@@ -10,33 +10,193 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BandRouteImport } from './routes/band'
+import { Route as CategoriesRouteImport } from './routes/categories'
+import { Route as FeedRouteImport } from './routes/feed'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
+import { Route as MeRouteImport } from './routes/me'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as RecommendedRouteImport } from './routes/recommended'
+import { Route as SavedRouteImport } from './routes/saved'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SingersRouteImport } from './routes/singers'
+import { Route as StudioRouteImport } from './routes/studio'
+import { Route as TalentIdRouteImport } from './routes/talent.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BandRoute = BandRouteImport.update({
+  id: '/band',
+  path: '/band',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesRoute = CategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendedRoute = RecommendedRouteImport.update({
+  id: '/recommended',
+  path: '/recommended',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SingersRoute = SingersRouteImport.update({
+  id: '/singers',
+  path: '/singers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TalentIdRoute = TalentIdRouteImport.update({
+  id: '/talent/$id',
+  path: '/talent/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/band': typeof BandRoute
+  '/categories': typeof CategoriesRoute
+  '/feed': typeof FeedRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
+  '/recommended': typeof RecommendedRoute
+  '/saved': typeof SavedRoute
+  '/search': typeof SearchRoute
+  '/singers': typeof SingersRoute
+  '/studio': typeof StudioRoute
+  '/talent/$id': typeof TalentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/band': typeof BandRoute
+  '/categories': typeof CategoriesRoute
+  '/feed': typeof FeedRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
+  '/recommended': typeof RecommendedRoute
+  '/saved': typeof SavedRoute
+  '/search': typeof SearchRoute
+  '/singers': typeof SingersRoute
+  '/studio': typeof StudioRoute
+  '/talent/$id': typeof TalentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/band': typeof BandRoute
+  '/categories': typeof CategoriesRoute
+  '/feed': typeof FeedRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
+  '/recommended': typeof RecommendedRoute
+  '/saved': typeof SavedRoute
+  '/search': typeof SearchRoute
+  '/singers': typeof SingersRoute
+  '/studio': typeof StudioRoute
+  '/talent/$id': typeof TalentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/band'
+    | '/categories'
+    | '/feed'
+    | '/marketplace'
+    | '/me'
+    | '/messages'
+    | '/recommended'
+    | '/saved'
+    | '/search'
+    | '/singers'
+    | '/studio'
+    | '/talent/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/band'
+    | '/categories'
+    | '/feed'
+    | '/marketplace'
+    | '/me'
+    | '/messages'
+    | '/recommended'
+    | '/saved'
+    | '/search'
+    | '/singers'
+    | '/studio'
+    | '/talent/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/band'
+    | '/categories'
+    | '/feed'
+    | '/marketplace'
+    | '/me'
+    | '/messages'
+    | '/recommended'
+    | '/saved'
+    | '/search'
+    | '/singers'
+    | '/studio'
+    | '/talent/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BandRoute: typeof BandRoute
+  CategoriesRoute: typeof CategoriesRoute
+  FeedRoute: typeof FeedRoute
+  MarketplaceRoute: typeof MarketplaceRoute
+  MeRoute: typeof MeRoute
+  MessagesRoute: typeof MessagesRoute
+  RecommendedRoute: typeof RecommendedRoute
+  SavedRoute: typeof SavedRoute
+  SearchRoute: typeof SearchRoute
+  SingersRoute: typeof SingersRoute
+  StudioRoute: typeof StudioRoute
+  TalentIdRoute: typeof TalentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +208,108 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/band': {
+      id: '/band'
+      path: '/band'
+      fullPath: '/band'
+      preLoaderRoute: typeof BandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories': {
+      id: '/categories'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof CategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommended': {
+      id: '/recommended'
+      path: '/recommended'
+      fullPath: '/recommended'
+      preLoaderRoute: typeof RecommendedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/singers': {
+      id: '/singers'
+      path: '/singers'
+      fullPath: '/singers'
+      preLoaderRoute: typeof SingersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/talent/$id': {
+      id: '/talent/$id'
+      path: '/talent/$id'
+      fullPath: '/talent/$id'
+      preLoaderRoute: typeof TalentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BandRoute: BandRoute,
+  CategoriesRoute: CategoriesRoute,
+  FeedRoute: FeedRoute,
+  MarketplaceRoute: MarketplaceRoute,
+  MeRoute: MeRoute,
+  MessagesRoute: MessagesRoute,
+  RecommendedRoute: RecommendedRoute,
+  SavedRoute: SavedRoute,
+  SearchRoute: SearchRoute,
+  SingersRoute: SingersRoute,
+  StudioRoute: StudioRoute,
+  TalentIdRoute: TalentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
