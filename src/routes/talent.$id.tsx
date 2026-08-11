@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AvailabilityBadge, Btn, Screen, VerifiedBadge } from "@/components/ml/ui";
 import { HireModal } from "@/components/ml/hire-modal";
