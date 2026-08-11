@@ -12,6 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BandRouteImport } from './routes/band'
 import { Route as CategoriesRouteImport } from './routes/categories'
+import { Route as FeedRouteImport } from './routes/feed'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
+import { Route as MeRouteImport } from './routes/me'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as RecommendedRouteImport } from './routes/recommended'
+import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
@@ -30,6 +36,36 @@ const BandRoute = BandRouteImport.update({
 const CategoriesRoute = CategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendedRoute = RecommendedRouteImport.update({
+  id: '/recommended',
+  path: '/recommended',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -57,6 +93,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
+  '/feed': typeof FeedRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
+  '/recommended': typeof RecommendedRoute
+  '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
@@ -66,6 +108,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
+  '/feed': typeof FeedRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
+  '/recommended': typeof RecommendedRoute
+  '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
@@ -76,6 +124,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
+  '/feed': typeof FeedRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/me': typeof MeRoute
+  '/messages': typeof MessagesRoute
+  '/recommended': typeof RecommendedRoute
+  '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
@@ -87,6 +141,12 @@ export interface FileRouteTypes {
     | '/'
     | '/band'
     | '/categories'
+    | '/feed'
+    | '/marketplace'
+    | '/me'
+    | '/messages'
+    | '/recommended'
+    | '/saved'
     | '/search'
     | '/singers'
     | '/studio'
@@ -96,6 +156,12 @@ export interface FileRouteTypes {
     | '/'
     | '/band'
     | '/categories'
+    | '/feed'
+    | '/marketplace'
+    | '/me'
+    | '/messages'
+    | '/recommended'
+    | '/saved'
     | '/search'
     | '/singers'
     | '/studio'
@@ -105,6 +171,12 @@ export interface FileRouteTypes {
     | '/'
     | '/band'
     | '/categories'
+    | '/feed'
+    | '/marketplace'
+    | '/me'
+    | '/messages'
+    | '/recommended'
+    | '/saved'
     | '/search'
     | '/singers'
     | '/studio'
@@ -115,6 +187,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BandRoute: typeof BandRoute
   CategoriesRoute: typeof CategoriesRoute
+  FeedRoute: typeof FeedRoute
+  MarketplaceRoute: typeof MarketplaceRoute
+  MeRoute: typeof MeRoute
+  MessagesRoute: typeof MessagesRoute
+  RecommendedRoute: typeof RecommendedRoute
+  SavedRoute: typeof SavedRoute
   SearchRoute: typeof SearchRoute
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
@@ -142,6 +220,48 @@ declare module '@tanstack/react-router' {
       path: '/categories'
       fullPath: '/categories'
       preLoaderRoute: typeof CategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommended': {
+      id: '/recommended'
+      path: '/recommended'
+      fullPath: '/recommended'
+      preLoaderRoute: typeof RecommendedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -179,6 +299,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
   CategoriesRoute: CategoriesRoute,
+  FeedRoute: FeedRoute,
+  MarketplaceRoute: MarketplaceRoute,
+  MeRoute: MeRoute,
+  MessagesRoute: MessagesRoute,
+  RecommendedRoute: RecommendedRoute,
+  SavedRoute: SavedRoute,
   SearchRoute: SearchRoute,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
