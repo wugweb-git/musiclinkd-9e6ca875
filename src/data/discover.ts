@@ -111,8 +111,9 @@ export const talents: Talent[] = [
 ];
 
 export const singers: Talent[] = [
-  talents[0],
-  talents[5],
+  talents[0]!,
+  talents[5]!,
+
   {
     id: "zaid-qureshi",
     name: "Zaid Qureshi",
