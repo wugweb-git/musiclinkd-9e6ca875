@@ -10,12 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BandRouteImport } from './routes/band'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as SingersRouteImport } from './routes/singers'
+import { Route as StudioRouteImport } from './routes/studio'
+import { Route as TalentIdRouteImport } from './routes/talent.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BandRoute = BandRouteImport.update({
+  id: '/band',
+  path: '/band',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriesRoute = CategoriesRouteImport.update({
@@ -28,35 +37,88 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SingersRoute = SingersRouteImport.update({
+  id: '/singers',
+  path: '/singers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TalentIdRoute = TalentIdRouteImport.update({
+  id: '/talent/$id',
+  path: '/talent/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/search': typeof SearchRoute
+  '/singers': typeof SingersRoute
+  '/studio': typeof StudioRoute
+  '/talent/$id': typeof TalentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/search': typeof SearchRoute
+  '/singers': typeof SingersRoute
+  '/studio': typeof StudioRoute
+  '/talent/$id': typeof TalentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/search': typeof SearchRoute
+  '/singers': typeof SingersRoute
+  '/studio': typeof StudioRoute
+  '/talent/$id': typeof TalentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories' | '/search'
+  fullPaths:
+    | '/'
+    | '/band'
+    | '/categories'
+    | '/search'
+    | '/singers'
+    | '/studio'
+    | '/talent/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories' | '/search'
-  id: '__root__' | '/' | '/categories' | '/search'
+  to:
+    | '/'
+    | '/band'
+    | '/categories'
+    | '/search'
+    | '/singers'
+    | '/studio'
+    | '/talent/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/band'
+    | '/categories'
+    | '/search'
+    | '/singers'
+    | '/studio'
+    | '/talent/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BandRoute: typeof BandRoute
   CategoriesRoute: typeof CategoriesRoute
   SearchRoute: typeof SearchRoute
+  SingersRoute: typeof SingersRoute
+  StudioRoute: typeof StudioRoute
+  TalentIdRoute: typeof TalentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/band': {
+      id: '/band'
+      path: '/band'
+      fullPath: '/band'
+      preLoaderRoute: typeof BandRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categories': {
@@ -82,13 +151,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/singers': {
+      id: '/singers'
+      path: '/singers'
+      fullPath: '/singers'
+      preLoaderRoute: typeof SingersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/talent/$id': {
+      id: '/talent/$id'
+      path: '/talent/$id'
+      fullPath: '/talent/$id'
+      preLoaderRoute: typeof TalentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BandRoute: BandRoute,
   CategoriesRoute: CategoriesRoute,
   SearchRoute: SearchRoute,
+  SingersRoute: SingersRoute,
+  StudioRoute: StudioRoute,
+  TalentIdRoute: TalentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
