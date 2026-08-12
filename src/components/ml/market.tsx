@@ -47,7 +47,7 @@ export function ConditionBadge({ value }: { value: string }) {
   );
 }
 
-export function Rating({ value, count }: { value?: number; count?: number }) {
+export function Rating({ value, count }: { value?: number | undefined; count?: number | undefined }) {
   if (!value) return null;
   return (
     <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-warn">
@@ -73,7 +73,7 @@ export function PriceBlock({
   size = "md",
 }: {
   price: string;
-  note?: string;
+  note?: string | undefined;
   size?: "md" | "lg";
 }) {
   return (
@@ -242,6 +242,7 @@ export function SellerSummary({
     rating: number;
     reviews: number;
     responseTime: string;
+    photo: string;
   };
   compact?: boolean;
 }) {
