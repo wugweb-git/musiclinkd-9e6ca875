@@ -1,0 +1,573 @@
+import { Link } from "@tanstack/react-router";
+import { useState, type ReactNode } from "react";
+import { Heart, MapPin, Star, ShieldCheck } from "lucide-react";
+import type { Listing } from "@/data/market";
+import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
+
+export function SaveButton({
+  saved,
+  onToggle,
+  size = 36,
+}: {
+  saved: boolean;
+  onToggle: () => void;
+  size?: number;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={saved ? "Remove from saved" : "Save listing"}
+      aria-pressed={saved}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onToggle();
+      }}
+      className="flex items-center justify-center rounded-full border border-border bg-card/95 backdrop-blur transition-transform active:scale-90"
+      style={{ width: size, height: size }}
+    >
+      <Heart
+        size={size * 0.45}
+        className={saved ? "text-primary" : "text-muted-foreground"}
+        fill={saved ? "currentColor" : "none"}
+        strokeWidth={2}
+      />
+    </button>
+  );
+}
+
+export function ConditionBadge({ value }: { value: string }) {
+  return (
+    <span
+      className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      style={{ background: "var(--surface-subtle)", color: "var(--text-2)" }}
+    >
+      {value}
+    </span>
+  );
+}
+
+export function Rating({ value, count }: { value?: number; count?: number }) {
+  if (!value) return null;
+  return (
+    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-warn">
+      <Star size={12} fill="currentColor" strokeWidth={0} />
+      {value}
+      {count ? <span className="text-muted-foreground">({count})</span> : null}
+    </span>
+  );
+}
+
+export function LocationRow({ text }: { text: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+      <MapPin size={12} strokeWidth={1.8} />
+      <span className="truncate">{text}</span>
+    </span>
+  );
+}
+
+export function PriceBlock({
+  price,
+  note,
+  size = "md",
+}: {
+  price: string;
+  note?: string;
+  size?: "md" | "lg";
+}) {
+  return (
+    <div className="flex items-baseline gap-1">
+      <span className={size === "lg" ? "text-2xl font-bold" : "text-[15px] font-bold"}>{price}</span>
+      {note ? <span className="text-[11px] text-muted-foreground">{note}</span> : null}
+    </div>
+  );
+}
+
+export function TrustPill({ label }: { label: string }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold"
+      style={{ background: "var(--purple-container)", color: "var(--purple)" }}
+    >
+      <ShieldCheck size={11} strokeWidth={2.2} />
+      {label}
+    </span>
+  );
+}
+
+export function CategoryTile({
+  slug,
+  label,
+  emoji,
+  count,
+}: {
+  slug: string;
+  label: string;
+  emoji: string;
+  count: string;
+}) {
+  return (
+    <Link
+      to="/marketplace/c/$slug"
+      params={{ slug }}
+      className="flex w-[104px] shrink-0 flex-col gap-2 rounded-3xl border border-border bg-card p-3"
+    >
+      <span
+        className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg"
+        style={{ background: "var(--pink-container)" }}
+      >
+        {emoji}
+      </span>
+      <span className="text-[12px] font-semibold leading-tight">{label}</span>
+      <span className="text-[10px] text-muted-foreground">{count}</span>
+    </Link>
+  );
+}
+
+function typeMeta(l: Listing) {
+  switch (l.type) {
+    case "service":
+      return { tag: "Service", line: l.delivery ? `Delivery ${l.delivery}` : "Remote" };
+    case "rental":
+      return { tag: "Rental", line: l.availability ?? "Check availability" };
+    case "space":
+      return { tag: "Space", line: l.availability ?? "Book a slot" };
+    default:
+      return { tag: l.brand ?? "Product", line: l.postedAt };
+  }
+}
+
+export function ListingCard({ l, saved, onSave }: { l: Listing; saved?: boolean; onSave?: () => void }) {
+  const [localSaved, setLocalSaved] = useState(false);
+  const isSaved = saved ?? localSaved;
+  const meta = typeMeta(l);
+  return (
+    <Link
+      to="/marketplace/l/$id"
+      params={{ id: l.id }}
+      className="block overflow-hidden rounded-3xl border border-border bg-card"
+    >
+      <div className="relative">
+        <img
+          src={l.photos[0]}
+          alt={l.title}
+          loading="lazy"
+          className="h-40 w-full object-cover"
+        />
+        <div className="absolute right-2 top-2">
+          <SaveButton saved={isSaved} onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))} />
+        </div>
+        <span className="absolute left-2 top-2 rounded-full bg-navy/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-background backdrop-blur">
+          {meta.tag}
+        </span>
+      </div>
+      <div className="p-3.5">
+        <div className="flex items-start justify-between gap-2">
+          <PriceBlock price={l.price} note={l.priceNote} />
+          {l.condition ? <ConditionBadge value={l.condition} /> : <Rating value={l.rating} count={l.reviews} />}
+        </div>
+        <h3 className="mt-1.5 line-clamp-2 text-[14px] leading-snug">{l.title}</h3>
+        <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">{l.subtitle}</p>
+        <div className="mt-2.5 flex items-center justify-between">
+          <LocationRow text={`${l.location} · ${l.distance}`} />
+          <span className="text-[10px] text-muted-foreground">{meta.line}</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export function ListingTile({ l }: { l: Listing }) {
+  const [saved, setSaved] = useState(false);
+  return (
+    <Link
+      to="/marketplace/l/$id"
+      params={{ id: l.id }}
+      className="block w-[168px] shrink-0 overflow-hidden rounded-3xl border border-border bg-card"
+    >
+      <div className="relative h-[124px]">
+        <img src={l.photos[0]} alt={l.title} loading="lazy" className="h-full w-full object-cover" />
+        <div className="absolute right-1.5 top-1.5">
+          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={30} />
+        </div>
+      </div>
+      <div className="p-3">
+        <PriceBlock price={l.price} note={l.priceNote} />
+        <h3 className="mt-1 line-clamp-2 text-[12px] leading-snug">{l.title}</h3>
+        <p className="mt-1 truncate text-[10px] text-muted-foreground">{l.distance}</p>
+      </div>
+    </Link>
+  );
+}
+
+export function ListingRow({ l }: { l: Listing }) {
+  const [saved, setSaved] = useState(false);
+  return (
+    <article className="flex gap-3 rounded-3xl border border-border bg-card p-3">
+      <Link to="/marketplace/l/$id" params={{ id: l.id }} className="shrink-0">
+        <img src={l.photos[0]} alt={l.title} loading="lazy" className="h-24 w-24 rounded-2xl object-cover" />
+      </Link>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-2">
+          <Link to="/marketplace/l/$id" params={{ id: l.id }} className="min-w-0">
+            <PriceBlock price={l.price} note={l.priceNote} />
+            <h3 className="line-clamp-2 text-[13px] leading-snug">{l.title}</h3>
+          </Link>
+          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
+        </div>
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          {l.condition ? <ConditionBadge value={l.condition} /> : null}
+          <Rating value={l.rating} count={l.reviews} />
+          <LocationRow text={l.distance} />
+        </div>
+        {l.reason ? (
+          <p className="mt-1.5 truncate text-[10px] font-semibold text-primary">{l.reason}</p>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+export function SellerSummary({
+  seller,
+  compact = false,
+}: {
+  seller: {
+    id: string;
+    name: string;
+    role: string;
+    location: string;
+    verified: boolean;
+    rating: number;
+    reviews: number;
+    responseTime: string;
+  };
+  compact?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-2xl object-cover" />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-[14px] font-semibold">{seller.name}</p>
+          {seller.verified ? <VerifiedBadge size={14} /> : null}
+        </div>
+        <p className="truncate text-[11px] text-muted-foreground">{seller.role}</p>
+        {compact ? null : (
+          <div className="mt-1 flex items-center gap-2">
+            <Rating value={seller.rating} count={seller.reviews} />
+            <span className="text-[10px] text-muted-foreground">Replies {seller.responseTime}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function EmptyState({
+  emoji,
+  title,
+  body,
+  action,
+}: {
+  emoji: string;
+  title: string;
+  body: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center">
+      <div
+        className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl text-2xl"
+        style={{ background: "var(--surface-subtle)" }}
+      >
+        {emoji}
+      </div>
+      <h3 className="text-[15px]">{title}</h3>
+      <p className="mx-auto mt-1 max-w-[260px] text-xs text-muted-foreground">{body}</p>
+      {action ? <div className="mt-5">{action}</div> : null}
+    </div>
+  );
+}
+
+export function ListingSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-3xl border border-border bg-card">
+      <div className="h-40 w-full animate-pulse bg-subtle" />
+      <div className="space-y-2 p-3.5">
+        <div className="h-4 w-24 animate-pulse rounded-full bg-subtle" />
+        <div className="h-3 w-full animate-pulse rounded-full bg-subtle" />
+        <div className="h-3 w-2/3 animate-pulse rounded-full bg-subtle" />
+      </div>
+    </div>
+  );
+}
+
+const filterGroups: { label: string; options: string[] }[] = [
+  { label: "Listing type", options: ["For sale", "Rental", "Service", "Space"] },
+  { label: "Category", options: ["Instruments", "Audio Gear", "Studio", "Services", "Spaces"] },
+  { label: "Condition", options: ["New", "Like New", "Excellent", "Good", "Fair"] },
+  { label: "Brand", options: ["Fender", "Neumann", "Focusrite", "Roland", "Swaraj", "Yamaha"] },
+  { label: "Location", options: ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Pune", "Goa"] },
+  { label: "Distance", options: ["Within 5 km", "Within 15 km", "Within 50 km", "Anywhere"] },
+  { label: "Price", options: ["Under ₹10k", "₹10k–50k", "₹50k–1L", "Above ₹1L"] },
+];
+
+export function MarketFilterSheet({
+  open,
+  onClose,
+  results = 214,
+}: {
+  open: boolean;
+  onClose: () => void;
+  results?: number;
+}) {
+  const [selected, setSelected] = useState<string[]>(["For sale", "Mumbai"]);
+  const [verified, setVerified] = useState(true);
+  const [available, setAvailable] = useState(false);
+
+  const toggle = (v: string) =>
+    setSelected((s) => (s.includes(v) ? s.filter((x) => x !== v) : [...s, v]));
+
+  return (
+    <Sheet open={open} onClose={onClose}>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl">Filters</h2>
+        <button onClick={() => setSelected([])} className="text-xs font-semibold text-primary">
+          Clear all
+        </button>
+      </div>
+
+      {filterGroups.map((g) => (
+        <div key={g.label} className="mb-5">
+          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            {g.label}
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {g.options.map((o) => (
+              <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
+                {o}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div className="mb-6 divide-y divide-border rounded-3xl border border-border">
+        <SwitchRow label="Verified sellers only" value={verified} onChange={setVerified} />
+        <SwitchRow label="Available right now" value={available} onChange={setAvailable} />
+      </div>
+
+      <Btn className="w-full" onClick={onClose}>
+        Show {results} results
+      </Btn>
+    </Sheet>
+  );
+}
+
+function SwitchRow({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={value}
+      onClick={() => onChange(!value)}
+      className="flex w-full items-center justify-between px-4 py-4 text-left"
+    >
+      <span className="text-sm font-medium">{label}</span>
+      <span className={`relative h-7 w-12 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}>
+        <span
+          className={`absolute top-1 h-5 w-5 rounded-full bg-card transition-all ${value ? "left-6" : "left-1"}`}
+        />
+      </span>
+    </button>
+  );
+}
+
+export function SortSheet({
+  open,
+  onClose,
+  value,
+  onChange,
+  options,
+}: {
+  open: boolean;
+  onClose: () => void;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+}) {
+  return (
+    <Sheet open={open} onClose={onClose} title="Sort by">
+      <div className="divide-y divide-border rounded-3xl border border-border">
+        {options.map((o) => (
+          <button
+            key={o}
+            type="button"
+            onClick={() => {
+              onChange(o);
+              onClose();
+            }}
+            className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium"
+          >
+            {o}
+            {value === o ? <span className="text-primary">✓</span> : null}
+          </button>
+        ))}
+      </div>
+    </Sheet>
+  );
+}
+
+export function OfferSheet({
+  open,
+  onClose,
+  listing,
+}: {
+  open: boolean;
+  onClose: () => void;
+  listing: Listing;
+}) {
+  const [amount, setAmount] = useState("");
+  const [message, setMessage] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const close = () => {
+    setSent(false);
+    onClose();
+  };
+
+  return (
+    <Sheet open={open} onClose={close}>
+      {sent ? (
+        <div className="py-10 text-center">
+          <div
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
+            style={{ background: "var(--success-container)" }}
+          >
+            ✓
+          </div>
+          <h2 className="text-xl">Offer sent</h2>
+          <p className="mx-auto mt-2 max-w-[260px] text-sm text-muted-foreground">
+            Your offer is pending. It expires in 48 hours and continues in Connections.
+          </p>
+          <Btn className="mt-6 w-full" onClick={close}>
+            Open conversation
+          </Btn>
+        </div>
+      ) : (
+        <>
+          <h2 className="mb-4 text-xl">Make an offer</h2>
+          <div className="mb-5 flex items-center gap-3 rounded-3xl border border-border p-3">
+            <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-2xl object-cover" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13px] font-semibold">{listing.title}</p>
+              <p className="text-[11px] text-muted-foreground">Asking {listing.price}</p>
+            </div>
+          </div>
+
+          <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            Your offer
+          </label>
+          <input
+            inputMode="numeric"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="₹1,70,000"
+            className="mb-4 h-14 w-full rounded-full border border-border bg-card px-5 text-base font-semibold outline-none focus:border-primary"
+          />
+
+          <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            Message (optional)
+          </label>
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={3}
+            placeholder="I can collect from Dadar this weekend."
+            className="mb-3 w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+          />
+          <p className="mb-5 text-[11px] text-muted-foreground">
+            Offers expire after 48 hours. Payment is arranged directly with the seller.
+          </p>
+
+          <Btn className="w-full" onClick={() => setSent(true)}>
+            Send offer
+          </Btn>
+        </>
+      )}
+    </Sheet>
+  );
+}
+
+export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const reasons = [
+    "Incorrect information",
+    "Suspected scam",
+    "Item already sold",
+    "Prohibited item",
+    "Seller behaviour",
+  ];
+  const [reason, setReason] = useState(reasons[0]!);
+  return (
+    <Sheet open={open} onClose={onClose} title="Report listing">
+      <div className="mb-5 divide-y divide-border rounded-3xl border border-border">
+        {reasons.map((r) => (
+          <button
+            key={r}
+            type="button"
+            onClick={() => setReason(r)}
+            className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium"
+          >
+            {r}
+            {reason === r ? <span className="text-primary">✓</span> : null}
+          </button>
+        ))}
+      </div>
+      <Btn className="w-full" onClick={onClose}>
+        Submit report
+      </Btn>
+      <Btn variant="ghost" className="mt-2 w-full" onClick={onClose}>
+        Block this seller
+      </Btn>
+    </Sheet>
+  );
+}
+
+export function SectionRow({
+  title,
+  hint,
+  to,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  to?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="mb-7">
+      <div className="mb-3 flex items-baseline justify-between px-5">
+        <div>
+          <h2 className="text-[17px]">{title}</h2>
+          {hint ? <p className="text-[11px] text-muted-foreground">{hint}</p> : null}
+        </div>
+        {to ? (
+          <Link to={to} className="text-xs font-semibold text-primary">
+            See all
+          </Link>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  );
+}
