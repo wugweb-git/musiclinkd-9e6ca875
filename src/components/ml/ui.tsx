@@ -20,10 +20,11 @@ export function Screen({
 const navItems = [
   { to: "/feed", label: "Home", icon: Home },
   { to: "/", label: "Discover", icon: Compass },
+  { to: "/messages", label: "Connections", icon: MessageCircle },
   { to: "/marketplace", label: "Market", icon: Store },
-  { to: "/messages", label: "Messages", icon: MessageCircle },
   { to: "/me", label: "Profile", icon: User },
 ];
+
 
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
