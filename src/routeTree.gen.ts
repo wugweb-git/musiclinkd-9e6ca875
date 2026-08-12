@@ -21,6 +21,7 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -83,6 +84,11 @@ const StudioRoute = StudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MarketplaceRoute,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
@@ -94,7 +100,7 @@ export interface FileRoutesByFullPath {
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/marketplace': typeof MarketplaceRoute
+  '/marketplace': typeof MarketplaceRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
@@ -103,13 +109,13 @@ export interface FileRoutesByFullPath {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/talent/$id': typeof TalentIdRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/marketplace': typeof MarketplaceRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
@@ -118,6 +124,7 @@ export interface FileRoutesByTo {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/talent/$id': typeof TalentIdRoute
+  '/marketplace': typeof MarketplaceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,7 +132,7 @@ export interface FileRoutesById {
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/marketplace': typeof MarketplaceRoute
+  '/marketplace': typeof MarketplaceRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
@@ -134,6 +141,7 @@ export interface FileRoutesById {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/talent/$id': typeof TalentIdRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,13 +159,13 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/talent/$id'
+    | '/marketplace/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/band'
     | '/categories'
     | '/feed'
-    | '/marketplace'
     | '/me'
     | '/messages'
     | '/recommended'
@@ -166,6 +174,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/talent/$id'
+    | '/marketplace'
   id:
     | '__root__'
     | '/'
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/talent/$id'
+    | '/marketplace/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,7 +198,7 @@ export interface RootRouteChildren {
   BandRoute: typeof BandRoute
   CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
-  MarketplaceRoute: typeof MarketplaceRoute
+  MarketplaceRoute: typeof MarketplaceRouteWithChildren
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   RecommendedRoute: typeof RecommendedRoute
@@ -285,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof MarketplaceRoute
+    }
     '/talent/$id': {
       id: '/talent/$id'
       path: '/talent/$id'
@@ -295,12 +312,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MarketplaceRouteChildren {
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
+}
+
+const MarketplaceRouteChildren: MarketplaceRouteChildren = {
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
+}
+
+const MarketplaceRouteWithChildren = MarketplaceRoute._addFileChildren(
+  MarketplaceRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
   CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
-  MarketplaceRoute: MarketplaceRoute,
+  MarketplaceRoute: MarketplaceRouteWithChildren,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   RecommendedRoute: RecommendedRoute,
