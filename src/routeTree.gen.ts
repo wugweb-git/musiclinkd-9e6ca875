@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BandRouteImport } from './routes/band'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as FeedRouteImport } from './routes/feed'
-import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as RecommendedRouteImport } from './routes/recommended'
@@ -21,7 +20,16 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
+import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
+import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
+import { Route as MarketplaceSavedRouteImport } from './routes/marketplace/saved'
+import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/search'
+import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
+import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
+import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
+import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,11 +49,6 @@ const CategoriesRoute = CategoriesRouteImport.update({
 const FeedRoute = FeedRouteImport.update({
   id: '/feed',
   path: '/feed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MarketplaceRoute = MarketplaceRouteImport.update({
-  id: '/marketplace',
-  path: '/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeRoute = MeRouteImport.update({
@@ -83,9 +86,54 @@ const StudioRoute = StudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceMineRoute = MarketplaceMineRouteImport.update({
+  id: '/marketplace/mine',
+  path: '/marketplace/mine',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceNearbyRoute = MarketplaceNearbyRouteImport.update({
+  id: '/marketplace/nearby',
+  path: '/marketplace/nearby',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceSavedRoute = MarketplaceSavedRouteImport.update({
+  id: '/marketplace/saved',
+  path: '/marketplace/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceSearchRoute = MarketplaceSearchRouteImport.update({
+  id: '/marketplace/search',
+  path: '/marketplace/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceSellRoute = MarketplaceSellRouteImport.update({
+  id: '/marketplace/sell',
+  path: '/marketplace/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceCSlugRoute = MarketplaceCSlugRouteImport.update({
+  id: '/marketplace/c/$slug',
+  path: '/marketplace/c/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceLIdRoute = MarketplaceLIdRouteImport.update({
+  id: '/marketplace/l/$id',
+  path: '/marketplace/l/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceSellerIdRoute = MarketplaceSellerIdRouteImport.update({
+  id: '/marketplace/seller/$id',
+  path: '/marketplace/seller/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -94,7 +142,6 @@ export interface FileRoutesByFullPath {
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/marketplace': typeof MarketplaceRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
@@ -102,14 +149,22 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/marketplace/mine': typeof MarketplaceMineRoute
+  '/marketplace/nearby': typeof MarketplaceNearbyRoute
+  '/marketplace/saved': typeof MarketplaceSavedRoute
+  '/marketplace/search': typeof MarketplaceSearchRoute
+  '/marketplace/sell': typeof MarketplaceSellRoute
   '/talent/$id': typeof TalentIdRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
+  '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
+  '/marketplace/l/$id': typeof MarketplaceLIdRoute
+  '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/marketplace': typeof MarketplaceRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
@@ -117,7 +172,16 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/marketplace/mine': typeof MarketplaceMineRoute
+  '/marketplace/nearby': typeof MarketplaceNearbyRoute
+  '/marketplace/saved': typeof MarketplaceSavedRoute
+  '/marketplace/search': typeof MarketplaceSearchRoute
+  '/marketplace/sell': typeof MarketplaceSellRoute
   '/talent/$id': typeof TalentIdRoute
+  '/marketplace': typeof MarketplaceIndexRoute
+  '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
+  '/marketplace/l/$id': typeof MarketplaceLIdRoute
+  '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,7 +189,6 @@ export interface FileRoutesById {
   '/band': typeof BandRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/marketplace': typeof MarketplaceRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
@@ -133,7 +196,16 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/marketplace/mine': typeof MarketplaceMineRoute
+  '/marketplace/nearby': typeof MarketplaceNearbyRoute
+  '/marketplace/saved': typeof MarketplaceSavedRoute
+  '/marketplace/search': typeof MarketplaceSearchRoute
+  '/marketplace/sell': typeof MarketplaceSellRoute
   '/talent/$id': typeof TalentIdRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
+  '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
+  '/marketplace/l/$id': typeof MarketplaceLIdRoute
+  '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -142,7 +214,6 @@ export interface FileRouteTypes {
     | '/band'
     | '/categories'
     | '/feed'
-    | '/marketplace'
     | '/me'
     | '/messages'
     | '/recommended'
@@ -150,14 +221,22 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
+    | '/marketplace/mine'
+    | '/marketplace/nearby'
+    | '/marketplace/saved'
+    | '/marketplace/search'
+    | '/marketplace/sell'
     | '/talent/$id'
+    | '/marketplace/'
+    | '/marketplace/c/$slug'
+    | '/marketplace/l/$id'
+    | '/marketplace/seller/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/band'
     | '/categories'
     | '/feed'
-    | '/marketplace'
     | '/me'
     | '/messages'
     | '/recommended'
@@ -165,14 +244,22 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
+    | '/marketplace/mine'
+    | '/marketplace/nearby'
+    | '/marketplace/saved'
+    | '/marketplace/search'
+    | '/marketplace/sell'
     | '/talent/$id'
+    | '/marketplace'
+    | '/marketplace/c/$slug'
+    | '/marketplace/l/$id'
+    | '/marketplace/seller/$id'
   id:
     | '__root__'
     | '/'
     | '/band'
     | '/categories'
     | '/feed'
-    | '/marketplace'
     | '/me'
     | '/messages'
     | '/recommended'
@@ -180,7 +267,16 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
+    | '/marketplace/mine'
+    | '/marketplace/nearby'
+    | '/marketplace/saved'
+    | '/marketplace/search'
+    | '/marketplace/sell'
     | '/talent/$id'
+    | '/marketplace/'
+    | '/marketplace/c/$slug'
+    | '/marketplace/l/$id'
+    | '/marketplace/seller/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,7 +284,6 @@ export interface RootRouteChildren {
   BandRoute: typeof BandRoute
   CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
-  MarketplaceRoute: typeof MarketplaceRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   RecommendedRoute: typeof RecommendedRoute
@@ -196,7 +291,16 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
+  MarketplaceMineRoute: typeof MarketplaceMineRoute
+  MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
+  MarketplaceSavedRoute: typeof MarketplaceSavedRoute
+  MarketplaceSearchRoute: typeof MarketplaceSearchRoute
+  MarketplaceSellRoute: typeof MarketplaceSellRoute
   TalentIdRoute: typeof TalentIdRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
+  MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
+  MarketplaceLIdRoute: typeof MarketplaceLIdRoute
+  MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -227,13 +331,6 @@ declare module '@tanstack/react-router' {
       path: '/feed'
       fullPath: '/feed'
       preLoaderRoute: typeof FeedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/marketplace': {
-      id: '/marketplace'
-      path: '/marketplace'
-      fullPath: '/marketplace'
-      preLoaderRoute: typeof MarketplaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me': {
@@ -285,11 +382,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/mine': {
+      id: '/marketplace/mine'
+      path: '/marketplace/mine'
+      fullPath: '/marketplace/mine'
+      preLoaderRoute: typeof MarketplaceMineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/nearby': {
+      id: '/marketplace/nearby'
+      path: '/marketplace/nearby'
+      fullPath: '/marketplace/nearby'
+      preLoaderRoute: typeof MarketplaceNearbyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/saved': {
+      id: '/marketplace/saved'
+      path: '/marketplace/saved'
+      fullPath: '/marketplace/saved'
+      preLoaderRoute: typeof MarketplaceSavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/search': {
+      id: '/marketplace/search'
+      path: '/marketplace/search'
+      fullPath: '/marketplace/search'
+      preLoaderRoute: typeof MarketplaceSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/sell': {
+      id: '/marketplace/sell'
+      path: '/marketplace/sell'
+      fullPath: '/marketplace/sell'
+      preLoaderRoute: typeof MarketplaceSellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/talent/$id': {
       id: '/talent/$id'
       path: '/talent/$id'
       fullPath: '/talent/$id'
       preLoaderRoute: typeof TalentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/c/$slug': {
+      id: '/marketplace/c/$slug'
+      path: '/marketplace/c/$slug'
+      fullPath: '/marketplace/c/$slug'
+      preLoaderRoute: typeof MarketplaceCSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/l/$id': {
+      id: '/marketplace/l/$id'
+      path: '/marketplace/l/$id'
+      fullPath: '/marketplace/l/$id'
+      preLoaderRoute: typeof MarketplaceLIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/seller/$id': {
+      id: '/marketplace/seller/$id'
+      path: '/marketplace/seller/$id'
+      fullPath: '/marketplace/seller/$id'
+      preLoaderRoute: typeof MarketplaceSellerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -300,7 +460,6 @@ const rootRouteChildren: RootRouteChildren = {
   BandRoute: BandRoute,
   CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
-  MarketplaceRoute: MarketplaceRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   RecommendedRoute: RecommendedRoute,
@@ -308,7 +467,16 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
+  MarketplaceMineRoute: MarketplaceMineRoute,
+  MarketplaceNearbyRoute: MarketplaceNearbyRoute,
+  MarketplaceSavedRoute: MarketplaceSavedRoute,
+  MarketplaceSearchRoute: MarketplaceSearchRoute,
+  MarketplaceSellRoute: MarketplaceSellRoute,
   TalentIdRoute: TalentIdRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
+  MarketplaceCSlugRoute: MarketplaceCSlugRoute,
+  MarketplaceLIdRoute: MarketplaceLIdRoute,
+  MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
