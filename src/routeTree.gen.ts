@@ -33,6 +33,7 @@ import { Route as MarketplaceRentIndexRouteImport } from './routes/marketplace/r
 import { Route as MarketplaceRentListRouteImport } from './routes/marketplace/rent/list'
 import { Route as MarketplaceRentListingsRouteImport } from './routes/marketplace/rent/listings'
 import { Route as MarketplaceRentMineRouteImport } from './routes/marketplace/rent/mine'
+import { Route as MarketplaceRentNearbyRouteImport } from './routes/marketplace/rent/nearby'
 import { Route as MarketplaceRentSavedRouteImport } from './routes/marketplace/rent/saved'
 import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/rent/search'
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
@@ -162,6 +163,11 @@ const MarketplaceRentMineRoute = MarketplaceRentMineRouteImport.update({
   path: '/marketplace/rent/mine',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceRentNearbyRoute = MarketplaceRentNearbyRouteImport.update({
+  id: '/marketplace/rent/nearby',
+  path: '/marketplace/rent/nearby',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRentSavedRoute = MarketplaceRentSavedRouteImport.update({
   id: '/marketplace/rent/saved',
   path: '/marketplace/rent/saved',
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
   '/marketplace/rent/listings': typeof MarketplaceRentListingsRoute
   '/marketplace/rent/mine': typeof MarketplaceRentMineRoute
+  '/marketplace/rent/nearby': typeof MarketplaceRentNearbyRoute
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
@@ -263,6 +270,7 @@ export interface FileRoutesByTo {
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
   '/marketplace/rent/listings': typeof MarketplaceRentListingsRoute
   '/marketplace/rent/mine': typeof MarketplaceRentMineRoute
+  '/marketplace/rent/nearby': typeof MarketplaceRentNearbyRoute
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
   '/marketplace/rent/listings': typeof MarketplaceRentListingsRoute
   '/marketplace/rent/mine': typeof MarketplaceRentMineRoute
+  '/marketplace/rent/nearby': typeof MarketplaceRentNearbyRoute
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
@@ -334,6 +343,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/list'
     | '/marketplace/rent/listings'
     | '/marketplace/rent/mine'
+    | '/marketplace/rent/nearby'
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/list'
     | '/marketplace/rent/listings'
     | '/marketplace/rent/mine'
+    | '/marketplace/rent/nearby'
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
@@ -402,6 +413,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/list'
     | '/marketplace/rent/listings'
     | '/marketplace/rent/mine'
+    | '/marketplace/rent/nearby'
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
@@ -437,6 +449,7 @@ export interface RootRouteChildren {
   MarketplaceRentListRoute: typeof MarketplaceRentListRoute
   MarketplaceRentListingsRoute: typeof MarketplaceRentListingsRoute
   MarketplaceRentMineRoute: typeof MarketplaceRentMineRoute
+  MarketplaceRentNearbyRoute: typeof MarketplaceRentNearbyRoute
   MarketplaceRentSavedRoute: typeof MarketplaceRentSavedRoute
   MarketplaceRentSearchRoute: typeof MarketplaceRentSearchRoute
   MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
@@ -618,6 +631,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceRentMineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/rent/nearby': {
+      id: '/marketplace/rent/nearby'
+      path: '/marketplace/rent/nearby'
+      fullPath: '/marketplace/rent/nearby'
+      preLoaderRoute: typeof MarketplaceRentNearbyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/rent/saved': {
       id: '/marketplace/rent/saved'
       path: '/marketplace/rent/saved'
@@ -701,6 +721,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentListRoute: MarketplaceRentListRoute,
   MarketplaceRentListingsRoute: MarketplaceRentListingsRoute,
   MarketplaceRentMineRoute: MarketplaceRentMineRoute,
+  MarketplaceRentNearbyRoute: MarketplaceRentNearbyRoute,
   MarketplaceRentSavedRoute: MarketplaceRentSavedRoute,
   MarketplaceRentSearchRoute: MarketplaceRentSearchRoute,
   MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
