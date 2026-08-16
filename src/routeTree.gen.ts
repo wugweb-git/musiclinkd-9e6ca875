@@ -34,6 +34,7 @@ import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
 import { Route as MarketplaceRentCSlugRouteImport } from './routes/marketplace/rent/c.$slug'
 import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/rent/e.$id'
+import { Route as MarketplaceRentRequestIdRouteImport } from './routes/marketplace/rent/request.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -160,6 +161,12 @@ const MarketplaceRentEIdRoute = MarketplaceRentEIdRouteImport.update({
   path: '/marketplace/rent/e/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceRentRequestIdRoute =
+  MarketplaceRentRequestIdRouteImport.update({
+    id: '/marketplace/rent/request/$id',
+    path: '/marketplace/rent/request/$id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
+  '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
+  '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -242,6 +251,7 @@ export interface FileRoutesById {
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
+  '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
+    | '/marketplace/rent/request/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
+    | '/marketplace/rent/request/$id'
   id:
     | '__root__'
     | '/'
@@ -325,6 +337,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
+    | '/marketplace/rent/request/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -353,6 +366,7 @@ export interface RootRouteChildren {
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
   MarketplaceRentCSlugRoute: typeof MarketplaceRentCSlugRoute
   MarketplaceRentEIdRoute: typeof MarketplaceRentEIdRoute
+  MarketplaceRentRequestIdRoute: typeof MarketplaceRentRequestIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -532,6 +546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceRentEIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/rent/request/$id': {
+      id: '/marketplace/rent/request/$id'
+      path: '/marketplace/rent/request/$id'
+      fullPath: '/marketplace/rent/request/$id'
+      preLoaderRoute: typeof MarketplaceRentRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -561,6 +582,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
   MarketplaceRentCSlugRoute: MarketplaceRentCSlugRoute,
   MarketplaceRentEIdRoute: MarketplaceRentEIdRoute,
+  MarketplaceRentRequestIdRoute: MarketplaceRentRequestIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
