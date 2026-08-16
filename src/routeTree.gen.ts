@@ -30,6 +30,7 @@ import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
 import { Route as MarketplaceRentIndexRouteImport } from './routes/marketplace/rent/index'
+import { Route as MarketplaceRentListingsRouteImport } from './routes/marketplace/rent/listings'
 import { Route as MarketplaceRentMineRouteImport } from './routes/marketplace/rent/mine'
 import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/rent/search'
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
@@ -144,6 +145,11 @@ const MarketplaceRentIndexRoute = MarketplaceRentIndexRouteImport.update({
   path: '/marketplace/rent/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketplaceRentListingsRoute = MarketplaceRentListingsRouteImport.update({
+  id: '/marketplace/rent/listings',
+  path: '/marketplace/rent/listings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRentMineRoute = MarketplaceRentMineRouteImport.update({
   id: '/marketplace/rent/mine',
   path: '/marketplace/rent/mine',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/': typeof MarketplaceIndexRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
+  '/marketplace/rent/listings': typeof MarketplaceRentListingsRoute
   '/marketplace/rent/mine': typeof MarketplaceRentMineRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceIndexRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
+  '/marketplace/rent/listings': typeof MarketplaceRentListingsRoute
   '/marketplace/rent/mine': typeof MarketplaceRentMineRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/marketplace/': typeof MarketplaceIndexRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
+  '/marketplace/rent/listings': typeof MarketplaceRentListingsRoute
   '/marketplace/rent/mine': typeof MarketplaceRentMineRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/marketplace/'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
+    | '/marketplace/rent/listings'
     | '/marketplace/rent/mine'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
@@ -335,6 +345,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
+    | '/marketplace/rent/listings'
     | '/marketplace/rent/mine'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
@@ -366,6 +377,7 @@ export interface FileRouteTypes {
     | '/marketplace/'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
+    | '/marketplace/rent/listings'
     | '/marketplace/rent/mine'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
+  MarketplaceRentListingsRoute: typeof MarketplaceRentListingsRoute
   MarketplaceRentMineRoute: typeof MarketplaceRentMineRoute
   MarketplaceRentSearchRoute: typeof MarketplaceRentSearchRoute
   MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
@@ -558,6 +571,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceRentIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marketplace/rent/listings': {
+      id: '/marketplace/rent/listings'
+      path: '/marketplace/rent/listings'
+      fullPath: '/marketplace/rent/listings'
+      preLoaderRoute: typeof MarketplaceRentListingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/rent/mine': {
       id: '/marketplace/rent/mine'
       path: '/marketplace/rent/mine'
@@ -638,6 +658,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
+  MarketplaceRentListingsRoute: MarketplaceRentListingsRoute,
   MarketplaceRentMineRoute: MarketplaceRentMineRoute,
   MarketplaceRentSearchRoute: MarketplaceRentSearchRoute,
   MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
