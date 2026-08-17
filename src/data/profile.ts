@@ -146,7 +146,7 @@ export type PersonProfile = {
   rating: number;
   reviewCount: number;
   links: { label: string; handle: string }[];
-  featured?: { kind: "Track" | "Project" | "Video"; title: string; meta: string; image: string };
+  featured?: undefined | { kind: "Track" | "Project" | "Video"; title: string; meta: string; image: string };
   audio: AudioTrack[];
   video: VideoItem[];
   gallery: string[];
@@ -158,7 +158,7 @@ export type PersonProfile = {
   reviews: ReviewItem[];
   opportunities: OpportunityItem[];
   market: MarketEntry[];
-  studio?: { name: string; meta: string; to: string };
+  studio?: { name: string; meta: string; to: string } | undefined;
   mutuals: { name: string; photo: string }[];
 };
 
