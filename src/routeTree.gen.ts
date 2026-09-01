@@ -51,6 +51,7 @@ import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confir
 import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.index'
 import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
+import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
 import { Route as MarketplaceRentIndexRouteImport } from './routes/marketplace/rent/index'
@@ -281,6 +282,11 @@ const BookingsRefRescheduleRoute = BookingsRefRescheduleRouteImport.update({
   path: '/bookings/$ref/reschedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabNewCollaboratorsRoute = CollabNewCollaboratorsRouteImport.update({
+  id: '/collaborators',
+  path: '/collaborators',
+  getParentRoute: () => CollabNewRoute,
+} as any)
 const MarketplaceCSlugRoute = MarketplaceCSlugRouteImport.update({
   id: '/marketplace/c/$slug',
   path: '/marketplace/c/$slug',
@@ -393,7 +399,7 @@ export interface FileRoutesByFullPath {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
-  '/collab/new': typeof CollabNewRoute
+  '/collab/new': typeof CollabNewRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -421,6 +427,7 @@ export interface FileRoutesByFullPath {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -455,7 +462,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
-  '/collab/new': typeof CollabNewRoute
+  '/collab/new': typeof CollabNewRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -483,6 +490,7 @@ export interface FileRoutesByTo {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -519,7 +527,7 @@ export interface FileRoutesById {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
-  '/collab/new': typeof CollabNewRoute
+  '/collab/new': typeof CollabNewRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -547,6 +555,7 @@ export interface FileRoutesById {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -612,6 +621,7 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -674,6 +684,7 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -737,6 +748,7 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -773,7 +785,7 @@ export interface RootRouteChildren {
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
-  CollabNewRoute: typeof CollabNewRoute
+  CollabNewRoute: typeof CollabNewRouteWithChildren
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
@@ -1113,6 +1125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsRefRescheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/new/collaborators': {
+      id: '/collab/new/collaborators'
+      path: '/collaborators'
+      fullPath: '/collab/new/collaborators'
+      preLoaderRoute: typeof CollabNewCollaboratorsRouteImport
+      parentRoute: typeof CollabNewRoute
+    }
     '/marketplace/c/$slug': {
       id: '/marketplace/c/$slug'
       path: '/marketplace/c/$slug'
@@ -1273,6 +1292,18 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
   BookingIdRouteChildren,
 )
 
+interface CollabNewRouteChildren {
+  CollabNewCollaboratorsRoute: typeof CollabNewCollaboratorsRoute
+}
+
+const CollabNewRouteChildren: CollabNewRouteChildren = {
+  CollabNewCollaboratorsRoute: CollabNewCollaboratorsRoute,
+}
+
+const CollabNewRouteWithChildren = CollabNewRoute._addFileChildren(
+  CollabNewRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
@@ -1286,7 +1317,7 @@ const rootRouteChildren: RootRouteChildren = {
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
-  CollabNewRoute: CollabNewRoute,
+  CollabNewRoute: CollabNewRouteWithChildren,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSavedRoute: MarketplaceSavedRoute,
