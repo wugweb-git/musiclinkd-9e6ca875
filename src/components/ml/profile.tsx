@@ -62,8 +62,8 @@ export function ProfileEmpty({
 }: {
   title: string;
   body: string;
-  cta?: string;
-  onCta?: () => void;
+  cta?: string | undefined;
+  onCta?: (() => void) | undefined;
 }) {
   return (
     <div className="rounded-3xl border border-dashed border-border bg-card p-5 text-center">
@@ -214,8 +214,8 @@ export function ProfileHero({
   p: PersonProfile;
   owner?: boolean;
   onShare: () => void;
-  onMore?: () => void;
-  back?: string;
+  onMore?: (() => void) | undefined;
+  back?: string | undefined;
 }) {
   return (
     <header>

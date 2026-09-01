@@ -177,7 +177,7 @@ function Overview({ p, playingId, onToggleTrack, onHire, owner, onTab }: { p: Pe
       </ProfileSection>
       {p.audio.length ? <ProfileSection title="Audio portfolio" action="View all" onAction={() => onTab("Portfolio")}><div className="space-y-2">{p.audio.slice(0, 2).map((track) => <AudioTrackCard key={track.id} track={track} playing={playingId === track.id} onToggle={() => onToggleTrack(track.id)} />)}</div></ProfileSection> : <ProfileSection title="Audio portfolio"><ProfileEmpty title="No audio yet" body="This professional has not added audio samples yet." cta={owner ? "Add audio" : undefined} /></ProfileSection>}
       {p.projects.length ? <ProfileSection title="Selected projects" action="View all" onAction={() => onTab("Projects")}><div className="space-y-2">{p.projects.slice(0, 2).map((project) => <ProjectCard key={project.id} p={project} />)}</div></ProfileSection> : null}
-      {p.services.length ? <ProfileSection title="Available to work" action="Services" onAction={() => onTab("Services")}><ServiceCard s={p.services[0]} onEnquire={onHire} /></ProfileSection> : null}
+      {p.services.length ? <ProfileSection title="Available to work" action="Services" onAction={() => onTab("Services")}><ServiceCard s={p.services[0]!} onEnquire={onHire} /></ProfileSection> : null}
       <RelationshipSections p={p} />
     </>
   );
