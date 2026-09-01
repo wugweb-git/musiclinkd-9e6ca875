@@ -22,6 +22,8 @@ import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
+import { Route as CollabIndexRouteImport } from './routes/collab.index'
+import { Route as CollabNewRouteImport } from './routes/collab.new'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -49,6 +51,15 @@ import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confir
 import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.index'
 import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
+import { Route as CollabIdIndexRouteImport } from './routes/collab.$id.index'
+import { Route as CollabIdActivityRouteImport } from './routes/collab.$id.activity'
+import { Route as CollabIdDiscussionRouteImport } from './routes/collab.$id.discussion'
+import { Route as CollabIdNotesRouteImport } from './routes/collab.$id.notes'
+import { Route as CollabIdParticipantsRouteImport } from './routes/collab.$id.participants'
+import { Route as CollabIdSettingsRouteImport } from './routes/collab.$id.settings'
+import { Route as CollabIdShareRouteImport } from './routes/collab.$id.share'
+import { Route as CollabIdTimelineRouteImport } from './routes/collab.$id.timeline'
+import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
 import { Route as MarketplaceRentIndexRouteImport } from './routes/marketplace/rent/index'
@@ -62,6 +73,10 @@ import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/se
 import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
 import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
 import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
+import { Route as CollabIdFilesIndexRouteImport } from './routes/collab.$id.files.index'
+import { Route as CollabIdFilesFileIdRouteImport } from './routes/collab.$id.files.$fileId'
+import { Route as CollabIdLifecycleActionRouteImport } from './routes/collab.$id.lifecycle.$action'
+import { Route as CollabIdMilestonesNewRouteImport } from './routes/collab.$id.milestones.new'
 import { Route as MarketplaceRentActiveIdRouteImport } from './routes/marketplace/rent/active.$id'
 import { Route as MarketplaceRentCSlugRouteImport } from './routes/marketplace/rent/c.$slug'
 import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/rent/e.$id'
@@ -132,6 +147,16 @@ const BookingIdRoute = BookingIdRouteImport.update({
 const BookingsIndexRoute = BookingsIndexRouteImport.update({
   id: '/bookings/',
   path: '/bookings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIndexRoute = CollabIndexRouteImport.update({
+  id: '/collab/',
+  path: '/collab/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabNewRoute = CollabNewRouteImport.update({
+  id: '/collab/new',
+  path: '/collab/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -269,6 +294,51 @@ const BookingsRefRescheduleRoute = BookingsRefRescheduleRouteImport.update({
   path: '/bookings/$ref/reschedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabIdIndexRoute = CollabIdIndexRouteImport.update({
+  id: '/collab/$id/',
+  path: '/collab/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdActivityRoute = CollabIdActivityRouteImport.update({
+  id: '/collab/$id/activity',
+  path: '/collab/$id/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdDiscussionRoute = CollabIdDiscussionRouteImport.update({
+  id: '/collab/$id/discussion',
+  path: '/collab/$id/discussion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdNotesRoute = CollabIdNotesRouteImport.update({
+  id: '/collab/$id/notes',
+  path: '/collab/$id/notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdParticipantsRoute = CollabIdParticipantsRouteImport.update({
+  id: '/collab/$id/participants',
+  path: '/collab/$id/participants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdSettingsRoute = CollabIdSettingsRouteImport.update({
+  id: '/collab/$id/settings',
+  path: '/collab/$id/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdShareRoute = CollabIdShareRouteImport.update({
+  id: '/collab/$id/share',
+  path: '/collab/$id/share',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdTimelineRoute = CollabIdTimelineRouteImport.update({
+  id: '/collab/$id/timeline',
+  path: '/collab/$id/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabNewCollaboratorsRoute = CollabNewCollaboratorsRouteImport.update({
+  id: '/collaborators',
+  path: '/collaborators',
+  getParentRoute: () => CollabNewRoute,
+} as any)
 const MarketplaceCSlugRoute = MarketplaceCSlugRouteImport.update({
   id: '/marketplace/c/$slug',
   path: '/marketplace/c/$slug',
@@ -334,6 +404,26 @@ const ProviderBookingsRefRoute = ProviderBookingsRefRouteImport.update({
   path: '/provider/bookings/$ref',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabIdFilesIndexRoute = CollabIdFilesIndexRouteImport.update({
+  id: '/collab/$id/files/',
+  path: '/collab/$id/files/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdFilesFileIdRoute = CollabIdFilesFileIdRouteImport.update({
+  id: '/collab/$id/files/$fileId',
+  path: '/collab/$id/files/$fileId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdLifecycleActionRoute = CollabIdLifecycleActionRouteImport.update({
+  id: '/collab/$id/lifecycle/$action',
+  path: '/collab/$id/lifecycle/$action',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIdMilestonesNewRoute = CollabIdMilestonesNewRouteImport.update({
+  id: '/collab/$id/milestones/new',
+  path: '/collab/$id/milestones/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRentActiveIdRoute = MarketplaceRentActiveIdRouteImport.update({
   id: '/marketplace/rent/active/$id',
   path: '/marketplace/rent/active/$id',
@@ -381,6 +471,7 @@ export interface FileRoutesByFullPath {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
+  '/collab/new': typeof CollabNewRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -396,6 +487,7 @@ export interface FileRoutesByFullPath {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
+  '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -407,6 +499,14 @@ export interface FileRoutesByFullPath {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/collab/$id/activity': typeof CollabIdActivityRoute
+  '/collab/$id/discussion': typeof CollabIdDiscussionRoute
+  '/collab/$id/notes': typeof CollabIdNotesRoute
+  '/collab/$id/participants': typeof CollabIdParticipantsRoute
+  '/collab/$id/settings': typeof CollabIdSettingsRoute
+  '/collab/$id/share': typeof CollabIdShareRoute
+  '/collab/$id/timeline': typeof CollabIdTimelineRoute
+  '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -420,14 +520,19 @@ export interface FileRoutesByFullPath {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
+  '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
+  '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
+  '/collab/$id/lifecycle/$action': typeof CollabIdLifecycleActionRoute
+  '/collab/$id/milestones/new': typeof CollabIdMilestonesNewRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
+  '/collab/$id/files/': typeof CollabIdFilesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -441,6 +546,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/collab/new': typeof CollabNewRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -456,6 +562,7 @@ export interface FileRoutesByTo {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings': typeof BookingsIndexRoute
+  '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -467,6 +574,14 @@ export interface FileRoutesByTo {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/collab/$id/activity': typeof CollabIdActivityRoute
+  '/collab/$id/discussion': typeof CollabIdDiscussionRoute
+  '/collab/$id/notes': typeof CollabIdNotesRoute
+  '/collab/$id/participants': typeof CollabIdParticipantsRoute
+  '/collab/$id/settings': typeof CollabIdSettingsRoute
+  '/collab/$id/share': typeof CollabIdShareRoute
+  '/collab/$id/timeline': typeof CollabIdTimelineRoute
+  '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -480,14 +595,19 @@ export interface FileRoutesByTo {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
+  '/collab/$id': typeof CollabIdIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
   '/provider/bookings': typeof ProviderBookingsIndexRoute
+  '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
+  '/collab/$id/lifecycle/$action': typeof CollabIdLifecycleActionRoute
+  '/collab/$id/milestones/new': typeof CollabIdMilestonesNewRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
+  '/collab/$id/files': typeof CollabIdFilesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -503,6 +623,7 @@ export interface FileRoutesById {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
+  '/collab/new': typeof CollabNewRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -518,6 +639,7 @@ export interface FileRoutesById {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
+  '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -529,6 +651,14 @@ export interface FileRoutesById {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/collab/$id/activity': typeof CollabIdActivityRoute
+  '/collab/$id/discussion': typeof CollabIdDiscussionRoute
+  '/collab/$id/notes': typeof CollabIdNotesRoute
+  '/collab/$id/participants': typeof CollabIdParticipantsRoute
+  '/collab/$id/settings': typeof CollabIdSettingsRoute
+  '/collab/$id/share': typeof CollabIdShareRoute
+  '/collab/$id/timeline': typeof CollabIdTimelineRoute
+  '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -542,14 +672,19 @@ export interface FileRoutesById {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
+  '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
+  '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
+  '/collab/$id/lifecycle/$action': typeof CollabIdLifecycleActionRoute
+  '/collab/$id/milestones/new': typeof CollabIdMilestonesNewRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
+  '/collab/$id/files/': typeof CollabIdFilesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -566,6 +701,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/booking/$id'
+    | '/collab/new'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -581,6 +717,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings/'
+    | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
     | '/booking/$id/addons'
@@ -592,6 +729,14 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/collab/$id/activity'
+    | '/collab/$id/discussion'
+    | '/collab/$id/notes'
+    | '/collab/$id/participants'
+    | '/collab/$id/settings'
+    | '/collab/$id/share'
+    | '/collab/$id/timeline'
+    | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -605,14 +750,19 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/booking/$id/'
     | '/bookings/$ref/'
+    | '/collab/$id/'
     | '/marketplace/rent/'
     | '/provider/bookings/'
+    | '/collab/$id/files/$fileId'
+    | '/collab/$id/lifecycle/$action'
+    | '/collab/$id/milestones/new'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
     | '/provider/bookings/requests/$ref'
+    | '/collab/$id/files/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -626,6 +776,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
+    | '/collab/new'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -641,6 +792,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings'
+    | '/collab'
     | '/marketplace'
     | '/onboarding'
     | '/booking/$id/addons'
@@ -652,6 +804,14 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/collab/$id/activity'
+    | '/collab/$id/discussion'
+    | '/collab/$id/notes'
+    | '/collab/$id/participants'
+    | '/collab/$id/settings'
+    | '/collab/$id/share'
+    | '/collab/$id/timeline'
+    | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -665,14 +825,19 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/booking/$id'
     | '/bookings/$ref'
+    | '/collab/$id'
     | '/marketplace/rent'
     | '/provider/bookings'
+    | '/collab/$id/files/$fileId'
+    | '/collab/$id/lifecycle/$action'
+    | '/collab/$id/milestones/new'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
     | '/provider/bookings/requests/$ref'
+    | '/collab/$id/files'
   id:
     | '__root__'
     | '/'
@@ -687,6 +852,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/booking/$id'
+    | '/collab/new'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -702,6 +868,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings/'
+    | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
     | '/booking/$id/addons'
@@ -713,6 +880,14 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/collab/$id/activity'
+    | '/collab/$id/discussion'
+    | '/collab/$id/notes'
+    | '/collab/$id/participants'
+    | '/collab/$id/settings'
+    | '/collab/$id/share'
+    | '/collab/$id/timeline'
+    | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -726,14 +901,19 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/booking/$id/'
     | '/bookings/$ref/'
+    | '/collab/$id/'
     | '/marketplace/rent/'
     | '/provider/bookings/'
+    | '/collab/$id/files/$fileId'
+    | '/collab/$id/lifecycle/$action'
+    | '/collab/$id/milestones/new'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
     | '/provider/bookings/requests/$ref'
+    | '/collab/$id/files/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -749,6 +929,7 @@ export interface RootRouteChildren {
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
+  CollabNewRoute: typeof CollabNewRouteWithChildren
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
@@ -764,11 +945,19 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   TalentIdRoute: typeof TalentIdRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
+  CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
+  CollabIdActivityRoute: typeof CollabIdActivityRoute
+  CollabIdDiscussionRoute: typeof CollabIdDiscussionRoute
+  CollabIdNotesRoute: typeof CollabIdNotesRoute
+  CollabIdParticipantsRoute: typeof CollabIdParticipantsRoute
+  CollabIdSettingsRoute: typeof CollabIdSettingsRoute
+  CollabIdShareRoute: typeof CollabIdShareRoute
+  CollabIdTimelineRoute: typeof CollabIdTimelineRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
   MarketplaceRentListRoute: typeof MarketplaceRentListRoute
@@ -781,14 +970,19 @@ export interface RootRouteChildren {
   OnboardingStepIdRoute: typeof OnboardingStepIdRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
+  CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
   ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
+  CollabIdFilesFileIdRoute: typeof CollabIdFilesFileIdRoute
+  CollabIdLifecycleActionRoute: typeof CollabIdLifecycleActionRoute
+  CollabIdMilestonesNewRoute: typeof CollabIdMilestonesNewRoute
   MarketplaceRentActiveIdRoute: typeof MarketplaceRentActiveIdRoute
   MarketplaceRentCSlugRoute: typeof MarketplaceRentCSlugRoute
   MarketplaceRentEIdRoute: typeof MarketplaceRentEIdRoute
   MarketplaceRentProviderIdRoute: typeof MarketplaceRentProviderIdRoute
   MarketplaceRentRequestIdRoute: typeof MarketplaceRentRequestIdRoute
   ProviderBookingsRequestsRefRoute: typeof ProviderBookingsRequestsRefRoute
+  CollabIdFilesIndexRoute: typeof CollabIdFilesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -882,6 +1076,20 @@ declare module '@tanstack/react-router' {
       path: '/bookings'
       fullPath: '/bookings/'
       preLoaderRoute: typeof BookingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/': {
+      id: '/collab/'
+      path: '/collab'
+      fullPath: '/collab/'
+      preLoaderRoute: typeof CollabIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/new': {
+      id: '/collab/new'
+      path: '/collab/new'
+      fullPath: '/collab/new'
+      preLoaderRoute: typeof CollabNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -1073,6 +1281,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsRefRescheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/$id/': {
+      id: '/collab/$id/'
+      path: '/collab/$id'
+      fullPath: '/collab/$id/'
+      preLoaderRoute: typeof CollabIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/activity': {
+      id: '/collab/$id/activity'
+      path: '/collab/$id/activity'
+      fullPath: '/collab/$id/activity'
+      preLoaderRoute: typeof CollabIdActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/discussion': {
+      id: '/collab/$id/discussion'
+      path: '/collab/$id/discussion'
+      fullPath: '/collab/$id/discussion'
+      preLoaderRoute: typeof CollabIdDiscussionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/notes': {
+      id: '/collab/$id/notes'
+      path: '/collab/$id/notes'
+      fullPath: '/collab/$id/notes'
+      preLoaderRoute: typeof CollabIdNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/participants': {
+      id: '/collab/$id/participants'
+      path: '/collab/$id/participants'
+      fullPath: '/collab/$id/participants'
+      preLoaderRoute: typeof CollabIdParticipantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/settings': {
+      id: '/collab/$id/settings'
+      path: '/collab/$id/settings'
+      fullPath: '/collab/$id/settings'
+      preLoaderRoute: typeof CollabIdSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/share': {
+      id: '/collab/$id/share'
+      path: '/collab/$id/share'
+      fullPath: '/collab/$id/share'
+      preLoaderRoute: typeof CollabIdShareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/timeline': {
+      id: '/collab/$id/timeline'
+      path: '/collab/$id/timeline'
+      fullPath: '/collab/$id/timeline'
+      preLoaderRoute: typeof CollabIdTimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/new/collaborators': {
+      id: '/collab/new/collaborators'
+      path: '/collaborators'
+      fullPath: '/collab/new/collaborators'
+      preLoaderRoute: typeof CollabNewCollaboratorsRouteImport
+      parentRoute: typeof CollabNewRoute
+    }
     '/marketplace/c/$slug': {
       id: '/marketplace/c/$slug'
       path: '/marketplace/c/$slug'
@@ -1164,6 +1435,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderBookingsRefRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/$id/files/': {
+      id: '/collab/$id/files/'
+      path: '/collab/$id/files'
+      fullPath: '/collab/$id/files/'
+      preLoaderRoute: typeof CollabIdFilesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/files/$fileId': {
+      id: '/collab/$id/files/$fileId'
+      path: '/collab/$id/files/$fileId'
+      fullPath: '/collab/$id/files/$fileId'
+      preLoaderRoute: typeof CollabIdFilesFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/lifecycle/$action': {
+      id: '/collab/$id/lifecycle/$action'
+      path: '/collab/$id/lifecycle/$action'
+      fullPath: '/collab/$id/lifecycle/$action'
+      preLoaderRoute: typeof CollabIdLifecycleActionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/$id/milestones/new': {
+      id: '/collab/$id/milestones/new'
+      path: '/collab/$id/milestones/new'
+      fullPath: '/collab/$id/milestones/new'
+      preLoaderRoute: typeof CollabIdMilestonesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/rent/active/$id': {
       id: '/marketplace/rent/active/$id'
       path: '/marketplace/rent/active/$id'
@@ -1233,6 +1532,18 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
   BookingIdRouteChildren,
 )
 
+interface CollabNewRouteChildren {
+  CollabNewCollaboratorsRoute: typeof CollabNewCollaboratorsRoute
+}
+
+const CollabNewRouteChildren: CollabNewRouteChildren = {
+  CollabNewCollaboratorsRoute: CollabNewCollaboratorsRoute,
+}
+
+const CollabNewRouteWithChildren = CollabNewRoute._addFileChildren(
+  CollabNewRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
@@ -1246,6 +1557,7 @@ const rootRouteChildren: RootRouteChildren = {
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
+  CollabNewRoute: CollabNewRouteWithChildren,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSavedRoute: MarketplaceSavedRoute,
@@ -1261,11 +1573,19 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   TalentIdRoute: TalentIdRoute,
   BookingsIndexRoute: BookingsIndexRoute,
+  CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
+  CollabIdActivityRoute: CollabIdActivityRoute,
+  CollabIdDiscussionRoute: CollabIdDiscussionRoute,
+  CollabIdNotesRoute: CollabIdNotesRoute,
+  CollabIdParticipantsRoute: CollabIdParticipantsRoute,
+  CollabIdSettingsRoute: CollabIdSettingsRoute,
+  CollabIdShareRoute: CollabIdShareRoute,
+  CollabIdTimelineRoute: CollabIdTimelineRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
   MarketplaceRentListRoute: MarketplaceRentListRoute,
@@ -1278,14 +1598,19 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingStepIdRoute: OnboardingStepIdRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
   BookingsRefIndexRoute: BookingsRefIndexRoute,
+  CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
   ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
+  CollabIdFilesFileIdRoute: CollabIdFilesFileIdRoute,
+  CollabIdLifecycleActionRoute: CollabIdLifecycleActionRoute,
+  CollabIdMilestonesNewRoute: CollabIdMilestonesNewRoute,
   MarketplaceRentActiveIdRoute: MarketplaceRentActiveIdRoute,
   MarketplaceRentCSlugRoute: MarketplaceRentCSlugRoute,
   MarketplaceRentEIdRoute: MarketplaceRentEIdRoute,
   MarketplaceRentProviderIdRoute: MarketplaceRentProviderIdRoute,
   MarketplaceRentRequestIdRoute: MarketplaceRentRequestIdRoute,
   ProviderBookingsRequestsRefRoute: ProviderBookingsRequestsRefRoute,
+  CollabIdFilesIndexRoute: CollabIdFilesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
