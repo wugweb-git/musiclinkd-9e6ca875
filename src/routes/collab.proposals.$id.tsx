@@ -28,7 +28,7 @@ export const Route = createFileRoute("/collab/proposals/$id")({
 function ProposalDetail() {
   const { id } = Route.useParams();
   const p = getProposal(id);
-  const [outcome, setOutcome] = useState<"none" | "accepted" | "declined">("none");
+  
 
   if (!p) {
     return (
