@@ -3,8 +3,8 @@ import { getBookable, getResource, priceFor, type Bookable, type Resource } from
 
 export type BookingDraft = {
   resourceId: string;
-  date?: string;
-  start?: string;
+  date?: string | undefined;
+  start?: string | undefined;
   hours: number;
   people: number;
   purpose: string;

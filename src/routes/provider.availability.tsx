@@ -70,7 +70,8 @@ function Availability() {
         <div className="mt-3">
           <AvailabilityCalendar
             resourceId={r.id}
-            fromPrice={r.pricing[0]?.price ?? b.fromPrice}
+            timezone={b.timezone}
+            fromPrice={r.tiers[0]?.price ?? 0}
             selected={blocked[0]}
             onSelect={(d) => setBlocked((v) => (v.includes(d) ? v.filter((x) => x !== d) : [d, ...v]))}
           />
@@ -123,7 +124,7 @@ function Availability() {
         <div className="mt-3 rounded-3xl border border-border bg-card p-4">
           <p className="text-sm font-semibold">Rate for {r.name}</p>
           <div className="mt-2 space-y-1.5">
-            {r.pricing.map((p) => (
+            {r.tiers.map((p) => (
               <div key={p.label} className="flex items-baseline justify-between text-xs">
                 <span className="text-text2">{p.label}</span>
                 <span className="font-semibold">{inr(p.price)}</span>

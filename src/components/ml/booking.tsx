@@ -245,7 +245,7 @@ export function AvailabilityCalendar({
 }: {
   resourceId: string;
   fromPrice: number;
-  selected?: string;
+  selected?: string | undefined;
   onSelect: (date: string) => void;
   timezone: string;
 }) {
@@ -349,7 +349,7 @@ export function SlotPicker({
   timezone,
 }: {
   slots: Slot[];
-  value?: string;
+  value?: string | undefined;
   onChange: (start: string) => void;
   timezone: string;
 }) {
@@ -398,7 +398,7 @@ export function DurationPicker({
   options: { label: string; hours: number }[];
   value: number;
   onChange: (hours: number) => void;
-  customHours?: number;
+  customHours?: number | undefined;
   onCustomHours?: (h: number) => void;
 }) {
   const isCustom = !options.some((o) => o.hours === value && o.hours !== 0);
@@ -540,7 +540,7 @@ export function PolicyCard({
 }: {
   title: string;
   body: string;
-  critical?: boolean;
+  critical?: boolean | undefined;
 }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
@@ -634,7 +634,7 @@ export function BookingListCard({
   booking: Booking;
   entityName: string;
   resourceName: string;
-  provider?: boolean;
+  provider?: boolean | undefined;
 }) {
   return (
     <Link
@@ -752,7 +752,7 @@ export function ErrorState({
   message,
   onRetry,
 }: {
-  title?: string;
+  title?: string | undefined;
   message: string;
   onRetry: () => void;
 }) {
@@ -775,7 +775,7 @@ export function EmptyState({
 }: {
   title: string;
   body: string;
-  action?: ReactNode;
+  action?: ReactNode | undefined;
 }) {
   return (
     <div className="rounded-3xl border border-dashed border-border bg-card p-6 text-center">
@@ -824,10 +824,10 @@ export function StickyBar({
 }: {
   primaryLabel: string;
   onPrimary: () => void;
-  hint?: string;
-  price?: string;
-  disabled?: boolean;
-  secondary?: ReactNode;
+  hint?: string | undefined;
+  price?: string | undefined;
+  disabled?: boolean | undefined;
+  secondary?: ReactNode | undefined;
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">

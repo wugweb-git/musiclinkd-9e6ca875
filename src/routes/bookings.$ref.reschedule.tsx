@@ -54,7 +54,7 @@ function Reschedule() {
     );
   }
 
-  const day = date ? availabilityFor(r.id, date, r.pricing[0]?.price ?? b.fromPrice) : undefined;
+  const day = date ? availabilityFor(r.id, date, r.tiers[0]?.price ?? 0) : undefined;
 
   if (sent) {
     return (
@@ -99,7 +99,8 @@ function Reschedule() {
         <div className="mt-3">
           <AvailabilityCalendar
             resourceId={r.id}
-            fromPrice={r.pricing[0]?.price ?? b.fromPrice}
+            timezone={b.timezone}
+            fromPrice={r.tiers[0]?.price ?? 0}
             selected={date}
             onSelect={(d) => {
               setDate(d);
@@ -112,7 +113,7 @@ function Reschedule() {
           <>
             <h2 className="mt-6 text-[17px]">New start time</h2>
             <div className="mt-3">
-              <SlotPicker slots={day.slots} selected={start} onSelect={setStart} />
+              <SlotPicker slots={day.slots} value={start} onChange={setStart} timezone={b.timezone} />
             </div>
           </>
         ) : null}
