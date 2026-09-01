@@ -43,37 +43,6 @@ function ProposalDetail() {
 
   const sent = p.status === "sent";
 
-  if (outcome !== "none") {
-    const accepted = outcome === "accepted";
-    return (
-      <Screen bottomNav={false}>
-        <TopBar title={accepted ? "Proposal accepted" : "Proposal declined"} back="/collab" />
-        <main className="px-5 pt-8 text-center">
-          <span
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
-            style={
-              accepted
-                ? { background: "var(--success-container)", color: "var(--success)" }
-                : { background: "var(--surface-subtle)", color: "var(--text-2)" }
-            }
-          >
-            {accepted ? "✓" : "—"}
-          </span>
-          <h2 className="text-[20px]">
-            {accepted ? "Terms agreed" : "Proposal declined"}
-          </h2>
-          <p className="mx-auto mt-2 mb-6 max-w-[280px] text-[13px] text-muted-foreground">
-            {accepted
-              ? `${p.from} joins ${p.projectName} as ${p.role}. The agreed terms are saved in project settings.`
-              : `${p.from} has been notified. You can counter with different terms at any time.`}
-          </p>
-          <Link to="/collab/$id" params={{ id: p.projectId }}>
-            <Btn className="w-full">Open project</Btn>
-          </Link>
-        </main>
-      </Screen>
-    );
-  }
 
   return (
     <Screen bottomNav={false}>
