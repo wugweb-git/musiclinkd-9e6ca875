@@ -1,38 +1,47 @@
-# FLOW 02 — User Onboarding
+# FLOW 02 finish + FLOW 03 — Add Portfolio
 
-Design-only build of the complete MusicLinkd onboarding journey, reusing the existing Gestalt system (`src/components/ml/ui.tsx`, tokens in `src/styles.css`) and canonical profile data (`src/data/profile.ts`). No backend, no auth, no schema changes.
+Two tracks in one build. FLOW 02 is partly built (`src/data/onboarding.ts` exists); FLOW 03 is new. Both are design-only, reusing the Gestalt system in `src/components/ml/ui.tsx` and tokens in `src/styles.css`. No backend, no schema changes.
 
-## Experience shape
+A `roadmap.md` at the project root will track both tracks and remaining items.
 
-One onboarding architecture with progressive, grouped steps — not 30 separate screens. Role-adaptive: irrelevant steps are skipped automatically.
+## Track A — finish FLOW 02 (Onboarding)
 
-```text
-WELCOME → IDENTITY → PROFESSION → EXPERTISE → CONTEXT → INTENT → PROFILE → PERSONALISATION → PREVIEW → COMPLETION → DONE
-```
+Already written: `src/data/onboarding.ts` (master data, role-adaptive step model, validation, readiness model, per-screen data contracts).
 
-Step groups:
-1. Identity — display name, username (inline availability check, mocked), profile photo sheet (camera/gallery/crop/replace/remove), optional cover
-2. Profession — primary role (single-select), secondary roles (multi)
-3. Expertise — instruments (only for instrument roles), role-specific specialisation (vocal type, production skills, engineering discipline, DJ event types, composition type)
-4. Context — genres, languages, location (Use my location / manual country-state-city), work mode
-5. Intent — availability types, "what brings you to MusicLinkd", experience level
-6. Profile — bio with character counter, profile links with URL validation, contact preferences (private by default)
-7. Personalisation — discovery preferences, profile visibility with plain-language consequences
-8. Preview — public profile card rendered with existing profile components, Edit / Complete
-9. Completion — usefulness-based readiness checklist (Identity, Professional context, Discovery-ready, Portfolio, Services, Verification) with hand-off CTAs
-10. Done — "You're ready for MusicLinkd", Explore / View profile
+Still to build:
+- `src/components/ml/onboarding.tsx` — `StepShell` (progress, back, skip, keyboard-aware, safe areas), `ChoiceGrid`, `ChipPicker`, `PhotoPicker` sheet, `InlineField`, `LocationPicker`, `ReadinessCard`, `HandoffCard`, offline/error/saving banners.
+- Draft store: React context + localStorage, demo-only persistence with resume support.
+- Routes under `src/routes/onboarding/`: `index.tsx` (welcome), `step.$id.tsx` (progressive stepper across identity → profession → expertise → context → intent → profile → personalisation), `preview.tsx`, `complete.tsx` (readiness checklist + hand-offs), `done.tsx`, `skip.tsx`, `resume.tsx`.
+- Hand-off cards only for Business (FLOW 12), Band (FLOW 15), Verification (FLOW 16), Portfolio (FLOW 03), Services (FLOW 11).
 
-Hand-off screens (intent capture only, then link out): Business intent → Business profile, Band/Crew intent → Band, Verification prompt, Portfolio prompt, Services prompt.
+## Track B — FLOW 03 (Add Portfolio)
 
-## States
+### Data
+`src/data/portfolio.ts`: `Portfolio`, `PortfolioItem` (track / album / video / performance / project / client work / case study / writing sample / image / external link), `MediaAsset` with states (not-uploaded, uploading, processing, ready, failed, unavailable), `Credit`, `Contributor`, visibility, featured flag (max 3), ordering, analytics figures, plus per-screen data contracts and EXISTING/COMPUTED/PROPOSED/FUTURE field tags. Seeded with realistic Indian music-industry work for the owner profile.
 
-Every step supports loading (master data), saving, error with retry, offline banner ("changes sync when you're back online"), and empty/no-selection without false validation. Skip and Resume screens included; progress persists locally so returning users resume at the last incomplete meaningful step.
+### Components — `src/components/ml/portfolio.tsx`
+`PortfolioHeader`, `WorkCard` (communicates what / who / role / media / context), `AudioWorkCard`, `VideoWorkCard`, `ImageWorkCard`, `ProjectWorkCard`, `CreditRow`, `ContributorPicker` (searches existing profiles first, invite fallback), `MediaUploader` with progress + error/retry/replace, `MediaPreview`, `AudioPlayer` (artwork, play/pause, seek, duration, Spotify-like feel), `VideoPlayer`, `MetadataSelector` (canonical genre/language/role/instrument/year/tags), `VisibilitySelector`, `FeaturedToggle`, `ReorderList` (drag plus accessible move-up/move-down), `WorkAnalytics`, `StatusPill` for portfolio and media states.
+
+### Routes — `src/routes/portfolio/`
+- `index.tsx` — entry + overview: featured, recent, categories, counts, visibility, actions (add / edit / reorder / preview / share / settings). Empty state with role-aware suggestions.
+- `add.tsx` — work type chooser, then a stepped creation flow: basics → role/credits → contributors → media (audio / video / image / external variants) → description → metadata → visibility & featured → preview → publish / save draft, with published and draft confirmation screens.
+- `w.$id.tsx` — work detail with player, credits, metadata, analytics; edit, delete confirm, archive/restore, share sheet (link, QR via FLOW 23 pattern, send in MusicLinkd).
+- `w.$id.edit.tsx` — edit existing work, save-conflict dialog (Review changes / Keep mine / Reload).
+- `reorder.tsx` — drag reorder + featured selection with save order.
+- `settings.tsx` — portfolio-only controls: visibility, default ordering, featured, display and media preferences.
+- `analytics.tsx` — portfolio-level views, plays, shares, saves, profile clicks, link clicks; reads canonical analytics only.
+- `select.tsx` — portfolio picker used by Opportunities application and Messaging share, with preview of selected items.
+
+### States
+Loading skeletons, empty, draft, published, private, archived, processing, error, offline, permission denied, work not found, media upload failure, save conflict — all as designed screens rather than raw errors.
+
+### Integration
+- Public profile and `/me` portfolio sections read from `src/data/portfolio.ts` instead of holding their own media lists.
+- Messaging gets a "Share work" entry point that opens the portfolio picker.
+- Onboarding's Portfolio prompt links to `/portfolio/add`.
 
 ## Technical notes
 
-- New route tree under `src/routes/onboarding/`: `index.tsx` (welcome), `step.$id.tsx` (the progressive stepper), `preview.tsx`, `complete.tsx`, `skip.tsx`, `resume.tsx`. Each route gets its own `head()` metadata.
-- New `src/data/onboarding.ts`: canonical master data (roles, instruments, genres, languages, locations, availability, intents, discovery prefs), the step definition list with role-conditional visibility, and per-screen data-contract metadata (`flow`, `screen`, `route`, `dataSource`, `entities`, `states`, `actions`). Fields not in the current profile model are tagged EXISTING / COMPUTED / PROPOSED / FUTURE.
-- New `src/components/ml/onboarding.tsx`: extended Gestalt pieces — `StepShell` (progress bar, back, skip, keyboard-aware scroll, safe areas), `ChoiceGrid`, `ChipPicker`, `PhotoPicker` sheet, `InlineField` with validation, `LocationPicker`, `ReadinessCard`, `HandoffCard`, offline/error banners.
-- Onboarding draft state kept in a small local store (React context + localStorage) purely for demo persistence; no network calls.
-- Preview screen reuses existing profile components rather than a parallel preview system.
-- No changes to global bottom navigation; onboarding runs full-screen without the nav.
+- Every route defines its own `head()` metadata; screen data contracts live beside the data model, not inline in components.
+- Mobile-first 430px shell, safe areas, sticky action bars, bottom sheets, large touch targets, no colour-only status, alt text on images, accessible reorder alternative.
+- No new design tokens; all colour via existing semantic tokens.
