@@ -104,12 +104,14 @@ function InviteDetail() {
 
       <StickyBar>
         <div className="flex gap-3">
-          <Btn variant="outline" className="flex-1" onClick={() => setOutcome("declined")}>
-            Decline
-          </Btn>
-          <Btn className="flex-[2]" onClick={() => setOutcome("accepted")}>
-            Accept as {inv.proposedRole}
-          </Btn>
+          <Link to="/collab/invites/declined/$id" params={{ id: inv.id }} className="flex-1">
+            <Btn variant="outline" className="w-full">
+              Decline
+            </Btn>
+          </Link>
+          <Link to="/collab/invites/accepted/$id" params={{ id: inv.id }} className="flex-[2]">
+            <Btn className="w-full">Accept as {inv.proposedRole}</Btn>
+          </Link>
         </div>
       </StickyBar>
     </Screen>
