@@ -1,0 +1,637 @@
+// FLOW-02 — Onboarding UI kit. Extends Gestalt; no new tokens.
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { Check, ChevronLeft, Camera, Image as ImageIcon, Trash2, WifiOff, MapPin } from "lucide-react";
+import { Btn, Sheet } from "@/components/ml/ui";
+import {
+  emptyDraft,
+  visibleSteps,
+  type OnboardingDraft,
+} from "@/data/onboarding";
+
+/* ------------------------------------------------------------------ */
+/* Draft store (design-time persistence only)                          */
+/* ------------------------------------------------------------------ */
+
+const KEY = "ml.onboarding.draft";
+
+type Store = {
+  draft: OnboardingDraft;
+  set: (patch: Partial<OnboardingDraft>) => void;
+  toggle: (field: keyof OnboardingDraft, value: string) => void;
+  markComplete: (id: string) => void;
+  reset: () => void;
+  hydrated: boolean;
+};
+
+const Ctx = createContext<Store | null>(null);
+
+export function OnboardingProvider({ children }: { children: ReactNode }) {
+  const [draft, setDraft] = useState<OnboardingDraft>(emptyDraft);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(KEY);
+      if (raw) setDraft({ ...emptyDraft, ...(JSON.parse(raw) as OnboardingDraft) });
+    } catch {
+      /* ignore — design-time only */
+    }
+    setHydrated(true);
+  }, []);
+
+  const persist = useCallback((next: OnboardingDraft) => {
+    setDraft(next);
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const value = useMemo<Store>(
+    () => ({
+      draft,
+      hydrated,
+      set: (patch) => persist({ ...draft, ...patch }),
+      toggle: (field, val) => {
+        const list = (draft[field] as unknown as string[]) ?? [];
+        const next = list.includes(val) ? list.filter((x) => x !== val) : [...list, val];
+        persist({ ...draft, [field]: next } as OnboardingDraft);
+      },
+      markComplete: (id) =>
+        persist({
+          ...draft,
+          completedSteps: draft.completedSteps.includes(id)
+            ? draft.completedSteps
+            : [...draft.completedSteps, id],
+        }),
+      reset: () => persist(emptyDraft),
+    }),
+    [draft, hydrated, persist],
+  );
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+
+export function useOnboarding(): Store {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error("useOnboarding must be used inside OnboardingProvider");
+  return ctx;
+}
+
+export function resumeTarget(draft: OnboardingDraft): string {
+  const list = visibleSteps(draft);
+  const next = list.find((s) => !draft.completedSteps.includes(s.id));
+  return next ? next.id : "visibility";
+}
+
+/* ------------------------------------------------------------------ */
+/* Shell                                                               */
+/* ------------------------------------------------------------------ */
+
+export function StepShell({
+  step,
+  total,
+  group,
+  title,
+  subtitle,
+  why,
+  onBack,
+  onSkip,
+  children,
+  footer,
+  banner,
+}: {
+  step: number;
+  total: number;
+  group: string;
+  title: string;
+  subtitle: string;
+  why: string;
+  onBack?: () => void;
+  onSkip?: () => void;
+  children: ReactNode;
+  footer: ReactNode;
+  banner?: ReactNode;
+}) {
+  const pct = Math.round((step / total) * 100);
+  return (
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col bg-background">
+      <header className="sticky top-0 z-30 border-b border-border bg-background/95 px-5 pb-3 pt-4 backdrop-blur">
+        <div className="flex items-center gap-3">
+          {onBack ? (
+            <button
+              type="button"
+              onClick={onBack}
+              aria-label="Go back"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card"
+            >
+              <ChevronLeft size={18} />
+            </button>
+          ) : (
+            <span className="h-10 w-10" />
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              {group} · Step {step} of {total}
+            </p>
+            <div
+              className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-subtle"
+              role="progressbar"
+              aria-valuenow={pct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Onboarding progress"
+            >
+              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+          {onSkip ? (
+            <button
+              type="button"
+              onClick={onSkip}
+              className="shrink-0 text-xs font-semibold text-muted-foreground"
+            >
+              Skip
+            </button>
+          ) : (
+            <span className="w-8" />
+          )}
+        </div>
+      </header>
+
+      <main className="flex-1 px-5 pb-40 pt-5">
+        {banner}
+        <h1 className="text-[26px] leading-tight">{title}</h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
+        <p
+          className="mt-3 rounded-2xl px-4 py-3 text-xs leading-relaxed text-text2"
+          style={{ background: "var(--pink-container)" }}
+        >
+          {why}
+        </p>
+        <div className="mt-6">{children}</div>
+      </main>
+
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+        {footer}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Pickers                                                             */
+/* ------------------------------------------------------------------ */
+
+export function ChipPicker({
+  options,
+  selected,
+  onToggle,
+  columns = false,
+}: {
+  options: string[];
+  selected: string[];
+  onToggle: (v: string) => void;
+  columns?: boolean;
+}) {
+  return (
+    <div className={columns ? "grid grid-cols-2 gap-2" : "flex flex-wrap gap-2"}>
+      {options.map((o) => {
+        const on = selected.includes(o);
+        return (
+          <button
+            key={o}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onToggle(o)}
+            className={`flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${
+              on ? "border-transparent bg-navy text-background" : "border-border bg-card text-foreground"
+            }`}
+          >
+            {on ? <Check size={14} /> : null}
+            {o}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ChoiceGrid({
+  options,
+  value,
+  onSelect,
+}: {
+  options: { key: string; label: string; hint: string; emoji?: string }[];
+  value: string | null;
+  onSelect: (key: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {options.map((o) => {
+        const on = value === o.key;
+        return (
+          <button
+            key={o.key}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onSelect(o.key)}
+            className={`flex min-h-[104px] flex-col items-start justify-between rounded-3xl border p-4 text-left transition-colors ${
+              on ? "border-primary bg-card" : "border-border bg-card"
+            }`}
+            style={on ? { background: "var(--pink-container)" } : undefined}
+          >
+            <span className="text-xl" aria-hidden>
+              {o.emoji ?? "•"}
+            </span>
+            <span>
+              <span className="block text-sm font-semibold">{o.label}</span>
+              <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground">{o.hint}</span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export function OptionList({
+  options,
+  selected,
+  onToggle,
+  multi = true,
+}: {
+  options: { key: string; label: string; hint: string }[];
+  selected: string[];
+  onToggle: (key: string) => void;
+  multi?: boolean;
+}) {
+  return (
+    <ul className="space-y-2.5">
+      {options.map((o) => {
+        const on = selected.includes(o.key);
+        return (
+          <li key={o.key}>
+            <button
+              type="button"
+              aria-pressed={on}
+              onClick={() => onToggle(o.key)}
+              className={`flex w-full items-start gap-3 rounded-3xl border p-4 text-left ${
+                on ? "border-primary" : "border-border"
+              } bg-card`}
+            >
+              <span
+                className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border ${
+                  multi ? "rounded-md" : "rounded-full"
+                } ${on ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
+              >
+                {on ? <Check size={12} strokeWidth={3} /> : null}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">{o.label}</span>
+                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{o.hint}</span>
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+export function InlineField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  hint,
+  error,
+  ok,
+  prefix,
+  multiline = false,
+  maxLength,
+  inputId,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  hint?: string;
+  error?: string;
+  ok?: string;
+  prefix?: string;
+  multiline?: boolean;
+  maxLength?: number;
+  inputId: string;
+}) {
+  const shared =
+    "w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground";
+  return (
+    <div>
+      <label htmlFor={inputId} className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </label>
+      <div
+        className={`flex min-h-14 items-center gap-1 rounded-2xl border px-4 py-3 ${
+          error ? "border-destructive" : "border-border"
+        } bg-card`}
+      >
+        {prefix ? <span className="text-sm text-muted-foreground">{prefix}</span> : null}
+        {multiline ? (
+          <textarea
+            id={inputId}
+            value={value}
+            rows={4}
+            maxLength={maxLength}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className={`${shared} resize-none`}
+          />
+        ) : (
+          <input
+            id={inputId}
+            value={value}
+            maxLength={maxLength}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className={shared}
+          />
+        )}
+      </div>
+      <div className="mt-1.5 flex items-start justify-between gap-3">
+        <p className={`text-xs ${error ? "text-destructive" : ok ? "text-success" : "text-muted-foreground"}`}>
+          {error ?? ok ?? hint ?? ""}
+        </p>
+        {maxLength ? (
+          <p className="shrink-0 text-xs tabular-nums text-muted-foreground">
+            {value.length}/{maxLength}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+export function PhotoPicker({
+  photo,
+  onChange,
+  label = "Profile photo",
+}: {
+  photo: string | null;
+  onChange: (v: string | null) => void;
+  label?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const pick = (src: string) => {
+    setOpen(false);
+    setUploading(true);
+    window.setTimeout(() => {
+      setUploading(false);
+      onChange(src);
+    }, 700);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center gap-4">
+        <div
+          className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-subtle"
+          aria-live="polite"
+        >
+          {uploading ? (
+            <span className="text-[11px] font-semibold text-muted-foreground">Uploading…</span>
+          ) : photo ? (
+            <img src={photo} alt={`${label} preview`} className="h-full w-full object-cover" />
+          ) : (
+            <Camera size={22} className="text-muted-foreground" />
+          )}
+        </div>
+        <div className="flex-1 space-y-2">
+          <Btn variant="outline" className="w-full" onClick={() => setOpen(true)}>
+            {photo ? "Replace photo" : "Add photo"}
+          </Btn>
+          {photo ? (
+            <button
+              type="button"
+              onClick={() => onChange(null)}
+              className="flex min-h-11 w-full items-center justify-center gap-2 text-xs font-semibold text-muted-foreground"
+            >
+              <Trash2 size={14} /> Remove
+            </button>
+          ) : null}
+        </div>
+      </div>
+
+      <Sheet open={open} onClose={() => setOpen(false)} title={label}>
+        <ul className="space-y-2">
+          {[
+            { icon: <Camera size={18} />, label: "Take photo", src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400" },
+            { icon: <ImageIcon size={18} />, label: "Choose from gallery", src: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400" },
+            { icon: <ImageIcon size={18} />, label: "Use existing photo", src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400" },
+          ].map((o) => (
+            <li key={o.label}>
+              <button
+                type="button"
+                onClick={() => pick(o.src)}
+                className="flex min-h-14 w-full items-center gap-3 rounded-2xl border border-border bg-card px-4 text-sm font-semibold"
+              >
+                {o.icon}
+                {o.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 text-xs text-muted-foreground">
+          You can crop and reposition after choosing. No professional headshot needed.
+        </p>
+      </Sheet>
+    </div>
+  );
+}
+
+export function SelectField({
+  label,
+  value,
+  options,
+  onChange,
+  placeholder,
+  selectId,
+  disabled = false,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+  placeholder: string;
+  selectId: string;
+  disabled?: boolean;
+}) {
+  return (
+    <div>
+      <label htmlFor={selectId} className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </label>
+      <select
+        id={selectId}
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        className="min-h-14 w-full rounded-2xl border border-border bg-card px-4 text-sm outline-none disabled:opacity-50"
+      >
+        <option value="">{placeholder}</option>
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Feedback                                                            */
+/* ------------------------------------------------------------------ */
+
+export function OfflineBanner() {
+  return (
+    <div
+      role="status"
+      className="mb-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-4"
+    >
+      <WifiOff size={16} className="mt-0.5 shrink-0 text-warn" />
+      <p className="text-xs leading-relaxed text-text2">
+        You're offline. Your answers are kept on this device and will sync when you're back online — nothing has been saved to your profile yet.
+      </p>
+    </div>
+  );
+}
+
+export function ErrorBanner({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <div role="alert" className="mb-4 rounded-2xl border border-destructive/40 bg-card p-4">
+      <p className="text-sm font-semibold text-destructive">We couldn't save that</p>
+      <p className="mt-1 text-xs text-text2">{message}</p>
+      <button type="button" onClick={onRetry} className="mt-3 min-h-11 text-xs font-bold text-primary">
+        Try again
+      </button>
+    </div>
+  );
+}
+
+export function SavingBanner({ label = "Saving your answers…" }: { label?: string }) {
+  return (
+    <div role="status" className="mb-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+      <p className="text-xs text-text2">{label}</p>
+    </div>
+  );
+}
+
+export function StepSkeleton() {
+  return (
+    <div className="space-y-3" aria-hidden>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div key={i} className="h-14 animate-pulse rounded-2xl bg-subtle" />
+      ))}
+    </div>
+  );
+}
+
+export function LocationHint() {
+  return (
+    <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+      <MapPin size={14} className="mt-0.5 shrink-0" />
+      City level is all we publish. Your exact address is never shown.
+    </p>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Readiness + hand-offs                                               */
+/* ------------------------------------------------------------------ */
+
+export function ReadinessCard({
+  label,
+  hint,
+  done,
+  flow,
+  action,
+}: {
+  label: string;
+  hint: string;
+  done: boolean;
+  flow?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
+      <span
+        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
+          done ? "bg-success text-background" : "border border-border bg-subtle text-muted-foreground"
+        }`}
+        aria-hidden
+      >
+        {done ? <Check size={13} strokeWidth={3} /> : <span className="text-[11px] font-bold">·</span>}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold">
+          {label}{" "}
+          <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            {done ? "Done" : "To do"}
+          </span>
+        </p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
+        {flow ? (
+          <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
+        ) : null}
+        {!done && action ? <div className="mt-2">{action}</div> : null}
+      </div>
+    </div>
+  );
+}
+
+export function HandoffCard({
+  title,
+  body,
+  flow,
+  action,
+  onLater,
+}: {
+  title: string;
+  body: string;
+  flow: string;
+  action: ReactNode;
+  onLater?: () => void;
+}) {
+  return (
+    <div className="rounded-3xl border border-border bg-card p-5">
+      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
+      <h3 className="mt-1 text-lg">{title}</h3>
+      <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
+      <div className="mt-4 flex items-center gap-2">
+        <div className="flex-1">{action}</div>
+        <button
+          type="button"
+          onClick={() => onLater?.()}
+          className="min-h-11 rounded-full border border-border px-5 text-sm font-semibold"
+        >
+          Later
+        </button>
+      </div>
+    </div>
+  );
+}
+

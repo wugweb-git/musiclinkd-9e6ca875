@@ -1,47 +1,60 @@
-# FLOW 02 finish + FLOW 03 — Add Portfolio
+# FLOW 08 — Booking (plus Dashboard IA follow-up)
 
-Two tracks in one build. FLOW 02 is partly built (`src/data/onboarding.ts` exists); FLOW 03 is new. Both are design-only, reusing the Gestalt system in `src/components/ml/ui.tsx` and tokens in `src/styles.css`. No backend, no schema changes.
+Design-only, front-end. Reuses the existing Gestalt system (`src/components/ml/ui.tsx`), the calendar and price-breakdown patterns already built for rentals (`src/components/ml/rental.tsx`), and existing profile/market/messaging screens. No backend, no payment provider integration, no navigation changes (bottom nav stays: Home, Discover, Connections, Market — Beta, Profile).
 
-A `roadmap.md` at the project root will track both tracks and remaining items.
+## Open work carried over
+Flow 02 onboarding is mid-build: `src/routes/onboarding/index.tsx` exists, the stepper/preview/completion routes and the Flow 03 portfolio layer do not yet. Booking is added as a new track in `roadmap.md`; onboarding remains ahead of it unless you want Booking first.
 
-## Track A — finish FLOW 02 (Onboarding)
+## 1. Data layer — `src/data/booking.ts`
+Seeded, typed demo data only, mapped to canonical names already used in the project (`businessProfile`, `service`, `availability`, `booking`, `payment`, `user`). Fields not backed by existing data are marked in comments as PROPOSED/COMPUTED.
 
-Already written: `src/data/onboarding.ts` (master data, role-adaptive step model, validation, readiness model, per-screen data contracts).
+- Bookable entities: recording, mixing, mastering, podcast, jam room, rehearsal, venue, music service — each with rooms/resources, facilities, equipment, policies, pricing tiers (hourly / half day / full day / session / custom).
+- Availability model: per-date state (available / limited / unavailable / closed) with schema-driven slot lists, buffer, min/max duration, advance window — no hardcoded universal slots.
+- Booking lifecycle: requested → provider reviewing → confirmed → upcoming → in progress → completed, plus cancelled / rejected / expired / no-show. Payment states: pending, processing, paid, failed, partially paid, balance due, refund pending, refunded.
+- Seeded customer bookings (all tabs) and provider requests, so every screen has populated and empty variants.
 
-Still to build:
-- `src/components/ml/onboarding.tsx` — `StepShell` (progress, back, skip, keyboard-aware, safe areas), `ChoiceGrid`, `ChipPicker`, `PhotoPicker` sheet, `InlineField`, `LocationPicker`, `ReadinessCard`, `HandoffCard`, offline/error/saving banners.
-- Draft store: React context + localStorage, demo-only persistence with resume support.
-- Routes under `src/routes/onboarding/`: `index.tsx` (welcome), `step.$id.tsx` (progressive stepper across identity → profession → expertise → context → intent → profile → personalisation), `preview.tsx`, `complete.tsx` (readiness checklist + hand-offs), `done.tsx`, `skip.tsx`, `resume.tsx`.
-- Hand-off cards only for Business (FLOW 12), Band (FLOW 15), Verification (FLOW 16), Portfolio (FLOW 03), Services (FLOW 11).
+## 2. Components — `src/components/ml/booking.tsx`
+Extends Gestalt; nothing Booking-only visually.
 
-## Track B — FLOW 03 (Add Portfolio)
+Booking header, bookable entity card, service/resource card, availability calendar (extends `RentalCalendar` states with limited/closed), time-slot selector, duration selector, add-on card, price breakdown, policy card with acknowledgement, booking summary, booking status pill, booking timeline, payment summary, provider request card, provider booking calendar (day/week/month), availability editor, and the cancellation / reschedule / confirmation bottom sheets.
 
-### Data
-`src/data/portfolio.ts`: `Portfolio`, `PortfolioItem` (track / album / video / performance / project / client work / case study / writing sample / image / external link), `MediaAsset` with states (not-uploaded, uploading, processing, ready, failed, unavailable), `Credit`, `Contributor`, visibility, featured flag (max 3), ordering, analytics figures, plus per-screen data contracts and EXISTING/COMPUTED/PROPOSED/FUTURE field tags. Seeded with realistic Indian music-industry work for the owner profile.
+## 3. Routes (customer)
+```
+/booking/$id                 entity detail + Check Availability CTA
+/booking/$id/service         resource / service selection
+/booking/$id/schedule        availability + date + time + duration (single stepped screen)
+/booking/$id/details         purpose, people, requirements, notes
+/booking/$id/addons          equipment & add-ons (rental add-ons link out to /marketplace/rent)
+/booking/$id/review          price, policies, Request or Confirm
+/booking/$id/pay             payment, with success / failed states
+/booking/confirmed/$ref      request-sent vs confirmed variants
+/bookings                    My Bookings — Upcoming / Pending / Completed / Cancelled
+/bookings/$ref               booking detail, upcoming countdown, reminder banner
+/bookings/$ref/reschedule    + confirmation state
+/bookings/$ref/cancel        policy + refund consequences, confirmation
+```
+Completion screen offers Leave Review (links to reviews flow) and Book Again (rebook prefilled, availability re-checked).
 
-### Components — `src/components/ml/portfolio.tsx`
-`PortfolioHeader`, `WorkCard` (communicates what / who / role / media / context), `AudioWorkCard`, `VideoWorkCard`, `ImageWorkCard`, `ProjectWorkCard`, `CreditRow`, `ContributorPicker` (searches existing profiles first, invite fallback), `MediaUploader` with progress + error/retry/replace, `MediaPreview`, `AudioPlayer` (artwork, play/pause, seek, duration, Spotify-like feel), `VideoPlayer`, `MetadataSelector` (canonical genre/language/role/instrument/year/tags), `VisibilitySelector`, `FeaturedToggle`, `ReorderList` (drag plus accessible move-up/move-down), `WorkAnalytics`, `StatusPill` for portfolio and media states.
+## 4. Routes (provider)
+```
+/provider/bookings            dashboard: today, upcoming, pending, availability, revenue, cancellations
+/provider/bookings/requests   request list + detail with Accept / Decline / Suggest alternative
+/provider/bookings/calendar   day / week / month with booking blocks
+/provider/bookings/$ref       provider booking detail
+/provider/availability        days, hours, blocked dates, buffer, min/max, advance window
+/provider/policies            cancellation, reschedule, deposit, payment, overtime, arrival, equipment
+/provider/pricing             hourly / half-day / full-day / session / add-ons / deposit
+```
+Provider screens are gated behind a role flag in demo data, not a separate app.
 
-### Routes — `src/routes/portfolio/`
-- `index.tsx` — entry + overview: featured, recent, categories, counts, visibility, actions (add / edit / reorder / preview / share / settings). Empty state with role-aware suggestions.
-- `add.tsx` — work type chooser, then a stepped creation flow: basics → role/credits → contributors → media (audio / video / image / external variants) → description → metadata → visibility & featured → preview → publish / save draft, with published and draft confirmation screens.
-- `w.$id.tsx` — work detail with player, credits, metadata, analytics; edit, delete confirm, archive/restore, share sheet (link, QR via FLOW 23 pattern, send in MusicLinkd).
-- `w.$id.edit.tsx` — edit existing work, save-conflict dialog (Review changes / Keep mine / Reload).
-- `reorder.tsx` — drag reorder + featured selection with save order.
-- `settings.tsx` — portfolio-only controls: visibility, default ordering, featured, display and media preferences.
-- `analytics.tsx` — portfolio-level views, plays, shares, saves, profile clicks, link clicks; reads canonical analytics only.
-- `select.tsx` — portfolio picker used by Opportunities application and Messaging share, with preview of selected items.
+## 5. States on every screen
+Loading skeletons, populated, empty (no bookings — customer and provider variants), offline banner (no false confirmation), error + retry, booking conflict ("this time is no longer available" with Choose Another Time / Date), no availability (next available, alternative dates, similar spaces, message provider), booking not found.
 
-### States
-Loading skeletons, empty, draft, published, private, archived, processing, error, offline, permission denied, work not found, media upload failure, save conflict — all as designed screens rather than raw errors.
+## 6. Cross-flow boundaries
+Message CTAs open the existing messaging screen with a booking-context card. Reviews, notifications, rentals, business identity, and services stay owned by their flows — Booking links to them and does not re-implement them.
 
-### Integration
-- Public profile and `/me` portfolio sections read from `src/data/portfolio.ts` instead of holding their own media lists.
-- Messaging gets a "Share work" entry point that opens the portfolio picker.
-- Onboarding's Portfolio prompt links to `/portfolio/add`.
+## 7. Dashboard follow-up (separate step, after Booking)
+Rework `src/routes/feed.tsx` to the orchestrator IA you described: compact header → greeting → single highest-value update card → Continue (next booking / unfinished action) → For you (artists, studios) → Activity list. Existing cards (Professional Profile Active, Collab Availability, Add Track/EP, Studio Spaces, Friends on MusicLinkd, Search Hub) get demoted to status indicators, activity counts, or secondary actions rather than equal-weight feature cards. Upcoming bookings from Flow 08 feed the Continue block. Loading / empty / offline / error / retry preserved, plus a pass on clipping, card widths, and bottom-nav overlap at 360–430px.
 
-## Technical notes
-
-- Every route defines its own `head()` metadata; screen data contracts live beside the data model, not inline in components.
-- Mobile-first 430px shell, safe areas, sticky action bars, bottom sheets, large touch targets, no colour-only status, alt text on images, accessible reorder alternative.
-- No new design tokens; all colour via existing semantic tokens.
+## Verification
+Build clean, then walk every route in a 412×915 Android viewport: no horizontal clipping, safe-area and bottom-nav padding correct, sticky CTAs above the nav, calendars and slot pickers keyboard/screen-reader labelled, and no colour-only status encoding.
