@@ -42,6 +42,8 @@ function Participants() {
     );
   }
 
+  void PermissionState;
+
   const canManage = project.myRole === "Composer" || project.owner === "You";
   const active = project.participants.filter((p) => p.status === "owner" || p.status === "active");
   const pending = project.participants.filter((p) => p.status === "invited");
