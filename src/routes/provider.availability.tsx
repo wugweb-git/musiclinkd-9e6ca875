@@ -1,0 +1,153 @@
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { AvailabilityCalendar, PolicyCard } from "@/components/ml/booking";
+import { bookables, formatDate, inr } from "@/data/booking";
+
+export const Route = createFileRoute("/provider/availability")({
+  head: () => ({
+    meta: [
+      { title: "Manage availability — MusicLinkd provider" },
+      {
+        name: "description",
+        content: "Set opening hours, block dates, adjust rates and choose instant or request-first booking.",
+      },
+      { property: "og:title", content: "Manage availability — MusicLinkd provider" },
+      { property: "og:description", content: "Opening hours, blocked dates and booking rules for your space." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: Availability,
+});
+
+const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+function Availability() {
+  const b = bookables[0]!;
+  const [resourceId, setResourceId] = useState(b.resources[0]!.id);
+  const [open, setOpen] = useState<string[]>(days.slice(0, 6));
+  const [blocked, setBlocked] = useState<string[]>([]);
+  const [instant, setInstant] = useState(false);
+  const r = b.resources.find((x) => x.id === resourceId) ?? b.resources[0]!;
+
+  return (
+    <Screen>
+      <TopBar title="Availability" subtitle={b.name} back="/provider/bookings" />
+      <main className="px-5 pt-2">
+        <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
+          {b.resources.map((x) => (
+            <Chip key={x.id} active={x.id === resourceId} onClick={() => setResourceId(x.id)}>
+              {x.name}
+            </Chip>
+          ))}
+        </div>
+
+        <h2 className="mt-5 text-[17px]">Opening days</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {days.map((d) => {
+            const on = open.includes(d);
+            return (
+              <button
+                key={d}
+                type="button"
+                aria-pressed={on}
+                onClick={() => setOpen((v) => (on ? v.filter((x) => x !== d) : [...v, d]))}
+                className={`min-h-11 min-w-[52px] rounded-full border px-3 text-sm font-semibold ${
+                  on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-text2"
+                }`}
+              >
+                {d}
+              </button>
+            );
+          })}
+        </div>
+
+        <h2 className="mt-6 text-[17px]">Block specific dates</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Tap a date to close {r.name} for maintenance, private sessions or holidays.
+        </p>
+        <div className="mt-3">
+          <AvailabilityCalendar
+            resourceId={r.id}
+            fromPrice={r.pricing[0]?.price ?? b.fromPrice}
+            selected={blocked[0]}
+            onSelect={(d) => setBlocked((v) => (v.includes(d) ? v.filter((x) => x !== d) : [d, ...v]))}
+          />
+        </div>
+        {blocked.length ? (
+          <ul className="mt-3 space-y-2">
+            {blocked.map((d) => (
+              <li
+                key={d}
+                className="flex min-h-12 items-center justify-between rounded-2xl border border-border bg-card px-4 text-sm"
+              >
+                {formatDate(d)}
+                <button
+                  type="button"
+                  onClick={() => setBlocked((v) => v.filter((x) => x !== d))}
+                  className="min-h-10 text-xs font-bold text-primary"
+                >
+                  Unblock
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        <h2 className="mt-6 text-[17px]">Booking rules</h2>
+        <button
+          type="button"
+          onClick={() => setInstant((v) => !v)}
+          aria-pressed={instant}
+          className="mt-3 flex w-full items-center gap-3 rounded-3xl border border-border bg-card p-4 text-left"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold">Instant booking</span>
+            <span className="block text-xs text-muted-foreground">
+              {instant
+                ? "Slots confirm automatically when the deposit is paid."
+                : "You review every request before it confirms."}
+            </span>
+          </span>
+          <span
+            className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition ${instant ? "bg-primary" : "bg-subtle"}`}
+            aria-hidden
+          >
+            <span
+              className={`block h-5 w-5 rounded-full bg-card transition ${instant ? "translate-x-5" : ""}`}
+            />
+          </span>
+        </button>
+
+        <div className="mt-3 rounded-3xl border border-border bg-card p-4">
+          <p className="text-sm font-semibold">Rate for {r.name}</p>
+          <div className="mt-2 space-y-1.5">
+            {r.pricing.map((p) => (
+              <div key={p.label} className="flex items-baseline justify-between text-xs">
+                <span className="text-text2">{p.label}</span>
+                <span className="font-semibold">{inr(p.price)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <PolicyCard
+            title="Cancellation window"
+            body="Customers can cancel free up to 48 hrs before the session. Inside that window you keep 50% of the deposit."
+          />
+        </div>
+
+        <Btn className="mt-6 w-full" onClick={() => undefined}>
+          Save availability
+        </Btn>
+        <Link to="/provider/bookings" className="mt-2 block">
+          <Btn variant="ghost" className="w-full">
+            Back to workspace
+          </Btn>
+        </Link>
+      </main>
+    </Screen>
+  );
+}
