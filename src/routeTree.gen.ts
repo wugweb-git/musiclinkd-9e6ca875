@@ -54,6 +54,7 @@ import { Route as MarketplaceRentNearbyRouteImport } from './routes/marketplace/
 import { Route as MarketplaceRentSavedRouteImport } from './routes/marketplace/rent/saved'
 import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/rent/search'
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
+import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
 import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
 import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
 import { Route as MarketplaceRentActiveIdRouteImport } from './routes/marketplace/rent/active.$id'
@@ -288,6 +289,11 @@ const MarketplaceSellerIdRoute = MarketplaceSellerIdRouteImport.update({
   path: '/marketplace/seller/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingStepIdRoute = OnboardingStepIdRouteImport.update({
+  id: '/onboarding/step/$id',
+  path: '/onboarding/step/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProviderBookingsIndexRoute = ProviderBookingsIndexRouteImport.update({
   id: '/provider/bookings/',
   path: '/provider/bookings/',
@@ -375,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
+  '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
+  '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
@@ -485,6 +493,7 @@ export interface FileRoutesById {
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
+  '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
@@ -542,6 +551,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
+    | '/onboarding/step/$id'
     | '/provider/bookings/$ref'
     | '/booking/$id/'
     | '/bookings/$ref/'
@@ -596,6 +606,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
+    | '/onboarding/step/$id'
     | '/provider/bookings/$ref'
     | '/booking/$id'
     | '/bookings/$ref'
@@ -651,6 +662,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
+    | '/onboarding/step/$id'
     | '/provider/bookings/$ref'
     | '/booking/$id/'
     | '/bookings/$ref/'
@@ -701,6 +713,7 @@ export interface RootRouteChildren {
   MarketplaceRentSavedRoute: typeof MarketplaceRentSavedRoute
   MarketplaceRentSearchRoute: typeof MarketplaceRentSearchRoute
   MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
+  OnboardingStepIdRoute: typeof OnboardingStepIdRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
@@ -1030,6 +1043,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceSellerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/step/$id': {
+      id: '/onboarding/step/$id'
+      path: '/onboarding/step/$id'
+      fullPath: '/onboarding/step/$id'
+      preLoaderRoute: typeof OnboardingStepIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/provider/bookings/': {
       id: '/provider/bookings/'
       path: '/provider/bookings'
@@ -1150,6 +1170,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentSavedRoute: MarketplaceRentSavedRoute,
   MarketplaceRentSearchRoute: MarketplaceRentSearchRoute,
   MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
+  OnboardingStepIdRoute: OnboardingStepIdRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
   BookingsRefIndexRoute: BookingsRefIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
