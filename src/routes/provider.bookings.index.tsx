@@ -65,7 +65,7 @@ function ProviderBookings() {
           <Stat icon={<CalendarClock size={15} />} label="Pending requests" value={`${providerStats.pending}`} />
           <Stat icon={<TrendingUp size={15} />} label="Occupancy" value={`${providerStats.utilisation}%`} />
           <Stat icon={<IndianRupee size={15} />} label="This month" value={inr(providerStats.revenueMonth)} />
-          <Stat icon={<Star size={15} />} label="Rating" value={`${providerStats.rating}`} />
+          <Stat icon={<Star size={15} />} label="Cancellations" value={`${providerStats.cancellations}`} />
         </div>
 
         <div className="-mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
