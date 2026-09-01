@@ -31,6 +31,7 @@ import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
+import { Route as ProviderBookingsRouteImport } from './routes/provider.bookings'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
 import { Route as BookingIdAddonsRouteImport } from './routes/booking.$id.addons'
@@ -167,6 +168,11 @@ const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
 const ProfileEditRoute = ProfileEditRouteImport.update({
   id: '/profile/edit',
   path: '/profile/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderBookingsRoute = ProviderBookingsRouteImport.update({
+  id: '/provider/bookings',
+  path: '/provider/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TalentIdRoute = TalentIdRouteImport.update({
@@ -327,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/provider/bookings': typeof ProviderBookingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
@@ -377,6 +384,7 @@ export interface FileRoutesByTo {
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/provider/bookings': typeof ProviderBookingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings': typeof BookingsIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
@@ -429,6 +437,7 @@ export interface FileRoutesById {
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/provider/bookings': typeof ProviderBookingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
@@ -482,6 +491,7 @@ export interface FileRouteTypes {
     | '/marketplace/sell'
     | '/profile/$username'
     | '/profile/edit'
+    | '/provider/bookings'
     | '/talent/$id'
     | '/bookings/'
     | '/marketplace/'
@@ -532,6 +542,7 @@ export interface FileRouteTypes {
     | '/marketplace/sell'
     | '/profile/$username'
     | '/profile/edit'
+    | '/provider/bookings'
     | '/talent/$id'
     | '/bookings'
     | '/marketplace'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/marketplace/sell'
     | '/profile/$username'
     | '/profile/edit'
+    | '/provider/bookings'
     | '/talent/$id'
     | '/bookings/'
     | '/marketplace/'
@@ -635,6 +647,7 @@ export interface RootRouteChildren {
   MarketplaceSellRoute: typeof MarketplaceSellRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
+  ProviderBookingsRoute: typeof ProviderBookingsRoute
   TalentIdRoute: typeof TalentIdRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
@@ -814,6 +827,13 @@ declare module '@tanstack/react-router' {
       path: '/profile/edit'
       fullPath: '/profile/edit'
       preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider/bookings': {
+      id: '/provider/bookings'
+      path: '/provider/bookings'
+      fullPath: '/provider/bookings'
+      preLoaderRoute: typeof ProviderBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talent/$id': {
@@ -1052,6 +1072,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSellRoute: MarketplaceSellRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
+  ProviderBookingsRoute: ProviderBookingsRoute,
   TalentIdRoute: TalentIdRoute,
   BookingsIndexRoute: BookingsIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
