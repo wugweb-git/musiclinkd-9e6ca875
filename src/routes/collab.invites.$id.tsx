@@ -28,7 +28,6 @@ export const Route = createFileRoute("/collab/invites/$id")({
 function InviteDetail() {
   const { id } = Route.useParams();
   const inv = getInvitation(id);
-  const [outcome, setOutcome] = useState<"none" | "accepted" | "declined">("none");
   const [question, setQuestion] = useState("");
 
   if (!inv) {
