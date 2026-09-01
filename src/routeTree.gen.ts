@@ -41,6 +41,7 @@ import { Route as BookingIdScheduleRouteImport } from './routes/booking.$id.sche
 import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.service'
 import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confirmed.$ref'
 import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.index'
+import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
@@ -218,6 +219,11 @@ const BookingsRefIndexRoute = BookingsRefIndexRouteImport.update({
   path: '/bookings/$ref/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingsRefCancelRoute = BookingsRefCancelRouteImport.update({
+  id: '/bookings/$ref/cancel',
+  path: '/bookings/$ref/cancel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookingsRefRescheduleRoute = BookingsRefRescheduleRouteImport.update({
   id: '/bookings/$ref/reschedule',
   path: '/bookings/$ref/reschedule',
@@ -332,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
+  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
@@ -381,6 +388,7 @@ export interface FileRoutesByTo {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
+  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
@@ -432,6 +440,7 @@ export interface FileRoutesById {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
+  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
+    | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
@@ -533,6 +543,7 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
+    | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
+    | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
@@ -628,6 +640,7 @@ export interface RootRouteChildren {
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
+  BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
@@ -873,6 +886,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsRefIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bookings/$ref/cancel': {
+      id: '/bookings/$ref/cancel'
+      path: '/bookings/$ref/cancel'
+      fullPath: '/bookings/$ref/cancel'
+      preLoaderRoute: typeof BookingsRefCancelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bookings/$ref/reschedule': {
       id: '/bookings/$ref/reschedule'
       path: '/bookings/$ref/reschedule'
@@ -1037,6 +1057,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
+  BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
