@@ -4,25 +4,36 @@ The collaboration layer already exists (home with tabs/search/filters/sort, crea
 
 ## What gets added
 
+&nbsp;
+
+&nbsp;
+
+*Where are the other 7 flows ???
+
 **Roles & agreement**
+
 - Project Roles screen: role, person, responsibility, status — read from the canonical role taxonomy already used in onboarding and profiles.
 - Project Agreement screen: scope, roles, timeline, compensation, ownership, credit, deliverables, with a plain note that this is a working agreement, not a legal contract. Linked from Settings and Overview.
 
 **Media & milestones**
+
 - Shared Media gallery: All / Audio / Video / Images / Documents filters over the project's existing files, with previews.
 - Milestone detail: milestone, owner, deadline, status, notes, plus Complete / Edit where permitted.
 
 **Proposals & invitations — full outcome set**
+
 - Proposal composer (new proposal): project, role, scope, deliverables, timeline, compensation, notes, with Send / Save draft / Cancel.
 - Proposal accepted and proposal declined outcome screens.
 - Invitation accepted ("You're now collaborating on…", role, participants, Open Project) and invitation declined screens.
 
 **Permissions & ownership**
+
 - Invite link screen: copy, share, disable link, with the controlled-access notice.
 - Transfer ownership confirmation (current owner → new owner).
 - Remove collaborator confirmation, gated to permitted roles.
 
 **Remaining states**
+
 - Deleted project state ("This collaboration is no longer available") wired into the workspace and detail routes.
 - Empty states for no collaborators / no files / no milestones / no activity inside the workspace tabs.
 
