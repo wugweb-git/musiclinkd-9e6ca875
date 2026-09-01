@@ -83,6 +83,12 @@ function Timeline() {
         )
       ) : (
         <>
+          {project.tasks.length === 0 ? (
+            <EmptyState
+              title="No tasks yet"
+              body="Tasks are deliberately light here — use them only for the small things a milestone depends on."
+            />
+          ) : null}
           <Label>{project.tasks.length} tasks</Label>
           <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
             {project.tasks.map((t) => {

@@ -67,9 +67,16 @@ function Files() {
         ))}
       </div>
 
-      <Btn className="mb-4 w-full" onClick={() => setUpload(true)}>
-        Upload to this project
-      </Btn>
+      <div className="mb-4 flex gap-3">
+        <Btn className="flex-1" onClick={() => setUpload(true)}>
+          Upload
+        </Btn>
+        <Link to="/collab/$id/media" params={{ id: project.id }} className="flex-1">
+          <Btn variant="outline" className="w-full">
+            Media gallery
+          </Btn>
+        </Link>
+      </div>
 
       {list.length === 0 ? (
         <EmptyState
