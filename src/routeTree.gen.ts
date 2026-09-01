@@ -59,6 +59,7 @@ import { Route as CollabIdParticipantsRouteImport } from './routes/collab.$id.pa
 import { Route as CollabIdSettingsRouteImport } from './routes/collab.$id.settings'
 import { Route as CollabIdShareRouteImport } from './routes/collab.$id.share'
 import { Route as CollabIdTimelineRouteImport } from './routes/collab.$id.timeline'
+import { Route as CollabInvitesIdRouteImport } from './routes/collab.invites.$id'
 import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
@@ -334,6 +335,11 @@ const CollabIdTimelineRoute = CollabIdTimelineRouteImport.update({
   path: '/collab/$id/timeline',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabInvitesIdRoute = CollabInvitesIdRouteImport.update({
+  id: '/collab/invites/$id',
+  path: '/collab/invites/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollabNewCollaboratorsRoute = CollabNewCollaboratorsRouteImport.update({
   id: '/collaborators',
   path: '/collaborators',
@@ -506,6 +512,7 @@ export interface FileRoutesByFullPath {
   '/collab/$id/settings': typeof CollabIdSettingsRoute
   '/collab/$id/share': typeof CollabIdShareRoute
   '/collab/$id/timeline': typeof CollabIdTimelineRoute
+  '/collab/invites/$id': typeof CollabInvitesIdRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
@@ -581,6 +588,7 @@ export interface FileRoutesByTo {
   '/collab/$id/settings': typeof CollabIdSettingsRoute
   '/collab/$id/share': typeof CollabIdShareRoute
   '/collab/$id/timeline': typeof CollabIdTimelineRoute
+  '/collab/invites/$id': typeof CollabInvitesIdRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
@@ -658,6 +666,7 @@ export interface FileRoutesById {
   '/collab/$id/settings': typeof CollabIdSettingsRoute
   '/collab/$id/share': typeof CollabIdShareRoute
   '/collab/$id/timeline': typeof CollabIdTimelineRoute
+  '/collab/invites/$id': typeof CollabInvitesIdRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
@@ -736,6 +745,7 @@ export interface FileRouteTypes {
     | '/collab/$id/settings'
     | '/collab/$id/share'
     | '/collab/$id/timeline'
+    | '/collab/invites/$id'
     | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
@@ -811,6 +821,7 @@ export interface FileRouteTypes {
     | '/collab/$id/settings'
     | '/collab/$id/share'
     | '/collab/$id/timeline'
+    | '/collab/invites/$id'
     | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
@@ -887,6 +898,7 @@ export interface FileRouteTypes {
     | '/collab/$id/settings'
     | '/collab/$id/share'
     | '/collab/$id/timeline'
+    | '/collab/invites/$id'
     | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
@@ -958,6 +970,7 @@ export interface RootRouteChildren {
   CollabIdSettingsRoute: typeof CollabIdSettingsRoute
   CollabIdShareRoute: typeof CollabIdShareRoute
   CollabIdTimelineRoute: typeof CollabIdTimelineRoute
+  CollabInvitesIdRoute: typeof CollabInvitesIdRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
   MarketplaceRentListRoute: typeof MarketplaceRentListRoute
@@ -1337,6 +1350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabIdTimelineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/invites/$id': {
+      id: '/collab/invites/$id'
+      path: '/collab/invites/$id'
+      fullPath: '/collab/invites/$id'
+      preLoaderRoute: typeof CollabInvitesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collab/new/collaborators': {
       id: '/collab/new/collaborators'
       path: '/collaborators'
@@ -1586,6 +1606,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollabIdSettingsRoute: CollabIdSettingsRoute,
   CollabIdShareRoute: CollabIdShareRoute,
   CollabIdTimelineRoute: CollabIdTimelineRoute,
+  CollabInvitesIdRoute: CollabInvitesIdRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
   MarketplaceRentListRoute: MarketplaceRentListRoute,
