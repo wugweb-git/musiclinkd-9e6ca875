@@ -29,6 +29,7 @@ import { Route as MarketplaceSavedRouteImport } from './routes/marketplace/saved
 import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/search'
 import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
+import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
@@ -162,6 +163,11 @@ const MarketplaceSellRoute = MarketplaceSellRouteImport.update({
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
   id: '/onboarding/',
   path: '/onboarding/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingPreviewRoute = OnboardingPreviewRouteImport.update({
+  id: '/onboarding/preview',
+  path: '/onboarding/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
@@ -356,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -411,6 +418,7 @@ export interface FileRoutesByTo {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -468,6 +476,7 @@ export interface FileRoutesById {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -526,6 +535,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/onboarding/preview'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -581,6 +591,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/onboarding/preview'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -637,6 +648,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/onboarding/preview'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -694,6 +706,7 @@ export interface RootRouteChildren {
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
   MarketplaceSearchRoute: typeof MarketplaceSearchRoute
   MarketplaceSellRoute: typeof MarketplaceSellRoute
+  OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
@@ -866,6 +879,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding/'
       preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/preview': {
+      id: '/onboarding/preview'
+      path: '/onboarding/preview'
+      fullPath: '/onboarding/preview'
+      preLoaderRoute: typeof OnboardingPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/$username': {
@@ -1151,6 +1171,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSavedRoute: MarketplaceSavedRoute,
   MarketplaceSearchRoute: MarketplaceSearchRoute,
   MarketplaceSellRoute: MarketplaceSellRoute,
+  OnboardingPreviewRoute: OnboardingPreviewRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
