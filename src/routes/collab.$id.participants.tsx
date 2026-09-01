@@ -118,7 +118,22 @@ function Participants() {
         >
           See the role taxonomy
         </button>
+        <Link
+          to="/collab/$id/roles"
+          params={{ id: project.id }}
+          className="mt-2 block text-[11px] font-semibold text-primary"
+        >
+          Open project roles
+        </Link>
       </Card>
+
+      <Link
+        to="/collab/$id/invite-link"
+        params={{ id: project.id }}
+        className="mb-5 block text-center text-[12px] font-semibold text-primary"
+      >
+        Invite with a link instead
+      </Link>
 
       <div className="mb-8 flex gap-3">
         <Link to="/collab/new/collaborators" className="flex-1">
