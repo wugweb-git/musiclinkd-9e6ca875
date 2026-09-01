@@ -68,6 +68,7 @@ import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$
 import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
 import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
 import { Route as CollabIdFilesIndexRouteImport } from './routes/collab.$id.files.index'
+import { Route as CollabIdFilesFileIdRouteImport } from './routes/collab.$id.files.$fileId'
 import { Route as MarketplaceRentActiveIdRouteImport } from './routes/marketplace/rent/active.$id'
 import { Route as MarketplaceRentCSlugRouteImport } from './routes/marketplace/rent/c.$slug'
 import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/rent/e.$id'
@@ -370,6 +371,11 @@ const CollabIdFilesIndexRoute = CollabIdFilesIndexRouteImport.update({
   path: '/collab/$id/files/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabIdFilesFileIdRoute = CollabIdFilesFileIdRouteImport.update({
+  id: '/collab/$id/files/$fileId',
+  path: '/collab/$id/files/$fileId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRentActiveIdRoute = MarketplaceRentActiveIdRouteImport.update({
   id: '/marketplace/rent/active/$id',
   path: '/marketplace/rent/active/$id',
@@ -463,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
+  '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
@@ -529,6 +536,7 @@ export interface FileRoutesByTo {
   '/collab/$id': typeof CollabIdIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
   '/provider/bookings': typeof ProviderBookingsIndexRoute
+  '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
@@ -597,6 +605,7 @@ export interface FileRoutesById {
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
+  '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
@@ -666,6 +675,7 @@ export interface FileRouteTypes {
     | '/collab/$id/'
     | '/marketplace/rent/'
     | '/provider/bookings/'
+    | '/collab/$id/files/$fileId'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
@@ -732,6 +742,7 @@ export interface FileRouteTypes {
     | '/collab/$id'
     | '/marketplace/rent'
     | '/provider/bookings'
+    | '/collab/$id/files/$fileId'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
@@ -799,6 +810,7 @@ export interface FileRouteTypes {
     | '/collab/$id/'
     | '/marketplace/rent/'
     | '/provider/bookings/'
+    | '/collab/$id/files/$fileId'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
@@ -859,6 +871,7 @@ export interface RootRouteChildren {
   CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
   ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
+  CollabIdFilesFileIdRoute: typeof CollabIdFilesFileIdRoute
   MarketplaceRentActiveIdRoute: typeof MarketplaceRentActiveIdRoute
   MarketplaceRentCSlugRoute: typeof MarketplaceRentCSlugRoute
   MarketplaceRentEIdRoute: typeof MarketplaceRentEIdRoute
@@ -1283,6 +1296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabIdFilesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/$id/files/$fileId': {
+      id: '/collab/$id/files/$fileId'
+      path: '/collab/$id/files/$fileId'
+      fullPath: '/collab/$id/files/$fileId'
+      preLoaderRoute: typeof CollabIdFilesFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/rent/active/$id': {
       id: '/marketplace/rent/active/$id'
       path: '/marketplace/rent/active/$id'
@@ -1415,6 +1435,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
   ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
+  CollabIdFilesFileIdRoute: CollabIdFilesFileIdRoute,
   MarketplaceRentActiveIdRoute: MarketplaceRentActiveIdRoute,
   MarketplaceRentCSlugRoute: MarketplaceRentCSlugRoute,
   MarketplaceRentEIdRoute: MarketplaceRentEIdRoute,
