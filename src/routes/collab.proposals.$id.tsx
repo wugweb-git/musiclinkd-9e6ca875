@@ -84,12 +84,14 @@ function ProposalDetail() {
         ) : (
           <div className="space-y-3">
             <div className="flex gap-3">
-              <Btn variant="outline" className="flex-1" onClick={() => setOutcome("declined")}>
-                Decline
-              </Btn>
-              <Btn className="flex-[2]" onClick={() => setOutcome("accepted")}>
-                Accept terms
-              </Btn>
+              <Link to="/collab/proposals/declined/$id" params={{ id: p.id }} className="flex-1">
+                <Btn variant="outline" className="w-full">
+                  Decline
+                </Btn>
+              </Link>
+              <Link to="/collab/proposals/accepted/$id" params={{ id: p.id }} className="flex-[2]">
+                <Btn className="w-full">Accept terms</Btn>
+              </Link>
             </div>
             <Link to="/collab/proposals/$id/counter" params={{ id: p.id }}>
               <Btn variant="ghost" className="w-full">
