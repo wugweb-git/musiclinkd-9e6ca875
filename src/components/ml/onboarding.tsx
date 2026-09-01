@@ -1,5 +1,5 @@
 // FLOW-02 — Onboarding UI kit. Extends Gestalt; no new tokens.
-import { Link } from "@tanstack/react-router";
+
 import {
   createContext,
   useCallback,
