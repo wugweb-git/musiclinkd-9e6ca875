@@ -21,7 +21,7 @@ export function WorkspaceShell({
   right,
 }: {
   project: Project;
-  tab: (typeof tabs)[number]["key"];
+  tab: (typeof tabs)[number]["key"] | (string & {});
   children: ReactNode;
   right?: ReactNode;
 }) {
