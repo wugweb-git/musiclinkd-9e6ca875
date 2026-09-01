@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { talents } from "@/data/discover";
 
@@ -20,7 +20,32 @@ export const Route = createFileRoute("/messages")({
 function Messages() {
   return (
     <Screen>
-      <TopBar title="Messages" subtitle="3 unread" />
+      <TopBar
+        title="Messages"
+        subtitle="3 unread"
+        right={
+          <Link
+            to="/collab"
+            className="text-[11px] font-bold uppercase tracking-wide text-primary"
+          >
+            Collabs
+          </Link>
+        }
+      />
+      <div className="px-5 pt-4">
+        <Link
+          to="/collab"
+          className="flex items-center justify-between rounded-3xl border border-border bg-card px-4 py-4"
+        >
+          <span className="min-w-0">
+            <span className="block text-[14px] font-semibold">Collaborations</span>
+            <span className="block text-[11px] text-muted-foreground">
+              2 invitations · 1 proposal · 3 active projects
+            </span>
+          </span>
+          <span className="text-muted-foreground">›</span>
+        </Link>
+      </div>
       <div className="divide-y divide-border px-5">
         {talents.slice(0, 4).map((t, i) => (
           <div key={t.id} className="flex items-center gap-3 py-4">
