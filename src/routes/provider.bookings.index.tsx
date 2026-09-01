@@ -19,7 +19,7 @@ import {
   providerToday,
 } from "@/data/booking";
 
-export const Route = createFileRoute("/provider/bookings")({
+export const Route = createFileRoute("/provider/bookings/")({
   head: () => ({
     meta: [
       { title: "Provider bookings — MusicLinkd" },
