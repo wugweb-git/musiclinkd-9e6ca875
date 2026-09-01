@@ -173,13 +173,18 @@ function CollabHome() {
               ))
             )}
             <Label>Proposals</Label>
-            <Link to="/collab/proposals/$id" params={{ id: "prop-mix" }} className="block">
+            <Link to="/collab/proposals/$id" params={{ id: "prop-mix" }} className="mb-3 block">
               <Card>
                 <p className="text-[14px] font-semibold">Kabir Nair — mixing proposal</p>
                 <p className="text-[11px] text-muted-foreground">
                   Raat Ki Rani · ₹55,000 · received yesterday
                 </p>
               </Card>
+            </Link>
+            <Link to="/collab/proposals/new" className="block">
+              <Btn variant="outline" className="w-full">
+                Send a proposal
+              </Btn>
             </Link>
           </section>
         ) : null}
