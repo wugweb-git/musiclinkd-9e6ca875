@@ -4,19 +4,19 @@ import { CalendarClock, IndianRupee, Star, TrendingUp } from "lucide-react";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import {
   BookingListCard,
+  BookingSkeleton,
   EmptyState,
   ProviderRequestCard,
-  BookingSkeleton,
 } from "@/components/ml/booking";
 import {
   bookings,
-  declineReasons,
   getBookable,
   getResource,
   inr,
   providerRequests,
   providerStats,
   providerToday,
+  type Booking,
 } from "@/data/booking";
 
 export const Route = createFileRoute("/provider/bookings/")({
@@ -41,8 +41,6 @@ const tabs = ["Requests", "Today", "Upcoming", "Past"] as const;
 function ProviderBookings() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Requests");
   const [loading, setLoading] = useState(false);
-  const [decline, setDecline] = useState<string | null>(null);
-  const [handled, setHandled] = useState<Record<string, "accepted" | "declined">>({});
 
   const upcoming = bookings.filter((b) => ["upcoming", "confirmed"].includes(b.status));
   const past = bookings.filter((b) => b.status === "completed");
@@ -89,53 +87,19 @@ function ProviderBookings() {
                 {providerRequests.map((bk) => {
                   const b = getBookable(bk.bookableId);
                   const r = getResource(b, bk.resourceId);
-                  const state = handled[bk.ref];
                   return (
-                    <div key={bk.ref}>
-                      <ProviderRequestCard
-                        booking={bk}
-                        resourceName={r?.name ?? "Room"}
-                        onAccept={() => setHandled((h) => ({ ...h, [bk.ref]: "accepted" }))}
-                        onDecline={() => setDecline(bk.ref)}
-                        state={state}
-                      />
-                      {decline === bk.ref ? (
-                        <div className="mt-2 rounded-3xl border border-border bg-card p-4">
-                          <p className="text-sm font-semibold">Reason for declining</p>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {declineReasons.map((x) => (
-                              <button
-                                key={x}
-                                type="button"
-                                onClick={() => {
-                                  setHandled((h) => ({ ...h, [bk.ref]: "declined" }));
-                                  setDecline(null);
-                                }}
-                                className="min-h-10 rounded-full border border-border px-3 text-xs font-semibold"
-                              >
-                                {x}
-                              </button>
-                            ))}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setDecline(null)}
-                            className="mt-3 min-h-10 text-xs font-bold text-muted-foreground"
-                          >
-                            Keep request
-                          </button>
-                        </div>
-                      ) : null}
-                    </div>
+                    <ProviderRequestCard
+                      key={bk.ref}
+                      booking={bk}
+                      entityResource={`${b?.name ?? "Your space"} · ${r?.name ?? "Room"}`}
+                    />
                   );
                 })}
               </div>
             )
           ) : (
             <List
-              items={
-                tab === "Today" ? providerToday : tab === "Upcoming" ? upcoming : past
-              }
+              items={tab === "Today" ? providerToday : tab === "Upcoming" ? upcoming : past}
               emptyTitle={`Nothing ${tab.toLowerCase()}`}
             />
           )}
@@ -149,7 +113,7 @@ function ProviderBookings() {
   );
 }
 
-function List({ items, emptyTitle }: { items: typeof bookings; emptyTitle: string }) {
+function List({ items, emptyTitle }: { items: Booking[]; emptyTitle: string }) {
   if (items.length === 0) {
     return <EmptyState title={emptyTitle} body="Sessions appear here once they're confirmed." />;
   }
@@ -162,8 +126,9 @@ function List({ items, emptyTitle }: { items: typeof bookings; emptyTitle: strin
           <BookingListCard
             key={bk.ref}
             booking={bk}
-            entityName={bk.customerName ?? b?.name ?? "Customer"}
+            entityName={b?.name ?? "Your space"}
             resourceName={r?.name ?? "Room"}
+            provider
           />
         );
       })}
