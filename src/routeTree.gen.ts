@@ -22,6 +22,7 @@ import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
+import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -132,6 +133,11 @@ const BookingIdRoute = BookingIdRouteImport.update({
 const BookingsIndexRoute = BookingsIndexRouteImport.update({
   id: '/bookings/',
   path: '/bookings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabIndexRoute = CollabIndexRouteImport.update({
+  id: '/collab/',
+  path: '/collab/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -396,6 +402,7 @@ export interface FileRoutesByFullPath {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
+  '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -456,6 +463,7 @@ export interface FileRoutesByTo {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings': typeof BookingsIndexRoute
+  '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -518,6 +526,7 @@ export interface FileRoutesById {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
+  '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -581,6 +590,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings/'
+    | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
     | '/booking/$id/addons'
@@ -641,6 +651,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings'
+    | '/collab'
     | '/marketplace'
     | '/onboarding'
     | '/booking/$id/addons'
@@ -702,6 +713,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings/'
+    | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
     | '/booking/$id/addons'
@@ -764,6 +776,7 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   TalentIdRoute: typeof TalentIdRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
+  CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
@@ -882,6 +895,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings'
       fullPath: '/bookings/'
       preLoaderRoute: typeof BookingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/': {
+      id: '/collab/'
+      path: '/collab'
+      fullPath: '/collab/'
+      preLoaderRoute: typeof CollabIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -1261,6 +1281,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   TalentIdRoute: TalentIdRoute,
   BookingsIndexRoute: BookingsIndexRoute,
+  CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
