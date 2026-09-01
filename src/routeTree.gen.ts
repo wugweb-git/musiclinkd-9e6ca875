@@ -20,6 +20,8 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as BookingIdRouteImport } from './routes/booking.$id'
+import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -27,9 +29,26 @@ import { Route as MarketplaceSavedRouteImport } from './routes/marketplace/saved
 import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/search'
 import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
+import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
+import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
+import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
+import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
+import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
+import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
+import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
+import { Route as BookingIdAddonsRouteImport } from './routes/booking.$id.addons'
+import { Route as BookingIdDetailsRouteImport } from './routes/booking.$id.details'
+import { Route as BookingIdPayRouteImport } from './routes/booking.$id.pay'
+import { Route as BookingIdReviewRouteImport } from './routes/booking.$id.review'
+import { Route as BookingIdScheduleRouteImport } from './routes/booking.$id.schedule'
+import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.service'
+import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confirmed.$ref'
+import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.index'
+import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
+import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
 import { Route as MarketplaceRentIndexRouteImport } from './routes/marketplace/rent/index'
@@ -40,11 +59,15 @@ import { Route as MarketplaceRentNearbyRouteImport } from './routes/marketplace/
 import { Route as MarketplaceRentSavedRouteImport } from './routes/marketplace/rent/saved'
 import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/rent/search'
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
+import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
+import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
+import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
 import { Route as MarketplaceRentActiveIdRouteImport } from './routes/marketplace/rent/active.$id'
 import { Route as MarketplaceRentCSlugRouteImport } from './routes/marketplace/rent/c.$slug'
 import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/rent/e.$id'
 import { Route as MarketplaceRentProviderIdRouteImport } from './routes/marketplace/rent/provider.$id'
 import { Route as MarketplaceRentRequestIdRouteImport } from './routes/marketplace/rent/request.$id'
+import { Route as ProviderBookingsRequestsRefRouteImport } from './routes/provider.bookings.requests.$ref'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -101,6 +124,16 @@ const StudioRoute = StudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingIdRoute = BookingIdRouteImport.update({
+  id: '/booking/$id',
+  path: '/booking/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsIndexRoute = BookingsIndexRouteImport.update({
+  id: '/bookings/',
+  path: '/bookings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
   id: '/marketplace/',
   path: '/marketplace/',
@@ -136,6 +169,26 @@ const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
   path: '/onboarding/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingCompleteRoute = OnboardingCompleteRouteImport.update({
+  id: '/onboarding/complete',
+  path: '/onboarding/complete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingPreviewRoute = OnboardingPreviewRouteImport.update({
+  id: '/onboarding/preview',
+  path: '/onboarding/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingResumeRoute = OnboardingResumeRouteImport.update({
+  id: '/onboarding/resume',
+  path: '/onboarding/resume',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
+  id: '/onboarding/skip',
+  path: '/onboarding/skip',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
   id: '/profile/$username',
   path: '/profile/$username',
@@ -146,9 +199,74 @@ const ProfileEditRoute = ProfileEditRouteImport.update({
   path: '/profile/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileInsightsRoute = ProfileInsightsRouteImport.update({
+  id: '/profile/insights',
+  path: '/profile/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderAvailabilityRoute = ProviderAvailabilityRouteImport.update({
+  id: '/provider/availability',
+  path: '/provider/availability',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingIdIndexRoute = BookingIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BookingIdRoute,
+} as any)
+const BookingIdAddonsRoute = BookingIdAddonsRouteImport.update({
+  id: '/addons',
+  path: '/addons',
+  getParentRoute: () => BookingIdRoute,
+} as any)
+const BookingIdDetailsRoute = BookingIdDetailsRouteImport.update({
+  id: '/details',
+  path: '/details',
+  getParentRoute: () => BookingIdRoute,
+} as any)
+const BookingIdPayRoute = BookingIdPayRouteImport.update({
+  id: '/pay',
+  path: '/pay',
+  getParentRoute: () => BookingIdRoute,
+} as any)
+const BookingIdReviewRoute = BookingIdReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => BookingIdRoute,
+} as any)
+const BookingIdScheduleRoute = BookingIdScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => BookingIdRoute,
+} as any)
+const BookingIdServiceRoute = BookingIdServiceRouteImport.update({
+  id: '/service',
+  path: '/service',
+  getParentRoute: () => BookingIdRoute,
+} as any)
+const BookingConfirmedRefRoute = BookingConfirmedRefRouteImport.update({
+  id: '/booking/confirmed/$ref',
+  path: '/booking/confirmed/$ref',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsRefIndexRoute = BookingsRefIndexRouteImport.update({
+  id: '/bookings/$ref/',
+  path: '/bookings/$ref/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsRefCancelRoute = BookingsRefCancelRouteImport.update({
+  id: '/bookings/$ref/cancel',
+  path: '/bookings/$ref/cancel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsRefRescheduleRoute = BookingsRefRescheduleRouteImport.update({
+  id: '/bookings/$ref/reschedule',
+  path: '/bookings/$ref/reschedule',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceCSlugRoute = MarketplaceCSlugRouteImport.update({
@@ -201,6 +319,21 @@ const MarketplaceSellerIdRoute = MarketplaceSellerIdRouteImport.update({
   path: '/marketplace/seller/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingStepIdRoute = OnboardingStepIdRouteImport.update({
+  id: '/onboarding/step/$id',
+  path: '/onboarding/step/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderBookingsIndexRoute = ProviderBookingsIndexRouteImport.update({
+  id: '/provider/bookings/',
+  path: '/provider/bookings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderBookingsRefRoute = ProviderBookingsRefRouteImport.update({
+  id: '/provider/bookings/$ref',
+  path: '/provider/bookings/$ref',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceRentActiveIdRoute = MarketplaceRentActiveIdRouteImport.update({
   id: '/marketplace/rent/active/$id',
   path: '/marketplace/rent/active/$id',
@@ -228,6 +361,12 @@ const MarketplaceRentRequestIdRoute =
     path: '/marketplace/rent/request/$id',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProviderBookingsRequestsRefRoute =
+  ProviderBookingsRequestsRefRouteImport.update({
+    id: '/provider/bookings/requests/$ref',
+    path: '/provider/bookings/requests/$ref',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -241,16 +380,33 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/booking/$id': typeof BookingIdRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/onboarding/complete': typeof OnboardingCompleteRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/resume': typeof OnboardingResumeRoute
+  '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/insights': typeof ProfileInsightsRoute
+  '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
+  '/bookings/': typeof BookingsIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/booking/$id/addons': typeof BookingIdAddonsRoute
+  '/booking/$id/details': typeof BookingIdDetailsRoute
+  '/booking/$id/pay': typeof BookingIdPayRoute
+  '/booking/$id/review': typeof BookingIdReviewRoute
+  '/booking/$id/schedule': typeof BookingIdScheduleRoute
+  '/booking/$id/service': typeof BookingIdServiceRoute
+  '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
+  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
+  '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -260,12 +416,18 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
+  '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
+  '/booking/$id/': typeof BookingIdIndexRoute
+  '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
+  '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -284,11 +446,27 @@ export interface FileRoutesByTo {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/onboarding/complete': typeof OnboardingCompleteRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/resume': typeof OnboardingResumeRoute
+  '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/insights': typeof ProfileInsightsRoute
+  '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
+  '/bookings': typeof BookingsIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/booking/$id/addons': typeof BookingIdAddonsRoute
+  '/booking/$id/details': typeof BookingIdDetailsRoute
+  '/booking/$id/pay': typeof BookingIdPayRoute
+  '/booking/$id/review': typeof BookingIdReviewRoute
+  '/booking/$id/schedule': typeof BookingIdScheduleRoute
+  '/booking/$id/service': typeof BookingIdServiceRoute
+  '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
+  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
+  '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -298,12 +476,18 @@ export interface FileRoutesByTo {
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
+  '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
+  '/booking/$id': typeof BookingIdIndexRoute
+  '/bookings/$ref': typeof BookingsRefIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
+  '/provider/bookings': typeof ProviderBookingsIndexRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -318,16 +502,33 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/booking/$id': typeof BookingIdRouteWithChildren
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/onboarding/complete': typeof OnboardingCompleteRoute
+  '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/resume': typeof OnboardingResumeRoute
+  '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/insights': typeof ProfileInsightsRoute
+  '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
+  '/bookings/': typeof BookingsIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/booking/$id/addons': typeof BookingIdAddonsRoute
+  '/booking/$id/details': typeof BookingIdDetailsRoute
+  '/booking/$id/pay': typeof BookingIdPayRoute
+  '/booking/$id/review': typeof BookingIdReviewRoute
+  '/booking/$id/schedule': typeof BookingIdScheduleRoute
+  '/booking/$id/service': typeof BookingIdServiceRoute
+  '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
+  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
+  '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -337,12 +538,18 @@ export interface FileRoutesById {
   '/marketplace/rent/saved': typeof MarketplaceRentSavedRoute
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
+  '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
+  '/booking/$id/': typeof BookingIdIndexRoute
+  '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
+  '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -358,16 +565,33 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
+    | '/booking/$id'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/onboarding/complete'
+    | '/onboarding/preview'
+    | '/onboarding/resume'
+    | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
+    | '/profile/insights'
+    | '/provider/availability'
     | '/talent/$id'
+    | '/bookings/'
     | '/marketplace/'
     | '/onboarding/'
+    | '/booking/$id/addons'
+    | '/booking/$id/details'
+    | '/booking/$id/pay'
+    | '/booking/$id/review'
+    | '/booking/$id/schedule'
+    | '/booking/$id/service'
+    | '/booking/confirmed/$ref'
+    | '/bookings/$ref/cancel'
+    | '/bookings/$ref/reschedule'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -377,12 +601,18 @@ export interface FileRouteTypes {
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
+    | '/onboarding/step/$id'
+    | '/provider/bookings/$ref'
+    | '/booking/$id/'
+    | '/bookings/$ref/'
     | '/marketplace/rent/'
+    | '/provider/bookings/'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/provider/bookings/requests/$ref'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -401,11 +631,27 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/onboarding/complete'
+    | '/onboarding/preview'
+    | '/onboarding/resume'
+    | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
+    | '/profile/insights'
+    | '/provider/availability'
     | '/talent/$id'
+    | '/bookings'
     | '/marketplace'
     | '/onboarding'
+    | '/booking/$id/addons'
+    | '/booking/$id/details'
+    | '/booking/$id/pay'
+    | '/booking/$id/review'
+    | '/booking/$id/schedule'
+    | '/booking/$id/service'
+    | '/booking/confirmed/$ref'
+    | '/bookings/$ref/cancel'
+    | '/bookings/$ref/reschedule'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -415,12 +661,18 @@ export interface FileRouteTypes {
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
+    | '/onboarding/step/$id'
+    | '/provider/bookings/$ref'
+    | '/booking/$id'
+    | '/bookings/$ref'
     | '/marketplace/rent'
+    | '/provider/bookings'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/provider/bookings/requests/$ref'
   id:
     | '__root__'
     | '/'
@@ -434,16 +686,33 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
+    | '/booking/$id'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/onboarding/complete'
+    | '/onboarding/preview'
+    | '/onboarding/resume'
+    | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
+    | '/profile/insights'
+    | '/provider/availability'
     | '/talent/$id'
+    | '/bookings/'
     | '/marketplace/'
     | '/onboarding/'
+    | '/booking/$id/addons'
+    | '/booking/$id/details'
+    | '/booking/$id/pay'
+    | '/booking/$id/review'
+    | '/booking/$id/schedule'
+    | '/booking/$id/service'
+    | '/booking/confirmed/$ref'
+    | '/bookings/$ref/cancel'
+    | '/bookings/$ref/reschedule'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -453,12 +722,18 @@ export interface FileRouteTypes {
     | '/marketplace/rent/saved'
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
+    | '/onboarding/step/$id'
+    | '/provider/bookings/$ref'
+    | '/booking/$id/'
+    | '/bookings/$ref/'
     | '/marketplace/rent/'
+    | '/provider/bookings/'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/provider/bookings/requests/$ref'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -473,16 +748,27 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
+  BookingIdRoute: typeof BookingIdRouteWithChildren
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
   MarketplaceSearchRoute: typeof MarketplaceSearchRoute
   MarketplaceSellRoute: typeof MarketplaceSellRoute
+  OnboardingCompleteRoute: typeof OnboardingCompleteRoute
+  OnboardingPreviewRoute: typeof OnboardingPreviewRoute
+  OnboardingResumeRoute: typeof OnboardingResumeRoute
+  OnboardingSkipRoute: typeof OnboardingSkipRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
+  ProfileInsightsRoute: typeof ProfileInsightsRoute
+  ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   TalentIdRoute: typeof TalentIdRoute
+  BookingsIndexRoute: typeof BookingsIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
+  BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
+  BookingsRefCancelRoute: typeof BookingsRefCancelRoute
+  BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
   MarketplaceRentListRoute: typeof MarketplaceRentListRoute
@@ -492,12 +778,17 @@ export interface RootRouteChildren {
   MarketplaceRentSavedRoute: typeof MarketplaceRentSavedRoute
   MarketplaceRentSearchRoute: typeof MarketplaceRentSearchRoute
   MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
+  OnboardingStepIdRoute: typeof OnboardingStepIdRoute
+  ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
+  BookingsRefIndexRoute: typeof BookingsRefIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
+  ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
   MarketplaceRentActiveIdRoute: typeof MarketplaceRentActiveIdRoute
   MarketplaceRentCSlugRoute: typeof MarketplaceRentCSlugRoute
   MarketplaceRentEIdRoute: typeof MarketplaceRentEIdRoute
   MarketplaceRentProviderIdRoute: typeof MarketplaceRentProviderIdRoute
   MarketplaceRentRequestIdRoute: typeof MarketplaceRentRequestIdRoute
+  ProviderBookingsRequestsRefRoute: typeof ProviderBookingsRequestsRefRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -579,6 +870,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking/$id': {
+      id: '/booking/$id'
+      path: '/booking/$id'
+      fullPath: '/booking/$id'
+      preLoaderRoute: typeof BookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings/': {
+      id: '/bookings/'
+      path: '/bookings'
+      fullPath: '/bookings/'
+      preLoaderRoute: typeof BookingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/': {
       id: '/marketplace/'
       path: '/marketplace'
@@ -628,6 +933,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/complete': {
+      id: '/onboarding/complete'
+      path: '/onboarding/complete'
+      fullPath: '/onboarding/complete'
+      preLoaderRoute: typeof OnboardingCompleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/preview': {
+      id: '/onboarding/preview'
+      path: '/onboarding/preview'
+      fullPath: '/onboarding/preview'
+      preLoaderRoute: typeof OnboardingPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/resume': {
+      id: '/onboarding/resume'
+      path: '/onboarding/resume'
+      fullPath: '/onboarding/resume'
+      preLoaderRoute: typeof OnboardingResumeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/skip': {
+      id: '/onboarding/skip'
+      path: '/onboarding/skip'
+      fullPath: '/onboarding/skip'
+      preLoaderRoute: typeof OnboardingSkipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile/$username': {
       id: '/profile/$username'
       path: '/profile/$username'
@@ -642,11 +975,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile/insights': {
+      id: '/profile/insights'
+      path: '/profile/insights'
+      fullPath: '/profile/insights'
+      preLoaderRoute: typeof ProfileInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider/availability': {
+      id: '/provider/availability'
+      path: '/provider/availability'
+      fullPath: '/provider/availability'
+      preLoaderRoute: typeof ProviderAvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/talent/$id': {
       id: '/talent/$id'
       path: '/talent/$id'
       fullPath: '/talent/$id'
       preLoaderRoute: typeof TalentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking/$id/': {
+      id: '/booking/$id/'
+      path: '/'
+      fullPath: '/booking/$id/'
+      preLoaderRoute: typeof BookingIdIndexRouteImport
+      parentRoute: typeof BookingIdRoute
+    }
+    '/booking/$id/addons': {
+      id: '/booking/$id/addons'
+      path: '/addons'
+      fullPath: '/booking/$id/addons'
+      preLoaderRoute: typeof BookingIdAddonsRouteImport
+      parentRoute: typeof BookingIdRoute
+    }
+    '/booking/$id/details': {
+      id: '/booking/$id/details'
+      path: '/details'
+      fullPath: '/booking/$id/details'
+      preLoaderRoute: typeof BookingIdDetailsRouteImport
+      parentRoute: typeof BookingIdRoute
+    }
+    '/booking/$id/pay': {
+      id: '/booking/$id/pay'
+      path: '/pay'
+      fullPath: '/booking/$id/pay'
+      preLoaderRoute: typeof BookingIdPayRouteImport
+      parentRoute: typeof BookingIdRoute
+    }
+    '/booking/$id/review': {
+      id: '/booking/$id/review'
+      path: '/review'
+      fullPath: '/booking/$id/review'
+      preLoaderRoute: typeof BookingIdReviewRouteImport
+      parentRoute: typeof BookingIdRoute
+    }
+    '/booking/$id/schedule': {
+      id: '/booking/$id/schedule'
+      path: '/schedule'
+      fullPath: '/booking/$id/schedule'
+      preLoaderRoute: typeof BookingIdScheduleRouteImport
+      parentRoute: typeof BookingIdRoute
+    }
+    '/booking/$id/service': {
+      id: '/booking/$id/service'
+      path: '/service'
+      fullPath: '/booking/$id/service'
+      preLoaderRoute: typeof BookingIdServiceRouteImport
+      parentRoute: typeof BookingIdRoute
+    }
+    '/booking/confirmed/$ref': {
+      id: '/booking/confirmed/$ref'
+      path: '/booking/confirmed/$ref'
+      fullPath: '/booking/confirmed/$ref'
+      preLoaderRoute: typeof BookingConfirmedRefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings/$ref/': {
+      id: '/bookings/$ref/'
+      path: '/bookings/$ref'
+      fullPath: '/bookings/$ref/'
+      preLoaderRoute: typeof BookingsRefIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings/$ref/cancel': {
+      id: '/bookings/$ref/cancel'
+      path: '/bookings/$ref/cancel'
+      fullPath: '/bookings/$ref/cancel'
+      preLoaderRoute: typeof BookingsRefCancelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings/$ref/reschedule': {
+      id: '/bookings/$ref/reschedule'
+      path: '/bookings/$ref/reschedule'
+      fullPath: '/bookings/$ref/reschedule'
+      preLoaderRoute: typeof BookingsRefRescheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/c/$slug': {
@@ -719,6 +1143,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceSellerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/step/$id': {
+      id: '/onboarding/step/$id'
+      path: '/onboarding/step/$id'
+      fullPath: '/onboarding/step/$id'
+      preLoaderRoute: typeof OnboardingStepIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider/bookings/': {
+      id: '/provider/bookings/'
+      path: '/provider/bookings'
+      fullPath: '/provider/bookings/'
+      preLoaderRoute: typeof ProviderBookingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider/bookings/$ref': {
+      id: '/provider/bookings/$ref'
+      path: '/provider/bookings/$ref'
+      fullPath: '/provider/bookings/$ref'
+      preLoaderRoute: typeof ProviderBookingsRefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/rent/active/$id': {
       id: '/marketplace/rent/active/$id'
       path: '/marketplace/rent/active/$id'
@@ -754,8 +1199,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceRentRequestIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/provider/bookings/requests/$ref': {
+      id: '/provider/bookings/requests/$ref'
+      path: '/provider/bookings/requests/$ref'
+      fullPath: '/provider/bookings/requests/$ref'
+      preLoaderRoute: typeof ProviderBookingsRequestsRefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface BookingIdRouteChildren {
+  BookingIdAddonsRoute: typeof BookingIdAddonsRoute
+  BookingIdDetailsRoute: typeof BookingIdDetailsRoute
+  BookingIdPayRoute: typeof BookingIdPayRoute
+  BookingIdReviewRoute: typeof BookingIdReviewRoute
+  BookingIdScheduleRoute: typeof BookingIdScheduleRoute
+  BookingIdServiceRoute: typeof BookingIdServiceRoute
+  BookingIdIndexRoute: typeof BookingIdIndexRoute
+}
+
+const BookingIdRouteChildren: BookingIdRouteChildren = {
+  BookingIdAddonsRoute: BookingIdAddonsRoute,
+  BookingIdDetailsRoute: BookingIdDetailsRoute,
+  BookingIdPayRoute: BookingIdPayRoute,
+  BookingIdReviewRoute: BookingIdReviewRoute,
+  BookingIdScheduleRoute: BookingIdScheduleRoute,
+  BookingIdServiceRoute: BookingIdServiceRoute,
+  BookingIdIndexRoute: BookingIdIndexRoute,
+}
+
+const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
+  BookingIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -769,16 +1245,27 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
+  BookingIdRoute: BookingIdRouteWithChildren,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSavedRoute: MarketplaceSavedRoute,
   MarketplaceSearchRoute: MarketplaceSearchRoute,
   MarketplaceSellRoute: MarketplaceSellRoute,
+  OnboardingCompleteRoute: OnboardingCompleteRoute,
+  OnboardingPreviewRoute: OnboardingPreviewRoute,
+  OnboardingResumeRoute: OnboardingResumeRoute,
+  OnboardingSkipRoute: OnboardingSkipRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
+  ProfileInsightsRoute: ProfileInsightsRoute,
+  ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   TalentIdRoute: TalentIdRoute,
+  BookingsIndexRoute: BookingsIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
+  BookingConfirmedRefRoute: BookingConfirmedRefRoute,
+  BookingsRefCancelRoute: BookingsRefCancelRoute,
+  BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
   MarketplaceRentListRoute: MarketplaceRentListRoute,
@@ -788,12 +1275,17 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentSavedRoute: MarketplaceRentSavedRoute,
   MarketplaceRentSearchRoute: MarketplaceRentSearchRoute,
   MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
+  OnboardingStepIdRoute: OnboardingStepIdRoute,
+  ProviderBookingsRefRoute: ProviderBookingsRefRoute,
+  BookingsRefIndexRoute: BookingsRefIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
+  ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
   MarketplaceRentActiveIdRoute: MarketplaceRentActiveIdRoute,
   MarketplaceRentCSlugRoute: MarketplaceRentCSlugRoute,
   MarketplaceRentEIdRoute: MarketplaceRentEIdRoute,
   MarketplaceRentProviderIdRoute: MarketplaceRentProviderIdRoute,
   MarketplaceRentRequestIdRoute: MarketplaceRentRequestIdRoute,
+  ProviderBookingsRequestsRefRoute: ProviderBookingsRequestsRefRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
