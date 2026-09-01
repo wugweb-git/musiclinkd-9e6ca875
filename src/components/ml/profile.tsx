@@ -72,7 +72,7 @@ export function ProfileEmpty({
         {body}
       </p>
       {cta ? (
-        <Btn variant="outline" className="mt-3 min-h-11 text-xs" onClick={onCta}>
+        <Btn variant="outline" className="mt-3 min-h-11 text-xs" onClick={() => onCta?.()}>
           {cta}
         </Btn>
       ) : null}
@@ -182,7 +182,7 @@ export function ChipGroup({
       </p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((i) => (
-          <TagChip key={i} tone={tone}>
+          <TagChip key={i} tone={tone ?? "subtle"}>
             {i}
           </TagChip>
         ))}
