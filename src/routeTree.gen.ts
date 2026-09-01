@@ -38,6 +38,7 @@ import { Route as BookingIdPayRouteImport } from './routes/booking.$id.pay'
 import { Route as BookingIdReviewRouteImport } from './routes/booking.$id.review'
 import { Route as BookingIdScheduleRouteImport } from './routes/booking.$id.schedule'
 import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.service'
+import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confirmed.$ref'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
 import { Route as MarketplaceRentIndexRouteImport } from './routes/marketplace/rent/index'
@@ -199,6 +200,11 @@ const BookingIdServiceRoute = BookingIdServiceRouteImport.update({
   path: '/service',
   getParentRoute: () => BookingIdRoute,
 } as any)
+const BookingConfirmedRefRoute = BookingConfirmedRefRouteImport.update({
+  id: '/booking/confirmed/$ref',
+  path: '/booking/confirmed/$ref',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceCSlugRoute = MarketplaceCSlugRouteImport.update({
   id: '/marketplace/c/$slug',
   path: '/marketplace/c/$slug',
@@ -306,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/booking/$id/review': typeof BookingIdReviewRoute
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
+  '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -351,6 +358,7 @@ export interface FileRoutesByTo {
   '/booking/$id/review': typeof BookingIdReviewRoute
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
+  '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -398,6 +406,7 @@ export interface FileRoutesById {
   '/booking/$id/review': typeof BookingIdReviewRoute
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
+  '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -446,6 +455,7 @@ export interface FileRouteTypes {
     | '/booking/$id/review'
     | '/booking/$id/schedule'
     | '/booking/$id/service'
+    | '/booking/confirmed/$ref'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -491,6 +501,7 @@ export interface FileRouteTypes {
     | '/booking/$id/review'
     | '/booking/$id/schedule'
     | '/booking/$id/service'
+    | '/booking/confirmed/$ref'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/booking/$id/review'
     | '/booking/$id/schedule'
     | '/booking/$id/service'
+    | '/booking/confirmed/$ref'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -578,6 +590,7 @@ export interface RootRouteChildren {
   TalentIdRoute: typeof TalentIdRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
+  BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
   MarketplaceRentListRoute: typeof MarketplaceRentListRoute
@@ -800,6 +813,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingIdServiceRouteImport
       parentRoute: typeof BookingIdRoute
     }
+    '/booking/confirmed/$ref': {
+      id: '/booking/confirmed/$ref'
+      path: '/booking/confirmed/$ref'
+      fullPath: '/booking/confirmed/$ref'
+      preLoaderRoute: typeof BookingConfirmedRefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/c/$slug': {
       id: '/marketplace/c/$slug'
       path: '/marketplace/c/$slug'
@@ -955,6 +975,7 @@ const rootRouteChildren: RootRouteChildren = {
   TalentIdRoute: TalentIdRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
+  BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
   MarketplaceRentListRoute: MarketplaceRentListRoute,
