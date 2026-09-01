@@ -31,6 +31,7 @@ import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
+import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
@@ -174,6 +175,11 @@ const OnboardingCompleteRoute = OnboardingCompleteRouteImport.update({
 const OnboardingPreviewRoute = OnboardingPreviewRouteImport.update({
   id: '/onboarding/preview',
   path: '/onboarding/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingResumeRoute = OnboardingResumeRouteImport.update({
+  id: '/onboarding/resume',
+  path: '/onboarding/resume',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/resume': typeof OnboardingResumeRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -427,6 +434,7 @@ export interface FileRoutesByTo {
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/resume': typeof OnboardingResumeRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -486,6 +494,7 @@ export interface FileRoutesById {
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
+  '/onboarding/resume': typeof OnboardingResumeRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -546,6 +555,7 @@ export interface FileRouteTypes {
     | '/marketplace/sell'
     | '/onboarding/complete'
     | '/onboarding/preview'
+    | '/onboarding/resume'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -603,6 +613,7 @@ export interface FileRouteTypes {
     | '/marketplace/sell'
     | '/onboarding/complete'
     | '/onboarding/preview'
+    | '/onboarding/resume'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -661,6 +672,7 @@ export interface FileRouteTypes {
     | '/marketplace/sell'
     | '/onboarding/complete'
     | '/onboarding/preview'
+    | '/onboarding/resume'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -720,6 +732,7 @@ export interface RootRouteChildren {
   MarketplaceSellRoute: typeof MarketplaceSellRoute
   OnboardingCompleteRoute: typeof OnboardingCompleteRoute
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
+  OnboardingResumeRoute: typeof OnboardingResumeRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
@@ -906,6 +919,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/preview'
       fullPath: '/onboarding/preview'
       preLoaderRoute: typeof OnboardingPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/resume': {
+      id: '/onboarding/resume'
+      path: '/onboarding/resume'
+      fullPath: '/onboarding/resume'
+      preLoaderRoute: typeof OnboardingResumeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/$username': {
@@ -1193,6 +1213,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSellRoute: MarketplaceSellRoute,
   OnboardingCompleteRoute: OnboardingCompleteRoute,
   OnboardingPreviewRoute: OnboardingPreviewRoute,
+  OnboardingResumeRoute: OnboardingResumeRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
