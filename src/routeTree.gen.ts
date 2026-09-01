@@ -35,6 +35,7 @@ import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
+import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
@@ -196,6 +197,11 @@ const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
 const ProfileEditRoute = ProfileEditRouteImport.update({
   id: '/profile/edit',
   path: '/profile/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileInsightsRoute = ProfileInsightsRouteImport.update({
+  id: '/profile/insights',
+  path: '/profile/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProviderAvailabilityRoute = ProviderAvailabilityRouteImport.update({
@@ -386,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/insights': typeof ProfileInsightsRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
@@ -445,6 +452,7 @@ export interface FileRoutesByTo {
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/insights': typeof ProfileInsightsRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings': typeof BookingsIndexRoute
@@ -506,6 +514,7 @@ export interface FileRoutesById {
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
+  '/profile/insights': typeof ProfileInsightsRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
@@ -568,6 +577,7 @@ export interface FileRouteTypes {
     | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
+    | '/profile/insights'
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings/'
@@ -627,6 +637,7 @@ export interface FileRouteTypes {
     | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
+    | '/profile/insights'
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings'
@@ -687,6 +698,7 @@ export interface FileRouteTypes {
     | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
+    | '/profile/insights'
     | '/provider/availability'
     | '/talent/$id'
     | '/bookings/'
@@ -748,6 +760,7 @@ export interface RootRouteChildren {
   OnboardingSkipRoute: typeof OnboardingSkipRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
+  ProfileInsightsRoute: typeof ProfileInsightsRoute
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   TalentIdRoute: typeof TalentIdRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
@@ -960,6 +973,13 @@ declare module '@tanstack/react-router' {
       path: '/profile/edit'
       fullPath: '/profile/edit'
       preLoaderRoute: typeof ProfileEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/insights': {
+      id: '/profile/insights'
+      path: '/profile/insights'
+      fullPath: '/profile/insights'
+      preLoaderRoute: typeof ProfileInsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider/availability': {
@@ -1237,6 +1257,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingSkipRoute: OnboardingSkipRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
+  ProfileInsightsRoute: ProfileInsightsRoute,
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   TalentIdRoute: TalentIdRoute,
   BookingsIndexRoute: BookingsIndexRoute,
