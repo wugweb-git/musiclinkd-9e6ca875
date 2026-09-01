@@ -32,6 +32,7 @@ import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
+import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
@@ -180,6 +181,11 @@ const OnboardingPreviewRoute = OnboardingPreviewRouteImport.update({
 const OnboardingResumeRoute = OnboardingResumeRouteImport.update({
   id: '/onboarding/resume',
   path: '/onboarding/resume',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
+  id: '/onboarding/skip',
+  path: '/onboarding/skip',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
@@ -377,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
+  '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -435,6 +442,7 @@ export interface FileRoutesByTo {
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
+  '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -495,6 +503,7 @@ export interface FileRoutesById {
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
+  '/onboarding/skip': typeof OnboardingSkipRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
@@ -556,6 +565,7 @@ export interface FileRouteTypes {
     | '/onboarding/complete'
     | '/onboarding/preview'
     | '/onboarding/resume'
+    | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -614,6 +624,7 @@ export interface FileRouteTypes {
     | '/onboarding/complete'
     | '/onboarding/preview'
     | '/onboarding/resume'
+    | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -673,6 +684,7 @@ export interface FileRouteTypes {
     | '/onboarding/complete'
     | '/onboarding/preview'
     | '/onboarding/resume'
+    | '/onboarding/skip'
     | '/profile/$username'
     | '/profile/edit'
     | '/provider/availability'
@@ -733,6 +745,7 @@ export interface RootRouteChildren {
   OnboardingCompleteRoute: typeof OnboardingCompleteRoute
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingResumeRoute: typeof OnboardingResumeRoute
+  OnboardingSkipRoute: typeof OnboardingSkipRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
@@ -926,6 +939,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/resume'
       fullPath: '/onboarding/resume'
       preLoaderRoute: typeof OnboardingResumeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/skip': {
+      id: '/onboarding/skip'
+      path: '/onboarding/skip'
+      fullPath: '/onboarding/skip'
+      preLoaderRoute: typeof OnboardingSkipRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/$username': {
@@ -1214,6 +1234,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingCompleteRoute: OnboardingCompleteRoute,
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingResumeRoute: OnboardingResumeRoute,
+  OnboardingSkipRoute: OnboardingSkipRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
