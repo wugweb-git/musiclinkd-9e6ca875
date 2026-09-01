@@ -23,6 +23,7 @@ import { Route as StudioRouteImport } from './routes/studio'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
+import { Route as CollabNewRouteImport } from './routes/collab.new'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -138,6 +139,11 @@ const BookingsIndexRoute = BookingsIndexRouteImport.update({
 const CollabIndexRoute = CollabIndexRouteImport.update({
   id: '/collab/',
   path: '/collab/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollabNewRoute = CollabNewRouteImport.update({
+  id: '/collab/new',
+  path: '/collab/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -387,6 +393,7 @@ export interface FileRoutesByFullPath {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
+  '/collab/new': typeof CollabNewRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/collab/new': typeof CollabNewRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -511,6 +519,7 @@ export interface FileRoutesById {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
+  '/collab/new': typeof CollabNewRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -575,6 +584,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/booking/$id'
+    | '/collab/new'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -636,6 +646,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
+    | '/collab/new'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -698,6 +709,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/booking/$id'
+    | '/collab/new'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -761,6 +773,7 @@ export interface RootRouteChildren {
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
+  CollabNewRoute: typeof CollabNewRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
@@ -902,6 +915,13 @@ declare module '@tanstack/react-router' {
       path: '/collab'
       fullPath: '/collab/'
       preLoaderRoute: typeof CollabIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collab/new': {
+      id: '/collab/new'
+      path: '/collab/new'
+      fullPath: '/collab/new'
+      preLoaderRoute: typeof CollabNewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -1266,6 +1286,7 @@ const rootRouteChildren: RootRouteChildren = {
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
+  CollabNewRoute: CollabNewRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSavedRoute: MarketplaceSavedRoute,
