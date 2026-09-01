@@ -51,6 +51,7 @@ import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confir
 import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.index'
 import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
+import { Route as CollabIdIndexRouteImport } from './routes/collab.$id.index'
 import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
@@ -282,6 +283,11 @@ const BookingsRefRescheduleRoute = BookingsRefRescheduleRouteImport.update({
   path: '/bookings/$ref/reschedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabIdIndexRoute = CollabIdIndexRouteImport.update({
+  id: '/collab/$id/',
+  path: '/collab/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollabNewCollaboratorsRoute = CollabNewCollaboratorsRouteImport.update({
   id: '/collaborators',
   path: '/collaborators',
@@ -441,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
+  '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
@@ -504,6 +511,7 @@ export interface FileRoutesByTo {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
+  '/collab/$id': typeof CollabIdIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
   '/provider/bookings': typeof ProviderBookingsIndexRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
@@ -569,6 +577,7 @@ export interface FileRoutesById {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
+  '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
@@ -635,6 +644,7 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/booking/$id/'
     | '/bookings/$ref/'
+    | '/collab/$id/'
     | '/marketplace/rent/'
     | '/provider/bookings/'
     | '/marketplace/rent/active/$id'
@@ -698,6 +708,7 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/booking/$id'
     | '/bookings/$ref'
+    | '/collab/$id'
     | '/marketplace/rent'
     | '/provider/bookings'
     | '/marketplace/rent/active/$id'
@@ -762,6 +773,7 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/booking/$id/'
     | '/bookings/$ref/'
+    | '/collab/$id/'
     | '/marketplace/rent/'
     | '/provider/bookings/'
     | '/marketplace/rent/active/$id'
@@ -819,6 +831,7 @@ export interface RootRouteChildren {
   OnboardingStepIdRoute: typeof OnboardingStepIdRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
+  CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
   ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
   MarketplaceRentActiveIdRoute: typeof MarketplaceRentActiveIdRoute
@@ -1125,6 +1138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsRefRescheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/$id/': {
+      id: '/collab/$id/'
+      path: '/collab/$id'
+      fullPath: '/collab/$id/'
+      preLoaderRoute: typeof CollabIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collab/new/collaborators': {
       id: '/collab/new/collaborators'
       path: '/collaborators'
@@ -1351,6 +1371,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingStepIdRoute: OnboardingStepIdRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
   BookingsRefIndexRoute: BookingsRefIndexRoute,
+  CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
   ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
   MarketplaceRentActiveIdRoute: MarketplaceRentActiveIdRoute,
