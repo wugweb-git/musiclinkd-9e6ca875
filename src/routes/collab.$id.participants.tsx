@@ -52,18 +52,44 @@ function Participants() {
   return (
     <WorkspaceShell project={project} tab="participants">
       <Label>On the project · {active.length}</Label>
-      <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
-        {active.map((p) => (
-          <ParticipantRow key={p.id} p={p} projectId={project.id} canManage={canManage} />
-        ))}
-      </div>
+      {active.length === 0 ? (
+        <Card className="mb-5 text-center">
+          <p className="text-[13px] font-semibold">No collaborators yet</p>
+          <p className="mt-1 text-[12px] text-muted-foreground">Add collaborators to get the project moving.</p>
+          <Link to="/collab/new/collaborators">
+            <Btn className="mt-3 w-full">Add collaborators</Btn>
+          </Link>
+        </Card>
+      ) : (
+        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+          {active.map((p) => (
+            <ParticipantRow
+              key={p.id}
+              p={p}
+              projectId={project.id}
+              canManage={canManage}
+              onRemove={() =>
+                navigate({ to: "/collab/$id/remove/$pid", params: { id: project.id, pid: p.id } })
+              }
+            />
+          ))}
+        </div>
+      )}
 
       {pending.length ? (
         <>
           <Label>Invited · awaiting response</Label>
           <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
             {pending.map((p) => (
-              <ParticipantRow key={p.id} p={p} projectId={project.id} canManage={canManage} />
+              <ParticipantRow
+                key={p.id}
+                p={p}
+                projectId={project.id}
+                canManage={canManage}
+                onRemove={() =>
+                  navigate({ to: "/collab/$id/remove/$pid", params: { id: project.id, pid: p.id } })
+                }
+              />
             ))}
           </div>
         </>
