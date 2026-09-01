@@ -568,15 +568,13 @@ export function ReadinessCard({
   hint,
   done,
   flow,
-  cta,
-  to,
+  action,
 }: {
   label: string;
   hint: string;
   done: boolean;
   flow?: string;
-  cta?: string;
-  to?: string;
+  action?: ReactNode;
 }) {
   return (
     <div className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
@@ -596,17 +594,10 @@ export function ReadinessCard({
           </span>
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
-        {!done && cta ? (
-          to ? (
-            <Link to={to} className="mt-2 inline-flex min-h-11 items-center text-xs font-bold text-primary">
-              {cta} {flow ? <span className="ml-1 text-muted-foreground">· {flow}</span> : null}
-            </Link>
-          ) : (
-            <span className="mt-2 inline-flex min-h-11 items-center text-xs font-bold text-primary">
-              {cta} {flow ? <span className="ml-1 text-muted-foreground">· {flow}</span> : null}
-            </span>
-          )
+        {flow ? (
+          <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
         ) : null}
+        {!done && action ? <div className="mt-2">{action}</div> : null}
       </div>
     </div>
   );
@@ -615,29 +606,32 @@ export function ReadinessCard({
 export function HandoffCard({
   title,
   body,
-  cta,
-  to,
   flow,
+  action,
+  onLater,
 }: {
   title: string;
   body: string;
-  cta: string;
-  to: string;
   flow: string;
+  action: ReactNode;
+  onLater?: () => void;
 }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-5">
       <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
       <h3 className="mt-1 text-lg">{title}</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
-      <div className="mt-4 flex gap-2">
-        <Link to={to} className="flex-1">
-          <Btn className="w-full">{cta}</Btn>
-        </Link>
-        <Btn variant="outline" className="px-6">
+      <div className="mt-4 flex items-center gap-2">
+        <div className="flex-1">{action}</div>
+        <button
+          type="button"
+          onClick={() => onLater?.()}
+          className="min-h-11 rounded-full border border-border px-5 text-sm font-semibold"
+        >
           Later
-        </Btn>
+        </button>
       </div>
     </div>
   );
 }
+
