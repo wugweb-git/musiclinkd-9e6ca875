@@ -21,6 +21,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
+import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -113,6 +114,11 @@ const StudioRoute = StudioRouteImport.update({
 const BookingIdRoute = BookingIdRouteImport.update({
   id: '/booking/$id',
   path: '/booking/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsIndexRoute = BookingsIndexRouteImport.update({
+  id: '/bookings/',
+  path: '/bookings/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -304,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/talent/$id': typeof TalentIdRoute
+  '/bookings/': typeof BookingsIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -350,6 +357,7 @@ export interface FileRoutesByTo {
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/talent/$id': typeof TalentIdRoute
+  '/bookings': typeof BookingsIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -398,6 +406,7 @@ export interface FileRoutesById {
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/talent/$id': typeof TalentIdRoute
+  '/bookings/': typeof BookingsIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -447,6 +456,7 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/profile/edit'
     | '/talent/$id'
+    | '/bookings/'
     | '/marketplace/'
     | '/onboarding/'
     | '/booking/$id/addons'
@@ -493,6 +503,7 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/profile/edit'
     | '/talent/$id'
+    | '/bookings'
     | '/marketplace'
     | '/onboarding'
     | '/booking/$id/addons'
@@ -540,6 +551,7 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/profile/edit'
     | '/talent/$id'
+    | '/bookings/'
     | '/marketplace/'
     | '/onboarding/'
     | '/booking/$id/addons'
@@ -588,6 +600,7 @@ export interface RootRouteChildren {
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   TalentIdRoute: typeof TalentIdRoute
+  BookingsIndexRoute: typeof BookingsIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
@@ -692,6 +705,13 @@ declare module '@tanstack/react-router' {
       path: '/booking/$id'
       fullPath: '/booking/$id'
       preLoaderRoute: typeof BookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings/': {
+      id: '/bookings/'
+      path: '/bookings'
+      fullPath: '/bookings/'
+      preLoaderRoute: typeof BookingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -973,6 +993,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   TalentIdRoute: TalentIdRoute,
+  BookingsIndexRoute: BookingsIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
