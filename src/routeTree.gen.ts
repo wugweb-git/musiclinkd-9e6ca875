@@ -53,6 +53,7 @@ import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.ca
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
 import { Route as CollabIdIndexRouteImport } from './routes/collab.$id.index'
 import { Route as CollabIdDiscussionRouteImport } from './routes/collab.$id.discussion'
+import { Route as CollabIdParticipantsRouteImport } from './routes/collab.$id.participants'
 import { Route as CollabIdTimelineRouteImport } from './routes/collab.$id.timeline'
 import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
@@ -298,6 +299,11 @@ const CollabIdDiscussionRoute = CollabIdDiscussionRouteImport.update({
   path: '/collab/$id/discussion',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabIdParticipantsRoute = CollabIdParticipantsRouteImport.update({
+  id: '/collab/$id/participants',
+  path: '/collab/$id/participants',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollabIdTimelineRoute = CollabIdTimelineRouteImport.update({
   id: '/collab/$id/timeline',
   path: '/collab/$id/timeline',
@@ -464,6 +470,7 @@ export interface FileRoutesByFullPath {
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/collab/$id/discussion': typeof CollabIdDiscussionRoute
+  '/collab/$id/participants': typeof CollabIdParticipantsRoute
   '/collab/$id/timeline': typeof CollabIdTimelineRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -533,6 +540,7 @@ export interface FileRoutesByTo {
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/collab/$id/discussion': typeof CollabIdDiscussionRoute
+  '/collab/$id/participants': typeof CollabIdParticipantsRoute
   '/collab/$id/timeline': typeof CollabIdTimelineRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -604,6 +612,7 @@ export interface FileRoutesById {
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/collab/$id/discussion': typeof CollabIdDiscussionRoute
+  '/collab/$id/participants': typeof CollabIdParticipantsRoute
   '/collab/$id/timeline': typeof CollabIdTimelineRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -676,6 +685,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/collab/$id/discussion'
+    | '/collab/$id/participants'
     | '/collab/$id/timeline'
     | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
@@ -745,6 +755,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/collab/$id/discussion'
+    | '/collab/$id/participants'
     | '/collab/$id/timeline'
     | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
@@ -815,6 +826,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/collab/$id/discussion'
+    | '/collab/$id/participants'
     | '/collab/$id/timeline'
     | '/collab/new/collaborators'
     | '/marketplace/c/$slug'
@@ -880,6 +892,7 @@ export interface RootRouteChildren {
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
   CollabIdDiscussionRoute: typeof CollabIdDiscussionRoute
+  CollabIdParticipantsRoute: typeof CollabIdParticipantsRoute
   CollabIdTimelineRoute: typeof CollabIdTimelineRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
@@ -1217,6 +1230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabIdDiscussionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/$id/participants': {
+      id: '/collab/$id/participants'
+      path: '/collab/$id/participants'
+      fullPath: '/collab/$id/participants'
+      preLoaderRoute: typeof CollabIdParticipantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collab/$id/timeline': {
       id: '/collab/$id/timeline'
       path: '/collab/$id/timeline'
@@ -1460,6 +1480,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
   CollabIdDiscussionRoute: CollabIdDiscussionRoute,
+  CollabIdParticipantsRoute: CollabIdParticipantsRoute,
   CollabIdTimelineRoute: CollabIdTimelineRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
