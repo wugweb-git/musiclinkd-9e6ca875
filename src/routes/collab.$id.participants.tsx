@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Btn, Screen, Sheet, Chip, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { Card, Label, ParticipantRow, PermissionState } from "@/components/ml/collab";
@@ -30,6 +30,7 @@ function Participants() {
   const { id } = Route.useParams();
   const project = getProject(id);
   const [roleSheet, setRoleSheet] = useState(false);
+  const navigate = useNavigate();
 
   if (!project) {
     return (
