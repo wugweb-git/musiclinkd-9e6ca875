@@ -59,6 +59,7 @@ import { Route as MarketplaceRentCSlugRouteImport } from './routes/marketplace/r
 import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/rent/e.$id'
 import { Route as MarketplaceRentProviderIdRouteImport } from './routes/marketplace/rent/provider.$id'
 import { Route as MarketplaceRentRequestIdRouteImport } from './routes/marketplace/rent/request.$id'
+import { Route as ProviderBookingsRequestsRefRouteImport } from './routes/provider.bookings.requests.$ref'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -312,6 +313,12 @@ const MarketplaceRentRequestIdRoute =
     path: '/marketplace/rent/request/$id',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProviderBookingsRequestsRefRoute =
+  ProviderBookingsRequestsRefRouteImport.update({
+    id: '/provider/bookings/requests/$ref',
+    path: '/provider/bookings/requests/$ref',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -364,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -415,6 +423,7 @@ export interface FileRoutesByTo {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -468,6 +477,7 @@ export interface FileRoutesById {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -522,6 +532,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/provider/bookings/requests/$ref'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -573,6 +584,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/provider/bookings/requests/$ref'
   id:
     | '__root__'
     | '/'
@@ -625,6 +637,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/provider/bookings/requests/$ref'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -671,6 +684,7 @@ export interface RootRouteChildren {
   MarketplaceRentEIdRoute: typeof MarketplaceRentEIdRoute
   MarketplaceRentProviderIdRoute: typeof MarketplaceRentProviderIdRoute
   MarketplaceRentRequestIdRoute: typeof MarketplaceRentRequestIdRoute
+  ProviderBookingsRequestsRefRoute: typeof ProviderBookingsRequestsRefRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1025,6 +1039,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceRentRequestIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/provider/bookings/requests/$ref': {
+      id: '/provider/bookings/requests/$ref'
+      path: '/provider/bookings/requests/$ref'
+      fullPath: '/provider/bookings/requests/$ref'
+      preLoaderRoute: typeof ProviderBookingsRequestsRefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1096,6 +1117,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentEIdRoute: MarketplaceRentEIdRoute,
   MarketplaceRentProviderIdRoute: MarketplaceRentProviderIdRoute,
   MarketplaceRentRequestIdRoute: MarketplaceRentRequestIdRoute,
+  ProviderBookingsRequestsRefRoute: ProviderBookingsRequestsRefRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
