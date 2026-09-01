@@ -700,7 +700,7 @@ export function RowLink({
   if (to) {
     return (
       <Link
-        to={to}
+        to={to as never}
         params={params as never}
         className="flex items-center gap-3 px-4 py-4 text-left"
       >
