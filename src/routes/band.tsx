@@ -82,8 +82,8 @@ function Band() {
           {members.map((m) => (
             <Link
               key={m.name}
-              to="/talent/$id"
-              params={{ id: "meher-kaur" }}
+              to="/profile/$username"
+              params={{ username: "meher-kaur" }}
               className="rounded-2xl border border-border bg-card p-2 text-center"
             >
               <img

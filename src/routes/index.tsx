@@ -131,8 +131,8 @@ function Discover() {
           {talents.slice(0, 2).map((t) => (
             <Link
               key={t.id}
-              to="/talent/$id"
-              params={{ id: t.id }}
+              to="/profile/$username"
+              params={{ username: t.id }}
               className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3"
             >
               <img
