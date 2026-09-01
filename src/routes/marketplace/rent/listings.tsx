@@ -7,7 +7,6 @@ import {
   equipment,
   equipmentById,
   inr,
-  providerInsights,
   rentalNotifications,
   rentalRequests,
 } from "@/data/rentals";
@@ -27,7 +26,7 @@ export const Route = createFileRoute("/marketplace/rent/listings")({
   component: MyListings,
 });
 
-const tabs = ["Active", "Requests", "Drafts", "Insights", "Alerts"];
+const tabs = ["Active", "Requests", "Drafts", "Alerts"];
 const statusBuckets = [
   "Active",
   "Reserved",
@@ -158,35 +157,6 @@ function MyListings() {
           />
         ) : null}
 
-        {tab === "Insights" ? (
-          <>
-            <div className="grid grid-cols-2 gap-3">
-              {providerInsights.map((s) => (
-                <div key={s.label} className="rounded-3xl border border-border bg-card p-4">
-                  <p className="text-[11px] text-muted-foreground">{s.label}</p>
-                  <p className="mt-1 text-xl font-bold">{s.value}</p>
-                  <p className="text-[11px] font-semibold text-success">{s.delta}</p>
-                </div>
-              ))}
-            </div>
-            <h2 className="pt-2 text-[16px]">Top equipment</h2>
-            {[...equipment]
-              .sort((a, b) => b.rentals - a.rentals)
-              .slice(0, 3)
-              .map((e) => (
-                <article
-                  key={e.id}
-                  className="flex items-center justify-between gap-3 rounded-3xl border border-border bg-card p-4"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-[13px] font-semibold">{e.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{e.rentals} rentals</p>
-                  </div>
-                  <span className="shrink-0 text-[13px] font-bold">{inr(e.daily)}/day</span>
-                </article>
-              ))}
-          </>
-        ) : null}
 
         {tab === "Alerts"
           ? rentalNotifications.map((n) => (

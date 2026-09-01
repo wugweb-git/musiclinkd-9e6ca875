@@ -8,11 +8,9 @@ import {
   ExternalLink,
   FolderKanban,
   Globe2,
-  Image as ImageIcon,
   Languages,
   MapPin,
   Mic2,
-  Music2,
   Pencil,
   Play,
   Settings2,
@@ -21,7 +19,7 @@ import {
 } from "lucide-react";
 import type { PersonProfile } from "@/data/profile";
 import { profileInsights, profileCompletion } from "@/data/profile";
-import { Btn, Chip, Screen, StatRow } from "./ui";
+import { Btn, Chip, Screen } from "./ui";
 import {
   AudioTrackCard,
   CollaboratorCard,
@@ -43,6 +41,7 @@ import {
   VideoCard,
   ChipGroup,
   InfoRow,
+  StatRow,
 } from "./profile";
 import { HireModal } from "./hire-modal";
 

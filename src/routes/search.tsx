@@ -163,8 +163,8 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
 
       <div className="mt-5 grid grid-cols-2 gap-2">
         <Link
-          to="/talent/$id"
-          params={{ id: t.id }}
+          to="/profile/$username"
+          params={{ username: t.id }}
           className="inline-flex min-h-12 items-center justify-center rounded-full bg-navy text-sm font-semibold text-background"
         >
           View full profile

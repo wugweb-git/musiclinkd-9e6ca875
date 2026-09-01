@@ -51,8 +51,8 @@ export function TalentRow({
 
       <div className="mt-3 flex items-center gap-2">
         <Link
-          to="/talent/$id"
-          params={{ id: t.id }}
+          to="/profile/$username"
+          params={{ username: t.id }}
           className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-navy text-xs font-semibold text-background"
         >
           View profile
@@ -75,8 +75,8 @@ export function TalentRow({
 export function TalentCard({ t }: { t: Talent }) {
   return (
     <Link
-      to="/talent/$id"
-      params={{ id: t.id }}
+      to="/profile/$username"
+      params={{ username: t.id }}
       className="block w-[172px] shrink-0 overflow-hidden rounded-3xl border border-border bg-card"
     >
       <div className="relative h-[150px]">
@@ -108,8 +108,8 @@ export function TalentCard({ t }: { t: Talent }) {
 export function TalentGridCard({ t }: { t: Talent }) {
   return (
     <Link
-      to="/talent/$id"
-      params={{ id: t.id }}
+      to="/profile/$username"
+      params={{ username: t.id }}
       className="overflow-hidden rounded-3xl border border-border bg-card"
     >
       <img

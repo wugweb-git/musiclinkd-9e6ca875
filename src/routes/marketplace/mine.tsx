@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
 import { EmptyState, ListingRow } from "@/components/ml/market";
-import { listings, offers, sellerStats, notifications } from "@/data/market";
+import { listings, offers } from "@/data/market";
 
 export const Route = createFileRoute("/marketplace/mine")({
   head: () => ({
@@ -16,13 +16,7 @@ export const Route = createFileRoute("/marketplace/mine")({
   component: Mine,
 });
 
-const tabs = ["Active", "Drafts", "Offers", "Insights"];
-const tone: Record<string, string> = {
-  primary: "var(--pink-container)",
-  success: "var(--success-container)",
-  warn: "var(--warn-container)",
-  purple: "var(--purple-container)",
-};
+const tabs = ["Active", "Drafts", "Offers"];
 
 function Mine() {
   const [tab, setTab] = useState(tabs[0]!);
@@ -74,30 +68,6 @@ function Mine() {
             ))
           : null}
 
-        {tab === "Insights" ? (
-          <>
-            <div className="grid grid-cols-2 gap-3">
-              {sellerStats.map((s) => (
-                <div key={s.label} className="rounded-3xl border border-border bg-card p-4">
-                  <p className="text-[11px] text-muted-foreground">{s.label}</p>
-                  <p className="mt-1 text-xl font-bold">{s.value}</p>
-                  <p className="text-[11px] font-semibold text-success">{s.delta}</p>
-                </div>
-              ))}
-            </div>
-            <h2 className="pt-3 text-[16px]">Notifications</h2>
-            {notifications.map((n) => (
-              <article key={n.id} className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
-                <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: tone[n.tone] }} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] font-semibold">{n.title}</p>
-                  <p className="text-[11px] text-muted-foreground">{n.body}</p>
-                </div>
-                <span className="text-[10px] text-muted-foreground">{n.time}</span>
-              </article>
-            ))}
-          </>
-        ) : null}
       </div>
     </Screen>
   );
