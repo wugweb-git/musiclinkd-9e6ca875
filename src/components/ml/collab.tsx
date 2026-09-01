@@ -341,8 +341,8 @@ export function MilestoneRow({
         </p>
         {m.notes ? <p className="mt-1 text-[11px] text-muted-foreground">Note: {m.notes}</p> : null}
         <Link
-          to="/collab/$id/timeline"
-          params={{ id: projectId }}
+          to="/collab/$id/milestones/$mid"
+          params={{ id: projectId, mid: m.id }}
           className="mt-2 inline-block text-[11px] font-semibold text-primary"
         >
           Open milestone

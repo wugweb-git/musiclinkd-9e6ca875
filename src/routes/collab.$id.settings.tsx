@@ -84,6 +84,34 @@ function Settings() {
           <RowLink title="Manage sharing link" to="/collab/$id/share" params={{ id: project.id }} />
         </div>
 
+        <Label>Project</Label>
+        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
+          <RowLink
+            title="Roles"
+            subtitle="Who holds which role and what they own"
+            to="/collab/$id/roles"
+            params={{ id: project.id }}
+          />
+          <RowLink
+            title="Working agreement"
+            subtitle="Scope, timeline, compensation, credit"
+            to="/collab/$id/agreement"
+            params={{ id: project.id }}
+          />
+          <RowLink
+            title="Invite link"
+            subtitle="Create, share or disable a join link"
+            to="/collab/$id/invite-link"
+            params={{ id: project.id }}
+          />
+          <RowLink
+            title="Transfer ownership"
+            subtitle={`Currently owned by ${project.owner}`}
+            to="/collab/$id/transfer"
+            params={{ id: project.id }}
+          />
+        </div>
+
         {project.agreement ? (
           <>
             <Label>Agreement</Label>

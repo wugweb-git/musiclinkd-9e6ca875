@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Btn, Screen, Sheet, Chip, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { Card, Label, ParticipantRow, PermissionState } from "@/components/ml/collab";
@@ -30,6 +30,7 @@ function Participants() {
   const { id } = Route.useParams();
   const project = getProject(id);
   const [roleSheet, setRoleSheet] = useState(false);
+  const navigate = useNavigate();
 
   if (!project) {
     return (
@@ -42,6 +43,7 @@ function Participants() {
     );
   }
 
+
   const canManage = project.myRole === "Composer" || project.owner === "You";
   const active = project.participants.filter((p) => p.status === "owner" || p.status === "active");
   const pending = project.participants.filter((p) => p.status === "invited");
@@ -50,18 +52,44 @@ function Participants() {
   return (
     <WorkspaceShell project={project} tab="participants">
       <Label>On the project · {active.length}</Label>
-      <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
-        {active.map((p) => (
-          <ParticipantRow key={p.id} p={p} projectId={project.id} canManage={canManage} />
-        ))}
-      </div>
+      {active.length === 0 ? (
+        <Card className="mb-5 text-center">
+          <p className="text-[13px] font-semibold">No collaborators yet</p>
+          <p className="mt-1 text-[12px] text-muted-foreground">Add collaborators to get the project moving.</p>
+          <Link to="/collab/new/collaborators">
+            <Btn className="mt-3 w-full">Add collaborators</Btn>
+          </Link>
+        </Card>
+      ) : (
+        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+          {active.map((p) => (
+            <ParticipantRow
+              key={p.id}
+              p={p}
+              projectId={project.id}
+              canManage={canManage}
+              onRemove={() =>
+                navigate({ to: "/collab/$id/remove/$pid", params: { id: project.id, pid: p.id } })
+              }
+            />
+          ))}
+        </div>
+      )}
 
       {pending.length ? (
         <>
           <Label>Invited · awaiting response</Label>
           <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
             {pending.map((p) => (
-              <ParticipantRow key={p.id} p={p} projectId={project.id} canManage={canManage} />
+              <ParticipantRow
+                key={p.id}
+                p={p}
+                projectId={project.id}
+                canManage={canManage}
+                onRemove={() =>
+                  navigate({ to: "/collab/$id/remove/$pid", params: { id: project.id, pid: p.id } })
+                }
+              />
             ))}
           </div>
         </>
@@ -90,7 +118,22 @@ function Participants() {
         >
           See the role taxonomy
         </button>
+        <Link
+          to="/collab/$id/roles"
+          params={{ id: project.id }}
+          className="mt-2 block text-[11px] font-semibold text-primary"
+        >
+          Open project roles
+        </Link>
       </Card>
+
+      <Link
+        to="/collab/$id/invite-link"
+        params={{ id: project.id }}
+        className="mb-5 block text-center text-[12px] font-semibold text-primary"
+      >
+        Invite with a link instead
+      </Link>
 
       <div className="mb-8 flex gap-3">
         <Link to="/collab/new/collaborators" className="flex-1">

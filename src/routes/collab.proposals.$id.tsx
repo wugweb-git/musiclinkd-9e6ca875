@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Btn, Screen, TopBar } from "@/components/ml/ui";
 import { Card, PermissionState, ProposalSummary, StickyBar } from "@/components/ml/collab";
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/collab/proposals/$id")({
 function ProposalDetail() {
   const { id } = Route.useParams();
   const p = getProposal(id);
-  const [outcome, setOutcome] = useState<"none" | "accepted" | "declined">("none");
+  
 
   if (!p) {
     return (
@@ -43,37 +43,6 @@ function ProposalDetail() {
 
   const sent = p.status === "sent";
 
-  if (outcome !== "none") {
-    const accepted = outcome === "accepted";
-    return (
-      <Screen bottomNav={false}>
-        <TopBar title={accepted ? "Proposal accepted" : "Proposal declined"} back="/collab" />
-        <main className="px-5 pt-8 text-center">
-          <span
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
-            style={
-              accepted
-                ? { background: "var(--success-container)", color: "var(--success)" }
-                : { background: "var(--surface-subtle)", color: "var(--text-2)" }
-            }
-          >
-            {accepted ? "✓" : "—"}
-          </span>
-          <h2 className="text-[20px]">
-            {accepted ? "Terms agreed" : "Proposal declined"}
-          </h2>
-          <p className="mx-auto mt-2 mb-6 max-w-[280px] text-[13px] text-muted-foreground">
-            {accepted
-              ? `${p.from} joins ${p.projectName} as ${p.role}. The agreed terms are saved in project settings.`
-              : `${p.from} has been notified. You can counter with different terms at any time.`}
-          </p>
-          <Link to="/collab/$id" params={{ id: p.projectId }}>
-            <Btn className="w-full">Open project</Btn>
-          </Link>
-        </main>
-      </Screen>
-    );
-  }
 
   return (
     <Screen bottomNav={false}>
@@ -115,12 +84,14 @@ function ProposalDetail() {
         ) : (
           <div className="space-y-3">
             <div className="flex gap-3">
-              <Btn variant="outline" className="flex-1" onClick={() => setOutcome("declined")}>
-                Decline
-              </Btn>
-              <Btn className="flex-[2]" onClick={() => setOutcome("accepted")}>
-                Accept terms
-              </Btn>
+              <Link to="/collab/proposals/declined/$id" params={{ id: p.id }} className="flex-1">
+                <Btn variant="outline" className="w-full">
+                  Decline
+                </Btn>
+              </Link>
+              <Link to="/collab/proposals/accepted/$id" params={{ id: p.id }} className="flex-[2]">
+                <Btn className="w-full">Accept terms</Btn>
+              </Link>
             </div>
             <Link to="/collab/proposals/$id/counter" params={{ id: p.id }}>
               <Btn variant="ghost" className="w-full">

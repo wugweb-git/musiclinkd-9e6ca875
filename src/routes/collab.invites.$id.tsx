@@ -28,7 +28,6 @@ export const Route = createFileRoute("/collab/invites/$id")({
 function InviteDetail() {
   const { id } = Route.useParams();
   const inv = getInvitation(id);
-  const [outcome, setOutcome] = useState<"none" | "accepted" | "declined">("none");
   const [question, setQuestion] = useState("");
 
   if (!inv) {
@@ -42,45 +41,6 @@ function InviteDetail() {
     );
   }
 
-  if (outcome !== "none") {
-    const accepted = outcome === "accepted";
-    return (
-      <Screen bottomNav={false}>
-        <TopBar title={accepted ? "Invitation accepted" : "Invitation declined"} back="/collab" />
-        <main className="px-5 pt-8 text-center">
-          <span
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
-            style={
-              accepted
-                ? { background: "var(--success-container)", color: "var(--success)" }
-                : { background: "var(--surface-subtle)", color: "var(--text-2)" }
-            }
-          >
-            {accepted ? "✓" : "—"}
-          </span>
-          <h2 className="text-[20px]">
-            {accepted ? `You're in on ${inv.projectName}` : "Invitation declined"}
-          </h2>
-          <p className="mx-auto mt-2 mb-6 max-w-[280px] text-[13px] text-muted-foreground">
-            {accepted
-              ? `${inv.inviter} has been notified. You joined as ${inv.proposedRole}.`
-              : `${inv.inviter} has been notified. You can still be invited to future projects.`}
-          </p>
-          {accepted ? (
-            <Link to="/collab/$id" params={{ id: inv.projectId }}>
-              <Btn className="w-full">Open the workspace</Btn>
-            </Link>
-          ) : (
-            <Link to="/collab">
-              <Btn variant="outline" className="w-full">
-                Back to collaborations
-              </Btn>
-            </Link>
-          )}
-        </main>
-      </Screen>
-    );
-  }
 
   return (
     <Screen bottomNav={false}>
@@ -144,12 +104,14 @@ function InviteDetail() {
 
       <StickyBar>
         <div className="flex gap-3">
-          <Btn variant="outline" className="flex-1" onClick={() => setOutcome("declined")}>
-            Decline
-          </Btn>
-          <Btn className="flex-[2]" onClick={() => setOutcome("accepted")}>
-            Accept as {inv.proposedRole}
-          </Btn>
+          <Link to="/collab/invites/declined/$id" params={{ id: inv.id }} className="flex-1">
+            <Btn variant="outline" className="w-full">
+              Decline
+            </Btn>
+          </Link>
+          <Link to="/collab/invites/accepted/$id" params={{ id: inv.id }} className="flex-[2]">
+            <Btn className="w-full">Accept as {inv.proposedRole}</Btn>
+          </Link>
         </div>
       </StickyBar>
     </Screen>
