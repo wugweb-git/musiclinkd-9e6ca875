@@ -70,6 +70,7 @@ import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/previ
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
+import { Route as OpportunitiesSavedRouteImport } from './routes/opportunities.saved'
 import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
 import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
 import { Route as PlansEarningsRouteImport } from './routes/plans.earnings'
@@ -471,6 +472,11 @@ const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
 const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
   id: '/opportunities/',
   path: '/opportunities/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesSavedRoute = OpportunitiesSavedRouteImport.update({
+  id: '/opportunities/saved',
+  path: '/opportunities/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OpportunitiesSearchRoute = OpportunitiesSearchRouteImport.update({
@@ -1025,6 +1031,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
@@ -1184,6 +1191,7 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
@@ -1345,6 +1353,7 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
@@ -1507,6 +1516,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/saved'
     | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
@@ -1666,6 +1676,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/saved'
     | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
@@ -1826,6 +1837,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/saved'
     | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
@@ -1984,6 +1996,7 @@ export interface RootRouteChildren {
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingResumeRoute: typeof OnboardingResumeRoute
   OnboardingSkipRoute: typeof OnboardingSkipRoute
+  OpportunitiesSavedRoute: typeof OpportunitiesSavedRoute
   OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
   PortfolioIdRoute: typeof PortfolioIdRouteWithChildren
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
@@ -2497,6 +2510,13 @@ declare module '@tanstack/react-router' {
       path: '/opportunities'
       fullPath: '/opportunities/'
       preLoaderRoute: typeof OpportunitiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/saved': {
+      id: '/opportunities/saved'
+      path: '/opportunities/saved'
+      fullPath: '/opportunities/saved'
+      preLoaderRoute: typeof OpportunitiesSavedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/opportunities/search': {
@@ -3379,6 +3399,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingResumeRoute: OnboardingResumeRoute,
   OnboardingSkipRoute: OnboardingSkipRoute,
+  OpportunitiesSavedRoute: OpportunitiesSavedRoute,
   OpportunitiesSearchRoute: OpportunitiesSearchRoute,
   PortfolioIdRoute: PortfolioIdRouteWithChildren,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
