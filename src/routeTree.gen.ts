@@ -69,6 +69,11 @@ import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
+import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
+import { Route as OpportunitiesMineRouteImport } from './routes/opportunities.mine'
+import { Route as OpportunitiesNewRouteImport } from './routes/opportunities.new'
+import { Route as OpportunitiesSavedRouteImport } from './routes/opportunities.saved'
+import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
 import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
 import { Route as PlansEarningsRouteImport } from './routes/plans.earnings'
 import { Route as PlansManageRouteImport } from './routes/plans.manage'
@@ -136,6 +141,11 @@ import { Route as MarketplaceRentSavedRouteImport } from './routes/marketplace/r
 import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/rent/search'
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
 import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
+import { Route as OpportunitiesIdIndexRouteImport } from './routes/opportunities.$id.index'
+import { Route as OpportunitiesIdApplyRouteImport } from './routes/opportunities.$id.apply'
+import { Route as OpportunitiesIdManageRouteImport } from './routes/opportunities.$id.manage'
+import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opportunities.applications.index'
+import { Route as OpportunitiesApplicationsAidRouteImport } from './routes/opportunities.applications.$aid'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
 import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
@@ -159,6 +169,8 @@ import { Route as MarketplaceRentCSlugRouteImport } from './routes/marketplace/r
 import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/rent/e.$id'
 import { Route as MarketplaceRentProviderIdRouteImport } from './routes/marketplace/rent/provider.$id'
 import { Route as MarketplaceRentRequestIdRouteImport } from './routes/marketplace/rent/request.$id'
+import { Route as OpportunitiesIdApplicantsIndexRouteImport } from './routes/opportunities.$id.applicants.index'
+import { Route as OpportunitiesIdApplicantsAidRouteImport } from './routes/opportunities.$id.applicants.$aid'
 import { Route as ProviderBookingsRequestsIndexRouteImport } from './routes/provider.bookings.requests.index'
 import { Route as ProviderBookingsRequestsRefRouteImport } from './routes/provider.bookings.requests.$ref'
 
@@ -460,6 +472,31 @@ const OnboardingResumeRoute = OnboardingResumeRouteImport.update({
 const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
   id: '/onboarding/skip',
   path: '/onboarding/skip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
+  id: '/opportunities/',
+  path: '/opportunities/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesMineRoute = OpportunitiesMineRouteImport.update({
+  id: '/opportunities/mine',
+  path: '/opportunities/mine',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesNewRoute = OpportunitiesNewRouteImport.update({
+  id: '/opportunities/new',
+  path: '/opportunities/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesSavedRoute = OpportunitiesSavedRouteImport.update({
+  id: '/opportunities/saved',
+  path: '/opportunities/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesSearchRoute = OpportunitiesSearchRouteImport.update({
+  id: '/opportunities/search',
+  path: '/opportunities/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
@@ -797,6 +834,33 @@ const OnboardingStepIdRoute = OnboardingStepIdRouteImport.update({
   path: '/onboarding/step/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpportunitiesIdIndexRoute = OpportunitiesIdIndexRouteImport.update({
+  id: '/opportunities/$id/',
+  path: '/opportunities/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesIdApplyRoute = OpportunitiesIdApplyRouteImport.update({
+  id: '/opportunities/$id/apply',
+  path: '/opportunities/$id/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesIdManageRoute = OpportunitiesIdManageRouteImport.update({
+  id: '/opportunities/$id/manage',
+  path: '/opportunities/$id/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesApplicationsIndexRoute =
+  OpportunitiesApplicationsIndexRouteImport.update({
+    id: '/opportunities/applications/',
+    path: '/opportunities/applications/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const OpportunitiesApplicationsAidRoute =
+  OpportunitiesApplicationsAidRouteImport.update({
+    id: '/opportunities/applications/$aid',
+    path: '/opportunities/applications/$aid',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -918,6 +982,18 @@ const MarketplaceRentRequestIdRoute =
     path: '/marketplace/rent/request/$id',
     getParentRoute: () => rootRouteImport,
   } as any)
+const OpportunitiesIdApplicantsIndexRoute =
+  OpportunitiesIdApplicantsIndexRouteImport.update({
+    id: '/opportunities/$id/applicants/',
+    path: '/opportunities/$id/applicants/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const OpportunitiesIdApplicantsAidRoute =
+  OpportunitiesIdApplicantsAidRouteImport.update({
+    id: '/opportunities/$id/applicants/$aid',
+    path: '/opportunities/$id/applicants/$aid',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProviderBookingsRequestsIndexRoute =
   ProviderBookingsRequestsIndexRouteImport.update({
     id: '/provider/bookings/requests/',
@@ -987,6 +1063,10 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/mine': typeof OpportunitiesMineRoute
+  '/opportunities/new': typeof OpportunitiesNewRoute
+  '/opportunities/saved': typeof OpportunitiesSavedRoute
+  '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
@@ -1013,6 +1093,7 @@ export interface FileRoutesByFullPath {
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1055,6 +1136,9 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/$id/manage': typeof OpportunitiesIdManageRoute
+  '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
@@ -1064,6 +1148,8 @@ export interface FileRoutesByFullPath {
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
+  '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
+  '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1081,8 +1167,10 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
+  '/opportunities/$id/applicants/': typeof OpportunitiesIdApplicantsIndexRoute
   '/provider/bookings/requests/': typeof ProviderBookingsRequestsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -1140,6 +1228,10 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/mine': typeof OpportunitiesMineRoute
+  '/opportunities/new': typeof OpportunitiesNewRoute
+  '/opportunities/saved': typeof OpportunitiesSavedRoute
+  '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
@@ -1166,6 +1258,7 @@ export interface FileRoutesByTo {
   '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/opportunities': typeof OpportunitiesIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/verification': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1208,6 +1301,9 @@ export interface FileRoutesByTo {
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/$id/manage': typeof OpportunitiesIdManageRoute
+  '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
@@ -1217,6 +1313,8 @@ export interface FileRoutesByTo {
   '/bookings/$ref': typeof BookingsRefIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
+  '/opportunities/$id': typeof OpportunitiesIdIndexRoute
+  '/opportunities/applications': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/new': typeof PortfolioNewIndexRoute
   '/provider/bookings': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1234,8 +1332,10 @@ export interface FileRoutesByTo {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files': typeof CollabIdFilesIndexRoute
+  '/opportunities/$id/applicants': typeof OpportunitiesIdApplicantsIndexRoute
   '/provider/bookings/requests': typeof ProviderBookingsRequestsIndexRoute
 }
 export interface FileRoutesById {
@@ -1295,6 +1395,10 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/mine': typeof OpportunitiesMineRoute
+  '/opportunities/new': typeof OpportunitiesNewRoute
+  '/opportunities/saved': typeof OpportunitiesSavedRoute
+  '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
@@ -1321,6 +1425,7 @@ export interface FileRoutesById {
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1363,6 +1468,9 @@ export interface FileRoutesById {
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/$id/manage': typeof OpportunitiesIdManageRoute
+  '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
@@ -1372,6 +1480,8 @@ export interface FileRoutesById {
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
+  '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
+  '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1389,8 +1499,10 @@ export interface FileRoutesById {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
+  '/opportunities/$id/applicants/': typeof OpportunitiesIdApplicantsIndexRoute
   '/provider/bookings/requests/': typeof ProviderBookingsRequestsIndexRoute
 }
 export interface FileRouteTypes {
@@ -1451,6 +1563,10 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/mine'
+    | '/opportunities/new'
+    | '/opportunities/saved'
+    | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
@@ -1477,6 +1593,7 @@ export interface FileRouteTypes {
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
+    | '/opportunities/'
     | '/portfolio/'
     | '/verification/'
     | '/bands/$id/invite'
@@ -1519,6 +1636,9 @@ export interface FileRouteTypes {
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
+    | '/opportunities/$id/apply'
+    | '/opportunities/$id/manage'
+    | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
@@ -1528,6 +1648,8 @@ export interface FileRouteTypes {
     | '/bookings/$ref/'
     | '/collab/$id/'
     | '/marketplace/rent/'
+    | '/opportunities/$id/'
+    | '/opportunities/applications/'
     | '/portfolio/new/'
     | '/provider/bookings/'
     | '/collab/$id/files/$fileId'
@@ -1545,8 +1667,10 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
+    | '/opportunities/$id/applicants/'
     | '/provider/bookings/requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1604,6 +1728,10 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/mine'
+    | '/opportunities/new'
+    | '/opportunities/saved'
+    | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
@@ -1630,6 +1758,7 @@ export interface FileRouteTypes {
     | '/collab'
     | '/marketplace'
     | '/onboarding'
+    | '/opportunities'
     | '/portfolio'
     | '/verification'
     | '/bands/$id/invite'
@@ -1672,6 +1801,9 @@ export interface FileRouteTypes {
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
+    | '/opportunities/$id/apply'
+    | '/opportunities/$id/manage'
+    | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
@@ -1681,6 +1813,8 @@ export interface FileRouteTypes {
     | '/bookings/$ref'
     | '/collab/$id'
     | '/marketplace/rent'
+    | '/opportunities/$id'
+    | '/opportunities/applications'
     | '/portfolio/new'
     | '/provider/bookings'
     | '/collab/$id/files/$fileId'
@@ -1698,8 +1832,10 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files'
+    | '/opportunities/$id/applicants'
     | '/provider/bookings/requests'
   id:
     | '__root__'
@@ -1758,6 +1894,10 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/mine'
+    | '/opportunities/new'
+    | '/opportunities/saved'
+    | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
@@ -1784,6 +1924,7 @@ export interface FileRouteTypes {
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
+    | '/opportunities/'
     | '/portfolio/'
     | '/verification/'
     | '/bands/$id/invite'
@@ -1826,6 +1967,9 @@ export interface FileRouteTypes {
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
+    | '/opportunities/$id/apply'
+    | '/opportunities/$id/manage'
+    | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
@@ -1835,6 +1979,8 @@ export interface FileRouteTypes {
     | '/bookings/$ref/'
     | '/collab/$id/'
     | '/marketplace/rent/'
+    | '/opportunities/$id/'
+    | '/opportunities/applications/'
     | '/portfolio/new/'
     | '/provider/bookings/'
     | '/collab/$id/files/$fileId'
@@ -1852,8 +1998,10 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
+    | '/opportunities/$id/applicants/'
     | '/provider/bookings/requests/'
   fileRoutesById: FileRoutesById
 }
@@ -1910,6 +2058,10 @@ export interface RootRouteChildren {
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingResumeRoute: typeof OnboardingResumeRoute
   OnboardingSkipRoute: typeof OnboardingSkipRoute
+  OpportunitiesMineRoute: typeof OpportunitiesMineRoute
+  OpportunitiesNewRoute: typeof OpportunitiesNewRoute
+  OpportunitiesSavedRoute: typeof OpportunitiesSavedRoute
+  OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
   PortfolioIdRoute: typeof PortfolioIdRouteWithChildren
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   PortfolioReorderRoute: typeof PortfolioReorderRoute
@@ -1932,6 +2084,7 @@ export interface RootRouteChildren {
   CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
+  OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
   VerificationIndexRoute: typeof VerificationIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
@@ -1963,12 +2116,17 @@ export interface RootRouteChildren {
   MarketplaceRentSearchRoute: typeof MarketplaceRentSearchRoute
   MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
   OnboardingStepIdRoute: typeof OnboardingStepIdRoute
+  OpportunitiesIdApplyRoute: typeof OpportunitiesIdApplyRoute
+  OpportunitiesIdManageRoute: typeof OpportunitiesIdManageRoute
+  OpportunitiesApplicationsAidRoute: typeof OpportunitiesApplicationsAidRoute
   PortfolioNewKindRoute: typeof PortfolioNewKindRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
   ProviderBookingsCalendarRoute: typeof ProviderBookingsCalendarRoute
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
   CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
+  OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
+  OpportunitiesApplicationsIndexRoute: typeof OpportunitiesApplicationsIndexRoute
   PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
   CollabIdFilesFileIdRoute: typeof CollabIdFilesFileIdRoute
@@ -1985,8 +2143,10 @@ export interface RootRouteChildren {
   MarketplaceRentEIdRoute: typeof MarketplaceRentEIdRoute
   MarketplaceRentProviderIdRoute: typeof MarketplaceRentProviderIdRoute
   MarketplaceRentRequestIdRoute: typeof MarketplaceRentRequestIdRoute
+  OpportunitiesIdApplicantsAidRoute: typeof OpportunitiesIdApplicantsAidRoute
   ProviderBookingsRequestsRefRoute: typeof ProviderBookingsRequestsRefRoute
   CollabIdFilesIndexRoute: typeof CollabIdFilesIndexRoute
+  OpportunitiesIdApplicantsIndexRoute: typeof OpportunitiesIdApplicantsIndexRoute
   ProviderBookingsRequestsIndexRoute: typeof ProviderBookingsRequestsIndexRoute
 }
 
@@ -2410,6 +2570,41 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/skip'
       fullPath: '/onboarding/skip'
       preLoaderRoute: typeof OnboardingSkipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/': {
+      id: '/opportunities/'
+      path: '/opportunities'
+      fullPath: '/opportunities/'
+      preLoaderRoute: typeof OpportunitiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/mine': {
+      id: '/opportunities/mine'
+      path: '/opportunities/mine'
+      fullPath: '/opportunities/mine'
+      preLoaderRoute: typeof OpportunitiesMineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/new': {
+      id: '/opportunities/new'
+      path: '/opportunities/new'
+      fullPath: '/opportunities/new'
+      preLoaderRoute: typeof OpportunitiesNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/saved': {
+      id: '/opportunities/saved'
+      path: '/opportunities/saved'
+      fullPath: '/opportunities/saved'
+      preLoaderRoute: typeof OpportunitiesSavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/search': {
+      id: '/opportunities/search'
+      path: '/opportunities/search'
+      fullPath: '/opportunities/search'
+      preLoaderRoute: typeof OpportunitiesSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plans/checkout': {
@@ -2881,6 +3076,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingStepIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opportunities/$id/': {
+      id: '/opportunities/$id/'
+      path: '/opportunities/$id'
+      fullPath: '/opportunities/$id/'
+      preLoaderRoute: typeof OpportunitiesIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/$id/apply': {
+      id: '/opportunities/$id/apply'
+      path: '/opportunities/$id/apply'
+      fullPath: '/opportunities/$id/apply'
+      preLoaderRoute: typeof OpportunitiesIdApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/$id/manage': {
+      id: '/opportunities/$id/manage'
+      path: '/opportunities/$id/manage'
+      fullPath: '/opportunities/$id/manage'
+      preLoaderRoute: typeof OpportunitiesIdManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/applications/': {
+      id: '/opportunities/applications/'
+      path: '/opportunities/applications'
+      fullPath: '/opportunities/applications/'
+      preLoaderRoute: typeof OpportunitiesApplicationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/applications/$aid': {
+      id: '/opportunities/applications/$aid'
+      path: '/opportunities/applications/$aid'
+      fullPath: '/opportunities/applications/$aid'
+      preLoaderRoute: typeof OpportunitiesApplicationsAidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/$id/edit': {
       id: '/portfolio/$id/edit'
       path: '/edit'
@@ -3040,6 +3270,20 @@ declare module '@tanstack/react-router' {
       path: '/marketplace/rent/request/$id'
       fullPath: '/marketplace/rent/request/$id'
       preLoaderRoute: typeof MarketplaceRentRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/$id/applicants/': {
+      id: '/opportunities/$id/applicants/'
+      path: '/opportunities/$id/applicants'
+      fullPath: '/opportunities/$id/applicants/'
+      preLoaderRoute: typeof OpportunitiesIdApplicantsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/$id/applicants/$aid': {
+      id: '/opportunities/$id/applicants/$aid'
+      path: '/opportunities/$id/applicants/$aid'
+      fullPath: '/opportunities/$id/applicants/$aid'
+      preLoaderRoute: typeof OpportunitiesIdApplicantsAidRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider/bookings/requests/': {
@@ -3257,6 +3501,10 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingResumeRoute: OnboardingResumeRoute,
   OnboardingSkipRoute: OnboardingSkipRoute,
+  OpportunitiesMineRoute: OpportunitiesMineRoute,
+  OpportunitiesNewRoute: OpportunitiesNewRoute,
+  OpportunitiesSavedRoute: OpportunitiesSavedRoute,
+  OpportunitiesSearchRoute: OpportunitiesSearchRoute,
   PortfolioIdRoute: PortfolioIdRouteWithChildren,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   PortfolioReorderRoute: PortfolioReorderRoute,
@@ -3279,6 +3527,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
+  OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
   VerificationIndexRoute: VerificationIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
@@ -3310,12 +3559,17 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentSearchRoute: MarketplaceRentSearchRoute,
   MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
   OnboardingStepIdRoute: OnboardingStepIdRoute,
+  OpportunitiesIdApplyRoute: OpportunitiesIdApplyRoute,
+  OpportunitiesIdManageRoute: OpportunitiesIdManageRoute,
+  OpportunitiesApplicationsAidRoute: OpportunitiesApplicationsAidRoute,
   PortfolioNewKindRoute: PortfolioNewKindRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
   ProviderBookingsCalendarRoute: ProviderBookingsCalendarRoute,
   BookingsRefIndexRoute: BookingsRefIndexRoute,
   CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
+  OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,
+  OpportunitiesApplicationsIndexRoute: OpportunitiesApplicationsIndexRoute,
   PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
   CollabIdFilesFileIdRoute: CollabIdFilesFileIdRoute,
@@ -3332,8 +3586,10 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentEIdRoute: MarketplaceRentEIdRoute,
   MarketplaceRentProviderIdRoute: MarketplaceRentProviderIdRoute,
   MarketplaceRentRequestIdRoute: MarketplaceRentRequestIdRoute,
+  OpportunitiesIdApplicantsAidRoute: OpportunitiesIdApplicantsAidRoute,
   ProviderBookingsRequestsRefRoute: ProviderBookingsRequestsRefRoute,
   CollabIdFilesIndexRoute: CollabIdFilesIndexRoute,
+  OpportunitiesIdApplicantsIndexRoute: OpportunitiesIdApplicantsIndexRoute,
   ProviderBookingsRequestsIndexRoute: ProviderBookingsRequestsIndexRoute,
 }
 export const routeTree = rootRouteImport
