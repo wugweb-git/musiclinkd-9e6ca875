@@ -64,6 +64,7 @@ import { Route as ProviderAvailabilityRouteImport } from './routes/provider.avai
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
+import { Route as BandsIdManageRouteImport } from './routes/bands.$id.manage'
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
 import { Route as BookingIdAddonsRouteImport } from './routes/booking.$id.addons'
 import { Route as BookingIdDetailsRouteImport } from './routes/booking.$id.details'
@@ -404,6 +405,11 @@ const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BandsIdManageRoute = BandsIdManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => BandsIdRoute,
 } as any)
 const BookingIdIndexRoute = BookingIdIndexRouteImport.update({
   id: '/',
@@ -753,7 +759,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
-  '/bands/$id': typeof BandsIdRoute
+  '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
@@ -795,6 +801,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
   '/booking/$id/pay': typeof BookingIdPayRoute
@@ -875,7 +882,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
-  '/bands/$id': typeof BandsIdRoute
+  '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/identity/analytics': typeof IdentityAnalyticsRoute
@@ -916,6 +923,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
   '/booking/$id/pay': typeof BookingIdPayRoute
@@ -997,7 +1005,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
-  '/bands/$id': typeof BandsIdRoute
+  '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
@@ -1039,6 +1047,7 @@ export interface FileRoutesById {
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
   '/booking/$id/pay': typeof BookingIdPayRoute
@@ -1163,6 +1172,7 @@ export interface FileRouteTypes {
     | '/marketplace/'
     | '/onboarding/'
     | '/portfolio/'
+    | '/bands/$id/manage'
     | '/booking/$id/addons'
     | '/booking/$id/details'
     | '/booking/$id/pay'
@@ -1284,6 +1294,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/onboarding'
     | '/portfolio'
+    | '/bands/$id/manage'
     | '/booking/$id/addons'
     | '/booking/$id/details'
     | '/booking/$id/pay'
@@ -1406,6 +1417,7 @@ export interface FileRouteTypes {
     | '/marketplace/'
     | '/onboarding/'
     | '/portfolio/'
+    | '/bands/$id/manage'
     | '/booking/$id/addons'
     | '/booking/$id/details'
     | '/booking/$id/pay'
@@ -1970,6 +1982,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bands/$id/manage': {
+      id: '/bands/$id/manage'
+      path: '/manage'
+      fullPath: '/bands/$id/manage'
+      preLoaderRoute: typeof BandsIdManageRouteImport
+      parentRoute: typeof BandsIdRoute
+    }
     '/booking/$id/': {
       id: '/booking/$id/'
       path: '/'
@@ -2428,13 +2447,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface BandsIdRouteChildren {
+  BandsIdManageRoute: typeof BandsIdManageRoute
+}
+
+const BandsIdRouteChildren: BandsIdRouteChildren = {
+  BandsIdManageRoute: BandsIdManageRoute,
+}
+
+const BandsIdRouteWithChildren =
+  BandsIdRoute._addFileChildren(BandsIdRouteChildren)
+
 interface BandsRouteChildren {
-  BandsIdRoute: typeof BandsIdRoute
+  BandsIdRoute: typeof BandsIdRouteWithChildren
   BandsNewRoute: typeof BandsNewRoute
 }
 
 const BandsRouteChildren: BandsRouteChildren = {
-  BandsIdRoute: BandsIdRoute,
+  BandsIdRoute: BandsIdRouteWithChildren,
   BandsNewRoute: BandsNewRoute,
 }
 
