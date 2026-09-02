@@ -18,6 +18,7 @@ import { Route as FeedRouteImport } from './routes/feed'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as RecommendedRouteImport } from './routes/recommended'
+import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
@@ -177,6 +178,11 @@ const MessagesRoute = MessagesRouteImport.update({
 const RecommendedRoute = RecommendedRouteImport.update({
   id: '/recommended',
   path: '/recommended',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewsRoute = ReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SavedRoute = SavedRouteImport.update({
@@ -773,6 +779,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
+  '/reviews': typeof ReviewsRoute
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
@@ -899,6 +906,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
+  '/reviews': typeof ReviewsRoute
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
@@ -1025,6 +1033,7 @@ export interface FileRoutesById {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
+  '/reviews': typeof ReviewsRoute
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
@@ -1153,6 +1162,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/recommended'
+    | '/reviews'
     | '/saved'
     | '/search'
     | '/singers'
@@ -1279,6 +1289,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/recommended'
+    | '/reviews'
     | '/saved'
     | '/search'
     | '/singers'
@@ -1404,6 +1415,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/recommended'
+    | '/reviews'
     | '/saved'
     | '/search'
     | '/singers'
@@ -1531,6 +1543,7 @@ export interface RootRouteChildren {
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   RecommendedRoute: typeof RecommendedRoute
+  ReviewsRoute: typeof ReviewsRoute
   SavedRoute: typeof SavedRoute
   SearchRoute: typeof SearchRoute
   SingersRoute: typeof SingersRoute
@@ -1695,6 +1708,13 @@ declare module '@tanstack/react-router' {
       path: '/recommended'
       fullPath: '/recommended'
       preLoaderRoute: typeof RecommendedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reviews': {
+      id: '/reviews'
+      path: '/reviews'
+      fullPath: '/reviews'
+      preLoaderRoute: typeof ReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/saved': {
@@ -2623,6 +2643,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   RecommendedRoute: RecommendedRoute,
+  ReviewsRoute: ReviewsRoute,
   SavedRoute: SavedRoute,
   SearchRoute: SearchRoute,
   SingersRoute: SingersRoute,
