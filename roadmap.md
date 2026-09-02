@@ -38,3 +38,8 @@
 ## Notes
 - Payments: seller is in India, so Lovable's built-in Stripe/Paddle are unavailable.
   Razorpay recommended (UPI, cards, INR) — awaiting user's decision before wiring.
+
+## Verify / follow-up (requested Sep 2)
+- Person Profile: confirm `/profile/$username`, `/me` owner mode, `/profile/edit`,
+  `/profile/insights`, `/talent/$id` redirect and Discover/Search link mapping all render
+- 412px Android render pass: dashboard, onboarding, profile, portfolio (clipping, bottom-nav overlap)

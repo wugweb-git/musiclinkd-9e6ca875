@@ -37,6 +37,9 @@ import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/previ
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
+import { Route as PortfolioIdRouteImport } from './routes/portfolio.$id'
+import { Route as PortfolioReorderRouteImport } from './routes/portfolio.reorder'
+import { Route as PortfolioSettingsRouteImport } from './routes/portfolio.settings'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
@@ -81,6 +84,7 @@ import { Route as MarketplaceRentSavedRouteImport } from './routes/marketplace/r
 import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/rent/search'
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
 import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
+import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
 import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
 import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
@@ -241,6 +245,21 @@ const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
   path: '/portfolio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioIdRoute = PortfolioIdRouteImport.update({
+  id: '/portfolio/$id',
+  path: '/portfolio/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioReorderRoute = PortfolioReorderRouteImport.update({
+  id: '/portfolio/reorder',
+  path: '/portfolio/reorder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioSettingsRoute = PortfolioSettingsRouteImport.update({
+  id: '/portfolio/settings',
+  path: '/portfolio/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
@@ -463,6 +482,11 @@ const OnboardingStepIdRoute = OnboardingStepIdRouteImport.update({
   path: '/onboarding/step/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => PortfolioIdRoute,
+} as any)
 const PortfolioNewIndexRoute = PortfolioNewIndexRouteImport.update({
   id: '/portfolio/new/',
   path: '/portfolio/new/',
@@ -599,6 +623,9 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/portfolio/$id': typeof PortfolioIdRouteWithChildren
+  '/portfolio/reorder': typeof PortfolioReorderRoute
+  '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
@@ -644,6 +671,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
@@ -693,6 +721,9 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/portfolio/$id': typeof PortfolioIdRouteWithChildren
+  '/portfolio/reorder': typeof PortfolioReorderRoute
+  '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
@@ -738,6 +769,7 @@ export interface FileRoutesByTo {
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id': typeof BookingIdIndexRoute
@@ -789,6 +821,9 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/portfolio/$id': typeof PortfolioIdRouteWithChildren
+  '/portfolio/reorder': typeof PortfolioReorderRoute
+  '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
@@ -834,6 +869,7 @@ export interface FileRoutesById {
   '/marketplace/rent/search': typeof MarketplaceRentSearchRoute
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
+  '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/booking/$id/': typeof BookingIdIndexRoute
@@ -886,6 +922,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/portfolio/$id'
+    | '/portfolio/reorder'
+    | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
@@ -931,6 +970,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
+    | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/booking/$id/'
@@ -980,6 +1020,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/portfolio/$id'
+    | '/portfolio/reorder'
+    | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
@@ -1025,6 +1068,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
+    | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/booking/$id'
@@ -1075,6 +1119,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/portfolio/$id'
+    | '/portfolio/reorder'
+    | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
@@ -1120,6 +1167,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/search'
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
+    | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/booking/$id/'
@@ -1171,6 +1219,9 @@ export interface RootRouteChildren {
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingResumeRoute: typeof OnboardingResumeRoute
   OnboardingSkipRoute: typeof OnboardingSkipRoute
+  PortfolioIdRoute: typeof PortfolioIdRouteWithChildren
+  PortfolioReorderRoute: typeof PortfolioReorderRoute
+  PortfolioSettingsRoute: typeof PortfolioSettingsRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ProfileInsightsRoute: typeof ProfileInsightsRoute
@@ -1430,6 +1481,27 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio/'
       preLoaderRoute: typeof PortfolioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/$id': {
+      id: '/portfolio/$id'
+      path: '/portfolio/$id'
+      fullPath: '/portfolio/$id'
+      preLoaderRoute: typeof PortfolioIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/reorder': {
+      id: '/portfolio/reorder'
+      path: '/portfolio/reorder'
+      fullPath: '/portfolio/reorder'
+      preLoaderRoute: typeof PortfolioReorderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/settings': {
+      id: '/portfolio/settings'
+      path: '/portfolio/settings'
+      fullPath: '/portfolio/settings'
+      preLoaderRoute: typeof PortfolioSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/$username': {
@@ -1740,6 +1812,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingStepIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/$id/edit': {
+      id: '/portfolio/$id/edit'
+      path: '/edit'
+      fullPath: '/portfolio/$id/edit'
+      preLoaderRoute: typeof PortfolioIdEditRouteImport
+      parentRoute: typeof PortfolioIdRoute
+    }
     '/portfolio/new/': {
       id: '/portfolio/new/'
       path: '/portfolio/new'
@@ -1926,6 +2005,18 @@ const CollabNewRouteWithChildren = CollabNewRoute._addFileChildren(
   CollabNewRouteChildren,
 )
 
+interface PortfolioIdRouteChildren {
+  PortfolioIdEditRoute: typeof PortfolioIdEditRoute
+}
+
+const PortfolioIdRouteChildren: PortfolioIdRouteChildren = {
+  PortfolioIdEditRoute: PortfolioIdEditRoute,
+}
+
+const PortfolioIdRouteWithChildren = PortfolioIdRoute._addFileChildren(
+  PortfolioIdRouteChildren,
+)
+
 interface CollabProposalsIdRouteChildren {
   CollabProposalsIdCounterRoute: typeof CollabProposalsIdCounterRoute
 }
@@ -1961,6 +2052,9 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingResumeRoute: OnboardingResumeRoute,
   OnboardingSkipRoute: OnboardingSkipRoute,
+  PortfolioIdRoute: PortfolioIdRouteWithChildren,
+  PortfolioReorderRoute: PortfolioReorderRoute,
+  PortfolioSettingsRoute: PortfolioSettingsRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   ProfileInsightsRoute: ProfileInsightsRoute,
