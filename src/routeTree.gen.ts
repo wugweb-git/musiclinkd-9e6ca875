@@ -38,6 +38,7 @@ import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioIdRouteImport } from './routes/portfolio.$id'
+import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
 import { Route as PortfolioReorderRouteImport } from './routes/portfolio.reorder'
 import { Route as PortfolioSettingsRouteImport } from './routes/portfolio.settings'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
@@ -250,6 +251,11 @@ const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
 const PortfolioIdRoute = PortfolioIdRouteImport.update({
   id: '/portfolio/$id',
   path: '/portfolio/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioAnalyticsRoute = PortfolioAnalyticsRouteImport.update({
+  id: '/portfolio/analytics',
+  path: '/portfolio/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioReorderRoute = PortfolioReorderRouteImport.update({
@@ -624,6 +630,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
+  '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
@@ -722,6 +729,7 @@ export interface FileRoutesByTo {
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
+  '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
@@ -822,6 +830,7 @@ export interface FileRoutesById {
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
+  '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
@@ -923,6 +932,7 @@ export interface FileRouteTypes {
     | '/onboarding/resume'
     | '/onboarding/skip'
     | '/portfolio/$id'
+    | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/settings'
     | '/profile/$username'
@@ -1021,6 +1031,7 @@ export interface FileRouteTypes {
     | '/onboarding/resume'
     | '/onboarding/skip'
     | '/portfolio/$id'
+    | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/settings'
     | '/profile/$username'
@@ -1120,6 +1131,7 @@ export interface FileRouteTypes {
     | '/onboarding/resume'
     | '/onboarding/skip'
     | '/portfolio/$id'
+    | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/settings'
     | '/profile/$username'
@@ -1220,6 +1232,7 @@ export interface RootRouteChildren {
   OnboardingResumeRoute: typeof OnboardingResumeRoute
   OnboardingSkipRoute: typeof OnboardingSkipRoute
   PortfolioIdRoute: typeof PortfolioIdRouteWithChildren
+  PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   PortfolioReorderRoute: typeof PortfolioReorderRoute
   PortfolioSettingsRoute: typeof PortfolioSettingsRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
@@ -1488,6 +1501,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/$id'
       fullPath: '/portfolio/$id'
       preLoaderRoute: typeof PortfolioIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/analytics': {
+      id: '/portfolio/analytics'
+      path: '/portfolio/analytics'
+      fullPath: '/portfolio/analytics'
+      preLoaderRoute: typeof PortfolioAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio/reorder': {
@@ -2053,6 +2073,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingResumeRoute: OnboardingResumeRoute,
   OnboardingSkipRoute: OnboardingSkipRoute,
   PortfolioIdRoute: PortfolioIdRouteWithChildren,
+  PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   PortfolioReorderRoute: PortfolioReorderRoute,
   PortfolioSettingsRoute: PortfolioSettingsRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
