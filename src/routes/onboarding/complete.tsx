@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 import { PartyPopper } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { saveMyProfile } from "@/lib/portfolio.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { Btn, TopBar } from "@/components/ml/ui";
 import { HandoffCard, OnboardingProvider, ReadinessCard, useOnboarding } from "@/components/ml/onboarding";
 import { completionPercent, readiness } from "@/data/onboarding";
@@ -26,8 +30,32 @@ export const Route = createFileRoute("/onboarding/complete")({
 });
 
 function Complete() {
-  const { draft: d } = useOnboarding();
+  const { draft: d, hydrated } = useOnboarding();
+  const { signedIn } = useAuth();
+  const persist = useServerFn(saveMyProfile);
+  const savedRef = useRef(false);
   const items = readiness(d);
+
+  // Persist the finished profile once for signed-in users; drafts stay local.
+  useEffect(() => {
+    if (!hydrated || !signedIn || savedRef.current) return;
+    savedRef.current = true;
+    void persist({
+      data: {
+        display_name: d.displayName || null,
+        username: d.username || null,
+        headline: d.primaryRole ?? null,
+        bio: d.bio || null,
+        city: d.city || null,
+        roles: [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[],
+        avatar_url: d.photo,
+        availability: d.availability[0] ?? null,
+        onboarding_complete: true,
+      },
+    }).catch(() => {
+      savedRef.current = false;
+    });
+  }, [hydrated, signedIn, persist, d]);
   const pct = completionPercent(d);
 
   return (
@@ -90,7 +118,7 @@ function Complete() {
             title="Add your portfolio"
             body="Tracks, videos and credits are what turn a profile view into an enquiry."
             action={
-              <Link to="/me" className="block">
+              <Link to="/portfolio/new" className="block">
                 <Btn className="w-full">Add work</Btn>
               </Link>
             }
@@ -133,8 +161,8 @@ function Complete() {
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <Link to="/feed" className="block">
-          <Btn className="w-full">Go to my home</Btn>
+        <Link to="/onboarding/done" className="block">
+          <Btn className="w-full">Finish</Btn>
         </Link>
       </div>
     </div>

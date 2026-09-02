@@ -33,6 +33,7 @@ import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/sear
 import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
+import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
@@ -227,6 +228,11 @@ const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
 const OnboardingCompleteRoute = OnboardingCompleteRouteImport.update({
   id: '/onboarding/complete',
   path: '/onboarding/complete',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingDoneRoute = OnboardingDoneRouteImport.update({
+  id: '/onboarding/done',
+  path: '/onboarding/done',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingPreviewRoute = OnboardingPreviewRouteImport.update({
@@ -632,6 +638,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
+  '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
@@ -732,6 +739,7 @@ export interface FileRoutesByTo {
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
+  '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
@@ -834,6 +842,7 @@ export interface FileRoutesById {
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
+  '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
@@ -937,6 +946,7 @@ export interface FileRouteTypes {
     | '/marketplace/search'
     | '/marketplace/sell'
     | '/onboarding/complete'
+    | '/onboarding/done'
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
@@ -1037,6 +1047,7 @@ export interface FileRouteTypes {
     | '/marketplace/search'
     | '/marketplace/sell'
     | '/onboarding/complete'
+    | '/onboarding/done'
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
@@ -1138,6 +1149,7 @@ export interface FileRouteTypes {
     | '/marketplace/search'
     | '/marketplace/sell'
     | '/onboarding/complete'
+    | '/onboarding/done'
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
@@ -1240,6 +1252,7 @@ export interface RootRouteChildren {
   MarketplaceSearchRoute: typeof MarketplaceSearchRoute
   MarketplaceSellRoute: typeof MarketplaceSellRoute
   OnboardingCompleteRoute: typeof OnboardingCompleteRoute
+  OnboardingDoneRoute: typeof OnboardingDoneRoute
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingResumeRoute: typeof OnboardingResumeRoute
   OnboardingSkipRoute: typeof OnboardingSkipRoute
@@ -1479,6 +1492,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/complete'
       fullPath: '/onboarding/complete'
       preLoaderRoute: typeof OnboardingCompleteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/done': {
+      id: '/onboarding/done'
+      path: '/onboarding/done'
+      fullPath: '/onboarding/done'
+      preLoaderRoute: typeof OnboardingDoneRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding/preview': {
@@ -2089,6 +2109,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSearchRoute: MarketplaceSearchRoute,
   MarketplaceSellRoute: MarketplaceSellRoute,
   OnboardingCompleteRoute: OnboardingCompleteRoute,
+  OnboardingDoneRoute: OnboardingDoneRoute,
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingResumeRoute: OnboardingResumeRoute,
   OnboardingSkipRoute: OnboardingSkipRoute,
