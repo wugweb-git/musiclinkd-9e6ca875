@@ -48,12 +48,12 @@
 - [ ] Camera permission / denied / gallery-image scan fallbacks, loading / offline / network + share error states
 
 ## FLOWS 15 / 16 / 17 / 18 / 20 / 22 (requested Sep 2, design-only, one coherent app)
-- [ ] FLOW 15 Band — band profile, members/roles, create/manage, band portfolio, band QR, discovery/opportunity hooks
-- [ ] FLOW 16 Verification — badge system, apply, document/type steps, review states, verified surfaces
-- [ ] FLOW 17 Reviews — post-booking review, ratings breakdown, write/edit/report, review lists on profile/business/listing
-- [ ] FLOW 18 Subscription / monetisation — plans, compare, checkout stub, manage, billing history, feature gates
-- [ ] FLOW 20 Recommendations — "for you" engine surfaces, reasons, feedback (more/less like this), settings
-- [ ] FLOW 22 CMS / content pages — help centre, guides, legal, article reader, category index, search
+- [x] FLOW 15 Band — /bands, /bands/$id, /bands/new, /bands/$id/manage, /bands/$id/invite
+- [x] FLOW 16 Verification — /verification, /verification/$type
+- [x] FLOW 17 Reviews — /reviews, /reviews/write/$id
+- [x] FLOW 18 Subscription / monetisation — /plans, /plans/checkout, /plans/manage, /plans/earnings
+- [x] FLOW 20 Recommendations — /recommendations, /recommendations/settings
+- [x] FLOW 22 CMS / content pages — /help, /help/$slug, /help/category/$key
 
 ## Notes
 - Payments: seller is in India, so Lovable's built-in Stripe/Paddle are unavailable.
