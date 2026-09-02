@@ -1,9 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
-import { OnboardingProvider, resumeTarget, useOnboarding
+import {
+  OnboardingProvider,
+  resumeTarget,
   SyncBanner,
+  useOnboarding,
 } from "@/components/ml/onboarding";
+
 import { steps, visibleSteps } from "@/data/onboarding";
 
 export const Route = createFileRoute("/onboarding/resume")({
