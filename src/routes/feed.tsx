@@ -347,12 +347,24 @@ function ContinueBlock({ c }: { c: ContinueCard }) {
   );
 }
 
+type QuietDestination =
+  | "/portfolio/new"
+  | "/search"
+  | "/studio"
+  | "/messages"
+  | "/bookings"
+  | "/bands"
+  | "/verification"
+  | "/reviews"
+  | "/plans"
+  | "/help";
+
 function QuietAction({
   to,
   icon,
   label,
 }: {
-  to: "/portfolio/new" | "/search" | "/studio" | "/messages" | "/bookings";
+  to: QuietDestination;
   icon: ReactNode;
   label: string;
 }) {
