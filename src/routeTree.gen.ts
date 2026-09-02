@@ -54,6 +54,7 @@ import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
+import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioIdRouteImport } from './routes/portfolio.$id'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
@@ -361,6 +362,11 @@ const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
   id: '/onboarding/skip',
   path: '/onboarding/skip',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => PlansRoute,
 } as any)
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
@@ -790,7 +796,7 @@ export interface FileRoutesByFullPath {
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRoute
+  '/plans': typeof PlansRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -823,6 +829,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/plans/checkout': typeof PlansCheckoutRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -919,7 +926,7 @@ export interface FileRoutesByTo {
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRoute
+  '/plans': typeof PlansRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -951,6 +958,7 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/plans/checkout': typeof PlansCheckoutRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -1048,7 +1056,7 @@ export interface FileRoutesById {
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRoute
+  '/plans': typeof PlansRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -1081,6 +1089,7 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/plans/checkout': typeof PlansCheckoutRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -1212,6 +1221,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/plans/checkout'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1340,6 +1350,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/plans/checkout'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1469,6 +1480,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/plans/checkout'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1566,7 +1578,7 @@ export interface RootRouteChildren {
   FeedRoute: typeof FeedRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
-  PlansRoute: typeof PlansRoute
+  PlansRoute: typeof PlansRouteWithChildren
   RecommendedRoute: typeof RecommendedRoute
   ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
@@ -1986,6 +1998,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding/skip'
       preLoaderRoute: typeof OnboardingSkipRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/plans/checkout': {
+      id: '/plans/checkout'
+      path: '/checkout'
+      fullPath: '/plans/checkout'
+      preLoaderRoute: typeof PlansCheckoutRouteImport
+      parentRoute: typeof PlansRoute
     }
     '/portfolio/': {
       id: '/portfolio/'
@@ -2589,6 +2608,16 @@ const BandsRouteChildren: BandsRouteChildren = {
 
 const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
 
+interface PlansRouteChildren {
+  PlansCheckoutRoute: typeof PlansCheckoutRoute
+}
+
+const PlansRouteChildren: PlansRouteChildren = {
+  PlansCheckoutRoute: PlansCheckoutRoute,
+}
+
+const PlansRouteWithChildren = PlansRoute._addFileChildren(PlansRouteChildren)
+
 interface ReviewsRouteChildren {
   ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
 }
@@ -2692,7 +2721,7 @@ const rootRouteChildren: RootRouteChildren = {
   FeedRoute: FeedRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
-  PlansRoute: PlansRoute,
+  PlansRoute: PlansRouteWithChildren,
   RecommendedRoute: RecommendedRoute,
   ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
