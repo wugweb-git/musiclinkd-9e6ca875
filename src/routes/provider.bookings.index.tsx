@@ -68,6 +68,14 @@ function ProviderBookings() {
           <Stat icon={<Star size={15} />} label="Cancellations" value={`${providerStats.cancellations}`} />
         </div>
 
+        <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
+          <WorkspaceLink to="/provider/bookings/requests" label="Requests" />
+          <WorkspaceLink to="/provider/bookings/calendar" label="Calendar" />
+          <WorkspaceLink to="/provider/availability" label="Availability" />
+          <WorkspaceLink to="/provider/pricing" label="Pricing" />
+          <WorkspaceLink to="/provider/policies" label="Policies" />
+        </div>
+
         <div className="-mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
           {tabs.map((t) => (
             <Chip key={t} active={t === tab} onClick={() => setTab(t)}>
@@ -143,5 +151,27 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
       <p className="mt-2 text-lg font-semibold leading-none">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>
     </div>
+  );
+}
+
+function WorkspaceLink({
+  to,
+  label,
+}: {
+  to:
+    | "/provider/bookings/requests"
+    | "/provider/bookings/calendar"
+    | "/provider/availability"
+    | "/provider/pricing"
+    | "/provider/policies";
+  label: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="inline-flex shrink-0 items-center rounded-full border border-border bg-card px-4 py-2.5 text-[12px] font-semibold"
+    >
+      {label}
+    </Link>
   );
 }

@@ -126,3 +126,146 @@ export const emptyDashboard: DashboardData = {
   activity: [],
   bookings: [],
 };
+
+/* ------------------------------------------------------------------ */
+/* Orchestrator selectors — derive "what matters now" from seeded data  */
+/* ------------------------------------------------------------------ */
+
+import { bookings, getBookable, getResource, formatDate, formatTime } from "./booking";
+
+/** Routes the dashboard is allowed to link to (all already exist). */
+export type DashLink =
+  | "/"
+  | "/messages"
+  | "/me"
+  | "/recommended"
+  | "/saved"
+  | "/search"
+  | "/studio"
+  | "/bookings"
+  | "/portfolio/new"
+  | "/profile/edit";
+
+export type HeadlineUpdate = {
+  id: string;
+  value: number;
+  title: string;
+  body: string;
+  cta: string;
+  to: DashLink;
+};
+
+export type ContinueCard = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  meta: string;
+  detail: string;
+  cta: string;
+  /** Booking ref when the card points at a session, otherwise a flat route. */
+  ref?: string;
+  to?: DashLink;
+  progress?: number;
+};
+
+export type ForYouTile = {
+  id: string;
+  value: string;
+  label: string;
+  hint: string;
+  to: DashLink;
+};
+
+/** The single highest-value update — never a grid of four equal counters. */
+export function headlineUpdate(d: DashboardData): HeadlineUpdate | null {
+  const rank: Record<string, number> = { collabs: 3, requests: 2, messages: 1, views: 0 };
+  const top = [...d.stats].filter((s) => s.value > 0).sort((a, b) => (rank[b.key] ?? 0) - (rank[a.key] ?? 0))[0];
+  if (!top) return null;
+  const copy: Record<string, { title: string; body: string; cta: string }> = {
+    collabs: {
+      title: `${top.value} new opportunities`,
+      body: "Collaboration matches picked for your roles and city.",
+      cta: "See opportunities",
+    },
+    requests: {
+      title: `${top.value} connection requests`,
+      body: "Musicians and studios want to work with you.",
+      cta: "Review requests",
+    },
+    messages: {
+      title: `${top.value} unread messages`,
+      body: "Conversations waiting on your reply.",
+      cta: "Open Connections",
+    },
+    views: {
+      title: `${top.value} profile views`,
+      body: "People are finding your work this week.",
+      cta: "View profile",
+    },
+  };
+  const c = copy[top.key]!;
+  return { id: top.key, value: top.value, title: c.title, body: c.body, cta: c.cta, to: top.to };
+}
+
+/** Next confirmed/upcoming session from the Booking flow, so Home and Bookings agree. */
+export function nextSession(): ContinueCard | null {
+  const soon = bookings
+    .filter((b) => b.status === "upcoming" || b.status === "confirmed" || b.status === "inProgress")
+    .sort((a, b) => a.date.localeCompare(b.date))[0];
+  if (!soon) return null;
+  const entity = getBookable(soon.bookableId);
+  const resource = getResource(entity, soon.resourceId);
+  const today = new Date().toISOString().slice(0, 10);
+  const when = soon.date === today ? "Today" : formatDate(soon.date);
+  return {
+    id: soon.ref,
+    eyebrow: "Continue",
+    title: entity?.name ?? "Studio session",
+    meta: resource ? `${resource.name} · ${entity?.city ?? ""}`.trim() : "Studio booking",
+    detail: `${when} · ${formatTime(soon.start)}–${formatTime(soon.end)}`,
+    cta: "View booking",
+    ref: soon.ref,
+  };
+}
+
+/** Session first, then the most advanced unfinished action. */
+export function continueCards(d: DashboardData): ContinueCard[] {
+  const out: ContinueCard[] = [];
+  const session = nextSession();
+  if (session) out.push(session);
+  const unfinished = [...d.continueItems].sort((a, b) => b.progress - a.progress)[0];
+  if (unfinished) {
+    out.push({
+      id: unfinished.id,
+      eyebrow: "Pick up where you left off",
+      title: unfinished.title,
+      meta: unfinished.meta,
+      detail: `${unfinished.progress}% done`,
+      cta: unfinished.cta,
+      to: unfinished.to,
+      progress: unfinished.progress,
+    });
+  }
+  return out;
+}
+
+export function forYouTiles(d: DashboardData): ForYouTile[] {
+  const tiles: ForYouTile[] = [];
+  if (d.forYou.length)
+    tiles.push({
+      id: "artists",
+      value: `${d.forYou.length}`,
+      label: "artists to meet",
+      hint: "Matched to your genres",
+      to: "/",
+    });
+  if (d.studios.length)
+    tiles.push({
+      id: "studios",
+      value: `${Math.min(d.studios.length, 4)}`,
+      label: "studios nearby",
+      hint: "Available this week",
+      to: "/studio",
+    });
+  return tiles;
+}

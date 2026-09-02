@@ -14,6 +14,7 @@ import {
   Pencil,
   Play,
   Settings2,
+  QrCode,
   Share2,
   Users,
 } from "lucide-react";
@@ -129,6 +130,7 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
         <OwnerLink to="/profile/edit" icon={<FolderKanban size={16} />} label="Manage portfolio" />
         <OwnerLink to="/profile/edit" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
         <OwnerLink to="/profile/edit" icon={<Clock3 size={16} />} label="Availability" />
+        <OwnerLink to="/identity/qr" icon={<QrCode size={16} />} label="My QR & digital ID" />
         <OwnerLink to="/profile/edit" icon={<Settings2 size={16} />} label="Profile settings" />
       </div>
       {insightsOpen ? (
@@ -155,7 +157,7 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
   );
 }
 
-function OwnerLink({ to, icon, label }: { to: "/profile/edit"; icon: ReactNode; label: string }) {
+function OwnerLink({ to, icon, label }: { to: "/profile/edit" | "/identity/qr"; icon: ReactNode; label: string }) {
   return <Link to={to} className="flex min-w-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3 text-xs font-semibold"><span className="shrink-0 text-primary">{icon}</span><span className="truncate">{label}</span><ChevronRight size={14} className="ml-auto shrink-0 text-muted-foreground" aria-hidden /></Link>;
 }
 

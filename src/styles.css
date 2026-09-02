@@ -81,6 +81,9 @@
   --purple-container: color-mix(in oklab, var(--purple) 10%, transparent);
   --success-container: color-mix(in oklab, var(--success) 12%, transparent);
   --warn-container: color-mix(in oklab, var(--warn) 14%, transparent);
+  --danger: oklch(0.5771 0.2152 27.33);
+  --danger-container: color-mix(in oklab, var(--danger) 12%, transparent);
+  --pink-strong: oklch(0.52 0.2 0.71);
   --gradient-brand: linear-gradient(135deg, var(--primary), var(--purple));
   --gradient-navy: linear-gradient(150deg, oklch(0.1713 0.0539 282.44), oklch(0.28 0.07 288));
 }

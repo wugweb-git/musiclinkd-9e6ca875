@@ -1,0 +1,88 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Check, Minus, Sparkles } from "lucide-react";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Card, Segmented, StatusPill, Row } from "@/components/ml/kit";
+import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
+
+export const Route = createFileRoute("/plans")({
+  head: () => ({
+    meta: [
+      { title: "Plans & Pricing | MusicLinkd" },
+      { name: "description", content: "Compare Starter, Pro and Business plans for professionals, studios and labels on MusicLinkd." },
+      { property: "og:title", content: "Plans & Pricing | MusicLinkd" },
+      { property: "og:description", content: "Starter, Pro and Business plans for music professionals." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Plans,
+});
+
+const cycles = ["Monthly", "Yearly"] as const;
+
+function Plans() {
+  const [cycle, setCycle] = useState<(typeof cycles)[number]>("Monthly");
+  const [selected, setSelected] = useState<PlanKey>(currentSubscription.planKey);
+
+  return (
+    <Screen>
+      <TopBar title="Plans" subtitle="Upgrade when the work does" back="/me" />
+      <div className="space-y-4 px-5 pt-4">
+        <Card className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-primary" aria-hidden />
+            <h2 className="text-[15px]">You are on {plans.find((p) => p.key === currentSubscription.planKey)?.name}</h2>
+          </div>
+          <p className="text-[12px] text-muted-foreground">Renews {currentSubscription.renewsOn} · {currentSubscription.amount} {currentSubscription.billingCycle}</p>
+          <Link to="/plans/manage"><Btn variant="outline" className="w-full">Manage subscription</Btn></Link>
+        </Card>
+
+        <Segmented value={cycle} options={cycles} onChange={setCycle} />
+
+        {plans.map((p) => {
+          const active = selected === p.key;
+          const currentPlan = currentSubscription.planKey === p.key;
+          return (
+            <button key={p.key} type="button" onClick={() => setSelected(p.key)} className="block w-full text-left">
+              <Card className={active ? "border-primary" : ""}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="truncate text-[19px] leading-tight">{p.name}</h3>
+                    <p className="mt-1 text-[12px] text-muted-foreground">{p.tagline}</p>
+                  </div>
+                  {p.best ? <StatusPill label="Most picked" tone="brand" /> : currentPlan ? <StatusPill label="Current" tone="good" /> : null}
+                </div>
+                <p className="mt-3 text-[24px] font-bold leading-none">
+                  {cycle === "Monthly" ? p.price : p.yearly.split(" · ")[0]}
+                  <span className="ml-1 text-[12px] font-semibold text-muted-foreground">{cycle === "Monthly" ? p.period : "per year"}</span>
+                </p>
+                {cycle === "Yearly" && p.key !== "free" ? <p className="mt-1 text-[12px] font-semibold text-primary">2 months free</p> : null}
+                <ul className="mt-3 space-y-2">
+                  {p.features.map((f) => (
+                    <li key={f.label} className="flex items-start gap-2 text-[13px]">
+                      {f.included ? <Check size={15} className="mt-0.5 shrink-0 text-success" aria-hidden /> : <Minus size={15} className="mt-0.5 shrink-0 text-muted-foreground" aria-hidden />}
+                      <span className={f.included ? "text-text2" : "text-muted-foreground"}>{f.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </button>
+          );
+        })}
+
+        <div className="space-y-2 pb-4">
+          {selected !== currentSubscription.planKey ? (
+            <Link to="/plans/checkout" search={{ plan: selected }}>
+              <Btn className="w-full">Continue with {plans.find((p) => p.key === selected)?.name}</Btn>
+            </Link>
+          ) : (
+            <Btn variant="outline" className="w-full">This is your current plan</Btn>
+          )}
+          <Row title="Earnings & payouts" subtitle="Bookings, services and rentals" to="/plans/earnings" />
+          <Row title="Plans & billing help" subtitle="Invoices, refunds, fees" to="/help/$slug" params={{ slug: "pricing-your-first-service" }} />
+        </div>
+      </div>
+    </Screen>
+  );
+}
