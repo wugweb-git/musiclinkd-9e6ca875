@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BandRouteImport } from './routes/band'
 import { Route as BandsRouteImport } from './routes/bands'
 import { Route as CategoriesRouteImport } from './routes/categories'
@@ -152,11 +151,6 @@ import { Route as ProviderBookingsRequestsRefRouteImport } from './routes/provid
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BandRoute = BandRouteImport.update({
@@ -855,7 +849,6 @@ const ProviderBookingsRequestsRefRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/band': typeof BandRoute
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
@@ -996,7 +989,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/band': typeof BandRoute
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
@@ -1137,7 +1129,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/band': typeof BandRoute
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
@@ -1280,7 +1271,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/band'
     | '/bands'
     | '/categories'
@@ -1421,7 +1411,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
     | '/band'
     | '/bands'
     | '/categories'
@@ -1561,7 +1550,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/auth'
     | '/band'
     | '/bands'
     | '/categories'
@@ -1703,7 +1691,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRoute
   BandRoute: typeof BandRoute
   BandsRoute: typeof BandsRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
@@ -1828,13 +1815,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/band': {
@@ -2946,7 +2926,6 @@ const CollabProposalsIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRoute,
   BandRoute: BandRoute,
   BandsRoute: BandsRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
