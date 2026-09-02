@@ -171,7 +171,7 @@ export function Meter({ label, value, max, hint }: { label: string; value: numbe
 /** Reason chip used by recommendations everywhere they appear. */
 export function ReasonChip({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex max-w-full items-center gap-1 truncate rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold text-text2">
+    <span className="inline-block max-w-full break-words rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold leading-snug text-text2">
       {children}
     </span>
   );

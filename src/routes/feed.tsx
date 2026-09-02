@@ -12,6 +12,10 @@ import {
   UserPlus,
   ArrowRight,
   Calendar,
+  Users,
+  Star,
+  CreditCard,
+  LifeBuoy,
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
 import { TalentCard } from "@/components/ml/cards";
@@ -211,7 +215,7 @@ function Body({ data }: { data: DashboardData }) {
       {/* 4 — For you */}
       {tiles.length || data.forYou.length ? (
         <section className="pt-6">
-          <SectionHeader title="For you" action="See all" />
+          <SectionHeader title="For you" action={<Link to="/recommendations">See all</Link>} />
           {tiles.length ? (
             <div className="grid grid-cols-2 gap-3 px-5">
               {tiles.map((t) => (
@@ -306,6 +310,10 @@ function Body({ data }: { data: DashboardData }) {
           <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
           <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />
           <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />
+          <QuietAction to="/bands" icon={<Users size={14} />} label="My bands" />
+          <QuietAction to="/reviews" icon={<Star size={14} />} label="Reviews" />
+          <QuietAction to="/plans" icon={<CreditCard size={14} />} label="Plan" />
+          <QuietAction to="/help" icon={<LifeBuoy size={14} />} label="Help" />
           <QuietAction to="/messages" icon={<UserPlus size={14} />} label="Find contacts" />
         </div>
       </section>
@@ -347,12 +355,24 @@ function ContinueBlock({ c }: { c: ContinueCard }) {
   );
 }
 
+type QuietDestination =
+  | "/portfolio/new"
+  | "/search"
+  | "/studio"
+  | "/messages"
+  | "/bookings"
+  | "/bands"
+  | "/verification"
+  | "/reviews"
+  | "/plans"
+  | "/help";
+
 function QuietAction({
   to,
   icon,
   label,
 }: {
-  to: "/portfolio/new" | "/search" | "/studio" | "/messages" | "/bookings";
+  to: QuietDestination;
   icon: ReactNode;
   label: string;
 }) {

@@ -1,14 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
+  BadgeCheck,
   BarChart3,
   BriefcaseBusiness,
   ChevronRight,
   Clock3,
+  CreditCard,
   ExternalLink,
   FolderKanban,
   Globe2,
   Languages,
+  LifeBuoy,
   MapPin,
   Mic2,
   Pencil,
@@ -16,6 +19,8 @@ import {
   Settings2,
   QrCode,
   Share2,
+  Sparkles,
+  Star,
   Users,
 } from "lucide-react";
 import type { PersonProfile } from "@/data/profile";
@@ -131,8 +136,15 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
         <OwnerLink to="/profile/edit" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
         <OwnerLink to="/profile/edit" icon={<Clock3 size={16} />} label="Availability" />
         <OwnerLink to="/identity/qr" icon={<QrCode size={16} />} label="My QR & digital ID" />
+        <OwnerLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
+        <OwnerLink to="/reviews" icon={<Star size={16} />} label="Reviews" />
+        <OwnerLink to="/bands" icon={<Users size={16} />} label="My bands" />
+        <OwnerLink to="/plans" icon={<CreditCard size={16} />} label="Plan & earnings" />
+        <OwnerLink to="/recommendations" icon={<Sparkles size={16} />} label="For you" />
+        <OwnerLink to="/help" icon={<LifeBuoy size={16} />} label="Help & guides" />
         <OwnerLink to="/profile/edit" icon={<Settings2 size={16} />} label="Profile settings" />
       </div>
+
       {insightsOpen ? (
         <div className="rounded-3xl border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-3">
@@ -157,7 +169,17 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
   );
 }
 
-function OwnerLink({ to, icon, label }: { to: "/profile/edit" | "/identity/qr"; icon: ReactNode; label: string }) {
+type OwnerDestination =
+  | "/profile/edit"
+  | "/identity/qr"
+  | "/verification"
+  | "/reviews"
+  | "/bands"
+  | "/plans"
+  | "/recommendations"
+  | "/help";
+
+function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode; label: string }) {
   return <Link to={to} className="flex min-w-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3 text-xs font-semibold"><span className="shrink-0 text-primary">{icon}</span><span className="truncate">{label}</span><ChevronRight size={14} className="ml-auto shrink-0 text-muted-foreground" aria-hidden /></Link>;
 }
 

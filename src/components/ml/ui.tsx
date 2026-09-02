@@ -240,11 +240,13 @@ export function Sheet({
   );
 }
 
-export function SectionHeader({ title, action }: { title: string; action?: string }) {
+export function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
   return (
-    <div className="mb-3 flex items-baseline justify-between px-5">
-      <h2 className="text-[17px]">{title}</h2>
-      {action ? <span className="text-xs font-semibold text-primary">{action}</span> : null}
+    <div className="mb-3 flex items-baseline justify-between gap-3 px-5">
+      <h2 className="min-w-0 truncate text-[17px]">{title}</h2>
+      {action ? (
+        <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-primary">{action}</span>
+      ) : null}
     </div>
   );
 }
