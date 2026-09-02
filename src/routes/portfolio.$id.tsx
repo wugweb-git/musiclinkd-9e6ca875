@@ -3,7 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Btn, TopBar } from "@/components/ml/ui";
-import { AudioPlayer, AudioPreview, PortfolioSkeleton, StateCard, StatusPill } from "@/components/ml/portfolio";
+import {
+  analyticsFor,
+  AudioPlayer,
+  CreditRow,
+  PortfolioSkeleton,
+  StateCard,
+  StatusPill,
+  VideoPlayer,
+  WorkAnalytics,
+} from "@/components/ml/portfolio";
 import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { deletePortfolioItem, getMyPortfolioItem } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
