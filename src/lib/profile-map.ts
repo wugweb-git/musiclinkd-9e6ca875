@@ -71,11 +71,21 @@ export function draftToProfile(d: OnboardingDraft, step?: string) {
     visibility: d.visibility || "public",
     availability: d.availability[0] ?? null,
     ...(d.photo ? { avatar_url: d.photo } : {}),
-    links: d.links,
+    links: asLinkMap(d.links),
     discovery_prefs: { topics: d.discovery, businessIntent: d.businessIntent, bandIntent: d.bandIntent },
     onboarding_draft: d as unknown as Record<string, unknown>,
     ...(step ? { onboarding_step: step } : {}),
   };
+}
+
+/** jsonb columns can hold [] or null; profile links are always a string map. */
+export function asLinkMap(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).filter(
+      (entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].length > 0,
+    ),
+  );
 }
 
 /** Rebuild a draft from the stored record; the raw draft blob wins when present. */
@@ -111,7 +121,7 @@ export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDr
     intents: row.intents ?? [],
     experience: row.experience_level ?? null,
     bio: row.bio ?? "",
-    links: (row.links ?? {}) as Record<string, string>,
+    links: asLinkMap(row.links),
     contact: row.contact_channels ?? emptyDraft.contact,
     discovery: prefs.topics ?? [],
     visibility: row.visibility ?? "public",
@@ -133,7 +143,7 @@ export function profileGaps(row: ProfileRow | null | undefined) {
     { id: "genres", label: "Genres", done: Boolean(row?.genres?.length) },
     { id: "languages", label: "Languages", done: Boolean(row?.languages?.length) },
     { id: "availability", label: "Availability", done: Boolean(row?.availability) },
-    { id: "links", label: "Links", done: Object.keys((row?.links ?? {}) as object).length > 0 },
+    { id: "links", label: "Links", done: Object.keys(asLinkMap(row?.links)).length > 0 },
   ];
   const done = checks.filter((c) => c.done).length;
   return { checks, missing: checks.filter((c) => !c.done), percent: Math.round((done / checks.length) * 100) };

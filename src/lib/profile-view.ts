@@ -3,7 +3,7 @@
 
 import type { PersonProfile } from "@/data/profile";
 import { roles as roleDefs } from "@/data/onboarding";
-import type { ProfileRow } from "@/lib/profile-map";
+import { asLinkMap, type ProfileRow } from "@/lib/profile-map";
 
 function roleLabel(key: string | undefined | null): string | null {
   if (!key) return null;
@@ -13,7 +13,7 @@ function roleLabel(key: string | undefined | null): string | null {
 export function mergeProfileRow(base: PersonProfile, row: ProfileRow | null | undefined): PersonProfile {
   if (!row) return base;
   const primary = roleLabel(row.roles?.[0]);
-  const linkMap = (row.links ?? {}) as Record<string, string>;
+  const linkMap = asLinkMap(row.links);
   const links = Object.entries(linkMap)
     .filter(([, v]) => Boolean(v))
     .map(([label, handle]) => ({ label, handle }));
