@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 import { getOpportunity, payLabel } from "@/data/opportunities";
-import { portfolioItems } from "@/data/portfolio";
+import { demoPortfolio, workType } from "@/data/portfolio";
 
 type Step = "portfolio" | "message" | "review" | "done";
 const order: Step[] = ["portfolio", "message", "review", "done"];
@@ -99,7 +99,7 @@ function ApplyFlow() {
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {portfolioItems.slice(0, 6).map((p) => {
+              {demoPortfolio.slice(0, 6).map((p) => {
                 const on = picked.includes(p.id);
                 return (
                   <button
@@ -108,10 +108,10 @@ function ApplyFlow() {
                     onClick={() => setPicked((prev) => (on ? prev.filter((x) => x !== p.id) : prev.length < 3 ? [...prev, p.id] : prev))}
                     className={`overflow-hidden rounded-[20px] border text-left ${on ? "border-primary" : "border-border"} bg-card`}
                   >
-                    <img src={p.cover} alt="" className="h-24 w-full object-cover" />
+                    <span className="flex h-20 w-full items-center justify-center bg-subtle text-2xl">{workType(p.kind).emoji}</span>
                     <span className="block p-3">
                       <span className="block truncate text-[13px] font-semibold">{p.title}</span>
-                      <span className="block text-[11px] text-muted-foreground">{p.kind}</span>
+                      <span className="block text-[11px] text-muted-foreground">{workType(p.kind).label}</span>
                     </span>
                   </button>
                 );
@@ -163,7 +163,7 @@ function ApplyFlow() {
               ) : (
                 picked.map((pid) => (
                   <p key={pid} className="text-[13px]">
-                    {portfolioItems.find((p) => p.id === pid)?.title ?? pid}
+                    {demoPortfolio.find((p) => p.id === pid)?.title ?? pid}
                   </p>
                 ))
               )}
