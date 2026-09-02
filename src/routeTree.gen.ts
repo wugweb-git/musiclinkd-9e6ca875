@@ -105,6 +105,7 @@ import { Route as CollabInvitesIdRouteImport } from './routes/collab.invites.$id
 import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as CollabProposalsIdRouteImport } from './routes/collab.proposals.$id'
 import { Route as CollabProposalsNewRouteImport } from './routes/collab.proposals.new'
+import { Route as HelpCategoryKeyRouteImport } from './routes/help.category.$key'
 import { Route as IdentityContactSaveRouteImport } from './routes/identity.contact.save'
 import { Route as IdentityQCodeRouteImport } from './routes/identity.q.$code'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
@@ -624,6 +625,11 @@ const CollabProposalsNewRoute = CollabProposalsNewRouteImport.update({
   path: '/collab/proposals/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpCategoryKeyRoute = HelpCategoryKeyRouteImport.update({
+  id: '/category/$key',
+  path: '/category/$key',
+  getParentRoute: () => HelpRoute,
+} as any)
 const IdentityContactSaveRoute = IdentityContactSaveRouteImport.update({
   id: '/save',
   path: '/save',
@@ -917,6 +923,7 @@ export interface FileRoutesByFullPath {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -1052,6 +1059,7 @@ export interface FileRoutesByTo {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -1189,6 +1197,7 @@ export interface FileRoutesById {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -1327,6 +1336,7 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
     | '/marketplace/c/$slug'
@@ -1462,6 +1472,7 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
     | '/marketplace/c/$slug'
@@ -1598,6 +1609,7 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
     | '/marketplace/c/$slug'
@@ -2430,6 +2442,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabProposalsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help/category/$key': {
+      id: '/help/category/$key'
+      path: '/category/$key'
+      fullPath: '/help/category/$key'
+      preLoaderRoute: typeof HelpCategoryKeyRouteImport
+      parentRoute: typeof HelpRoute
+    }
     '/identity/contact/save': {
       id: '/identity/contact/save'
       path: '/save'
@@ -2726,10 +2745,12 @@ const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
 
 interface HelpRouteChildren {
   HelpSlugRoute: typeof HelpSlugRoute
+  HelpCategoryKeyRoute: typeof HelpCategoryKeyRoute
 }
 
 const HelpRouteChildren: HelpRouteChildren = {
   HelpSlugRoute: HelpSlugRoute,
+  HelpCategoryKeyRoute: HelpCategoryKeyRoute,
 }
 
 const HelpRouteWithChildren = HelpRoute._addFileChildren(HelpRouteChildren)
