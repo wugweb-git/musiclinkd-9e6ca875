@@ -116,6 +116,7 @@ import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$ki
 import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
 import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
 import { Route as ProviderBookingsCalendarRouteImport } from './routes/provider.bookings.calendar'
+import { Route as ReviewsWriteIdRouteImport } from './routes/reviews.write.$id'
 import { Route as CollabIdFilesIndexRouteImport } from './routes/collab.$id.files.index'
 import { Route as CollabIdFilesFileIdRouteImport } from './routes/collab.$id.files.$fileId'
 import { Route as CollabIdLifecycleActionRouteImport } from './routes/collab.$id.lifecycle.$action'
@@ -671,6 +672,11 @@ const ProviderBookingsCalendarRoute =
     path: '/provider/bookings/calendar',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ReviewsWriteIdRoute = ReviewsWriteIdRouteImport.update({
+  id: '/write/$id',
+  path: '/write/$id',
+  getParentRoute: () => ReviewsRoute,
+} as any)
 const CollabIdFilesIndexRoute = CollabIdFilesIndexRouteImport.update({
   id: '/collab/$id/files/',
   path: '/collab/$id/files/',
@@ -779,7 +785,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
-  '/reviews': typeof ReviewsRoute
+  '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
@@ -871,6 +877,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
+  '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
@@ -906,7 +913,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
-  '/reviews': typeof ReviewsRoute
+  '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
@@ -997,6 +1004,7 @@ export interface FileRoutesByTo {
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
+  '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
@@ -1033,7 +1041,7 @@ export interface FileRoutesById {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recommended': typeof RecommendedRoute
-  '/reviews': typeof ReviewsRoute
+  '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
@@ -1125,6 +1133,7 @@ export interface FileRoutesById {
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
+  '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
@@ -1254,6 +1263,7 @@ export interface FileRouteTypes {
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
+    | '/reviews/write/$id'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/collab/$id/'
@@ -1380,6 +1390,7 @@ export interface FileRouteTypes {
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
+    | '/reviews/write/$id'
     | '/booking/$id'
     | '/bookings/$ref'
     | '/collab/$id'
@@ -1507,6 +1518,7 @@ export interface FileRouteTypes {
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
+    | '/reviews/write/$id'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/collab/$id/'
@@ -1543,7 +1555,7 @@ export interface RootRouteChildren {
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   RecommendedRoute: typeof RecommendedRoute
-  ReviewsRoute: typeof ReviewsRoute
+  ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
   SearchRoute: typeof SearchRoute
   SingersRoute: typeof SingersRoute
@@ -2396,6 +2408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderBookingsCalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reviews/write/$id': {
+      id: '/reviews/write/$id'
+      path: '/write/$id'
+      fullPath: '/reviews/write/$id'
+      preLoaderRoute: typeof ReviewsWriteIdRouteImport
+      parentRoute: typeof ReviewsRoute
+    }
     '/collab/$id/files/': {
       id: '/collab/$id/files/'
       path: '/collab/$id/files'
@@ -2550,6 +2569,17 @@ const BandsRouteChildren: BandsRouteChildren = {
 
 const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
 
+interface ReviewsRouteChildren {
+  ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
+}
+
+const ReviewsRouteChildren: ReviewsRouteChildren = {
+  ReviewsWriteIdRoute: ReviewsWriteIdRoute,
+}
+
+const ReviewsRouteWithChildren =
+  ReviewsRoute._addFileChildren(ReviewsRouteChildren)
+
 interface VerificationRouteChildren {
   VerificationTypeRoute: typeof VerificationTypeRoute
 }
@@ -2643,7 +2673,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   RecommendedRoute: RecommendedRoute,
-  ReviewsRoute: ReviewsRoute,
+  ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
   SearchRoute: SearchRoute,
   SingersRoute: SingersRoute,
