@@ -140,6 +140,7 @@ import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/se
 import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
 import { Route as OpportunitiesIdIndexRouteImport } from './routes/opportunities.$id.index'
 import { Route as OpportunitiesIdApplyRouteImport } from './routes/opportunities.$id.apply'
+import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opportunities.applications.index'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
 import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
@@ -821,6 +822,12 @@ const OpportunitiesIdApplyRoute = OpportunitiesIdApplyRouteImport.update({
   path: '/opportunities/$id/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpportunitiesApplicationsIndexRoute =
+  OpportunitiesApplicationsIndexRouteImport.update({
+    id: '/opportunities/applications/',
+    path: '/opportunities/applications/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -1092,6 +1099,7 @@ export interface FileRoutesByFullPath {
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
+  '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1249,6 +1257,7 @@ export interface FileRoutesByTo {
   '/collab/$id': typeof CollabIdIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
   '/opportunities/$id': typeof OpportunitiesIdIndexRoute
+  '/opportunities/applications': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/new': typeof PortfolioNewIndexRoute
   '/provider/bookings': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1408,6 +1417,7 @@ export interface FileRoutesById {
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
+  '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1568,6 +1578,7 @@ export interface FileRouteTypes {
     | '/collab/$id/'
     | '/marketplace/rent/'
     | '/opportunities/$id/'
+    | '/opportunities/applications/'
     | '/portfolio/new/'
     | '/provider/bookings/'
     | '/collab/$id/files/$fileId'
@@ -1725,6 +1736,7 @@ export interface FileRouteTypes {
     | '/collab/$id'
     | '/marketplace/rent'
     | '/opportunities/$id'
+    | '/opportunities/applications'
     | '/portfolio/new'
     | '/provider/bookings'
     | '/collab/$id/files/$fileId'
@@ -1883,6 +1895,7 @@ export interface FileRouteTypes {
     | '/collab/$id/'
     | '/marketplace/rent/'
     | '/opportunities/$id/'
+    | '/opportunities/applications/'
     | '/portfolio/new/'
     | '/provider/bookings/'
     | '/collab/$id/files/$fileId'
@@ -2021,6 +2034,7 @@ export interface RootRouteChildren {
   CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
   OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
+  OpportunitiesApplicationsIndexRoute: typeof OpportunitiesApplicationsIndexRoute
   PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
   CollabIdFilesFileIdRoute: typeof CollabIdFilesFileIdRoute
@@ -2961,6 +2975,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIdApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opportunities/applications/': {
+      id: '/opportunities/applications/'
+      path: '/opportunities/applications'
+      fullPath: '/opportunities/applications/'
+      preLoaderRoute: typeof OpportunitiesApplicationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/$id/edit': {
       id: '/portfolio/$id/edit'
       path: '/edit'
@@ -3400,6 +3421,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
   OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,
+  OpportunitiesApplicationsIndexRoute: OpportunitiesApplicationsIndexRoute,
   PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
   CollabIdFilesFileIdRoute: CollabIdFilesFileIdRoute,
