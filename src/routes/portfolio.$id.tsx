@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Btn, TopBar } from "@/components/ml/ui";
-import { AudioPreview, PortfolioSkeleton, StateCard, StatusPill } from "@/components/ml/portfolio";
+import { AudioPlayer, AudioPreview, PortfolioSkeleton, StateCard, StatusPill } from "@/components/ml/portfolio";
 import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { deletePortfolioItem, getMyPortfolioItem } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -110,9 +110,15 @@ function WorkDetail() {
               ) : null}
             </section>
 
-            {item.media_url && workType(item.kind).media === "audio" ? (
+            {workType(item.kind).media === "audio" ? (
               <div className="mt-4">
-                <AudioPreview src={item.media_url} title={item.title} />
+                <AudioPlayer src={item.media_url} title={item.title} artwork={item.cover_url} />
+              </div>
+            ) : null}
+
+            {item.media_url && workType(item.kind).media === "video" ? (
+              <div className="mt-4">
+                <VideoPlayer src={item.media_url} title={item.title} />
               </div>
             ) : null}
 
@@ -132,13 +138,20 @@ function WorkDetail() {
                 <h2 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
                   Credits
                 </h2>
-                <ul className="mt-2 space-y-1 text-sm">
+                <div className="mt-2 space-y-2">
                   {item.collaborators.map((c) => (
-                    <li key={c}>{c}</li>
+                    <CreditRow key={c} name={c} />
                   ))}
-                </ul>
+                </div>
               </section>
             ) : null}
+
+            <section className="mt-6">
+              <h2 className="text-[17px]">Performance</h2>
+              <div className="mt-3">
+                <WorkAnalytics figures={analyticsFor(item.id)} />
+              </div>
+            </section>
 
             <div className="mt-6 flex flex-wrap gap-2">
               {demo ? null : (
