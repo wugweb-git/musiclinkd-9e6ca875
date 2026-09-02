@@ -10,6 +10,16 @@
   reschedule, cancel, provider workspace, request review, availability manager
 
 ## In progress
+- Backend (Lovable Cloud) — enabled
+  - [x] `profiles` + `portfolio_items` tables, RLS, grants, signup trigger
+  - [x] `/auth` email+password and Google sign-in, `useAuth` hook
+  - [x] `src/lib/portfolio.functions.ts` server functions (portfolio + profile CRUD)
+  - [ ] onboarding completion writes profile to the database
+- FLOW 03 — Add Portfolio (UI per latest spec, DB-backed when signed in)
+  - [ ] overview, add-work type picker, work form, preview/publish, draft
+  - [ ] work detail, edit, reorder, settings, share, empty/loading/error states
+- FLOW 08 — Booking: re-check latest spec gaps (payment success/failure, conflict,
+  no-availability, rebook, provider pricing/policies screens)
 - FLOW 02 — User Onboarding
   - [x] `src/data/onboarding.ts` master data, step model, contracts
   - [x] `src/components/ml/onboarding.tsx` UI kit + draft store
