@@ -55,6 +55,7 @@ import { Route as IdentityPrintRouteImport } from './routes/identity.print'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
 import { Route as IdentityScanRouteImport } from './routes/identity.scan'
 import { Route as IdentitySettingsRouteImport } from './routes/identity.settings'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -387,6 +388,11 @@ const IdentityScanRoute = IdentityScanRouteImport.update({
 const IdentitySettingsRoute = IdentitySettingsRouteImport.update({
   id: '/identity/settings',
   path: '/identity/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -957,6 +963,7 @@ export interface FileRoutesByFullPath {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -1107,6 +1114,7 @@ export interface FileRoutesByTo {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -1259,6 +1267,7 @@ export interface FileRoutesById {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -1412,6 +1421,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1562,6 +1572,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1713,6 +1724,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1862,6 +1874,7 @@ export interface RootRouteChildren {
   IdentityQrRoute: typeof IdentityQrRoute
   IdentityScanRoute: typeof IdentityScanRoute
   IdentitySettingsRoute: typeof IdentitySettingsRoute
+  LegalTermsRoute: typeof LegalTermsRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
@@ -2273,6 +2286,13 @@ declare module '@tanstack/react-router' {
       path: '/identity/settings'
       fullPath: '/identity/settings'
       preLoaderRoute: typeof IdentitySettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -3185,6 +3205,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdentityQrRoute: IdentityQrRoute,
   IdentityScanRoute: IdentityScanRoute,
   IdentitySettingsRoute: IdentitySettingsRoute,
+  LegalTermsRoute: LegalTermsRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSavedRoute: MarketplaceSavedRoute,
