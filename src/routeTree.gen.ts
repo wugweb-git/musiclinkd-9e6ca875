@@ -141,6 +141,7 @@ import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$
 import { Route as OpportunitiesIdIndexRouteImport } from './routes/opportunities.$id.index'
 import { Route as OpportunitiesIdApplyRouteImport } from './routes/opportunities.$id.apply'
 import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opportunities.applications.index'
+import { Route as OpportunitiesApplicationsAidRouteImport } from './routes/opportunities.applications.$aid'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
 import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
@@ -828,6 +829,12 @@ const OpportunitiesApplicationsIndexRoute =
     path: '/opportunities/applications/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const OpportunitiesApplicationsAidRoute =
+  OpportunitiesApplicationsAidRouteImport.update({
+    id: '/opportunities/applications/$aid',
+    path: '/opportunities/applications/$aid',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -1089,6 +1096,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
@@ -1247,6 +1255,7 @@ export interface FileRoutesByTo {
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
@@ -1407,6 +1416,7 @@ export interface FileRoutesById {
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
@@ -1568,6 +1578,7 @@ export interface FileRouteTypes {
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
     | '/opportunities/$id/apply'
+    | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
@@ -1726,6 +1737,7 @@ export interface FileRouteTypes {
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
     | '/opportunities/$id/apply'
+    | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
@@ -1885,6 +1897,7 @@ export interface FileRouteTypes {
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
     | '/opportunities/$id/apply'
+    | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
@@ -2027,6 +2040,7 @@ export interface RootRouteChildren {
   MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
   OnboardingStepIdRoute: typeof OnboardingStepIdRoute
   OpportunitiesIdApplyRoute: typeof OpportunitiesIdApplyRoute
+  OpportunitiesApplicationsAidRoute: typeof OpportunitiesApplicationsAidRoute
   PortfolioNewKindRoute: typeof PortfolioNewKindRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
   ProviderBookingsCalendarRoute: typeof ProviderBookingsCalendarRoute
@@ -2982,6 +2996,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesApplicationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opportunities/applications/$aid': {
+      id: '/opportunities/applications/$aid'
+      path: '/opportunities/applications/$aid'
+      fullPath: '/opportunities/applications/$aid'
+      preLoaderRoute: typeof OpportunitiesApplicationsAidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/$id/edit': {
       id: '/portfolio/$id/edit'
       path: '/edit'
@@ -3414,6 +3435,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
   OnboardingStepIdRoute: OnboardingStepIdRoute,
   OpportunitiesIdApplyRoute: OpportunitiesIdApplyRoute,
+  OpportunitiesApplicationsAidRoute: OpportunitiesApplicationsAidRoute,
   PortfolioNewKindRoute: PortfolioNewKindRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
   ProviderBookingsCalendarRoute: ProviderBookingsCalendarRoute,
