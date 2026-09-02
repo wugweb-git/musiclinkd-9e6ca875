@@ -105,23 +105,43 @@ function Discover() {
       </section>
 
       <section className="pb-6">
-        <SectionHeader title="Recommended for you" action="Swipe" />
-        <div className="px-5">
+        <SectionHeader
+          title="Recommended for you"
+          action={<Link to="/recommendations">For you</Link>}
+        />
+        <div className="space-y-3 px-5">
           <Link
             to="/recommended"
             className="flex items-center gap-4 rounded-3xl border border-border bg-navy p-4 text-background"
           >
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-background/10 text-2xl">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-background/10 text-2xl">
               ✨
             </span>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <h3 className="text-[15px] text-background">24 new matches</h3>
               <p className="text-[11px] opacity-75">
-                Based on Hindi film, indie & your Mumbai activity
+                Based on Hindi film, indie &amp; your Mumbai activity
               </p>
             </div>
-            <span className="text-lg">→</span>
+            <span className="shrink-0 text-lg">→</span>
           </Link>
+          <div className="grid grid-cols-2 gap-3">
+            <Link
+              to="/recommendations"
+              className="min-w-0 rounded-3xl border border-border bg-card p-4"
+            >
+              <p className="truncate text-[13px] font-semibold">Why you see this</p>
+              <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
+                Explainable picks across people, spaces, gear and work
+              </p>
+            </Link>
+            <Link to="/bands" className="min-w-0 rounded-3xl border border-border bg-card p-4">
+              <p className="truncate text-[13px] font-semibold">Bands near you</p>
+              <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
+                Line-ups looking for members and shows
+              </p>
+            </Link>
+          </div>
         </div>
       </section>
 
