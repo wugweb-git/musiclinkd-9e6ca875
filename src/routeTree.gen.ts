@@ -169,6 +169,7 @@ import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/ren
 import { Route as MarketplaceRentProviderIdRouteImport } from './routes/marketplace/rent/provider.$id'
 import { Route as MarketplaceRentRequestIdRouteImport } from './routes/marketplace/rent/request.$id'
 import { Route as OpportunitiesIdApplicantsIndexRouteImport } from './routes/opportunities.$id.applicants.index'
+import { Route as OpportunitiesIdApplicantsAidRouteImport } from './routes/opportunities.$id.applicants.$aid'
 import { Route as ProviderBookingsRequestsIndexRouteImport } from './routes/provider.bookings.requests.index'
 import { Route as ProviderBookingsRequestsRefRouteImport } from './routes/provider.bookings.requests.$ref'
 
@@ -981,6 +982,12 @@ const OpportunitiesIdApplicantsIndexRoute =
     path: '/opportunities/$id/applicants/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const OpportunitiesIdApplicantsAidRoute =
+  OpportunitiesIdApplicantsAidRouteImport.update({
+    id: '/opportunities/$id/applicants/$aid',
+    path: '/opportunities/$id/applicants/$aid',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProviderBookingsRequestsIndexRoute =
   ProviderBookingsRequestsIndexRouteImport.update({
     id: '/provider/bookings/requests/',
@@ -1153,6 +1160,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
   '/opportunities/$id/applicants/': typeof OpportunitiesIdApplicantsIndexRoute
@@ -1316,6 +1324,7 @@ export interface FileRoutesByTo {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files': typeof CollabIdFilesIndexRoute
   '/opportunities/$id/applicants': typeof OpportunitiesIdApplicantsIndexRoute
@@ -1481,6 +1490,7 @@ export interface FileRoutesById {
   '/marketplace/rent/e/$id': typeof MarketplaceRentEIdRoute
   '/marketplace/rent/provider/$id': typeof MarketplaceRentProviderIdRoute
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
+  '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
   '/opportunities/$id/applicants/': typeof OpportunitiesIdApplicantsIndexRoute
@@ -1647,6 +1657,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
     | '/opportunities/$id/applicants/'
@@ -1810,6 +1821,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files'
     | '/opportunities/$id/applicants'
@@ -1974,6 +1986,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/e/$id'
     | '/marketplace/rent/provider/$id'
     | '/marketplace/rent/request/$id'
+    | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
     | '/opportunities/$id/applicants/'
@@ -2117,6 +2130,7 @@ export interface RootRouteChildren {
   MarketplaceRentEIdRoute: typeof MarketplaceRentEIdRoute
   MarketplaceRentProviderIdRoute: typeof MarketplaceRentProviderIdRoute
   MarketplaceRentRequestIdRoute: typeof MarketplaceRentRequestIdRoute
+  OpportunitiesIdApplicantsAidRoute: typeof OpportunitiesIdApplicantsAidRoute
   ProviderBookingsRequestsRefRoute: typeof ProviderBookingsRequestsRefRoute
   CollabIdFilesIndexRoute: typeof CollabIdFilesIndexRoute
   OpportunitiesIdApplicantsIndexRoute: typeof OpportunitiesIdApplicantsIndexRoute
@@ -3245,6 +3259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIdApplicantsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opportunities/$id/applicants/$aid': {
+      id: '/opportunities/$id/applicants/$aid'
+      path: '/opportunities/$id/applicants/$aid'
+      fullPath: '/opportunities/$id/applicants/$aid'
+      preLoaderRoute: typeof OpportunitiesIdApplicantsAidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/provider/bookings/requests/': {
       id: '/provider/bookings/requests/'
       path: '/provider/bookings/requests'
@@ -3544,6 +3565,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentEIdRoute: MarketplaceRentEIdRoute,
   MarketplaceRentProviderIdRoute: MarketplaceRentProviderIdRoute,
   MarketplaceRentRequestIdRoute: MarketplaceRentRequestIdRoute,
+  OpportunitiesIdApplicantsAidRoute: OpportunitiesIdApplicantsAidRoute,
   ProviderBookingsRequestsRefRoute: ProviderBookingsRequestsRefRoute,
   CollabIdFilesIndexRoute: CollabIdFilesIndexRoute,
   OpportunitiesIdApplicantsIndexRoute: OpportunitiesIdApplicantsIndexRoute,
