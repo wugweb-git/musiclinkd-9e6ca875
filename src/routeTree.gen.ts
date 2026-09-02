@@ -25,6 +25,17 @@ import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as CollabNewRouteImport } from './routes/collab.new'
+import { Route as IdentityAnalyticsRouteImport } from './routes/identity.analytics'
+import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
+import { Route as IdentityCardRouteImport } from './routes/identity.card'
+import { Route as IdentityContactRouteImport } from './routes/identity.contact'
+import { Route as IdentityCustomizeRouteImport } from './routes/identity.customize'
+import { Route as IdentityFullRouteImport } from './routes/identity.full'
+import { Route as IdentityHistoryRouteImport } from './routes/identity.history'
+import { Route as IdentityPrintRouteImport } from './routes/identity.print'
+import { Route as IdentityQrRouteImport } from './routes/identity.qr'
+import { Route as IdentityScanRouteImport } from './routes/identity.scan'
+import { Route as IdentitySettingsRouteImport } from './routes/identity.settings'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -47,6 +58,8 @@ import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
+import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
+import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
 import { Route as BookingIdAddonsRouteImport } from './routes/booking.$id.addons'
@@ -76,6 +89,8 @@ import { Route as CollabInvitesIdRouteImport } from './routes/collab.invites.$id
 import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as CollabProposalsIdRouteImport } from './routes/collab.proposals.$id'
 import { Route as CollabProposalsNewRouteImport } from './routes/collab.proposals.new'
+import { Route as IdentityContactSaveRouteImport } from './routes/identity.contact.save'
+import { Route as IdentityQCodeRouteImport } from './routes/identity.q.$code'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
 import { Route as MarketplaceLIdRouteImport } from './routes/marketplace/l.$id'
 import { Route as MarketplaceRentIndexRouteImport } from './routes/marketplace/rent/index'
@@ -92,6 +107,7 @@ import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.in
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
 import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
 import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
+import { Route as ProviderBookingsCalendarRouteImport } from './routes/provider.bookings.calendar'
 import { Route as CollabIdFilesIndexRouteImport } from './routes/collab.$id.files.index'
 import { Route as CollabIdFilesFileIdRouteImport } from './routes/collab.$id.files.$fileId'
 import { Route as CollabIdLifecycleActionRouteImport } from './routes/collab.$id.lifecycle.$action'
@@ -108,6 +124,7 @@ import { Route as MarketplaceRentCSlugRouteImport } from './routes/marketplace/r
 import { Route as MarketplaceRentEIdRouteImport } from './routes/marketplace/rent/e.$id'
 import { Route as MarketplaceRentProviderIdRouteImport } from './routes/marketplace/rent/provider.$id'
 import { Route as MarketplaceRentRequestIdRouteImport } from './routes/marketplace/rent/request.$id'
+import { Route as ProviderBookingsRequestsIndexRouteImport } from './routes/provider.bookings.requests.index'
 import { Route as ProviderBookingsRequestsRefRouteImport } from './routes/provider.bookings.requests.$ref'
 
 const IndexRoute = IndexRouteImport.update({
@@ -188,6 +205,61 @@ const CollabIndexRoute = CollabIndexRouteImport.update({
 const CollabNewRoute = CollabNewRouteImport.update({
   id: '/collab/new',
   path: '/collab/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityAnalyticsRoute = IdentityAnalyticsRouteImport.update({
+  id: '/identity/analytics',
+  path: '/identity/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityBusinessRoute = IdentityBusinessRouteImport.update({
+  id: '/identity/business',
+  path: '/identity/business',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityCardRoute = IdentityCardRouteImport.update({
+  id: '/identity/card',
+  path: '/identity/card',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityContactRoute = IdentityContactRouteImport.update({
+  id: '/identity/contact',
+  path: '/identity/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityCustomizeRoute = IdentityCustomizeRouteImport.update({
+  id: '/identity/customize',
+  path: '/identity/customize',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityFullRoute = IdentityFullRouteImport.update({
+  id: '/identity/full',
+  path: '/identity/full',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityHistoryRoute = IdentityHistoryRouteImport.update({
+  id: '/identity/history',
+  path: '/identity/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityPrintRoute = IdentityPrintRouteImport.update({
+  id: '/identity/print',
+  path: '/identity/print',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityQrRoute = IdentityQrRouteImport.update({
+  id: '/identity/qr',
+  path: '/identity/qr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityScanRoute = IdentityScanRouteImport.update({
+  id: '/identity/scan',
+  path: '/identity/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentitySettingsRoute = IdentitySettingsRouteImport.update({
+  id: '/identity/settings',
+  path: '/identity/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -298,6 +370,16 @@ const ProfileInsightsRoute = ProfileInsightsRouteImport.update({
 const ProviderAvailabilityRoute = ProviderAvailabilityRouteImport.update({
   id: '/provider/availability',
   path: '/provider/availability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderPoliciesRoute = ProviderPoliciesRouteImport.update({
+  id: '/provider/policies',
+  path: '/provider/policies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderPricingRoute = ProviderPricingRouteImport.update({
+  id: '/provider/pricing',
+  path: '/provider/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TalentIdRoute = TalentIdRouteImport.update({
@@ -445,6 +527,16 @@ const CollabProposalsNewRoute = CollabProposalsNewRouteImport.update({
   path: '/collab/proposals/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IdentityContactSaveRoute = IdentityContactSaveRouteImport.update({
+  id: '/save',
+  path: '/save',
+  getParentRoute: () => IdentityContactRoute,
+} as any)
+const IdentityQCodeRoute = IdentityQCodeRouteImport.update({
+  id: '/identity/q/$code',
+  path: '/identity/q/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketplaceCSlugRoute = MarketplaceCSlugRouteImport.update({
   id: '/marketplace/c/$slug',
   path: '/marketplace/c/$slug',
@@ -525,6 +617,12 @@ const ProviderBookingsRefRoute = ProviderBookingsRefRouteImport.update({
   path: '/provider/bookings/$ref',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProviderBookingsCalendarRoute =
+  ProviderBookingsCalendarRouteImport.update({
+    id: '/provider/bookings/calendar',
+    path: '/provider/bookings/calendar',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CollabIdFilesIndexRoute = CollabIdFilesIndexRouteImport.update({
   id: '/collab/$id/files/',
   path: '/collab/$id/files/',
@@ -610,6 +708,12 @@ const MarketplaceRentRequestIdRoute =
     path: '/marketplace/rent/request/$id',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProviderBookingsRequestsIndexRoute =
+  ProviderBookingsRequestsIndexRouteImport.update({
+    id: '/provider/bookings/requests/',
+    path: '/provider/bookings/requests/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProviderBookingsRequestsRefRoute =
   ProviderBookingsRequestsRefRouteImport.update({
     id: '/provider/bookings/requests/$ref',
@@ -632,6 +736,17 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/identity/analytics': typeof IdentityAnalyticsRoute
+  '/identity/business': typeof IdentityBusinessRoute
+  '/identity/card': typeof IdentityCardRoute
+  '/identity/contact': typeof IdentityContactRouteWithChildren
+  '/identity/customize': typeof IdentityCustomizeRoute
+  '/identity/full': typeof IdentityFullRoute
+  '/identity/history': typeof IdentityHistoryRoute
+  '/identity/print': typeof IdentityPrintRoute
+  '/identity/qr': typeof IdentityQrRoute
+  '/identity/scan': typeof IdentityScanRoute
+  '/identity/settings': typeof IdentitySettingsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -651,6 +766,8 @@ export interface FileRoutesByFullPath {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
+  '/provider/policies': typeof ProviderPoliciesRoute
+  '/provider/pricing': typeof ProviderPricingRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
   '/collab/': typeof CollabIndexRoute
@@ -682,6 +799,8 @@ export interface FileRoutesByFullPath {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/identity/contact/save': typeof IdentityContactSaveRoute
+  '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -695,6 +814,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
+  '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
@@ -718,6 +838,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
+  '/provider/bookings/requests/': typeof ProviderBookingsRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -733,6 +854,17 @@ export interface FileRoutesByTo {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/identity/analytics': typeof IdentityAnalyticsRoute
+  '/identity/business': typeof IdentityBusinessRoute
+  '/identity/card': typeof IdentityCardRoute
+  '/identity/contact': typeof IdentityContactRouteWithChildren
+  '/identity/customize': typeof IdentityCustomizeRoute
+  '/identity/full': typeof IdentityFullRoute
+  '/identity/history': typeof IdentityHistoryRoute
+  '/identity/print': typeof IdentityPrintRoute
+  '/identity/qr': typeof IdentityQrRoute
+  '/identity/scan': typeof IdentityScanRoute
+  '/identity/settings': typeof IdentitySettingsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -752,6 +884,8 @@ export interface FileRoutesByTo {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
+  '/provider/policies': typeof ProviderPoliciesRoute
+  '/provider/pricing': typeof ProviderPricingRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings': typeof BookingsIndexRoute
   '/collab': typeof CollabIndexRoute
@@ -783,6 +917,8 @@ export interface FileRoutesByTo {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/identity/contact/save': typeof IdentityContactSaveRoute
+  '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -796,6 +932,7 @@ export interface FileRoutesByTo {
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
+  '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
@@ -819,6 +956,7 @@ export interface FileRoutesByTo {
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files': typeof CollabIdFilesIndexRoute
+  '/provider/bookings/requests': typeof ProviderBookingsRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -836,6 +974,17 @@ export interface FileRoutesById {
   '/studio': typeof StudioRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/identity/analytics': typeof IdentityAnalyticsRoute
+  '/identity/business': typeof IdentityBusinessRoute
+  '/identity/card': typeof IdentityCardRoute
+  '/identity/contact': typeof IdentityContactRouteWithChildren
+  '/identity/customize': typeof IdentityCustomizeRoute
+  '/identity/full': typeof IdentityFullRoute
+  '/identity/history': typeof IdentityHistoryRoute
+  '/identity/print': typeof IdentityPrintRoute
+  '/identity/qr': typeof IdentityQrRoute
+  '/identity/scan': typeof IdentityScanRoute
+  '/identity/settings': typeof IdentitySettingsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -855,6 +1004,8 @@ export interface FileRoutesById {
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
   '/provider/availability': typeof ProviderAvailabilityRoute
+  '/provider/policies': typeof ProviderPoliciesRoute
+  '/provider/pricing': typeof ProviderPricingRoute
   '/talent/$id': typeof TalentIdRoute
   '/bookings/': typeof BookingsIndexRoute
   '/collab/': typeof CollabIndexRoute
@@ -886,6 +1037,8 @@ export interface FileRoutesById {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/identity/contact/save': typeof IdentityContactSaveRoute
+  '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
   '/marketplace/l/$id': typeof MarketplaceLIdRoute
   '/marketplace/rent/list': typeof MarketplaceRentListRoute
@@ -899,6 +1052,7 @@ export interface FileRoutesById {
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
+  '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
@@ -922,6 +1076,7 @@ export interface FileRoutesById {
   '/marketplace/rent/request/$id': typeof MarketplaceRentRequestIdRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
+  '/provider/bookings/requests/': typeof ProviderBookingsRequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -940,6 +1095,17 @@ export interface FileRouteTypes {
     | '/studio'
     | '/booking/$id'
     | '/collab/new'
+    | '/identity/analytics'
+    | '/identity/business'
+    | '/identity/card'
+    | '/identity/contact'
+    | '/identity/customize'
+    | '/identity/full'
+    | '/identity/history'
+    | '/identity/print'
+    | '/identity/qr'
+    | '/identity/scan'
+    | '/identity/settings'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -959,6 +1125,8 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/insights'
     | '/provider/availability'
+    | '/provider/policies'
+    | '/provider/pricing'
     | '/talent/$id'
     | '/bookings/'
     | '/collab/'
@@ -990,6 +1158,8 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/identity/contact/save'
+    | '/identity/q/$code'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -1003,6 +1173,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
+    | '/provider/bookings/calendar'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/collab/$id/'
@@ -1026,6 +1197,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/request/$id'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
+    | '/provider/bookings/requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1041,6 +1213,17 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/collab/new'
+    | '/identity/analytics'
+    | '/identity/business'
+    | '/identity/card'
+    | '/identity/contact'
+    | '/identity/customize'
+    | '/identity/full'
+    | '/identity/history'
+    | '/identity/print'
+    | '/identity/qr'
+    | '/identity/scan'
+    | '/identity/settings'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1060,6 +1243,8 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/insights'
     | '/provider/availability'
+    | '/provider/policies'
+    | '/provider/pricing'
     | '/talent/$id'
     | '/bookings'
     | '/collab'
@@ -1091,6 +1276,8 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/identity/contact/save'
+    | '/identity/q/$code'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -1104,6 +1291,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
+    | '/provider/bookings/calendar'
     | '/booking/$id'
     | '/bookings/$ref'
     | '/collab/$id'
@@ -1127,6 +1315,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/request/$id'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files'
+    | '/provider/bookings/requests'
   id:
     | '__root__'
     | '/'
@@ -1143,6 +1332,17 @@ export interface FileRouteTypes {
     | '/studio'
     | '/booking/$id'
     | '/collab/new'
+    | '/identity/analytics'
+    | '/identity/business'
+    | '/identity/card'
+    | '/identity/contact'
+    | '/identity/customize'
+    | '/identity/full'
+    | '/identity/history'
+    | '/identity/print'
+    | '/identity/qr'
+    | '/identity/scan'
+    | '/identity/settings'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1162,6 +1362,8 @@ export interface FileRouteTypes {
     | '/profile/edit'
     | '/profile/insights'
     | '/provider/availability'
+    | '/provider/policies'
+    | '/provider/pricing'
     | '/talent/$id'
     | '/bookings/'
     | '/collab/'
@@ -1193,6 +1395,8 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/identity/contact/save'
+    | '/identity/q/$code'
     | '/marketplace/c/$slug'
     | '/marketplace/l/$id'
     | '/marketplace/rent/list'
@@ -1206,6 +1410,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
+    | '/provider/bookings/calendar'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/collab/$id/'
@@ -1229,6 +1434,7 @@ export interface FileRouteTypes {
     | '/marketplace/rent/request/$id'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
+    | '/provider/bookings/requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1246,6 +1452,17 @@ export interface RootRouteChildren {
   StudioRoute: typeof StudioRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   CollabNewRoute: typeof CollabNewRouteWithChildren
+  IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
+  IdentityBusinessRoute: typeof IdentityBusinessRoute
+  IdentityCardRoute: typeof IdentityCardRoute
+  IdentityContactRoute: typeof IdentityContactRouteWithChildren
+  IdentityCustomizeRoute: typeof IdentityCustomizeRoute
+  IdentityFullRoute: typeof IdentityFullRoute
+  IdentityHistoryRoute: typeof IdentityHistoryRoute
+  IdentityPrintRoute: typeof IdentityPrintRoute
+  IdentityQrRoute: typeof IdentityQrRoute
+  IdentityScanRoute: typeof IdentityScanRoute
+  IdentitySettingsRoute: typeof IdentitySettingsRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
@@ -1265,6 +1482,8 @@ export interface RootRouteChildren {
   ProfileEditRoute: typeof ProfileEditRoute
   ProfileInsightsRoute: typeof ProfileInsightsRoute
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
+  ProviderPoliciesRoute: typeof ProviderPoliciesRoute
+  ProviderPricingRoute: typeof ProviderPricingRoute
   TalentIdRoute: typeof TalentIdRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
@@ -1289,6 +1508,7 @@ export interface RootRouteChildren {
   CollabInvitesIdRoute: typeof CollabInvitesIdRoute
   CollabProposalsIdRoute: typeof CollabProposalsIdRouteWithChildren
   CollabProposalsNewRoute: typeof CollabProposalsNewRoute
+  IdentityQCodeRoute: typeof IdentityQCodeRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
   MarketplaceRentListRoute: typeof MarketplaceRentListRoute
@@ -1301,6 +1521,7 @@ export interface RootRouteChildren {
   OnboardingStepIdRoute: typeof OnboardingStepIdRoute
   PortfolioNewKindRoute: typeof PortfolioNewKindRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
+  ProviderBookingsCalendarRoute: typeof ProviderBookingsCalendarRoute
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
   CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
@@ -1322,6 +1543,7 @@ export interface RootRouteChildren {
   MarketplaceRentRequestIdRoute: typeof MarketplaceRentRequestIdRoute
   ProviderBookingsRequestsRefRoute: typeof ProviderBookingsRequestsRefRoute
   CollabIdFilesIndexRoute: typeof CollabIdFilesIndexRoute
+  ProviderBookingsRequestsIndexRoute: typeof ProviderBookingsRequestsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1436,6 +1658,83 @@ declare module '@tanstack/react-router' {
       path: '/collab/new'
       fullPath: '/collab/new'
       preLoaderRoute: typeof CollabNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/analytics': {
+      id: '/identity/analytics'
+      path: '/identity/analytics'
+      fullPath: '/identity/analytics'
+      preLoaderRoute: typeof IdentityAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/business': {
+      id: '/identity/business'
+      path: '/identity/business'
+      fullPath: '/identity/business'
+      preLoaderRoute: typeof IdentityBusinessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/card': {
+      id: '/identity/card'
+      path: '/identity/card'
+      fullPath: '/identity/card'
+      preLoaderRoute: typeof IdentityCardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/contact': {
+      id: '/identity/contact'
+      path: '/identity/contact'
+      fullPath: '/identity/contact'
+      preLoaderRoute: typeof IdentityContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/customize': {
+      id: '/identity/customize'
+      path: '/identity/customize'
+      fullPath: '/identity/customize'
+      preLoaderRoute: typeof IdentityCustomizeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/full': {
+      id: '/identity/full'
+      path: '/identity/full'
+      fullPath: '/identity/full'
+      preLoaderRoute: typeof IdentityFullRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/history': {
+      id: '/identity/history'
+      path: '/identity/history'
+      fullPath: '/identity/history'
+      preLoaderRoute: typeof IdentityHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/print': {
+      id: '/identity/print'
+      path: '/identity/print'
+      fullPath: '/identity/print'
+      preLoaderRoute: typeof IdentityPrintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/qr': {
+      id: '/identity/qr'
+      path: '/identity/qr'
+      fullPath: '/identity/qr'
+      preLoaderRoute: typeof IdentityQrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/scan': {
+      id: '/identity/scan'
+      path: '/identity/scan'
+      fullPath: '/identity/scan'
+      preLoaderRoute: typeof IdentityScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/settings': {
+      id: '/identity/settings'
+      path: '/identity/settings'
+      fullPath: '/identity/settings'
+      preLoaderRoute: typeof IdentitySettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -1590,6 +1889,20 @@ declare module '@tanstack/react-router' {
       path: '/provider/availability'
       fullPath: '/provider/availability'
       preLoaderRoute: typeof ProviderAvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider/policies': {
+      id: '/provider/policies'
+      path: '/provider/policies'
+      fullPath: '/provider/policies'
+      preLoaderRoute: typeof ProviderPoliciesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider/pricing': {
+      id: '/provider/pricing'
+      path: '/provider/pricing'
+      fullPath: '/provider/pricing'
+      preLoaderRoute: typeof ProviderPricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talent/$id': {
@@ -1795,6 +2108,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabProposalsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/identity/contact/save': {
+      id: '/identity/contact/save'
+      path: '/save'
+      fullPath: '/identity/contact/save'
+      preLoaderRoute: typeof IdentityContactSaveRouteImport
+      parentRoute: typeof IdentityContactRoute
+    }
+    '/identity/q/$code': {
+      id: '/identity/q/$code'
+      path: '/identity/q/$code'
+      fullPath: '/identity/q/$code'
+      preLoaderRoute: typeof IdentityQCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marketplace/c/$slug': {
       id: '/marketplace/c/$slug'
       path: '/marketplace/c/$slug'
@@ -1905,6 +2232,13 @@ declare module '@tanstack/react-router' {
       path: '/provider/bookings/$ref'
       fullPath: '/provider/bookings/$ref'
       preLoaderRoute: typeof ProviderBookingsRefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider/bookings/calendar': {
+      id: '/provider/bookings/calendar'
+      path: '/provider/bookings/calendar'
+      fullPath: '/provider/bookings/calendar'
+      preLoaderRoute: typeof ProviderBookingsCalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collab/$id/files/': {
@@ -2019,6 +2353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketplaceRentRequestIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/provider/bookings/requests/': {
+      id: '/provider/bookings/requests/'
+      path: '/provider/bookings/requests'
+      fullPath: '/provider/bookings/requests/'
+      preLoaderRoute: typeof ProviderBookingsRequestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/provider/bookings/requests/$ref': {
       id: '/provider/bookings/requests/$ref'
       path: '/provider/bookings/requests/$ref'
@@ -2065,6 +2406,18 @@ const CollabNewRouteWithChildren = CollabNewRoute._addFileChildren(
   CollabNewRouteChildren,
 )
 
+interface IdentityContactRouteChildren {
+  IdentityContactSaveRoute: typeof IdentityContactSaveRoute
+}
+
+const IdentityContactRouteChildren: IdentityContactRouteChildren = {
+  IdentityContactSaveRoute: IdentityContactSaveRoute,
+}
+
+const IdentityContactRouteWithChildren = IdentityContactRoute._addFileChildren(
+  IdentityContactRouteChildren,
+)
+
 interface PortfolioIdRouteChildren {
   PortfolioIdEditRoute: typeof PortfolioIdEditRoute
 }
@@ -2103,6 +2456,17 @@ const rootRouteChildren: RootRouteChildren = {
   StudioRoute: StudioRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   CollabNewRoute: CollabNewRouteWithChildren,
+  IdentityAnalyticsRoute: IdentityAnalyticsRoute,
+  IdentityBusinessRoute: IdentityBusinessRoute,
+  IdentityCardRoute: IdentityCardRoute,
+  IdentityContactRoute: IdentityContactRouteWithChildren,
+  IdentityCustomizeRoute: IdentityCustomizeRoute,
+  IdentityFullRoute: IdentityFullRoute,
+  IdentityHistoryRoute: IdentityHistoryRoute,
+  IdentityPrintRoute: IdentityPrintRoute,
+  IdentityQrRoute: IdentityQrRoute,
+  IdentityScanRoute: IdentityScanRoute,
+  IdentitySettingsRoute: IdentitySettingsRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSavedRoute: MarketplaceSavedRoute,
@@ -2122,6 +2486,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileEditRoute: ProfileEditRoute,
   ProfileInsightsRoute: ProfileInsightsRoute,
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
+  ProviderPoliciesRoute: ProviderPoliciesRoute,
+  ProviderPricingRoute: ProviderPricingRoute,
   TalentIdRoute: TalentIdRoute,
   BookingsIndexRoute: BookingsIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
@@ -2146,6 +2512,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollabInvitesIdRoute: CollabInvitesIdRoute,
   CollabProposalsIdRoute: CollabProposalsIdRouteWithChildren,
   CollabProposalsNewRoute: CollabProposalsNewRoute,
+  IdentityQCodeRoute: IdentityQCodeRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
   MarketplaceRentListRoute: MarketplaceRentListRoute,
@@ -2158,6 +2525,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingStepIdRoute: OnboardingStepIdRoute,
   PortfolioNewKindRoute: PortfolioNewKindRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
+  ProviderBookingsCalendarRoute: ProviderBookingsCalendarRoute,
   BookingsRefIndexRoute: BookingsRefIndexRoute,
   CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
@@ -2179,6 +2547,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRentRequestIdRoute: MarketplaceRentRequestIdRoute,
   ProviderBookingsRequestsRefRoute: ProviderBookingsRequestsRefRoute,
   CollabIdFilesIndexRoute: CollabIdFilesIndexRoute,
+  ProviderBookingsRequestsIndexRoute: ProviderBookingsRequestsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
