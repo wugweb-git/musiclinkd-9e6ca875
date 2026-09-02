@@ -18,6 +18,7 @@ import { Route as FeedRouteImport } from './routes/feed'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlansRouteImport } from './routes/plans'
+import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as RecommendedRouteImport } from './routes/recommended'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SavedRouteImport } from './routes/saved'
@@ -183,6 +184,11 @@ const MessagesRoute = MessagesRouteImport.update({
 const PlansRoute = PlansRouteImport.update({
   id: '/plans',
   path: '/plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsRoute = RecommendationsRouteImport.update({
+  id: '/recommendations',
+  path: '/recommendations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecommendedRoute = RecommendedRouteImport.update({
@@ -809,6 +815,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
+  '/recommendations': typeof RecommendationsRoute
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -941,6 +948,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
+  '/recommendations': typeof RecommendationsRoute
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -1073,6 +1081,7 @@ export interface FileRoutesById {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
+  '/recommendations': typeof RecommendationsRoute
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -1207,6 +1216,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recommendations'
     | '/recommended'
     | '/reviews'
     | '/saved'
@@ -1339,6 +1349,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recommendations'
     | '/recommended'
     | '/reviews'
     | '/saved'
@@ -1470,6 +1481,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recommendations'
     | '/recommended'
     | '/reviews'
     | '/saved'
@@ -1603,6 +1615,7 @@ export interface RootRouteChildren {
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   PlansRoute: typeof PlansRouteWithChildren
+  RecommendationsRoute: typeof RecommendationsRoute
   RecommendedRoute: typeof RecommendedRoute
   ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
@@ -1769,6 +1782,13 @@ declare module '@tanstack/react-router' {
       path: '/plans'
       fullPath: '/plans'
       preLoaderRoute: typeof PlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommendations': {
+      id: '/recommendations'
+      path: '/recommendations'
+      fullPath: '/recommendations'
+      preLoaderRoute: typeof RecommendationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recommended': {
@@ -2764,6 +2784,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   PlansRoute: PlansRouteWithChildren,
+  RecommendationsRoute: RecommendationsRoute,
   RecommendedRoute: RecommendedRoute,
   ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
