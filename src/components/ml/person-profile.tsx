@@ -164,7 +164,17 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
   );
 }
 
-function OwnerLink({ to, icon, label }: { to: "/profile/edit" | "/identity/qr"; icon: ReactNode; label: string }) {
+type OwnerDestination =
+  | "/profile/edit"
+  | "/identity/qr"
+  | "/verification"
+  | "/reviews"
+  | "/bands"
+  | "/plans"
+  | "/recommendations"
+  | "/help";
+
+function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode; label: string }) {
   return <Link to={to} className="flex min-w-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3 text-xs font-semibold"><span className="shrink-0 text-primary">{icon}</span><span className="truncate">{label}</span><ChevronRight size={14} className="ml-auto shrink-0 text-muted-foreground" aria-hidden /></Link>;
 }
 
