@@ -41,7 +41,7 @@ export function WorkForm({
     }
     if (!signedIn) {
       toast.error("Sign in to save work to your portfolio");
-      navigate({ to: "/auth" });
+      navigate({ to: "/auth", search: { mode: "signin" } });
       return;
     }
     setBusy(true);
