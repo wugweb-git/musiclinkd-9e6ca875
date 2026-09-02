@@ -55,6 +55,7 @@ import { Route as IdentityPrintRouteImport } from './routes/identity.print'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
 import { Route as IdentityScanRouteImport } from './routes/identity.scan'
 import { Route as IdentitySettingsRouteImport } from './routes/identity.settings'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
@@ -388,6 +389,11 @@ const IdentityScanRoute = IdentityScanRouteImport.update({
 const IdentitySettingsRoute = IdentitySettingsRouteImport.update({
   id: '/identity/settings',
   path: '/identity/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalTermsRoute = LegalTermsRouteImport.update({
@@ -963,6 +969,7 @@ export interface FileRoutesByFullPath {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
@@ -1114,6 +1121,7 @@ export interface FileRoutesByTo {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
@@ -1267,6 +1275,7 @@ export interface FileRoutesById {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
@@ -1421,6 +1430,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
@@ -1572,6 +1582,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
@@ -1724,6 +1735,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
@@ -1874,6 +1886,7 @@ export interface RootRouteChildren {
   IdentityQrRoute: typeof IdentityQrRoute
   IdentityScanRoute: typeof IdentityScanRoute
   IdentitySettingsRoute: typeof IdentitySettingsRoute
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalTermsRoute: typeof LegalTermsRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
@@ -2286,6 +2299,13 @@ declare module '@tanstack/react-router' {
       path: '/identity/settings'
       fullPath: '/identity/settings'
       preLoaderRoute: typeof IdentitySettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal/terms': {
@@ -3205,6 +3225,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdentityQrRoute: IdentityQrRoute,
   IdentityScanRoute: IdentityScanRoute,
   IdentitySettingsRoute: IdentitySettingsRoute,
+  LegalPrivacyRoute: LegalPrivacyRoute,
   LegalTermsRoute: LegalTermsRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
