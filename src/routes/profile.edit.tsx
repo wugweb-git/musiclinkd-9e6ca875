@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
 import { Btn, Screen, TopBar } from "@/components/ml/ui";
@@ -202,7 +202,7 @@ function EditProfile() {
     );
   }
 
-  const sections: { id: string; label: string; detail: string; done: boolean; body: JSX.Element }[] = [
+  const sections: { id: string; label: string; detail: string; done: boolean; body: ReactElement }[] = [
     {
       id: "identity",
       label: "Identity",
