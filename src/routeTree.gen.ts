@@ -69,6 +69,7 @@ import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
+import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
 import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
 import { Route as PlansEarningsRouteImport } from './routes/plans.earnings'
 import { Route as PlansManageRouteImport } from './routes/plans.manage'
@@ -460,6 +461,11 @@ const OnboardingResumeRoute = OnboardingResumeRouteImport.update({
 const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
   id: '/onboarding/skip',
   path: '/onboarding/skip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
+  id: '/opportunities/',
+  path: '/opportunities/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
@@ -1013,6 +1019,7 @@ export interface FileRoutesByFullPath {
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1166,6 +1173,7 @@ export interface FileRoutesByTo {
   '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
+  '/opportunities': typeof OpportunitiesIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/verification': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1321,6 +1329,7 @@ export interface FileRoutesById {
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1477,6 +1486,7 @@ export interface FileRouteTypes {
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
+    | '/opportunities/'
     | '/portfolio/'
     | '/verification/'
     | '/bands/$id/invite'
@@ -1630,6 +1640,7 @@ export interface FileRouteTypes {
     | '/collab'
     | '/marketplace'
     | '/onboarding'
+    | '/opportunities'
     | '/portfolio'
     | '/verification'
     | '/bands/$id/invite'
@@ -1784,6 +1795,7 @@ export interface FileRouteTypes {
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
+    | '/opportunities/'
     | '/portfolio/'
     | '/verification/'
     | '/bands/$id/invite'
@@ -1932,6 +1944,7 @@ export interface RootRouteChildren {
   CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
+  OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
   VerificationIndexRoute: typeof VerificationIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
@@ -2410,6 +2423,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/skip'
       fullPath: '/onboarding/skip'
       preLoaderRoute: typeof OnboardingSkipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/': {
+      id: '/opportunities/'
+      path: '/opportunities'
+      fullPath: '/opportunities/'
+      preLoaderRoute: typeof OpportunitiesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plans/checkout': {
@@ -3279,6 +3299,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
+  OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
   VerificationIndexRoute: VerificationIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
