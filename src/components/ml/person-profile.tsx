@@ -131,8 +131,15 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
         <OwnerLink to="/profile/edit" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
         <OwnerLink to="/profile/edit" icon={<Clock3 size={16} />} label="Availability" />
         <OwnerLink to="/identity/qr" icon={<QrCode size={16} />} label="My QR & digital ID" />
+        <OwnerLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
+        <OwnerLink to="/reviews" icon={<Star size={16} />} label="Reviews" />
+        <OwnerLink to="/bands" icon={<Users size={16} />} label="My bands" />
+        <OwnerLink to="/plans" icon={<CreditCard size={16} />} label="Plan & earnings" />
+        <OwnerLink to="/recommendations" icon={<Sparkles size={16} />} label="For you" />
+        <OwnerLink to="/help" icon={<LifeBuoy size={16} />} label="Help & guides" />
         <OwnerLink to="/profile/edit" icon={<Settings2 size={16} />} label="Profile settings" />
       </div>
+
       {insightsOpen ? (
         <div className="rounded-3xl border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-3">
