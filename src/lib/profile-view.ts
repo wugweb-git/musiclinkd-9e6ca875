@@ -3,7 +3,7 @@
 
 import type { PersonProfile } from "@/data/profile";
 import { roles as roleDefs } from "@/data/onboarding";
-import type { ProfileRow } from "@/lib/profile-map";
+import { asLinkMap, type ProfileRow } from "@/lib/profile-map";
 
 function roleLabel(key: string | undefined | null): string | null {
   if (!key) return null;
