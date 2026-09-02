@@ -641,6 +641,39 @@ export function SavingBanner({ label = "Saving your answers…" }: { label?: str
   );
 }
 
+/** Renders the real sync state of the draft (local, saving, offline, error). */
+export function SyncBanner({
+  state,
+  onRetry,
+  localNote = "Saved on this device. Sign in to keep your answers on your account.",
+}: {
+  state: SyncState;
+  onRetry: () => void;
+  localNote?: string;
+}) {
+  if (state === "saving" || state === "loading") {
+    return <SavingBanner label={state === "loading" ? "Loading your saved answers…" : "Saving to your account…"} />;
+  }
+  if (state === "offline") return <OfflineBanner />;
+  if (state === "error") {
+    return (
+      <ErrorBanner
+        message="Your answers are safe on this device. We'll try again, or you can retry now."
+        onRetry={onRetry}
+      />
+    );
+  }
+  if (state === "local") {
+    return (
+      <div role="status" className="mb-4 rounded-2xl border border-border bg-card p-4">
+        <p className="text-xs leading-relaxed text-text2">{localNote}</p>
+      </div>
+    );
+  }
+  return null;
+}
+
+
 export function StepSkeleton() {
   return (
     <div className="space-y-3" aria-hidden>
