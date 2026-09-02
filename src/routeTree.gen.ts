@@ -31,6 +31,7 @@ import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthOtpRouteImport } from './routes/auth.otp'
 import { Route as AuthPhoneRouteImport } from './routes/auth.phone'
+import { Route as AuthSuccessRouteImport } from './routes/auth.success'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as BandsIdRouteImport } from './routes/bands.$id'
 import { Route as BandsNewRouteImport } from './routes/bands.new'
@@ -262,6 +263,11 @@ const AuthOtpRoute = AuthOtpRouteImport.update({
 const AuthPhoneRoute = AuthPhoneRouteImport.update({
   id: '/auth/phone',
   path: '/auth/phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSuccessRoute = AuthSuccessRouteImport.update({
+  id: '/auth/success',
+  path: '/auth/success',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
@@ -905,6 +911,7 @@ export interface FileRoutesByFullPath {
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/phone': typeof AuthPhoneRoute
+  '/auth/success': typeof AuthSuccessRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
@@ -1051,6 +1058,7 @@ export interface FileRoutesByTo {
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/phone': typeof AuthPhoneRoute
+  '/auth/success': typeof AuthSuccessRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
@@ -1197,6 +1205,7 @@ export interface FileRoutesById {
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/phone': typeof AuthPhoneRoute
+  '/auth/success': typeof AuthSuccessRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
@@ -1345,6 +1354,7 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/auth/otp'
     | '/auth/phone'
+    | '/auth/success'
     | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
@@ -1491,6 +1501,7 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/auth/otp'
     | '/auth/phone'
+    | '/auth/success'
     | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
@@ -1636,6 +1647,7 @@ export interface FileRouteTypes {
     | '/auth/forgot'
     | '/auth/otp'
     | '/auth/phone'
+    | '/auth/success'
     | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
@@ -1783,6 +1795,7 @@ export interface RootRouteChildren {
   AuthForgotRoute: typeof AuthForgotRoute
   AuthOtpRoute: typeof AuthOtpRoute
   AuthPhoneRoute: typeof AuthPhoneRoute
+  AuthSuccessRoute: typeof AuthSuccessRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   CollabNewRoute: typeof CollabNewRouteWithChildren
@@ -2040,6 +2053,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/phone'
       fullPath: '/auth/phone'
       preLoaderRoute: typeof AuthPhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/success': {
+      id: '/auth/success'
+      path: '/auth/success'
+      fullPath: '/auth/success'
+      preLoaderRoute: typeof AuthSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/verify-email': {
@@ -3066,6 +3086,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthForgotRoute: AuthForgotRoute,
   AuthOtpRoute: AuthOtpRoute,
   AuthPhoneRoute: AuthPhoneRoute,
+  AuthSuccessRoute: AuthSuccessRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   CollabNewRoute: CollabNewRouteWithChildren,
