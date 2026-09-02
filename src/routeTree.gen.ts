@@ -26,7 +26,6 @@ import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
-import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as BandsIdRouteImport } from './routes/bands.$id'
 import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
@@ -74,7 +73,11 @@ import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
+import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
+import { Route as VerificationBadgeRouteImport } from './routes/verification.badge'
+import { Route as VerificationChooseRouteImport } from './routes/verification.choose'
+import { Route as VerificationPrivacyRouteImport } from './routes/verification.privacy'
 import { Route as BandsIdInviteRouteImport } from './routes/bands.$id.invite'
 import { Route as BandsIdManageRouteImport } from './routes/bands.$id.manage'
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
@@ -228,11 +231,6 @@ const SingersRoute = SingersRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VerificationRoute = VerificationRouteImport.update({
-  id: '/verification',
-  path: '/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdRoute = BandsIdRouteImport.update({
@@ -470,10 +468,30 @@ const TalentIdRoute = TalentIdRouteImport.update({
   path: '/talent/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerificationIndexRoute = VerificationIndexRouteImport.update({
+  id: '/verification/',
+  path: '/verification/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerificationTypeRoute = VerificationTypeRouteImport.update({
-  id: '/$type',
-  path: '/$type',
-  getParentRoute: () => VerificationRoute,
+  id: '/verification/$type',
+  path: '/verification/$type',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationBadgeRoute = VerificationBadgeRouteImport.update({
+  id: '/verification/badge',
+  path: '/verification/badge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationChooseRoute = VerificationChooseRouteImport.update({
+  id: '/verification/choose',
+  path: '/verification/choose',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationPrivacyRoute = VerificationPrivacyRouteImport.update({
+  id: '/verification/privacy',
+  path: '/verification/privacy',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdInviteRoute = BandsIdInviteRouteImport.update({
   id: '/invite',
@@ -847,7 +865,6 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
-  '/verification': typeof VerificationRouteWithChildren
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
@@ -891,11 +908,15 @@ export interface FileRoutesByFullPath {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
+  '/verification/badge': typeof VerificationBadgeRoute
+  '/verification/choose': typeof VerificationChooseRoute
+  '/verification/privacy': typeof VerificationPrivacyRoute
   '/bookings/': typeof BookingsIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -984,7 +1005,6 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
-  '/verification': typeof VerificationRouteWithChildren
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
@@ -1027,11 +1047,15 @@ export interface FileRoutesByTo {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
+  '/verification/badge': typeof VerificationBadgeRoute
+  '/verification/choose': typeof VerificationChooseRoute
+  '/verification/privacy': typeof VerificationPrivacyRoute
   '/bookings': typeof BookingsIndexRoute
   '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/verification': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -1121,7 +1145,6 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
-  '/verification': typeof VerificationRouteWithChildren
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
@@ -1165,11 +1188,15 @@ export interface FileRoutesById {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
+  '/verification/badge': typeof VerificationBadgeRoute
+  '/verification/choose': typeof VerificationChooseRoute
+  '/verification/privacy': typeof VerificationPrivacyRoute
   '/bookings/': typeof BookingsIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
@@ -1260,7 +1287,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
-    | '/verification'
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
@@ -1304,11 +1330,15 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
+    | '/verification/badge'
+    | '/verification/choose'
+    | '/verification/privacy'
     | '/bookings/'
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
     | '/portfolio/'
+    | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
     | '/booking/$id/addons'
@@ -1397,7 +1427,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
-    | '/verification'
     | '/bands/$id'
     | '/bands/new'
     | '/collab/new'
@@ -1440,11 +1469,15 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
+    | '/verification/badge'
+    | '/verification/choose'
+    | '/verification/privacy'
     | '/bookings'
     | '/collab'
     | '/marketplace'
     | '/onboarding'
     | '/portfolio'
+    | '/verification'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
     | '/booking/$id/addons'
@@ -1533,7 +1566,6 @@ export interface FileRouteTypes {
     | '/search'
     | '/singers'
     | '/studio'
-    | '/verification'
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
@@ -1577,11 +1609,15 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
+    | '/verification/badge'
+    | '/verification/choose'
+    | '/verification/privacy'
     | '/bookings/'
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
     | '/portfolio/'
+    | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
     | '/booking/$id/addons'
@@ -1671,7 +1707,6 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
-  VerificationRoute: typeof VerificationRouteWithChildren
   BookingIdRoute: typeof BookingIdRouteWithChildren
   CollabNewRoute: typeof CollabNewRouteWithChildren
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
@@ -1707,11 +1742,16 @@ export interface RootRouteChildren {
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
   TalentIdRoute: typeof TalentIdRoute
+  VerificationTypeRoute: typeof VerificationTypeRoute
+  VerificationBadgeRoute: typeof VerificationBadgeRoute
+  VerificationChooseRoute: typeof VerificationChooseRoute
+  VerificationPrivacyRoute: typeof VerificationPrivacyRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
+  VerificationIndexRoute: typeof VerificationIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
@@ -1887,13 +1927,6 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/verification': {
-      id: '/verification'
-      path: '/verification'
-      fullPath: '/verification'
-      preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bands/$id': {
@@ -2225,12 +2258,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verification/': {
+      id: '/verification/'
+      path: '/verification'
+      fullPath: '/verification/'
+      preLoaderRoute: typeof VerificationIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verification/$type': {
       id: '/verification/$type'
-      path: '/$type'
+      path: '/verification/$type'
       fullPath: '/verification/$type'
       preLoaderRoute: typeof VerificationTypeRouteImport
-      parentRoute: typeof VerificationRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification/badge': {
+      id: '/verification/badge'
+      path: '/verification/badge'
+      fullPath: '/verification/badge'
+      preLoaderRoute: typeof VerificationBadgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification/choose': {
+      id: '/verification/choose'
+      path: '/verification/choose'
+      fullPath: '/verification/choose'
+      preLoaderRoute: typeof VerificationChooseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification/privacy': {
+      id: '/verification/privacy'
+      path: '/verification/privacy'
+      fullPath: '/verification/privacy'
+      preLoaderRoute: typeof VerificationPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/bands/$id/invite': {
       id: '/bands/$id/invite'
@@ -2792,18 +2853,6 @@ const ReviewsRouteChildren: ReviewsRouteChildren = {
 const ReviewsRouteWithChildren =
   ReviewsRoute._addFileChildren(ReviewsRouteChildren)
 
-interface VerificationRouteChildren {
-  VerificationTypeRoute: typeof VerificationTypeRoute
-}
-
-const VerificationRouteChildren: VerificationRouteChildren = {
-  VerificationTypeRoute: VerificationTypeRoute,
-}
-
-const VerificationRouteWithChildren = VerificationRoute._addFileChildren(
-  VerificationRouteChildren,
-)
-
 interface BookingIdRouteChildren {
   BookingIdAddonsRoute: typeof BookingIdAddonsRoute
   BookingIdDetailsRoute: typeof BookingIdDetailsRoute
@@ -2893,7 +2942,6 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
-  VerificationRoute: VerificationRouteWithChildren,
   BookingIdRoute: BookingIdRouteWithChildren,
   CollabNewRoute: CollabNewRouteWithChildren,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
@@ -2929,11 +2977,16 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
   TalentIdRoute: TalentIdRoute,
+  VerificationTypeRoute: VerificationTypeRoute,
+  VerificationBadgeRoute: VerificationBadgeRoute,
+  VerificationChooseRoute: VerificationChooseRoute,
+  VerificationPrivacyRoute: VerificationPrivacyRoute,
   BookingsIndexRoute: BookingsIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
+  VerificationIndexRoute: VerificationIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
