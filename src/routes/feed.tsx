@@ -306,6 +306,10 @@ function Body({ data }: { data: DashboardData }) {
           <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
           <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />
           <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />
+          <QuietAction to="/bands" icon={<Users size={14} />} label="My bands" />
+          <QuietAction to="/reviews" icon={<Star size={14} />} label="Reviews" />
+          <QuietAction to="/plans" icon={<CreditCard size={14} />} label="Plan" />
+          <QuietAction to="/help" icon={<LifeBuoy size={14} />} label="Help" />
           <QuietAction to="/messages" icon={<UserPlus size={14} />} label="Find contacts" />
         </div>
       </section>
