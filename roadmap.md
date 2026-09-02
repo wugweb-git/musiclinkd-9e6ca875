@@ -14,17 +14,21 @@
   - [x] `profiles` + `portfolio_items` tables, RLS, grants, signup trigger
   - [x] `/auth` email+password and Google sign-in, `useAuth` hook
   - [x] `src/lib/portfolio.functions.ts` server functions (portfolio + profile CRUD)
-  - [ ] onboarding completion writes profile to the database
+  - [x] onboarding completion writes profile to the database
 - FLOW 03 — Add Portfolio (UI per latest spec, DB-backed when signed in)
-  - [ ] overview, add-work type picker, work form, preview/publish, draft
-  - [ ] work detail, edit, reorder, settings, share, empty/loading/error states
+  - [x] overview (header stats, featured, all work), type picker, work form, draft/publish
+  - [x] work detail (audio/video player, credits, performance), edit, reorder + featured,
+        settings, share, portfolio analytics, share-work picker
+  - [x] media uploader state machine (not-uploaded/uploading/processing/ready/failed/unavailable)
+  - [ ] real media upload/storage (deliberately out of scope — links only)
 - FLOW 08 — Booking: re-check latest spec gaps (payment success/failure, conflict,
   no-availability, rebook, provider pricing/policies screens)
 - FLOW 02 — User Onboarding
   - [x] `src/data/onboarding.ts` master data, step model, contracts
   - [x] `src/components/ml/onboarding.tsx` UI kit + draft store
   - [x] welcome, stepper (`/onboarding/step/$id`), preview, complete, resume, skip
-  - [ ] render pass on 412px viewport
+  - [x] `/onboarding/done` final screen + portfolio hand-off
+  - [x] render pass on 412px viewport (no overflow, no console errors)
 
 ## Next
 - Profile follow-ups (from user)

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn } from "@/components/ml/ui";
 import { Field, TextInput, StickyBar } from "@/components/ml/collab";
-import { SelectableChips } from "@/components/ml/portfolio";
+import { ContributorPicker, MediaUploader, SelectableChips } from "@/components/ml/portfolio";
 import { creditRoles, genres, visibilityOptions, workType, type PortfolioItem } from "@/data/portfolio";
 import { savePortfolioItem } from "@/lib/portfolio.functions";
 
@@ -28,7 +28,7 @@ export function WorkForm({
   );
   const [genre, setGenre] = useState<string[]>([]);
   const [year, setYear] = useState(initial?.release_year ? String(initial.release_year) : "");
-  const [collabs, setCollabs] = useState((initial?.collaborators ?? []).join(", "));
+  const [collabList, setCollabList] = useState<string[]>(initial?.collaborators ?? []);
   const [mediaUrl, setMediaUrl] = useState(initial?.media_url ?? "");
   const [coverUrl, setCoverUrl] = useState(initial?.cover_url ?? "");
   const [visibility, setVisibility] = useState<string>(initial ? (initial.published ? "public" : "private") : "public");
@@ -54,10 +54,7 @@ export function WorkForm({
           kind,
           description: description.trim() || null,
           role: [...roles, ...genre].join(", ") || null,
-          collaborators: collabs
-            .split(",")
-            .map((c) => c.trim())
-            .filter(Boolean),
+          collaborators: collabList,
           cover_url: coverUrl.trim() || null,
           media_url: mediaUrl.trim() || null,
           release_year: parsedYear && !Number.isNaN(parsedYear) ? parsedYear : null,
@@ -121,17 +118,13 @@ export function WorkForm({
           <TextInput value={year} onChange={setYear} placeholder="2025" />
         </Field>
 
-        <Field label="Contributors" optional hint="Comma separated — artists, studios, engineers">
-          <TextInput value={collabs} onChange={setCollabs} placeholder="Aditi Rao, Octave Sound Labs" />
+        <Field label="Contributors" optional hint="Search MusicLinkd first — invite by name if they're not here yet">
+          <ContributorPicker value={collabList} onChange={setCollabList} />
         </Field>
 
         {t.media !== "none" ? (
-          <Field
-            label={t.media === "link" ? "Work link" : `${t.media} link`}
-            optional
-            hint="YouTube, Spotify, SoundCloud or a direct file URL"
-          >
-            <TextInput value={mediaUrl} onChange={setMediaUrl} placeholder="https://" />
+          <Field label="Media" optional hint="Link a file, YouTube, Spotify or SoundCloud">
+            <MediaUploader type={t.media} url={mediaUrl} onUrl={setMediaUrl} />
           </Field>
         ) : null}
 

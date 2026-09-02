@@ -4,8 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Btn, TopBar } from "@/components/ml/ui";
-import { PortfolioSkeleton, StateCard } from "@/components/ml/portfolio";
-import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
+import { PortfolioSkeleton, ReorderList, StateCard } from "@/components/ml/portfolio";
+import { demoPortfolio, FEATURED_LIMIT, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -40,6 +40,19 @@ function Reorder() {
     setOrder(signedIn ? (q.data ?? []) : demoPortfolio);
   }, [q.data, signedIn]);
 
+  const [featured, setFeatured] = useState<string[]>([]);
+
+  function toggleFeatured(id: string) {
+    setFeatured((prev) => {
+      if (prev.includes(id)) return prev.filter((p) => p !== id);
+      if (prev.length >= FEATURED_LIMIT) {
+        toast.error(`You can feature up to ${FEATURED_LIMIT} works`);
+        return prev;
+      }
+      return [...prev, id];
+    });
+  }
+
   function move(index: number, delta: number) {
     setOrder((prev) => {
       const next = [...prev];
@@ -71,40 +84,16 @@ function Reorder() {
           />
         ) : null}
 
-        <ul className="space-y-2">
-          {order.map((item, i) => (
-            <li
-              key={item.id}
-              className="flex items-center gap-3 rounded-3xl border border-border bg-card p-4"
-            >
-              <span className="text-xl" aria-hidden>
-                {workType(item.kind).emoji}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold">{item.title}</span>
-                <span className="block text-xs text-muted-foreground">
-                  Position {i + 1} of {order.length}
-                </span>
-              </span>
-              <button
-                type="button"
-                aria-label={`Move ${item.title} up`}
-                onClick={() => move(i, -1)}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                aria-label={`Move ${item.title} down`}
-                onClick={() => move(i, 1)}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
-              >
-                ↓
-              </button>
-            </li>
-          ))}
-        </ul>
+        <ReorderList
+          items={order}
+          onMove={(i, dir) => move(i, dir)}
+          featured={featured}
+          onFeature={toggleFeatured}
+        />
+
+        <p className="mt-4 text-[11px] text-muted-foreground">
+          Featured work leads your profile — up to {FEATURED_LIMIT} items.
+        </p>
 
         {order.length ? (
           <div className="sticky bottom-0 mt-6 border-t border-border bg-background/95 py-4 backdrop-blur">

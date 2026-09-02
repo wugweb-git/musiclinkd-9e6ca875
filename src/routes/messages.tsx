@@ -45,6 +45,18 @@ function Messages() {
           </span>
           <span className="text-muted-foreground">›</span>
         </Link>
+        <Link
+          to="/portfolio/select"
+          className="mt-3 flex items-center justify-between rounded-3xl border border-border bg-card px-4 py-4"
+        >
+          <span className="min-w-0">
+            <span className="block text-[14px] font-semibold">Share work</span>
+            <span className="block text-[11px] text-muted-foreground">
+              Attach a track, project or performance to a conversation
+            </span>
+          </span>
+          <span className="text-muted-foreground">›</span>
+        </Link>
       </div>
       <div className="divide-y divide-border px-5">
         {talents.slice(0, 4).map((t, i) => (

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn, TopBar } from "@/components/ml/ui";
 import {
+  PortfolioHeader,
   PortfolioSkeleton,
   SignedOutCard,
   StateCard,
@@ -44,6 +45,7 @@ function PortfolioOverview() {
 
   const items: PortfolioItem[] = signedIn ? (q.data ?? []) : demoPortfolio;
   const published = items.filter((i) => i.published);
+  const featured = items.slice(0, 3);
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
@@ -59,27 +61,30 @@ function PortfolioOverview() {
       />
 
       <main className="px-5 pt-4">
-        <section className="rounded-3xl border border-border bg-card p-5">
-          <div className="flex items-baseline justify-between">
-            <div>
-              <p className="text-[28px] leading-none tabular-nums">{items.length}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {published.length} published · {items.length - published.length} draft
-              </p>
-            </div>
-            <Link to="/portfolio/new">
-              <Btn>Add work</Btn>
-            </Link>
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link to="/portfolio/reorder">
-              <Btn variant="outline">Reorder</Btn>
-            </Link>
-            <Link to="/me">
-              <Btn variant="outline">Preview on profile</Btn>
-            </Link>
-          </div>
-        </section>
+        <PortfolioHeader
+          total={items.length}
+          published={published.length}
+          drafts={items.length - published.length}
+          featured={featured.length}
+        />
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link to="/portfolio/new">
+            <Btn>Add work</Btn>
+          </Link>
+          <Link to="/portfolio/reorder">
+            <Btn variant="outline">Reorder</Btn>
+          </Link>
+          <Link to="/portfolio/analytics">
+            <Btn variant="outline">Performance</Btn>
+          </Link>
+          <Link to="/portfolio/select">
+            <Btn variant="outline">Share work</Btn>
+          </Link>
+          <Link to="/me">
+            <Btn variant="outline">Preview on profile</Btn>
+          </Link>
+        </div>
 
         {!signedIn && !authLoading ? (
           <div className="mt-5">
@@ -87,7 +92,18 @@ function PortfolioOverview() {
           </div>
         ) : null}
 
-        <h2 className="mt-7 text-[17px]">Work</h2>
+        {featured.length ? (
+          <>
+            <h2 className="mt-7 text-[17px]">Featured</h2>
+            <div className="mt-3 space-y-3">
+              {featured.map((item) => (
+                <WorkCard key={`f-${item.id}`} item={item} />
+              ))}
+            </div>
+          </>
+        ) : null}
+
+        <h2 className="mt-7 text-[17px]">All work</h2>
         <div className="mt-3 space-y-3">
           {signedIn && (q.isLoading || authLoading) ? <PortfolioSkeleton /> : null}
 
