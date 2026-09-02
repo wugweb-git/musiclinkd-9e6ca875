@@ -12,6 +12,10 @@ import {
   UserPlus,
   ArrowRight,
   Calendar,
+  Users,
+  Star,
+  CreditCard,
+  LifeBuoy,
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
 import { TalentCard } from "@/components/ml/cards";
