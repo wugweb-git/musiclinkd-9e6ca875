@@ -71,7 +71,7 @@ function Discover() {
       </div>
 
       <section className="pb-6">
-        <SectionHeader title="Featured talent" action="See all" />
+        <SectionHeader title="Featured talent" action={<Link to="/search">See all</Link>} />
         <div className="flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {talents.slice(0, 4).map((t) => (
             <TalentCard key={t.id} t={t} />
@@ -80,7 +80,7 @@ function Discover() {
       </section>
 
       <section className="pb-6">
-        <SectionHeader title="Trending this week" action="See all" />
+        <SectionHeader title="Trending this week" action={<Link to="/search">See all</Link>} />
         <div className="flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {trending.map((t) => (
             <article
