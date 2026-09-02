@@ -211,7 +211,7 @@ function Body({ data }: { data: DashboardData }) {
       {/* 4 — For you */}
       {tiles.length || data.forYou.length ? (
         <section className="pt-6">
-          <SectionHeader title="For you" action="See all" />
+          <SectionHeader title="For you" action={<Link to="/recommendations">See all</Link>} />
           {tiles.length ? (
             <div className="grid grid-cols-2 gap-3 px-5">
               {tiles.map((t) => (
