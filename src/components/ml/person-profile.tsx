@@ -1,14 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
+  BadgeCheck,
   BarChart3,
   BriefcaseBusiness,
   ChevronRight,
   Clock3,
+  CreditCard,
   ExternalLink,
   FolderKanban,
   Globe2,
   Languages,
+  LifeBuoy,
   MapPin,
   Mic2,
   Pencil,
@@ -16,6 +19,8 @@ import {
   Settings2,
   QrCode,
   Share2,
+  Sparkles,
+  Star,
   Users,
 } from "lucide-react";
 import type { PersonProfile } from "@/data/profile";
