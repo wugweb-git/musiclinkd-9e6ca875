@@ -40,6 +40,7 @@ import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioIdRouteImport } from './routes/portfolio.$id'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
 import { Route as PortfolioReorderRouteImport } from './routes/portfolio.reorder'
+import { Route as PortfolioSelectRouteImport } from './routes/portfolio.select'
 import { Route as PortfolioSettingsRouteImport } from './routes/portfolio.settings'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
@@ -261,6 +262,11 @@ const PortfolioAnalyticsRoute = PortfolioAnalyticsRouteImport.update({
 const PortfolioReorderRoute = PortfolioReorderRouteImport.update({
   id: '/portfolio/reorder',
   path: '/portfolio/reorder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioSelectRoute = PortfolioSelectRouteImport.update({
+  id: '/portfolio/select',
+  path: '/portfolio/select',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioSettingsRoute = PortfolioSettingsRouteImport.update({
@@ -632,6 +638,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
+  '/portfolio/select': typeof PortfolioSelectRoute
   '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
@@ -731,6 +738,7 @@ export interface FileRoutesByTo {
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
+  '/portfolio/select': typeof PortfolioSelectRoute
   '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
@@ -832,6 +840,7 @@ export interface FileRoutesById {
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
+  '/portfolio/select': typeof PortfolioSelectRoute
   '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
@@ -934,6 +943,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
+    | '/portfolio/select'
     | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
@@ -1033,6 +1043,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
+    | '/portfolio/select'
     | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
@@ -1133,6 +1144,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
+    | '/portfolio/select'
     | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
@@ -1234,6 +1246,7 @@ export interface RootRouteChildren {
   PortfolioIdRoute: typeof PortfolioIdRouteWithChildren
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   PortfolioReorderRoute: typeof PortfolioReorderRoute
+  PortfolioSelectRoute: typeof PortfolioSelectRoute
   PortfolioSettingsRoute: typeof PortfolioSettingsRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
@@ -1515,6 +1528,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/reorder'
       fullPath: '/portfolio/reorder'
       preLoaderRoute: typeof PortfolioReorderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/select': {
+      id: '/portfolio/select'
+      path: '/portfolio/select'
+      fullPath: '/portfolio/select'
+      preLoaderRoute: typeof PortfolioSelectRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio/settings': {
@@ -2075,6 +2095,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioIdRoute: PortfolioIdRouteWithChildren,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   PortfolioReorderRoute: PortfolioReorderRoute,
+  PortfolioSelectRoute: PortfolioSelectRoute,
   PortfolioSettingsRoute: PortfolioSettingsRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
