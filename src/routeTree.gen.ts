@@ -55,6 +55,7 @@ import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/previ
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
+import { Route as PlansManageRouteImport } from './routes/plans.manage'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioIdRouteImport } from './routes/portfolio.$id'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
@@ -366,6 +367,11 @@ const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
 const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => PlansRoute,
+} as any)
+const PlansManageRoute = PlansManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
   getParentRoute: () => PlansRoute,
 } as any)
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
@@ -830,6 +836,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/plans/checkout': typeof PlansCheckoutRoute
+  '/plans/manage': typeof PlansManageRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -959,6 +966,7 @@ export interface FileRoutesByTo {
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/plans/checkout': typeof PlansCheckoutRoute
+  '/plans/manage': typeof PlansManageRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -1090,6 +1098,7 @@ export interface FileRoutesById {
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/plans/checkout': typeof PlansCheckoutRoute
+  '/plans/manage': typeof PlansManageRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -1222,6 +1231,7 @@ export interface FileRouteTypes {
     | '/onboarding/resume'
     | '/onboarding/skip'
     | '/plans/checkout'
+    | '/plans/manage'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1351,6 +1361,7 @@ export interface FileRouteTypes {
     | '/onboarding/resume'
     | '/onboarding/skip'
     | '/plans/checkout'
+    | '/plans/manage'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1481,6 +1492,7 @@ export interface FileRouteTypes {
     | '/onboarding/resume'
     | '/onboarding/skip'
     | '/plans/checkout'
+    | '/plans/manage'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -2004,6 +2016,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/plans/checkout'
       preLoaderRoute: typeof PlansCheckoutRouteImport
+      parentRoute: typeof PlansRoute
+    }
+    '/plans/manage': {
+      id: '/plans/manage'
+      path: '/manage'
+      fullPath: '/plans/manage'
+      preLoaderRoute: typeof PlansManageRouteImport
       parentRoute: typeof PlansRoute
     }
     '/portfolio/': {
@@ -2610,10 +2629,12 @@ const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
 
 interface PlansRouteChildren {
   PlansCheckoutRoute: typeof PlansCheckoutRoute
+  PlansManageRoute: typeof PlansManageRoute
 }
 
 const PlansRouteChildren: PlansRouteChildren = {
   PlansCheckoutRoute: PlansCheckoutRoute,
+  PlansManageRoute: PlansManageRoute,
 }
 
 const PlansRouteWithChildren = PlansRoute._addFileChildren(PlansRouteChildren)
