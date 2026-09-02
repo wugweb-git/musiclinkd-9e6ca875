@@ -64,6 +64,7 @@ import { Route as ProviderAvailabilityRouteImport } from './routes/provider.avai
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
+import { Route as BandsIdInviteRouteImport } from './routes/bands.$id.invite'
 import { Route as BandsIdManageRouteImport } from './routes/bands.$id.manage'
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
 import { Route as BookingIdAddonsRouteImport } from './routes/booking.$id.addons'
@@ -405,6 +406,11 @@ const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BandsIdInviteRoute = BandsIdInviteRouteImport.update({
+  id: '/invite',
+  path: '/invite',
+  getParentRoute: () => BandsIdRoute,
 } as any)
 const BandsIdManageRoute = BandsIdManageRouteImport.update({
   id: '/manage',
@@ -801,6 +807,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
@@ -923,6 +930,7 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
@@ -1047,6 +1055,7 @@ export interface FileRoutesById {
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
@@ -1172,6 +1181,7 @@ export interface FileRouteTypes {
     | '/marketplace/'
     | '/onboarding/'
     | '/portfolio/'
+    | '/bands/$id/invite'
     | '/bands/$id/manage'
     | '/booking/$id/addons'
     | '/booking/$id/details'
@@ -1294,6 +1304,7 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/onboarding'
     | '/portfolio'
+    | '/bands/$id/invite'
     | '/bands/$id/manage'
     | '/booking/$id/addons'
     | '/booking/$id/details'
@@ -1417,6 +1428,7 @@ export interface FileRouteTypes {
     | '/marketplace/'
     | '/onboarding/'
     | '/portfolio/'
+    | '/bands/$id/invite'
     | '/bands/$id/manage'
     | '/booking/$id/addons'
     | '/booking/$id/details'
@@ -1982,6 +1994,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bands/$id/invite': {
+      id: '/bands/$id/invite'
+      path: '/invite'
+      fullPath: '/bands/$id/invite'
+      preLoaderRoute: typeof BandsIdInviteRouteImport
+      parentRoute: typeof BandsIdRoute
+    }
     '/bands/$id/manage': {
       id: '/bands/$id/manage'
       path: '/manage'
@@ -2448,10 +2467,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface BandsIdRouteChildren {
+  BandsIdInviteRoute: typeof BandsIdInviteRoute
   BandsIdManageRoute: typeof BandsIdManageRoute
 }
 
 const BandsIdRouteChildren: BandsIdRouteChildren = {
+  BandsIdInviteRoute: BandsIdInviteRoute,
   BandsIdManageRoute: BandsIdManageRoute,
 }
 
