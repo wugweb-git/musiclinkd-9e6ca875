@@ -126,9 +126,12 @@ export const saveMyProfile = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }) => {
+    const patch = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== undefined),
+    ) as Record<string, unknown>;
     const { data: row, error } = await context.supabase
       .from("profiles")
-      .upsert({ id: context.userId, ...data }, { onConflict: "id" })
+      .upsert({ id: context.userId, ...patch } as never, { onConflict: "id" })
       .select()
       .single();
     if (error) throw new Error(error.message);
