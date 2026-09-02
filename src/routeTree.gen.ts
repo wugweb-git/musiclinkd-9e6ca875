@@ -15,9 +15,11 @@ import { Route as BandRouteImport } from './routes/band'
 import { Route as BandsRouteImport } from './routes/bands'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as FeedRouteImport } from './routes/feed'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlansRouteImport } from './routes/plans'
+import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as RecommendedRouteImport } from './routes/recommended'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SavedRouteImport } from './routes/saved'
@@ -31,6 +33,7 @@ import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as CollabNewRouteImport } from './routes/collab.new'
+import { Route as HelpSlugRouteImport } from './routes/help.$slug'
 import { Route as IdentityAnalyticsRouteImport } from './routes/identity.analytics'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
 import { Route as IdentityCardRouteImport } from './routes/identity.card'
@@ -54,6 +57,9 @@ import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
 import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/preview'
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
+import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
+import { Route as PlansEarningsRouteImport } from './routes/plans.earnings'
+import { Route as PlansManageRouteImport } from './routes/plans.manage'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioIdRouteImport } from './routes/portfolio.$id'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
@@ -66,6 +72,7 @@ import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
+import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
 import { Route as BandsIdInviteRouteImport } from './routes/bands.$id.invite'
@@ -98,6 +105,7 @@ import { Route as CollabInvitesIdRouteImport } from './routes/collab.invites.$id
 import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
 import { Route as CollabProposalsIdRouteImport } from './routes/collab.proposals.$id'
 import { Route as CollabProposalsNewRouteImport } from './routes/collab.proposals.new'
+import { Route as HelpCategoryKeyRouteImport } from './routes/help.category.$key'
 import { Route as IdentityContactSaveRouteImport } from './routes/identity.contact.save'
 import { Route as IdentityQCodeRouteImport } from './routes/identity.q.$code'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
@@ -167,6 +175,11 @@ const FeedRoute = FeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeRoute = MeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -180,6 +193,11 @@ const MessagesRoute = MessagesRouteImport.update({
 const PlansRoute = PlansRouteImport.update({
   id: '/plans',
   path: '/plans',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsRoute = RecommendationsRouteImport.update({
+  id: '/recommendations',
+  path: '/recommendations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecommendedRoute = RecommendedRouteImport.update({
@@ -246,6 +264,11 @@ const CollabNewRoute = CollabNewRouteImport.update({
   id: '/collab/new',
   path: '/collab/new',
   getParentRoute: () => rootRouteImport,
+} as any)
+const HelpSlugRoute = HelpSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => HelpRoute,
 } as any)
 const IdentityAnalyticsRoute = IdentityAnalyticsRouteImport.update({
   id: '/identity/analytics',
@@ -362,6 +385,21 @@ const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
   path: '/onboarding/skip',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => PlansRoute,
+} as any)
+const PlansEarningsRoute = PlansEarningsRouteImport.update({
+  id: '/earnings',
+  path: '/earnings',
+  getParentRoute: () => PlansRoute,
+} as any)
+const PlansManageRoute = PlansManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => PlansRoute,
+} as any)
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
   path: '/portfolio/',
@@ -421,6 +459,11 @@ const ProviderPricingRoute = ProviderPricingRouteImport.update({
   id: '/provider/pricing',
   path: '/provider/pricing',
   getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => RecommendationsRoute,
 } as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
@@ -581,6 +624,11 @@ const CollabProposalsNewRoute = CollabProposalsNewRouteImport.update({
   id: '/collab/proposals/new',
   path: '/collab/proposals/new',
   getParentRoute: () => rootRouteImport,
+} as any)
+const HelpCategoryKeyRoute = HelpCategoryKeyRouteImport.update({
+  id: '/category/$key',
+  path: '/category/$key',
+  getParentRoute: () => HelpRoute,
 } as any)
 const IdentityContactSaveRoute = IdentityContactSaveRouteImport.update({
   id: '/save',
@@ -788,9 +836,11 @@ export interface FileRoutesByFullPath {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
+  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRoute
+  '/plans': typeof PlansRouteWithChildren
+  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -802,6 +852,7 @@ export interface FileRoutesByFullPath {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
@@ -823,6 +874,9 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/plans/checkout': typeof PlansCheckoutRoute
+  '/plans/earnings': typeof PlansEarningsRoute
+  '/plans/manage': typeof PlansManageRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -834,6 +888,7 @@ export interface FileRoutesByFullPath {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/bookings/': typeof BookingsIndexRoute
@@ -868,6 +923,7 @@ export interface FileRoutesByFullPath {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -917,9 +973,11 @@ export interface FileRoutesByTo {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
+  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRoute
+  '/plans': typeof PlansRouteWithChildren
+  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -930,6 +988,7 @@ export interface FileRoutesByTo {
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
@@ -951,6 +1010,9 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/plans/checkout': typeof PlansCheckoutRoute
+  '/plans/earnings': typeof PlansEarningsRoute
+  '/plans/manage': typeof PlansManageRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -962,6 +1024,7 @@ export interface FileRoutesByTo {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/bookings': typeof BookingsIndexRoute
@@ -996,6 +1059,7 @@ export interface FileRoutesByTo {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -1046,9 +1110,11 @@ export interface FileRoutesById {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
+  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRoute
+  '/plans': typeof PlansRouteWithChildren
+  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -1060,6 +1126,7 @@ export interface FileRoutesById {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
@@ -1081,6 +1148,9 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/plans/checkout': typeof PlansCheckoutRoute
+  '/plans/earnings': typeof PlansEarningsRoute
+  '/plans/manage': typeof PlansManageRoute
   '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
@@ -1092,6 +1162,7 @@ export interface FileRoutesById {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/bookings/': typeof BookingsIndexRoute
@@ -1126,6 +1197,7 @@ export interface FileRoutesById {
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
   '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
+  '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
   '/marketplace/c/$slug': typeof MarketplaceCSlugRoute
@@ -1177,9 +1249,11 @@ export interface FileRouteTypes {
     | '/bands'
     | '/categories'
     | '/feed'
+    | '/help'
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recommendations'
     | '/recommended'
     | '/reviews'
     | '/saved'
@@ -1191,6 +1265,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/collab/new'
+    | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
@@ -1212,6 +1287,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/plans/checkout'
+    | '/plans/earnings'
+    | '/plans/manage'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1223,6 +1301,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/provider/policies'
     | '/provider/pricing'
+    | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
     | '/bookings/'
@@ -1257,6 +1336,7 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
     | '/marketplace/c/$slug'
@@ -1306,9 +1386,11 @@ export interface FileRouteTypes {
     | '/bands'
     | '/categories'
     | '/feed'
+    | '/help'
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recommendations'
     | '/recommended'
     | '/reviews'
     | '/saved'
@@ -1319,6 +1401,7 @@ export interface FileRouteTypes {
     | '/bands/$id'
     | '/bands/new'
     | '/collab/new'
+    | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
@@ -1340,6 +1423,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/plans/checkout'
+    | '/plans/earnings'
+    | '/plans/manage'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1351,6 +1437,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/provider/policies'
     | '/provider/pricing'
+    | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
     | '/bookings'
@@ -1385,6 +1472,7 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
     | '/marketplace/c/$slug'
@@ -1434,9 +1522,11 @@ export interface FileRouteTypes {
     | '/bands'
     | '/categories'
     | '/feed'
+    | '/help'
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recommendations'
     | '/recommended'
     | '/reviews'
     | '/saved'
@@ -1448,6 +1538,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/collab/new'
+    | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
@@ -1469,6 +1560,9 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/plans/checkout'
+    | '/plans/earnings'
+    | '/plans/manage'
     | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
@@ -1480,6 +1574,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/provider/policies'
     | '/provider/pricing'
+    | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
     | '/bookings/'
@@ -1514,6 +1609,7 @@ export interface FileRouteTypes {
     | '/collab/new/collaborators'
     | '/collab/proposals/$id'
     | '/collab/proposals/new'
+    | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
     | '/marketplace/c/$slug'
@@ -1564,9 +1660,11 @@ export interface RootRouteChildren {
   BandsRoute: typeof BandsRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
+  HelpRoute: typeof HelpRouteWithChildren
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
-  PlansRoute: typeof PlansRoute
+  PlansRoute: typeof PlansRouteWithChildren
+  RecommendationsRoute: typeof RecommendationsRouteWithChildren
   RecommendedRoute: typeof RecommendedRoute
   ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
@@ -1714,6 +1812,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/me': {
       id: '/me'
       path: '/me'
@@ -1733,6 +1838,13 @@ declare module '@tanstack/react-router' {
       path: '/plans'
       fullPath: '/plans'
       preLoaderRoute: typeof PlansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommendations': {
+      id: '/recommendations'
+      path: '/recommendations'
+      fullPath: '/recommendations'
+      preLoaderRoute: typeof RecommendationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recommended': {
@@ -1825,6 +1937,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/collab/new'
       preLoaderRoute: typeof CollabNewRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/help/$slug': {
+      id: '/help/$slug'
+      path: '/$slug'
+      fullPath: '/help/$slug'
+      preLoaderRoute: typeof HelpSlugRouteImport
+      parentRoute: typeof HelpRoute
     }
     '/identity/analytics': {
       id: '/identity/analytics'
@@ -1987,6 +2106,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingSkipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plans/checkout': {
+      id: '/plans/checkout'
+      path: '/checkout'
+      fullPath: '/plans/checkout'
+      preLoaderRoute: typeof PlansCheckoutRouteImport
+      parentRoute: typeof PlansRoute
+    }
+    '/plans/earnings': {
+      id: '/plans/earnings'
+      path: '/earnings'
+      fullPath: '/plans/earnings'
+      preLoaderRoute: typeof PlansEarningsRouteImport
+      parentRoute: typeof PlansRoute
+    }
+    '/plans/manage': {
+      id: '/plans/manage'
+      path: '/manage'
+      fullPath: '/plans/manage'
+      preLoaderRoute: typeof PlansManageRouteImport
+      parentRoute: typeof PlansRoute
+    }
     '/portfolio/': {
       id: '/portfolio/'
       path: '/portfolio'
@@ -2070,6 +2210,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/provider/pricing'
       preLoaderRoute: typeof ProviderPricingRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/recommendations/settings': {
+      id: '/recommendations/settings'
+      path: '/settings'
+      fullPath: '/recommendations/settings'
+      preLoaderRoute: typeof RecommendationsSettingsRouteImport
+      parentRoute: typeof RecommendationsRoute
     }
     '/talent/$id': {
       id: '/talent/$id'
@@ -2294,6 +2441,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/collab/proposals/new'
       preLoaderRoute: typeof CollabProposalsNewRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/help/category/$key': {
+      id: '/help/category/$key'
+      path: '/category/$key'
+      fullPath: '/help/category/$key'
+      preLoaderRoute: typeof HelpCategoryKeyRouteImport
+      parentRoute: typeof HelpRoute
     }
     '/identity/contact/save': {
       id: '/identity/contact/save'
@@ -2589,6 +2743,44 @@ const BandsRouteChildren: BandsRouteChildren = {
 
 const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
 
+interface HelpRouteChildren {
+  HelpSlugRoute: typeof HelpSlugRoute
+  HelpCategoryKeyRoute: typeof HelpCategoryKeyRoute
+}
+
+const HelpRouteChildren: HelpRouteChildren = {
+  HelpSlugRoute: HelpSlugRoute,
+  HelpCategoryKeyRoute: HelpCategoryKeyRoute,
+}
+
+const HelpRouteWithChildren = HelpRoute._addFileChildren(HelpRouteChildren)
+
+interface PlansRouteChildren {
+  PlansCheckoutRoute: typeof PlansCheckoutRoute
+  PlansEarningsRoute: typeof PlansEarningsRoute
+  PlansManageRoute: typeof PlansManageRoute
+}
+
+const PlansRouteChildren: PlansRouteChildren = {
+  PlansCheckoutRoute: PlansCheckoutRoute,
+  PlansEarningsRoute: PlansEarningsRoute,
+  PlansManageRoute: PlansManageRoute,
+}
+
+const PlansRouteWithChildren = PlansRoute._addFileChildren(PlansRouteChildren)
+
+interface RecommendationsRouteChildren {
+  RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
+}
+
+const RecommendationsRouteChildren: RecommendationsRouteChildren = {
+  RecommendationsSettingsRoute: RecommendationsSettingsRoute,
+}
+
+const RecommendationsRouteWithChildren = RecommendationsRoute._addFileChildren(
+  RecommendationsRouteChildren,
+)
+
 interface ReviewsRouteChildren {
   ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
 }
@@ -2690,9 +2882,11 @@ const rootRouteChildren: RootRouteChildren = {
   BandsRoute: BandsRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
+  HelpRoute: HelpRouteWithChildren,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
-  PlansRoute: PlansRoute,
+  PlansRoute: PlansRouteWithChildren,
+  RecommendationsRoute: RecommendationsRouteWithChildren,
   RecommendedRoute: RecommendedRoute,
   ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
