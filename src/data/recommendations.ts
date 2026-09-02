@@ -31,7 +31,7 @@ export const recommendations: Recommendation[] = [
     title: talents[0]!.name,
     subtitle: talents[0]!.role,
     image: talents[0]!.photo,
-    meta: talents[0]!.city,
+    meta: talents[0]!.location,
     reason: "Works in your genres and is available the week of your next session",
     route: `/profile/${talents[0]!.id}`,
     verified: talents[0]!.verified,
