@@ -20,6 +20,7 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlansRouteImport } from './routes/plans'
 import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as RecommendedRouteImport } from './routes/recommended'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
@@ -204,6 +205,11 @@ const RecommendationsRoute = RecommendationsRouteImport.update({
 const RecommendedRoute = RecommendedRouteImport.update({
   id: '/recommended',
   path: '/recommended',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsRoute = ReviewsRouteImport.update({
@@ -877,6 +883,7 @@ export interface FileRoutesByFullPath {
   '/plans': typeof PlansRouteWithChildren
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
@@ -1020,6 +1027,7 @@ export interface FileRoutesByTo {
   '/plans': typeof PlansRouteWithChildren
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
@@ -1163,6 +1171,7 @@ export interface FileRoutesById {
   '/plans': typeof PlansRouteWithChildren
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
@@ -1308,6 +1317,7 @@ export interface FileRouteTypes {
     | '/plans'
     | '/recommendations'
     | '/recommended'
+    | '/reset-password'
     | '/reviews'
     | '/saved'
     | '/search'
@@ -1451,6 +1461,7 @@ export interface FileRouteTypes {
     | '/plans'
     | '/recommendations'
     | '/recommended'
+    | '/reset-password'
     | '/reviews'
     | '/saved'
     | '/search'
@@ -1593,6 +1604,7 @@ export interface FileRouteTypes {
     | '/plans'
     | '/recommendations'
     | '/recommended'
+    | '/reset-password'
     | '/reviews'
     | '/saved'
     | '/search'
@@ -1737,6 +1749,7 @@ export interface RootRouteChildren {
   PlansRoute: typeof PlansRouteWithChildren
   RecommendationsRoute: typeof RecommendationsRouteWithChildren
   RecommendedRoute: typeof RecommendedRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
   SearchRoute: typeof SearchRoute
@@ -1924,6 +1937,13 @@ declare module '@tanstack/react-router' {
       path: '/recommended'
       fullPath: '/recommended'
       preLoaderRoute: typeof RecommendedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reviews': {
@@ -2996,6 +3016,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlansRoute: PlansRouteWithChildren,
   RecommendationsRoute: RecommendationsRouteWithChildren,
   RecommendedRoute: RecommendedRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
   SearchRoute: SearchRoute,
