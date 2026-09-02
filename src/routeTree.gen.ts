@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BandRouteImport } from './routes/band'
+import { Route as BandsRouteImport } from './routes/bands'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as MeRouteImport } from './routes/me'
@@ -140,6 +141,11 @@ const AuthRoute = AuthRouteImport.update({
 const BandRoute = BandRouteImport.update({
   id: '/band',
   path: '/band',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BandsRoute = BandsRouteImport.update({
+  id: '/bands',
+  path: '/bands',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriesRoute = CategoriesRouteImport.update({
@@ -725,6 +731,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/band': typeof BandRoute
+  '/bands': typeof BandsRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
@@ -844,6 +851,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/band': typeof BandRoute
+  '/bands': typeof BandsRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
@@ -963,6 +971,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/band': typeof BandRoute
+  '/bands': typeof BandsRoute
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
@@ -1084,6 +1093,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/band'
+    | '/bands'
     | '/categories'
     | '/feed'
     | '/me'
@@ -1203,6 +1213,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/band'
+    | '/bands'
     | '/categories'
     | '/feed'
     | '/me'
@@ -1321,6 +1332,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/band'
+    | '/bands'
     | '/categories'
     | '/feed'
     | '/me'
@@ -1441,6 +1453,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   BandRoute: typeof BandRoute
+  BandsRoute: typeof BandsRoute
   CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
   MeRoute: typeof MeRoute
@@ -1567,6 +1580,13 @@ declare module '@tanstack/react-router' {
       path: '/band'
       fullPath: '/band'
       preLoaderRoute: typeof BandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bands': {
+      id: '/bands'
+      path: '/bands'
+      fullPath: '/bands'
+      preLoaderRoute: typeof BandsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categories': {
@@ -2445,6 +2465,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   BandRoute: BandRoute,
+  BandsRoute: BandsRoute,
   CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
   MeRoute: MeRoute,
