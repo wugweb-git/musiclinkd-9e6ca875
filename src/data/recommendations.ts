@@ -42,7 +42,7 @@ export const recommendations: Recommendation[] = [
     title: studios[0]!.name,
     subtitle: "Recording studio",
     image: studios[0]!.photo,
-    meta: studios[0]!.city,
+    meta: studios[0]!.location,
     reason: "Similar to the studio you booked in August, 12% lower rate",
     route: "/booking",
   },
