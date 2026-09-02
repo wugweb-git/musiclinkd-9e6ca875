@@ -6,16 +6,22 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { Check, ChevronLeft, Camera, Image as ImageIcon, Trash2, WifiOff, MapPin } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { Btn, Sheet } from "@/components/ml/ui";
+import { useAuth } from "@/hooks/use-auth";
+import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
+import { draftToProfile, profileToDraft } from "@/lib/profile-map";
 import {
   emptyDraft,
   visibleSteps,
   type OnboardingDraft,
 } from "@/data/onboarding";
+
 
 /* ------------------------------------------------------------------ */
 /* Draft store — local-first, synced to the account when signed in     */
