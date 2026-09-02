@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BandRouteImport } from './routes/band'
 import { Route as BandsRouteImport } from './routes/bands'
 import { Route as CategoriesRouteImport } from './routes/categories'
@@ -21,11 +20,23 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlansRouteImport } from './routes/plans'
 import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as RecommendedRouteImport } from './routes/recommended'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as AuthIndexRouteImport } from './routes/auth.index'
+import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
+import { Route as AuthLockedRouteImport } from './routes/auth.locked'
+import { Route as AuthMaintenanceRouteImport } from './routes/auth.maintenance'
+import { Route as AuthOfflineRouteImport } from './routes/auth.offline'
+import { Route as AuthOtpRouteImport } from './routes/auth.otp'
+import { Route as AuthPhoneRouteImport } from './routes/auth.phone'
+import { Route as AuthSignoutRouteImport } from './routes/auth.signout'
+import { Route as AuthSuccessRouteImport } from './routes/auth.success'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as BandsIdRouteImport } from './routes/bands.$id'
 import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
@@ -44,6 +55,8 @@ import { Route as IdentityPrintRouteImport } from './routes/identity.print'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
 import { Route as IdentityScanRouteImport } from './routes/identity.scan'
 import { Route as IdentitySettingsRouteImport } from './routes/identity.settings'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -72,6 +85,7 @@ import { Route as ProviderAvailabilityRouteImport } from './routes/provider.avai
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
@@ -153,11 +167,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BandRoute = BandRouteImport.update({
   id: '/band',
   path: '/band',
@@ -208,6 +217,11 @@ const RecommendedRoute = RecommendedRouteImport.update({
   path: '/recommended',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReviewsRoute = ReviewsRouteImport.update({
   id: '/reviews',
   path: '/reviews',
@@ -231,6 +245,61 @@ const SingersRoute = SingersRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthIndexRoute = AuthIndexRouteImport.update({
+  id: '/auth/',
+  path: '/auth/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthForgotRoute = AuthForgotRouteImport.update({
+  id: '/auth/forgot',
+  path: '/auth/forgot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLockedRoute = AuthLockedRouteImport.update({
+  id: '/auth/locked',
+  path: '/auth/locked',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthMaintenanceRoute = AuthMaintenanceRouteImport.update({
+  id: '/auth/maintenance',
+  path: '/auth/maintenance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOfflineRoute = AuthOfflineRouteImport.update({
+  id: '/auth/offline',
+  path: '/auth/offline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOtpRoute = AuthOtpRouteImport.update({
+  id: '/auth/otp',
+  path: '/auth/otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthPhoneRoute = AuthPhoneRouteImport.update({
+  id: '/auth/phone',
+  path: '/auth/phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignoutRoute = AuthSignoutRouteImport.update({
+  id: '/auth/signout',
+  path: '/auth/signout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSuccessRoute = AuthSuccessRouteImport.update({
+  id: '/auth/success',
+  path: '/auth/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/auth/verify-email',
+  path: '/auth/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdRoute = BandsIdRouteImport.update({
@@ -321,6 +390,16 @@ const IdentityScanRoute = IdentityScanRouteImport.update({
 const IdentitySettingsRoute = IdentitySettingsRouteImport.update({
   id: '/identity/settings',
   path: '/identity/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -462,6 +541,11 @@ const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => RecommendationsRoute,
+} as any)
+const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
+  id: '/settings/delete-account',
+  path: '/settings/delete-account',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
@@ -849,7 +933,6 @@ const ProviderBookingsRequestsRefRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/band': typeof BandRoute
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
@@ -860,11 +943,22 @@ export interface FileRoutesByFullPath {
   '/plans': typeof PlansRouteWithChildren
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/welcome': typeof WelcomeRoute
+  '/auth/forgot': typeof AuthForgotRoute
+  '/auth/locked': typeof AuthLockedRoute
+  '/auth/maintenance': typeof AuthMaintenanceRoute
+  '/auth/offline': typeof AuthOfflineRoute
+  '/auth/otp': typeof AuthOtpRoute
+  '/auth/phone': typeof AuthPhoneRoute
+  '/auth/signout': typeof AuthSignoutRoute
+  '/auth/success': typeof AuthSuccessRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
@@ -881,6 +975,8 @@ export interface FileRoutesByFullPath {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -906,11 +1002,13 @@ export interface FileRoutesByFullPath {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
   '/verification/choose': typeof VerificationChooseRoute
   '/verification/privacy': typeof VerificationPrivacyRoute
+  '/auth/': typeof AuthIndexRoute
   '/bookings/': typeof BookingsIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
@@ -989,7 +1087,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/band': typeof BandRoute
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
@@ -1000,11 +1097,22 @@ export interface FileRoutesByTo {
   '/plans': typeof PlansRouteWithChildren
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/welcome': typeof WelcomeRoute
+  '/auth/forgot': typeof AuthForgotRoute
+  '/auth/locked': typeof AuthLockedRoute
+  '/auth/maintenance': typeof AuthMaintenanceRoute
+  '/auth/offline': typeof AuthOfflineRoute
+  '/auth/otp': typeof AuthOtpRoute
+  '/auth/phone': typeof AuthPhoneRoute
+  '/auth/signout': typeof AuthSignoutRoute
+  '/auth/success': typeof AuthSuccessRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
@@ -1020,6 +1128,8 @@ export interface FileRoutesByTo {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -1045,11 +1155,13 @@ export interface FileRoutesByTo {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
   '/verification/choose': typeof VerificationChooseRoute
   '/verification/privacy': typeof VerificationPrivacyRoute
+  '/auth': typeof AuthIndexRoute
   '/bookings': typeof BookingsIndexRoute
   '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
@@ -1129,7 +1241,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/band': typeof BandRoute
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
@@ -1140,11 +1251,22 @@ export interface FileRoutesById {
   '/plans': typeof PlansRouteWithChildren
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
+  '/welcome': typeof WelcomeRoute
+  '/auth/forgot': typeof AuthForgotRoute
+  '/auth/locked': typeof AuthLockedRoute
+  '/auth/maintenance': typeof AuthMaintenanceRoute
+  '/auth/offline': typeof AuthOfflineRoute
+  '/auth/otp': typeof AuthOtpRoute
+  '/auth/phone': typeof AuthPhoneRoute
+  '/auth/signout': typeof AuthSignoutRoute
+  '/auth/success': typeof AuthSuccessRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
@@ -1161,6 +1283,8 @@ export interface FileRoutesById {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/saved': typeof MarketplaceSavedRoute
@@ -1186,11 +1310,13 @@ export interface FileRoutesById {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
   '/verification/choose': typeof VerificationChooseRoute
   '/verification/privacy': typeof VerificationPrivacyRoute
+  '/auth/': typeof AuthIndexRoute
   '/bookings/': typeof BookingsIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
@@ -1271,7 +1397,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/band'
     | '/bands'
     | '/categories'
@@ -1282,11 +1407,22 @@ export interface FileRouteTypes {
     | '/plans'
     | '/recommendations'
     | '/recommended'
+    | '/reset-password'
     | '/reviews'
     | '/saved'
     | '/search'
     | '/singers'
     | '/studio'
+    | '/welcome'
+    | '/auth/forgot'
+    | '/auth/locked'
+    | '/auth/maintenance'
+    | '/auth/offline'
+    | '/auth/otp'
+    | '/auth/phone'
+    | '/auth/signout'
+    | '/auth/success'
+    | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
@@ -1303,6 +1439,8 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1328,11 +1466,13 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
     | '/verification/choose'
     | '/verification/privacy'
+    | '/auth/'
     | '/bookings/'
     | '/collab/'
     | '/marketplace/'
@@ -1411,7 +1551,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
     | '/band'
     | '/bands'
     | '/categories'
@@ -1422,11 +1561,22 @@ export interface FileRouteTypes {
     | '/plans'
     | '/recommendations'
     | '/recommended'
+    | '/reset-password'
     | '/reviews'
     | '/saved'
     | '/search'
     | '/singers'
     | '/studio'
+    | '/welcome'
+    | '/auth/forgot'
+    | '/auth/locked'
+    | '/auth/maintenance'
+    | '/auth/offline'
+    | '/auth/otp'
+    | '/auth/phone'
+    | '/auth/signout'
+    | '/auth/success'
+    | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
     | '/collab/new'
@@ -1442,6 +1592,8 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1467,11 +1619,13 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
     | '/verification/choose'
     | '/verification/privacy'
+    | '/auth'
     | '/bookings'
     | '/collab'
     | '/marketplace'
@@ -1550,7 +1704,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/auth'
     | '/band'
     | '/bands'
     | '/categories'
@@ -1561,11 +1714,22 @@ export interface FileRouteTypes {
     | '/plans'
     | '/recommendations'
     | '/recommended'
+    | '/reset-password'
     | '/reviews'
     | '/saved'
     | '/search'
     | '/singers'
     | '/studio'
+    | '/welcome'
+    | '/auth/forgot'
+    | '/auth/locked'
+    | '/auth/maintenance'
+    | '/auth/offline'
+    | '/auth/otp'
+    | '/auth/phone'
+    | '/auth/signout'
+    | '/auth/success'
+    | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
@@ -1582,6 +1746,8 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/saved'
@@ -1607,11 +1773,13 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
     | '/verification/choose'
     | '/verification/privacy'
+    | '/auth/'
     | '/bookings/'
     | '/collab/'
     | '/marketplace/'
@@ -1691,7 +1859,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRoute
   BandRoute: typeof BandRoute
   BandsRoute: typeof BandsRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
@@ -1702,11 +1869,22 @@ export interface RootRouteChildren {
   PlansRoute: typeof PlansRouteWithChildren
   RecommendationsRoute: typeof RecommendationsRouteWithChildren
   RecommendedRoute: typeof RecommendedRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
   SearchRoute: typeof SearchRoute
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
+  WelcomeRoute: typeof WelcomeRoute
+  AuthForgotRoute: typeof AuthForgotRoute
+  AuthLockedRoute: typeof AuthLockedRoute
+  AuthMaintenanceRoute: typeof AuthMaintenanceRoute
+  AuthOfflineRoute: typeof AuthOfflineRoute
+  AuthOtpRoute: typeof AuthOtpRoute
+  AuthPhoneRoute: typeof AuthPhoneRoute
+  AuthSignoutRoute: typeof AuthSignoutRoute
+  AuthSuccessRoute: typeof AuthSuccessRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   CollabNewRoute: typeof CollabNewRouteWithChildren
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
@@ -1720,6 +1898,8 @@ export interface RootRouteChildren {
   IdentityQrRoute: typeof IdentityQrRoute
   IdentityScanRoute: typeof IdentityScanRoute
   IdentitySettingsRoute: typeof IdentitySettingsRoute
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalTermsRoute: typeof LegalTermsRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
@@ -1741,11 +1921,13 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
+  SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
   VerificationBadgeRoute: typeof VerificationBadgeRoute
   VerificationChooseRoute: typeof VerificationChooseRoute
   VerificationPrivacyRoute: typeof VerificationPrivacyRoute
+  AuthIndexRoute: typeof AuthIndexRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
@@ -1815,13 +1997,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/band': {
@@ -1894,6 +2069,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecommendedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reviews': {
       id: '/reviews'
       path: '/reviews'
@@ -1927,6 +2109,83 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/': {
+      id: '/auth/'
+      path: '/auth'
+      fullPath: '/auth/'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/forgot': {
+      id: '/auth/forgot'
+      path: '/auth/forgot'
+      fullPath: '/auth/forgot'
+      preLoaderRoute: typeof AuthForgotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/locked': {
+      id: '/auth/locked'
+      path: '/auth/locked'
+      fullPath: '/auth/locked'
+      preLoaderRoute: typeof AuthLockedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/maintenance': {
+      id: '/auth/maintenance'
+      path: '/auth/maintenance'
+      fullPath: '/auth/maintenance'
+      preLoaderRoute: typeof AuthMaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/offline': {
+      id: '/auth/offline'
+      path: '/auth/offline'
+      fullPath: '/auth/offline'
+      preLoaderRoute: typeof AuthOfflineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/otp': {
+      id: '/auth/otp'
+      path: '/auth/otp'
+      fullPath: '/auth/otp'
+      preLoaderRoute: typeof AuthOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/phone': {
+      id: '/auth/phone'
+      path: '/auth/phone'
+      fullPath: '/auth/phone'
+      preLoaderRoute: typeof AuthPhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signout': {
+      id: '/auth/signout'
+      path: '/auth/signout'
+      fullPath: '/auth/signout'
+      preLoaderRoute: typeof AuthSignoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/success': {
+      id: '/auth/success'
+      path: '/auth/success'
+      fullPath: '/auth/success'
+      preLoaderRoute: typeof AuthSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bands/$id': {
@@ -2053,6 +2312,20 @@ declare module '@tanstack/react-router' {
       path: '/identity/settings'
       fullPath: '/identity/settings'
       preLoaderRoute: typeof IdentitySettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -2250,6 +2523,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/recommendations/settings'
       preLoaderRoute: typeof RecommendationsSettingsRouteImport
       parentRoute: typeof RecommendationsRoute
+    }
+    '/settings/delete-account': {
+      id: '/settings/delete-account'
+      path: '/settings/delete-account'
+      fullPath: '/settings/delete-account'
+      preLoaderRoute: typeof SettingsDeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/talent/$id': {
       id: '/talent/$id'
@@ -2926,7 +3206,6 @@ const CollabProposalsIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRoute,
   BandRoute: BandRoute,
   BandsRoute: BandsRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
@@ -2937,11 +3216,22 @@ const rootRouteChildren: RootRouteChildren = {
   PlansRoute: PlansRouteWithChildren,
   RecommendationsRoute: RecommendationsRouteWithChildren,
   RecommendedRoute: RecommendedRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
   SearchRoute: SearchRoute,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
+  WelcomeRoute: WelcomeRoute,
+  AuthForgotRoute: AuthForgotRoute,
+  AuthLockedRoute: AuthLockedRoute,
+  AuthMaintenanceRoute: AuthMaintenanceRoute,
+  AuthOfflineRoute: AuthOfflineRoute,
+  AuthOtpRoute: AuthOtpRoute,
+  AuthPhoneRoute: AuthPhoneRoute,
+  AuthSignoutRoute: AuthSignoutRoute,
+  AuthSuccessRoute: AuthSuccessRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   CollabNewRoute: CollabNewRouteWithChildren,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
@@ -2955,6 +3245,8 @@ const rootRouteChildren: RootRouteChildren = {
   IdentityQrRoute: IdentityQrRoute,
   IdentityScanRoute: IdentityScanRoute,
   IdentitySettingsRoute: IdentitySettingsRoute,
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalTermsRoute: LegalTermsRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSavedRoute: MarketplaceSavedRoute,
@@ -2976,11 +3268,13 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
+  SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
   VerificationBadgeRoute: VerificationBadgeRoute,
   VerificationChooseRoute: VerificationChooseRoute,
   VerificationPrivacyRoute: VerificationPrivacyRoute,
+  AuthIndexRoute: AuthIndexRoute,
   BookingsIndexRoute: BookingsIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,

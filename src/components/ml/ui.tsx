@@ -188,12 +188,14 @@ export function Btn({
   className = "",
   onClick,
   type = "button",
+  disabled = false,
 }: {
   children: ReactNode;
   variant?: "primary" | "navy" | "ghost" | "outline";
   className?: string;
   onClick?: () => void;
   type?: "button" | "submit";
+  disabled?: boolean;
 }) {
   const styles: Record<string, string> = {
     primary: "bg-primary text-primary-foreground",
@@ -205,12 +207,14 @@ export function Btn({
     <button
       type={type}
       onClick={onClick}
-      className={`inline-flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold transition-transform active:scale-[0.98] ${styles[variant]} ${className}`}
+      disabled={disabled}
+      className={`inline-flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 ${styles[variant]} ${className}`}
     >
       {children}
     </button>
   );
 }
+
 
 export function Sheet({
   open,

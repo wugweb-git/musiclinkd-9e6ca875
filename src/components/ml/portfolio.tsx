@@ -115,7 +115,7 @@ export function SignedOutCard({ what = "your portfolio" }: { what?: string }) {
       title="Sign in to manage your work"
       body={`Create a free MusicLinkd account to publish and edit ${what}. You're seeing demo work below.`}
       action={
-        <Link to="/auth">
+        <Link to="/auth" search={{ mode: "signin" }}>
           <Btn>Sign in or sign up</Btn>
         </Link>
       }
