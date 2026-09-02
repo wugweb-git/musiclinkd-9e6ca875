@@ -15,6 +15,7 @@ import { Route as BandRouteImport } from './routes/band'
 import { Route as BandsRouteImport } from './routes/bands'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as FeedRouteImport } from './routes/feed'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlansRouteImport } from './routes/plans'
@@ -170,6 +171,11 @@ const CategoriesRoute = CategoriesRouteImport.update({
 const FeedRoute = FeedRouteImport.update({
   id: '/feed',
   path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeRoute = MeRouteImport.update({
@@ -818,6 +824,7 @@ export interface FileRoutesByFullPath {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
+  '/help': typeof HelpRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
@@ -952,6 +959,7 @@ export interface FileRoutesByTo {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
+  '/help': typeof HelpRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
@@ -1086,6 +1094,7 @@ export interface FileRoutesById {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
+  '/help': typeof HelpRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
@@ -1222,6 +1231,7 @@ export interface FileRouteTypes {
     | '/bands'
     | '/categories'
     | '/feed'
+    | '/help'
     | '/me'
     | '/messages'
     | '/plans'
@@ -1356,6 +1366,7 @@ export interface FileRouteTypes {
     | '/bands'
     | '/categories'
     | '/feed'
+    | '/help'
     | '/me'
     | '/messages'
     | '/plans'
@@ -1489,6 +1500,7 @@ export interface FileRouteTypes {
     | '/bands'
     | '/categories'
     | '/feed'
+    | '/help'
     | '/me'
     | '/messages'
     | '/plans'
@@ -1624,6 +1636,7 @@ export interface RootRouteChildren {
   BandsRoute: typeof BandsRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
+  HelpRoute: typeof HelpRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   PlansRoute: typeof PlansRouteWithChildren
@@ -1773,6 +1786,13 @@ declare module '@tanstack/react-router' {
       path: '/feed'
       fullPath: '/feed'
       preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me': {
@@ -2812,6 +2832,7 @@ const rootRouteChildren: RootRouteChildren = {
   BandsRoute: BandsRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
+  HelpRoute: HelpRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   PlansRoute: PlansRouteWithChildren,
