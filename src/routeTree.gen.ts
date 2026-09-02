@@ -70,6 +70,7 @@ import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
+import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
 import { Route as BandsIdInviteRouteImport } from './routes/bands.$id.invite'
@@ -446,6 +447,11 @@ const ProviderPricingRoute = ProviderPricingRouteImport.update({
   path: '/provider/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => RecommendationsRoute,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
@@ -815,7 +821,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
-  '/recommendations': typeof RecommendationsRoute
+  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -862,6 +868,7 @@ export interface FileRoutesByFullPath {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/bookings/': typeof BookingsIndexRoute
@@ -948,7 +955,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
-  '/recommendations': typeof RecommendationsRoute
+  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -994,6 +1001,7 @@ export interface FileRoutesByTo {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/bookings': typeof BookingsIndexRoute
@@ -1081,7 +1089,7 @@ export interface FileRoutesById {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
-  '/recommendations': typeof RecommendationsRoute
+  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -1128,6 +1136,7 @@ export interface FileRoutesById {
   '/provider/availability': typeof ProviderAvailabilityRoute
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/bookings/': typeof BookingsIndexRoute
@@ -1263,6 +1272,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/provider/policies'
     | '/provider/pricing'
+    | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
     | '/bookings/'
@@ -1395,6 +1405,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/provider/policies'
     | '/provider/pricing'
+    | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
     | '/bookings'
@@ -1528,6 +1539,7 @@ export interface FileRouteTypes {
     | '/provider/availability'
     | '/provider/policies'
     | '/provider/pricing'
+    | '/recommendations/settings'
     | '/talent/$id'
     | '/verification/$type'
     | '/bookings/'
@@ -1615,7 +1627,7 @@ export interface RootRouteChildren {
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   PlansRoute: typeof PlansRouteWithChildren
-  RecommendationsRoute: typeof RecommendationsRoute
+  RecommendationsRoute: typeof RecommendationsRouteWithChildren
   RecommendedRoute: typeof RecommendedRoute
   ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
@@ -2147,6 +2159,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/provider/pricing'
       preLoaderRoute: typeof ProviderPricingRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/recommendations/settings': {
+      id: '/recommendations/settings'
+      path: '/settings'
+      fullPath: '/recommendations/settings'
+      preLoaderRoute: typeof RecommendationsSettingsRouteImport
+      parentRoute: typeof RecommendationsRoute
     }
     '/talent/$id': {
       id: '/talent/$id'
@@ -2680,6 +2699,18 @@ const PlansRouteChildren: PlansRouteChildren = {
 
 const PlansRouteWithChildren = PlansRoute._addFileChildren(PlansRouteChildren)
 
+interface RecommendationsRouteChildren {
+  RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
+}
+
+const RecommendationsRouteChildren: RecommendationsRouteChildren = {
+  RecommendationsSettingsRoute: RecommendationsSettingsRoute,
+}
+
+const RecommendationsRouteWithChildren = RecommendationsRoute._addFileChildren(
+  RecommendationsRouteChildren,
+)
+
 interface ReviewsRouteChildren {
   ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
 }
@@ -2784,7 +2815,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   PlansRoute: PlansRouteWithChildren,
-  RecommendationsRoute: RecommendationsRoute,
+  RecommendationsRoute: RecommendationsRouteWithChildren,
   RecommendedRoute: RecommendedRoute,
   ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
