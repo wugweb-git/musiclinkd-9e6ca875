@@ -70,6 +70,7 @@ import { Route as OnboardingPreviewRouteImport } from './routes/onboarding/previ
 import { Route as OnboardingResumeRouteImport } from './routes/onboarding/resume'
 import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
+import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
 import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
 import { Route as PlansEarningsRouteImport } from './routes/plans.earnings'
 import { Route as PlansManageRouteImport } from './routes/plans.manage'
@@ -466,6 +467,11 @@ const OnboardingSkipRoute = OnboardingSkipRouteImport.update({
 const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
   id: '/opportunities/',
   path: '/opportunities/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesSearchRoute = OpportunitiesSearchRouteImport.update({
+  id: '/opportunities/search',
+  path: '/opportunities/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
@@ -993,6 +999,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
@@ -1147,6 +1154,7 @@ export interface FileRoutesByTo {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
@@ -1303,6 +1311,7 @@ export interface FileRoutesById {
   '/onboarding/preview': typeof OnboardingPreviewRoute
   '/onboarding/resume': typeof OnboardingResumeRoute
   '/onboarding/skip': typeof OnboardingSkipRoute
+  '/opportunities/search': typeof OpportunitiesSearchRoute
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
@@ -1460,6 +1469,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
@@ -1614,6 +1624,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
@@ -1769,6 +1780,7 @@ export interface FileRouteTypes {
     | '/onboarding/preview'
     | '/onboarding/resume'
     | '/onboarding/skip'
+    | '/opportunities/search'
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
@@ -1922,6 +1934,7 @@ export interface RootRouteChildren {
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
   OnboardingResumeRoute: typeof OnboardingResumeRoute
   OnboardingSkipRoute: typeof OnboardingSkipRoute
+  OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
   PortfolioIdRoute: typeof PortfolioIdRouteWithChildren
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   PortfolioReorderRoute: typeof PortfolioReorderRoute
@@ -2430,6 +2443,13 @@ declare module '@tanstack/react-router' {
       path: '/opportunities'
       fullPath: '/opportunities/'
       preLoaderRoute: typeof OpportunitiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/search': {
+      id: '/opportunities/search'
+      path: '/opportunities/search'
+      fullPath: '/opportunities/search'
+      preLoaderRoute: typeof OpportunitiesSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plans/checkout': {
@@ -3277,6 +3297,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingPreviewRoute: OnboardingPreviewRoute,
   OnboardingResumeRoute: OnboardingResumeRoute,
   OnboardingSkipRoute: OnboardingSkipRoute,
+  OpportunitiesSearchRoute: OpportunitiesSearchRoute,
   PortfolioIdRoute: PortfolioIdRouteWithChildren,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   PortfolioReorderRoute: PortfolioReorderRoute,
