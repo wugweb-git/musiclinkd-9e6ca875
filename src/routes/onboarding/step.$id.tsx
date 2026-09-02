@@ -7,14 +7,13 @@ import {
   ErrorBanner,
   InlineField,
   LocationHint,
-  OfflineBanner,
   OnboardingProvider,
   OptionList,
   PhotoPicker,
-  SavingBanner,
   SelectField,
   StepShell,
   StepSkeleton,
+  SyncBanner,
   useOnboarding,
 } from "@/components/ml/onboarding";
 import {
@@ -69,11 +68,11 @@ export const Route = createFileRoute("/onboarding/step/$id")({
   ),
 });
 
-type Banner = "none" | "saving" | "offline" | "error";
+type Banner = "none" | "error";
 
 function StepRoute() {
   const { id } = Route.useParams();
-  const { draft, set, toggle, markComplete, hydrated } = useOnboarding();
+  const { draft, set, toggle, markComplete, hydrated, sync, retry } = useOnboarding();
   const navigate = useNavigate();
   const [banner, setBanner] = useState<Banner>("none");
 
@@ -126,11 +125,8 @@ function StepRoute() {
       completedSteps: complete ? [...draft.completedSteps, def.id] : draft.completedSteps,
     });
     const pos = after.findIndex((s) => s.id === def.id);
-    setBanner("saving");
-    window.setTimeout(() => {
-      setBanner("none");
-      goto(after[pos + 1]);
-    }, 320);
+    setBanner("none");
+    goto(after[pos + 1]);
   };
 
   const valid = isValid(def.id, draft);
@@ -146,16 +142,14 @@ function StepRoute() {
       onBack={index === 0 ? () => navigate({ to: "/onboarding" }) : () => goto(list[index - 1])}
       {...(def.optional ? { onSkip: () => advance(false) } : {})}
       banner={
-        banner === "saving" ? (
-          <SavingBanner />
-        ) : banner === "offline" ? (
-          <OfflineBanner />
-        ) : banner === "error" ? (
+        banner === "error" ? (
           <ErrorBanner
-            message="We couldn't save that just now. Your answers are kept on this device."
+            message="Add the required details above before continuing."
             onRetry={() => setBanner("none")}
           />
-        ) : null
+        ) : (
+          <SyncBanner state={sync} onRetry={retry} />
+        )
       }
       footer={
         <div className="space-y-2">

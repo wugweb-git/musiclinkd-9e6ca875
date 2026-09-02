@@ -109,22 +109,39 @@ export const getMyProfile = createServerFn({ method: "GET" })
     return data;
   });
 
+const strList = (max: number, len = 40) => z.array(z.string().max(len)).max(max).optional();
+
+const profilePatchSchema = z.object({
+  username: z.string().min(3).max(30).optional().nullable(),
+  display_name: z.string().max(80).optional().nullable(),
+  headline: z.string().max(160).optional().nullable(),
+  bio: z.string().max(1200).optional().nullable(),
+  city: z.string().max(80).optional().nullable(),
+  state: z.string().max(80).optional().nullable(),
+  country: z.string().max(80).optional().nullable(),
+  roles: strList(12),
+  instruments: strList(20),
+  genres: strList(20),
+  languages: strList(20),
+  specialisations: strList(30, 60),
+  work_modes: strList(10),
+  intents: strList(12, 60),
+  contact_channels: strList(10),
+  experience_level: z.string().max(40).optional().nullable(),
+  visibility: z.string().max(24).optional(),
+  availability: z.string().max(40).optional().nullable(),
+  avatar_url: z.string().max(500).optional().nullable(),
+  links: z.record(z.string(), z.string().max(300)).optional(),
+  discovery_prefs: z.record(z.string(), z.unknown()).optional(),
+  onboarding_step: z.string().max(40).optional().nullable(),
+  onboarding_draft: z.record(z.string(), z.unknown()).optional(),
+  onboarding_complete: z.boolean().optional(),
+});
+
 export const saveMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z
-      .object({
-        username: z.string().min(3).max(30).optional().nullable(),
-        display_name: z.string().max(80).optional().nullable(),
-        headline: z.string().max(160).optional().nullable(),
-        bio: z.string().max(1200).optional().nullable(),
-        city: z.string().max(80).optional().nullable(),
-        roles: z.array(z.string().max(40)).max(12).optional(),
-        availability: z.string().max(40).optional().nullable(),
-        onboarding_complete: z.boolean().optional(),
-      })
-      .parse(d),
-  )
+  .inputValidator((d) => profilePatchSchema.parse(d))
+
   .handler(async ({ context, data }) => {
     const patch = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== undefined),
@@ -135,5 +152,36 @@ export const saveMyProfile = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+    return row;
+  });
+
+/** Public profile read — anon key, safe columns only, no session. */
+export const getPublicProfile = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ username: z.string().min(1).max(60) }).parse(d))
+  .handler(async ({ data }) => {
+    const { createClient } = await import("@supabase/supabase-js");
+    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+    const url = process.env["SUPABASE_URL"]!;
+    const client = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: {
+        fetch: (input: RequestInfo | URL, init?: RequestInit) => {
+          const h = new Headers(init?.headers);
+          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+          h.set("apikey", key);
+          return fetch(input, { ...init, headers: h });
+        },
+      },
+    });
+
+    const { data: row } = await client
+      .from("profiles")
+      .select(
+        "username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, availability, avatar_url, links, visibility",
+      )
+      .eq("username", data.username)
+      .maybeSingle();
+
+    if (!row || (row as { visibility?: string }).visibility === "private") return null;
     return row;
   });

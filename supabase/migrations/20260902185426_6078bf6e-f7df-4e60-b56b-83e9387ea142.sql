@@ -1,0 +1,16 @@
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS instruments text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS genres text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS languages text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS specialisations text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS work_modes text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS intents text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS contact_channels text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS experience_level text,
+  ADD COLUMN IF NOT EXISTS country text,
+  ADD COLUMN IF NOT EXISTS state text,
+  ADD COLUMN IF NOT EXISTS visibility text NOT NULL DEFAULT 'public',
+  ADD COLUMN IF NOT EXISTS links jsonb NOT NULL DEFAULT '[]'::jsonb,
+  ADD COLUMN IF NOT EXISTS discovery_prefs jsonb NOT NULL DEFAULT '{}'::jsonb,
+  ADD COLUMN IF NOT EXISTS onboarding_step text,
+  ADD COLUMN IF NOT EXISTS onboarding_draft jsonb NOT NULL DEFAULT '{}'::jsonb;

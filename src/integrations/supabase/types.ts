@@ -71,42 +71,87 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           city: string | null
+          contact_channels: string[]
+          country: string | null
           created_at: string
+          discovery_prefs: Json
           display_name: string | null
+          experience_level: string | null
+          genres: string[]
           headline: string | null
           id: string
+          instruments: string[]
+          intents: string[]
+          languages: string[]
+          links: Json
           onboarding_complete: boolean
+          onboarding_draft: Json
+          onboarding_step: string | null
           roles: string[]
+          specialisations: string[]
+          state: string | null
           updated_at: string
           username: string | null
+          visibility: string
+          work_modes: string[]
         }
         Insert: {
           availability?: string | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          contact_channels?: string[]
+          country?: string | null
           created_at?: string
+          discovery_prefs?: Json
           display_name?: string | null
+          experience_level?: string | null
+          genres?: string[]
           headline?: string | null
           id: string
+          instruments?: string[]
+          intents?: string[]
+          languages?: string[]
+          links?: Json
           onboarding_complete?: boolean
+          onboarding_draft?: Json
+          onboarding_step?: string | null
           roles?: string[]
+          specialisations?: string[]
+          state?: string | null
           updated_at?: string
           username?: string | null
+          visibility?: string
+          work_modes?: string[]
         }
         Update: {
           availability?: string | null
           avatar_url?: string | null
           bio?: string | null
           city?: string | null
+          contact_channels?: string[]
+          country?: string | null
           created_at?: string
+          discovery_prefs?: Json
           display_name?: string | null
+          experience_level?: string | null
+          genres?: string[]
           headline?: string | null
           id?: string
+          instruments?: string[]
+          intents?: string[]
+          languages?: string[]
+          links?: Json
           onboarding_complete?: boolean
+          onboarding_draft?: Json
+          onboarding_step?: string | null
           roles?: string[]
+          specialisations?: string[]
+          state?: string | null
           updated_at?: string
           username?: string | null
+          visibility?: string
+          work_modes?: string[]
         }
         Relationships: []
       }

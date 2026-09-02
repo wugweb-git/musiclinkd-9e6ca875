@@ -1,7 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
-import { OnboardingProvider, resumeTarget, useOnboarding } from "@/components/ml/onboarding";
+import {
+  OnboardingProvider,
+  resumeTarget,
+  SyncBanner,
+  useOnboarding,
+} from "@/components/ml/onboarding";
+
 import { steps, visibleSteps } from "@/data/onboarding";
 
 export const Route = createFileRoute("/onboarding/resume")({
@@ -26,7 +32,7 @@ export const Route = createFileRoute("/onboarding/resume")({
 });
 
 function Resume() {
-  const { draft, reset } = useOnboarding();
+  const { draft, reset, sync, retry, hydrated } = useOnboarding();
   const navigate = useNavigate();
   const target = resumeTarget(draft);
   const def = steps.find((s) => s.id === target);
@@ -36,6 +42,7 @@ function Resume() {
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
       <div>
+        <SyncBanner state={hydrated ? sync : "loading"} onRetry={retry} localNote="Picking up from this device. Sign in to continue on any device." />
         <Clock size={40} className="text-primary" />
         <h1 className="mt-4 text-[28px] leading-tight">Welcome back</h1>
         <p className="mt-2 text-sm text-muted-foreground">
