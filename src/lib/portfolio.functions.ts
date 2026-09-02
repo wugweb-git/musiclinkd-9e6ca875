@@ -109,22 +109,39 @@ export const getMyProfile = createServerFn({ method: "GET" })
     return data;
   });
 
+const strList = (max: number, len = 40) => z.array(z.string().max(len)).max(max).optional();
+
+const profilePatchSchema = z.object({
+  username: z.string().min(3).max(30).optional().nullable(),
+  display_name: z.string().max(80).optional().nullable(),
+  headline: z.string().max(160).optional().nullable(),
+  bio: z.string().max(1200).optional().nullable(),
+  city: z.string().max(80).optional().nullable(),
+  state: z.string().max(80).optional().nullable(),
+  country: z.string().max(80).optional().nullable(),
+  roles: strList(12),
+  instruments: strList(20),
+  genres: strList(20),
+  languages: strList(20),
+  specialisations: strList(30, 60),
+  work_modes: strList(10),
+  intents: strList(12, 60),
+  contact_channels: strList(10),
+  experience_level: z.string().max(40).optional().nullable(),
+  visibility: z.string().max(24).optional(),
+  availability: z.string().max(40).optional().nullable(),
+  avatar_url: z.string().max(500).optional().nullable(),
+  links: z.record(z.string(), z.string().max(300)).optional(),
+  discovery_prefs: z.record(z.string(), z.unknown()).optional(),
+  onboarding_step: z.string().max(40).optional().nullable(),
+  onboarding_draft: z.record(z.string(), z.unknown()).optional(),
+  onboarding_complete: z.boolean().optional(),
+});
+
 export const saveMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z
-      .object({
-        username: z.string().min(3).max(30).optional().nullable(),
-        display_name: z.string().max(80).optional().nullable(),
-        headline: z.string().max(160).optional().nullable(),
-        bio: z.string().max(1200).optional().nullable(),
-        city: z.string().max(80).optional().nullable(),
-        roles: z.array(z.string().max(40)).max(12).optional(),
-        availability: z.string().max(40).optional().nullable(),
-        onboarding_complete: z.boolean().optional(),
-      })
-      .parse(d),
-  )
+  .inputValidator((d) => profilePatchSchema.parse(d))
+
   .handler(async ({ context, data }) => {
     const patch = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== undefined),
