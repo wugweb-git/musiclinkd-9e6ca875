@@ -138,6 +138,7 @@ import { Route as MarketplaceRentSavedRouteImport } from './routes/marketplace/r
 import { Route as MarketplaceRentSearchRouteImport } from './routes/marketplace/rent/search'
 import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/seller.$id'
 import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
+import { Route as OpportunitiesIdIndexRouteImport } from './routes/opportunities.$id.index'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
 import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
@@ -809,6 +810,11 @@ const OnboardingStepIdRoute = OnboardingStepIdRouteImport.update({
   path: '/onboarding/step/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpportunitiesIdIndexRoute = OpportunitiesIdIndexRouteImport.update({
+  id: '/opportunities/$id/',
+  path: '/opportunities/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -1078,6 +1084,7 @@ export interface FileRoutesByFullPath {
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
+  '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1233,6 +1240,7 @@ export interface FileRoutesByTo {
   '/bookings/$ref': typeof BookingsRefIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
+  '/opportunities/$id': typeof OpportunitiesIdIndexRoute
   '/portfolio/new': typeof PortfolioNewIndexRoute
   '/provider/bookings': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1390,6 +1398,7 @@ export interface FileRoutesById {
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
+  '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
@@ -1548,6 +1557,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/'
     | '/collab/$id/'
     | '/marketplace/rent/'
+    | '/opportunities/$id/'
     | '/portfolio/new/'
     | '/provider/bookings/'
     | '/collab/$id/files/$fileId'
@@ -1703,6 +1713,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref'
     | '/collab/$id'
     | '/marketplace/rent'
+    | '/opportunities/$id'
     | '/portfolio/new'
     | '/provider/bookings'
     | '/collab/$id/files/$fileId'
@@ -1859,6 +1870,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/'
     | '/collab/$id/'
     | '/marketplace/rent/'
+    | '/opportunities/$id/'
     | '/portfolio/new/'
     | '/provider/bookings/'
     | '/collab/$id/files/$fileId'
@@ -1995,6 +2007,7 @@ export interface RootRouteChildren {
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
   CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
+  OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
   PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
   CollabIdFilesFileIdRoute: typeof CollabIdFilesFileIdRoute
@@ -2921,6 +2934,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingStepIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opportunities/$id/': {
+      id: '/opportunities/$id/'
+      path: '/opportunities/$id'
+      fullPath: '/opportunities/$id/'
+      preLoaderRoute: typeof OpportunitiesIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/$id/edit': {
       id: '/portfolio/$id/edit'
       path: '/edit'
@@ -3358,6 +3378,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookingsRefIndexRoute: BookingsRefIndexRoute,
   CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
+  OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,
   PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
   CollabIdFilesFileIdRoute: CollabIdFilesFileIdRoute,
