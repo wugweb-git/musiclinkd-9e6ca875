@@ -48,7 +48,6 @@ function Complete() {
         bio: d.bio || null,
         city: d.city || null,
         roles: [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[],
-        avatar_url: d.photo,
         availability: d.availability[0] ?? null,
         onboarding_complete: true,
       },
