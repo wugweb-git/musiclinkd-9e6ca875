@@ -30,6 +30,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthLockedRouteImport } from './routes/auth.locked'
+import { Route as AuthOfflineRouteImport } from './routes/auth.offline'
 import { Route as AuthOtpRouteImport } from './routes/auth.otp'
 import { Route as AuthPhoneRouteImport } from './routes/auth.phone'
 import { Route as AuthSignoutRouteImport } from './routes/auth.signout'
@@ -260,6 +261,11 @@ const AuthForgotRoute = AuthForgotRouteImport.update({
 const AuthLockedRoute = AuthLockedRouteImport.update({
   id: '/auth/locked',
   path: '/auth/locked',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOfflineRoute = AuthOfflineRouteImport.update({
+  id: '/auth/offline',
+  path: '/auth/offline',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthOtpRoute = AuthOtpRouteImport.update({
@@ -922,6 +928,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/locked': typeof AuthLockedRoute
+  '/auth/offline': typeof AuthOfflineRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/phone': typeof AuthPhoneRoute
   '/auth/signout': typeof AuthSignoutRoute
@@ -1071,6 +1078,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/locked': typeof AuthLockedRoute
+  '/auth/offline': typeof AuthOfflineRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/phone': typeof AuthPhoneRoute
   '/auth/signout': typeof AuthSignoutRoute
@@ -1220,6 +1228,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/locked': typeof AuthLockedRoute
+  '/auth/offline': typeof AuthOfflineRoute
   '/auth/otp': typeof AuthOtpRoute
   '/auth/phone': typeof AuthPhoneRoute
   '/auth/signout': typeof AuthSignoutRoute
@@ -1371,6 +1380,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/auth/forgot'
     | '/auth/locked'
+    | '/auth/offline'
     | '/auth/otp'
     | '/auth/phone'
     | '/auth/signout'
@@ -1520,6 +1530,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/auth/forgot'
     | '/auth/locked'
+    | '/auth/offline'
     | '/auth/otp'
     | '/auth/phone'
     | '/auth/signout'
@@ -1668,6 +1679,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/auth/forgot'
     | '/auth/locked'
+    | '/auth/offline'
     | '/auth/otp'
     | '/auth/phone'
     | '/auth/signout'
@@ -1818,6 +1830,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AuthForgotRoute: typeof AuthForgotRoute
   AuthLockedRoute: typeof AuthLockedRoute
+  AuthOfflineRoute: typeof AuthOfflineRoute
   AuthOtpRoute: typeof AuthOtpRoute
   AuthPhoneRoute: typeof AuthPhoneRoute
   AuthSignoutRoute: typeof AuthSignoutRoute
@@ -2072,6 +2085,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/locked'
       fullPath: '/auth/locked'
       preLoaderRoute: typeof AuthLockedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/offline': {
+      id: '/auth/offline'
+      path: '/auth/offline'
+      fullPath: '/auth/offline'
+      preLoaderRoute: typeof AuthOfflineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/otp': {
@@ -3125,6 +3145,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AuthForgotRoute: AuthForgotRoute,
   AuthLockedRoute: AuthLockedRoute,
+  AuthOfflineRoute: AuthOfflineRoute,
   AuthOtpRoute: AuthOtpRoute,
   AuthPhoneRoute: AuthPhoneRoute,
   AuthSignoutRoute: AuthSignoutRoute,
