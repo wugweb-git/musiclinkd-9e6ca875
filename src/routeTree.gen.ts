@@ -33,6 +33,7 @@ import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as CollabNewRouteImport } from './routes/collab.new'
+import { Route as HelpSlugRouteImport } from './routes/help.$slug'
 import { Route as IdentityAnalyticsRouteImport } from './routes/identity.analytics'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
 import { Route as IdentityCardRouteImport } from './routes/identity.card'
@@ -262,6 +263,11 @@ const CollabNewRoute = CollabNewRouteImport.update({
   id: '/collab/new',
   path: '/collab/new',
   getParentRoute: () => rootRouteImport,
+} as any)
+const HelpSlugRoute = HelpSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => HelpRoute,
 } as any)
 const IdentityAnalyticsRoute = IdentityAnalyticsRouteImport.update({
   id: '/identity/analytics',
@@ -824,7 +830,7 @@ export interface FileRoutesByFullPath {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/help': typeof HelpRoute
+  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
@@ -840,6 +846,7 @@ export interface FileRoutesByFullPath {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
@@ -959,7 +966,7 @@ export interface FileRoutesByTo {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/help': typeof HelpRoute
+  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
@@ -974,6 +981,7 @@ export interface FileRoutesByTo {
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
@@ -1094,7 +1102,7 @@ export interface FileRoutesById {
   '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/help': typeof HelpRoute
+  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
@@ -1110,6 +1118,7 @@ export interface FileRoutesById {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
@@ -1247,6 +1256,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/collab/new'
+    | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
@@ -1381,6 +1391,7 @@ export interface FileRouteTypes {
     | '/bands/$id'
     | '/bands/new'
     | '/collab/new'
+    | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
@@ -1516,6 +1527,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/collab/new'
+    | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
@@ -1636,7 +1648,7 @@ export interface RootRouteChildren {
   BandsRoute: typeof BandsRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
-  HelpRoute: typeof HelpRoute
+  HelpRoute: typeof HelpRouteWithChildren
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   PlansRoute: typeof PlansRouteWithChildren
@@ -1913,6 +1925,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/collab/new'
       preLoaderRoute: typeof CollabNewRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/help/$slug': {
+      id: '/help/$slug'
+      path: '/$slug'
+      fullPath: '/help/$slug'
+      preLoaderRoute: typeof HelpSlugRouteImport
+      parentRoute: typeof HelpRoute
     }
     '/identity/analytics': {
       id: '/identity/analytics'
@@ -2705,6 +2724,16 @@ const BandsRouteChildren: BandsRouteChildren = {
 
 const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
 
+interface HelpRouteChildren {
+  HelpSlugRoute: typeof HelpSlugRoute
+}
+
+const HelpRouteChildren: HelpRouteChildren = {
+  HelpSlugRoute: HelpSlugRoute,
+}
+
+const HelpRouteWithChildren = HelpRoute._addFileChildren(HelpRouteChildren)
+
 interface PlansRouteChildren {
   PlansCheckoutRoute: typeof PlansCheckoutRoute
   PlansEarningsRoute: typeof PlansEarningsRoute
@@ -2832,7 +2861,7 @@ const rootRouteChildren: RootRouteChildren = {
   BandsRoute: BandsRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
-  HelpRoute: HelpRoute,
+  HelpRoute: HelpRouteWithChildren,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   PlansRoute: PlansRouteWithChildren,
