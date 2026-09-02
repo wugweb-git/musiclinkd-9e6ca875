@@ -18,10 +18,12 @@ import {
 } from "@/data/onboarding";
 
 /* ------------------------------------------------------------------ */
-/* Draft store (design-time persistence only)                          */
+/* Draft store — local-first, synced to the account when signed in     */
 /* ------------------------------------------------------------------ */
 
 const KEY = "ml.onboarding.draft";
+
+export type SyncState = "idle" | "loading" | "saving" | "saved" | "offline" | "error" | "local";
 
 type Store = {
   draft: OnboardingDraft;
@@ -30,6 +32,8 @@ type Store = {
   markComplete: (id: string) => void;
   reset: () => void;
   hydrated: boolean;
+  sync: SyncState;
+  retry: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -37,49 +41,139 @@ const Ctx = createContext<Store | null>(null);
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [draft, setDraft] = useState<OnboardingDraft>(emptyDraft);
   const [hydrated, setHydrated] = useState(false);
+  const [sync, setSync] = useState<SyncState>("idle");
+  const { signedIn, loading: authLoading } = useAuth();
+  const loadProfile = useServerFn(getMyProfile);
+  const persist = useServerFn(saveMyProfile);
+  const timer = useRef<number | null>(null);
+  const pending = useRef<OnboardingDraft | null>(null);
+  const mergedFromServer = useRef(false);
 
+  // 1. Local draft first — instant and works offline.
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(KEY);
       if (raw) setDraft({ ...emptyDraft, ...(JSON.parse(raw) as OnboardingDraft) });
     } catch {
-      /* ignore — design-time only */
+      /* ignore corrupt drafts */
     }
     setHydrated(true);
   }, []);
 
-  const persist = useCallback((next: OnboardingDraft) => {
-    setDraft(next);
+  const writeLocal = useCallback((next: OnboardingDraft) => {
     try {
       window.localStorage.setItem(KEY, JSON.stringify(next));
     } catch {
-      /* ignore */
+      /* storage may be unavailable */
     }
   }, []);
+
+  const push = useCallback(
+    async (next: OnboardingDraft) => {
+      if (!navigator.onLine) {
+        setSync("offline");
+        return;
+      }
+      setSync("saving");
+      try {
+        const step = resumeTarget(next);
+        await persist({ data: draftToProfile(next, step) });
+        setSync("saved");
+      } catch {
+        setSync("error");
+      }
+    },
+    [persist],
+  );
+
+  // 2. Merge the account copy once we know the user is signed in.
+  useEffect(() => {
+    if (!hydrated || authLoading || mergedFromServer.current) return;
+    if (!signedIn) {
+      setSync("local");
+      return;
+    }
+    mergedFromServer.current = true;
+    setSync("loading");
+    loadProfile()
+      .then((row) => {
+        const remote = profileToDraft(row as never);
+        if (remote) {
+          setDraft((local) => {
+            // Whichever copy is further along wins; the other fills the blanks.
+            const localAhead = local.completedSteps.length >= remote.completedSteps.length;
+            const base = localAhead ? { ...remote, ...prune(local) } : { ...local, ...prune(remote) };
+            const merged = {
+              ...base,
+              completedSteps: Array.from(
+                new Set([...local.completedSteps, ...remote.completedSteps]),
+              ),
+            } as OnboardingDraft;
+            writeLocal(merged);
+            return merged;
+          });
+        }
+        setSync("saved");
+      })
+      .catch(() => setSync("error"));
+  }, [hydrated, authLoading, signedIn, loadProfile, writeLocal]);
+
+  const persistDraft = useCallback(
+    (next: OnboardingDraft) => {
+      setDraft(next);
+      writeLocal(next);
+      if (!signedIn) {
+        setSync("local");
+        return;
+      }
+      pending.current = next;
+      if (timer.current) window.clearTimeout(timer.current);
+      timer.current = window.setTimeout(() => {
+        const payload = pending.current;
+        pending.current = null;
+        if (payload) void push(payload);
+      }, 700);
+    },
+    [signedIn, push, writeLocal],
+  );
 
   const value = useMemo<Store>(
     () => ({
       draft,
       hydrated,
-      set: (patch) => persist({ ...draft, ...patch }),
+      sync,
+      retry: () => void push(draft),
+      set: (patch) => persistDraft({ ...draft, ...patch }),
       toggle: (field, val) => {
         const list = (draft[field] as unknown as string[]) ?? [];
         const next = list.includes(val) ? list.filter((x) => x !== val) : [...list, val];
-        persist({ ...draft, [field]: next } as OnboardingDraft);
+        persistDraft({ ...draft, [field]: next } as OnboardingDraft);
       },
       markComplete: (id) =>
-        persist({
+        persistDraft({
           ...draft,
           completedSteps: draft.completedSteps.includes(id)
             ? draft.completedSteps
             : [...draft.completedSteps, id],
         }),
-      reset: () => persist(emptyDraft),
+      reset: () => persistDraft(emptyDraft),
     }),
-    [draft, hydrated, persist],
+    [draft, hydrated, sync, persistDraft, push],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+
+/** Drop empty values so a merge never blanks out the other copy. */
+function prune(d: OnboardingDraft): Partial<OnboardingDraft> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(d)) {
+    if (v === null || v === undefined || v === "") continue;
+    if (Array.isArray(v) && v.length === 0) continue;
+    if (!Array.isArray(v) && typeof v === "object" && Object.keys(v as object).length === 0) continue;
+    out[k] = v;
+  }
+  return out as Partial<OnboardingDraft>;
 }
 
 export function useOnboarding(): Store {
@@ -87,6 +181,7 @@ export function useOnboarding(): Store {
   if (!ctx) throw new Error("useOnboarding must be used inside OnboardingProvider");
   return ctx;
 }
+
 
 export function resumeTarget(draft: OnboardingDraft): string {
   const list = visibleSteps(draft);
