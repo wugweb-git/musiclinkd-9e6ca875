@@ -23,6 +23,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as BandsIdRouteImport } from './routes/bands.$id'
+import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
@@ -197,6 +198,11 @@ const StudioRoute = StudioRouteImport.update({
 const BandsIdRoute = BandsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
+  getParentRoute: () => BandsRoute,
+} as any)
+const BandsNewRoute = BandsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
   getParentRoute: () => BandsRoute,
 } as any)
 const BookingIdRoute = BookingIdRouteImport.update({
@@ -748,6 +754,7 @@ export interface FileRoutesByFullPath {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/bands/$id': typeof BandsIdRoute
+  '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
   '/identity/analytics': typeof IdentityAnalyticsRoute
@@ -869,6 +876,7 @@ export interface FileRoutesByTo {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/bands/$id': typeof BandsIdRoute
+  '/bands/new': typeof BandsNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
@@ -990,6 +998,7 @@ export interface FileRoutesById {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/bands/$id': typeof BandsIdRoute
+  '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/collab/new': typeof CollabNewRouteWithChildren
   '/identity/analytics': typeof IdentityAnalyticsRoute
@@ -1113,6 +1122,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/bands/$id'
+    | '/bands/new'
     | '/booking/$id'
     | '/collab/new'
     | '/identity/analytics'
@@ -1234,6 +1244,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/bands/$id'
+    | '/bands/new'
     | '/collab/new'
     | '/identity/analytics'
     | '/identity/business'
@@ -1354,6 +1365,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/bands/$id'
+    | '/bands/new'
     | '/booking/$id'
     | '/collab/new'
     | '/identity/analytics'
@@ -1669,6 +1681,13 @@ declare module '@tanstack/react-router' {
       path: '/$id'
       fullPath: '/bands/$id'
       preLoaderRoute: typeof BandsIdRouteImport
+      parentRoute: typeof BandsRoute
+    }
+    '/bands/new': {
+      id: '/bands/new'
+      path: '/new'
+      fullPath: '/bands/new'
+      preLoaderRoute: typeof BandsNewRouteImport
       parentRoute: typeof BandsRoute
     }
     '/booking/$id': {
@@ -2411,10 +2430,12 @@ declare module '@tanstack/react-router' {
 
 interface BandsRouteChildren {
   BandsIdRoute: typeof BandsIdRoute
+  BandsNewRoute: typeof BandsNewRoute
 }
 
 const BandsRouteChildren: BandsRouteChildren = {
   BandsIdRoute: BandsIdRoute,
+  BandsNewRoute: BandsNewRoute,
 }
 
 const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
