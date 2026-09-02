@@ -71,7 +71,7 @@ function BandProfile() {
               <Link to="/messages" className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-text2"><MessageSquare size={14} aria-hidden />Message</Link>
             </>
           )}
-          <Link to="/booking" className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-navy px-2 text-xs font-semibold text-background"><CalendarDays size={14} aria-hidden />Book</Link>
+          <Link to="/bookings" className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-navy px-2 text-xs font-semibold text-background"><CalendarDays size={14} aria-hidden />Book</Link>
           <Link to="/identity/card" className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-text2"><Share2 size={14} aria-hidden />Share</Link>
         </div>
 
