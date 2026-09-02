@@ -143,6 +143,7 @@ import { Route as MarketplaceSellerIdRouteImport } from './routes/marketplace/se
 import { Route as OnboardingStepIdRouteImport } from './routes/onboarding/step.$id'
 import { Route as OpportunitiesIdIndexRouteImport } from './routes/opportunities.$id.index'
 import { Route as OpportunitiesIdApplyRouteImport } from './routes/opportunities.$id.apply'
+import { Route as OpportunitiesIdManageRouteImport } from './routes/opportunities.$id.manage'
 import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opportunities.applications.index'
 import { Route as OpportunitiesApplicationsAidRouteImport } from './routes/opportunities.applications.$aid'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
@@ -843,6 +844,11 @@ const OpportunitiesIdApplyRoute = OpportunitiesIdApplyRouteImport.update({
   path: '/opportunities/$id/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OpportunitiesIdManageRoute = OpportunitiesIdManageRouteImport.update({
+  id: '/opportunities/$id/manage',
+  path: '/opportunities/$id/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OpportunitiesApplicationsIndexRoute =
   OpportunitiesApplicationsIndexRouteImport.update({
     id: '/opportunities/applications/',
@@ -1131,6 +1137,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/$id/manage': typeof OpportunitiesIdManageRoute
   '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
@@ -1295,6 +1302,7 @@ export interface FileRoutesByTo {
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/$id/manage': typeof OpportunitiesIdManageRoute
   '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
@@ -1461,6 +1469,7 @@ export interface FileRoutesById {
   '/marketplace/seller/$id': typeof MarketplaceSellerIdRoute
   '/onboarding/step/$id': typeof OnboardingStepIdRoute
   '/opportunities/$id/apply': typeof OpportunitiesIdApplyRoute
+  '/opportunities/$id/manage': typeof OpportunitiesIdManageRoute
   '/opportunities/applications/$aid': typeof OpportunitiesApplicationsAidRoute
   '/portfolio/$id/edit': typeof PortfolioIdEditRoute
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
@@ -1628,6 +1637,7 @@ export interface FileRouteTypes {
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
     | '/opportunities/$id/apply'
+    | '/opportunities/$id/manage'
     | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
@@ -1792,6 +1802,7 @@ export interface FileRouteTypes {
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
     | '/opportunities/$id/apply'
+    | '/opportunities/$id/manage'
     | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
@@ -1957,6 +1968,7 @@ export interface FileRouteTypes {
     | '/marketplace/seller/$id'
     | '/onboarding/step/$id'
     | '/opportunities/$id/apply'
+    | '/opportunities/$id/manage'
     | '/opportunities/applications/$aid'
     | '/portfolio/$id/edit'
     | '/portfolio/new/$kind'
@@ -2105,6 +2117,7 @@ export interface RootRouteChildren {
   MarketplaceSellerIdRoute: typeof MarketplaceSellerIdRoute
   OnboardingStepIdRoute: typeof OnboardingStepIdRoute
   OpportunitiesIdApplyRoute: typeof OpportunitiesIdApplyRoute
+  OpportunitiesIdManageRoute: typeof OpportunitiesIdManageRoute
   OpportunitiesApplicationsAidRoute: typeof OpportunitiesApplicationsAidRoute
   PortfolioNewKindRoute: typeof PortfolioNewKindRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
@@ -3077,6 +3090,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIdApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/opportunities/$id/manage': {
+      id: '/opportunities/$id/manage'
+      path: '/opportunities/$id/manage'
+      fullPath: '/opportunities/$id/manage'
+      preLoaderRoute: typeof OpportunitiesIdManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/opportunities/applications/': {
       id: '/opportunities/applications/'
       path: '/opportunities/applications'
@@ -3540,6 +3560,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSellerIdRoute: MarketplaceSellerIdRoute,
   OnboardingStepIdRoute: OnboardingStepIdRoute,
   OpportunitiesIdApplyRoute: OpportunitiesIdApplyRoute,
+  OpportunitiesIdManageRoute: OpportunitiesIdManageRoute,
   OpportunitiesApplicationsAidRoute: OpportunitiesApplicationsAidRoute,
   PortfolioNewKindRoute: PortfolioNewKindRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
