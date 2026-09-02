@@ -49,7 +49,7 @@
 
 ## FLOWS 15 / 16 / 17 / 18 / 20 / 22 (requested Sep 2, design-only, one coherent app)
 - [x] FLOW 15 Band — /bands, /bands/$id, /bands/new, /bands/$id/manage, /bands/$id/invite
-- [x] FLOW 16 Verification — /verification, /verification/$type
+- [x] FLOW 16 Verification — VERIFY-01..17: /verification (hub), /verification/choose, /verification/$type?step&mode (5-step wizard, status branches, resubmit/renew), /verification/badge, /verification/privacy. Verified end-to-end at 412px.
 - [x] FLOW 17 Reviews — /reviews, /reviews/write/$id
 - [x] FLOW 18 Subscription / monetisation — /plans, /plans/checkout, /plans/manage, /plans/earnings
 - [x] FLOW 20 Recommendations — /recommendations, /recommendations/settings
