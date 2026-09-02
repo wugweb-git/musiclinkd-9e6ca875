@@ -27,6 +27,7 @@ import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as BandsIdRouteImport } from './routes/bands.$id'
 import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
@@ -237,6 +238,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/auth/verify-email',
+  path: '/auth/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdRoute = BandsIdRouteImport.update({
@@ -871,6 +877,7 @@ export interface FileRoutesByFullPath {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
@@ -1012,6 +1019,7 @@ export interface FileRoutesByTo {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
@@ -1153,6 +1161,7 @@ export interface FileRoutesById {
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
@@ -1296,6 +1305,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/welcome'
+    | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
@@ -1437,6 +1447,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/welcome'
+    | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
     | '/collab/new'
@@ -1577,6 +1588,7 @@ export interface FileRouteTypes {
     | '/singers'
     | '/studio'
     | '/welcome'
+    | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
@@ -1719,6 +1731,7 @@ export interface RootRouteChildren {
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   WelcomeRoute: typeof WelcomeRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   CollabNewRoute: typeof CollabNewRouteWithChildren
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
@@ -1947,6 +1960,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth/'
       preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bands/$id': {
@@ -2962,6 +2982,7 @@ const rootRouteChildren: RootRouteChildren = {
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   WelcomeRoute: WelcomeRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   CollabNewRoute: CollabNewRouteWithChildren,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
