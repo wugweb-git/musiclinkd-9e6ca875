@@ -85,6 +85,7 @@ import { Route as ProviderAvailabilityRouteImport } from './routes/provider.avai
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
@@ -541,6 +542,11 @@ const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => RecommendationsRoute,
 } as any)
+const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
+  id: '/settings/delete-account',
+  path: '/settings/delete-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
@@ -996,6 +1002,7 @@ export interface FileRoutesByFullPath {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1148,6 +1155,7 @@ export interface FileRoutesByTo {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1302,6 +1310,7 @@ export interface FileRoutesById {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1457,6 +1466,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1609,6 +1619,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1762,6 +1773,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1909,6 +1921,7 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
+  SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
   VerificationBadgeRoute: typeof VerificationBadgeRoute
@@ -2510,6 +2523,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/recommendations/settings'
       preLoaderRoute: typeof RecommendationsSettingsRouteImport
       parentRoute: typeof RecommendationsRoute
+    }
+    '/settings/delete-account': {
+      id: '/settings/delete-account'
+      path: '/settings/delete-account'
+      fullPath: '/settings/delete-account'
+      preLoaderRoute: typeof SettingsDeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/talent/$id': {
       id: '/talent/$id'
@@ -3248,6 +3268,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
+  SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
   VerificationBadgeRoute: VerificationBadgeRoute,
