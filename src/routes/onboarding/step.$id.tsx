@@ -7,11 +7,9 @@ import {
   ErrorBanner,
   InlineField,
   LocationHint,
-  OfflineBanner,
   OnboardingProvider,
   OptionList,
   PhotoPicker,
-  SavingBanner,
   SelectField,
   StepShell,
   StepSkeleton,
@@ -70,7 +68,7 @@ export const Route = createFileRoute("/onboarding/step/$id")({
   ),
 });
 
-type Banner = "none" | "saving" | "offline" | "error";
+type Banner = "none" | "error";
 
 function StepRoute() {
   const { id } = Route.useParams();
