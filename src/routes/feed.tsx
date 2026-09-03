@@ -212,7 +212,25 @@ function Body({ data }: { data: DashboardData }) {
         </section>
       ) : null}
 
+      {/* 3b — Opportunities */}
+      <section className="pt-6">
+        <SectionHeader title="Opportunities" action={<Link to="/opportunities">See all</Link>} />
+        <div className="grid grid-cols-2 gap-3 px-5">
+          <Link to="/opportunities" className="min-w-0 rounded-3xl border border-border bg-card p-4">
+            <p className="text-[24px] font-bold leading-none">5</p>
+            <p className="mt-2 truncate text-[12px] font-semibold">Matching you</p>
+            <p className="truncate text-[11px] text-muted-foreground">Singers, mixers, gigs</p>
+          </Link>
+          <Link to="/opportunities/applications" className="min-w-0 rounded-3xl border border-border bg-card p-4">
+            <p className="text-[24px] font-bold leading-none">2</p>
+            <p className="mt-2 truncate text-[12px] font-semibold">Your applications</p>
+            <p className="truncate text-[11px] text-muted-foreground">1 shortlisted</p>
+          </Link>
+        </div>
+      </section>
+
       {/* 4 — For you */}
+
       {tiles.length || data.forYou.length ? (
         <section className="pt-6">
           <SectionHeader title="For you" action={<Link to="/recommendations">See all</Link>} />
