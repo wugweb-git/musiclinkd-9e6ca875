@@ -45,7 +45,7 @@ function ApplicationDetail() {
 
   return (
     <Screen>
-      <TopBar title="Your application" subtitle={o?.title} back="/opportunities/applications" />
+      <TopBar title="Your application" {...(o ? { subtitle: o.title } : {})} back="/opportunities/applications" />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-2">
