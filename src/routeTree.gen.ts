@@ -90,6 +90,7 @@ import { Route as ProviderAvailabilityRouteImport } from './routes/provider.avai
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
@@ -579,6 +580,11 @@ const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => RecommendationsRoute,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
   id: '/settings/delete-account',
@@ -1102,6 +1108,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1268,6 +1275,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/services': typeof ServicesIndexRoute
   '/verification': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1436,6 +1444,7 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1605,6 +1614,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
+    | '/services/'
     | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -1771,6 +1781,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/opportunities'
     | '/portfolio'
+    | '/services'
     | '/verification'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -1938,6 +1949,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
+    | '/services/'
     | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -2099,6 +2111,7 @@ export interface RootRouteChildren {
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
   VerificationIndexRoute: typeof VerificationIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
@@ -2732,6 +2745,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/recommendations/settings'
       preLoaderRoute: typeof RecommendationsSettingsRouteImport
       parentRoute: typeof RecommendationsRoute
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/settings/delete-account': {
       id: '/settings/delete-account'
@@ -3550,6 +3570,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingIndexRoute: OnboardingIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
   VerificationIndexRoute: VerificationIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
