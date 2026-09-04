@@ -15,7 +15,7 @@ export const Route = createFileRoute("/services/$id")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: ServiceDetail;
+  component: ServiceDetail,
 });
 
 function ServiceDetail() {
