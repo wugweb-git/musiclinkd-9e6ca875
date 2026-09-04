@@ -92,6 +92,7 @@ import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
+import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
 import { Route as ServicesNewRouteImport } from './routes/services.new'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
@@ -591,6 +592,11 @@ const ServicesIndexRoute = ServicesIndexRouteImport.update({
 const ServicesIdRoute = ServicesIdRouteImport.update({
   id: '/services/$id',
   path: '/services/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesAvailabilityRoute = ServicesAvailabilityRouteImport.update({
+  id: '/services/availability',
+  path: '/services/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesNewRoute = ServicesNewRouteImport.update({
@@ -1108,6 +1114,7 @@ export interface FileRoutesByFullPath {
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/services/$id': typeof ServicesIdRoute
+  '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
@@ -1277,6 +1284,7 @@ export interface FileRoutesByTo {
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/services/$id': typeof ServicesIdRoute
+  '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
@@ -1448,6 +1456,7 @@ export interface FileRoutesById {
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/services/$id': typeof ServicesIdRoute
+  '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
@@ -1620,6 +1629,7 @@ export interface FileRouteTypes {
     | '/provider/pricing'
     | '/recommendations/settings'
     | '/services/$id'
+    | '/services/availability'
     | '/services/new'
     | '/settings/delete-account'
     | '/talent/$id'
@@ -1789,6 +1799,7 @@ export interface FileRouteTypes {
     | '/provider/pricing'
     | '/recommendations/settings'
     | '/services/$id'
+    | '/services/availability'
     | '/services/new'
     | '/settings/delete-account'
     | '/talent/$id'
@@ -1959,6 +1970,7 @@ export interface FileRouteTypes {
     | '/provider/pricing'
     | '/recommendations/settings'
     | '/services/$id'
+    | '/services/availability'
     | '/services/new'
     | '/settings/delete-account'
     | '/talent/$id'
@@ -2123,6 +2135,7 @@ export interface RootRouteChildren {
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
   ServicesIdRoute: typeof ServicesIdRoute
+  ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesNewRoute: typeof ServicesNewRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   TalentIdRoute: typeof TalentIdRoute
@@ -2784,6 +2797,13 @@ declare module '@tanstack/react-router' {
       path: '/services/$id'
       fullPath: '/services/$id'
       preLoaderRoute: typeof ServicesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/availability': {
+      id: '/services/availability'
+      path: '/services/availability'
+      fullPath: '/services/availability'
+      preLoaderRoute: typeof ServicesAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/new': {
@@ -3598,6 +3618,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
   ServicesIdRoute: ServicesIdRoute,
+  ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesNewRoute: ServicesNewRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   TalentIdRoute: TalentIdRoute,
