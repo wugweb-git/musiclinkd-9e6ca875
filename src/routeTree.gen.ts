@@ -91,6 +91,7 @@ import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
@@ -584,6 +585,11 @@ const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIdRoute = ServicesIdRouteImport.update({
+  id: '/services/$id',
+  path: '/services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
@@ -1095,6 +1101,7 @@ export interface FileRoutesByFullPath {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/services/$id': typeof ServicesIdRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1262,6 +1269,7 @@ export interface FileRoutesByTo {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/services/$id': typeof ServicesIdRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1431,6 +1439,7 @@ export interface FileRoutesById {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/services/$id': typeof ServicesIdRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1601,6 +1610,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/services/$id'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -1768,6 +1778,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/services/$id'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -1936,6 +1947,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/services/$id'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -2098,6 +2110,7 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
+  ServicesIdRoute: typeof ServicesIdRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
@@ -2751,6 +2764,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services/'
       preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$id': {
+      id: '/services/$id'
+      path: '/services/$id'
+      fullPath: '/services/$id'
+      preLoaderRoute: typeof ServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/delete-account': {
@@ -3557,6 +3577,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
+  ServicesIdRoute: ServicesIdRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
