@@ -90,6 +90,10 @@ import { Route as ProviderAvailabilityRouteImport } from './routes/provider.avai
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesIdRouteImport } from './routes/services.$id'
+import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
+import { Route as ServicesNewRouteImport } from './routes/services.new'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
@@ -579,6 +583,26 @@ const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
   getParentRoute: () => RecommendationsRoute,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIdRoute = ServicesIdRouteImport.update({
+  id: '/services/$id',
+  path: '/services/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesAvailabilityRoute = ServicesAvailabilityRouteImport.update({
+  id: '/services/availability',
+  path: '/services/availability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesNewRoute = ServicesNewRouteImport.update({
+  id: '/services/new',
+  path: '/services/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
   id: '/settings/delete-account',
@@ -1089,6 +1113,9 @@ export interface FileRoutesByFullPath {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/services/$id': typeof ServicesIdRoute
+  '/services/availability': typeof ServicesAvailabilityRoute
+  '/services/new': typeof ServicesNewRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1102,6 +1129,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1255,6 +1283,9 @@ export interface FileRoutesByTo {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/services/$id': typeof ServicesIdRoute
+  '/services/availability': typeof ServicesAvailabilityRoute
+  '/services/new': typeof ServicesNewRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1268,6 +1299,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/services': typeof ServicesIndexRoute
   '/verification': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1423,6 +1455,9 @@ export interface FileRoutesById {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/services/$id': typeof ServicesIdRoute
+  '/services/availability': typeof ServicesAvailabilityRoute
+  '/services/new': typeof ServicesNewRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1436,6 +1471,7 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1592,6 +1628,9 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/services/$id'
+    | '/services/availability'
+    | '/services/new'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -1605,6 +1644,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
+    | '/services/'
     | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -1758,6 +1798,9 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/services/$id'
+    | '/services/availability'
+    | '/services/new'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -1771,6 +1814,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/opportunities'
     | '/portfolio'
+    | '/services'
     | '/verification'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -1925,6 +1969,9 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/services/$id'
+    | '/services/availability'
+    | '/services/new'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -1938,6 +1985,7 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
+    | '/services/'
     | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -2086,6 +2134,9 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
+  ServicesIdRoute: typeof ServicesIdRoute
+  ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
+  ServicesNewRoute: typeof ServicesNewRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
@@ -2099,6 +2150,7 @@ export interface RootRouteChildren {
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
   VerificationIndexRoute: typeof VerificationIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
@@ -2732,6 +2784,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/recommendations/settings'
       preLoaderRoute: typeof RecommendationsSettingsRouteImport
       parentRoute: typeof RecommendationsRoute
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$id': {
+      id: '/services/$id'
+      path: '/services/$id'
+      fullPath: '/services/$id'
+      preLoaderRoute: typeof ServicesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/availability': {
+      id: '/services/availability'
+      path: '/services/availability'
+      fullPath: '/services/availability'
+      preLoaderRoute: typeof ServicesAvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/new': {
+      id: '/services/new'
+      path: '/services/new'
+      fullPath: '/services/new'
+      preLoaderRoute: typeof ServicesNewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/settings/delete-account': {
       id: '/settings/delete-account'
@@ -3537,6 +3617,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
+  ServicesIdRoute: ServicesIdRoute,
+  ServicesAvailabilityRoute: ServicesAvailabilityRoute,
+  ServicesNewRoute: ServicesNewRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
@@ -3550,6 +3633,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingIndexRoute: OnboardingIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
   VerificationIndexRoute: VerificationIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
