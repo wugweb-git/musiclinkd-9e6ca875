@@ -41,6 +41,7 @@ import { Route as BandsIdRouteImport } from './routes/bands.$id'
 import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
+import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as CollabNewRouteImport } from './routes/collab.new'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
@@ -337,6 +338,11 @@ const BookingIdRoute = BookingIdRouteImport.update({
 const BookingsIndexRoute = BookingsIndexRouteImport.update({
   id: '/bookings/',
   path: '/bookings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessIndexRoute = BusinessIndexRouteImport.update({
+  id: '/business/',
+  path: '/business/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollabIndexRoute = CollabIndexRouteImport.update({
@@ -1124,6 +1130,7 @@ export interface FileRoutesByFullPath {
   '/verification/privacy': typeof VerificationPrivacyRoute
   '/auth/': typeof AuthIndexRoute
   '/bookings/': typeof BookingsIndexRoute
+  '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -1294,6 +1301,7 @@ export interface FileRoutesByTo {
   '/verification/privacy': typeof VerificationPrivacyRoute
   '/auth': typeof AuthIndexRoute
   '/bookings': typeof BookingsIndexRoute
+  '/business': typeof BusinessIndexRoute
   '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
@@ -1466,6 +1474,7 @@ export interface FileRoutesById {
   '/verification/privacy': typeof VerificationPrivacyRoute
   '/auth/': typeof AuthIndexRoute
   '/bookings/': typeof BookingsIndexRoute
+  '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
@@ -1639,6 +1648,7 @@ export interface FileRouteTypes {
     | '/verification/privacy'
     | '/auth/'
     | '/bookings/'
+    | '/business/'
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
@@ -1809,6 +1819,7 @@ export interface FileRouteTypes {
     | '/verification/privacy'
     | '/auth'
     | '/bookings'
+    | '/business'
     | '/collab'
     | '/marketplace'
     | '/onboarding'
@@ -1980,6 +1991,7 @@ export interface FileRouteTypes {
     | '/verification/privacy'
     | '/auth/'
     | '/bookings/'
+    | '/business/'
     | '/collab/'
     | '/marketplace/'
     | '/onboarding/'
@@ -2145,6 +2157,7 @@ export interface RootRouteChildren {
   VerificationPrivacyRoute: typeof VerificationPrivacyRoute
   AuthIndexRoute: typeof AuthIndexRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
+  BusinessIndexRoute: typeof BusinessIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
@@ -2440,6 +2453,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings'
       fullPath: '/bookings/'
       preLoaderRoute: typeof BookingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business/': {
+      id: '/business/'
+      path: '/business'
+      fullPath: '/business/'
+      preLoaderRoute: typeof BusinessIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collab/': {
@@ -3628,6 +3648,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationPrivacyRoute: VerificationPrivacyRoute,
   AuthIndexRoute: AuthIndexRoute,
   BookingsIndexRoute: BookingsIndexRoute,
+  BusinessIndexRoute: BusinessIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
