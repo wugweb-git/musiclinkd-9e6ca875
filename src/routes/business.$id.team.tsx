@@ -80,10 +80,10 @@ function TeamScreen() {
 
         <Card className="space-y-2">
           <h2 className="text-[15px]">What each role can do</h2>
-          {(Object.keys(rolePermissions) as BusinessRole[]).map((r) => (
-            <div key={r} className="border-b border-border py-2 last:border-0">
-              <p className="text-[13px] font-semibold">{businessRoleLabel[r]}</p>
-              <p className="text-[11px] text-muted-foreground">{rolePermissions[r].join(" · ")}</p>
+          {rolePermissions.map((r) => (
+            <div key={r.role} className="border-b border-border py-2 last:border-0">
+              <p className="text-[13px] font-semibold">{businessRoleLabel[r.role]}</p>
+              <p className="text-[11px] text-muted-foreground">{r.can.join(" · ")}</p>
             </div>
           ))}
         </Card>
