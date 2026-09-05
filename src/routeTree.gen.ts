@@ -118,6 +118,7 @@ import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.ind
 import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
 import { Route as BusinessIdManageRouteImport } from './routes/business.$id.manage'
+import { Route as BusinessIdTeamRouteImport } from './routes/business.$id.team'
 import { Route as CollabIdIndexRouteImport } from './routes/collab.$id.index'
 import { Route as CollabIdActivityRouteImport } from './routes/collab.$id.activity'
 import { Route as CollabIdAgreementRouteImport } from './routes/collab.$id.agreement'
@@ -728,6 +729,11 @@ const BusinessIdManageRoute = BusinessIdManageRouteImport.update({
   path: '/manage',
   getParentRoute: () => BusinessIdRoute,
 } as any)
+const BusinessIdTeamRoute = BusinessIdTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => BusinessIdRoute,
+} as any)
 const CollabIdIndexRoute = CollabIdIndexRouteImport.update({
   id: '/collab/$id/',
   path: '/collab/$id/',
@@ -1170,6 +1176,7 @@ export interface FileRoutesByFullPath {
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/business/$id/manage': typeof BusinessIdManageRoute
+  '/business/$id/team': typeof BusinessIdTeamRoute
   '/collab/$id/activity': typeof CollabIdActivityRoute
   '/collab/$id/agreement': typeof CollabIdAgreementRoute
   '/collab/$id/discussion': typeof CollabIdDiscussionRoute
@@ -1344,6 +1351,7 @@ export interface FileRoutesByTo {
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/business/$id/manage': typeof BusinessIdManageRoute
+  '/business/$id/team': typeof BusinessIdTeamRoute
   '/collab/$id/activity': typeof CollabIdActivityRoute
   '/collab/$id/agreement': typeof CollabIdAgreementRoute
   '/collab/$id/discussion': typeof CollabIdDiscussionRoute
@@ -1520,6 +1528,7 @@ export interface FileRoutesById {
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/business/$id/manage': typeof BusinessIdManageRoute
+  '/business/$id/team': typeof BusinessIdTeamRoute
   '/collab/$id/activity': typeof CollabIdActivityRoute
   '/collab/$id/agreement': typeof CollabIdAgreementRoute
   '/collab/$id/discussion': typeof CollabIdDiscussionRoute
@@ -1697,6 +1706,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/business/$id/manage'
+    | '/business/$id/team'
     | '/collab/$id/activity'
     | '/collab/$id/agreement'
     | '/collab/$id/discussion'
@@ -1871,6 +1881,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/business/$id/manage'
+    | '/business/$id/team'
     | '/collab/$id/activity'
     | '/collab/$id/agreement'
     | '/collab/$id/discussion'
@@ -2046,6 +2057,7 @@ export interface FileRouteTypes {
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
     | '/business/$id/manage'
+    | '/business/$id/team'
     | '/collab/$id/activity'
     | '/collab/$id/agreement'
     | '/collab/$id/discussion'
@@ -3032,6 +3044,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessIdManageRouteImport
       parentRoute: typeof BusinessIdRoute
     }
+    '/business/$id/team': {
+      id: '/business/$id/team'
+      path: '/team'
+      fullPath: '/business/$id/team'
+      preLoaderRoute: typeof BusinessIdTeamRouteImport
+      parentRoute: typeof BusinessIdRoute
+    }
     '/collab/$id/': {
       id: '/collab/$id/'
       path: '/collab/$id'
@@ -3583,10 +3602,12 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
 
 interface BusinessIdRouteChildren {
   BusinessIdManageRoute: typeof BusinessIdManageRoute
+  BusinessIdTeamRoute: typeof BusinessIdTeamRoute
 }
 
 const BusinessIdRouteChildren: BusinessIdRouteChildren = {
   BusinessIdManageRoute: BusinessIdManageRoute,
+  BusinessIdTeamRoute: BusinessIdTeamRoute,
 }
 
 const BusinessIdRouteWithChildren = BusinessIdRoute._addFileChildren(
