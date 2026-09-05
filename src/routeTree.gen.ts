@@ -42,6 +42,7 @@ import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
+import { Route as BusinessIdRouteImport } from './routes/business.$id'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as CollabNewRouteImport } from './routes/collab.new'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
@@ -343,6 +344,11 @@ const BookingsIndexRoute = BookingsIndexRouteImport.update({
 const BusinessIndexRoute = BusinessIndexRouteImport.update({
   id: '/business/',
   path: '/business/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessIdRoute = BusinessIdRouteImport.update({
+  id: '/business/$id',
+  path: '/business/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollabIndexRoute = CollabIndexRouteImport.update({
@@ -1075,6 +1081,7 @@ export interface FileRoutesByFullPath {
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
+  '/business/$id': typeof BusinessIdRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
@@ -1246,6 +1253,7 @@ export interface FileRoutesByTo {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
+  '/business/$id': typeof BusinessIdRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
@@ -1419,6 +1427,7 @@ export interface FileRoutesById {
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
+  '/business/$id': typeof BusinessIdRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
@@ -1593,6 +1602,7 @@ export interface FileRouteTypes {
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
+    | '/business/$id'
     | '/collab/new'
     | '/help/$slug'
     | '/identity/analytics'
@@ -1764,6 +1774,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
+    | '/business/$id'
     | '/collab/new'
     | '/help/$slug'
     | '/identity/analytics'
@@ -1936,6 +1947,7 @@ export interface FileRouteTypes {
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
+    | '/business/$id'
     | '/collab/new'
     | '/help/$slug'
     | '/identity/analytics'
@@ -2107,6 +2119,7 @@ export interface RootRouteChildren {
   AuthSuccessRoute: typeof AuthSuccessRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
+  BusinessIdRoute: typeof BusinessIdRoute
   CollabNewRoute: typeof CollabNewRouteWithChildren
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
   IdentityBusinessRoute: typeof IdentityBusinessRoute
@@ -2460,6 +2473,13 @@ declare module '@tanstack/react-router' {
       path: '/business'
       fullPath: '/business/'
       preLoaderRoute: typeof BusinessIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business/$id': {
+      id: '/business/$id'
+      path: '/business/$id'
+      fullPath: '/business/$id'
+      preLoaderRoute: typeof BusinessIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collab/': {
@@ -3598,6 +3618,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSuccessRoute: AuthSuccessRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
+  BusinessIdRoute: BusinessIdRoute,
   CollabNewRoute: CollabNewRouteWithChildren,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
   IdentityBusinessRoute: IdentityBusinessRoute,
