@@ -66,6 +66,7 @@ import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/near
 import { Route as MarketplaceSavedRouteImport } from './routes/marketplace/saved'
 import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/search'
 import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
+import { Route as NotificationsIndexRouteImport } from './routes/notifications.index'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
 import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
@@ -467,6 +468,11 @@ const MarketplaceSearchRoute = MarketplaceSearchRouteImport.update({
 const MarketplaceSellRoute = MarketplaceSellRouteImport.update({
   id: '/marketplace/sell',
   path: '/marketplace/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsIndexRoute = NotificationsIndexRouteImport.update({
+  id: '/notifications/',
+  path: '/notifications/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
@@ -1159,6 +1165,7 @@ export interface FileRoutesByFullPath {
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
+  '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
@@ -1334,6 +1341,7 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessIndexRoute
   '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
+  '/notifications': typeof NotificationsIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
@@ -1511,6 +1519,7 @@ export interface FileRoutesById {
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
+  '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
@@ -1689,6 +1698,7 @@ export interface FileRouteTypes {
     | '/business/'
     | '/collab/'
     | '/marketplace/'
+    | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
@@ -1864,6 +1874,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/collab'
     | '/marketplace'
+    | '/notifications'
     | '/onboarding'
     | '/opportunities'
     | '/portfolio'
@@ -2040,6 +2051,7 @@ export interface FileRouteTypes {
     | '/business/'
     | '/collab/'
     | '/marketplace/'
+    | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
@@ -2210,6 +2222,7 @@ export interface RootRouteChildren {
   BusinessIndexRoute: typeof BusinessIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
+  NotificationsIndexRoute: typeof NotificationsIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
@@ -2678,6 +2691,13 @@ declare module '@tanstack/react-router' {
       path: '/marketplace/sell'
       fullPath: '/marketplace/sell'
       preLoaderRoute: typeof MarketplaceSellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications/': {
+      id: '/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications/'
+      preLoaderRoute: typeof NotificationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding/': {
@@ -3745,6 +3765,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessIndexRoute: BusinessIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
+  NotificationsIndexRoute: NotificationsIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
