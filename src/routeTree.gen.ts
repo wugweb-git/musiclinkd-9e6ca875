@@ -67,6 +67,7 @@ import { Route as MarketplaceSavedRouteImport } from './routes/marketplace/saved
 import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/search'
 import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications.index'
+import { Route as NotificationsSettingsRouteImport } from './routes/notifications.settings'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
 import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
@@ -473,6 +474,11 @@ const MarketplaceSellRoute = MarketplaceSellRouteImport.update({
 const NotificationsIndexRoute = NotificationsIndexRouteImport.update({
   id: '/notifications/',
   path: '/notifications/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsSettingsRoute = NotificationsSettingsRouteImport.update({
+  id: '/notifications/settings',
+  path: '/notifications/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
@@ -1127,6 +1133,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/notifications/settings': typeof NotificationsSettingsRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
@@ -1303,6 +1310,7 @@ export interface FileRoutesByTo {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/notifications/settings': typeof NotificationsSettingsRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
@@ -1481,6 +1489,7 @@ export interface FileRoutesById {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/notifications/settings': typeof NotificationsSettingsRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
@@ -1660,6 +1669,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/notifications/settings'
     | '/onboarding/complete'
     | '/onboarding/done'
     | '/onboarding/preview'
@@ -1836,6 +1846,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/notifications/settings'
     | '/onboarding/complete'
     | '/onboarding/done'
     | '/onboarding/preview'
@@ -2013,6 +2024,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/notifications/settings'
     | '/onboarding/complete'
     | '/onboarding/done'
     | '/onboarding/preview'
@@ -2188,6 +2200,7 @@ export interface RootRouteChildren {
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
   MarketplaceSearchRoute: typeof MarketplaceSearchRoute
   MarketplaceSellRoute: typeof MarketplaceSellRoute
+  NotificationsSettingsRoute: typeof NotificationsSettingsRoute
   OnboardingCompleteRoute: typeof OnboardingCompleteRoute
   OnboardingDoneRoute: typeof OnboardingDoneRoute
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
@@ -2698,6 +2711,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/notifications/'
       preLoaderRoute: typeof NotificationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications/settings': {
+      id: '/notifications/settings'
+      path: '/notifications/settings'
+      fullPath: '/notifications/settings'
+      preLoaderRoute: typeof NotificationsSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding/': {
@@ -3731,6 +3751,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSavedRoute: MarketplaceSavedRoute,
   MarketplaceSearchRoute: MarketplaceSearchRoute,
   MarketplaceSellRoute: MarketplaceSellRoute,
+  NotificationsSettingsRoute: NotificationsSettingsRoute,
   OnboardingCompleteRoute: OnboardingCompleteRoute,
   OnboardingDoneRoute: OnboardingDoneRoute,
   OnboardingPreviewRoute: OnboardingPreviewRoute,
