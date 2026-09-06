@@ -100,6 +100,7 @@ import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
 import { Route as ServicesNewRouteImport } from './routes/services.new'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
+import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
@@ -642,6 +643,11 @@ const SettingsIndexRoute = SettingsIndexRouteImport.update({
   path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsAccountRoute = SettingsAccountRouteImport.update({
+  id: '/settings/account',
+  path: '/settings/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
   id: '/settings/delete-account',
   path: '/settings/delete-account',
@@ -1167,6 +1173,7 @@ export interface FileRoutesByFullPath {
   '/services/$id': typeof ServicesIdRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1345,6 +1352,7 @@ export interface FileRoutesByTo {
   '/services/$id': typeof ServicesIdRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1525,6 +1533,7 @@ export interface FileRoutesById {
   '/services/$id': typeof ServicesIdRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1706,6 +1715,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/services/availability'
     | '/services/new'
+    | '/settings/account'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -1884,6 +1894,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/services/availability'
     | '/services/new'
+    | '/settings/account'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -2063,6 +2074,7 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/services/availability'
     | '/services/new'
+    | '/settings/account'
     | '/settings/delete-account'
     | '/talent/$id'
     | '/verification/$type'
@@ -2236,6 +2248,7 @@ export interface RootRouteChildren {
   ServicesIdRoute: typeof ServicesIdRoute
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesNewRoute: typeof ServicesNewRoute
+  SettingsAccountRoute: typeof SettingsAccountRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
@@ -2955,6 +2968,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings/'
       preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/account': {
+      id: '/settings/account'
+      path: '/settings/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsAccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/delete-account': {
@@ -3795,6 +3815,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIdRoute: ServicesIdRoute,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesNewRoute: ServicesNewRoute,
+  SettingsAccountRoute: SettingsAccountRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
