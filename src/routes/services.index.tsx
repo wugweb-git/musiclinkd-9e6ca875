@@ -34,7 +34,7 @@ function ServicesHome() {
         subtitle="What people can book you for"
         back="/me"
         right={
-          <Link to="/services/new" aria-label="Add service" className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground">
+          <Link to="/services/new" search={{ step: "category" as const }} aria-label="Add service" className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground">
             <Plus size={18} />
           </Link>
         }
@@ -97,7 +97,7 @@ function ServicesHome() {
           </div>
         ) : (
           <EmptyState title={`No ${filter.toLowerCase()} services`} body="Publish a service so people can book you without asking for a quote first.">
-            <Link to="/services/new">
+            <Link to="/services/new" search={{ step: "category" as const }}>
               <Btn className="w-full">Add a service</Btn>
             </Link>
           </EmptyState>

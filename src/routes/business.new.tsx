@@ -9,7 +9,7 @@ type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
   validateSearch: (search: Record<string, unknown>) => ({
-    step: (steps.includes(search.step as Step) ? search.step : "type") as Step,
+    step: (steps.includes(search["step"] as Step) ? search["step"] : "type") as Step,
   }),
   head: () => ({
     meta: [
