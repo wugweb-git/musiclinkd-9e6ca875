@@ -761,14 +761,14 @@ const BusinessIdIndexRoute = BusinessIdIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessIdManageRoute = BusinessIdManageRouteImport.update({
-  id: '/business/$id/manage',
-  path: '/business/$id/manage',
-  getParentRoute: () => rootRouteImport,
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => BusinessIdRoute,
 } as any)
 const BusinessIdTeamRoute = BusinessIdTeamRouteImport.update({
-  id: '/business/$id/team',
-  path: '/business/$id/team',
-  getParentRoute: () => rootRouteImport,
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => BusinessIdRoute,
 } as any)
 const CollabIdIndexRoute = CollabIdIndexRouteImport.update({
   id: '/collab/$id/',
@@ -2295,8 +2295,6 @@ export interface RootRouteChildren {
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
-  BusinessIdManageRoute: typeof BusinessIdManageRoute
-  BusinessIdTeamRoute: typeof BusinessIdTeamRoute
   CollabIdActivityRoute: typeof CollabIdActivityRoute
   CollabIdAgreementRoute: typeof CollabIdAgreementRoute
   CollabIdDiscussionRoute: typeof CollabIdDiscussionRoute
@@ -3161,17 +3159,17 @@ declare module '@tanstack/react-router' {
     }
     '/business/$id/manage': {
       id: '/business/$id/manage'
-      path: '/business/$id/manage'
+      path: '/manage'
       fullPath: '/business/$id/manage'
       preLoaderRoute: typeof BusinessIdManageRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BusinessIdRoute
     }
     '/business/$id/team': {
       id: '/business/$id/team'
-      path: '/business/$id/team'
+      path: '/team'
       fullPath: '/business/$id/team'
       preLoaderRoute: typeof BusinessIdTeamRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof BusinessIdRoute
     }
     '/collab/$id/': {
       id: '/collab/$id/'
@@ -3866,8 +3864,6 @@ const rootRouteChildren: RootRouteChildren = {
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
-  BusinessIdManageRoute: BusinessIdManageRoute,
-  BusinessIdTeamRoute: BusinessIdTeamRoute,
   CollabIdActivityRoute: CollabIdActivityRoute,
   CollabIdAgreementRoute: CollabIdAgreementRoute,
   CollabIdDiscussionRoute: CollabIdDiscussionRoute,
