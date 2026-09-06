@@ -79,3 +79,7 @@
 - [ ] FLOW 12 Business Profiles
 - [ ] FLOW 13 Notifications
 - [ ] FLOW 21 Settings & Support
+- [x] FLOW 11 Services & Availability — /services, /services/$id, /services/new (5-step), /services/availability
+- [x] FLOW 12 Business Profiles — /business, /business/$id, /business/new (6-step), /business/$id/manage, /business/$id/team
+- [x] FLOW 13 Notifications — /notifications, /notifications/settings
+- [x] FLOW 21 Settings & Support — /settings, /settings/account, /settings/privacy, /settings/security

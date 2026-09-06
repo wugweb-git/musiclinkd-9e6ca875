@@ -5,7 +5,7 @@ import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { getBusiness, businessTypeLabel, businessRoleLabel } from "@/data/business";
 
-export const Route = createFileRoute("/business/$id")({
+export const Route = createFileRoute("/business/$id/")({
   head: () => ({
     meta: [
       { title: "Business profile | MusicLinkd" },

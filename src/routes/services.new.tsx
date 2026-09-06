@@ -14,7 +14,7 @@ type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/services/new")({
   validateSearch: (search: Record<string, unknown>) => ({
-    step: (steps.includes(search.step as Step) ? search.step : "category") as Step,
+    step: (steps.includes(search["step"] as Step) ? search["step"] : "category") as Step,
   }),
   head: () => ({
     meta: [

@@ -141,7 +141,7 @@ function ServiceDetail() {
 
       <Sheet open={manage} onClose={() => setManage(false)} title="Manage service">
         <div className="space-y-2">
-          <Link to="/services/new">
+          <Link to="/services/new" search={{ step: "category" as const }}>
             <Btn variant="outline" className="w-full">
               Edit details & pricing
             </Btn>

@@ -42,7 +42,6 @@ import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
-import { Route as BusinessIdRouteImport } from './routes/business.$id'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as CollabNewRouteImport } from './routes/collab.new'
@@ -66,6 +65,8 @@ import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/near
 import { Route as MarketplaceSavedRouteImport } from './routes/marketplace/saved'
 import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/search'
 import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
+import { Route as NotificationsIndexRouteImport } from './routes/notifications.index'
+import { Route as NotificationsSettingsRouteImport } from './routes/notifications.settings'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as OnboardingCompleteRouteImport } from './routes/onboarding/complete'
 import { Route as OnboardingDoneRouteImport } from './routes/onboarding/done'
@@ -97,7 +98,11 @@ import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
 import { Route as ServicesNewRouteImport } from './routes/services.new'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
+import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
+import { Route as SettingsPrivacyRouteImport } from './routes/settings.privacy'
+import { Route as SettingsSecurityRouteImport } from './routes/settings.security'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
@@ -117,6 +122,7 @@ import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confir
 import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.index'
 import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
+import { Route as BusinessIdIndexRouteImport } from './routes/business.$id.index'
 import { Route as BusinessIdManageRouteImport } from './routes/business.$id.manage'
 import { Route as BusinessIdTeamRouteImport } from './routes/business.$id.team'
 import { Route as CollabIdIndexRouteImport } from './routes/collab.$id.index'
@@ -349,11 +355,6 @@ const BusinessIndexRoute = BusinessIndexRouteImport.update({
   path: '/business/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BusinessIdRoute = BusinessIdRouteImport.update({
-  id: '/business/$id',
-  path: '/business/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BusinessNewRoute = BusinessNewRouteImport.update({
   id: '/business/new',
   path: '/business/new',
@@ -467,6 +468,16 @@ const MarketplaceSearchRoute = MarketplaceSearchRouteImport.update({
 const MarketplaceSellRoute = MarketplaceSellRouteImport.update({
   id: '/marketplace/sell',
   path: '/marketplace/sell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsIndexRoute = NotificationsIndexRouteImport.update({
+  id: '/notifications/',
+  path: '/notifications/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsSettingsRoute = NotificationsSettingsRouteImport.update({
+  id: '/notifications/settings',
+  path: '/notifications/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
@@ -624,9 +635,29 @@ const ServicesNewRoute = ServicesNewRouteImport.update({
   path: '/services/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsAccountRoute = SettingsAccountRouteImport.update({
+  id: '/settings/account',
+  path: '/settings/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
   id: '/settings/delete-account',
   path: '/settings/delete-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsPrivacyRoute = SettingsPrivacyRouteImport.update({
+  id: '/settings/privacy',
+  path: '/settings/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
+  id: '/settings/security',
+  path: '/settings/security',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TalentIdRoute = TalentIdRouteImport.update({
@@ -724,15 +755,20 @@ const BookingsRefRescheduleRoute = BookingsRefRescheduleRouteImport.update({
   path: '/bookings/$ref/reschedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BusinessIdIndexRoute = BusinessIdIndexRouteImport.update({
+  id: '/business/$id/',
+  path: '/business/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BusinessIdManageRoute = BusinessIdManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
-  getParentRoute: () => BusinessIdRoute,
+  id: '/business/$id/manage',
+  path: '/business/$id/manage',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessIdTeamRoute = BusinessIdTeamRouteImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => BusinessIdRoute,
+  id: '/business/$id/team',
+  path: '/business/$id/team',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CollabIdIndexRoute = CollabIdIndexRouteImport.update({
   id: '/collab/$id/',
@@ -1099,7 +1135,6 @@ export interface FileRoutesByFullPath {
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
-  '/business/$id': typeof BusinessIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/help/$slug': typeof HelpSlugRoute
@@ -1121,6 +1156,7 @@ export interface FileRoutesByFullPath {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/notifications/settings': typeof NotificationsSettingsRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
@@ -1148,7 +1184,10 @@ export interface FileRoutesByFullPath {
   '/services/$id': typeof ServicesIdRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
+  '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1159,10 +1198,12 @@ export interface FileRoutesByFullPath {
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
+  '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1217,6 +1258,7 @@ export interface FileRoutesByFullPath {
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
+  '/business/$id/': typeof BusinessIdIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
@@ -1274,7 +1316,6 @@ export interface FileRoutesByTo {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
-  '/business/$id': typeof BusinessIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/help/$slug': typeof HelpSlugRoute
@@ -1296,6 +1337,7 @@ export interface FileRoutesByTo {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/notifications/settings': typeof NotificationsSettingsRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
@@ -1323,7 +1365,10 @@ export interface FileRoutesByTo {
   '/services/$id': typeof ServicesIdRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
+  '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1334,10 +1379,12 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessIndexRoute
   '/collab': typeof CollabIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
+  '/notifications': typeof NotificationsIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/verification': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1392,6 +1439,7 @@ export interface FileRoutesByTo {
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
+  '/business/$id': typeof BusinessIdIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
   '/opportunities/$id': typeof OpportunitiesIdIndexRoute
@@ -1451,7 +1499,6 @@ export interface FileRoutesById {
   '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
-  '/business/$id': typeof BusinessIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
   '/help/$slug': typeof HelpSlugRoute
@@ -1473,6 +1520,7 @@ export interface FileRoutesById {
   '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
+  '/notifications/settings': typeof NotificationsSettingsRoute
   '/onboarding/complete': typeof OnboardingCompleteRoute
   '/onboarding/done': typeof OnboardingDoneRoute
   '/onboarding/preview': typeof OnboardingPreviewRoute
@@ -1500,7 +1548,10 @@ export interface FileRoutesById {
   '/services/$id': typeof ServicesIdRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
+  '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
+  '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1511,10 +1562,12 @@ export interface FileRoutesById {
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
+  '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
@@ -1569,6 +1622,7 @@ export interface FileRoutesById {
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
+  '/business/$id/': typeof BusinessIdIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
@@ -1629,7 +1683,6 @@ export interface FileRouteTypes {
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
-    | '/business/$id'
     | '/business/new'
     | '/collab/new'
     | '/help/$slug'
@@ -1651,6 +1704,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/notifications/settings'
     | '/onboarding/complete'
     | '/onboarding/done'
     | '/onboarding/preview'
@@ -1678,7 +1732,10 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/services/availability'
     | '/services/new'
+    | '/settings/account'
     | '/settings/delete-account'
+    | '/settings/privacy'
+    | '/settings/security'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1689,10 +1746,12 @@ export interface FileRouteTypes {
     | '/business/'
     | '/collab/'
     | '/marketplace/'
+    | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
     | '/services/'
+    | '/settings/'
     | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -1747,6 +1806,7 @@ export interface FileRouteTypes {
     | '/reviews/write/$id'
     | '/booking/$id/'
     | '/bookings/$ref/'
+    | '/business/$id/'
     | '/collab/$id/'
     | '/marketplace/rent/'
     | '/opportunities/$id/'
@@ -1804,7 +1864,6 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/bands/$id'
     | '/bands/new'
-    | '/business/$id'
     | '/business/new'
     | '/collab/new'
     | '/help/$slug'
@@ -1826,6 +1885,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/notifications/settings'
     | '/onboarding/complete'
     | '/onboarding/done'
     | '/onboarding/preview'
@@ -1853,7 +1913,10 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/services/availability'
     | '/services/new'
+    | '/settings/account'
     | '/settings/delete-account'
+    | '/settings/privacy'
+    | '/settings/security'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1864,10 +1927,12 @@ export interface FileRouteTypes {
     | '/business'
     | '/collab'
     | '/marketplace'
+    | '/notifications'
     | '/onboarding'
     | '/opportunities'
     | '/portfolio'
     | '/services'
+    | '/settings'
     | '/verification'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -1922,6 +1987,7 @@ export interface FileRouteTypes {
     | '/reviews/write/$id'
     | '/booking/$id'
     | '/bookings/$ref'
+    | '/business/$id'
     | '/collab/$id'
     | '/marketplace/rent'
     | '/opportunities/$id'
@@ -1980,7 +2046,6 @@ export interface FileRouteTypes {
     | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
-    | '/business/$id'
     | '/business/new'
     | '/collab/new'
     | '/help/$slug'
@@ -2002,6 +2067,7 @@ export interface FileRouteTypes {
     | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
+    | '/notifications/settings'
     | '/onboarding/complete'
     | '/onboarding/done'
     | '/onboarding/preview'
@@ -2029,7 +2095,10 @@ export interface FileRouteTypes {
     | '/services/$id'
     | '/services/availability'
     | '/services/new'
+    | '/settings/account'
     | '/settings/delete-account'
+    | '/settings/privacy'
+    | '/settings/security'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -2040,10 +2109,12 @@ export interface FileRouteTypes {
     | '/business/'
     | '/collab/'
     | '/marketplace/'
+    | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
     | '/portfolio/'
     | '/services/'
+    | '/settings/'
     | '/verification/'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
@@ -2098,6 +2169,7 @@ export interface FileRouteTypes {
     | '/reviews/write/$id'
     | '/booking/$id/'
     | '/bookings/$ref/'
+    | '/business/$id/'
     | '/collab/$id/'
     | '/marketplace/rent/'
     | '/opportunities/$id/'
@@ -2155,7 +2227,6 @@ export interface RootRouteChildren {
   AuthSuccessRoute: typeof AuthSuccessRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
-  BusinessIdRoute: typeof BusinessIdRouteWithChildren
   BusinessNewRoute: typeof BusinessNewRoute
   CollabNewRoute: typeof CollabNewRouteWithChildren
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
@@ -2176,6 +2247,7 @@ export interface RootRouteChildren {
   MarketplaceSavedRoute: typeof MarketplaceSavedRoute
   MarketplaceSearchRoute: typeof MarketplaceSearchRoute
   MarketplaceSellRoute: typeof MarketplaceSellRoute
+  NotificationsSettingsRoute: typeof NotificationsSettingsRoute
   OnboardingCompleteRoute: typeof OnboardingCompleteRoute
   OnboardingDoneRoute: typeof OnboardingDoneRoute
   OnboardingPreviewRoute: typeof OnboardingPreviewRoute
@@ -2199,7 +2271,10 @@ export interface RootRouteChildren {
   ServicesIdRoute: typeof ServicesIdRoute
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesNewRoute: typeof ServicesNewRoute
+  SettingsAccountRoute: typeof SettingsAccountRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
+  SettingsPrivacyRoute: typeof SettingsPrivacyRoute
+  SettingsSecurityRoute: typeof SettingsSecurityRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
   VerificationBadgeRoute: typeof VerificationBadgeRoute
@@ -2210,14 +2285,18 @@ export interface RootRouteChildren {
   BusinessIndexRoute: typeof BusinessIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
+  NotificationsIndexRoute: typeof NotificationsIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
   VerificationIndexRoute: typeof VerificationIndexRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
+  BusinessIdManageRoute: typeof BusinessIdManageRoute
+  BusinessIdTeamRoute: typeof BusinessIdTeamRoute
   CollabIdActivityRoute: typeof CollabIdActivityRoute
   CollabIdAgreementRoute: typeof CollabIdAgreementRoute
   CollabIdDiscussionRoute: typeof CollabIdDiscussionRoute
@@ -2252,6 +2331,7 @@ export interface RootRouteChildren {
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
   ProviderBookingsCalendarRoute: typeof ProviderBookingsCalendarRoute
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
+  BusinessIdIndexRoute: typeof BusinessIdIndexRoute
   CollabIdIndexRoute: typeof CollabIdIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
   OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
@@ -2512,13 +2592,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/business/$id': {
-      id: '/business/$id'
-      path: '/business/$id'
-      fullPath: '/business/$id'
-      preLoaderRoute: typeof BusinessIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/business/new': {
       id: '/business/new'
       path: '/business/new'
@@ -2678,6 +2751,20 @@ declare module '@tanstack/react-router' {
       path: '/marketplace/sell'
       fullPath: '/marketplace/sell'
       preLoaderRoute: typeof MarketplaceSellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications/': {
+      id: '/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications/'
+      preLoaderRoute: typeof NotificationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications/settings': {
+      id: '/notifications/settings'
+      path: '/notifications/settings'
+      fullPath: '/notifications/settings'
+      preLoaderRoute: typeof NotificationsSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding/': {
@@ -2897,11 +2984,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/account': {
+      id: '/settings/account'
+      path: '/settings/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/delete-account': {
       id: '/settings/delete-account'
       path: '/settings/delete-account'
       fullPath: '/settings/delete-account'
       preLoaderRoute: typeof SettingsDeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/privacy': {
+      id: '/settings/privacy'
+      path: '/settings/privacy'
+      fullPath: '/settings/privacy'
+      preLoaderRoute: typeof SettingsPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/security': {
+      id: '/settings/security'
+      path: '/settings/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof SettingsSecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talent/$id': {
@@ -3037,19 +3152,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsRefRescheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/business/$id/': {
+      id: '/business/$id/'
+      path: '/business/$id'
+      fullPath: '/business/$id/'
+      preLoaderRoute: typeof BusinessIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/business/$id/manage': {
       id: '/business/$id/manage'
-      path: '/manage'
+      path: '/business/$id/manage'
       fullPath: '/business/$id/manage'
       preLoaderRoute: typeof BusinessIdManageRouteImport
-      parentRoute: typeof BusinessIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/business/$id/team': {
       id: '/business/$id/team'
-      path: '/team'
+      path: '/business/$id/team'
       fullPath: '/business/$id/team'
       preLoaderRoute: typeof BusinessIdTeamRouteImport
-      parentRoute: typeof BusinessIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/collab/$id/': {
       id: '/collab/$id/'
@@ -3600,20 +3722,6 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
   BookingIdRouteChildren,
 )
 
-interface BusinessIdRouteChildren {
-  BusinessIdManageRoute: typeof BusinessIdManageRoute
-  BusinessIdTeamRoute: typeof BusinessIdTeamRoute
-}
-
-const BusinessIdRouteChildren: BusinessIdRouteChildren = {
-  BusinessIdManageRoute: BusinessIdManageRoute,
-  BusinessIdTeamRoute: BusinessIdTeamRoute,
-}
-
-const BusinessIdRouteWithChildren = BusinessIdRoute._addFileChildren(
-  BusinessIdRouteChildren,
-)
-
 interface CollabNewRouteChildren {
   CollabNewCollaboratorsRoute: typeof CollabNewCollaboratorsRoute
 }
@@ -3690,7 +3798,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSuccessRoute: AuthSuccessRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
-  BusinessIdRoute: BusinessIdRouteWithChildren,
   BusinessNewRoute: BusinessNewRoute,
   CollabNewRoute: CollabNewRouteWithChildren,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
@@ -3711,6 +3818,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceSavedRoute: MarketplaceSavedRoute,
   MarketplaceSearchRoute: MarketplaceSearchRoute,
   MarketplaceSellRoute: MarketplaceSellRoute,
+  NotificationsSettingsRoute: NotificationsSettingsRoute,
   OnboardingCompleteRoute: OnboardingCompleteRoute,
   OnboardingDoneRoute: OnboardingDoneRoute,
   OnboardingPreviewRoute: OnboardingPreviewRoute,
@@ -3734,7 +3842,10 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIdRoute: ServicesIdRoute,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesNewRoute: ServicesNewRoute,
+  SettingsAccountRoute: SettingsAccountRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
+  SettingsPrivacyRoute: SettingsPrivacyRoute,
+  SettingsSecurityRoute: SettingsSecurityRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
   VerificationBadgeRoute: VerificationBadgeRoute,
@@ -3745,14 +3856,18 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessIndexRoute: BusinessIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
+  NotificationsIndexRoute: NotificationsIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
   VerificationIndexRoute: VerificationIndexRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
+  BusinessIdManageRoute: BusinessIdManageRoute,
+  BusinessIdTeamRoute: BusinessIdTeamRoute,
   CollabIdActivityRoute: CollabIdActivityRoute,
   CollabIdAgreementRoute: CollabIdAgreementRoute,
   CollabIdDiscussionRoute: CollabIdDiscussionRoute,
@@ -3787,6 +3902,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
   ProviderBookingsCalendarRoute: ProviderBookingsCalendarRoute,
   BookingsRefIndexRoute: BookingsRefIndexRoute,
+  BusinessIdIndexRoute: BusinessIdIndexRoute,
   CollabIdIndexRoute: CollabIdIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
   OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,

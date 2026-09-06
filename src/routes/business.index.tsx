@@ -26,7 +26,7 @@ function BusinessHome() {
         subtitle="Studios, labels, venues"
         back="/me"
         right={
-          <Link to="/business/new" aria-label="Add business" className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground">
+          <Link to="/business/new" search={{ step: "type" as const }} aria-label="Add business" className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground">
             <Plus size={18} />
           </Link>
         }
@@ -60,7 +60,7 @@ function BusinessHome() {
           ))
         ) : (
           <EmptyState title="No business yet" body="A business profile is separate from you — it has its own team, spaces and bookings.">
-            <Link to="/business/new">
+            <Link to="/business/new" search={{ step: "type" as const }}>
               <Btn className="w-full">Create a business</Btn>
             </Link>
           </EmptyState>
