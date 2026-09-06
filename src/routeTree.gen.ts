@@ -103,6 +103,7 @@ import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as SettingsPrivacyRouteImport } from './routes/settings.privacy'
+import { Route as SettingsSecurityRouteImport } from './routes/settings.security'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
@@ -659,6 +660,11 @@ const SettingsPrivacyRoute = SettingsPrivacyRouteImport.update({
   path: '/settings/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
+  id: '/settings/security',
+  path: '/settings/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
@@ -1182,6 +1188,7 @@ export interface FileRoutesByFullPath {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1362,6 +1369,7 @@ export interface FileRoutesByTo {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1544,6 +1552,7 @@ export interface FileRoutesById {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
+  '/settings/security': typeof SettingsSecurityRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1727,6 +1736,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/delete-account'
     | '/settings/privacy'
+    | '/settings/security'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -1907,6 +1917,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/delete-account'
     | '/settings/privacy'
+    | '/settings/security'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -2088,6 +2099,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/delete-account'
     | '/settings/privacy'
+    | '/settings/security'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -2263,6 +2275,7 @@ export interface RootRouteChildren {
   SettingsAccountRoute: typeof SettingsAccountRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   SettingsPrivacyRoute: typeof SettingsPrivacyRoute
+  SettingsSecurityRoute: typeof SettingsSecurityRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
   VerificationBadgeRoute: typeof VerificationBadgeRoute
@@ -3002,6 +3015,13 @@ declare module '@tanstack/react-router' {
       path: '/settings/privacy'
       fullPath: '/settings/privacy'
       preLoaderRoute: typeof SettingsPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/security': {
+      id: '/settings/security'
+      path: '/settings/security'
+      fullPath: '/settings/security'
+      preLoaderRoute: typeof SettingsSecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talent/$id': {
@@ -3838,6 +3858,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsAccountRoute: SettingsAccountRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   SettingsPrivacyRoute: SettingsPrivacyRoute,
+  SettingsSecurityRoute: SettingsSecurityRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
   VerificationBadgeRoute: VerificationBadgeRoute,
