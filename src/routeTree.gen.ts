@@ -123,8 +123,11 @@ import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.ind
 import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
 import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
 import { Route as BusinessIdIndexRouteImport } from './routes/business.$id.index'
+import { Route as BusinessIdAnalyticsRouteImport } from './routes/business.$id.analytics'
 import { Route as BusinessIdAvailabilityRouteImport } from './routes/business.$id.availability'
+import { Route as BusinessIdDashboardRouteImport } from './routes/business.$id.dashboard'
 import { Route as BusinessIdEnquiryRouteImport } from './routes/business.$id.enquiry'
+import { Route as BusinessIdLeadsRouteImport } from './routes/business.$id.leads'
 import { Route as BusinessIdManageRouteImport } from './routes/business.$id.manage'
 import { Route as BusinessIdPortfolioRouteImport } from './routes/business.$id.portfolio'
 import { Route as BusinessIdReviewsRouteImport } from './routes/business.$id.reviews'
@@ -175,6 +178,8 @@ import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.boo
 import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
 import { Route as ProviderBookingsCalendarRouteImport } from './routes/provider.bookings.calendar'
 import { Route as ReviewsWriteIdRouteImport } from './routes/reviews.write.$id'
+import { Route as ServicesIdEnquiryRouteImport } from './routes/services.$id.enquiry'
+import { Route as ServicesIdManageRouteImport } from './routes/services.$id.manage'
 import { Route as CollabIdFilesIndexRouteImport } from './routes/collab.$id.files.index'
 import { Route as CollabIdFilesFileIdRouteImport } from './routes/collab.$id.files.$fileId'
 import { Route as CollabIdLifecycleActionRouteImport } from './routes/collab.$id.lifecycle.$action'
@@ -766,14 +771,29 @@ const BusinessIdIndexRoute = BusinessIdIndexRouteImport.update({
   path: '/business/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BusinessIdAnalyticsRoute = BusinessIdAnalyticsRouteImport.update({
+  id: '/business/$id/analytics',
+  path: '/business/$id/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BusinessIdAvailabilityRoute = BusinessIdAvailabilityRouteImport.update({
   id: '/business/$id/availability',
   path: '/business/$id/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BusinessIdDashboardRoute = BusinessIdDashboardRouteImport.update({
+  id: '/business/$id/dashboard',
+  path: '/business/$id/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BusinessIdEnquiryRoute = BusinessIdEnquiryRouteImport.update({
   id: '/business/$id/enquiry',
   path: '/business/$id/enquiry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessIdLeadsRoute = BusinessIdLeadsRouteImport.update({
+  id: '/business/$id/leads',
+  path: '/business/$id/leads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessIdManageRoute = BusinessIdManageRouteImport.update({
@@ -1030,6 +1050,16 @@ const ReviewsWriteIdRoute = ReviewsWriteIdRouteImport.update({
   path: '/write/$id',
   getParentRoute: () => ReviewsRoute,
 } as any)
+const ServicesIdEnquiryRoute = ServicesIdEnquiryRouteImport.update({
+  id: '/enquiry',
+  path: '/enquiry',
+  getParentRoute: () => ServicesIdRoute,
+} as any)
+const ServicesIdManageRoute = ServicesIdManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => ServicesIdRoute,
+} as any)
 const CollabIdFilesIndexRoute = CollabIdFilesIndexRouteImport.update({
   id: '/collab/$id/files/',
   path: '/collab/$id/files/',
@@ -1217,7 +1247,7 @@ export interface FileRoutesByFullPath {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
-  '/services/$id': typeof ServicesIdRoute
+  '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -1252,8 +1282,11 @@ export interface FileRoutesByFullPath {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
+  '/business/$id/dashboard': typeof BusinessIdDashboardRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
+  '/business/$id/leads': typeof BusinessIdLeadsRoute
   '/business/$id/manage': typeof BusinessIdManageRoute
   '/business/$id/portfolio': typeof BusinessIdPortfolioRoute
   '/business/$id/reviews': typeof BusinessIdReviewsRoute
@@ -1298,6 +1331,8 @@ export interface FileRoutesByFullPath {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
+  '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
+  '/services/$id/manage': typeof ServicesIdManageRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
@@ -1404,7 +1439,7 @@ export interface FileRoutesByTo {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
-  '/services/$id': typeof ServicesIdRoute
+  '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -1439,8 +1474,11 @@ export interface FileRoutesByTo {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
+  '/business/$id/dashboard': typeof BusinessIdDashboardRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
+  '/business/$id/leads': typeof BusinessIdLeadsRoute
   '/business/$id/manage': typeof BusinessIdManageRoute
   '/business/$id/portfolio': typeof BusinessIdPortfolioRoute
   '/business/$id/reviews': typeof BusinessIdReviewsRoute
@@ -1485,6 +1523,8 @@ export interface FileRoutesByTo {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
+  '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
+  '/services/$id/manage': typeof ServicesIdManageRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
   '/business/$id': typeof BusinessIdIndexRoute
@@ -1593,7 +1633,7 @@ export interface FileRoutesById {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
-  '/services/$id': typeof ServicesIdRoute
+  '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -1628,8 +1668,11 @@ export interface FileRoutesById {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
   '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
+  '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
+  '/business/$id/dashboard': typeof BusinessIdDashboardRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
+  '/business/$id/leads': typeof BusinessIdLeadsRoute
   '/business/$id/manage': typeof BusinessIdManageRoute
   '/business/$id/portfolio': typeof BusinessIdPortfolioRoute
   '/business/$id/reviews': typeof BusinessIdReviewsRoute
@@ -1674,6 +1717,8 @@ export interface FileRoutesById {
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
+  '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
+  '/services/$id/manage': typeof ServicesIdManageRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
@@ -1818,8 +1863,11 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/business/$id/analytics'
     | '/business/$id/availability'
+    | '/business/$id/dashboard'
     | '/business/$id/enquiry'
+    | '/business/$id/leads'
     | '/business/$id/manage'
     | '/business/$id/portfolio'
     | '/business/$id/reviews'
@@ -1864,6 +1912,8 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
     | '/reviews/write/$id'
+    | '/services/$id/enquiry'
+    | '/services/$id/manage'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/business/$id/'
@@ -2005,8 +2055,11 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/business/$id/analytics'
     | '/business/$id/availability'
+    | '/business/$id/dashboard'
     | '/business/$id/enquiry'
+    | '/business/$id/leads'
     | '/business/$id/manage'
     | '/business/$id/portfolio'
     | '/business/$id/reviews'
@@ -2051,6 +2104,8 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
     | '/reviews/write/$id'
+    | '/services/$id/enquiry'
+    | '/services/$id/manage'
     | '/booking/$id'
     | '/bookings/$ref'
     | '/business/$id'
@@ -2193,8 +2248,11 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/bookings/$ref/cancel'
     | '/bookings/$ref/reschedule'
+    | '/business/$id/analytics'
     | '/business/$id/availability'
+    | '/business/$id/dashboard'
     | '/business/$id/enquiry'
+    | '/business/$id/leads'
     | '/business/$id/manage'
     | '/business/$id/portfolio'
     | '/business/$id/reviews'
@@ -2239,6 +2297,8 @@ export interface FileRouteTypes {
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
     | '/reviews/write/$id'
+    | '/services/$id/enquiry'
+    | '/services/$id/manage'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/business/$id/'
@@ -2340,7 +2400,7 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
-  ServicesIdRoute: typeof ServicesIdRoute
+  ServicesIdRoute: typeof ServicesIdRouteWithChildren
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesNewRoute: typeof ServicesNewRoute
   SettingsAccountRoute: typeof SettingsAccountRoute
@@ -2367,8 +2427,11 @@ export interface RootRouteChildren {
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
+  BusinessIdAnalyticsRoute: typeof BusinessIdAnalyticsRoute
   BusinessIdAvailabilityRoute: typeof BusinessIdAvailabilityRoute
+  BusinessIdDashboardRoute: typeof BusinessIdDashboardRoute
   BusinessIdEnquiryRoute: typeof BusinessIdEnquiryRoute
+  BusinessIdLeadsRoute: typeof BusinessIdLeadsRoute
   BusinessIdManageRoute: typeof BusinessIdManageRoute
   BusinessIdPortfolioRoute: typeof BusinessIdPortfolioRoute
   BusinessIdReviewsRoute: typeof BusinessIdReviewsRoute
@@ -3237,6 +3300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/business/$id/analytics': {
+      id: '/business/$id/analytics'
+      path: '/business/$id/analytics'
+      fullPath: '/business/$id/analytics'
+      preLoaderRoute: typeof BusinessIdAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/business/$id/availability': {
       id: '/business/$id/availability'
       path: '/business/$id/availability'
@@ -3244,11 +3314,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessIdAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/business/$id/dashboard': {
+      id: '/business/$id/dashboard'
+      path: '/business/$id/dashboard'
+      fullPath: '/business/$id/dashboard'
+      preLoaderRoute: typeof BusinessIdDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/business/$id/enquiry': {
       id: '/business/$id/enquiry'
       path: '/business/$id/enquiry'
       fullPath: '/business/$id/enquiry'
       preLoaderRoute: typeof BusinessIdEnquiryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business/$id/leads': {
+      id: '/business/$id/leads'
+      path: '/business/$id/leads'
+      fullPath: '/business/$id/leads'
+      preLoaderRoute: typeof BusinessIdLeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/business/$id/manage': {
@@ -3601,6 +3685,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewsWriteIdRouteImport
       parentRoute: typeof ReviewsRoute
     }
+    '/services/$id/enquiry': {
+      id: '/services/$id/enquiry'
+      path: '/enquiry'
+      fullPath: '/services/$id/enquiry'
+      preLoaderRoute: typeof ServicesIdEnquiryRouteImport
+      parentRoute: typeof ServicesIdRoute
+    }
+    '/services/$id/manage': {
+      id: '/services/$id/manage'
+      path: '/manage'
+      fullPath: '/services/$id/manage'
+      preLoaderRoute: typeof ServicesIdManageRouteImport
+      parentRoute: typeof ServicesIdRoute
+    }
     '/collab/$id/files/': {
       id: '/collab/$id/files/'
       path: '/collab/$id/files'
@@ -3878,6 +3976,20 @@ const PortfolioIdRouteWithChildren = PortfolioIdRoute._addFileChildren(
   PortfolioIdRouteChildren,
 )
 
+interface ServicesIdRouteChildren {
+  ServicesIdEnquiryRoute: typeof ServicesIdEnquiryRoute
+  ServicesIdManageRoute: typeof ServicesIdManageRoute
+}
+
+const ServicesIdRouteChildren: ServicesIdRouteChildren = {
+  ServicesIdEnquiryRoute: ServicesIdEnquiryRoute,
+  ServicesIdManageRoute: ServicesIdManageRoute,
+}
+
+const ServicesIdRouteWithChildren = ServicesIdRoute._addFileChildren(
+  ServicesIdRouteChildren,
+)
+
 interface CollabProposalsIdRouteChildren {
   CollabProposalsIdCounterRoute: typeof CollabProposalsIdCounterRoute
 }
@@ -3959,7 +4071,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
-  ServicesIdRoute: ServicesIdRoute,
+  ServicesIdRoute: ServicesIdRouteWithChildren,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesNewRoute: ServicesNewRoute,
   SettingsAccountRoute: SettingsAccountRoute,
@@ -3986,8 +4098,11 @@ const rootRouteChildren: RootRouteChildren = {
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
+  BusinessIdAnalyticsRoute: BusinessIdAnalyticsRoute,
   BusinessIdAvailabilityRoute: BusinessIdAvailabilityRoute,
+  BusinessIdDashboardRoute: BusinessIdDashboardRoute,
   BusinessIdEnquiryRoute: BusinessIdEnquiryRoute,
+  BusinessIdLeadsRoute: BusinessIdLeadsRoute,
   BusinessIdManageRoute: BusinessIdManageRoute,
   BusinessIdPortfolioRoute: BusinessIdPortfolioRoute,
   BusinessIdReviewsRoute: BusinessIdReviewsRoute,
