@@ -97,6 +97,7 @@ import { Route as RecommendationsSettingsRouteImport } from './routes/recommenda
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
+import { Route as ServicesConflictsRouteImport } from './routes/services.conflicts'
 import { Route as ServicesNewRouteImport } from './routes/services.new'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as SettingsAccountRouteImport } from './routes/settings.account'
@@ -109,8 +110,11 @@ import { Route as VerificationTypeRouteImport } from './routes/verification.$typ
 import { Route as VerificationBadgeRouteImport } from './routes/verification.badge'
 import { Route as VerificationChooseRouteImport } from './routes/verification.choose'
 import { Route as VerificationPrivacyRouteImport } from './routes/verification.privacy'
+import { Route as BandsIdContactRouteImport } from './routes/bands.$id.contact'
+import { Route as BandsIdEventsRouteImport } from './routes/bands.$id.events'
 import { Route as BandsIdInviteRouteImport } from './routes/bands.$id.invite'
 import { Route as BandsIdManageRouteImport } from './routes/bands.$id.manage'
+import { Route as BandsIdPortfolioRouteImport } from './routes/bands.$id.portfolio'
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
 import { Route as BookingIdAddonsRouteImport } from './routes/booking.$id.addons'
 import { Route as BookingIdDetailsRouteImport } from './routes/booking.$id.details'
@@ -641,6 +645,11 @@ const ServicesAvailabilityRoute = ServicesAvailabilityRouteImport.update({
   path: '/services/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesConflictsRoute = ServicesConflictsRouteImport.update({
+  id: '/services/conflicts',
+  path: '/services/conflicts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesNewRoute = ServicesNewRouteImport.update({
   id: '/services/new',
   path: '/services/new',
@@ -701,6 +710,16 @@ const VerificationPrivacyRoute = VerificationPrivacyRouteImport.update({
   path: '/verification/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BandsIdContactRoute = BandsIdContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => BandsIdRoute,
+} as any)
+const BandsIdEventsRoute = BandsIdEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => BandsIdRoute,
+} as any)
 const BandsIdInviteRoute = BandsIdInviteRouteImport.update({
   id: '/invite',
   path: '/invite',
@@ -709,6 +728,11 @@ const BandsIdInviteRoute = BandsIdInviteRouteImport.update({
 const BandsIdManageRoute = BandsIdManageRouteImport.update({
   id: '/manage',
   path: '/manage',
+  getParentRoute: () => BandsIdRoute,
+} as any)
+const BandsIdPortfolioRoute = BandsIdPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
   getParentRoute: () => BandsIdRoute,
 } as any)
 const BookingIdIndexRoute = BookingIdIndexRouteImport.update({
@@ -1249,6 +1273,7 @@ export interface FileRoutesByFullPath {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
+  '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
@@ -1271,8 +1296,11 @@ export interface FileRoutesByFullPath {
   '/services/': typeof ServicesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
+  '/bands/$id/contact': typeof BandsIdContactRoute
+  '/bands/$id/events': typeof BandsIdEventsRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
+  '/bands/$id/portfolio': typeof BandsIdPortfolioRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
   '/booking/$id/pay': typeof BookingIdPayRoute
@@ -1441,6 +1469,7 @@ export interface FileRoutesByTo {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
+  '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
@@ -1463,8 +1492,11 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/verification': typeof VerificationIndexRoute
+  '/bands/$id/contact': typeof BandsIdContactRoute
+  '/bands/$id/events': typeof BandsIdEventsRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
+  '/bands/$id/portfolio': typeof BandsIdPortfolioRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
   '/booking/$id/pay': typeof BookingIdPayRoute
@@ -1635,6 +1667,7 @@ export interface FileRoutesById {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
+  '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
@@ -1657,8 +1690,11 @@ export interface FileRoutesById {
   '/services/': typeof ServicesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
+  '/bands/$id/contact': typeof BandsIdContactRoute
+  '/bands/$id/events': typeof BandsIdEventsRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
   '/bands/$id/manage': typeof BandsIdManageRoute
+  '/bands/$id/portfolio': typeof BandsIdPortfolioRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
   '/booking/$id/pay': typeof BookingIdPayRoute
@@ -1830,6 +1866,7 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/services/$id'
     | '/services/availability'
+    | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
     | '/settings/delete-account'
@@ -1852,8 +1889,11 @@ export interface FileRouteTypes {
     | '/services/'
     | '/settings/'
     | '/verification/'
+    | '/bands/$id/contact'
+    | '/bands/$id/events'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
+    | '/bands/$id/portfolio'
     | '/booking/$id/addons'
     | '/booking/$id/details'
     | '/booking/$id/pay'
@@ -2022,6 +2062,7 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/services/$id'
     | '/services/availability'
+    | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
     | '/settings/delete-account'
@@ -2044,8 +2085,11 @@ export interface FileRouteTypes {
     | '/services'
     | '/settings'
     | '/verification'
+    | '/bands/$id/contact'
+    | '/bands/$id/events'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
+    | '/bands/$id/portfolio'
     | '/booking/$id/addons'
     | '/booking/$id/details'
     | '/booking/$id/pay'
@@ -2215,6 +2259,7 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/services/$id'
     | '/services/availability'
+    | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
     | '/settings/delete-account'
@@ -2237,8 +2282,11 @@ export interface FileRouteTypes {
     | '/services/'
     | '/settings/'
     | '/verification/'
+    | '/bands/$id/contact'
+    | '/bands/$id/events'
     | '/bands/$id/invite'
     | '/bands/$id/manage'
+    | '/bands/$id/portfolio'
     | '/booking/$id/addons'
     | '/booking/$id/details'
     | '/booking/$id/pay'
@@ -2402,6 +2450,7 @@ export interface RootRouteChildren {
   ProviderPricingRoute: typeof ProviderPricingRoute
   ServicesIdRoute: typeof ServicesIdRouteWithChildren
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
+  ServicesConflictsRoute: typeof ServicesConflictsRoute
   ServicesNewRoute: typeof ServicesNewRoute
   SettingsAccountRoute: typeof SettingsAccountRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
@@ -3118,6 +3167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/conflicts': {
+      id: '/services/conflicts'
+      path: '/services/conflicts'
+      fullPath: '/services/conflicts'
+      preLoaderRoute: typeof ServicesConflictsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services/new': {
       id: '/services/new'
       path: '/services/new'
@@ -3202,6 +3258,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bands/$id/contact': {
+      id: '/bands/$id/contact'
+      path: '/contact'
+      fullPath: '/bands/$id/contact'
+      preLoaderRoute: typeof BandsIdContactRouteImport
+      parentRoute: typeof BandsIdRoute
+    }
+    '/bands/$id/events': {
+      id: '/bands/$id/events'
+      path: '/events'
+      fullPath: '/bands/$id/events'
+      preLoaderRoute: typeof BandsIdEventsRouteImport
+      parentRoute: typeof BandsIdRoute
+    }
     '/bands/$id/invite': {
       id: '/bands/$id/invite'
       path: '/invite'
@@ -3214,6 +3284,13 @@ declare module '@tanstack/react-router' {
       path: '/manage'
       fullPath: '/bands/$id/manage'
       preLoaderRoute: typeof BandsIdManageRouteImport
+      parentRoute: typeof BandsIdRoute
+    }
+    '/bands/$id/portfolio': {
+      id: '/bands/$id/portfolio'
+      path: '/portfolio'
+      fullPath: '/bands/$id/portfolio'
+      preLoaderRoute: typeof BandsIdPortfolioRouteImport
       parentRoute: typeof BandsIdRoute
     }
     '/booking/$id/': {
@@ -3843,13 +3920,19 @@ declare module '@tanstack/react-router' {
 }
 
 interface BandsIdRouteChildren {
+  BandsIdContactRoute: typeof BandsIdContactRoute
+  BandsIdEventsRoute: typeof BandsIdEventsRoute
   BandsIdInviteRoute: typeof BandsIdInviteRoute
   BandsIdManageRoute: typeof BandsIdManageRoute
+  BandsIdPortfolioRoute: typeof BandsIdPortfolioRoute
 }
 
 const BandsIdRouteChildren: BandsIdRouteChildren = {
+  BandsIdContactRoute: BandsIdContactRoute,
+  BandsIdEventsRoute: BandsIdEventsRoute,
   BandsIdInviteRoute: BandsIdInviteRoute,
   BandsIdManageRoute: BandsIdManageRoute,
+  BandsIdPortfolioRoute: BandsIdPortfolioRoute,
 }
 
 const BandsIdRouteWithChildren =
@@ -4073,6 +4156,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderPricingRoute: ProviderPricingRoute,
   ServicesIdRoute: ServicesIdRouteWithChildren,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,
+  ServicesConflictsRoute: ServicesConflictsRoute,
   ServicesNewRoute: ServicesNewRoute,
   SettingsAccountRoute: SettingsAccountRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,

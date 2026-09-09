@@ -133,3 +133,13 @@ export const reviewPolicy = [
 ];
 
 export const flagReasons = ["Not about this transaction", "Abusive or hateful", "Contains contact details", "Spam or fake", "Other"];
+
+export const getReview = (id: string) =>
+  [...receivedReviews, ...givenReviews].find((r) => r.id === id);
+
+/** review_request: people you can ask for a review after a completed transaction. */
+export const reviewRequestTargets = [
+  { id: "rq-1", name: "Ananya Sharma", photo: u("photo-1534528741775-53994a69daeb"), context: "Studio session · 14 Aug", asked: false },
+  { id: "rq-2", name: "DJ Noor", photo: u("photo-1571019613454-1cb2f99b2d8b"), context: "Mixing · 2 Aug", asked: true },
+  { id: "rq-3", name: "Kabir S.", photo: u("photo-1500648767791-00dcc994a43e"), context: "Rhodes sale · 1 Sep", asked: false },
+];
