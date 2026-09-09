@@ -94,6 +94,7 @@ import { Route as ProviderAvailabilityRouteImport } from './routes/provider.avai
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
@@ -181,6 +182,9 @@ import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$ki
 import { Route as ProviderBookingsIndexRouteImport } from './routes/provider.bookings.index'
 import { Route as ProviderBookingsRefRouteImport } from './routes/provider.bookings.$ref'
 import { Route as ProviderBookingsCalendarRouteImport } from './routes/provider.bookings.calendar'
+import { Route as ReviewsIdEditRouteImport } from './routes/reviews.$id.edit'
+import { Route as ReviewsIdReplyRouteImport } from './routes/reviews.$id.reply'
+import { Route as ReviewsIdReportRouteImport } from './routes/reviews.$id.report'
 import { Route as ReviewsWriteIdRouteImport } from './routes/reviews.write.$id'
 import { Route as ServicesIdEnquiryRouteImport } from './routes/services.$id.enquiry'
 import { Route as ServicesIdManageRouteImport } from './routes/services.$id.manage'
@@ -630,6 +634,11 @@ const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => RecommendationsRoute,
 } as any)
+const ReviewsRequestRoute = ReviewsRequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => ReviewsRoute,
+} as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
@@ -1069,6 +1078,21 @@ const ProviderBookingsCalendarRoute =
     path: '/provider/bookings/calendar',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ReviewsIdEditRoute = ReviewsIdEditRouteImport.update({
+  id: '/$id/edit',
+  path: '/$id/edit',
+  getParentRoute: () => ReviewsRoute,
+} as any)
+const ReviewsIdReplyRoute = ReviewsIdReplyRouteImport.update({
+  id: '/$id/reply',
+  path: '/$id/reply',
+  getParentRoute: () => ReviewsRoute,
+} as any)
+const ReviewsIdReportRoute = ReviewsIdReportRouteImport.update({
+  id: '/$id/report',
+  path: '/$id/report',
+  getParentRoute: () => ReviewsRoute,
+} as any)
 const ReviewsWriteIdRoute = ReviewsWriteIdRouteImport.update({
   id: '/write/$id',
   path: '/write/$id',
@@ -1271,6 +1295,7 @@ export interface FileRoutesByFullPath {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/reviews/request': typeof ReviewsRequestRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
@@ -1358,6 +1383,9 @@ export interface FileRoutesByFullPath {
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
+  '/reviews/$id/edit': typeof ReviewsIdEditRoute
+  '/reviews/$id/reply': typeof ReviewsIdReplyRoute
+  '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
@@ -1467,6 +1495,7 @@ export interface FileRoutesByTo {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/reviews/request': typeof ReviewsRequestRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
@@ -1554,6 +1583,9 @@ export interface FileRoutesByTo {
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
+  '/reviews/$id/edit': typeof ReviewsIdEditRoute
+  '/reviews/$id/reply': typeof ReviewsIdReplyRoute
+  '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
@@ -1665,6 +1697,7 @@ export interface FileRoutesById {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/reviews/request': typeof ReviewsRequestRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
@@ -1752,6 +1785,9 @@ export interface FileRoutesById {
   '/portfolio/new/$kind': typeof PortfolioNewKindRoute
   '/provider/bookings/$ref': typeof ProviderBookingsRefRoute
   '/provider/bookings/calendar': typeof ProviderBookingsCalendarRoute
+  '/reviews/$id/edit': typeof ReviewsIdEditRoute
+  '/reviews/$id/reply': typeof ReviewsIdReplyRoute
+  '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
@@ -1864,6 +1900,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/reviews/request'
     | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
@@ -1951,6 +1988,9 @@ export interface FileRouteTypes {
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
+    | '/reviews/$id/edit'
+    | '/reviews/$id/reply'
+    | '/reviews/$id/report'
     | '/reviews/write/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
@@ -2060,6 +2100,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/reviews/request'
     | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
@@ -2147,6 +2188,9 @@ export interface FileRouteTypes {
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
+    | '/reviews/$id/edit'
+    | '/reviews/$id/reply'
+    | '/reviews/$id/report'
     | '/reviews/write/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
@@ -2257,6 +2301,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/reviews/request'
     | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
@@ -2344,6 +2389,9 @@ export interface FileRouteTypes {
     | '/portfolio/new/$kind'
     | '/provider/bookings/$ref'
     | '/provider/bookings/calendar'
+    | '/reviews/$id/edit'
+    | '/reviews/$id/reply'
+    | '/reviews/$id/report'
     | '/reviews/write/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
@@ -3146,6 +3194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecommendationsSettingsRouteImport
       parentRoute: typeof RecommendationsRoute
     }
+    '/reviews/request': {
+      id: '/reviews/request'
+      path: '/request'
+      fullPath: '/reviews/request'
+      preLoaderRoute: typeof ReviewsRequestRouteImport
+      parentRoute: typeof ReviewsRoute
+    }
     '/services/': {
       id: '/services/'
       path: '/services'
@@ -3755,6 +3810,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderBookingsCalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reviews/$id/edit': {
+      id: '/reviews/$id/edit'
+      path: '/$id/edit'
+      fullPath: '/reviews/$id/edit'
+      preLoaderRoute: typeof ReviewsIdEditRouteImport
+      parentRoute: typeof ReviewsRoute
+    }
+    '/reviews/$id/reply': {
+      id: '/reviews/$id/reply'
+      path: '/$id/reply'
+      fullPath: '/reviews/$id/reply'
+      preLoaderRoute: typeof ReviewsIdReplyRouteImport
+      parentRoute: typeof ReviewsRoute
+    }
+    '/reviews/$id/report': {
+      id: '/reviews/$id/report'
+      path: '/$id/report'
+      fullPath: '/reviews/$id/report'
+      preLoaderRoute: typeof ReviewsIdReportRouteImport
+      parentRoute: typeof ReviewsRoute
+    }
     '/reviews/write/$id': {
       id: '/reviews/write/$id'
       path: '/write/$id'
@@ -3989,10 +4065,18 @@ const RecommendationsRouteWithChildren = RecommendationsRoute._addFileChildren(
 )
 
 interface ReviewsRouteChildren {
+  ReviewsRequestRoute: typeof ReviewsRequestRoute
+  ReviewsIdEditRoute: typeof ReviewsIdEditRoute
+  ReviewsIdReplyRoute: typeof ReviewsIdReplyRoute
+  ReviewsIdReportRoute: typeof ReviewsIdReportRoute
   ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
 }
 
 const ReviewsRouteChildren: ReviewsRouteChildren = {
+  ReviewsRequestRoute: ReviewsRequestRoute,
+  ReviewsIdEditRoute: ReviewsIdEditRoute,
+  ReviewsIdReplyRoute: ReviewsIdReplyRoute,
+  ReviewsIdReportRoute: ReviewsIdReportRoute,
   ReviewsWriteIdRoute: ReviewsWriteIdRoute,
 }
 
