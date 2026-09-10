@@ -7,7 +7,11 @@ export const Route = createFileRoute("/services/conflicts")({
   head: () => ({
     meta: [
       { title: "Booking conflicts | MusicLinkd" },
-      { name: "description", content: "Double bookings and overlaps across your services, with the quickest way to resolve each one." },
+      {
+        name: "description",
+        content:
+          "Double bookings and overlaps across your services, with the quickest way to resolve each one.",
+      },
       { property: "og:title", content: "Booking conflicts | MusicLinkd" },
       { property: "og:description", content: "Overlapping sessions and how to resolve them." },
       { property: "og:type", content: "website" },
@@ -44,7 +48,11 @@ const conflicts = [
 function Conflicts() {
   return (
     <Screen>
-      <TopBar title="Conflicts" subtitle="Overlaps across your services" back="/services/availability" />
+      <TopBar
+        title="Conflicts"
+        subtitle="Overlaps across your services"
+        back="/services/availability"
+      />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
@@ -53,7 +61,8 @@ function Conflicts() {
               <AlertTriangle size={18} />
             </span>
             <p className="text-[13px] text-muted-foreground">
-              Conflicts do not cancel anything on their own. Nothing changes until you pick an option below.
+              Conflicts do not cancel anything on their own. Nothing changes until you pick an
+              option below.
             </p>
           </div>
         </Card>
@@ -70,8 +79,12 @@ function Conflicts() {
                   <StatusPill label={c.kind} tone={c.tone} />
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <Btn variant="outline" className="flex-1">Offer another time</Btn>
-                  <Btn variant="ghost" className="flex-1">Keep both</Btn>
+                  <Btn variant="outline" className="flex-1">
+                    Offer another time
+                  </Btn>
+                  <Btn variant="ghost" className="flex-1">
+                    Keep both
+                  </Btn>
                 </div>
               </Card>
             ))}

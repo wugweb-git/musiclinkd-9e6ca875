@@ -74,18 +74,78 @@ export type RoleDef = {
 };
 
 export const roles: RoleDef[] = [
-  { key: "singer", label: "Singer", hint: "Vocalist, playback, live", emoji: "🎤", instruments: false },
-  { key: "musician", label: "Musician", hint: "Session, live, studio", emoji: "🎸", instruments: true },
-  { key: "producer", label: "Producer", hint: "Beats, arrangement, mix", emoji: "🎛", instruments: true },
-  { key: "composer", label: "Composer", hint: "Score, jingles, film", emoji: "🎼", instruments: true },
-  { key: "lyricist", label: "Lyricist", hint: "Writing, adaptation", emoji: "✍️", instruments: false },
-  { key: "music-director", label: "Music Director", hint: "Leading music teams", emoji: "🎬", instruments: false },
-  { key: "sound-engineer", label: "Sound Engineer", hint: "Record, mix, master", emoji: "🎚", instruments: false },
+  {
+    key: "singer",
+    label: "Singer",
+    hint: "Vocalist, playback, live",
+    emoji: "🎤",
+    instruments: false,
+  },
+  {
+    key: "musician",
+    label: "Musician",
+    hint: "Session, live, studio",
+    emoji: "🎸",
+    instruments: true,
+  },
+  {
+    key: "producer",
+    label: "Producer",
+    hint: "Beats, arrangement, mix",
+    emoji: "🎛",
+    instruments: true,
+  },
+  {
+    key: "composer",
+    label: "Composer",
+    hint: "Score, jingles, film",
+    emoji: "🎼",
+    instruments: true,
+  },
+  {
+    key: "lyricist",
+    label: "Lyricist",
+    hint: "Writing, adaptation",
+    emoji: "✍️",
+    instruments: false,
+  },
+  {
+    key: "music-director",
+    label: "Music Director",
+    hint: "Leading music teams",
+    emoji: "🎬",
+    instruments: false,
+  },
+  {
+    key: "sound-engineer",
+    label: "Sound Engineer",
+    hint: "Record, mix, master",
+    emoji: "🎚",
+    instruments: false,
+  },
   { key: "dj", label: "DJ", hint: "Clubs, weddings, events", emoji: "🎧", instruments: false },
   { key: "rj", label: "RJ", hint: "Radio, hosting", emoji: "📻", instruments: false },
-  { key: "podcaster", label: "Podcaster", hint: "Shows and audio series", emoji: "🎙", instruments: false },
-  { key: "voice-artist", label: "Voice Artist", hint: "Dubbing, ads, narration", emoji: "🗣", instruments: false },
-  { key: "music-teacher", label: "Music Teacher", hint: "Lessons and coaching", emoji: "📚", instruments: true },
+  {
+    key: "podcaster",
+    label: "Podcaster",
+    hint: "Shows and audio series",
+    emoji: "🎙",
+    instruments: false,
+  },
+  {
+    key: "voice-artist",
+    label: "Voice Artist",
+    hint: "Dubbing, ads, narration",
+    emoji: "🗣",
+    instruments: false,
+  },
+  {
+    key: "music-teacher",
+    label: "Music Teacher",
+    hint: "Lessons and coaching",
+    emoji: "📚",
+    instruments: true,
+  },
   { key: "other", label: "Other", hint: "Tell us in your bio", emoji: "✨", instruments: false },
 ];
 
@@ -241,7 +301,16 @@ export const businessTypes = [
 /* Location master data (city-level is enough for discovery). */
 export const countries = ["India"];
 export const statesByCountry: Record<string, string[]> = {
-  India: ["Maharashtra", "Delhi", "Karnataka", "Tamil Nadu", "West Bengal", "Punjab", "Kerala", "Goa"],
+  India: [
+    "Maharashtra",
+    "Delhi",
+    "Karnataka",
+    "Tamil Nadu",
+    "West Bengal",
+    "Punjab",
+    "Kerala",
+    "Goa",
+  ],
 };
 export const citiesByState: Record<string, string[]> = {
   Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik"],
@@ -264,40 +333,67 @@ export const specialisationByRole: Record<
     groups: [
       { label: "Vocal type", options: ["Male", "Female", "Baritone", "Tenor", "Soprano", "Alto"] },
       { label: "Vocal range", options: ["Low", "Mid", "High", "Wide range"] },
-      { label: "Performance type", options: ["Playback", "Live shows", "Studio sessions", "Backing vocals", "Jingles"] },
+      {
+        label: "Performance type",
+        options: ["Playback", "Live shows", "Studio sessions", "Backing vocals", "Jingles"],
+      },
     ],
   },
   musician: {
     title: "How do you play professionally?",
     groups: [
-      { label: "Work type", options: ["Session work", "Live performance", "Touring band", "Studio recording"] },
-      { label: "Strengths", options: ["Sight reading", "Improvisation", "Arrangement", "Programming"] },
+      {
+        label: "Work type",
+        options: ["Session work", "Live performance", "Touring band", "Studio recording"],
+      },
+      {
+        label: "Strengths",
+        options: ["Sight reading", "Improvisation", "Arrangement", "Programming"],
+      },
     ],
   },
   producer: {
     title: "What do you produce?",
     groups: [
-      { label: "Production", options: ["Full production", "Arrangement", "Beat making", "Topline", "Remixing"] },
-      { label: "Tools", options: ["Ableton Live", "Logic Pro", "FL Studio", "Pro Tools", "Cubase", "Reaper"] },
+      {
+        label: "Production",
+        options: ["Full production", "Arrangement", "Beat making", "Topline", "Remixing"],
+      },
+      {
+        label: "Tools",
+        options: ["Ableton Live", "Logic Pro", "FL Studio", "Pro Tools", "Cubase", "Reaper"],
+      },
     ],
   },
   composer: {
     title: "What do you compose for?",
     groups: [
-      { label: "Composition type", options: ["Film", "Advertising", "Background score", "Series", "Games", "Independent"] },
+      {
+        label: "Composition type",
+        options: ["Film", "Advertising", "Background score", "Series", "Games", "Independent"],
+      },
     ],
   },
   "sound-engineer": {
     title: "What's your engineering focus?",
     groups: [
-      { label: "Discipline", options: ["Recording", "Mixing", "Mastering", "Live sound", "Post production"] },
-      { label: "Tools", options: ["Pro Tools", "Logic Pro", "Nuendo", "Ableton Live", "Analog console"] },
+      {
+        label: "Discipline",
+        options: ["Recording", "Mixing", "Mastering", "Live sound", "Post production"],
+      },
+      {
+        label: "Tools",
+        options: ["Pro Tools", "Logic Pro", "Nuendo", "Ableton Live", "Analog console"],
+      },
     ],
   },
   dj: {
     title: "Where do you play?",
     groups: [
-      { label: "Event types", options: ["Clubs", "Weddings", "Corporate", "Festivals", "Private parties"] },
+      {
+        label: "Event types",
+        options: ["Clubs", "Weddings", "Corporate", "Festivals", "Private parties"],
+      },
       { label: "Setup", options: ["Own CDJs", "Own controller", "Own PA", "Venue gear only"] },
     ],
   },
@@ -421,7 +517,13 @@ export const steps: StepDef[] = [
     subtitle: "This is how people find and credit you.",
     why: "Your name and username appear on every credit, message and search result.",
     optional: false,
-    contract: contract("ONB-02", "Identity Basics", "/onboarding/step/identity", ["users"], ["user"]),
+    contract: contract(
+      "ONB-02",
+      "Identity Basics",
+      "/onboarding/step/identity",
+      ["users"],
+      ["user"],
+    ),
   },
   {
     id: "photo",
@@ -439,7 +541,13 @@ export const steps: StepDef[] = [
     subtitle: "Pick the one that describes you best.",
     why: "Your primary role shapes the rest of this setup and how you're discovered.",
     optional: false,
-    contract: contract("ONB-04", "Primary Role", "/onboarding/step/role", ["masterData"], ["role", "professionalProfile"]),
+    contract: contract(
+      "ONB-04",
+      "Primary Role",
+      "/onboarding/step/role",
+      ["masterData"],
+      ["role", "professionalProfile"],
+    ),
   },
   {
     id: "secondary-roles",
@@ -448,7 +556,13 @@ export const steps: StepDef[] = [
     subtitle: "Optional. Add as many as fit.",
     why: "Extra roles widen the work you show up for, without diluting your main one.",
     optional: true,
-    contract: contract("ONB-05", "Secondary Roles", "/onboarding/step/secondary-roles", ["masterData"], ["role"]),
+    contract: contract(
+      "ONB-05",
+      "Secondary Roles",
+      "/onboarding/step/secondary-roles",
+      ["masterData"],
+      ["role"],
+    ),
   },
   {
     id: "instruments",
@@ -461,7 +575,13 @@ export const steps: StepDef[] = [
       const all = [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[];
       return roles.some((r) => all.includes(r.key) && r.instruments);
     },
-    contract: contract("ONB-06", "Instruments", "/onboarding/step/instruments", ["masterData"], ["instrument"]),
+    contract: contract(
+      "ONB-06",
+      "Instruments",
+      "/onboarding/step/instruments",
+      ["masterData"],
+      ["instrument"],
+    ),
   },
   {
     id: "specialisation",
@@ -471,7 +591,13 @@ export const steps: StepDef[] = [
     why: "Specialisation is what turns a search result into a booking.",
     optional: true,
     visible: (d) => Boolean(d.primaryRole && specialisationByRole[d.primaryRole]),
-    contract: contract("ONB-07", "Professional Specialisation", "/onboarding/step/specialisation", ["masterData"], ["professionalProfile"]),
+    contract: contract(
+      "ONB-07",
+      "Professional Specialisation",
+      "/onboarding/step/specialisation",
+      ["masterData"],
+      ["professionalProfile"],
+    ),
   },
   {
     id: "genres",
@@ -489,7 +615,13 @@ export const steps: StepDef[] = [
     subtitle: "Choose all that apply.",
     why: "Language decides a lot of casting in Indian music work.",
     optional: true,
-    contract: contract("ONB-09", "Languages", "/onboarding/step/languages", ["masterData"], ["language"]),
+    contract: contract(
+      "ONB-09",
+      "Languages",
+      "/onboarding/step/languages",
+      ["masterData"],
+      ["language"],
+    ),
   },
   {
     id: "location",
@@ -498,7 +630,13 @@ export const steps: StepDef[] = [
     subtitle: "City level is enough.",
     why: "Most work starts local. We never show your exact address.",
     optional: false,
-    contract: contract("ONB-10", "Location", "/onboarding/step/location", ["masterData"], ["location"]),
+    contract: contract(
+      "ONB-10",
+      "Location",
+      "/onboarding/step/location",
+      ["masterData"],
+      ["location"],
+    ),
   },
   {
     id: "work-mode",
@@ -507,7 +645,13 @@ export const steps: StepDef[] = [
     subtitle: "Pick everything that applies.",
     why: "Remote-friendly profiles get enquiries from outside their city.",
     optional: true,
-    contract: contract("ONB-11", "Work Mode", "/onboarding/step/work-mode", ["masterData"], ["professionalProfile"]),
+    contract: contract(
+      "ONB-11",
+      "Work Mode",
+      "/onboarding/step/work-mode",
+      ["masterData"],
+      ["professionalProfile"],
+    ),
   },
   {
     id: "availability",
@@ -516,7 +660,13 @@ export const steps: StepDef[] = [
     subtitle: "You can fine-tune this later in Services.",
     why: "This is a high-level signal. Detailed pricing lives in Services & Availability.",
     optional: true,
-    contract: contract("ONB-12", "Availability", "/onboarding/step/availability", ["masterData"], ["availability"]),
+    contract: contract(
+      "ONB-12",
+      "Availability",
+      "/onboarding/step/availability",
+      ["masterData"],
+      ["availability"],
+    ),
   },
   {
     id: "intent",
@@ -525,7 +675,13 @@ export const steps: StepDef[] = [
     subtitle: "Pick as many as you like.",
     why: "We'll shape your home feed and recommendations around this.",
     optional: true,
-    contract: contract("ONB-13", "Professional Intent", "/onboarding/step/intent", ["masterData"], ["preferences"]),
+    contract: contract(
+      "ONB-13",
+      "Professional Intent",
+      "/onboarding/step/intent",
+      ["masterData"],
+      ["preferences"],
+    ),
   },
   {
     id: "experience",
@@ -534,7 +690,13 @@ export const steps: StepDef[] = [
     subtitle: "Not a ranking — just context.",
     why: "Helps match you to the right briefs. Never shown as a score.",
     optional: true,
-    contract: contract("ONB-14", "Experience", "/onboarding/step/experience", ["masterData"], ["professionalProfile"]),
+    contract: contract(
+      "ONB-14",
+      "Experience",
+      "/onboarding/step/experience",
+      ["masterData"],
+      ["professionalProfile"],
+    ),
   },
   {
     id: "bio",
@@ -543,7 +705,13 @@ export const steps: StepDef[] = [
     subtitle: "Two lines is plenty.",
     why: "Your bio is the first thing read after your name and role.",
     optional: true,
-    contract: contract("ONB-15", "Bio", "/onboarding/step/bio", ["professionalProfiles"], ["professionalProfile"]),
+    contract: contract(
+      "ONB-15",
+      "Bio",
+      "/onboarding/step/bio",
+      ["professionalProfiles"],
+      ["professionalProfile"],
+    ),
   },
   {
     id: "links",
@@ -552,7 +720,13 @@ export const steps: StepDef[] = [
     subtitle: "Optional. Add only what you use.",
     why: "External links carry proof of work until your portfolio is up.",
     optional: true,
-    contract: contract("ONB-16", "Profile Links", "/onboarding/step/links", ["profileLinks"], ["profileLink"]),
+    contract: contract(
+      "ONB-16",
+      "Profile Links",
+      "/onboarding/step/links",
+      ["profileLinks"],
+      ["profileLink"],
+    ),
   },
   {
     id: "contact",
@@ -561,7 +735,13 @@ export const steps: StepDef[] = [
     subtitle: "Private by default.",
     why: "Nothing private is published. You choose what to share per enquiry.",
     optional: true,
-    contract: contract("ONB-17", "Contact Preferences", "/onboarding/step/contact", ["preferences"], ["preferences"]),
+    contract: contract(
+      "ONB-17",
+      "Contact Preferences",
+      "/onboarding/step/contact",
+      ["preferences"],
+      ["preferences"],
+    ),
   },
   {
     id: "discovery",
@@ -570,7 +750,13 @@ export const steps: StepDef[] = [
     subtitle: "We'll tune your feed to this.",
     why: "Feeds Discover and Recommendations. You can change it anytime.",
     optional: true,
-    contract: contract("ONB-18", "Discovery Preferences", "/onboarding/step/discovery", ["preferences"], ["preferences"]),
+    contract: contract(
+      "ONB-18",
+      "Discovery Preferences",
+      "/onboarding/step/discovery",
+      ["preferences"],
+      ["preferences"],
+    ),
   },
   {
     id: "visibility",
@@ -579,7 +765,13 @@ export const steps: StepDef[] = [
     subtitle: "You can change this whenever you want.",
     why: "Public profiles are found by clients outside MusicLinkd too.",
     optional: false,
-    contract: contract("ONB-19", "Profile Visibility", "/onboarding/step/visibility", ["users"], ["user"]),
+    contract: contract(
+      "ONB-19",
+      "Profile Visibility",
+      "/onboarding/step/visibility",
+      ["users"],
+      ["user"],
+    ),
   },
   {
     id: "business",
@@ -588,7 +780,13 @@ export const steps: StepDef[] = [
     subtitle: "Studio, label, agency, school and more.",
     why: "Businesses get their own profile with team, services and verification.",
     optional: true,
-    contract: contract("ONB-26", "Business Intent", "/onboarding/step/business", ["businesses"], ["business"]),
+    contract: contract(
+      "ONB-26",
+      "Business Intent",
+      "/onboarding/step/business",
+      ["businesses"],
+      ["business"],
+    ),
   },
   {
     id: "band",
@@ -673,9 +871,27 @@ export function completionPercent(d: OnboardingDraft): number {
 }
 
 export const screenContracts = {
-  welcome: contract("ONB-01", "Onboarding Welcome", "/onboarding", ["users", "professionalProfiles", "masterData"], ["user"]),
-  preview: contract("ONB-20", "Profile Preview", "/onboarding/preview", ["users", "professionalProfiles"], ["user", "professionalProfile"]),
-  completion: contract("ONB-21", "Profile Completion", "/onboarding/complete", ["professionalProfiles"], ["professionalProfile"]),
+  welcome: contract(
+    "ONB-01",
+    "Onboarding Welcome",
+    "/onboarding",
+    ["users", "professionalProfiles", "masterData"],
+    ["user"],
+  ),
+  preview: contract(
+    "ONB-20",
+    "Profile Preview",
+    "/onboarding/preview",
+    ["users", "professionalProfiles"],
+    ["user", "professionalProfile"],
+  ),
+  completion: contract(
+    "ONB-21",
+    "Profile Completion",
+    "/onboarding/complete",
+    ["professionalProfiles"],
+    ["professionalProfile"],
+  ),
   done: contract("ONB-22", "Onboarding Complete", "/onboarding/done", ["users"], ["user"]),
   skip: contract("ONB-23", "Skip / Complete Later", "/onboarding/skip", ["users"], ["user"]),
   resume: contract("ONB-24", "Resume Onboarding", "/onboarding/resume", ["users"], ["user"]),

@@ -12,7 +12,10 @@ export const Route = createFileRoute("/auth/otp")({
   head: () => ({
     meta: [
       { title: "Enter your code — MusicLinkd" },
-      { name: "description", content: "Enter the 6-digit code we texted you to finish signing in to MusicLinkd." },
+      {
+        name: "description",
+        content: "Enter the 6-digit code we texted you to finish signing in to MusicLinkd.",
+      },
       { property: "og:title", content: "Enter your code — MusicLinkd" },
       { property: "og:description", content: "Verify your number and continue to MusicLinkd." },
       { property: "og:type", content: "website" },
@@ -46,7 +49,11 @@ function OtpScreen() {
     <AuthScreen>
       <AuthHeading
         title="Enter your code"
-        sub={phone ? `Sent to +91 ${phone.slice(0, 5)} ${phone.slice(5)}` : "Enter the 6-digit code we sent you."}
+        sub={
+          phone
+            ? `Sent to +91 ${phone.slice(0, 5)} ${phone.slice(5)}`
+            : "Enter the 6-digit code we sent you."
+        }
       />
 
       {error ? <AuthNotice title="That code did not match">{error}</AuthNotice> : null}
@@ -87,7 +94,9 @@ function OtpScreen() {
       <Btn
         className="w-full"
         disabled={code.length !== 6}
-        onClick={() => setError("Phone sign-in is not enabled on this build. Continue with email or Google.")}
+        onClick={() =>
+          setError("Phone sign-in is not enabled on this build. Continue with email or Google.")
+        }
       >
         Verify and continue
       </Btn>
@@ -96,14 +105,22 @@ function OtpScreen() {
         {seconds > 0 ? (
           <span>Resend code in 0:{String(seconds).padStart(2, "0")}</span>
         ) : (
-          <button type="button" onClick={() => setSeconds(30)} className="font-semibold text-primary">
+          <button
+            type="button"
+            onClick={() => setSeconds(30)}
+            className="font-semibold text-primary"
+          >
             Resend code
           </button>
         )}
       </div>
 
       <p className="mt-4 text-center text-[12.5px] text-text2">
-        <button type="button" onClick={() => void navigate({ to: "/auth/phone" })} className="font-semibold text-primary">
+        <button
+          type="button"
+          onClick={() => void navigate({ to: "/auth/phone" })}
+          className="font-semibold text-primary"
+        >
           Change number
         </button>
         <span className="mx-2 text-border">|</span>

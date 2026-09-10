@@ -9,10 +9,14 @@ export const Route = createFileRoute("/verification/badge")({
       { title: "Where your badge appears | MusicLinkd" },
       {
         name: "description",
-        content: "How the MusicLinkd verified badge is shown on profiles, search, listings, messages and reviews.",
+        content:
+          "How the MusicLinkd verified badge is shown on profiles, search, listings, messages and reviews.",
       },
       { property: "og:title", content: "Where your badge appears | MusicLinkd" },
-      { property: "og:description", content: "One badge, shown the same way everywhere on MusicLinkd." },
+      {
+        property: "og:description",
+        content: "One badge, shown the same way everywhere on MusicLinkd.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -31,8 +35,8 @@ function BadgeGuide() {
             <VerifiedBadge />
           </div>
           <p className="text-[13px] text-text2">
-            The badge only ever means one thing: a person on the Trust team checked real evidence. It is never sold,
-            never given for activity, and never awarded for a follower count.
+            The badge only ever means one thing: a person on the Trust team checked real evidence.
+            It is never sold, never given for activity, and never awarded for a follower count.
           </p>
         </Card>
 
@@ -54,7 +58,11 @@ function BadgeGuide() {
         <section className="space-y-2">
           <h2 className="text-[15px]">Related</h2>
           <Row title="Verification status" subtitle="Your badges and requests" to="/verification" />
-          <Row title="Document privacy" subtitle="What is stored and who sees it" to="/verification/privacy" />
+          <Row
+            title="Document privacy"
+            subtitle="What is stored and who sees it"
+            to="/verification/privacy"
+          />
         </section>
       </div>
     </Screen>

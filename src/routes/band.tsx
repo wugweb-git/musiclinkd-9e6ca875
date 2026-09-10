@@ -23,10 +23,30 @@ export const Route = createFileRoute("/band")({
 });
 
 const members = [
-  { name: "Raman Negi", role: "Vocals", photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80" },
-  { name: "Paras Thakur", role: "Guitar", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" },
-  { name: "Ramit Mehra", role: "Bass", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80" },
-  { name: "Sahil Sarin", role: "Drums", photo: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80" },
+  {
+    name: "Raman Negi",
+    role: "Vocals",
+    photo:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80",
+  },
+  {
+    name: "Paras Thakur",
+    role: "Guitar",
+    photo:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+  },
+  {
+    name: "Ramit Mehra",
+    role: "Bass",
+    photo:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+  },
+  {
+    name: "Sahil Sarin",
+    role: "Drums",
+    photo:
+      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80",
+  },
 ];
 
 function Band() {

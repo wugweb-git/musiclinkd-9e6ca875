@@ -14,10 +14,14 @@ export const Route = createFileRoute("/collab/$id/notes")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Shared creative notes, references and decisions kept alongside a MusicLinkd project.",
+          content:
+            "Shared creative notes, references and decisions kept alongside a MusicLinkd project.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: "Keep lyrics, arrangement ideas and decisions in one place." },
+        {
+          property: "og:description",
+          content: "Keep lyrics, arrangement ideas and decisions in one place.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -47,7 +51,10 @@ function Notes() {
   return (
     <WorkspaceShell project={project} tab="notes">
       {sorted.length === 0 ? (
-        <EmptyState title="No notes yet" body="Write down the creative direction so nothing gets lost." />
+        <EmptyState
+          title="No notes yet"
+          body="Write down the creative direction so nothing gets lost."
+        />
       ) : (
         <>
           <Label>{sorted.length} notes</Label>
@@ -75,7 +82,12 @@ function Notes() {
 
       <div className="mt-5 mb-8">
         <Label>New note</Label>
-        <TextInput value={draft} onChange={setDraft} multiline placeholder="Arrangement idea, lyric line, reference..." />
+        <TextInput
+          value={draft}
+          onChange={setDraft}
+          multiline
+          placeholder="Arrangement idea, lyric line, reference..."
+        />
         <Btn className="mt-3 w-full" onClick={() => setDraft("")}>
           Save note
         </Btn>

@@ -20,7 +20,8 @@ export const Route = createFileRoute("/collab/$id/roles")({
         { property: "og:title", content: `${title} | MusicLinkd` },
         {
           property: "og:description",
-          content: "Canonical music roles — composer, vocalist, producer, mixing and mastering engineer.",
+          content:
+            "Canonical music roles — composer, vocalist, producer, mixing and mastering engineer.",
         },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
@@ -86,8 +87,8 @@ function Roles() {
       )}
 
       <p className="mb-5 text-[11px] text-muted-foreground">
-        Roles come from the shared MusicLinkd taxonomy, so completed work carries the same credit across
-        profiles, portfolios and search.
+        Roles come from the shared MusicLinkd taxonomy, so completed work carries the same credit
+        across profiles, portfolios and search.
       </p>
 
       <div className="mb-8 flex gap-3">

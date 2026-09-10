@@ -10,10 +10,14 @@ export const Route = createFileRoute("/collab/new")({
       { title: "Create a collaboration — MusicLinkd" },
       {
         name: "description",
-        content: "Set up a music collaboration: name, type, your role, timeline and optional budget.",
+        content:
+          "Set up a music collaboration: name, type, your role, timeline and optional budget.",
       },
       { property: "og:title", content: "Create a collaboration — MusicLinkd" },
-      { property: "og:description", content: "Turn a conversation into a structured music project." },
+      {
+        property: "og:description",
+        content: "Turn a conversation into a structured music project.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -50,7 +54,11 @@ function CreateCollab() {
           </div>
         </Field>
 
-        <Field label="Description" optional hint="What are you making, and what does success look like?">
+        <Field
+          label="Description"
+          optional
+          hint="What are you making, and what does success look like?"
+        >
           <TextInput
             value={description}
             onChange={setDescription}
@@ -97,7 +105,8 @@ function CreateCollab() {
         <div className="rounded-3xl border border-border bg-card p-4">
           <Label>What happens next</Label>
           <p className="text-[12px] text-muted-foreground">
-            You'll invite collaborators and set their roles. Nothing is shared until you send invitations.
+            You'll invite collaborators and set their roles. Nothing is shared until you send
+            invitations.
           </p>
         </div>
       </main>

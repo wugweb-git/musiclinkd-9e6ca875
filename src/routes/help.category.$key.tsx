@@ -32,10 +32,20 @@ function CategoryPage() {
       <TopBar title={cat?.label ?? "Topic"} subtitle={cat?.blurb ?? ""} back="/help" />
       <div className="space-y-2 px-5 pt-4 pb-10">
         {pages.length ? (
-          pages.map((p) => <Row key={p.slug} title={p.title} subtitle={`${p.readTime} · ${p.summary}`} to="/help/$slug" params={{ slug: p.slug }} />)
+          pages.map((p) => (
+            <Row
+              key={p.slug}
+              title={p.title}
+              subtitle={`${p.readTime} · ${p.summary}`}
+              to="/help/$slug"
+              params={{ slug: p.slug }}
+            />
+          ))
         ) : (
           <EmptyState title="Nothing here yet" body="We are still writing guides for this topic.">
-            <Link to="/help"><Btn className="w-full">Browse all guides</Btn></Link>
+            <Link to="/help">
+              <Btn className="w-full">Browse all guides</Btn>
+            </Link>
           </EmptyState>
         )}
       </div>

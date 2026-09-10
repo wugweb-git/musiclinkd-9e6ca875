@@ -14,9 +14,16 @@ export const Route = createFileRoute("/identity/business")({
   head: () => ({
     meta: [
       { title: "Business QR — Octave Sound Labs on MusicLinkd" },
-      { name: "description", content: "A scannable QR for your studio or business profile: print it for reception, posters and event stands." },
+      {
+        name: "description",
+        content:
+          "A scannable QR for your studio or business profile: print it for reception, posters and event stands.",
+      },
       { property: "og:title", content: "Business QR on MusicLinkd" },
-      { property: "og:description", content: "Turn a printed code into bookings, messages and follows." },
+      {
+        property: "og:description",
+        content: "Turn a printed code into bookings, messages and follows.",
+      },
     ],
   }),
   component: BusinessQr,
@@ -48,7 +55,11 @@ function BusinessQr() {
           <Btn className="flex-1" onClick={() => setShare(true)}>
             <Share2 size={16} className="mr-2" /> Share
           </Btn>
-          <Btn variant="outline" className="flex-1" onClick={() => toast.success("Business QR saved")}>
+          <Btn
+            variant="outline"
+            className="flex-1"
+            onClick={() => toast.success("Business QR saved")}
+          >
             <Download size={16} className="mr-2" /> Download
           </Btn>
         </div>
@@ -68,7 +79,11 @@ function BusinessQr() {
       </main>
 
       <Sheet open={share} onClose={() => setShare(false)} title="Share business QR">
-        <ShareActions url={url} title={myBusiness.name} onDownload={() => toast.success("Business QR saved")} />
+        <ShareActions
+          url={url}
+          title={myBusiness.name}
+          onDownload={() => toast.success("Business QR saved")}
+        />
         <div className="mt-3">
           <DownloadNote />
         </div>

@@ -26,10 +26,14 @@ export const Route = createFileRoute("/bookings/$ref/")({
       { title: "Booking detail — MusicLinkd" },
       {
         name: "description",
-        content: "Full status, timing, location, payment state and actions for a single MusicLinkd booking.",
+        content:
+          "Full status, timing, location, payment state and actions for a single MusicLinkd booking.",
       },
       { property: "og:title", content: "Booking detail — MusicLinkd" },
-      { property: "og:description", content: "Status, timing, payment and actions for your booking." },
+      {
+        property: "og:description",
+        content: "Status, timing, payment and actions for your booking.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -90,7 +94,12 @@ function BookingDetail() {
 
         <div className="mt-4 rounded-3xl border border-border bg-card p-4">
           <div className="flex gap-3">
-            <img src={r.photo} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover" loading="lazy" />
+            <img
+              src={r.photo}
+              alt=""
+              className="h-16 w-16 shrink-0 rounded-2xl object-cover"
+              loading="lazy"
+            />
             <div className="min-w-0">
               <p className="truncate font-semibold">{b.name}</p>
               <p className="truncate text-xs text-muted-foreground">{r.name}</p>
@@ -125,7 +134,12 @@ function BookingDetail() {
         <h2 className="mt-6 text-[17px]">Terms that apply</h2>
         <div className="mt-3 space-y-2">
           {b.policies.slice(0, 3).map((p) => (
-            <PolicyCard key={p.title} title={p.title} body={p.body} critical={p.critical ?? false} />
+            <PolicyCard
+              key={p.title}
+              title={p.title}
+              body={p.body}
+              critical={p.critical ?? false}
+            />
           ))}
         </div>
 

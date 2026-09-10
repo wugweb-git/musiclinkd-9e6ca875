@@ -20,10 +20,14 @@ export const Route = createFileRoute("/provider/bookings/requests/$ref")({
       { title: "Review booking request — MusicLinkd" },
       {
         name: "description",
-        content: "See who's asking, what they need and what you'd earn, then accept, propose a new time or decline.",
+        content:
+          "See who's asking, what they need and what you'd earn, then accept, propose a new time or decline.",
       },
       { property: "og:title", content: "Review booking request — MusicLinkd" },
-      { property: "og:description", content: "Accept, counter-offer or decline an incoming session request." },
+      {
+        property: "og:description",
+        content: "Accept, counter-offer or decline an incoming session request.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -88,7 +92,12 @@ function RequestReview() {
       <main className="px-5 pt-4">
         <div className="rounded-3xl border border-border bg-card p-4">
           <div className="flex items-center gap-3">
-            <img src={bk.customerAvatar} alt="" className="h-12 w-12 rounded-full object-cover" loading="lazy" />
+            <img
+              src={bk.customerAvatar}
+              alt=""
+              className="h-12 w-12 rounded-full object-cover"
+              loading="lazy"
+            />
             <div className="min-w-0">
               <p className="truncate font-semibold">{bk.customer}</p>
               <p className="truncate text-xs text-muted-foreground">{bk.customerRole}</p>

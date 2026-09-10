@@ -10,10 +10,14 @@ export const Route = createFileRoute("/booking/$id/details")({
       { title: "Session details — MusicLinkd booking" },
       {
         name: "description",
-        content: "Tell the provider what the session is for, how many people are coming and anything they should prepare.",
+        content:
+          "Tell the provider what the session is for, how many people are coming and anything they should prepare.",
       },
       { property: "og:title", content: "Session details — MusicLinkd booking" },
-      { property: "og:description", content: "Purpose, headcount and requirements for your session." },
+      {
+        property: "og:description",
+        content: "Purpose, headcount and requirements for your session.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -31,7 +35,8 @@ function Details() {
       <main className="px-5 pt-4">
         <StepDots step={3} total={5} />
         <p className="mt-3 text-sm text-muted-foreground">
-          Only what the provider needs to prepare the room. Your contact details come from your profile.
+          Only what the provider needs to prepare the room. Your contact details come from your
+          profile.
         </p>
 
         <div className="mt-5 space-y-4">

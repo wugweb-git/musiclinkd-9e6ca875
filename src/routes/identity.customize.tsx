@@ -13,9 +13,16 @@ export const Route = createFileRoute("/identity/customize")({
   head: () => ({
     meta: [
       { title: "Customise your MusicLinkd QR" },
-      { name: "description", content: "Choose a QR presentation that fits your posters, cards and stage backdrops without hurting scannability." },
+      {
+        name: "description",
+        content:
+          "Choose a QR presentation that fits your posters, cards and stage backdrops without hurting scannability.",
+      },
       { property: "og:title", content: "Customise your MusicLinkd QR" },
-      { property: "og:description", content: "Four contrast-checked presentations, one canonical destination." },
+      {
+        property: "og:description",
+        content: "Four contrast-checked presentations, one canonical destination.",
+      },
     ],
   }),
   component: Customize,
@@ -79,7 +86,10 @@ function Customize() {
         </p>
 
         <div className="mt-4">
-          <Btn className="w-full" onClick={() => toast.success("QR presentation updated for this session")}>
+          <Btn
+            className="w-full"
+            onClick={() => toast.success("QR presentation updated for this session")}
+          >
             Save presentation
           </Btn>
         </div>

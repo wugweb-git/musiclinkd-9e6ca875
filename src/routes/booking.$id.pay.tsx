@@ -12,7 +12,8 @@ export const Route = createFileRoute("/booking/$id/pay")({
       { title: "Pay your deposit — MusicLinkd booking" },
       {
         name: "description",
-        content: "Pay the deposit that holds your slot. The balance is settled with the provider on the day.",
+        content:
+          "Pay the deposit that holds your slot. The balance is settled with the provider on the day.",
       },
       { property: "og:title", content: "Pay your deposit — MusicLinkd booking" },
       { property: "og:description", content: "Secure deposit payment for your studio session." },
@@ -109,11 +110,15 @@ function Pay() {
 
         <p className="mt-4 flex items-start gap-2 rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
           <Lock size={14} className="mt-0.5 shrink-0" />
-          You'll finish the payment in the provider's secure payment window. MusicLinkd never stores card details.
+          You'll finish the payment in the provider's secure payment window. MusicLinkd never stores
+          card details.
         </p>
 
         {phase === "processing" ? (
-          <p role="status" className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-xs">
+          <p
+            role="status"
+            className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-xs"
+          >
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
             Processing payment…
           </p>

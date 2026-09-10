@@ -9,9 +9,16 @@ export const Route = createFileRoute("/opportunities/applications/")({
   head: () => ({
     meta: [
       { title: "My applications | MusicLinkd" },
-      { name: "description", content: "Track every opportunity you applied to — viewed, shortlisted, accepted or closed." },
+      {
+        name: "description",
+        content:
+          "Track every opportunity you applied to — viewed, shortlisted, accepted or closed.",
+      },
       { property: "og:title", content: "My applications | MusicLinkd" },
-      { property: "og:description", content: "Application status across music-industry opportunities." },
+      {
+        property: "og:description",
+        content: "Application status across music-industry opportunities.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -35,13 +42,20 @@ function Applications() {
 
   return (
     <Screen>
-      <TopBar title="My applications" subtitle="Applications never expire silently" back="/opportunities" />
+      <TopBar
+        title="My applications"
+        subtitle="Applications never expire silently"
+        back="/opportunities"
+      />
       <div className="space-y-4 px-5 pt-4">
         <Segmented value={tab} options={tabs} onChange={setTab} />
         {loading ? (
           <Loading rows={3} />
         ) : list.length === 0 ? (
-          <EmptyState title="Nothing here" body="Apply to an opportunity and you'll be able to track it from this screen.">
+          <EmptyState
+            title="Nothing here"
+            body="Apply to an opportunity and you'll be able to track it from this screen."
+          >
             <Link to="/opportunities">
               <Btn className="w-full">Find opportunities</Btn>
             </Link>

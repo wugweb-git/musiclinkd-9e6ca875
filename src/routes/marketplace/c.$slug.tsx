@@ -38,17 +38,25 @@ function CategoryScreen() {
 
   return (
     <Screen>
-      <TopBar title={cat?.label ?? "Market"} subtitle={`${cat?.count ?? 0} listings in India`} back="/marketplace" />
+      <TopBar
+        title={cat?.label ?? "Market"}
+        subtitle={`${cat?.count ?? 0} listings in India`}
+        back="/marketplace"
+      />
       <div className="flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {["All", ...subs].map((s) => (
-          <Chip key={s} active={sub === s} onClick={() => setSub(s)}>{s}</Chip>
+          <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
+            {s}
+          </Chip>
         ))}
       </div>
       <div className="flex items-center justify-between px-5">
         <p className="text-xs text-muted-foreground">{items.length} results · Mumbai</p>
         <div className="flex gap-2">
           <Chip onClick={() => setSortOpen(true)}>{sort}</Chip>
-          <Chip active onClick={() => setFilters(true)}>Filters</Chip>
+          <Chip active onClick={() => setFilters(true)}>
+            Filters
+          </Chip>
         </div>
       </div>
       <div className="space-y-3 px-5 py-4">
@@ -63,7 +71,13 @@ function CategoryScreen() {
         )}
       </div>
       <MarketFilterSheet open={filters} onClose={() => setFilters(false)} results={items.length} />
-      <SortSheet open={sortOpen} onClose={() => setSortOpen(false)} value={sort} onChange={setSort} options={sorts} />
+      <SortSheet
+        open={sortOpen}
+        onClose={() => setSortOpen(false)}
+        value={sort}
+        onChange={setSort}
+        options={sorts}
+      />
     </Screen>
   );
 }

@@ -8,7 +8,11 @@ export const Route = createFileRoute("/bands/$id/portfolio")({
   head: () => ({
     meta: [
       { title: "Band portfolio | MusicLinkd" },
-      { name: "description", content: "Releases, recordings and live work credited to the band rather than to one member." },
+      {
+        name: "description",
+        content:
+          "Releases, recordings and live work credited to the band rather than to one member.",
+      },
       { property: "og:title", content: "Band portfolio | MusicLinkd" },
       { property: "og:description", content: "Releases and recordings credited to the band." },
       { property: "og:type", content: "website" },
@@ -30,7 +34,10 @@ function BandPortfolio() {
       <Screen>
         <TopBar title="Portfolio" back="/bands" />
         <div className="px-5 pt-6">
-          <EmptyState title="Band not found" body="This band may have been deleted or made private." />
+          <EmptyState
+            title="Band not found"
+            body="This band may have been deleted or made private."
+          />
         </div>
       </Screen>
     );
@@ -49,18 +56,30 @@ function BandPortfolio() {
               {band.releases.map((r) => (
                 <Card key={r.title}>
                   <div className="flex items-center gap-3">
-                    <img src={r.cover} alt="" className="h-14 w-14 rounded-[12px] object-cover" loading="lazy" />
+                    <img
+                      src={r.cover}
+                      alt=""
+                      className="h-14 w-14 rounded-[12px] object-cover"
+                      loading="lazy"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{r.title}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">{r.kind} · {r.year}</p>
+                      <p className="truncate text-[12px] text-muted-foreground">
+                        {r.kind} · {r.year}
+                      </p>
                     </div>
                   </div>
                 </Card>
               ))}
-              <Btn variant="outline" className="w-full">Add a release</Btn>
+              <Btn variant="outline" className="w-full">
+                Add a release
+              </Btn>
             </div>
           ) : (
-            <EmptyState title="No releases yet" body="Add the band's EPs, singles and albums so bookers can hear you.">
+            <EmptyState
+              title="No releases yet"
+              body="Add the band's EPs, singles and albums so bookers can hear you."
+            >
               <Btn>Add a release</Btn>
             </EmptyState>
           )
@@ -69,11 +88,17 @@ function BandPortfolio() {
             <Card>
               <p className="text-sm font-semibold">Live recordings and sets</p>
               <p className="mt-1 text-[13px] text-muted-foreground">
-                A single well-shot live video does more for a booking than five studio demos. Add one set video and a photo from the room.
+                A single well-shot live video does more for a booking than five studio demos. Add
+                one set video and a photo from the room.
               </p>
-              <Btn variant="outline" className="mt-3 w-full">Add live work</Btn>
+              <Btn variant="outline" className="mt-3 w-full">
+                Add live work
+              </Btn>
             </Card>
-            <EmptyState title="Nothing live yet" body="Upload a set video or link one from YouTube." />
+            <EmptyState
+              title="Nothing live yet"
+              body="Upload a set video or link one from YouTube."
+            />
           </div>
         )}
       </div>

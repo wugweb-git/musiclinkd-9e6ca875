@@ -87,9 +87,15 @@ function Overview() {
         {project.budget ? <Tag tone="ok">{project.budget}</Tag> : null}
       </div>
 
-      <p className="mb-5 text-[13px] leading-relaxed text-muted-foreground">{project.description}</p>
+      <p className="mb-5 text-[13px] leading-relaxed text-muted-foreground">
+        {project.description}
+      </p>
 
-      {pinned ? <PinnedNote>{pinned.title} — {pinned.body}</PinnedNote> : null}
+      {pinned ? (
+        <PinnedNote>
+          {pinned.title} — {pinned.body}
+        </PinnedNote>
+      ) : null}
 
       <Card className="mb-5">
         <div className="mb-2 flex items-center justify-between">
@@ -97,10 +103,15 @@ function Overview() {
           <span className="text-[12px] font-bold text-primary">{project.progress}%</span>
         </div>
         <div className="h-2 w-full overflow-hidden rounded-full bg-border">
-          <div className="h-full rounded-full bg-primary" style={{ width: `${project.progress}%` }} />
+          <div
+            className="h-full rounded-full bg-primary"
+            style={{ width: `${project.progress}%` }}
+          />
         </div>
         <p className="mt-2 text-[11px] text-muted-foreground">
-          {nextMilestone ? `Next: ${nextMilestone.name} · due ${nextMilestone.due}` : "All milestones done"}
+          {nextMilestone
+            ? `Next: ${nextMilestone.name} · due ${nextMilestone.due}`
+            : "All milestones done"}
         </p>
       </Card>
 

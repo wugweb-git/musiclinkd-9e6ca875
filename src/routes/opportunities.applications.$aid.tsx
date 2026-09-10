@@ -16,7 +16,10 @@ export const Route = createFileRoute("/opportunities/applications/$aid")({
         { title },
         { name: "description", content: "Application status, attached portfolio and next steps." },
         { property: "og:title", content: title },
-        { property: "og:description", content: "Follow your application from submitted to shortlisted to agreement." },
+        {
+          property: "og:description",
+          content: "Follow your application from submitted to shortlisted to agreement.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -45,7 +48,11 @@ function ApplicationDetail() {
 
   return (
     <Screen>
-      <TopBar title="Your application" {...(o ? { subtitle: o.title } : {})} back="/opportunities/applications" />
+      <TopBar
+        title="Your application"
+        {...(o ? { subtitle: o.title } : {})}
+        back="/opportunities/applications"
+      />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-2">
@@ -54,12 +61,17 @@ function ApplicationDetail() {
           </div>
           {a.status === "shortlisted" ? (
             <p className="text-[13px] text-text2">
-              You're on the shortlist. Keep the conversation going — most shortlists convert within a week.
+              You're on the shortlist. Keep the conversation going — most shortlists convert within
+              a week.
             </p>
           ) : a.status === "rejected" ? (
-            <p className="text-[13px] text-text2">Not selected this time. Your profile stays visible to this poster for future posts.</p>
+            <p className="text-[13px] text-text2">
+              Not selected this time. Your profile stays visible to this poster for future posts.
+            </p>
           ) : (
-            <p className="text-[13px] text-text2">The poster has your application. You'll be notified on any change.</p>
+            <p className="text-[13px] text-text2">
+              The poster has your application. You'll be notified on any change.
+            </p>
           )}
         </Card>
 
@@ -67,7 +79,11 @@ function ApplicationDetail() {
           <h2 className="text-[15px]">Progress</h2>
           {a.timeline.map((t) => (
             <div key={t.label} className="flex items-start gap-2">
-              {t.done ? <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-primary" /> : <Circle size={16} className="mt-0.5 shrink-0 text-border" />}
+              {t.done ? (
+                <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-primary" />
+              ) : (
+                <Circle size={16} className="mt-0.5 shrink-0 text-border" />
+              )}
               <div className="min-w-0">
                 <p className="text-[13px] font-semibold">{t.label}</p>
                 <p className="text-[12px] text-muted-foreground">{t.at}</p>
@@ -79,12 +95,17 @@ function ApplicationDetail() {
         <Card className="space-y-2">
           <h2 className="text-[15px]">What you sent</h2>
           <p className="text-[13px] text-text2">{a.message}</p>
-          {a.rateQuoted ? <p className="text-[12px] text-muted-foreground">Rate quoted: {a.rateQuoted}</p> : null}
+          {a.rateQuoted ? (
+            <p className="text-[12px] text-muted-foreground">Rate quoted: {a.rateQuoted}</p>
+          ) : null}
           <div className="flex flex-wrap gap-2 pt-1">
             {a.portfolioIds.map((pid) => {
               const item = demoPortfolio.find((p) => p.id === pid);
               return (
-                <span key={pid} className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold">
+                <span
+                  key={pid}
+                  className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold"
+                >
                   {workType(item?.kind ?? "track").emoji} {item?.title ?? "Attached work"}
                 </span>
               );
@@ -136,7 +157,12 @@ function ApplicationDetail() {
         </Btn>
       </Dialog>
 
-      <Dialog open={done} title="Application withdrawn" body="It's been removed from the poster's list." onClose={() => setDone(false)}>
+      <Dialog
+        open={done}
+        title="Application withdrawn"
+        body="It's been removed from the poster's list."
+        onClose={() => setDone(false)}
+      >
         <Link to="/opportunities/applications">
           <Btn className="w-full">Back to applications</Btn>
         </Link>

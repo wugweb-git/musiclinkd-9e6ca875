@@ -18,7 +18,10 @@ export const Route = createFileRoute("/portfolio/reorder")({
         content: "Set the order your work appears in, and choose what leads your profile.",
       },
       { property: "og:title", content: "Reorder portfolio — MusicLinkd" },
-      { property: "og:description", content: "Move work up or down to change what people see first." },
+      {
+        property: "og:description",
+        content: "Move work up or down to change what people see first.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -97,10 +100,7 @@ function Reorder() {
 
         {order.length ? (
           <div className="sticky bottom-0 mt-6 border-t border-border bg-background/95 py-4 backdrop-blur">
-            <Btn
-              className="w-full"
-              onClick={() => toast.success("Order saved for this session")}
-            >
+            <Btn className="w-full" onClick={() => toast.success("Order saved for this session")}>
               Save order
             </Btn>
           </div>

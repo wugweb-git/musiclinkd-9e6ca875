@@ -20,9 +20,16 @@ export const Route = createFileRoute("/identity/q/$code")({
   head: () => ({
     meta: [
       { title: "Scanned MusicLinkd code" },
-      { name: "description", content: "Preview where a MusicLinkd QR leads before you open it — profile, business, service, listing or portfolio work." },
+      {
+        name: "description",
+        content:
+          "Preview where a MusicLinkd QR leads before you open it — profile, business, service, listing or portfolio work.",
+      },
       { property: "og:title", content: "Scanned MusicLinkd code" },
-      { property: "og:description", content: "Every MusicLinkd code resolves to a public, canonical destination." },
+      {
+        property: "og:description",
+        content: "Every MusicLinkd code resolves to a public, canonical destination.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -62,7 +69,9 @@ function QrResult() {
           >
             <Btn onClick={() => setPhase("done")}>Try again</Btn>
             <Link to="/identity/scan">
-              <Btn variant="outline" className="w-full">Back to scanner</Btn>
+              <Btn variant="outline" className="w-full">
+                Back to scanner
+              </Btn>
             </Link>
           </StateCard>
         ) : preview ? (
@@ -72,16 +81,27 @@ function QrResult() {
             <div className="mt-4">
               <PrimaryPair
                 primary={{ label: "Open on MusicLinkd", to: preview.route }}
-                secondary={{ label: "Share", onClick: () => void nativeShare({ title: preview.title, url }) }}
+                secondary={{
+                  label: "Share",
+                  onClick: () => void nativeShare({ title: preview.title, url }),
+                }}
               />
             </div>
 
             {preview.kind === "profile" || preview.kind === "business" ? (
               <div className="mt-2 flex gap-2">
-                <Btn variant="outline" className="flex-1" onClick={() => void nav({ to: "/messages" })}>
+                <Btn
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => void nav({ to: "/messages" })}
+                >
                   <MessageCircle size={16} className="mr-2" /> Message
                 </Btn>
-                <Btn variant="ghost" className="flex-1" onClick={() => void nav({ to: preview.route as never })}>
+                <Btn
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={() => void nav({ to: preview.route as never })}
+                >
                   <UserPlus size={16} className="mr-2" /> Connect
                 </Btn>
               </div>
@@ -90,8 +110,8 @@ function QrResult() {
             <div className="mt-6 rounded-[24px] border border-border bg-card p-4">
               <p className="text-[13px] font-semibold">Why you can trust this</p>
               <p className="mt-1 text-[12px] text-muted-foreground">
-                The code carries only a MusicLinkd address. Nothing personal is stored inside it, and
-                the destination always shows here before it opens.
+                The code carries only a MusicLinkd address. Nothing personal is stored inside it,
+                and the destination always shows here before it opens.
               </p>
             </div>
 
@@ -109,7 +129,9 @@ function QrResult() {
             body={statusCopy[dest.status === "active" ? "invalid" : dest.status].body}
           >
             <Link to="/identity/scan">
-              <Btn className="w-full">{statusCopy[dest.status === "active" ? "invalid" : dest.status].cta}</Btn>
+              <Btn className="w-full">
+                {statusCopy[dest.status === "active" ? "invalid" : dest.status].cta}
+              </Btn>
             </Link>
             <Link to="/">
               <Btn variant="outline" className="w-full">

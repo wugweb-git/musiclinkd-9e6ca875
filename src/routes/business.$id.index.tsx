@@ -9,9 +9,15 @@ export const Route = createFileRoute("/business/$id/")({
   head: () => ({
     meta: [
       { title: "Business profile | MusicLinkd" },
-      { name: "description", content: "Spaces, rates, team and credits for a studio, label or venue on MusicLinkd." },
+      {
+        name: "description",
+        content: "Spaces, rates, team and credits for a studio, label or venue on MusicLinkd.",
+      },
       { property: "og:title", content: "Business profile | MusicLinkd" },
-      { property: "og:description", content: "See rooms, rates and the people behind the business." },
+      {
+        property: "og:description",
+        content: "See rooms, rates and the people behind the business.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -44,7 +50,12 @@ function BusinessProfileScreen() {
         subtitle={businessTypeLabel(b.type)}
         back="/business"
         right={
-          <Link to="/business/$id/manage" params={{ id }} aria-label="Manage business" className="grid h-10 w-10 place-items-center rounded-full bg-subtle">
+          <Link
+            to="/business/$id/manage"
+            params={{ id }}
+            aria-label="Manage business"
+            className="grid h-10 w-10 place-items-center rounded-full bg-subtle"
+          >
             <Settings2 size={16} />
           </Link>
         }
@@ -54,7 +65,12 @@ function BusinessProfileScreen() {
 
       <div className="space-y-4 px-5 pt-4 pb-6">
         <div className="-mt-10 flex items-end gap-3">
-          <img src={b.logo} alt="" className="h-16 w-16 rounded-3xl border-4 border-background object-cover" loading="lazy" />
+          <img
+            src={b.logo}
+            alt=""
+            className="h-16 w-16 rounded-3xl border-4 border-background object-cover"
+            loading="lazy"
+          />
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex items-center gap-2">
               <h1 className="truncate text-[18px] font-bold">{b.name}</h1>
@@ -113,7 +129,10 @@ function BusinessProfileScreen() {
             <Card className="space-y-2">
               <h2 className="text-[15px]">Services & rates</h2>
               {b.services.map((s) => (
-                <div key={s.id} className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0">
+                <div
+                  key={s.id}
+                  className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
+                >
                   <span className="min-w-0 flex-1 truncate text-[13px]">{s.label}</span>
                   <span className="shrink-0 text-[13px] font-semibold">{s.price}</span>
                 </div>
@@ -142,7 +161,9 @@ function BusinessProfileScreen() {
               <p className="flex items-center gap-2 text-[13px]">
                 <Globe2 size={15} /> {b.contact.website}
               </p>
-              <p className="text-[11px] text-muted-foreground">Full contact details unlock once a booking is confirmed.</p>
+              <p className="text-[11px] text-muted-foreground">
+                Full contact details unlock once a booking is confirmed.
+              </p>
             </Card>
           </>
         ) : null}
@@ -178,8 +199,16 @@ function BusinessProfileScreen() {
             {b.members
               .filter((m) => m.status !== "removed")
               .map((m) => (
-                <div key={m.id} className="flex items-center gap-3 border-b border-border py-2.5 last:border-0">
-                  <img src={m.photo} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" loading="lazy" />
+                <div
+                  key={m.id}
+                  className="flex items-center gap-3 border-b border-border py-2.5 last:border-0"
+                >
+                  <img
+                    src={m.photo}
+                    alt=""
+                    className="h-10 w-10 shrink-0 rounded-full object-cover"
+                    loading="lazy"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-semibold">{m.name}</p>
                     <p className="text-[11px] text-muted-foreground">
@@ -189,7 +218,11 @@ function BusinessProfileScreen() {
                   {m.status === "invited" ? <StatusPill label="invited" tone="warn" /> : null}
                 </div>
               ))}
-            <Link to="/business/$id/team" params={{ id }} className="block text-[12px] font-semibold text-primary">
+            <Link
+              to="/business/$id/team"
+              params={{ id }}
+              className="block text-[12px] font-semibold text-primary"
+            >
               Manage team →
             </Link>
           </Card>

@@ -5,9 +5,15 @@ export const Route = createFileRoute("/legal/terms")({
   head: () => ({
     meta: [
       { title: "Terms of Use — MusicLinkd" },
-      { name: "description", content: "The rules for using MusicLinkd: your account, your work, bookings and conduct." },
+      {
+        name: "description",
+        content: "The rules for using MusicLinkd: your account, your work, bookings and conduct.",
+      },
       { property: "og:title", content: "Terms of Use — MusicLinkd" },
-      { property: "og:description", content: "Plain-language terms for the MusicLinkd network and marketplace." },
+      {
+        property: "og:description",
+        content: "Plain-language terms for the MusicLinkd network and marketplace.",
+      },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -44,8 +50,8 @@ function TermsPage() {
       <TopBar title="Terms of Use" subtitle="Last updated 2 September 2026" back="/welcome" />
       <main className="px-5 pb-12 pt-4">
         <p className="text-[13px] leading-relaxed text-text2">
-          Short version: be honest about your work, treat other professionals well, and you keep the rights to
-          everything you create.
+          Short version: be honest about your work, treat other professionals well, and you keep the
+          rights to everything you create.
         </p>
         <div className="mt-6 space-y-4">
           {sections.map((s) => (

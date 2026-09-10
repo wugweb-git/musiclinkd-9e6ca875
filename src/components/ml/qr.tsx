@@ -9,12 +9,7 @@ import QRCode from "qrcode";
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, VerifiedBadge } from "./ui";
-import {
-  canonicalUrl,
-  styleFor,
-  type DestinationPreview,
-  type QrStyle,
-} from "@/data/identity";
+import { canonicalUrl, styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 
 /* ------------------------------------------------------------------ */
 /* QR matrix — rendered client-side, high contrast, generous quiet zone */
@@ -69,7 +64,10 @@ export function QrCode({
           className="h-full w-full rounded-[24px]"
         />
       ) : (
-        <div className="h-full w-full animate-pulse rounded-[24px] bg-subtle" aria-label="Generating QR code" />
+        <div
+          className="h-full w-full animate-pulse rounded-[24px] bg-subtle"
+          aria-label="Generating QR code"
+        />
       )}
     </div>
   );
@@ -135,7 +133,12 @@ export function QrIdentityCard({
       </div>
 
       <div className="mt-5 flex justify-center">
-        <QrCode value={canonicalUrl(code)} size={compact ? 160 : 200} style={style} label={`MusicLinkd QR for ${name}`} />
+        <QrCode
+          value={canonicalUrl(code)}
+          size={compact ? 160 : 200}
+          style={style}
+          label={`MusicLinkd QR for ${name}`}
+        />
       </div>
 
       <p className="mt-4 text-[12px] font-semibold" style={{ opacity: onInk ? 0.85 : 0.7 }}>
@@ -155,10 +158,12 @@ export function QrIdentityCard({
 export function ScanFrame({ scanning }: { scanning: boolean }) {
   return (
     <div className="relative mx-auto aspect-square w-[260px]" aria-hidden>
-      {["left-0 top-0 border-l-4 border-t-4 rounded-tl-[24px]",
+      {[
+        "left-0 top-0 border-l-4 border-t-4 rounded-tl-[24px]",
         "right-0 top-0 border-r-4 border-t-4 rounded-tr-[24px]",
         "left-0 bottom-0 border-l-4 border-b-4 rounded-bl-[24px]",
-        "right-0 bottom-0 border-r-4 border-b-4 rounded-br-[24px]"].map((c) => (
+        "right-0 bottom-0 border-r-4 border-b-4 rounded-br-[24px]",
+      ].map((c) => (
         <span key={c} className={`absolute h-12 w-12 border-primary ${c}`} />
       ))}
       {scanning ? (
@@ -299,7 +304,9 @@ export function ActionRow({
       </span>
       <span className="min-w-0 flex-1 text-left">
         <span className="block truncate text-sm font-semibold">{label}</span>
-        {hint ? <span className="block truncate text-[12px] text-muted-foreground">{hint}</span> : null}
+        {hint ? (
+          <span className="block truncate text-[12px] text-muted-foreground">{hint}</span>
+        ) : null}
       </span>
     </>
   );
@@ -323,7 +330,12 @@ export function ActionRow({
 export function CopyLinkRow({ url }: { url: string }) {
   const [done, setDone] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
   return (
     <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5">
       <span className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground">{url}</span>
@@ -349,7 +361,11 @@ export async function nativeShare(payload: { title: string; text?: string; url: 
   const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
   if (nav.share) {
     try {
-      await nav.share({ title: payload.title, ...(payload.text ? { text: payload.text } : {}), url: payload.url });
+      await nav.share({
+        title: payload.title,
+        ...(payload.text ? { text: payload.text } : {}),
+        url: payload.url,
+      });
       return;
     } catch {
       /* user dismissed — no error state needed */
@@ -373,12 +389,38 @@ export function ShareActions({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <ActionRow icon={<Share2 size={17} />} label="Share QR" hint="Send the code image" onClick={() => void nativeShare({ title, url })} />
-      <ActionRow icon={<Camera size={17} />} label="Share profile" hint={url} onClick={() => void nativeShare({ title, url })} />
-      <ActionRow icon={<Copy size={17} />} label="Copy link" onClick={() => { void navigator.clipboard?.writeText(url); toast.success("Link copied"); }} />
-      <ActionRow icon={<Share2 size={17} />} label="Send via MusicLinkd" hint="Opens Connections" to="/messages" />
-      {onDownload ? <ActionRow icon={<Download size={17} />} label="Download image" onClick={onDownload} /> : null}
-      {onSaveContact ? <ActionRow icon={<Check size={17} />} label="Add to contacts" onClick={onSaveContact} /> : null}
+      <ActionRow
+        icon={<Share2 size={17} />}
+        label="Share QR"
+        hint="Send the code image"
+        onClick={() => void nativeShare({ title, url })}
+      />
+      <ActionRow
+        icon={<Camera size={17} />}
+        label="Share profile"
+        hint={url}
+        onClick={() => void nativeShare({ title, url })}
+      />
+      <ActionRow
+        icon={<Copy size={17} />}
+        label="Copy link"
+        onClick={() => {
+          void navigator.clipboard?.writeText(url);
+          toast.success("Link copied");
+        }}
+      />
+      <ActionRow
+        icon={<Share2 size={17} />}
+        label="Send via MusicLinkd"
+        hint="Opens Connections"
+        to="/messages"
+      />
+      {onDownload ? (
+        <ActionRow icon={<Download size={17} />} label="Download image" onClick={onDownload} />
+      ) : null}
+      {onSaveContact ? (
+        <ActionRow icon={<Check size={17} />} label="Add to contacts" onClick={onSaveContact} />
+      ) : null}
     </div>
   );
 }
@@ -399,7 +441,10 @@ export function PrimaryPair({
   primary: { label: string; onClick?: () => void; to?: string };
   secondary?: { label: string; onClick?: () => void; to?: string };
 }) {
-  const wrap = (a: { label: string; onClick?: () => void; to?: string }, variant: "primary" | "outline") =>
+  const wrap = (
+    a: { label: string; onClick?: () => void; to?: string },
+    variant: "primary" | "outline",
+  ) =>
     a.to ? (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <Link to={a.to as any} className="flex-1">

@@ -13,7 +13,8 @@ export const Route = createFileRoute("/collab/$id/share")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Share a MusicLinkd collaboration with a link, choose what's visible and revoke access anytime.",
+          content:
+            "Share a MusicLinkd collaboration with a link, choose what's visible and revoke access anytime.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
         { property: "og:description", content: "Controlled sharing for a music collaboration." },
@@ -78,7 +79,8 @@ function Share() {
         </div>
 
         <p className="mb-6 text-[11px] text-muted-foreground">
-          Turning the link off immediately revokes access for anyone who hasn't been invited directly.
+          Turning the link off immediately revokes access for anyone who hasn't been invited
+          directly.
         </p>
 
         <Link

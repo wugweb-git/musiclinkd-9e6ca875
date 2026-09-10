@@ -6,15 +6,29 @@ import { Btn, Screen, TopBar } from "@/components/ml/ui";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
-import { genres as genreOptions, instruments as instrumentOptions, languages as languageOptions, linkPlatforms, roles as roleDefs, workModes as workModeOptions } from "@/data/onboarding";
+import {
+  genres as genreOptions,
+  instruments as instrumentOptions,
+  languages as languageOptions,
+  linkPlatforms,
+  roles as roleDefs,
+  workModes as workModeOptions,
+} from "@/data/onboarding";
 
 export const Route = createFileRoute("/profile/edit")({
   head: () => ({
     meta: [
       { title: "Edit Professional Profile | MusicLinkd" },
-      { name: "description", content: "Update your MusicLinkd identity, music profile, portfolio, services and availability." },
+      {
+        name: "description",
+        content:
+          "Update your MusicLinkd identity, music profile, portfolio, services and availability.",
+      },
       { property: "og:title", content: "Edit Professional Profile | MusicLinkd" },
-      { property: "og:description", content: "Keep your MusicLinkd professional identity current." },
+      {
+        property: "og:description",
+        content: "Keep your MusicLinkd professional identity current.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -114,10 +128,16 @@ function EditProfile() {
   const gaps = profileGaps({ ...(row ?? {}), ...form } as ProfileRow);
 
   const update = (patch: Partial<Form>) => setForm((f) => ({ ...f, ...patch }));
-  const toggle = (key: "roles" | "genres" | "instruments" | "languages" | "work_modes", value: string) =>
+  const toggle = (
+    key: "roles" | "genres" | "instruments" | "languages" | "work_modes",
+    value: string,
+  ) =>
     setForm((f) => {
       const list = f[key];
-      return { ...f, [key]: list.includes(value) ? list.filter((v) => v !== value) : [...list, value] };
+      return {
+        ...f,
+        [key]: list.includes(value) ? list.filter((v) => v !== value) : [...list, value],
+      };
     });
 
   const save = async () => {
@@ -202,7 +222,13 @@ function EditProfile() {
     );
   }
 
-  const sections: { id: string; label: string; detail: string; done: boolean; body: ReactElement }[] = [
+  const sections: {
+    id: string;
+    label: string;
+    detail: string;
+    done: boolean;
+    body: ReactElement;
+  }[] = [
     {
       id: "identity",
       label: "Identity",
@@ -210,8 +236,17 @@ function EditProfile() {
       done: Boolean(form.display_name && form.username),
       body: (
         <div className="space-y-3">
-          <Field label="Display name" value={form.display_name} onChange={(v) => update({ display_name: v })} />
-          <Field label="Username" value={form.username} onChange={(v) => update({ username: v.toLowerCase().replace(/\s+/g, ".") })} hint="3–30 characters, used in your public link" />
+          <Field
+            label="Display name"
+            value={form.display_name}
+            onChange={(v) => update({ display_name: v })}
+          />
+          <Field
+            label="Username"
+            value={form.username}
+            onChange={(v) => update({ username: v.toLowerCase().replace(/\s+/g, ".") })}
+            hint="3–30 characters, used in your public link"
+          />
           <Field label="Headline" value={form.headline} onChange={(v) => update({ headline: v })} />
           <Field label="Bio" value={form.bio} onChange={(v) => update({ bio: v })} multiline />
         </div>
@@ -224,9 +259,24 @@ function EditProfile() {
       done: form.roles.length > 0,
       body: (
         <div className="space-y-4">
-          <Chips label="Roles" options={roleDefs.map((r) => r.key)} labels={Object.fromEntries(roleDefs.map((r) => [r.key, r.label]))} selected={form.roles} onToggle={(v) => toggle("roles", v)} />
-          <Chips label="Work modes" options={workModeOptions as unknown as string[]} selected={form.work_modes} onToggle={(v) => toggle("work_modes", v)} />
-          <Field label="Experience" value={form.experience_level} onChange={(v) => update({ experience_level: v })} />
+          <Chips
+            label="Roles"
+            options={roleDefs.map((r) => r.key)}
+            labels={Object.fromEntries(roleDefs.map((r) => [r.key, r.label]))}
+            selected={form.roles}
+            onToggle={(v) => toggle("roles", v)}
+          />
+          <Chips
+            label="Work modes"
+            options={workModeOptions as unknown as string[]}
+            selected={form.work_modes}
+            onToggle={(v) => toggle("work_modes", v)}
+          />
+          <Field
+            label="Experience"
+            value={form.experience_level}
+            onChange={(v) => update({ experience_level: v })}
+          />
         </div>
       ),
     },
@@ -237,9 +287,24 @@ function EditProfile() {
       done: form.genres.length > 0 && form.languages.length > 0,
       body: (
         <div className="space-y-4">
-          <Chips label="Genres" options={genreOptions} selected={form.genres} onToggle={(v) => toggle("genres", v)} />
-          <Chips label="Instruments" options={instrumentOptions} selected={form.instruments} onToggle={(v) => toggle("instruments", v)} />
-          <Chips label="Languages" options={languageOptions} selected={form.languages} onToggle={(v) => toggle("languages", v)} />
+          <Chips
+            label="Genres"
+            options={genreOptions}
+            selected={form.genres}
+            onToggle={(v) => toggle("genres", v)}
+          />
+          <Chips
+            label="Instruments"
+            options={instrumentOptions}
+            selected={form.instruments}
+            onToggle={(v) => toggle("instruments", v)}
+          />
+          <Chips
+            label="Languages"
+            options={languageOptions}
+            selected={form.languages}
+            onToggle={(v) => toggle("languages", v)}
+          />
         </div>
       ),
     },
@@ -252,7 +317,12 @@ function EditProfile() {
         <div className="space-y-3">
           <Field label="City" value={form.city} onChange={(v) => update({ city: v })} />
           <Field label="State" value={form.state} onChange={(v) => update({ state: v })} />
-          <Field label="Availability" value={form.availability} onChange={(v) => update({ availability: v })} hint="e.g. Open for studio work" />
+          <Field
+            label="Availability"
+            value={form.availability}
+            onChange={(v) => update({ availability: v })}
+            hint="e.g. Open for studio work"
+          />
         </div>
       ),
     },
@@ -264,8 +334,11 @@ function EditProfile() {
       body: (
         <div className="space-y-3">
           {linkPlatforms.map((p) => {
-            const key = typeof p === "string" ? p : (p as { key?: string; label?: string }).key ?? (p as { label: string }).label;
-            const label = typeof p === "string" ? p : (p as { label?: string }).label ?? key;
+            const key =
+              typeof p === "string"
+                ? p
+                : ((p as { key?: string; label?: string }).key ?? (p as { label: string }).label);
+            const label = typeof p === "string" ? p : ((p as { label?: string }).label ?? key);
             return (
               <Field
                 key={key}
@@ -287,7 +360,11 @@ function EditProfile() {
         <div className="space-y-2">
           {[
             { value: "public", label: "Public", hint: "Anyone on MusicLinkd can find you" },
-            { value: "connections", label: "Connections only", hint: "Only people you're connected with" },
+            {
+              value: "connections",
+              label: "Connections only",
+              hint: "Only people you're connected with",
+            },
             { value: "private", label: "Private", hint: "Hidden from discovery" },
           ].map((o) => (
             <button
@@ -300,7 +377,9 @@ function EditProfile() {
                 <span className="block text-sm font-semibold">{o.label}</span>
                 <span className="block truncate text-[11px] text-muted-foreground">{o.hint}</span>
               </span>
-              {form.visibility === o.value ? <Check size={16} className="shrink-0 text-primary" aria-hidden /> : null}
+              {form.visibility === o.value ? (
+                <Check size={16} className="shrink-0 text-primary" aria-hidden />
+              ) : null}
             </button>
           ))}
         </div>
@@ -325,23 +404,46 @@ function EditProfile() {
           {sections.map((section) => {
             const isOpen = open === section.id;
             return (
-              <section key={section.id} className="overflow-hidden rounded-3xl border border-border bg-card">
+              <section
+                key={section.id}
+                className="overflow-hidden rounded-3xl border border-border bg-card"
+              >
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : section.id)}
                   aria-expanded={isOpen}
                   className="flex min-h-[72px] w-full items-center gap-3 px-4 text-left"
                 >
-                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-pink-container text-primary"}`}>
-                    {section.done ? <Check size={16} aria-hidden /> : <span className="text-xs font-bold">•</span>}
+                  <span
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-pink-container text-primary"}`}
+                  >
+                    {section.done ? (
+                      <Check size={16} aria-hidden />
+                    ) : (
+                      <span className="text-xs font-bold">•</span>
+                    )}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold">{section.label}</span>
-                    <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">{section.detail}</span>
+                    <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
+                      {section.detail}
+                    </span>
                   </span>
-                  {isOpen ? <ChevronDown size={17} className="shrink-0 text-muted-foreground" aria-hidden /> : <ChevronRight size={17} className="shrink-0 text-muted-foreground" aria-hidden />}
+                  {isOpen ? (
+                    <ChevronDown size={17} className="shrink-0 text-muted-foreground" aria-hidden />
+                  ) : (
+                    <ChevronRight
+                      size={17}
+                      className="shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                  )}
                 </button>
-                {isOpen ? <div className="border-t border-border bg-subtle/50 px-4 pb-4 pt-3">{section.body}</div> : null}
+                {isOpen ? (
+                  <div className="border-t border-border bg-subtle/50 px-4 pb-4 pt-3">
+                    {section.body}
+                  </div>
+                ) : null}
               </section>
             );
           })}
@@ -350,11 +452,17 @@ function EditProfile() {
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         {status === "error" ? (
-          <p role="alert" className="text-[11px] text-destructive">Couldn't save. Your edits are still here — try again.</p>
+          <p role="alert" className="text-[11px] text-destructive">
+            Couldn't save. Your edits are still here — try again.
+          </p>
         ) : status === "offline" ? (
-          <p role="status" className="text-[11px] text-warn">You're offline. Reconnect to save these changes.</p>
+          <p role="status" className="text-[11px] text-warn">
+            You're offline. Reconnect to save these changes.
+          </p>
         ) : status === "saved" ? (
-          <p role="status" className="text-[11px] text-success">Saved to your account.</p>
+          <p role="status" className="text-[11px] text-success">
+            Saved to your account.
+          </p>
         ) : null}
         <Btn className="w-full" onClick={() => void save()} disabled={status === "saving"}>
           <Save size={16} aria-hidden />
@@ -380,7 +488,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
       {multiline ? (
         <textarea
           value={value}
@@ -415,7 +525,9 @@ function Chips({
 }) {
   return (
     <div>
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
       <div className="mt-2 flex flex-wrap gap-2">
         {options.map((o) => {
           const on = selected.includes(o);

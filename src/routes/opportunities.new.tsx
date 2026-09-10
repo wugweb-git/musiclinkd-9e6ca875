@@ -5,8 +5,23 @@ import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
 
-type Step = "basics" | "location" | "availability" | "compensation" | "requirements" | "preview" | "published";
-const order: Step[] = ["basics", "location", "availability", "compensation", "requirements", "preview", "published"];
+type Step =
+  | "basics"
+  | "location"
+  | "availability"
+  | "compensation"
+  | "requirements"
+  | "preview"
+  | "published";
+const order: Step[] = [
+  "basics",
+  "location",
+  "availability",
+  "compensation",
+  "requirements",
+  "preview",
+  "published",
+];
 const labels: Record<Step, string> = {
   basics: "The basics",
   location: "Where",
@@ -24,9 +39,16 @@ export const Route = createFileRoute("/opportunities/new")({
   head: () => ({
     meta: [
       { title: "Post an opportunity | MusicLinkd" },
-      { name: "description", content: "Post a structured music-industry requirement and receive applications with portfolios attached." },
+      {
+        name: "description",
+        content:
+          "Post a structured music-industry requirement and receive applications with portfolios attached.",
+      },
       { property: "og:title", content: "Post an opportunity | MusicLinkd" },
-      { property: "og:description", content: "Tell the industry what you need — role, dates, budget, requirements." },
+      {
+        property: "og:description",
+        content: "Tell the industry what you need — role, dates, budget, requirements.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -66,7 +88,8 @@ function CreateOpportunity() {
             </span>
             <h2 className="text-[20px] leading-tight">Your opportunity is live</h2>
             <p className="text-[13px] text-muted-foreground">
-              It's now in Discover and in recommendations for matching professionals. You'll be notified on every application.
+              It's now in Discover and in recommendations for matching professionals. You'll be
+              notified on every application.
             </p>
           </Card>
           <Link to="/opportunities/mine">
@@ -83,15 +106,26 @@ function CreateOpportunity() {
   }
 
   const canContinue =
-    step === "basics" ? title.trim().length > 4 && !!cat : step === "location" ? city.trim().length > 1 : true;
+    step === "basics"
+      ? title.trim().length > 4 && !!cat
+      : step === "location"
+        ? city.trim().length > 1
+        : true;
 
   return (
     <Screen>
-      <TopBar title="Post an opportunity" subtitle={`Step ${idx + 1} of 6 · ${labels[step]}`} back="/opportunities" />
+      <TopBar
+        title="Post an opportunity"
+        subtitle={`Step ${idx + 1} of 6 · ${labels[step]}`}
+        back="/opportunities"
+      />
       <div className="space-y-4 px-5 pt-4 pb-28">
         <div className="flex items-center gap-1.5">
           {order.slice(0, 6).map((s, i) => (
-            <span key={s} className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`} />
+            <span
+              key={s}
+              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`}
+            />
           ))}
         </div>
 
@@ -160,7 +194,8 @@ function CreateOpportunity() {
             <Card className="space-y-1">
               <p className="text-[13px] font-semibold">Already have a booking calendar?</p>
               <p className="text-[12px] text-muted-foreground">
-                Confirmed hires can be converted into a booking in one tap — availability stays owned by Booking.
+                Confirmed hires can be converted into a booking in one tap — availability stays
+                owned by Booking.
               </p>
               <Link to="/provider/availability">
                 <Btn variant="ghost" className="w-full">
@@ -194,7 +229,8 @@ function CreateOpportunity() {
             ) : (
               <Card>
                 <p className="text-[13px] text-muted-foreground">
-                  Unpaid and revenue-share posts are labelled clearly to applicants. Asking applicants to pay you is not allowed.
+                  Unpaid and revenue-share posts are labelled clearly to applicants. Asking
+                  applicants to pay you is not allowed.
                 </p>
               </Card>
             )}
@@ -228,9 +264,16 @@ function CreateOpportunity() {
                 <p className="text-[13px] text-muted-foreground">No requirements yet.</p>
               ) : (
                 reqs.map((r, i) => (
-                  <div key={`${r}-${i}`} className="flex items-center gap-2 rounded-[16px] border border-border bg-card px-4 py-3">
+                  <div
+                    key={`${r}-${i}`}
+                    className="flex items-center gap-2 rounded-[16px] border border-border bg-card px-4 py-3"
+                  >
                     <span className="min-w-0 flex-1 truncate text-[13px]">{r}</span>
-                    <button type="button" className="text-[12px] font-semibold text-primary" onClick={() => setReqs((p) => p.filter((_, j) => j !== i))}>
+                    <button
+                      type="button"
+                      className="text-[12px] font-semibold text-primary"
+                      onClick={() => setReqs((p) => p.filter((_, j) => j !== i))}
+                    >
                       Remove
                     </button>
                   </div>
@@ -245,7 +288,14 @@ function CreateOpportunity() {
             <h2 className="text-[19px] leading-tight">This is what applicants see</h2>
             <Card className="space-y-2">
               <div className="flex flex-wrap gap-2">
-                <StatusPill label={cat ? opportunityCategories.find((c) => c.key === cat)?.label ?? "Requirement" : "Requirement"} tone="brand" />
+                <StatusPill
+                  label={
+                    cat
+                      ? (opportunityCategories.find((c) => c.key === cat)?.label ?? "Requirement")
+                      : "Requirement"
+                  }
+                  tone="brand"
+                />
                 <StatusPill label={mode} />
               </div>
               <h3 className="text-[17px] leading-snug">{title || "Untitled opportunity"}</h3>
@@ -292,7 +342,15 @@ function CreateOpportunity() {
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-2">
       <div>

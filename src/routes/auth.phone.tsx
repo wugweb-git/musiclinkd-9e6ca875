@@ -7,7 +7,10 @@ export const Route = createFileRoute("/auth/phone")({
   head: () => ({
     meta: [
       { title: "Continue with phone — MusicLinkd" },
-      { name: "description", content: "Sign in to MusicLinkd with your mobile number and a one-time code." },
+      {
+        name: "description",
+        content: "Sign in to MusicLinkd with your mobile number and a one-time code.",
+      },
       { property: "og:title", content: "Continue with phone — MusicLinkd" },
       { property: "og:description", content: "Fast, password-free sign in for MusicLinkd." },
       { property: "og:type", content: "website" },

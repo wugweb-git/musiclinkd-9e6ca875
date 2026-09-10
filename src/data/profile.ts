@@ -6,19 +6,9 @@ import { singers, talents, type Talent } from "./discover";
  * services, connections, reviews.
  */
 
-export type ProfileRole =
-  | "Vocal Artist"
-  | "Producer"
-  | "Musician"
-  | "Engineer"
-  | "DJ"
-  | "Other";
+export type ProfileRole = "Vocal Artist" | "Producer" | "Musician" | "Engineer" | "DJ" | "Other";
 
-export type VerificationTier =
-  | "Basic"
-  | "Email Verified"
-  | "Professional"
-  | "Industry Verified";
+export type VerificationTier = "Basic" | "Email Verified" | "Professional" | "Industry Verified";
 
 export type AvailabilityState =
   | "Available"
@@ -146,7 +136,8 @@ export type PersonProfile = {
   rating: number;
   reviewCount: number;
   links: { label: string; handle: string }[];
-  featured?: undefined | { kind: "Track" | "Project" | "Video"; title: string; meta: string; image: string };
+  featured?:
+    undefined | { kind: "Track" | "Project" | "Video"; title: string; meta: string; image: string };
   audio: AudioTrack[];
   video: VideoItem[];
   gallery: string[];
@@ -195,8 +186,7 @@ const rahul: PersonProfile = {
   verification: "Industry Verified",
   privacy: "Public",
   yearsActive: "11 years active",
-  shortBio:
-    "I build records around the vocal — warm low end, wide stereo, nothing overproduced.",
+  shortBio: "I build records around the vocal — warm low end, wide stereo, nothing overproduced.",
   longBio:
     "I build records around the vocal — warm low end, wide stereo, nothing overproduced. Started as a live keys player with touring indie acts, moved into production in 2017 and now split time between my room in Indiranagar and tracking days at Yash Raj Sound. I work fast on references, send stems labelled, and stay on a project through mastering hand-off. Comfortable with Hindi, Tamil and English lyric sessions.",
   genres: ["Indie", "Electronic", "R&B", "Bollywood", "Ambient"],
@@ -236,14 +226,53 @@ const rahul: PersonProfile = {
       artwork: art[0]!,
       featured: true,
     },
-    { id: "a2", title: "Saanjh (Reprise)", role: "Mix", project: "Yash Raj Sound", duration: "4:08", artwork: art[1]! },
-    { id: "a3", title: "Kollam Nights", role: "Producer", project: "Single", duration: "3:15", artwork: art[2]! },
-    { id: "a4", title: "Low Tide Demo", role: "Writer · Producer", project: "Demo", duration: "2:31", artwork: art[3]! },
+    {
+      id: "a2",
+      title: "Saanjh (Reprise)",
+      role: "Mix",
+      project: "Yash Raj Sound",
+      duration: "4:08",
+      artwork: art[1]!,
+    },
+    {
+      id: "a3",
+      title: "Kollam Nights",
+      role: "Producer",
+      project: "Single",
+      duration: "3:15",
+      artwork: art[2]!,
+    },
+    {
+      id: "a4",
+      title: "Low Tide Demo",
+      role: "Writer · Producer",
+      project: "Demo",
+      duration: "2:31",
+      artwork: art[3]!,
+    },
   ],
   video: [
-    { id: "v1", title: "Neon Monsoon — studio session", context: "Behind the scenes", duration: "6:12", thumb: shots[1]! },
-    { id: "v2", title: "Live keys — Bengaluru Sessions", context: "Live performance", duration: "12:40", thumb: shots[2]! },
-    { id: "v3", title: "Mixing walkthrough: vocal chain", context: "Studio", duration: "9:05", thumb: shots[3]! },
+    {
+      id: "v1",
+      title: "Neon Monsoon — studio session",
+      context: "Behind the scenes",
+      duration: "6:12",
+      thumb: shots[1]!,
+    },
+    {
+      id: "v2",
+      title: "Live keys — Bengaluru Sessions",
+      context: "Live performance",
+      duration: "12:40",
+      thumb: shots[2]!,
+    },
+    {
+      id: "v3",
+      title: "Mixing walkthrough: vocal chain",
+      context: "Studio",
+      duration: "9:05",
+      thumb: shots[3]!,
+    },
   ],
   gallery: shots,
   projects: [
@@ -279,9 +308,30 @@ const rahul: PersonProfile = {
     },
   ],
   discography: [
-    { id: "d1", title: "Neon Monsoon", kind: "EP", label: "Independent", year: "2025", cover: art[0]! },
-    { id: "d2", title: "Kollam Nights", kind: "Single", label: "Sony Music India", year: "2024", cover: art[2]! },
-    { id: "d3", title: "Saanjh", kind: "Album", label: "Yash Raj Sound", year: "2023", cover: art[1]! },
+    {
+      id: "d1",
+      title: "Neon Monsoon",
+      kind: "EP",
+      label: "Independent",
+      year: "2025",
+      cover: art[0]!,
+    },
+    {
+      id: "d2",
+      title: "Kollam Nights",
+      kind: "Single",
+      label: "Sony Music India",
+      year: "2024",
+      cover: art[2]!,
+    },
+    {
+      id: "d3",
+      title: "Saanjh",
+      kind: "Album",
+      label: "Yash Raj Sound",
+      year: "2023",
+      cover: art[1]!,
+    },
   ],
   services: [
     {
@@ -335,10 +385,34 @@ const rahul: PersonProfile = {
     },
   ],
   collaborators: [
-    { id: "c1", name: "Ananya Sharma", kind: "Artist", photo: u("photo-1534528741775-53994a69daeb", 200), link: { to: "/profile/$username", params: { username: "ananya-sharma" } } },
-    { id: "c2", name: "Meher Kaur", kind: "Artist", photo: u("photo-1529626455594-4ff0802cfb7e", 200), link: { to: "/profile/$username", params: { username: "meher-kaur" } } },
-    { id: "c3", name: "Yash Raj Sound", kind: "Studio", photo: u("photo-1598488035139-bdbb2231ce04", 200), link: { to: "/studio" } },
-    { id: "c4", name: "The Local Train", kind: "Artist", photo: u("photo-1514320291840-2e0a9bf2a9ae", 200), link: { to: "/band" } },
+    {
+      id: "c1",
+      name: "Ananya Sharma",
+      kind: "Artist",
+      photo: u("photo-1534528741775-53994a69daeb", 200),
+      link: { to: "/profile/$username", params: { username: "ananya-sharma" } },
+    },
+    {
+      id: "c2",
+      name: "Meher Kaur",
+      kind: "Artist",
+      photo: u("photo-1529626455594-4ff0802cfb7e", 200),
+      link: { to: "/profile/$username", params: { username: "meher-kaur" } },
+    },
+    {
+      id: "c3",
+      name: "Yash Raj Sound",
+      kind: "Studio",
+      photo: u("photo-1598488035139-bdbb2231ce04", 200),
+      link: { to: "/studio" },
+    },
+    {
+      id: "c4",
+      name: "The Local Train",
+      kind: "Artist",
+      photo: u("photo-1514320291840-2e0a9bf2a9ae", 200),
+      link: { to: "/band" },
+    },
   ],
   reviews: [
     {
@@ -368,8 +442,18 @@ const rahul: PersonProfile = {
     },
   ],
   opportunities: [
-    { id: "o1", title: "Looking for a vocalist", detail: "Indie electronic EP, 3 tracks, credited release · Bengaluru or remote", tone: "seeking" },
-    { id: "o2", title: "Available for session work", detail: "Keys and production, weekday afternoons through October", tone: "offering" },
+    {
+      id: "o1",
+      title: "Looking for a vocalist",
+      detail: "Indie electronic EP, 3 tracks, credited release · Bengaluru or remote",
+      tone: "seeking",
+    },
+    {
+      id: "o2",
+      title: "Available for session work",
+      detail: "Keys and production, weekday afternoons through October",
+      tone: "offering",
+    },
   ],
   market: [
     {
@@ -411,7 +495,8 @@ const ananya: PersonProfile = {
   availability: "Available",
   verification: "Industry Verified",
   yearsActive: "9 years active",
-  shortBio: "Trained in Hindustani classical for 12 years, now across film playback and indie releases.",
+  shortBio:
+    "Trained in Hindustani classical for 12 years, now across film playback and indie releases.",
   longBio:
     "Trained in Hindustani classical for 12 years, now working across film playback and independent releases. Comfortable tracking remotely from a treated booth (Neumann TLM 103 · Apollo Twin X) with 48-hour turnaround, and equally at home on a scratch session with a live band.",
   genres: ["Hindi Film", "Pop Vocals", "Sufi", "Indie"],
@@ -458,7 +543,12 @@ const ananya: PersonProfile = {
   market: [],
   studio: undefined,
   opportunities: [
-    { id: "o1", title: "Available for shows", detail: "Mumbai and Pune, weekends through December", tone: "offering" },
+    {
+      id: "o1",
+      title: "Available for shows",
+      detail: "Mumbai and Pune, weekends through December",
+      tone: "offering",
+    },
   ],
 };
 
@@ -479,7 +569,12 @@ function fromTalent(t: Talent): PersonProfile {
     primaryRole: t.role.split(" · ")[0] ?? t.role,
     secondaryRoles: t.role.split(" · ").slice(1),
     location: t.location,
-    availability: t.availability === "Booked" ? "Busy" : t.availability === "Selective" ? "In Studio" : "Available",
+    availability:
+      t.availability === "Booked"
+        ? "Busy"
+        : t.availability === "Selective"
+          ? "In Studio"
+          : "Available",
     verification: t.verified ? "Professional" : "Email Verified",
     genres: t.genres,
     languages: t.languages,
@@ -539,12 +634,27 @@ export const profileInsights = {
 
 export const editSections = [
   { id: "identity", label: "Identity", detail: "Photo, name, username, headline", done: true },
-  { id: "professional", label: "Professional", detail: "Roles, experience, professional details", done: true },
+  {
+    id: "professional",
+    label: "Professional",
+    detail: "Roles, experience, professional details",
+    done: true,
+  },
   { id: "music", label: "Music", detail: "Genres, instruments, languages, influences", done: true },
-  { id: "portfolio", label: "Portfolio", detail: "Audio, video, gallery, featured work", done: false },
+  {
+    id: "portfolio",
+    label: "Portfolio",
+    detail: "Audio, video, gallery, featured work",
+    done: false,
+  },
   { id: "services", label: "Services", detail: "Offerings, rates, turnaround", done: true },
   { id: "availability", label: "Availability", detail: "Status and booking windows", done: false },
   { id: "links", label: "Social links", detail: "Streaming and social profiles", done: true },
   { id: "privacy", label: "Privacy", detail: "Who sees contact, portfolio, activity", done: true },
-  { id: "verification", label: "Verification", detail: "Industry verified · renew Mar 2027", done: true },
+  {
+    id: "verification",
+    label: "Verification",
+    detail: "Industry verified · renew Mar 2027",
+    done: true,
+  },
 ];

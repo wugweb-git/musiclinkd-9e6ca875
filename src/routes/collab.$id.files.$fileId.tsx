@@ -1,13 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Btn, Screen, TopBar } from "@/components/ml/ui";
-import {
-  AudioPlayer,
-  Card,
-  Label,
-  PermissionState,
-  RowLink,
-  Tag,
-} from "@/components/ml/collab";
+import { AudioPlayer, Card, Label, PermissionState, RowLink, Tag } from "@/components/ml/collab";
 import { fileKindMeta, getFile, getProject } from "@/data/collab";
 
 export const Route = createFileRoute("/collab/$id/files/$fileId")({
@@ -19,7 +12,8 @@ export const Route = createFileRoute("/collab/$id/files/$fileId")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Version history, access and notes for a file shared inside a MusicLinkd collaboration.",
+          content:
+            "Version history, access and notes for a file shared inside a MusicLinkd collaboration.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
         { property: "og:description", content: "Track every version of a collaboration file." },
@@ -49,7 +43,11 @@ function FileDetail() {
 
   return (
     <Screen>
-      <TopBar title={file.name} subtitle={`${fileKindMeta[file.kind].label} · ${file.size}`} back="/collab" />
+      <TopBar
+        title={file.name}
+        subtitle={`${fileKindMeta[file.kind].label} · ${file.size}`}
+        back="/collab"
+      />
       <main className="px-5 pt-5">
         {!file.available ? (
           <div
@@ -78,7 +76,8 @@ function FileDetail() {
 
         <Card className="mb-5">
           <p className="text-[12px] text-muted-foreground">
-            Uploaded by <span className="font-semibold text-foreground">{file.uploadedBy}</span> · {file.date}
+            Uploaded by <span className="font-semibold text-foreground">{file.uploadedBy}</span> ·{" "}
+            {file.date}
           </p>
         </Card>
 

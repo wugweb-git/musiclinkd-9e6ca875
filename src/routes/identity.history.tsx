@@ -13,7 +13,11 @@ export const Route = createFileRoute("/identity/history")({
   head: () => ({
     meta: [
       { title: "Scan history — MusicLinkd" },
-      { name: "description", content: "Every MusicLinkd code you've scanned, so a conversation started at a gig doesn't get lost." },
+      {
+        name: "description",
+        content:
+          "Every MusicLinkd code you've scanned, so a conversation started at a gig doesn't get lost.",
+      },
       { property: "og:title", content: "Scan history on MusicLinkd" },
       { property: "og:description", content: "Pick a connection back up later." },
     ],
@@ -44,7 +48,10 @@ function ScanHistory() {
       />
       <main className="px-5 pt-4">
         {items.length === 0 ? (
-          <StateCard title="No scans yet" body="Codes you scan appear here so you can find that studio or session player again.">
+          <StateCard
+            title="No scans yet"
+            body="Codes you scan appear here so you can find that studio or session player again."
+          >
             <Link to="/identity/scan">
               <Btn className="w-full">
                 <ScanLine size={16} className="mr-2" /> Open scanner
@@ -55,7 +62,11 @@ function ScanHistory() {
           <div className="flex flex-col gap-2">
             {items.map((h) => (
               <Link key={h.code} to="/identity/q/$code" params={{ code: h.code }}>
-                <ActionRow icon={<ScanLine size={17} />} label={h.label} hint={`${h.kind} · ${h.when}`} />
+                <ActionRow
+                  icon={<ScanLine size={17} />}
+                  label={h.label}
+                  hint={`${h.kind} · ${h.when}`}
+                />
               </Link>
             ))}
           </div>

@@ -16,7 +16,10 @@ export const Route = createFileRoute("/opportunities/")({
           "Find singers, producers, engineers, studios and gigs — structured music-industry requests you can apply to with your portfolio.",
       },
       { property: "og:title", content: "Opportunities for music professionals | MusicLinkd" },
-      { property: "og:description", content: "Discoverable demand across the Indian music industry." },
+      {
+        property: "og:description",
+        content: "Discoverable demand across the Indian music industry.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -39,7 +42,9 @@ function OpportunitiesHome() {
         ? opportunities
         : opportunities.filter((o) => o.city === "Mumbai");
 
-  const active = myApplications.filter((a) => a.status !== "rejected" && a.status !== "withdrawn").length;
+  const active = myApplications.filter(
+    (a) => a.status !== "rejected" && a.status !== "withdrawn",
+  ).length;
 
   return (
     <Screen>
@@ -68,8 +73,18 @@ function OpportunitiesHome() {
         </Link>
 
         <div className="grid grid-cols-2 gap-2">
-          <Row icon={<Briefcase size={16} />} title="My applications" subtitle={`${active} active`} to="/opportunities/applications" />
-          <Row icon={<Bookmark size={16} />} title="Saved" subtitle="Shortlist" to="/opportunities/saved" />
+          <Row
+            icon={<Briefcase size={16} />}
+            title="My applications"
+            subtitle={`${active} active`}
+            to="/opportunities/applications"
+          />
+          <Row
+            icon={<Bookmark size={16} />}
+            title="Saved"
+            subtitle="Shortlist"
+            to="/opportunities/saved"
+          />
         </div>
 
         <section>
@@ -95,13 +110,21 @@ function OpportunitiesHome() {
         {state === "loading" ? (
           <Loading rows={3} />
         ) : list.length === 0 ? (
-          <EmptyState title="Nothing here yet" body="No opportunities match this view. Widen your city or check back tomorrow.">
+          <EmptyState
+            title="Nothing here yet"
+            body="No opportunities match this view. Widen your city or check back tomorrow."
+          >
             <Btn variant="outline">Change preferences</Btn>
           </EmptyState>
         ) : (
           <div className="space-y-3 pb-4">
             {list.map((o) => (
-              <OpportunityCard key={o.id} o={o} saved={has(o.id) || o.saved} onSave={() => toggle(o.id)} />
+              <OpportunityCard
+                key={o.id}
+                o={o}
+                saved={has(o.id) || o.saved}
+                onSave={() => toggle(o.id)}
+              />
             ))}
           </div>
         )}

@@ -7,7 +7,10 @@ export const Route = createFileRoute("/auth/offline")({
   head: () => ({
     meta: [
       { title: "You're offline — MusicLinkd" },
-      { name: "description", content: "MusicLinkd could not reach the network. Reconnect to continue signing in." },
+      {
+        name: "description",
+        content: "MusicLinkd could not reach the network. Reconnect to continue signing in.",
+      },
       { property: "og:title", content: "You're offline — MusicLinkd" },
       { property: "og:description", content: "Check your connection and retry." },
       { property: "og:type", content: "website" },

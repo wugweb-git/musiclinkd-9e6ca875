@@ -7,7 +7,10 @@ export const Route = createFileRoute("/business/$id/analytics")({
   head: () => ({
     meta: [
       { title: "Business analytics | MusicLinkd" },
-      { name: "description", content: "See how many people found the business, saved it, enquired and actually booked." },
+      {
+        name: "description",
+        content: "See how many people found the business, saved it, enquired and actually booked.",
+      },
       { property: "og:title", content: "Business analytics | MusicLinkd" },
       { property: "og:description", content: "Views, saves, enquiries and bookings." },
       { property: "og:type", content: "website" },
@@ -27,7 +30,10 @@ function BusinessAnalytics() {
       <Screen>
         <TopBar title="Analytics" back="/business" />
         <div className="px-5 pt-6">
-          <EmptyState title="Business not found" body="This business may have been removed or you no longer have access to it." />
+          <EmptyState
+            title="Business not found"
+            body="This business may have been removed or you no longer have access to it."
+          />
         </div>
       </Screen>
     );
@@ -37,7 +43,11 @@ function BusinessAnalytics() {
 
   return (
     <Screen>
-      <TopBar title="Analytics" subtitle={`${b.name} · last 30 days`} back={`/business/${b.id}/dashboard`} />
+      <TopBar
+        title="Analytics"
+        subtitle={`${b.name} · last 30 days`}
+        back={`/business/${b.id}/dashboard`}
+      />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <div className="grid grid-cols-2 gap-2">
@@ -58,10 +68,17 @@ function BusinessAnalytics() {
           <p className="text-sm font-semibold">Views this week</p>
           <div className="mt-3 flex h-24 items-end gap-2">
             {a.daily.map((d, i) => (
-              <div key={i} className="flex-1 rounded-t-[8px] bg-primary/80" style={{ height: `${(d / peak) * 100}%` }} aria-label={`${d} views`} />
+              <div
+                key={i}
+                className="flex-1 rounded-t-[8px] bg-primary/80"
+                style={{ height: `${(d / peak) * 100}%` }}
+                aria-label={`${d} views`}
+              />
             ))}
           </div>
-          <p className="mt-2 text-[12px] text-muted-foreground">View to enquiry: {a.viewToEnquiry}</p>
+          <p className="mt-2 text-[12px] text-muted-foreground">
+            View to enquiry: {a.viewToEnquiry}
+          </p>
         </Card>
 
         <Card>
@@ -85,7 +102,8 @@ function BusinessAnalytics() {
         <Card>
           <p className="text-sm font-semibold">Responsiveness</p>
           <p className="mt-1 text-[13px] text-muted-foreground">
-            You reply to {a.responseRate} of enquiries, usually {a.responseTime}. Studios that reply within an hour get roughly twice the bookings.
+            You reply to {a.responseRate} of enquiries, usually {a.responseTime}. Studios that reply
+            within an hour get roughly twice the bookings.
           </p>
         </Card>
       </div>

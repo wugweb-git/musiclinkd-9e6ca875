@@ -9,7 +9,10 @@ export const Route = createFileRoute("/opportunities/mine")({
   head: () => ({
     meta: [
       { title: "My opportunities | MusicLinkd" },
-      { name: "description", content: "Opportunities you posted — applicants, drafts, analytics and closing." },
+      {
+        name: "description",
+        content: "Opportunities you posted — applicants, drafts, analytics and closing.",
+      },
       { property: "og:title", content: "My opportunities | MusicLinkd" },
       { property: "og:description", content: "Manage the requirements you posted on MusicLinkd." },
       { property: "og:type", content: "website" },
@@ -39,7 +42,10 @@ function MyOpportunities() {
       />
       <div className="space-y-3 px-5 pt-4 pb-4">
         {myOpportunities.length === 0 ? (
-          <EmptyState title="You haven't posted yet" body="Post a requirement and receive applications with portfolios attached.">
+          <EmptyState
+            title="You haven't posted yet"
+            body="Post a requirement and receive applications with portfolios attached."
+          >
             <Link to="/opportunities/new" search={{ step: "basics" }}>
               <Btn className="w-full">Post an opportunity</Btn>
             </Link>

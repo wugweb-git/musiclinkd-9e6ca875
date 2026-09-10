@@ -8,7 +8,10 @@ export const Route = createFileRoute("/settings/")({
   head: () => ({
     meta: [
       { title: "Settings | MusicLinkd" },
-      { name: "description", content: "Account, work, privacy, security and support — all in one place." },
+      {
+        name: "description",
+        content: "Account, work, privacy, security and support — all in one place.",
+      },
       { property: "og:title", content: "Settings | MusicLinkd" },
       { property: "og:description", content: "Manage your MusicLinkd account." },
       { property: "og:type", content: "website" },
@@ -25,7 +28,9 @@ function SettingsScreen() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         {settingsGroups.map((g) => (
           <div key={g.key} className="space-y-2">
-            <h2 className="px-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{g.title}</h2>
+            <h2 className="px-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              {g.title}
+            </h2>
             <Card className="p-0">
               {g.rows.map((r) => (
                 <Link
@@ -35,7 +40,9 @@ function SettingsScreen() {
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[13px] font-semibold">{r.label}</span>
-                    <span className="block truncate text-[11px] text-muted-foreground">{r.hint}</span>
+                    <span className="block truncate text-[11px] text-muted-foreground">
+                      {r.hint}
+                    </span>
                   </span>
                   <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
                 </Link>
@@ -43,7 +50,9 @@ function SettingsScreen() {
             </Card>
           </div>
         ))}
-        <p className="px-1 text-center text-[11px] text-muted-foreground">MusicLinkd · v1.0 preview</p>
+        <p className="px-1 text-center text-[11px] text-muted-foreground">
+          MusicLinkd · v1.0 preview
+        </p>
       </div>
     </Screen>
   );

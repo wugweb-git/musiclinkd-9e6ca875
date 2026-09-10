@@ -20,10 +20,14 @@ export const Route = createFileRoute("/marketplace/rent/request/$id")({
         { title },
         {
           name: "description",
-          content: "Pick your rental dates, quantity and pickup or delivery, then send the request to the provider.",
+          content:
+            "Pick your rental dates, quantity and pickup or delivery, then send the request to the provider.",
         },
         { property: "og:title", content: title },
-        { property: "og:description", content: "Check availability and request equipment on MusicLinkd." },
+        {
+          property: "og:description",
+          content: "Check availability and request equipment on MusicLinkd.",
+        },
       ],
     };
   },
@@ -79,11 +83,7 @@ function RequestFlow() {
 
   return (
     <Screen>
-      <TopBar
-        title={titles[step]}
-        subtitle={e.name}
-        back="/marketplace/rent"
-      />
+      <TopBar title={titles[step]} subtitle={e.name} back="/marketplace/rent" />
 
       <div className="px-5 py-4">
         <div className="mb-4 flex gap-1.5">
@@ -196,8 +196,8 @@ function RequestFlow() {
               className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
             />
             <p className="mt-3 text-[11px] text-muted-foreground">
-              No payment is taken now. The provider confirms availability and the final amount in your
-              conversation.
+              No payment is taken now. The provider confirms availability and the final amount in
+              your conversation.
             </p>
             <Btn className="mt-4 w-full" onClick={() => setStep("confirmed")}>
               Send rental request
@@ -218,8 +218,8 @@ function RequestFlow() {
             </div>
             <h2 className="text-xl">Request sent</h2>
             <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">
-              {p.name} usually replies {p.responseTime.toLowerCase()}. You'll get a notification when
-              they accept, decline or counter.
+              {p.name} usually replies {p.responseTime.toLowerCase()}. You'll get a notification
+              when they accept, decline or counter.
             </p>
             <dl className="mt-5 divide-y divide-border rounded-3xl border border-border text-left">
               {[
@@ -239,7 +239,9 @@ function RequestFlow() {
               <Btn className="w-full">View rental</Btn>
             </Link>
             <Link to="/messages" className="mt-2 block">
-              <Btn variant="outline" className="w-full">Message provider</Btn>
+              <Btn variant="outline" className="w-full">
+                Message provider
+              </Btn>
             </Link>
           </div>
         ) : null}

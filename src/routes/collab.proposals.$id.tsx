@@ -1,4 +1,3 @@
-
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Btn, Screen, TopBar } from "@/components/ml/ui";
 import { Card, PermissionState, ProposalSummary, StickyBar } from "@/components/ml/collab";
@@ -13,10 +12,14 @@ export const Route = createFileRoute("/collab/proposals/$id")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Review a collaboration proposal: scope, deliverables, timeline and compensation.",
+          content:
+            "Review a collaboration proposal: scope, deliverables, timeline and compensation.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: "Agree the terms of a music collaboration before work starts." },
+        {
+          property: "og:description",
+          content: "Agree the terms of a music collaboration before work starts.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -28,7 +31,6 @@ export const Route = createFileRoute("/collab/proposals/$id")({
 function ProposalDetail() {
   const { id } = Route.useParams();
   const p = getProposal(id);
-  
 
   if (!p) {
     return (
@@ -42,7 +44,6 @@ function ProposalDetail() {
   }
 
   const sent = p.status === "sent";
-
 
   return (
     <Screen bottomNav={false}>

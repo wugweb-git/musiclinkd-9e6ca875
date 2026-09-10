@@ -9,7 +9,10 @@ export const Route = createFileRoute("/bands/$id/contact")({
   head: () => ({
     meta: [
       { title: "Contact a band | MusicLinkd" },
-      { name: "description", content: "Reach a band's booking contact with your date, venue and budget in one message." },
+      {
+        name: "description",
+        content: "Reach a band's booking contact with your date, venue and budget in one message.",
+      },
       { property: "og:title", content: "Contact a band | MusicLinkd" },
       { property: "og:description", content: "Send a band your date, venue and budget." },
       { property: "og:type", content: "website" },
@@ -33,7 +36,10 @@ function BandContact() {
       <Screen>
         <TopBar title="Contact" back="/bands" />
         <div className="px-5 pt-6">
-          <EmptyState title="Band not found" body="This band may have been deleted or made private." />
+          <EmptyState
+            title="Band not found"
+            body="This band may have been deleted or made private."
+          />
         </div>
       </Screen>
     );
@@ -47,7 +53,9 @@ function BandContact() {
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
             <h2 className="mt-3 text-[19px] leading-tight">{band.name} has your message</h2>
-            <p className="mt-2 text-[13px] text-muted-foreground">It goes to whoever handles bookings for the band. Replies land in Connections.</p>
+            <p className="mt-2 text-[13px] text-muted-foreground">
+              It goes to whoever handles bookings for the band. Replies land in Connections.
+            </p>
           </Card>
           <Link to="/messages" className="block">
             <Btn className="w-full">Open Connections</Btn>
@@ -74,7 +82,9 @@ function BandContact() {
         </Card>
 
         <Card>
-          <label htmlFor="msg" className="text-sm font-semibold">Your message</label>
+          <label htmlFor="msg" className="text-sm font-semibold">
+            Your message
+          </label>
           <textarea
             id="msg"
             rows={5}

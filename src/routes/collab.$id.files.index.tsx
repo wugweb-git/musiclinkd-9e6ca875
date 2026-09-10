@@ -2,13 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Btn, Chip, Screen, Sheet, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
-import {
-  EmptyState,
-  FileRow,
-  Label,
-  PermissionState,
-  UploadPanel,
-} from "@/components/ml/collab";
+import { EmptyState, FileRow, Label, PermissionState, UploadPanel } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
 
 export const Route = createFileRoute("/collab/$id/files/")({
@@ -20,7 +14,8 @@ export const Route = createFileRoute("/collab/$id/files/")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Stems, mixes, lyrics, references and contracts shared inside a MusicLinkd collaboration.",
+          content:
+            "Stems, mixes, lyrics, references and contracts shared inside a MusicLinkd collaboration.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
         { property: "og:description", content: "Every version of the work, in one place." },
@@ -53,9 +48,7 @@ function Files() {
   }
 
   const list =
-    kind === "All"
-      ? project.files
-      : project.files.filter((f) => f.kind === kind.toLowerCase());
+    kind === "All" ? project.files : project.files.filter((f) => f.kind === kind.toLowerCase());
 
   return (
     <WorkspaceShell project={project} tab="files">

@@ -56,7 +56,11 @@ function ResetPassword() {
       return;
     }
     if (password !== confirm) {
-      setError({ kind: "unknown", title: "Passwords do not match", body: "Re-enter the same password twice." });
+      setError({
+        kind: "unknown",
+        title: "Passwords do not match",
+        body: "Re-enter the same password twice.",
+      });
       return;
     }
     setBusy(true);
@@ -93,7 +97,10 @@ function ResetPassword() {
   if (!valid) {
     return (
       <AuthScreen>
-        <AuthHeading title="This reset link has expired" sub="Reset links work once and expire after 60 minutes." />
+        <AuthHeading
+          title="This reset link has expired"
+          sub="Reset links work once and expire after 60 minutes."
+        />
         <Btn className="w-full" onClick={() => void navigate({ to: "/auth/forgot" })}>
           Send a new link
         </Btn>
@@ -108,10 +115,23 @@ function ResetPassword() {
 
   return (
     <AuthScreen>
-      <AuthHeading title="Set a new password" sub="Choose something you have not used on MusicLinkd before." />
+      <AuthHeading
+        title="Set a new password"
+        sub="Choose something you have not used on MusicLinkd before."
+      />
       {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-      <PasswordInput label="New password" value={password} onChange={setPassword} autoComplete="new-password" />
-      <PasswordInput label="Confirm password" value={confirm} onChange={setConfirm} autoComplete="new-password" />
+      <PasswordInput
+        label="New password"
+        value={password}
+        onChange={setPassword}
+        autoComplete="new-password"
+      />
+      <PasswordInput
+        label="Confirm password"
+        value={confirm}
+        onChange={setConfirm}
+        autoComplete="new-password"
+      />
       <PasswordRequirements value={password} />
       <Btn className="w-full" onClick={() => void save()} disabled={busy}>
         {busy ? "Saving…" : "Save new password"}

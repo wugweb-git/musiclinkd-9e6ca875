@@ -15,9 +15,15 @@ export const Route = createFileRoute("/auth/forgot")({
   head: () => ({
     meta: [
       { title: "Reset your password — MusicLinkd" },
-      { name: "description", content: "Send yourself a secure link to set a new MusicLinkd password." },
+      {
+        name: "description",
+        content: "Send yourself a secure link to set a new MusicLinkd password.",
+      },
       { property: "og:title", content: "Reset your password — MusicLinkd" },
-      { property: "og:description", content: "Get back into your MusicLinkd account in two steps." },
+      {
+        property: "og:description",
+        content: "Get back into your MusicLinkd account in two steps.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -35,7 +41,11 @@ function ForgotPassword() {
   async function send() {
     setError(null);
     if (!email.includes("@")) {
-      setError({ kind: "unknown", title: "Enter a valid email", body: "We send the reset link to this address." });
+      setError({
+        kind: "unknown",
+        title: "Enter a valid email",
+        body: "We send the reset link to this address.",
+      });
       return;
     }
     setBusy(true);
@@ -69,7 +79,10 @@ function ForgotPassword() {
             The link expires in 60 minutes and can be used once.
           </AuthNotice>
           <div className="space-y-3">
-            <Btn className="w-full" onClick={() => void navigate({ to: "/auth", search: { mode: "signin" } })}>
+            <Btn
+              className="w-full"
+              onClick={() => void navigate({ to: "/auth", search: { mode: "signin" } })}
+            >
               Back to sign in
             </Btn>
             <Btn variant="outline" className="w-full" onClick={() => setSent(false)}>

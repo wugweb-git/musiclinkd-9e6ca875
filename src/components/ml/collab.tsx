@@ -139,8 +139,26 @@ export function ParticipantRow({
         </p>
         <p className="mt-1 truncate text-[11px] text-muted-foreground">{p.contribution}</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <Tag tone={p.status === "invited" ? "warn" : p.status === "owner" ? "info" : p.status === "active" ? "ok" : "off"}>
-            {p.status === "owner" ? "Owner" : p.status === "invited" ? "Invited" : p.status === "left" ? "Left" : p.status === "declined" ? "Declined" : "Active"}
+          <Tag
+            tone={
+              p.status === "invited"
+                ? "warn"
+                : p.status === "owner"
+                  ? "info"
+                  : p.status === "active"
+                    ? "ok"
+                    : "off"
+            }
+          >
+            {p.status === "owner"
+              ? "Owner"
+              : p.status === "invited"
+                ? "Invited"
+                : p.status === "left"
+                  ? "Left"
+                  : p.status === "declined"
+                    ? "Declined"
+                    : "Active"}
           </Tag>
           <Link
             to="/profile/$username"
@@ -237,7 +255,9 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
         </span>
       )}
       <div className="min-w-0 flex-1">
-        <h3 className={`truncate text-[14px] ${file.available ? "" : "text-muted-foreground line-through"}`}>
+        <h3
+          className={`truncate text-[14px] ${file.available ? "" : "text-muted-foreground line-through"}`}
+        >
           {file.name}
         </h3>
         <p className="truncate text-[11px] text-muted-foreground">
@@ -245,7 +265,9 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
         </p>
         <p className="truncate text-[10px] text-muted-foreground">{file.access}</p>
       </div>
-      {file.available ? <ChevronRight size={16} className="shrink-0 text-muted-foreground" /> : null}
+      {file.available ? (
+        <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
+      ) : null}
     </>
   );
 
@@ -326,7 +348,11 @@ export function MilestoneRow({
         onClick={onToggle}
         aria-label={`Toggle ${m.name}`}
         className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border"
-        style={m.status === "done" ? { background: "var(--success)", borderColor: "transparent" } : undefined}
+        style={
+          m.status === "done"
+            ? { background: "var(--success)", borderColor: "transparent" }
+            : undefined
+        }
       >
         {m.status === "done" ? <Check size={14} className="text-background" /> : null}
       </button>
@@ -689,10 +715,10 @@ export function RowLink({
   const inner = (
     <>
       <div className="min-w-0 flex-1">
-        <p className={`truncate text-[14px] font-medium ${danger ? "text-destructive" : ""}`}>{title}</p>
-        {subtitle ? (
-          <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p>
-        ) : null}
+        <p className={`truncate text-[14px] font-medium ${danger ? "text-destructive" : ""}`}>
+          {title}
+        </p>
+        {subtitle ? <p className="truncate text-[11px] text-muted-foreground">{subtitle}</p> : null}
       </div>
       <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
     </>
@@ -709,7 +735,11 @@ export function RowLink({
     );
   }
   return (
-    <button type="button" onClick={onClick} className="flex w-full items-center gap-3 px-4 py-4 text-left">
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center gap-3 px-4 py-4 text-left"
+    >
       {inner}
     </button>
   );

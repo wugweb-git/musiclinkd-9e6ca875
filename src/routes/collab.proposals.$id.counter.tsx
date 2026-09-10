@@ -10,7 +10,8 @@ export const Route = createFileRoute("/collab/proposals/$id/counter")({
       { title: "Counter proposal | MusicLinkd" },
       {
         name: "description",
-        content: "Adjust scope, deliverables, timeline and compensation, then send a counter proposal.",
+        content:
+          "Adjust scope, deliverables, timeline and compensation, then send a counter proposal.",
       },
       { property: "og:title", content: "Counter proposal | MusicLinkd" },
       { property: "og:description", content: "Negotiate collaboration terms in the open." },
@@ -68,7 +69,12 @@ function Counter() {
           <TextInput value={compensation} onChange={setCompensation} />
         </Field>
         <Field label="Note to collaborator" optional>
-          <TextInput value={notes} onChange={setNotes} multiline placeholder="Explain what you changed and why." />
+          <TextInput
+            value={notes}
+            onChange={setNotes}
+            multiline
+            placeholder="Explain what you changed and why."
+          />
         </Field>
       </main>
       <StickyBar>

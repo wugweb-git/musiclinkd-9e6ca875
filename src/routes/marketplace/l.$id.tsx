@@ -28,7 +28,12 @@ export const Route = createFileRoute("/marketplace/l/$id")({
         { name: "description", content: desc },
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
-        ...(image ? [{ property: "og:image", content: image }, { name: "twitter:image", content: image }] : []),
+        ...(image
+          ? [
+              { property: "og:image", content: image },
+              { name: "twitter:image", content: image },
+            ]
+          : []),
       ],
     };
   },
@@ -71,7 +76,10 @@ function ListingDetail() {
         back="/marketplace"
         right={
           <div className="flex items-center gap-2">
-            <button aria-label="Share" className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card">
+            <button
+              aria-label="Share"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            >
               <Share2 size={15} />
             </button>
             <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={40} />
@@ -88,7 +96,10 @@ function ListingDetail() {
               aria-label={`Photo ${i + 1}`}
               onClick={() => setShot(i)}
               className="h-1.5 rounded-full transition-all"
-              style={{ width: i === shot ? 18 : 6, background: i === shot ? "var(--primary)" : "var(--border)" }}
+              style={{
+                width: i === shot ? 18 : 6,
+                background: i === shot ? "var(--primary)" : "var(--border)",
+              }}
             />
           ))}
         </div>
@@ -97,7 +108,11 @@ function ListingDetail() {
       <div className="px-5 py-5">
         <div className="flex items-start justify-between gap-3">
           <PriceBlock price={l.price} note={l.priceNote} size="lg" />
-          {l.condition ? <ConditionBadge value={l.condition} /> : <Rating value={l.rating} count={l.reviews} />}
+          {l.condition ? (
+            <ConditionBadge value={l.condition} />
+          ) : (
+            <Rating value={l.rating} count={l.reviews} />
+          )}
         </div>
         <h1 className="mt-2 text-[22px] leading-tight">{l.title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{l.subtitle}</p>
@@ -111,7 +126,11 @@ function ListingDetail() {
         <p className="mt-2 text-sm leading-relaxed text-text2">{l.description}</p>
 
         <h2 className="mt-6 text-[16px]">
-          {l.type === "service" ? "Service details" : l.type === "rental" ? "Rental terms" : "Specifications"}
+          {l.type === "service"
+            ? "Service details"
+            : l.type === "rental"
+              ? "Rental terms"
+              : "Specifications"}
         </h2>
         <dl className="mt-2 divide-y divide-border rounded-3xl border border-border">
           {l.specs.map((s) => (
@@ -138,7 +157,9 @@ function ListingDetail() {
             ))}
           </div>
           <Link to="/marketplace/seller/$id" params={{ id: seller.id }} className="mt-3 block">
-            <Btn variant="outline" className="w-full">View profile</Btn>
+            <Btn variant="outline" className="w-full">
+              View profile
+            </Btn>
           </Link>
         </div>
 
@@ -150,10 +171,14 @@ function ListingDetail() {
                 <p className="text-[13px] font-semibold">{r.name}</p>
                 <Rating value={r.rating} />
               </div>
-              <p className="text-[11px] text-muted-foreground">{r.role} · {r.context} · {r.date}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {r.role} · {r.context} · {r.date}
+              </p>
               <p className="mt-2 text-sm text-text2">{r.body}</p>
               {r.response ? (
-                <p className="mt-2 rounded-2xl bg-subtle p-3 text-xs text-text2">Seller: {r.response}</p>
+                <p className="mt-2 rounded-2xl bg-subtle p-3 text-xs text-text2">
+                  Seller: {r.response}
+                </p>
               ) : null}
             </article>
           ))}
@@ -161,9 +186,12 @@ function ListingDetail() {
 
         <h2 className="mt-6 text-[16px]">Related listings</h2>
         <div className="mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
-          {listings.filter((x) => x.id !== l.id).slice(0, 4).map((x) => (
-            <ListingTile key={x.id} l={x} />
-          ))}
+          {listings
+            .filter((x) => x.id !== l.id)
+            .slice(0, 4)
+            .map((x) => (
+              <ListingTile key={x.id} l={x} />
+            ))}
         </div>
 
         <button

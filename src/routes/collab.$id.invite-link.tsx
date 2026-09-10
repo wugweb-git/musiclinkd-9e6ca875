@@ -18,7 +18,10 @@ export const Route = createFileRoute("/collab/$id/invite-link")({
             "Create, share or disable a controlled invite link so a collaborator can join this MusicLinkd project.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: "Controlled invitations for a music collaboration." },
+        {
+          property: "og:description",
+          content: "Controlled invitations for a music collaboration.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -81,8 +84,8 @@ function InviteLink() {
         </div>
 
         <p className="mb-5 text-[11px] text-muted-foreground">
-          Invite links are not permanently open. Disable the link and anyone who hasn't already joined loses
-          access immediately.
+          Invite links are not permanently open. Disable the link and anyone who hasn't already
+          joined loses access immediately.
         </p>
 
         <Btn variant="outline" className="mb-5 w-full" onClick={() => setActive(false)}>

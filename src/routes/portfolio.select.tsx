@@ -69,7 +69,9 @@ function PortfolioSelect() {
                 type="button"
                 aria-pressed={on}
                 onClick={() =>
-                  setPicked((p) => (p.includes(item.id) ? p.filter((x) => x !== item.id) : [...p, item.id]))
+                  setPicked((p) =>
+                    p.includes(item.id) ? p.filter((x) => x !== item.id) : [...p, item.id],
+                  )
                 }
                 className={`flex w-full items-center gap-3 rounded-3xl border p-4 text-left ${
                   on ? "border-primary" : "border-border"

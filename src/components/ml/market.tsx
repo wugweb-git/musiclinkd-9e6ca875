@@ -47,7 +47,13 @@ export function ConditionBadge({ value }: { value: string }) {
   );
 }
 
-export function Rating({ value, count }: { value?: number | undefined; count?: number | undefined }) {
+export function Rating({
+  value,
+  count,
+}: {
+  value?: number | undefined;
+  count?: number | undefined;
+}) {
   if (!value) return null;
   return (
     <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-warn">
@@ -78,7 +84,9 @@ export function PriceBlock({
 }) {
   return (
     <div className="flex items-baseline gap-1">
-      <span className={size === "lg" ? "text-2xl font-bold" : "text-[15px] font-bold"}>{price}</span>
+      <span className={size === "lg" ? "text-2xl font-bold" : "text-[15px] font-bold"}>
+        {price}
+      </span>
       {note ? <span className="text-[11px] text-muted-foreground">{note}</span> : null}
     </div>
   );
@@ -138,7 +146,15 @@ function typeMeta(l: Listing) {
   }
 }
 
-export function ListingCard({ l, saved, onSave }: { l: Listing; saved?: boolean; onSave?: () => void }) {
+export function ListingCard({
+  l,
+  saved,
+  onSave,
+}: {
+  l: Listing;
+  saved?: boolean;
+  onSave?: () => void;
+}) {
   const [localSaved, setLocalSaved] = useState(false);
   const isSaved = saved ?? localSaved;
   const meta = typeMeta(l);
@@ -149,14 +165,12 @@ export function ListingCard({ l, saved, onSave }: { l: Listing; saved?: boolean;
       className="block overflow-hidden rounded-3xl border border-border bg-card"
     >
       <div className="relative">
-        <img
-          src={l.photos[0]}
-          alt={l.title}
-          loading="lazy"
-          className="h-40 w-full object-cover"
-        />
+        <img src={l.photos[0]} alt={l.title} loading="lazy" className="h-40 w-full object-cover" />
         <div className="absolute right-2 top-2">
-          <SaveButton saved={isSaved} onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))} />
+          <SaveButton
+            saved={isSaved}
+            onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
+          />
         </div>
         <span className="absolute left-2 top-2 rounded-full bg-navy/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-background backdrop-blur">
           {meta.tag}
@@ -165,7 +179,11 @@ export function ListingCard({ l, saved, onSave }: { l: Listing; saved?: boolean;
       <div className="p-3.5">
         <div className="flex items-start justify-between gap-2">
           <PriceBlock price={l.price} note={l.priceNote} />
-          {l.condition ? <ConditionBadge value={l.condition} /> : <Rating value={l.rating} count={l.reviews} />}
+          {l.condition ? (
+            <ConditionBadge value={l.condition} />
+          ) : (
+            <Rating value={l.rating} count={l.reviews} />
+          )}
         </div>
         <h3 className="mt-1.5 line-clamp-2 text-[14px] leading-snug">{l.title}</h3>
         <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">{l.subtitle}</p>
@@ -187,7 +205,12 @@ export function ListingTile({ l }: { l: Listing }) {
       className="block w-[168px] shrink-0 overflow-hidden rounded-3xl border border-border bg-card"
     >
       <div className="relative h-[124px]">
-        <img src={l.photos[0]} alt={l.title} loading="lazy" className="h-full w-full object-cover" />
+        <img
+          src={l.photos[0]}
+          alt={l.title}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
         <div className="absolute right-1.5 top-1.5">
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={30} />
         </div>
@@ -206,7 +229,12 @@ export function ListingRow({ l }: { l: Listing }) {
   return (
     <article className="flex gap-3 rounded-3xl border border-border bg-card p-3">
       <Link to="/marketplace/l/$id" params={{ id: l.id }} className="shrink-0">
-        <img src={l.photos[0]} alt={l.title} loading="lazy" className="h-24 w-24 rounded-2xl object-cover" />
+        <img
+          src={l.photos[0]}
+          alt={l.title}
+          loading="lazy"
+          className="h-24 w-24 rounded-2xl object-cover"
+        />
       </Link>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
@@ -385,7 +413,9 @@ function SwitchRow({
       className="flex w-full items-center justify-between px-4 py-4 text-left"
     >
       <span className="text-sm font-medium">{label}</span>
-      <span className={`relative h-7 w-12 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}>
+      <span
+        className={`relative h-7 w-12 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}
+      >
         <span
           className={`absolute top-1 h-5 w-5 rounded-full bg-card transition-all ${value ? "left-6" : "left-1"}`}
         />

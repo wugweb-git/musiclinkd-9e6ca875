@@ -25,7 +25,8 @@ export type Review = {
   helpful: number;
 };
 
-const u = (id: string, w = 300) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const u = (id: string, w = 300) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 export const receivedReviews: Review[] = [
   {
@@ -44,7 +45,10 @@ export const receivedReviews: Review[] = [
     body: "Turned a rough voice memo into a finished master in two sessions. Sent stems the same night without being asked.",
     createdAt: "3 weeks ago",
     verifiedTransaction: true,
-    response: { body: "Thank you Ananya — the arrangement did most of the work.", at: "3 weeks ago" },
+    response: {
+      body: "Thank you Ananya — the arrangement did most of the work.",
+      at: "3 weeks ago",
+    },
     helpful: 12,
   },
   {
@@ -132,14 +136,38 @@ export const reviewPolicy = [
   "Contact details, abuse and off-platform payment requests are removed.",
 ];
 
-export const flagReasons = ["Not about this transaction", "Abusive or hateful", "Contains contact details", "Spam or fake", "Other"];
+export const flagReasons = [
+  "Not about this transaction",
+  "Abusive or hateful",
+  "Contains contact details",
+  "Spam or fake",
+  "Other",
+];
 
 export const getReview = (id: string) =>
   [...receivedReviews, ...givenReviews].find((r) => r.id === id);
 
 /** review_request: people you can ask for a review after a completed transaction. */
 export const reviewRequestTargets = [
-  { id: "rq-1", name: "Ananya Sharma", photo: u("photo-1534528741775-53994a69daeb"), context: "Studio session · 14 Aug", asked: false },
-  { id: "rq-2", name: "DJ Noor", photo: u("photo-1571019613454-1cb2f99b2d8b"), context: "Mixing · 2 Aug", asked: true },
-  { id: "rq-3", name: "Kabir S.", photo: u("photo-1500648767791-00dcc994a43e"), context: "Rhodes sale · 1 Sep", asked: false },
+  {
+    id: "rq-1",
+    name: "Ananya Sharma",
+    photo: u("photo-1534528741775-53994a69daeb"),
+    context: "Studio session · 14 Aug",
+    asked: false,
+  },
+  {
+    id: "rq-2",
+    name: "DJ Noor",
+    photo: u("photo-1571019613454-1cb2f99b2d8b"),
+    context: "Mixing · 2 Aug",
+    asked: true,
+  },
+  {
+    id: "rq-3",
+    name: "Kabir S.",
+    photo: u("photo-1500648767791-00dcc994a43e"),
+    context: "Rhodes sale · 1 Sep",
+    asked: false,
+  },
 ];

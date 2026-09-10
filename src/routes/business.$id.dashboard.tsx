@@ -8,9 +8,16 @@ export const Route = createFileRoute("/business/$id/dashboard")({
   head: () => ({
     meta: [
       { title: "Business dashboard | MusicLinkd" },
-      { name: "description", content: "Run the business day to day: new leads, bookings, reviews, availability and analytics in one place." },
+      {
+        name: "description",
+        content:
+          "Run the business day to day: new leads, bookings, reviews, availability and analytics in one place.",
+      },
       { property: "og:title", content: "Business dashboard | MusicLinkd" },
-      { property: "og:description", content: "Leads, bookings, reviews and analytics for your business." },
+      {
+        property: "og:description",
+        content: "Leads, bookings, reviews and analytics for your business.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -27,7 +34,10 @@ function BusinessDashboard() {
       <Screen>
         <TopBar title="Dashboard" back="/business" />
         <div className="px-5 pt-6">
-          <EmptyState title="Business not found" body="This business may have been removed or you no longer have access to it." />
+          <EmptyState
+            title="Business not found"
+            body="This business may have been removed or you no longer have access to it."
+          />
         </div>
       </Screen>
     );
@@ -43,8 +53,12 @@ function BusinessDashboard() {
         <Card>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold">{newLeads} new {newLeads === 1 ? "enquiry" : "enquiries"}</p>
-              <p className="mt-1 text-[13px] text-muted-foreground">Answering within an hour is the single biggest lever you have.</p>
+              <p className="text-sm font-semibold">
+                {newLeads} new {newLeads === 1 ? "enquiry" : "enquiries"}
+              </p>
+              <p className="mt-1 text-[13px] text-muted-foreground">
+                Answering within an hour is the single biggest lever you have.
+              </p>
             </div>
             <StatusPill label="Today" tone="brand" />
           </div>
@@ -64,13 +78,48 @@ function BusinessDashboard() {
         </div>
 
         <div className="space-y-2">
-          <Row icon={<Inbox size={16} />} title="Leads" subtitle={`${newLeads} waiting on a reply`} to={`/business/${b.id}/leads`} />
-          <Row icon={<BarChart3 size={16} />} title="Analytics" subtitle="Views, sources, room demand" to={`/business/${b.id}/analytics`} />
-          <Row icon={<Wrench size={16} />} title="Services" subtitle="Rooms, sessions and pricing" to={`/business/${b.id}/services`} />
-          <Row icon={<CalendarClock size={16} />} title="Availability" subtitle="Hours, notice and blackout dates" to={`/business/${b.id}/availability`} />
-          <Row icon={<Images size={16} />} title="Portfolio" subtitle="Credits and gallery" to={`/business/${b.id}/portfolio`} />
-          <Row icon={<Star size={16} />} title="Reviews" subtitle={`${b.stats.rating} from ${b.stats.reviews} reviews`} to={`/business/${b.id}/reviews`} />
-          <Row icon={<ShieldCheck size={16} />} title="Verification" subtitle={b.verified ? "Verified business" : "Not verified yet"} to={`/business/${b.id}/verification`} />
+          <Row
+            icon={<Inbox size={16} />}
+            title="Leads"
+            subtitle={`${newLeads} waiting on a reply`}
+            to={`/business/${b.id}/leads`}
+          />
+          <Row
+            icon={<BarChart3 size={16} />}
+            title="Analytics"
+            subtitle="Views, sources, room demand"
+            to={`/business/${b.id}/analytics`}
+          />
+          <Row
+            icon={<Wrench size={16} />}
+            title="Services"
+            subtitle="Rooms, sessions and pricing"
+            to={`/business/${b.id}/services`}
+          />
+          <Row
+            icon={<CalendarClock size={16} />}
+            title="Availability"
+            subtitle="Hours, notice and blackout dates"
+            to={`/business/${b.id}/availability`}
+          />
+          <Row
+            icon={<Images size={16} />}
+            title="Portfolio"
+            subtitle="Credits and gallery"
+            to={`/business/${b.id}/portfolio`}
+          />
+          <Row
+            icon={<Star size={16} />}
+            title="Reviews"
+            subtitle={`${b.stats.rating} from ${b.stats.reviews} reviews`}
+            to={`/business/${b.id}/reviews`}
+          />
+          <Row
+            icon={<ShieldCheck size={16} />}
+            title="Verification"
+            subtitle={b.verified ? "Verified business" : "Not verified yet"}
+            to={`/business/${b.id}/verification`}
+          />
         </div>
       </div>
     </Screen>

@@ -10,10 +10,14 @@ export const Route = createFileRoute("/collab/$id/lifecycle/$action")({
       { title: "Change project status | MusicLinkd" },
       {
         name: "description",
-        content: "Put a MusicLinkd collaboration on hold, complete it, archive it, leave it or cancel it.",
+        content:
+          "Put a MusicLinkd collaboration on hold, complete it, archive it, leave it or cancel it.",
       },
       { property: "og:title", content: "Change project status | MusicLinkd" },
-      { property: "og:description", content: "Every collaboration has a clear, reversible lifecycle." },
+      {
+        property: "og:description",
+        content: "Every collaboration has a clear, reversible lifecycle.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -21,7 +25,10 @@ export const Route = createFileRoute("/collab/$id/lifecycle/$action")({
   component: Lifecycle,
 });
 
-const copy: Record<string, { title: string; body: string; cta: string; danger?: boolean; ask: string }> = {
+const copy: Record<
+  string,
+  { title: string; body: string; cta: string; danger?: boolean; ask: string }
+> = {
   hold: {
     title: "Put this project on hold",
     body: "The workspace stays intact and everyone keeps access. Milestones stop counting as overdue.",
@@ -120,7 +127,12 @@ function Lifecycle() {
         <p className="mt-2 mb-5 text-[13px] leading-relaxed text-muted-foreground">{c.body}</p>
 
         <Field label={c.ask} optional>
-          <TextInput value={reason} onChange={setReason} multiline placeholder="Add context for the team..." />
+          <TextInput
+            value={reason}
+            onChange={setReason}
+            multiline
+            placeholder="Add context for the team..."
+          />
         </Field>
 
         <Card>

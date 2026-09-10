@@ -3,13 +3,23 @@ import { useState } from "react";
 import { MoreHorizontal, Settings2, Sparkles } from "lucide-react";
 import { Screen, TopBar, Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { Card, EmptyState, Loading, ReasonChip, Segmented } from "@/components/ml/kit";
-import { recommendations, recSections, feedbackOptions, recEmptyCopy, type Recommendation } from "@/data/recommendations";
+import {
+  recommendations,
+  recSections,
+  feedbackOptions,
+  recEmptyCopy,
+  type Recommendation,
+} from "@/data/recommendations";
 
 export const Route = createFileRoute("/recommendations")({
   head: () => ({
     meta: [
       { title: "For You — Recommendations | MusicLinkd" },
-      { name: "description", content: "Explainable recommendations for talent, studios, gear, opportunities and collaborations on MusicLinkd." },
+      {
+        name: "description",
+        content:
+          "Explainable recommendations for talent, studios, gear, opportunities and collaborations on MusicLinkd.",
+      },
       { property: "og:title", content: "For You — Recommendations | MusicLinkd" },
       { property: "og:description", content: "Explainable recommendations across MusicLinkd." },
       { property: "og:type", content: "website" },
@@ -40,7 +50,10 @@ function Recs() {
   const visible = (ids: string[]) =>
     ids
       .map((id) => recommendations.find((r) => r.id === id))
-      .filter((r): r is Recommendation => !!r && !hidden.includes(r.id) && (allow.length === 0 || allow.includes(r.kind)));
+      .filter(
+        (r): r is Recommendation =>
+          !!r && !hidden.includes(r.id) && (allow.length === 0 || allow.includes(r.kind)),
+      );
 
   const anything = recSections.some((s) => visible(s.ids).length);
 
@@ -51,7 +64,11 @@ function Recs() {
         subtitle="Why you are seeing each one"
         back="/feed"
         right={
-          <Link to="/recommendations/settings" aria-label="Recommendation settings" className="flex h-10 w-10 items-center justify-center rounded-full bg-subtle">
+          <Link
+            to="/recommendations/settings"
+            aria-label="Recommendation settings"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-subtle"
+          >
             <Settings2 size={18} aria-hidden />
           </Link>
         }
@@ -63,8 +80,14 @@ function Recs() {
           <Loading rows={4} />
         ) : !anything ? (
           <EmptyState title={recEmptyCopy.title} body={recEmptyCopy.body}>
-            <Link to="/profile/edit"><Btn className="w-full">Complete my profile</Btn></Link>
-            <Link to="/"><Btn variant="outline" className="w-full">Browse Discover instead</Btn></Link>
+            <Link to="/profile/edit">
+              <Btn className="w-full">Complete my profile</Btn>
+            </Link>
+            <Link to="/">
+              <Btn variant="outline" className="w-full">
+                Browse Discover instead
+              </Btn>
+            </Link>
           </EmptyState>
         ) : (
           recSections.map((s) => {
@@ -81,7 +104,12 @@ function Recs() {
                   {items.map((r) => (
                     <Card key={r.id} className="p-0 overflow-hidden">
                       <div className="flex gap-3 p-3">
-                        <img src={r.image} alt="" loading="lazy" className="h-20 w-20 shrink-0 rounded-2xl object-cover" />
+                        <img
+                          src={r.image}
+                          alt=""
+                          loading="lazy"
+                          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+                        />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-2">
                             <div className="min-w-0 flex-1">
@@ -89,13 +117,22 @@ function Recs() {
                                 <h3 className="truncate text-[15px] leading-tight">{r.title}</h3>
                                 {r.verified ? <VerifiedBadge size={13} /> : null}
                               </div>
-                              <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{r.subtitle} · {r.meta}</p>
+                              <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
+                                {r.subtitle} · {r.meta}
+                              </p>
                             </div>
-                            <button type="button" aria-label="Recommendation feedback" onClick={() => setFeedbackFor(r.id)} className="shrink-0 p-1 text-muted-foreground">
+                            <button
+                              type="button"
+                              aria-label="Recommendation feedback"
+                              onClick={() => setFeedbackFor(r.id)}
+                              className="shrink-0 p-1 text-muted-foreground"
+                            >
                               <MoreHorizontal size={18} aria-hidden />
                             </button>
                           </div>
-                          <div className="mt-2"><ReasonChip>{r.reason}</ReasonChip></div>
+                          <div className="mt-2">
+                            <ReasonChip>{r.reason}</ReasonChip>
+                          </div>
                         </div>
                       </div>
                       <div className="flex gap-2 border-t border-border p-3">
@@ -103,8 +140,16 @@ function Recs() {
                         <Link to={r.route as any} className="flex-1">
                           <Btn className="w-full text-xs">Open</Btn>
                         </Link>
-                        <Btn variant="outline" className="flex-1 text-xs">Save</Btn>
-                        <Btn variant="ghost" className="flex-1 text-xs" onClick={() => setHidden((p) => [...p, r.id])}>Hide</Btn>
+                        <Btn variant="outline" className="flex-1 text-xs">
+                          Save
+                        </Btn>
+                        <Btn
+                          variant="ghost"
+                          className="flex-1 text-xs"
+                          onClick={() => setHidden((p) => [...p, r.id])}
+                        >
+                          Hide
+                        </Btn>
                       </div>
                     </Card>
                   ))}
@@ -116,8 +161,15 @@ function Recs() {
 
         <Card className="mb-4 space-y-2">
           <h2 className="text-[15px]">Recommendations you control</h2>
-          <p className="text-[12px] text-muted-foreground">Every card shows why it is here. Hide anything and it stops influencing future suggestions.</p>
-          <Link to="/recommendations/settings"><Btn variant="outline" className="w-full">Recommendation settings</Btn></Link>
+          <p className="text-[12px] text-muted-foreground">
+            Every card shows why it is here. Hide anything and it stops influencing future
+            suggestions.
+          </p>
+          <Link to="/recommendations/settings">
+            <Btn variant="outline" className="w-full">
+              Recommendation settings
+            </Btn>
+          </Link>
         </Card>
       </div>
 

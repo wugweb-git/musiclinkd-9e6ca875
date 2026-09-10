@@ -9,10 +9,14 @@ export const Route = createFileRoute("/profile/insights")({
       { title: "Profile insights — MusicLinkd" },
       {
         name: "description",
-        content: "See who is finding your MusicLinkd profile: views, plays, search appearances and where your audience is based.",
+        content:
+          "See who is finding your MusicLinkd profile: views, plays, search appearances and where your audience is based.",
       },
       { property: "og:title", content: "Profile insights — MusicLinkd" },
-      { property: "og:description", content: "Views, plays, search appearances and audience cities for your profile." },
+      {
+        property: "og:description",
+        content: "Views, plays, search appearances and audience cities for your profile.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -71,7 +75,10 @@ function Insights() {
                   <span className="tabular-nums text-muted-foreground">{a.share}%</span>
                 </div>
                 <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-subtle">
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${a.share}%` }} />
+                  <div
+                    className="h-full rounded-full bg-primary"
+                    style={{ width: `${a.share}%` }}
+                  />
                 </div>
               </div>
             ))}
@@ -81,8 +88,8 @@ function Insights() {
         <section className="mt-6 rounded-3xl border border-border bg-card p-5">
           <p className="text-sm font-semibold">Get seen more</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {me.name.split(" ")[0]}, your profile is {profileCompletion.percent}% complete. Finishing these lifts search
-            ranking.
+            {me.name.split(" ")[0]}, your profile is {profileCompletion.percent}% complete.
+            Finishing these lifts search ranking.
           </p>
           <ul className="mt-3 space-y-1.5">
             {profileCompletion.missing.map((m) => (

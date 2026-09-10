@@ -13,7 +13,8 @@ export const Route = createFileRoute("/collab/$id/activity")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "A chronological log of everything that happened inside a MusicLinkd collaboration.",
+          content:
+            "A chronological log of everything that happened inside a MusicLinkd collaboration.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
         { property: "og:description", content: "See who did what, and when." },
@@ -43,7 +44,10 @@ function Activity() {
   return (
     <WorkspaceShell project={project} tab="activity">
       {project.activity.length === 0 ? (
-        <EmptyState title="No activity yet" body="Activity appears as people join, upload and complete work." />
+        <EmptyState
+          title="No activity yet"
+          body="Activity appears as people join, upload and complete work."
+        />
       ) : (
         <>
           <Label>All activity</Label>

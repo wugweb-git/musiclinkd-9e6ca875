@@ -9,7 +9,8 @@ export const Route = createFileRoute("/portfolio/settings")({
       { title: "Portfolio settings — MusicLinkd" },
       {
         name: "description",
-        content: "Control who can see your portfolio, how work is ordered and which media plays first.",
+        content:
+          "Control who can see your portfolio, how work is ordered and which media plays first.",
       },
       { property: "og:title", content: "Portfolio settings — MusicLinkd" },
       { property: "og:description", content: "Visibility, ordering and media preferences." },
@@ -56,7 +57,11 @@ function PortfolioSettings() {
           {[
             { key: "custom", label: "My custom order", blurb: "Use the order you set in Reorder." },
             { key: "recent", label: "Most recent first", blurb: "Newest work at the top." },
-            { key: "featured", label: "Featured first", blurb: "Featured work leads, then recent." },
+            {
+              key: "featured",
+              label: "Featured first",
+              blurb: "Featured work leads, then recent.",
+            },
           ].map((o) => (
             <button
               key={o.key}

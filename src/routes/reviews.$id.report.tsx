@@ -8,7 +8,10 @@ export const Route = createFileRoute("/reviews/$id/report")({
   head: () => ({
     meta: [
       { title: "Report a review | MusicLinkd" },
-      { name: "description", content: "Flag a review that breaks the rules and tell the team what is wrong with it." },
+      {
+        name: "description",
+        content: "Flag a review that breaks the rules and tell the team what is wrong with it.",
+      },
       { property: "og:title", content: "Report a review | MusicLinkd" },
       { property: "og:description", content: "Flag a review that breaks the rules." },
       { property: "og:type", content: "website" },
@@ -45,10 +48,13 @@ function ReportReview() {
           <Card>
             <h2 className="text-[19px] leading-tight">Thanks — the team will look at it</h2>
             <p className="mt-2 text-[13px] text-muted-foreground">
-              The review stays visible while it is checked. You will hear back either way, usually within two days.
+              The review stays visible while it is checked. You will hear back either way, usually
+              within two days.
             </p>
           </Card>
-          <Btn className="w-full" onClick={() => navigate({ to: "/reviews" })}>Back to reviews</Btn>
+          <Btn className="w-full" onClick={() => navigate({ to: "/reviews" })}>
+            Back to reviews
+          </Btn>
         </div>
       </Screen>
     );
@@ -75,7 +81,9 @@ function ReportReview() {
         </Card>
 
         <Card>
-          <label htmlFor="detail" className="text-sm font-semibold">Anything else? (optional)</label>
+          <label htmlFor="detail" className="text-sm font-semibold">
+            Anything else? (optional)
+          </label>
           <textarea
             id="detail"
             rows={4}

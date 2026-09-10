@@ -15,7 +15,10 @@ export const Route = createFileRoute("/auth/verify-email")({
   head: () => ({
     meta: [
       { title: "Confirm your email — MusicLinkd" },
-      { name: "description", content: "Confirm your email address to activate your MusicLinkd account." },
+      {
+        name: "description",
+        content: "Confirm your email address to activate your MusicLinkd account.",
+      },
       { property: "og:title", content: "Confirm your email — MusicLinkd" },
       { property: "og:description", content: "One tap and your MusicLinkd account is ready." },
       { property: "og:type", content: "website" },
@@ -63,7 +66,11 @@ function VerifyEmail() {
         }
       />
 
-      {sent ? <AuthNotice tone="success" title="Link sent again">Give it a minute to arrive.</AuthNotice> : null}
+      {sent ? (
+        <AuthNotice tone="success" title="Link sent again">
+          Give it a minute to arrive.
+        </AuthNotice>
+      ) : null}
 
       <div className="rounded-3xl border border-border bg-card p-4">
         <p className="text-[13px] font-semibold">Not arrived?</p>

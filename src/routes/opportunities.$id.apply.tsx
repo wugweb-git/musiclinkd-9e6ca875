@@ -19,9 +19,15 @@ export const Route = createFileRoute("/opportunities/$id/apply")({
     return {
       meta: [
         { title },
-        { name: "description", content: "Attach portfolio work, write a short pitch and submit your application." },
+        {
+          name: "description",
+          content: "Attach portfolio work, write a short pitch and submit your application.",
+        },
         { property: "og:title", content: title },
-        { property: "og:description", content: "Apply with proof of fit — portfolio first, pitch second." },
+        {
+          property: "og:description",
+          content: "Apply with proof of fit — portfolio first, pitch second.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -50,7 +56,8 @@ function ApplyFlow() {
     );
   }
 
-  const go = (s: Step) => nav({ to: "/opportunities/$id/apply", params: { id }, search: { step: s } });
+  const go = (s: Step) =>
+    nav({ to: "/opportunities/$id/apply", params: { id }, search: { step: s } });
   const idx = order.indexOf(step);
 
   if (step === "done") {
@@ -64,7 +71,8 @@ function ApplyFlow() {
             </span>
             <h2 className="text-[20px] leading-tight">You're in for {o.title}</h2>
             <p className="text-[13px] text-muted-foreground">
-              {o.poster.name} usually responds within 2 days. You'll get a notification when your application is viewed.
+              {o.poster.name} usually responds within 2 days. You'll get a notification when your
+              application is viewed.
             </p>
           </Card>
           <Link to="/opportunities/applications">
@@ -86,7 +94,10 @@ function ApplyFlow() {
       <div className="space-y-4 px-5 pt-4 pb-28">
         <div className="flex items-center gap-1.5">
           {order.slice(0, 3).map((s, i) => (
-            <span key={s} className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`} />
+            <span
+              key={s}
+              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`}
+            />
           ))}
         </div>
 
@@ -105,13 +116,25 @@ function ApplyFlow() {
                   <button
                     key={p.id}
                     type="button"
-                    onClick={() => setPicked((prev) => (on ? prev.filter((x) => x !== p.id) : prev.length < 3 ? [...prev, p.id] : prev))}
+                    onClick={() =>
+                      setPicked((prev) =>
+                        on
+                          ? prev.filter((x) => x !== p.id)
+                          : prev.length < 3
+                            ? [...prev, p.id]
+                            : prev,
+                      )
+                    }
                     className={`overflow-hidden rounded-[20px] border text-left ${on ? "border-primary" : "border-border"} bg-card`}
                   >
-                    <span className="flex h-20 w-full items-center justify-center bg-subtle text-2xl">{workType(p.kind).emoji}</span>
+                    <span className="flex h-20 w-full items-center justify-center bg-subtle text-2xl">
+                      {workType(p.kind).emoji}
+                    </span>
                     <span className="block p-3">
                       <span className="block truncate text-[13px] font-semibold">{p.title}</span>
-                      <span className="block text-[11px] text-muted-foreground">{workType(p.kind).label}</span>
+                      <span className="block text-[11px] text-muted-foreground">
+                        {workType(p.kind).label}
+                      </span>
                     </span>
                   </button>
                 );
@@ -129,7 +152,9 @@ function ApplyFlow() {
           <>
             <div>
               <h2 className="text-[19px] leading-tight">Your pitch</h2>
-              <p className="mt-1 text-[13px] text-muted-foreground">Three lines beats three paragraphs. Say why you fit this brief.</p>
+              <p className="mt-1 text-[13px] text-muted-foreground">
+                Three lines beats three paragraphs. Say why you fit this brief.
+              </p>
             </div>
             <textarea
               value={message}
@@ -159,7 +184,10 @@ function ApplyFlow() {
             <Card className="space-y-2">
               <StatusPill label="Attached work" tone="brand" />
               {picked.length === 0 ? (
-                <p className="text-[13px] text-muted-foreground">No portfolio attached — applications with work are 4× more likely to be shortlisted.</p>
+                <p className="text-[13px] text-muted-foreground">
+                  No portfolio attached — applications with work are 4× more likely to be
+                  shortlisted.
+                </p>
               ) : (
                 picked.map((pid) => (
                   <p key={pid} className="text-[13px]">
@@ -174,7 +202,8 @@ function ApplyFlow() {
               {rate ? <p className="text-[12px] text-muted-foreground">Rate: {rate}</p> : null}
             </Card>
             <p className="text-[12px] text-muted-foreground">
-              Your public profile, verification badges and reviews are shared with {o.poster.name} when you apply.
+              Your public profile, verification badges and reviews are shared with {o.poster.name}{" "}
+              when you apply.
             </p>
           </>
         ) : null}
