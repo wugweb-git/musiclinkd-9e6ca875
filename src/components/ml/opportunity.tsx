@@ -55,7 +55,7 @@ export function MatchBar({ score, reasons }: { score: number; reasons: string[] 
     <div className="rounded-md bg-subtle p-3">
       <div className="flex items-baseline justify-between">
         <span className="text-1 font-semibold">Fit for you</span>
-        <span className="text-2 font-bold text-primary">{score}%</span>
+        <span className="text-1 font-bold text-primary">{score}%</span>
       </div>
       <div className="mt-1.5 h-1.5 rounded-full bg-card">
         <div className="h-1.5 rounded-full bg-primary" style={{ width: `${score}%` }} />
@@ -123,8 +123,8 @@ export function OpportunityCard({
           <StatusPill label={o.workMode} />
           {o.featured ? <StatusPill label="Featured" tone="warn" /> : null}
         </div>
-        <h3 className="mt-2 text-2-lg leading-snug">{o.title}</h3>
-        <p className="mt-1 line-clamp-2 text-2 text-muted-foreground">{o.summary}</p>
+        <h3 className="mt-2 text-2 leading-snug">{o.title}</h3>
+        <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{o.summary}</p>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <Wallet size={13} /> {payLabel(o)}
@@ -173,7 +173,7 @@ export function ApplicationCard({ a, o }: { a: Application; o?: Opportunity }) {
         <p className="truncate text-1 text-muted-foreground">
           {o?.poster.name ?? "—"} · applied {a.submittedAt}
         </p>
-        <p className="line-clamp-2 text-2 text-text2">{a.message}</p>
+        <p className="line-clamp-2 text-1 text-text2">{a.message}</p>
       </Card>
     </Link>
   );
@@ -198,7 +198,7 @@ export function ApplicantCard({ a }: { a: Applicant }) {
               {a.headline} · {a.city}
             </p>
           </div>
-          <span className="shrink-0 text-2 font-bold text-primary">{a.matchScore}%</span>
+          <span className="shrink-0 text-1 font-bold text-primary">{a.matchScore}%</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {a.matchReasons.slice(0, 2).map((r) => (

@@ -43,7 +43,7 @@ const toneStyle: Record<string, { bg: string; fg: string }> = {
   ok: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
   info: { bg: "var(--pink-container)", fg: "var(--primary)" },
-  off: { bg: "var(--surface-subtle)", fg: "var(--text-2)" },
+  off: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
 };
 
 export function BookingStatusPill({ status }: { status: BookingStatus }) {

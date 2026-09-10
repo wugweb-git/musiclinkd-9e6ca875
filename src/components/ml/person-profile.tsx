@@ -215,7 +215,7 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
               <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
                 Profile insights
               </p>
-              <h2 className="mt-1 text-2-lg">{profileInsights.range}</h2>
+              <h2 className="mt-1 text-2">{profileInsights.range}</h2>
             </div>
             <BarChart3 size={18} className="text-primary" aria-hidden />
           </div>
@@ -449,7 +449,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
                   className="aspect-square w-full object-cover"
                 />
                 <div className="p-3">
-                  <h3 className="truncate text-2">{release.title}</h3>
+                  <h3 className="truncate text-1">{release.title}</h3>
                   <p className="mt-1 truncate text-1 text-muted-foreground">
                     {release.kind} · {release.year}
                   </p>

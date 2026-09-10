@@ -31,7 +31,7 @@ export function ProfileSection({
   return (
     <section className="mt-6">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <h2 className="text-2-lg">{title}</h2>
+        <h2 className="text-2">{title}</h2>
         {action ? (
           <button type="button" onClick={onAction} className="text-xs font-semibold text-primary">
             {action}
@@ -97,7 +97,7 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
       className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-1 font-bold uppercase tracking-wide"
       style={{
         background: industry ? "var(--pink-container)" : "var(--surface-subtle)",
-        color: industry ? "var(--primary)" : "var(--text-2)",
+        color: industry ? "var(--primary)" : "var(--text-secondary)",
       }}
       title={tier}
     >
@@ -114,12 +114,12 @@ export function StatusBadge({ status }: { status: string }) {
       className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{
         background: busy ? "var(--surface-subtle)" : "var(--success-container)",
-        color: busy ? "var(--text-2)" : "var(--success)",
+        color: busy ? "var(--text-secondary)" : "var(--success)",
       }}
     >
       <span
         className="h-1.5 w-1.5 rounded-full"
-        style={{ background: busy ? "var(--text-2)" : "var(--success)" }}
+        style={{ background: busy ? "var(--text-secondary)" : "var(--success)" }}
       />
       {status}
     </span>
@@ -134,7 +134,7 @@ export function TagChip({
   tone?: "subtle" | "pink" | "purple";
 }) {
   const styles: Record<string, { background: string; color: string }> = {
-    subtle: { background: "var(--surface-subtle)", color: "var(--text-2)" },
+    subtle: { background: "var(--surface-subtle)", color: "var(--text-secondary)" },
     pink: { background: "var(--pink-container)", color: "var(--primary)" },
     purple: { background: "var(--status-category-bg)", color: "var(--status-category-text)" },
   };
@@ -305,7 +305,7 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
         >
           Featured {featured.kind}
         </span>
-        <h3 className="mt-2 text-3 text-background">{featured.title}</h3>
+        <h3 className="mt-2 text-2 text-background">{featured.title}</h3>
         <p className="text-1 opacity-85">{featured.meta}</p>
       </div>
     </article>
@@ -420,7 +420,7 @@ export function VideoCard({ v }: { v: VideoItem }) {
         </span>
       </div>
       <div className="p-3">
-        <h3 className="truncate text-2">{v.title}</h3>
+        <h3 className="truncate text-1">{v.title}</h3>
         <p className="truncate text-1 text-muted-foreground">{v.context}</p>
       </div>
     </article>
@@ -474,7 +474,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-2">{s.name}</h3>
         {s.from ? (
-          <span className="shrink-0 text-2 font-bold text-primary">{s.from}</span>
+          <span className="shrink-0 text-1 font-bold text-primary">{s.from}</span>
         ) : (
           <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
@@ -599,7 +599,7 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
         className="h-12 w-12 rounded-2xl object-cover"
       />
       <div className="min-w-0">
-        <h3 className="truncate text-2">{m.title}</h3>
+        <h3 className="truncate text-1">{m.title}</h3>
         <p className="truncate text-1 text-muted-foreground">{m.meta}</p>
       </div>
     </Link>
@@ -685,7 +685,7 @@ export function ShareSheet({
             <p className="text-1 font-bold uppercase tracking-wide opacity-70">
               MusicLinkd identity
             </p>
-            <p className="mt-1 truncate text-2 font-semibold">{url}</p>
+            <p className="mt-1 truncate text-1 font-semibold">{url}</p>
             <p className="mt-1 text-1 opacity-75">Scan to open this profile in MusicLinkd.</p>
           </div>
         </div>

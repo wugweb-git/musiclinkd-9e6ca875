@@ -10,7 +10,7 @@ import { ChevronRight, Star } from "lucide-react";
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
 const toneStyle: Record<Tone, { bg: string; fg: string }> = {
-  neutral: { bg: "var(--surface-subtle)", fg: "var(--text-2)" },
+  neutral: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
   good: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
   bad: { bg: "var(--danger-container)", fg: "var(--danger)" },
@@ -41,9 +41,7 @@ export function StatusPill({
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <section
-      className={`rounded-lg border border-border bg-card p-4 shadow-elevation-2 ${className}`}
-    >
+    <section className={`rounded-lg border border-border bg-card p-4 ${className}`}>
       {children}
     </section>
   );
@@ -140,8 +138,8 @@ export function EmptyState({
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
-      <h3 className="text-2-lg leading-tight">{title}</h3>
-      <p className="mx-auto mt-2 max-w-[280px] text-2 text-muted-foreground">{body}</p>
+      <h3 className="text-2 leading-tight">{title}</h3>
+      <p className="mx-auto mt-2 max-w-[280px] text-1 text-muted-foreground">{body}</p>
       {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
     </div>
   );
@@ -187,7 +185,7 @@ export function Meter({
   const pct = max ? Math.round((value / max) * 100) : 0;
   return (
     <div>
-      <div className="flex items-baseline justify-between text-2">
+      <div className="flex items-baseline justify-between text-1">
         <span className="font-semibold">{label}</span>
         <span className="text-muted-foreground">{hint ?? value}</span>
       </div>
@@ -233,8 +231,8 @@ export function Dialog({
         className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]"
       />
       <div className="relative w-full rounded-lg border border-border bg-card p-5">
-        <h2 className="text-3 leading-tight">{title}</h2>
-        {body ? <p className="mt-2 text-2 text-muted-foreground">{body}</p> : null}
+        <h2 className="text-2 leading-tight">{title}</h2>
+        {body ? <p className="mt-2 text-1 text-muted-foreground">{body}</p> : null}
         {children ? <div className="mt-4 flex flex-col gap-2">{children}</div> : null}
       </div>
     </div>

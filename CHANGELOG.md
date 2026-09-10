@@ -7,14 +7,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
-- Design tokens reconciled to v9 in `src/styles.css`: radius scale 8/16/32/pill, five fluid type
-  ramps, four elevation steps, motion durations and easings, a focus-ring token, `--font-mono`
-  (JetBrains Mono, now actually loaded), spacing and opacity steps, `--container-app` and
-  `--spacing-nav-clear`
+- Design tokens reconciled to v9 in `src/styles.css`, taken verbatim from
+  `frontend/guide/system/ml-tokens.css` (generated from `tokens/tokens.json`): radius scale
+  8/16/32/pill, four fluid type ramps (`--type-1..4` = 12–13 / 16–18 / 22–28 / 32–44px), four
+  elevation steps, motion durations and easings, a focus-ring token, spacing and opacity steps,
+  `--container-app` and `--spacing-nav-clear`
 - `--status-category-*` (the only sanctioned purple) and `--selected-*` (pink means selected)
   semantic token pairs
-- `--text-2-lg`, a fifth deliberate type step for section headers — without it every 17px heading
-  collapses onto `--text-2` and matches the body copy beneath it
 - `AGENTS.md` — GitHub↔Lovable sync protocol and code rules
 - `CHANGELOG.md`
 - `.prettierignore` entries fencing prose out of the formatter: `.lovable/`, `roadmap.md`,
@@ -47,6 +46,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Renamed the `--text-2` *colour* token to `--text-secondary`. Mapping the type ramp into
+  Tailwind's `--text-*` namespace collided with it, and one would have silently won
 - Category badge contrast was 3.72:1, below the 4.5:1 `AGENTS.md` mandates. The new
   `--status-category-*` pair measures 8.77:1
 
@@ -56,6 +57,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   text, and it is the colour of nearly every caption in the app. It passes the 3:1 non-text floor,
   so icon use is fine. `oklch(0.56 0.0257 285.59)` would give 4.66:1. Not changed here: it repaints
   secondary text on every screen and deserves its own review.
+- `tokens.json` and its documentation disagree in three places, all recorded rather than resolved
+  here: the published guide says "there is no purple in the palette" while `tokens.json` carries
+  purple reinstated 2026-08-31 on the brand owner's instruction; `color.paper`'s description
+  narrates a change to `#ECECF1` that neither its own `$value` nor the generated CSS reflects; and
+  `README.md` promises `foundation.gestalt.*` full-fidelity scales that do not exist in
+  `tokens.json` at all
+- `--navy` is retired in the system (`--color-ink #0D0D0D` "replaces --black, --text and the
+  retired --navy", and `action.primary = ink` — the primary button is black, not pink). Not
+  migrated here: it is a colour-identity change on every screen
 - No accessibility linting: `eslint-plugin-jsx-a11y` is not registered in `eslint.config.js`, so
   the WCAG AA, contrast, `:focus-visible` and 48dp touch-target rules `AGENTS.md` mandates are
   not machine-checked. Tracked in `roadmap.md`.

@@ -40,7 +40,7 @@ export function ConditionBadge({ value }: { value: string }) {
   return (
     <span
       className="rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: "var(--surface-subtle)", color: "var(--text-2)" }}
+      style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
     >
       {value}
     </span>
@@ -238,7 +238,7 @@ export function ListingRow({ l }: { l: Listing }) {
         <div className="flex items-start justify-between gap-2">
           <Link to="/marketplace/l/$id" params={{ id: l.id }} className="min-w-0">
             <PriceBlock price={l.price} note={l.priceNote} />
-            <h3 className="line-clamp-2 text-2 leading-snug">{l.title}</h3>
+            <h3 className="line-clamp-2 text-1 leading-snug">{l.title}</h3>
           </Link>
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
         </div>
@@ -499,7 +499,7 @@ export function OfferSheet({
           <div className="mb-5 flex items-center gap-3 rounded-3xl border border-border p-3">
             <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-2xl object-cover" />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-2 font-semibold">{listing.title}</p>
+              <p className="truncate text-1 font-semibold">{listing.title}</p>
               <p className="text-1 text-muted-foreground">Asking {listing.price}</p>
             </div>
           </div>
@@ -587,7 +587,7 @@ export function SectionRow({
     <section className="mb-7">
       <div className="mb-3 flex items-baseline justify-between px-5">
         <div>
-          <h2 className="text-2-lg">{title}</h2>
+          <h2 className="text-2">{title}</h2>
           {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {to ? (

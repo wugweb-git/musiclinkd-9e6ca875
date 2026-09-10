@@ -102,7 +102,7 @@ export function StateCard({
       style={tone === "error" ? { borderColor: "var(--danger, #DC2626)" } : undefined}
       role={tone === "error" ? "alert" : undefined}
     >
-      <h3 className="text-2-lg">{title}</h3>
+      <h3 className="text-2">{title}</h3>
       <p className="mx-auto mt-1.5 max-w-[280px] text-sm text-muted-foreground">{body}</p>
       {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
     </div>

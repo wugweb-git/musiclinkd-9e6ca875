@@ -162,7 +162,7 @@ export function AvailabilityBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
     Available: { bg: "var(--success-container)", fg: "var(--success)" },
     Selective: { bg: "var(--warn-container)", fg: "var(--warn)" },
-    Booked: { bg: "var(--surface-subtle)", fg: "var(--text-2)" },
+    Booked: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
   };
   const c = map[status] ?? map["Booked"]!;
   return (
@@ -240,7 +240,7 @@ export function Sheet({
 export function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-3 px-5">
-      <h2 className="min-w-0 truncate text-2-lg">{title}</h2>
+      <h2 className="min-w-0 truncate text-2">{title}</h2>
       {action ? (
         <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-primary">
           {action}

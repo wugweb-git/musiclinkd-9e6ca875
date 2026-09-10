@@ -67,7 +67,7 @@ export function OutcomePanel({
     <Card className="mb-5">
       <Tag tone={tone}>{tone === "ok" ? "Confirmed" : "Closed"}</Tag>
       <h2 className="mt-3 text-2 font-semibold">{title}</h2>
-      <p className="mt-1 text-2 text-muted-foreground">{body}</p>
+      <p className="mt-1 text-1 text-muted-foreground">{body}</p>
       {children ? <div className="mt-4">{children}</div> : null}
     </Card>
   );
@@ -87,8 +87,8 @@ export function ConfirmPanel({
 }) {
   return (
     <Card className="mb-5">
-      <h2 className="text-2-lg font-semibold">{title}</h2>
-      <p className="mt-1 text-2 text-muted-foreground">{body}</p>
+      <h2 className="text-2 font-semibold">{title}</h2>
+      <p className="mt-1 text-1 text-muted-foreground">{body}</p>
       <Label>What happens</Label>
       <ul className="space-y-1.5">
         {consequences.map((c) => (

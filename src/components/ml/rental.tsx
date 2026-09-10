@@ -22,7 +22,7 @@ export function RentalAvailabilityBadge({
   const map = {
     ok: { bg: "var(--success-container)", fg: "var(--success)" },
     warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-    off: { bg: "var(--surface-subtle)", fg: "var(--text-2)" },
+    off: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
   } as const;
   const c = map[tone];
   return (
@@ -60,9 +60,9 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
     "Offer sent": ["var(--purple-container)", "var(--purple)"],
     Confirmed: ["var(--pink-container)", "var(--primary)"],
     Active: ["var(--success-container)", "var(--success)"],
-    Completed: ["var(--surface-subtle)", "var(--text-2)"],
-    Cancelled: ["var(--surface-subtle)", "var(--text-2)"],
-    Declined: ["var(--surface-subtle)", "var(--text-2)"],
+    Completed: ["var(--surface-subtle)", "var(--text-secondary)"],
+    Cancelled: ["var(--surface-subtle)", "var(--text-secondary)"],
+    Declined: ["var(--surface-subtle)", "var(--text-secondary)"],
   };
   const [bg, fg] = tone[status];
   return (
@@ -165,7 +165,7 @@ export function EquipmentRow({ e, action }: { e: Equipment; action?: ReactNode }
         <div className="flex items-start justify-between gap-2">
           <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="min-w-0">
             <RentalPriceBlock e={e} />
-            <h3 className="line-clamp-2 text-2 leading-snug">{e.name}</h3>
+            <h3 className="line-clamp-2 text-1 leading-snug">{e.name}</h3>
           </Link>
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
         </div>
@@ -361,7 +361,7 @@ export function PriceBreakdown({
         ))}
       </div>
       <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-        <span className="text-2 font-semibold">Estimated total</span>
+        <span className="text-1 font-semibold">Estimated total</span>
         <span className="text-xl font-bold">{inr(total)}</span>
       </div>
       <div
@@ -376,7 +376,7 @@ export function PriceBreakdown({
             Held by the provider, returned after the equipment is checked.
           </p>
         </div>
-        <span className="shrink-0 text-2 font-bold">{inr(deposit)}</span>
+        <span className="shrink-0 text-1 font-bold">{inr(deposit)}</span>
       </div>
       <p className="mt-3 text-1 text-muted-foreground">
         Estimate only. Nothing is charged on MusicLinkd — the provider confirms the final amount in
@@ -445,7 +445,7 @@ export function FulfilmentPicker({
               <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-2 font-semibold">{o.id}</span>
+              <span className="block text-1 font-semibold">{o.id}</span>
               <span className="block truncate text-1 text-muted-foreground">{o.line}</span>
             </span>
             <span
@@ -481,7 +481,7 @@ export function BookingCard({
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="line-clamp-2 text-2 leading-snug">{e.name}</h3>
+            <h3 className="line-clamp-2 text-1 leading-snug">{e.name}</h3>
             <RentalStatusPill status={b.status} />
           </div>
           <p className="mt-1 truncate text-1 text-muted-foreground">{provider.name}</p>
@@ -520,7 +520,7 @@ export function RentalRequestCard({
           className="h-14 w-14 shrink-0 rounded-2xl object-cover"
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-2 font-semibold">{e.name}</p>
+          <p className="truncate text-1 font-semibold">{e.name}</p>
           <p className="truncate text-1 text-muted-foreground">
             {dates} · {quantity} unit{quantity > 1 ? "s" : ""} · {price}
           </p>

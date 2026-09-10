@@ -35,7 +35,7 @@ const toneStyle: Record<string, { bg: string; fg: string }> = {
   ok: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
   info: { bg: "var(--pink-container)", fg: "var(--primary)" },
-  off: { bg: "var(--surface-subtle)", fg: "var(--text-2)" },
+  off: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
   bad: { bg: "color-mix(in oklab, var(--destructive) 10%, transparent)", fg: "var(--destructive)" },
 };
 
@@ -106,7 +106,7 @@ export function ParticipantStack({
       {rest > 0 ? (
         <span
           className="ml-[-8px] flex h-7 w-7 items-center justify-center rounded-full border-2 border-card text-1 font-bold"
-          style={{ background: "var(--surface-subtle)", color: "var(--text-2)" }}
+          style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
         >
           +{rest}
         </span>
@@ -249,7 +249,7 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
       ) : (
         <span
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base"
-          style={{ background: "var(--surface-subtle)", color: "var(--text-2)" }}
+          style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
         >
           {meta.icon}
         </span>
@@ -392,12 +392,12 @@ export function ActivityItem({ a }: { a: ActivityEntry }) {
     <li className="flex gap-3 py-3">
       <span
         className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-1"
-        style={{ background: "var(--surface-subtle)", color: "var(--text-2)" }}
+        style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
       >
         {activityIcon[a.kind]}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-2">
+        <p className="text-1">
           <span className="font-semibold">{a.actor}</span> {a.text}
         </p>
         <p className="text-1 text-muted-foreground">{a.time}</p>
@@ -410,11 +410,11 @@ export function ProposalSummary({ p }: { p: Proposal }) {
   return (
     <Card>
       <Label>Scope</Label>
-      <p className="mb-4 text-2">{p.scope}</p>
+      <p className="mb-4 text-1">{p.scope}</p>
       <Label>Deliverables</Label>
       <ul className="mb-4 space-y-1.5">
         {p.deliverables.map((d) => (
-          <li key={d} className="flex items-start gap-2 text-2">
+          <li key={d} className="flex items-start gap-2 text-1">
             <Check size={14} className="mt-0.5 shrink-0 text-primary" />
             {d}
           </li>
@@ -423,18 +423,18 @@ export function ProposalSummary({ p }: { p: Proposal }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label>Timeline</Label>
-          <p className="text-2">{p.timeline}</p>
+          <p className="text-1">{p.timeline}</p>
         </div>
         <div>
           <Label>Compensation</Label>
-          <p className="text-2">{p.compensation}</p>
+          <p className="text-1">{p.compensation}</p>
         </div>
       </div>
       {p.notes ? (
         <>
           <div className="my-4 h-px bg-border" />
           <Label>Notes</Label>
-          <p className="text-2 text-muted-foreground">{p.notes}</p>
+          <p className="text-1 text-muted-foreground">{p.notes}</p>
         </>
       ) : null}
     </Card>
@@ -575,7 +575,7 @@ export function UploadPanel({
         className="flex w-full flex-col items-center rounded-3xl border border-dashed border-border bg-card px-6 py-8"
       >
         <Upload size={20} className="mb-2 text-primary" />
-        <span className="text-2 font-semibold">Select a file to upload</span>
+        <span className="text-1 font-semibold">Select a file to upload</span>
         <span className="mt-1 text-1 text-muted-foreground">
           Audio, video, images, documents, lyrics or contracts
         </span>
@@ -586,7 +586,7 @@ export function UploadPanel({
     return (
       <Card>
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-2 font-semibold">Uploading Mix v4.wav</p>
+          <p className="text-1 font-semibold">Uploading Mix v4.wav</p>
           <button type="button" onClick={onCancel} aria-label="Cancel upload">
             <X size={16} className="text-muted-foreground" />
           </button>
@@ -604,7 +604,7 @@ export function UploadPanel({
         <div className="flex items-start gap-3">
           <AlertTriangle size={18} className="mt-0.5 shrink-0 text-destructive" />
           <div className="flex-1">
-            <p className="text-2 font-semibold">Upload failed</p>
+            <p className="text-1 font-semibold">Upload failed</p>
             <p className="text-1 text-muted-foreground">
               Mix v4.wav couldn't be uploaded. Your connection dropped at 46%.
             </p>
@@ -620,7 +620,7 @@ export function UploadPanel({
     <Card>
       <div className="flex items-center gap-3">
         <Check size={18} className="text-[color:var(--success)]" />
-        <p className="text-2 font-semibold">Mix v4.wav uploaded to the project</p>
+        <p className="text-1 font-semibold">Mix v4.wav uploaded to the project</p>
       </div>
     </Card>
   );

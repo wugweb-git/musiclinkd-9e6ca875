@@ -87,7 +87,7 @@ export function TalentCard({ t }: { t: Talent }) {
       </div>
       <div className="p-3">
         <div className="flex items-center gap-1">
-          <h3 className="truncate text-2">{t.name}</h3>
+          <h3 className="truncate text-1">{t.name}</h3>
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.role}</p>
@@ -115,7 +115,7 @@ export function TalentGridCard({ t }: { t: Talent }) {
       />
       <div className="p-3">
         <div className="flex items-center gap-1">
-          <h3 className="truncate text-2">{t.name}</h3>
+          <h3 className="truncate text-1">{t.name}</h3>
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.location}</p>

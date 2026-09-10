@@ -117,12 +117,12 @@ export function QrIdentityCard({
           style={{ border: `2px solid ${s.dark}20` }}
         />
         <div className="flex items-center justify-center gap-1.5">
-          <h2 className="text-3 leading-tight" style={{ color: s.dark }}>
+          <h2 className="text-2 leading-tight" style={{ color: s.dark }}>
             {name}
           </h2>
           {verified ? <VerifiedBadge size={15} /> : null}
         </div>
-        <p className="text-2" style={{ opacity: 0.72 }}>
+        <p className="text-1" style={{ opacity: 0.72 }}>
           {role}
         </p>
         {tagline && !compact ? (
@@ -251,7 +251,7 @@ export function DestinationPreviewCard({ preview }: { preview: DestinationPrevie
             <h2 className="min-w-0 text-2 leading-tight">{preview.title}</h2>
             {preview.verified ? <VerifiedBadge size={15} /> : null}
           </div>
-          <p className="mt-1 text-2 text-muted-foreground">{preview.subtitle}</p>
+          <p className="mt-1 text-1 text-muted-foreground">{preview.subtitle}</p>
           <p className="mt-0.5 truncate text-1 text-muted-foreground">{preview.meta}</p>
           {preview.extra ? (
             <p className="mt-0.5 truncate text-1 text-muted-foreground">{preview.extra}</p>
@@ -277,7 +277,7 @@ export function StateCard({
 }) {
   return (
     <section className="rounded-lg border border-border bg-card p-6 text-center">
-      <h2 className="text-3 leading-tight">{title}</h2>
+      <h2 className="text-2 leading-tight">{title}</h2>
       <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">{body}</p>
       {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
     </section>
@@ -336,7 +336,7 @@ export function CopyLinkRow({ url }: { url: string }) {
   );
   return (
     <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5">
-      <span className="min-w-0 flex-1 truncate text-2 text-muted-foreground">{url}</span>
+      <span className="min-w-0 flex-1 truncate text-1 text-muted-foreground">{url}</span>
       <button
         type="button"
         aria-label="Copy link"

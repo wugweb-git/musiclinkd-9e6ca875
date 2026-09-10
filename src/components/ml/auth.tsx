@@ -24,7 +24,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
       >
         <Music2 size={18} className="text-primary" />
       </span>
-      <span className="text-2-lg font-semibold tracking-tight">MusicLinkd</span>
+      <span className="text-2 font-semibold tracking-tight">MusicLinkd</span>
     </div>
   );
 }
@@ -33,7 +33,7 @@ export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-6">
       <h1 className="text-3 font-semibold leading-tight tracking-tight">{title}</h1>
-      {sub ? <p className="mt-2 text-2 leading-relaxed text-text2">{sub}</p> : null}
+      {sub ? <p className="mt-2 text-1 leading-relaxed text-text2">{sub}</p> : null}
     </div>
   );
 }
@@ -77,7 +77,7 @@ export function AuthNotice({
       className="mb-5 rounded-3xl px-4 py-3.5"
       style={{ background: s.bg }}
     >
-      <p className={`text-2 font-semibold ${s.fg}`}>{title}</p>
+      <p className={`text-1 font-semibold ${s.fg}`}>{title}</p>
       {children ? (
         <div className="mt-1 text-[12.5px] leading-relaxed text-text2">{children}</div>
       ) : null}
