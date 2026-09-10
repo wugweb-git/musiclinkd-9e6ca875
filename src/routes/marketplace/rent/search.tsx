@@ -22,10 +22,14 @@ export const Route = createFileRoute("/marketplace/rent/search")({
       { title: "Search Rental Equipment | MusicLinkd" },
       {
         name: "description",
-        content: "Search music equipment for rent by name, brand, model, category, provider or city.",
+        content:
+          "Search music equipment for rent by name, brand, model, category, provider or city.",
       },
       { property: "og:title", content: "Search Rental Equipment | MusicLinkd" },
-      { property: "og:description", content: "Find available gear near you and check dates instantly." },
+      {
+        property: "og:description",
+        content: "Find available gear near you and check dates instantly.",
+      },
     ],
   }),
   component: RentSearch,
@@ -61,7 +65,9 @@ function RentSearch() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {recentRentalSearches.map((s) => (
-                <Chip key={s} onClick={() => setQ(s)}>{s}</Chip>
+                <Chip key={s} onClick={() => setQ(s)}>
+                  {s}
+                </Chip>
               ))}
             </div>
           </section>
@@ -71,7 +77,9 @@ function RentSearch() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {popularRentalSearches.map((s) => (
-                <Chip key={s} onClick={() => setQ(s)}>{s}</Chip>
+                <Chip key={s} onClick={() => setQ(s)}>
+                  {s}
+                </Chip>
               ))}
             </div>
           </section>
@@ -82,7 +90,9 @@ function RentSearch() {
             <div className="flex flex-wrap gap-2">
               {rentalCategories.map((c) => (
                 <Link key={c.slug} to="/marketplace/rent/c/$slug" params={{ slug: c.slug }}>
-                  <Chip>{c.emoji} {c.label}</Chip>
+                  <Chip>
+                    {c.emoji} {c.label}
+                  </Chip>
                 </Link>
               ))}
             </div>
@@ -140,7 +150,11 @@ function RentSearch() {
         </>
       )}
 
-      <RentalFilterSheet open={filters} onClose={() => setFilters(false)} results={results.length} />
+      <RentalFilterSheet
+        open={filters}
+        onClose={() => setFilters(false)}
+        results={results.length}
+      />
       <SortSheet
         open={sortOpen}
         onClose={() => setSortOpen(false)}

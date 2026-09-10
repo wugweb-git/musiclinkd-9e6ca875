@@ -30,7 +30,11 @@ function NewWork() {
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-8">
-      <TopBar title={`New ${t.label.toLowerCase()}`} subtitle="Step 2 of 3 · Details" back="/portfolio/new" />
+      <TopBar
+        title={`New ${t.label.toLowerCase()}`}
+        subtitle="Step 2 of 3 · Details"
+        back="/portfolio/new"
+      />
       <main className="px-5 pt-4">
         {!signedIn && !loading ? (
           <div className="mb-5">

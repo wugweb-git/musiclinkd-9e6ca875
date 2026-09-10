@@ -25,7 +25,6 @@ const navItems = [
   { to: "/me", label: "Profile", icon: User },
 ];
 
-
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   return (
@@ -36,10 +35,7 @@ export function BottomNav() {
           const Icon = item.icon;
           return (
             <li key={item.to} className="flex-1">
-              <Link
-                to={item.to}
-                className="flex h-16 flex-col items-center justify-center gap-1"
-              >
+              <Link to={item.to} className="flex h-16 flex-col items-center justify-center gap-1">
                 <span
                   className={
                     active
@@ -92,9 +88,7 @@ export function TopBar({
       ) : null}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-[22px] leading-tight">{title}</h1>
-        {subtitle ? (
-          <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
-        ) : null}
+        {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
       </div>
       {right}
     </header>
@@ -215,7 +209,6 @@ export function Btn({
   );
 }
 
-
 export function Sheet({
   open,
   onClose,
@@ -249,7 +242,9 @@ export function SectionHeader({ title, action }: { title: string; action?: React
     <div className="mb-3 flex items-baseline justify-between gap-3 px-5">
       <h2 className="min-w-0 truncate text-[17px]">{title}</h2>
       {action ? (
-        <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-primary">{action}</span>
+        <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-primary">
+          {action}
+        </span>
       ) : null}
     </div>
   );

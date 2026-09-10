@@ -10,10 +10,14 @@ export const Route = createFileRoute("/onboarding/skip")({
       { title: "Finish your profile later — MusicLinkd" },
       {
         name: "description",
-        content: "Pause setup without losing anything. We'll keep your answers and remind you what's still missing.",
+        content:
+          "Pause setup without losing anything. We'll keep your answers and remind you what's still missing.",
       },
       { property: "og:title", content: "Finish your profile later — MusicLinkd" },
-      { property: "og:description", content: "Pause your MusicLinkd profile setup and resume any time." },
+      {
+        property: "og:description",
+        content: "Pause your MusicLinkd profile setup and resume any time.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -36,8 +40,8 @@ function SkipLater() {
         <PauseCircle size={40} className="text-primary" />
         <h1 className="mt-4 text-[28px] leading-tight">We've saved your progress</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          You can use MusicLinkd right away. An incomplete profile just shows up less in search and gets fewer
-          enquiries.
+          You can use MusicLinkd right away. An incomplete profile just shows up less in search and
+          gets fewer enquiries.
         </p>
 
         <div className="mt-6 rounded-3xl border border-border bg-card p-5">

@@ -8,7 +8,11 @@ export const Route = createFileRoute("/settings/delete-account")({
   head: () => ({
     meta: [
       { title: "Delete your account — MusicLinkd" },
-      { name: "description", content: "Understand what happens to your profile, work and bookings before you delete your MusicLinkd account." },
+      {
+        name: "description",
+        content:
+          "Understand what happens to your profile, work and bookings before you delete your MusicLinkd account.",
+      },
       { property: "og:title", content: "Delete your account — MusicLinkd" },
       { property: "og:description", content: "What deletion removes, and what we must keep." },
       { property: "og:type", content: "website" },
@@ -78,7 +82,9 @@ function DeleteAccount() {
             variant="outline"
             disabled={confirm.trim().toUpperCase() !== "DELETE"}
             onClick={() =>
-              toast.error("Account deletion is handled by support on this build. Contact us from Help.")
+              toast.error(
+                "Account deletion is handled by support on this build. Contact us from Help.",
+              )
             }
           >
             Delete my account

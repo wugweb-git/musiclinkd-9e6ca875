@@ -41,7 +41,9 @@ function RentHome() {
   }, []);
 
   const recommended = equipment.filter((e) => e.reason);
-  const nearby = [...equipment].sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance)).slice(0, 5);
+  const nearby = [...equipment]
+    .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+    .slice(0, 5);
   const popular = [...equipment].sort((a, b) => b.rentals - a.rentals).slice(0, 5);
 
   return (
@@ -82,7 +84,9 @@ function RentHome() {
 
       <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {["For You", "Available today", "Near me", "Delivery", "Under ₹1k/day"].map((c, i) => (
-          <Chip key={c} active={i === 0}>{c}</Chip>
+          <Chip key={c} active={i === 0}>
+            {c}
+          </Chip>
         ))}
       </div>
 
@@ -156,7 +160,8 @@ function RentHome() {
         <div className="rounded-3xl border border-border bg-card p-5">
           <h2 className="text-[16px]">Equipment sitting idle?</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Rent it out to 72,000+ verified music professionals. You set the dates, deposit and terms.
+            Rent it out to 72,000+ verified music professionals. You set the dates, deposit and
+            terms.
           </p>
           <Link to="/marketplace/rent/list" className="mt-4 block">
             <Btn className="w-full">Rent out equipment</Btn>
@@ -168,7 +173,11 @@ function RentHome() {
         </div>
       </div>
 
-      <RentalFilterSheet open={filters} onClose={() => setFilters(false)} results={equipment.length} />
+      <RentalFilterSheet
+        open={filters}
+        onClose={() => setFilters(false)}
+        results={equipment.length}
+      />
     </Screen>
   );
 }

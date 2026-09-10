@@ -14,7 +14,8 @@ export const Route = createFileRoute("/portfolio/$id/edit")({
       { title: "Edit work — MusicLinkd portfolio" },
       {
         name: "description",
-        content: "Update the title, credits, media, metadata and visibility of this portfolio work.",
+        content:
+          "Update the title, credits, media, metadata and visibility of this portfolio work.",
       },
       { property: "og:title", content: "Edit work — MusicLinkd portfolio" },
       { property: "og:description", content: "Update details, credits and visibility." },

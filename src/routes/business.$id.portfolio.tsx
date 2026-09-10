@@ -8,7 +8,10 @@ export const Route = createFileRoute("/business/$id/portfolio")({
   head: () => ({
     meta: [
       { title: "Business portfolio | MusicLinkd" },
-      { name: "description", content: "Manage the credits, gallery and featured work shown on your business page." },
+      {
+        name: "description",
+        content: "Manage the credits, gallery and featured work shown on your business page.",
+      },
       { property: "og:title", content: "Business portfolio | MusicLinkd" },
       { property: "og:description", content: "Credits, gallery and featured work." },
       { property: "og:type", content: "website" },
@@ -30,7 +33,10 @@ function BusinessPortfolio() {
       <Screen>
         <TopBar title="Portfolio" back="/business" />
         <div className="px-5 pt-6">
-          <EmptyState title="Business not found" body="This business may have been removed or you no longer have access to it." />
+          <EmptyState
+            title="Business not found"
+            body="This business may have been removed or you no longer have access to it."
+          />
         </div>
       </Screen>
     );
@@ -56,15 +62,24 @@ function BusinessPortfolio() {
                     <StatusPill label="Public" tone="good" />
                   </div>
                   <div className="mt-3 flex gap-2">
-                    <Btn variant="outline" className="flex-1">Edit</Btn>
-                    <Btn variant="ghost" className="flex-1">Hide</Btn>
+                    <Btn variant="outline" className="flex-1">
+                      Edit
+                    </Btn>
+                    <Btn variant="ghost" className="flex-1">
+                      Hide
+                    </Btn>
                   </div>
                 </Card>
               ))}
-              <Btn variant="outline" className="w-full">Add a credit</Btn>
+              <Btn variant="outline" className="w-full">
+                Add a credit
+              </Btn>
             </div>
           ) : (
-            <EmptyState title="No credits yet" body="Add the records, films and sessions this space worked on.">
+            <EmptyState
+              title="No credits yet"
+              body="Add the records, films and sessions this space worked on."
+            >
               <Btn>Add a credit</Btn>
             </EmptyState>
           )
@@ -73,14 +88,22 @@ function BusinessPortfolio() {
             <div className="grid grid-cols-2 gap-2">
               {b.gallery.map((g) => (
                 <div key={g} className="overflow-hidden rounded-[16px] border border-border">
-                  <img src={g} alt={`${b.name} space`} className="h-28 w-full object-cover" loading="lazy" />
+                  <img
+                    src={g}
+                    alt={`${b.name} space`}
+                    className="h-28 w-full object-cover"
+                    loading="lazy"
+                  />
                 </div>
               ))}
             </div>
             <p className="text-[12px] text-muted-foreground">
-              The first photo is used as the cover on Discover. Drag to reorder once you have more than three.
+              The first photo is used as the cover on Discover. Drag to reorder once you have more
+              than three.
             </p>
-            <Btn variant="outline" className="w-full">Add photos</Btn>
+            <Btn variant="outline" className="w-full">
+              Add photos
+            </Btn>
           </div>
         )}
       </div>

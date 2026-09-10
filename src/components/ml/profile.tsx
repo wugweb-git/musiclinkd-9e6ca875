@@ -1,13 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import {
-  BadgeCheck,
-  Pause,
-  Play,
-  Share2,
-  ShieldCheck,
-  Star,
-} from "lucide-react";
+import { BadgeCheck, Pause, Play, Share2, ShieldCheck, Star } from "lucide-react";
 import type {
   AudioTrack,
   Collaborator,
@@ -40,11 +33,7 @@ export function ProfileSection({
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <h2 className="text-[17px]">{title}</h2>
         {action ? (
-          <button
-            type="button"
-            onClick={onAction}
-            className="text-xs font-semibold text-primary"
-          >
+          <button type="button" onClick={onAction} className="text-xs font-semibold text-primary">
             {action}
           </button>
         ) : null}
@@ -101,13 +90,7 @@ export function ProfileSkeleton() {
 
 /* ── Badges & chips ────────────────────────────────────────── */
 
-export function VerificationBadge({
-  tier,
-  compact,
-}: {
-  tier: string;
-  compact?: boolean;
-}) {
+export function VerificationBadge({ tier, compact }: { tier: string; compact?: boolean }) {
   const industry = tier === "Industry Verified" || tier === "Professional";
   return (
     <span
@@ -156,10 +139,7 @@ export function TagChip({
     purple: { background: "var(--purple-container)", color: "var(--purple)" },
   };
   return (
-    <span
-      className="rounded-full px-3 py-1.5 text-[11px] font-semibold"
-      style={styles[tone]}
-    >
+    <span className="rounded-full px-3 py-1.5 text-[11px] font-semibold" style={styles[tone]}>
       {children}
     </span>
   );
@@ -220,11 +200,7 @@ export function ProfileHero({
   return (
     <header>
       <div className="relative h-44">
-        <img
-          src={p.cover}
-          alt={`${p.name} cover`}
-          className="h-full w-full object-cover"
-        />
+        <img src={p.cover} alt={`${p.name} cover`} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/25 to-navy/10" />
         {back ? (
           <Link
@@ -284,9 +260,7 @@ export function ProfileHero({
           <StatusBadge status={p.availability} />
         </div>
         {owner && p.privacy !== "Public" ? (
-          <p className="mt-2 text-[11px] font-semibold text-warn">
-            Visibility: {p.privacy}
-          </p>
+          <p className="mt-2 text-[11px] font-semibold text-warn">Visibility: {p.privacy}</p>
         ) : null}
       </div>
     </header>
@@ -314,11 +288,7 @@ export function StatRow({ p }: { p: PersonProfile }) {
 
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
-export function FeaturedCard({
-  featured,
-}: {
-  featured: NonNullable<PersonProfile["featured"]>;
-}) {
+export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile["featured"]> }) {
   return (
     <article className="relative overflow-hidden rounded-3xl border border-border">
       <img
@@ -393,7 +363,12 @@ export function MiniPlayer({
   return (
     <div className="fixed inset-x-0 bottom-16 z-40 mx-auto w-full max-w-[430px] px-3 pb-2">
       <div className="flex items-center gap-3 rounded-3xl border border-border bg-card p-2.5">
-        <img src={track.artwork} alt="" aria-hidden className="h-11 w-11 rounded-2xl object-cover" />
+        <img
+          src={track.artwork}
+          alt=""
+          aria-hidden
+          className="h-11 w-11 rounded-2xl object-cover"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[12px] font-semibold">{track.title}</p>
           <div className="mt-1.5 flex h-5 items-end gap-[2px]" aria-hidden>
@@ -471,7 +446,13 @@ export function GalleryGrid({ images }: { images: string[] }) {
 export function ProjectCard({ p }: { p: ProjectItem }) {
   return (
     <article className="flex gap-3 rounded-3xl border border-border bg-card p-3">
-      <img src={p.cover} alt="" aria-hidden loading="lazy" className="h-20 w-20 rounded-2xl object-cover" />
+      <img
+        src={p.cover}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        className="h-20 w-20 rounded-2xl object-cover"
+      />
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="min-w-0 flex-1 truncate text-[14px]">{p.name}</h3>
@@ -531,7 +512,13 @@ export function ExperienceCard({ e }: { e: ExperienceItem }) {
 export function CollaboratorCard({ c }: { c: Collaborator }) {
   const inner = (
     <>
-      <img src={c.photo} alt="" aria-hidden loading="lazy" className="h-16 w-16 rounded-2xl object-cover" />
+      <img
+        src={c.photo}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        className="h-16 w-16 rounded-2xl object-cover"
+      />
       <p className="mt-2 w-20 truncate text-center text-[11px] font-semibold">{c.name}</p>
       <p className="text-[10px] text-muted-foreground">{c.kind}</p>
     </>
@@ -608,7 +595,13 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
       params={m.params as never}
       className="flex w-[210px] shrink-0 items-center gap-3 rounded-3xl border border-border bg-card p-3"
     >
-      <img src={m.image} alt="" aria-hidden loading="lazy" className="h-12 w-12 rounded-2xl object-cover" />
+      <img
+        src={m.image}
+        alt=""
+        aria-hidden
+        loading="lazy"
+        className="h-12 w-12 rounded-2xl object-cover"
+      />
       <div className="min-w-0">
         <h3 className="truncate text-[13px]">{m.title}</h3>
         <p className="truncate text-[11px] text-muted-foreground">{m.meta}</p>
@@ -697,9 +690,7 @@ export function ShareSheet({
               MusicLinkd identity
             </p>
             <p className="mt-1 truncate text-[13px] font-semibold">{url}</p>
-            <p className="mt-1 text-[11px] opacity-75">
-              Scan to open this profile in MusicLinkd.
-            </p>
+            <p className="mt-1 text-[11px] opacity-75">Scan to open this profile in MusicLinkd.</p>
           </div>
         </div>
       </div>

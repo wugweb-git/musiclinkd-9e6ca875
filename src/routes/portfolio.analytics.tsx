@@ -82,8 +82,8 @@ function PortfolioAnalytics() {
                   >
                     <p className="truncate text-sm font-semibold">{item.title}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {a.views.toLocaleString("en-IN")} views · {a.plays.toLocaleString("en-IN")} plays ·{" "}
-                      {a.saves} saves · {a.profileClicks} profile clicks
+                      {a.views.toLocaleString("en-IN")} views · {a.plays.toLocaleString("en-IN")}{" "}
+                      plays · {a.saves} saves · {a.profileClicks} profile clicks
                     </p>
                   </Link>
                 );

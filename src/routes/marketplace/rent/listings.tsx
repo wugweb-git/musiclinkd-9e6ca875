@@ -3,13 +3,7 @@ import { useState } from "react";
 import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { EquipmentRow, RentalStatusPill } from "@/components/ml/rental";
-import {
-  equipment,
-  equipmentById,
-  inr,
-  rentalNotifications,
-  rentalRequests,
-} from "@/data/rentals";
+import { equipment, equipmentById, inr, rentalNotifications, rentalRequests } from "@/data/rentals";
 
 export const Route = createFileRoute("/marketplace/rent/listings")({
   head: () => ({
@@ -17,7 +11,8 @@ export const Route = createFileRoute("/marketplace/rent/listings")({
       { title: "My Rental Listings | MusicLinkd" },
       {
         name: "description",
-        content: "Manage your rental listings, requests, offers and provider insights on MusicLinkd.",
+        content:
+          "Manage your rental listings, requests, offers and provider insights on MusicLinkd.",
       },
       { property: "og:title", content: "My Rental Listings | MusicLinkd" },
       { property: "og:description", content: "A lightweight workspace for rental providers." },
@@ -110,7 +105,11 @@ function MyListings() {
               return (
                 <article key={r.id} className="rounded-3xl border border-border bg-card p-4">
                   <div className="flex items-start gap-3">
-                    <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+                    <img
+                      src={e.photos[0]}
+                      alt=""
+                      className="h-14 w-14 shrink-0 rounded-2xl object-cover"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] font-semibold">{e.name}</p>
                       <p className="truncate text-[11px] text-muted-foreground">
@@ -119,14 +118,23 @@ function MyListings() {
                       <p className="mt-1 text-[11px]">
                         <span className="font-semibold">{inr(r.offered)}</span>
                         {r.offered !== r.asking ? (
-                          <span className="text-muted-foreground"> offered vs {inr(r.asking)} asking</span>
+                          <span className="text-muted-foreground">
+                            {" "}
+                            offered vs {inr(r.asking)} asking
+                          </span>
                         ) : (
                           <span className="text-muted-foreground"> at asking price</span>
                         )}
                       </p>
                     </div>
                     <RentalStatusPill
-                      status={r.status === "Pending" ? "Requested" : r.status === "Accepted" ? "Confirmed" : "Declined"}
+                      status={
+                        r.status === "Pending"
+                          ? "Requested"
+                          : r.status === "Accepted"
+                            ? "Confirmed"
+                            : "Declined"
+                      }
                     />
                   </div>
                   {r.status === "Pending" ? (
@@ -157,10 +165,12 @@ function MyListings() {
           />
         ) : null}
 
-
         {tab === "Alerts"
           ? rentalNotifications.map((n) => (
-              <article key={n.id} className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
+              <article
+                key={n.id}
+                className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4"
+              >
                 <span
                   className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ background: tone[n.tone] }}

@@ -10,7 +10,11 @@ export const Route = createFileRoute("/identity/analytics")({
   head: () => ({
     meta: [
       { title: "QR analytics — MusicLinkd" },
-      { name: "description", content: "See how your printed and shared MusicLinkd codes turn into profile visits, follows, messages and bookings." },
+      {
+        name: "description",
+        content:
+          "See how your printed and shared MusicLinkd codes turn into profile visits, follows, messages and bookings.",
+      },
       { property: "og:title", content: "QR analytics on MusicLinkd" },
       { property: "og:description", content: "Which surface actually brings work in." },
     ],
@@ -68,7 +72,9 @@ function QrAnalytics() {
 
         <div className="mt-4">
           <Link to="/identity/print">
-            <Btn variant="outline" className="w-full">Print more of what works</Btn>
+            <Btn variant="outline" className="w-full">
+              Print more of what works
+            </Btn>
           </Link>
         </div>
       </main>

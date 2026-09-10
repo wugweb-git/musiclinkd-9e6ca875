@@ -10,10 +10,14 @@ export const Route = createFileRoute("/onboarding/preview")({
       { title: "Preview your profile — MusicLinkd" },
       {
         name: "description",
-        content: "See exactly how your MusicLinkd profile looks to other musicians, studios and clients before you publish.",
+        content:
+          "See exactly how your MusicLinkd profile looks to other musicians, studios and clients before you publish.",
       },
       { property: "og:title", content: "Preview your profile — MusicLinkd" },
-      { property: "og:description", content: "How your profile looks to the rest of the industry." },
+      {
+        property: "og:description",
+        content: "How your profile looks to the rest of the industry.",
+      },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -71,7 +75,11 @@ function Preview() {
           <p className="mt-3 text-[11px] text-muted-foreground">musiclinkd.com/{d.username}</p>
         </section>
 
-        <Row title="Roles" items={[role?.label, ...d.secondaryRoles].filter(Boolean) as string[]} onEdit={() => edit("role")} />
+        <Row
+          title="Roles"
+          items={[role?.label, ...d.secondaryRoles].filter(Boolean) as string[]}
+          onEdit={() => edit("role")}
+        />
         <Row title="Instruments" items={d.instruments} onEdit={() => edit("instruments")} />
         <Row title="Genres" items={d.genres} onEdit={() => edit("genres")} />
         <Row title="Languages" items={d.languages} onEdit={() => edit("languages")} />
@@ -87,7 +95,8 @@ function Preview() {
         <Row title="Visibility" items={[d.visibility]} onEdit={() => edit("visibility")} />
 
         <p className="mt-6 rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
-          Anything empty simply doesn't show on your profile. You can fill it in later from your profile settings.
+          Anything empty simply doesn't show on your profile. You can fill it in later from your
+          profile settings.
         </p>
       </main>
 
@@ -110,20 +119,29 @@ function Row({ title, items, onEdit }: { title: string; items: string[]; onEdit:
     <section className="mt-3 rounded-3xl border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold">{title}</h2>
-        <button type="button" onClick={onEdit} className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-primary"
+        >
           <Pencil size={12} /> Edit
         </button>
       </div>
       {items.length ? (
         <div className="mt-2 flex flex-wrap gap-1.5">
           {items.map((x) => (
-            <span key={x} className="rounded-full bg-subtle px-3 py-1 text-xs font-semibold text-text2">
+            <span
+              key={x}
+              className="rounded-full bg-subtle px-3 py-1 text-xs font-semibold text-text2"
+            >
               {x}
             </span>
           ))}
         </div>
       ) : (
-        <p className="mt-1.5 text-xs text-muted-foreground">Not added — this section stays hidden.</p>
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          Not added — this section stays hidden.
+        </p>
       )}
     </section>
   );

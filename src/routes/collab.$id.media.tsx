@@ -19,7 +19,10 @@ export const Route = createFileRoute("/collab/$id/media")({
             "Every audio, video, image and document shared on this MusicLinkd collaboration, in one filterable gallery.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: "Project media in one place — audio, video, images, documents." },
+        {
+          property: "og:description",
+          content: "Project media in one place — audio, video, images, documents.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],

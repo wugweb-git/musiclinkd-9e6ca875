@@ -9,7 +9,10 @@ export const Route = createFileRoute("/settings/security")({
   head: () => ({
     meta: [
       { title: "Security | MusicLinkd" },
-      { name: "description", content: "Password, two-step verification and the devices signed in to your account." },
+      {
+        name: "description",
+        content: "Password, two-step verification and the devices signed in to your account.",
+      },
       { property: "og:title", content: "Security | MusicLinkd" },
       { property: "og:description", content: "Keep your MusicLinkd account safe." },
       { property: "og:type", content: "website" },
@@ -29,7 +32,11 @@ function SecurityScreen() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="p-0">
           {securityRows.map((r) => (
-            <Link key={r.key} to={r.to} className="flex items-center gap-3 border-b border-border p-4 last:border-0">
+            <Link
+              key={r.key}
+              to={r.to}
+              className="flex items-center gap-3 border-b border-border p-4 last:border-0"
+            >
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] font-semibold">{r.label}</span>
                 <span className="block truncate text-[11px] text-muted-foreground">{r.hint}</span>
@@ -42,7 +49,10 @@ function SecurityScreen() {
         <Card className="space-y-1">
           <h2 className="text-[15px]">Where you are signed in</h2>
           {sessions.map((s) => (
-            <div key={s.id} className="flex items-center gap-3 border-b border-border py-2.5 last:border-0">
+            <div
+              key={s.id}
+              className="flex items-center gap-3 border-b border-border py-2.5 last:border-0"
+            >
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 truncate text-[13px] font-semibold">
                   {s.device}

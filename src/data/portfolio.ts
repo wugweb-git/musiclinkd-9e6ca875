@@ -41,16 +41,76 @@ export const workTypes: {
   emoji: string;
   media: "audio" | "video" | "image" | "link" | "none";
 }[] = [
-  { kind: "track", label: "Track", blurb: "A single song or recording", emoji: "🎵", media: "audio" },
-  { kind: "album", label: "Album / EP", blurb: "A release with multiple tracks", emoji: "💿", media: "audio" },
-  { kind: "video", label: "Video", blurb: "Music video, session or reel", emoji: "🎬", media: "video" },
-  { kind: "performance", label: "Performance", blurb: "Live show, tour or festival set", emoji: "🎤", media: "video" },
-  { kind: "project", label: "Project", blurb: "A body of work you contributed to", emoji: "🗂", media: "link" },
-  { kind: "client", label: "Client work", blurb: "Work delivered for a client or brand", emoji: "🤝", media: "link" },
-  { kind: "case-study", label: "Case study", blurb: "Brief, approach, outcome", emoji: "📈", media: "none" },
-  { kind: "writing", label: "Writing sample", blurb: "Lyrics, topline or notation", emoji: "✍️", media: "none" },
-  { kind: "image", label: "Image", blurb: "Artwork, stills or behind the scenes", emoji: "🖼", media: "image" },
-  { kind: "link", label: "External link", blurb: "YouTube, Spotify, SoundCloud, site", emoji: "🔗", media: "link" },
+  {
+    kind: "track",
+    label: "Track",
+    blurb: "A single song or recording",
+    emoji: "🎵",
+    media: "audio",
+  },
+  {
+    kind: "album",
+    label: "Album / EP",
+    blurb: "A release with multiple tracks",
+    emoji: "💿",
+    media: "audio",
+  },
+  {
+    kind: "video",
+    label: "Video",
+    blurb: "Music video, session or reel",
+    emoji: "🎬",
+    media: "video",
+  },
+  {
+    kind: "performance",
+    label: "Performance",
+    blurb: "Live show, tour or festival set",
+    emoji: "🎤",
+    media: "video",
+  },
+  {
+    kind: "project",
+    label: "Project",
+    blurb: "A body of work you contributed to",
+    emoji: "🗂",
+    media: "link",
+  },
+  {
+    kind: "client",
+    label: "Client work",
+    blurb: "Work delivered for a client or brand",
+    emoji: "🤝",
+    media: "link",
+  },
+  {
+    kind: "case-study",
+    label: "Case study",
+    blurb: "Brief, approach, outcome",
+    emoji: "📈",
+    media: "none",
+  },
+  {
+    kind: "writing",
+    label: "Writing sample",
+    blurb: "Lyrics, topline or notation",
+    emoji: "✍️",
+    media: "none",
+  },
+  {
+    kind: "image",
+    label: "Image",
+    blurb: "Artwork, stills or behind the scenes",
+    emoji: "🖼",
+    media: "image",
+  },
+  {
+    kind: "link",
+    label: "External link",
+    blurb: "YouTube, Spotify, SoundCloud, site",
+    emoji: "🔗",
+    media: "link",
+  },
 ];
 
 export function workType(kind: string) {
@@ -151,20 +211,38 @@ export const demoPortfolio: PortfolioItem[] = [
 /* ------------------------------------------------------------------ */
 
 export type MediaState =
-  | "not-uploaded"
-  | "uploading"
-  | "processing"
-  | "ready"
-  | "failed"
-  | "unavailable";
+  "not-uploaded" | "uploading" | "processing" | "ready" | "failed" | "unavailable";
 
-export const mediaStateCopy: Record<MediaState, { label: string; hint: string; tone: "neutral" | "good" | "warn" | "bad" }> = {
-  "not-uploaded": { label: "No media", hint: "Add a link or file so people can hear or see this work.", tone: "neutral" },
-  uploading: { label: "Uploading", hint: "Keep this screen open while the file transfers.", tone: "warn" },
-  processing: { label: "Processing", hint: "We're preparing the preview. This usually takes a minute.", tone: "warn" },
+export const mediaStateCopy: Record<
+  MediaState,
+  { label: string; hint: string; tone: "neutral" | "good" | "warn" | "bad" }
+> = {
+  "not-uploaded": {
+    label: "No media",
+    hint: "Add a link or file so people can hear or see this work.",
+    tone: "neutral",
+  },
+  uploading: {
+    label: "Uploading",
+    hint: "Keep this screen open while the file transfers.",
+    tone: "warn",
+  },
+  processing: {
+    label: "Processing",
+    hint: "We're preparing the preview. This usually takes a minute.",
+    tone: "warn",
+  },
   ready: { label: "Ready", hint: "Playable on your profile.", tone: "good" },
-  failed: { label: "Upload failed", hint: "The transfer stopped. Retry or replace the file.", tone: "bad" },
-  unavailable: { label: "Unavailable", hint: "The source link no longer responds. Replace it to restore playback.", tone: "bad" },
+  failed: {
+    label: "Upload failed",
+    hint: "The transfer stopped. Retry or replace the file.",
+    tone: "bad",
+  },
+  unavailable: {
+    label: "Unavailable",
+    hint: "The source link no longer responds. Replace it to restore playback.",
+    tone: "bad",
+  },
 };
 
 export type MediaAsset = {
@@ -195,7 +273,13 @@ export type Contributor = {
 export const contributorDirectory: Contributor[] = [
   { id: "c1", name: "Aditi Rao", role: "Vocalist", username: "aditi.rao", onPlatform: true },
   { id: "c2", name: "Rohan Mehta", role: "Guitarist", username: "rohan.mehta", onPlatform: true },
-  { id: "c3", name: "Octave Sound Labs", role: "Studio", username: "octave.labs", onPlatform: true },
+  {
+    id: "c3",
+    name: "Octave Sound Labs",
+    role: "Studio",
+    username: "octave.labs",
+    onPlatform: true,
+  },
   { id: "c4", name: "Kabir Sen", role: "Mixing Engineer", username: "kabir.sen", onPlatform: true },
   { id: "c5", name: "Meera Iyer", role: "Lyricist", username: "meera.iyer", onPlatform: true },
   { id: "c6", name: "The Kite Notes", role: "Band", username: "kitenotes", onPlatform: true },
@@ -222,7 +306,14 @@ export const workAnalytics: Record<string, WorkAnalyticsFigures> = {
 
 export function analyticsFor(id: string): WorkAnalyticsFigures {
   return (
-    workAnalytics[id] ?? { views: 0, plays: 0, shares: 0, saves: 0, profileClicks: 0, linkClicks: 0 }
+    workAnalytics[id] ?? {
+      views: 0,
+      plays: 0,
+      shares: 0,
+      saves: 0,
+      profileClicks: 0,
+      linkClicks: 0,
+    }
   );
 }
 

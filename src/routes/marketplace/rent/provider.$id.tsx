@@ -58,9 +58,7 @@ function ProviderProfile() {
               {p.verified ? <VerifiedBadge size={16} /> : null}
             </div>
             <p className="mt-0.5 text-[12px] text-muted-foreground">{p.role}</p>
-            {p.business ? (
-              <p className="text-[11px] text-muted-foreground">{p.business}</p>
-            ) : null}
+            {p.business ? <p className="text-[11px] text-muted-foreground">{p.business}</p> : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               <Rating value={p.rating} count={p.reviews} />
               <span className="text-[11px] text-muted-foreground">{p.location}</span>
@@ -98,7 +96,9 @@ function ProviderProfile() {
           <Link to="/messages">
             <Btn className="w-full">Message</Btn>
           </Link>
-          <Btn variant="outline" className="w-full">Follow</Btn>
+          <Btn variant="outline" className="w-full">
+            Follow
+          </Btn>
         </div>
       </div>
 

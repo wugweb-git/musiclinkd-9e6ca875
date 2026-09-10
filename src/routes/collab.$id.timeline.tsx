@@ -104,7 +104,11 @@ function Timeline() {
                 >
                   <span
                     className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-[11px] text-background"
-                    style={checked ? { background: "var(--success)", borderColor: "transparent" } : undefined}
+                    style={
+                      checked
+                        ? { background: "var(--success)", borderColor: "transparent" }
+                        : undefined
+                    }
                   >
                     {checked ? "✓" : ""}
                   </span>

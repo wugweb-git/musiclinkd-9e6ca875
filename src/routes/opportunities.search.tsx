@@ -9,13 +9,21 @@ import { opportunities, opportunityCategories } from "@/data/opportunities";
 type Search = { q?: string };
 
 export const Route = createFileRoute("/opportunities/search")({
-  validateSearch: (s: Record<string, unknown>): Search => ({ q: typeof s["q"] === "string" ? s["q"] : "" }),
+  validateSearch: (s: Record<string, unknown>): Search => ({
+    q: typeof s["q"] === "string" ? s["q"] : "",
+  }),
   head: () => ({
     meta: [
       { title: "Search opportunities | MusicLinkd" },
-      { name: "description", content: "Search music-industry requirements by role, city, pay and dates." },
+      {
+        name: "description",
+        content: "Search music-industry requirements by role, city, pay and dates.",
+      },
       { property: "og:title", content: "Search opportunities | MusicLinkd" },
-      { property: "og:description", content: "Filter opportunities by role, city, pay, work mode and dates." },
+      {
+        property: "og:description",
+        content: "Filter opportunities by role, city, pay, work mode and dates.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -39,7 +47,8 @@ function OpportunitySearch() {
 
   const t = term.trim().toLowerCase();
   let list = opportunities.filter((o) => {
-    if (t && !(`${o.title} ${o.summary} ${o.city} ${o.genres.join(" ")}`.toLowerCase().includes(t))) return false;
+    if (t && !`${o.title} ${o.summary} ${o.city} ${o.genres.join(" ")}`.toLowerCase().includes(t))
+      return false;
     if (mode && o.workMode !== mode) return false;
     if (cats.length && !cats.includes(o.categoryKey)) return false;
     if (pay !== "Any") {
@@ -48,7 +57,8 @@ function OpportunitySearch() {
     }
     return true;
   });
-  if (sort === "Highest pay") list = [...list].sort((a, b) => (b.compensation.min ?? 0) - (a.compensation.min ?? 0));
+  if (sort === "Highest pay")
+    list = [...list].sort((a, b) => (b.compensation.min ?? 0) - (a.compensation.min ?? 0));
   if (sort === "Best fit") list = [...list].sort((a, b) => b.matchScore - a.matchScore);
 
   const activeCount = (mode ? 1 : 0) + (pay !== "Any" ? 1 : 0) + cats.length;
@@ -72,7 +82,10 @@ function OpportunitySearch() {
         </div>
 
         {list.length === 0 ? (
-          <EmptyState title="No matches" body="Try a broader role, remove the pay filter, or include remote work.">
+          <EmptyState
+            title="No matches"
+            body="Try a broader role, remove the pay filter, or include remote work."
+          >
             <Btn
               variant="outline"
               onClick={() => {
@@ -93,7 +106,12 @@ function OpportunitySearch() {
           <div className="space-y-3 pb-4">
             <p className="text-[12px] text-muted-foreground">{list.length} opportunities</p>
             {list.map((o) => (
-              <OpportunityCard key={o.id} o={o} saved={has(o.id) || o.saved} onSave={() => toggle(o.id)} />
+              <OpportunityCard
+                key={o.id}
+                o={o}
+                saved={has(o.id) || o.saved}
+                onSave={() => toggle(o.id)}
+              />
             ))}
           </div>
         )}
@@ -128,7 +146,11 @@ function OpportunitySearch() {
                 <Chip
                   key={c.key}
                   active={cats.includes(c.key)}
-                  onClick={() => setCats((p) => (p.includes(c.key) ? p.filter((x) => x !== c.key) : [...p, c.key]))}
+                  onClick={() =>
+                    setCats((p) =>
+                      p.includes(c.key) ? p.filter((x) => x !== c.key) : [...p, c.key],
+                    )
+                  }
                 >
                   {c.label}
                 </Chip>

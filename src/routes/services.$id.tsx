@@ -8,9 +8,15 @@ export const Route = createFileRoute("/services/$id")({
   head: () => ({
     meta: [
       { title: "Service details | MusicLinkd" },
-      { name: "description", content: "Pricing, packages, deliverables and availability for this service." },
+      {
+        name: "description",
+        content: "Pricing, packages, deliverables and availability for this service.",
+      },
       { property: "og:title", content: "Service details | MusicLinkd" },
-      { property: "og:description", content: "What is included, what it costs and how long it takes." },
+      {
+        property: "og:description",
+        content: "What is included, what it costs and how long it takes.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -42,7 +48,11 @@ function ServiceDetail() {
         title={s.category}
         back="/services"
         right={
-          <button type="button" onClick={() => setManage(true)} className="text-[12px] font-semibold text-primary">
+          <button
+            type="button"
+            onClick={() => setManage(true)}
+            className="text-[12px] font-semibold text-primary"
+          >
             Manage
           </button>
         }
@@ -51,7 +61,10 @@ function ServiceDetail() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-3">
           <div className="flex items-start gap-3">
-            <span aria-hidden className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-subtle text-[22px]">
+            <span
+              aria-hidden
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-subtle text-[22px]"
+            >
               {s.emoji}
             </span>
             <div className="min-w-0 flex-1">
@@ -63,7 +76,10 @@ function ServiceDetail() {
           </div>
           <div className="flex items-center justify-between gap-2">
             <p className="text-[18px] font-bold">{priceLabel(s.basePrice, s.unit)}</p>
-            <StatusPill label={paused ? "paused" : s.status} tone={paused ? "warn" : serviceStatusTone[s.status]} />
+            <StatusPill
+              label={paused ? "paused" : s.status}
+              tone={paused ? "warn" : serviceStatusTone[s.status]}
+            />
           </div>
           <p className="text-[13px] leading-relaxed text-muted-foreground">{s.description}</p>
         </Card>
@@ -110,7 +126,10 @@ function ServiceDetail() {
           <Card className="space-y-2">
             <h2 className="text-[15px]">Add-ons</h2>
             {s.addons.map((a) => (
-              <div key={a.id} className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0">
+              <div
+                key={a.id}
+                className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
+              >
                 <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
                 <span className="text-[13px] font-semibold">{priceLabel(a.price, a.unit)}</span>
               </div>

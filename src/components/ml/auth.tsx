@@ -4,13 +4,7 @@ import { Check, Eye, EyeOff, Music2, ShieldCheck, X } from "lucide-react";
 
 /* ---------------------------------------------------------------- shell */
 
-export function AuthScreen({
-  children,
-  brand = true,
-}: {
-  children: ReactNode;
-  brand?: boolean;
-}) {
+export function AuthScreen({ children, brand = true }: { children: ReactNode; brand?: boolean }) {
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col bg-background">
       <div className="flex-1 px-5 pb-10 pt-6">
@@ -84,7 +78,9 @@ export function AuthNotice({
       style={{ background: s.bg }}
     >
       <p className={`text-[13px] font-semibold ${s.fg}`}>{title}</p>
-      {children ? <div className="mt-1 text-[12.5px] leading-relaxed text-text2">{children}</div> : null}
+      {children ? (
+        <div className="mt-1 text-[12.5px] leading-relaxed text-text2">{children}</div>
+      ) : null}
       {action ? <div className="mt-3">{action}</div> : null}
     </div>
   );
@@ -214,7 +210,11 @@ export function PasswordRequirements({ value }: { value: string }) {
               className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
               style={{ background: c.ok ? "var(--pink-container)" : "var(--border)" }}
             >
-              {c.ok ? <Check size={11} className="text-primary" /> : <X size={11} className="text-muted-foreground" />}
+              {c.ok ? (
+                <Check size={11} className="text-primary" />
+              ) : (
+                <X size={11} className="text-muted-foreground" />
+              )}
             </span>
             <span className={c.ok ? "text-foreground" : undefined}>{c.label}</span>
           </li>
@@ -262,9 +262,17 @@ export type AuthErrorKind =
   | "network"
   | "unknown";
 
-export function classifyAuthError(message: string): { kind: AuthErrorKind; title: string; body: string } {
+export function classifyAuthError(message: string): {
+  kind: AuthErrorKind;
+  title: string;
+  body: string;
+} {
   const m = message.toLowerCase();
-  if (m.includes("already registered") || m.includes("already been registered") || m.includes("user already"))
+  if (
+    m.includes("already registered") ||
+    m.includes("already been registered") ||
+    m.includes("user already")
+  )
     return {
       kind: "account_exists",
       title: "This email already has an account",

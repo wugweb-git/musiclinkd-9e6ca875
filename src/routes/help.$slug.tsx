@@ -32,8 +32,13 @@ function HelpPage() {
       <Screen bottomNav={false}>
         <TopBar title="Not found" back="/help" />
         <div className="px-5 pt-6">
-          <EmptyState title="This page has moved" body="The guide you followed is no longer published. Search the help centre for the current version.">
-            <Link to="/help"><Btn className="w-full">Back to help</Btn></Link>
+          <EmptyState
+            title="This page has moved"
+            body="The guide you followed is no longer published. Search the help centre for the current version."
+          >
+            <Link to="/help">
+              <Btn className="w-full">Back to help</Btn>
+            </Link>
           </EmptyState>
         </div>
       </Screen>
@@ -48,13 +53,25 @@ function HelpPage() {
           <StatusPill label={page.kind} tone={page.kind === "policy" ? "warn" : "brand"} />
           <h1 className="text-[26px] font-bold leading-tight">{page.title}</h1>
           <p className="text-[13px] text-text2">{page.summary}</p>
-          <p className="text-[11px] text-muted-foreground">{page.readTime} · {page.updated}</p>
+          <p className="text-[11px] text-muted-foreground">
+            {page.readTime} · {page.updated}
+          </p>
         </header>
 
         <div className="space-y-4">
           {page.blocks.map((b, i) => {
-            if (b.type === "heading") return <h2 key={i} className="pt-1 text-[17px]">{b.text}</h2>;
-            if (b.type === "para") return <p key={i} className="text-[14px] leading-relaxed text-text2">{b.text}</p>;
+            if (b.type === "heading")
+              return (
+                <h2 key={i} className="pt-1 text-[17px]">
+                  {b.text}
+                </h2>
+              );
+            if (b.type === "para")
+              return (
+                <p key={i} className="text-[14px] leading-relaxed text-text2">
+                  {b.text}
+                </p>
+              );
             if (b.type === "list")
               return (
                 <ul key={i} className="space-y-2">
@@ -88,7 +105,15 @@ function HelpPage() {
               {page.related.map((r) => {
                 const rel = getPage(r);
                 if (!rel) return null;
-                return <Row key={r} title={rel.title} subtitle={rel.readTime} to="/help/$slug" params={{ slug: r }} />;
+                return (
+                  <Row
+                    key={r}
+                    title={rel.title}
+                    subtitle={rel.readTime}
+                    to="/help/$slug"
+                    params={{ slug: r }}
+                  />
+                );
               })}
             </div>
           </section>

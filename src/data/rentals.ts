@@ -1,19 +1,7 @@
-export type RentalCategory =
-  | "instruments"
-  | "audio"
-  | "studio"
-  | "dj"
-  | "live"
-  | "other";
+export type RentalCategory = "instruments" | "audio" | "studio" | "dj" | "live" | "other";
 
 export type RentalStatus =
-  | "Requested"
-  | "Offer sent"
-  | "Confirmed"
-  | "Active"
-  | "Completed"
-  | "Cancelled"
-  | "Declined";
+  "Requested" | "Offer sent" | "Confirmed" | "Active" | "Completed" | "Cancelled" | "Declined";
 
 export type Provider = {
   id: string;
@@ -168,14 +156,7 @@ export const rentalCategories: {
     label: "Live",
     emoji: "🔊",
     count: "1,120 items",
-    subs: [
-      "PA Systems",
-      "Speakers",
-      "Microphones",
-      "Mixers",
-      "Amplifiers",
-      "Stage Equipment",
-    ],
+    subs: ["PA Systems", "Speakers", "Microphones", "Mixers", "Amplifiers", "Stage Equipment"],
   },
   {
     slug: "other",
@@ -349,7 +330,7 @@ export const equipment: Equipment[] = [
       { label: "Model", value: "'65 Twin Reverb Reissue" },
       { label: "Type", value: "Valve combo amplifier" },
       { label: "Power", value: "85W · 230V" },
-      { label: "Speakers", value: "2 × 12\" Jensen C-12K" },
+      { label: "Speakers", value: '2 × 12" Jensen C-12K' },
       { label: "Weight", value: "29 kg" },
       { label: "Condition", value: "Good" },
       { label: "Year", value: "2019" },
@@ -440,7 +421,7 @@ export const equipment: Equipment[] = [
     enquiries: 39,
     photos: [img("photo-1571266028243-e4733b0f0bb0"), img("photo-1493225457124-a3eb161ffa5f")],
     description:
-      "All-in-one rekordbox and Serato-ready system with 10.1\" touchscreen. Standard for club nights, weddings and brand events across Mumbai.",
+      'All-in-one rekordbox and Serato-ready system with 10.1" touchscreen. Standard for club nights, weddings and brand events across Mumbai.',
     specs: [
       { label: "Brand", value: "Pioneer DJ" },
       { label: "Model", value: "XDJ-RX3" },
@@ -649,10 +630,8 @@ export const equipment: Equipment[] = [
 
 export const equipmentById = (id: string) => equipment.find((e) => e.id === id);
 export const providerById = (id: string) => providers.find((p) => p.id === id);
-export const equipmentByProvider = (id: string) =>
-  equipment.filter((e) => e.providerId === id);
-export const equipmentByCategory = (slug: string) =>
-  equipment.filter((e) => e.category === slug);
+export const equipmentByProvider = (id: string) => equipment.filter((e) => e.providerId === id);
+export const equipmentByCategory = (slug: string) => equipment.filter((e) => e.category === slug);
 
 export type Booking = {
   id: string;
@@ -806,11 +785,41 @@ export const rentalReviews = [
 ];
 
 export const rentalNotifications = [
-  { id: "rn1", title: "Rental request received", body: "Kabir Sen · Fender Twin Reverb · 18–20 Aug", time: "8m", tone: "primary" },
-  { id: "rn2", title: "Request accepted", body: "Pioneer XDJ-RX3 confirmed for 22–24 Aug", time: "1h", tone: "success" },
-  { id: "rn3", title: "Counter offer", body: "₹4,800 for 3 days on the Twin Reverb", time: "3h", tone: "warn" },
-  { id: "rn4", title: "Return reminder", body: "2 × Shure SM7B due back 18 Aug, 7 pm", time: "6h", tone: "warn" },
-  { id: "rn5", title: "Review request", body: "Rate Pearl Export kit and Ravi Deshmukh", time: "2d", tone: "purple" },
+  {
+    id: "rn1",
+    title: "Rental request received",
+    body: "Kabir Sen · Fender Twin Reverb · 18–20 Aug",
+    time: "8m",
+    tone: "primary",
+  },
+  {
+    id: "rn2",
+    title: "Request accepted",
+    body: "Pioneer XDJ-RX3 confirmed for 22–24 Aug",
+    time: "1h",
+    tone: "success",
+  },
+  {
+    id: "rn3",
+    title: "Counter offer",
+    body: "₹4,800 for 3 days on the Twin Reverb",
+    time: "3h",
+    tone: "warn",
+  },
+  {
+    id: "rn4",
+    title: "Return reminder",
+    body: "2 × Shure SM7B due back 18 Aug, 7 pm",
+    time: "6h",
+    tone: "warn",
+  },
+  {
+    id: "rn5",
+    title: "Review request",
+    body: "Rate Pearl Export kit and Ravi Deshmukh",
+    time: "2d",
+    tone: "purple",
+  },
 ];
 
 export const providerInsights = [

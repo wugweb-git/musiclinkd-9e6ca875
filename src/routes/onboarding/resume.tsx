@@ -16,7 +16,8 @@ export const Route = createFileRoute("/onboarding/resume")({
       { title: "Pick up where you left off — MusicLinkd" },
       {
         name: "description",
-        content: "Your profile setup is saved. Continue from the exact question you stopped at, or start fresh.",
+        content:
+          "Your profile setup is saved. Continue from the exact question you stopped at, or start fresh.",
       },
       { property: "og:title", content: "Pick up where you left off — MusicLinkd" },
       { property: "og:description", content: "Resume your saved MusicLinkd profile setup." },
@@ -42,7 +43,11 @@ function Resume() {
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
       <div>
-        <SyncBanner state={hydrated ? sync : "loading"} onRetry={retry} localNote="Picking up from this device. Sign in to continue on any device." />
+        <SyncBanner
+          state={hydrated ? sync : "loading"}
+          onRetry={retry}
+          localNote="Picking up from this device. Sign in to continue on any device."
+        />
         <Clock size={40} className="text-primary" />
         <h1 className="mt-4 text-[28px] leading-tight">Welcome back</h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -51,9 +56,13 @@ function Resume() {
         </p>
 
         <div className="mt-6 rounded-3xl border border-border bg-card p-5">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Next up</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            Next up
+          </p>
           <p className="mt-1 text-lg">{def?.title ?? "Review your profile"}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{def?.subtitle ?? "One last look before publishing."}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {def?.subtitle ?? "One last look before publishing."}
+          </p>
           <div
             className="mt-4 h-1.5 overflow-hidden rounded-full bg-subtle"
             role="progressbar"

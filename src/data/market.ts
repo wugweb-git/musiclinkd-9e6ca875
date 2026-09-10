@@ -453,8 +453,32 @@ export const sellerStats = [
 ];
 
 export const notifications = [
-  { id: "n1", title: "New offer on Fender Stratocaster", body: "₹1,70,000 from Kabir Sen", time: "12m", tone: "primary" },
-  { id: "n2", title: "Listing approved", body: "Neumann TLM 103 is now live", time: "2h", tone: "success" },
-  { id: "n3", title: "Rental request", body: "Backline kit for 14–16 Aug", time: "5h", tone: "warn" },
-  { id: "n4", title: "Review received", body: "Ira Fernandes rated you 5 stars", time: "1d", tone: "purple" },
+  {
+    id: "n1",
+    title: "New offer on Fender Stratocaster",
+    body: "₹1,70,000 from Kabir Sen",
+    time: "12m",
+    tone: "primary",
+  },
+  {
+    id: "n2",
+    title: "Listing approved",
+    body: "Neumann TLM 103 is now live",
+    time: "2h",
+    tone: "success",
+  },
+  {
+    id: "n3",
+    title: "Rental request",
+    body: "Backline kit for 14–16 Aug",
+    time: "5h",
+    tone: "warn",
+  },
+  {
+    id: "n4",
+    title: "Review received",
+    body: "Ira Fernandes rated you 5 stars",
+    time: "1d",
+    tone: "purple",
+  },
 ];

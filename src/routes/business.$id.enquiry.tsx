@@ -9,9 +9,16 @@ export const Route = createFileRoute("/business/$id/enquiry")({
   head: () => ({
     meta: [
       { title: "Enquire with a business | MusicLinkd" },
-      { name: "description", content: "Send a studio, label or venue your dates and requirement, or jump straight to booking a room." },
+      {
+        name: "description",
+        content:
+          "Send a studio, label or venue your dates and requirement, or jump straight to booking a room.",
+      },
       { property: "og:title", content: "Enquire with a business | MusicLinkd" },
-      { property: "og:description", content: "Send your dates and requirement, or book a room directly." },
+      {
+        property: "og:description",
+        content: "Send your dates and requirement, or book a room directly.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -33,7 +40,10 @@ function BusinessEnquiry() {
       <Screen>
         <TopBar title="Enquiry" back="/business" />
         <div className="px-5 pt-6">
-          <EmptyState title="Business not found" body="This business may have been removed or is no longer public." />
+          <EmptyState
+            title="Business not found"
+            body="This business may have been removed or is no longer public."
+          />
         </div>
       </Screen>
     );
@@ -48,14 +58,17 @@ function BusinessEnquiry() {
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
             <h2 className="mt-3 text-[19px] leading-tight">Your enquiry is with {b.name}</h2>
             <p className="mt-2 text-[13px] text-muted-foreground">
-              They usually reply within a couple of hours. You will get a notification and the thread appears in Connections.
+              They usually reply within a couple of hours. You will get a notification and the
+              thread appears in Connections.
             </p>
           </Card>
           <Link to="/messages" className="block">
             <Btn className="w-full">Open Connections</Btn>
           </Link>
           <Link to="/business/$id" params={{ id: b.id }} className="block">
-            <Btn variant="ghost" className="w-full">Back to {b.name}</Btn>
+            <Btn variant="ghost" className="w-full">
+              Back to {b.name}
+            </Btn>
           </Link>
         </div>
       </Screen>
@@ -90,7 +103,9 @@ function BusinessEnquiry() {
             placeholder="Dates, how many people, what you need from the room."
             className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
           />
-          <p className="mt-2 text-[12px] text-muted-foreground">Sharing rough dates gets a faster answer than "are you free?".</p>
+          <p className="mt-2 text-[12px] text-muted-foreground">
+            Sharing rough dates gets a faster answer than "are you free?".
+          </p>
         </Card>
 
         <Btn className="w-full" disabled={message.trim().length < 8} onClick={() => setSent(true)}>
@@ -99,9 +114,13 @@ function BusinessEnquiry() {
 
         <Card>
           <p className="text-sm font-semibold">Already know what you want?</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">Pick a room and a date and skip the back and forth.</p>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Pick a room and a date and skip the back and forth.
+          </p>
           <Link to="/booking/$id" params={{ id: "svc-1" }} className="mt-3 block">
-            <Btn variant="outline" className="w-full">Book a room</Btn>
+            <Btn variant="outline" className="w-full">
+              Book a room
+            </Btn>
           </Link>
         </Card>
       </div>

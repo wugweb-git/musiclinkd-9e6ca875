@@ -14,7 +14,10 @@ export const Route = createFileRoute("/provider/bookings/requests/")({
           "Every incoming booking request for your space in one queue: new, in review and needs a reply, with the session details you need to decide.",
       },
       { property: "og:title", content: "Booking requests — MusicLinkd provider" },
-      { property: "og:description", content: "Review, accept or decline incoming session requests." },
+      {
+        property: "og:description",
+        content: "Review, accept or decline incoming session requests.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

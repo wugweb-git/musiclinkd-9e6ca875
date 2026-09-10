@@ -5,7 +5,10 @@ export const Route = createFileRoute("/legal/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy Policy — MusicLinkd" },
-      { name: "description", content: "What MusicLinkd collects, why, and the controls you have over your data." },
+      {
+        name: "description",
+        content: "What MusicLinkd collects, why, and the controls you have over your data.",
+      },
       { property: "og:title", content: "Privacy Policy — MusicLinkd" },
       { property: "og:description", content: "Clear answers about your data on MusicLinkd." },
       { property: "og:type", content: "article" },
@@ -44,8 +47,8 @@ function PrivacyPage() {
       <TopBar title="Privacy Policy" subtitle="Last updated 2 September 2026" back="/welcome" />
       <main className="px-5 pb-12 pt-4">
         <p className="text-[13px] leading-relaxed text-text2">
-          Short version: your public profile is public, everything else is not, and you can leave with your data at
-          any time.
+          Short version: your public profile is public, everything else is not, and you can leave
+          with your data at any time.
         </p>
         <div className="mt-6 space-y-4">
           {sections.map((s) => (

@@ -35,7 +35,13 @@ export type Booking = {
 };
 
 export type DashboardData = {
-  user: { firstName: string; role: string; photo: string; profileCompletion: number; available: boolean };
+  user: {
+    firstName: string;
+    role: string;
+    photo: string;
+    profileCompletion: number;
+    available: boolean;
+  };
   stats: Stat[];
   continueItems: ContinueItem[];
   forYou: typeof talents;
@@ -53,10 +59,22 @@ export const dashboardData: DashboardData = {
     available: true,
   },
   stats: [
-    { key: "requests", label: "Connection requests", value: 6, hint: "3 new today", to: "/messages" },
+    {
+      key: "requests",
+      label: "Connection requests",
+      value: 6,
+      hint: "3 new today",
+      to: "/messages",
+    },
     { key: "messages", label: "Unread messages", value: 3, hint: "Beta", to: "/messages" },
     { key: "views", label: "Profile views", value: 148, hint: "+24 this week", to: "/me" },
-    { key: "collabs", label: "Collab opportunities", value: 9, hint: "Matched to you", to: "/recommended" },
+    {
+      key: "collabs",
+      label: "Collab opportunities",
+      value: 9,
+      hint: "Matched to you",
+      to: "/recommended",
+    },
   ],
   continueItems: [
     {
@@ -113,8 +131,20 @@ export const dashboardData: DashboardData = {
     },
   ],
   bookings: [
-    { id: "b1", title: "Yash Raj Sound Studios", meta: "Mix session · 11:00–16:00", day: "14", month: "Aug" },
-    { id: "b2", title: "Vocal cut with Tanvi Rao", meta: "Krimson Avenue, Bengaluru", day: "19", month: "Aug" },
+    {
+      id: "b1",
+      title: "Yash Raj Sound Studios",
+      meta: "Mix session · 11:00–16:00",
+      day: "14",
+      month: "Aug",
+    },
+    {
+      id: "b2",
+      title: "Vocal cut with Tanvi Rao",
+      meta: "Krimson Avenue, Bengaluru",
+      day: "19",
+      month: "Aug",
+    },
   ],
 };
 
@@ -179,7 +209,9 @@ export type ForYouTile = {
 /** The single highest-value update — never a grid of four equal counters. */
 export function headlineUpdate(d: DashboardData): HeadlineUpdate | null {
   const rank: Record<string, number> = { collabs: 3, requests: 2, messages: 1, views: 0 };
-  const top = [...d.stats].filter((s) => s.value > 0).sort((a, b) => (rank[b.key] ?? 0) - (rank[a.key] ?? 0))[0];
+  const top = [...d.stats]
+    .filter((s) => s.value > 0)
+    .sort((a, b) => (rank[b.key] ?? 0) - (rank[a.key] ?? 0))[0];
   if (!top) return null;
   const copy: Record<string, { title: string; body: string; cta: string }> = {
     collabs: {

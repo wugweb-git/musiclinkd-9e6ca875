@@ -84,14 +84,42 @@ export const entitlements = [
 ];
 
 export const invoices = [
-  { id: "in-2609", date: "12 Sep 2026", amount: "₹499", status: "paid" as const, plan: "Pro monthly" },
-  { id: "in-2481", date: "12 Aug 2026", amount: "₹499", status: "paid" as const, plan: "Pro monthly" },
-  { id: "in-2350", date: "12 Jul 2026", amount: "₹499", status: "refunded" as const, plan: "Pro monthly" },
+  {
+    id: "in-2609",
+    date: "12 Sep 2026",
+    amount: "₹499",
+    status: "paid" as const,
+    plan: "Pro monthly",
+  },
+  {
+    id: "in-2481",
+    date: "12 Aug 2026",
+    amount: "₹499",
+    status: "paid" as const,
+    plan: "Pro monthly",
+  },
+  {
+    id: "in-2350",
+    date: "12 Jul 2026",
+    amount: "₹499",
+    status: "refunded" as const,
+    plan: "Pro monthly",
+  },
 ];
 
 export const boosts = [
-  { id: "bo-1", target: "Mixing & mastering service", state: "active" as const, detail: "3 days left · 2.4× profile views" },
-  { id: "bo-2", target: "Fender Rhodes Mk1 listing", state: "available" as const, detail: "Boost for 7 days" },
+  {
+    id: "bo-1",
+    target: "Mixing & mastering service",
+    state: "active" as const,
+    detail: "3 days left · 2.4× profile views",
+  },
+  {
+    id: "bo-2",
+    target: "Fender Rhodes Mk1 listing",
+    state: "available" as const,
+    detail: "Boost for 7 days",
+  },
 ];
 
 export const payoutAccount = {
@@ -112,4 +140,10 @@ export const earnings = {
   fees: "Platform fee 8% · shown on every invoice",
 };
 
-export const cancelReasons = ["Too expensive", "Not getting enough work", "Missing a feature", "Taking a break", "Other"];
+export const cancelReasons = [
+  "Too expensive",
+  "Not getting enough work",
+  "Missing a feature",
+  "Taking a break",
+  "Other",
+];

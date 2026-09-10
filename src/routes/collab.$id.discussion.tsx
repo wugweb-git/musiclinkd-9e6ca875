@@ -112,7 +112,8 @@ function Discussion() {
                 {d.replies.map((r) => (
                   <div key={`${r.author}-${r.time}`}>
                     <p className="text-[11px] font-semibold">
-                      {r.author} <span className="font-normal text-muted-foreground">· {r.time}</span>
+                      {r.author}{" "}
+                      <span className="font-normal text-muted-foreground">· {r.time}</span>
                     </p>
                     <p className="text-[12px] text-muted-foreground">{r.body}</p>
                   </div>

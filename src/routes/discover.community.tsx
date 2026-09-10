@@ -8,7 +8,11 @@ export const Route = createFileRoute("/discover/community")({
   head: () => ({
     meta: [
       { title: "Discover the community | MusicLinkd" },
-      { name: "description", content: "Bands, studios, labels and crews near you — the groups behind the individual profiles." },
+      {
+        name: "description",
+        content:
+          "Bands, studios, labels and crews near you — the groups behind the individual profiles.",
+      },
       { property: "og:title", content: "Discover the community | MusicLinkd" },
       { property: "og:description", content: "Bands, studios, labels and crews." },
       { property: "og:type", content: "website" },
@@ -32,10 +36,17 @@ function DiscoverCommunity() {
                 <Link key={b.id} to="/bands/$id" params={{ id: b.id }} className="block">
                   <Card>
                     <div className="flex items-center gap-3">
-                      <img src={b.avatar} alt="" className="h-12 w-12 rounded-full object-cover" loading="lazy" />
+                      <img
+                        src={b.avatar}
+                        alt=""
+                        className="h-12 w-12 rounded-full object-cover"
+                        loading="lazy"
+                      />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">{b.name}</p>
-                        <p className="truncate text-[12px] text-muted-foreground">{b.genres.join(" · ")} · {b.city}</p>
+                        <p className="truncate text-[12px] text-muted-foreground">
+                          {b.genres.join(" · ")} · {b.city}
+                        </p>
                       </div>
                     </div>
                   </Card>
@@ -51,7 +62,12 @@ function DiscoverCommunity() {
           <p className="mb-2 text-sm font-semibold">Studios and labels</p>
           <div className="space-y-2">
             {myBusinesses.map((b) => (
-              <Row key={b.id} title={b.name} subtitle={`${b.city} · ${b.tagline}`} to={`/business/${b.id}`} />
+              <Row
+                key={b.id}
+                title={b.name}
+                subtitle={`${b.city} · ${b.tagline}`}
+                to={`/business/${b.id}`}
+              />
             ))}
           </div>
         </section>

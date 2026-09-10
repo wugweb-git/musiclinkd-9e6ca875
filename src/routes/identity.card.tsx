@@ -7,14 +7,25 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Download, RefreshCcw, Share2 } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { QrIdentityCard, CopyLinkRow, StateCard, Skeleton, DownloadNote, nativeShare } from "@/components/ml/qr";
+import {
+  QrIdentityCard,
+  CopyLinkRow,
+  StateCard,
+  Skeleton,
+  DownloadNote,
+  nativeShare,
+} from "@/components/ml/qr";
 import { canonicalUrl, myIdentity } from "@/data/identity";
 
 export const Route = createFileRoute("/identity/card")({
   head: () => ({
     meta: [
       { title: "MusicLinkd share card" },
-      { name: "description", content: "A ready-to-post identity card with your name, role and QR — for stories, group chats and press kits." },
+      {
+        name: "description",
+        content:
+          "A ready-to-post identity card with your name, role and QR — for stories, group chats and press kits.",
+      },
       { property: "og:title", content: "MusicLinkd share card" },
       { property: "og:description", content: "Post it, print it, hand it over." },
     ],
@@ -39,7 +50,10 @@ function ShareCard() {
         {phase === "generating" ? (
           <Skeleton className="h-[430px] w-full" />
         ) : phase === "error" ? (
-          <StateCard title="Couldn't build the card" body="Something interrupted the export. Try building it again.">
+          <StateCard
+            title="Couldn't build the card"
+            body="Something interrupted the export. Try building it again."
+          >
             <Btn onClick={() => setPhase("generating")}>
               <RefreshCcw size={16} className="mr-2" /> Try again
             </Btn>
@@ -62,7 +76,16 @@ function ShareCard() {
             </div>
 
             <div className="mt-3 flex gap-2">
-              <Btn className="flex-1" onClick={() => void nativeShare({ title: `${myIdentity.name} on MusicLinkd`, text: myIdentity.tagline, url })}>
+              <Btn
+                className="flex-1"
+                onClick={() =>
+                  void nativeShare({
+                    title: `${myIdentity.name} on MusicLinkd`,
+                    text: myIdentity.tagline,
+                    url,
+                  })
+                }
+              >
                 <Share2 size={16} className="mr-2" /> Share card
               </Btn>
               <Btn variant="outline" className="flex-1" onClick={() => toast.success("Card saved")}>

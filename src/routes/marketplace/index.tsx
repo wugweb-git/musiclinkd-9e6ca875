@@ -23,7 +23,8 @@ export const Route = createFileRoute("/marketplace/")({
       { property: "og:title", content: "MusicLinkd Market" },
       {
         property: "og:description",
-        content: "India's music industry marketplace — instruments, gear, rentals, services and studios.",
+        content:
+          "India's music industry marketplace — instruments, gear, rentals, services and studios.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

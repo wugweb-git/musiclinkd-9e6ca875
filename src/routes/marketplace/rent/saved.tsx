@@ -14,7 +14,10 @@ export const Route = createFileRoute("/marketplace/rent/saved")({
         content: "Your saved rental equipment, providers, searches and recently viewed listings.",
       },
       { property: "og:title", content: "Saved Rentals | MusicLinkd" },
-      { property: "og:description", content: "Come back to the gear you shortlisted, with live availability." },
+      {
+        property: "og:description",
+        content: "Come back to the gear you shortlisted, with live availability.",
+      },
     ],
   }),
   component: SavedRentals,
@@ -41,7 +44,9 @@ function SavedRentals() {
           ? equipment.slice(0, 3).map((e) => <EquipmentRow key={e.id} e={e} />)
           : null}
 
-        {tab === "Providers" ? providers.slice(0, 3).map((p) => <ProviderCard key={p.id} p={p} />) : null}
+        {tab === "Providers"
+          ? providers.slice(0, 3).map((p) => <ProviderCard key={p.id} p={p} />)
+          : null}
 
         {tab === "Searches"
           ? recentRentalSearches.map((s) => (

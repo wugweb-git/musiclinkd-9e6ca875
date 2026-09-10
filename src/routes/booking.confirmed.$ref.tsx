@@ -10,10 +10,14 @@ export const Route = createFileRoute("/booking/confirmed/$ref")({
       { title: "Booking confirmation — MusicLinkd" },
       {
         name: "description",
-        content: "Your session details, reference number and next steps after requesting or confirming a booking.",
+        content:
+          "Your session details, reference number and next steps after requesting or confirming a booking.",
       },
       { property: "og:title", content: "Booking confirmation — MusicLinkd" },
-      { property: "og:description", content: "Session details and next steps for your MusicLinkd booking." },
+      {
+        property: "og:description",
+        content: "Session details and next steps for your MusicLinkd booking.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

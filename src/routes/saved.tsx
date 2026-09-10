@@ -42,11 +42,7 @@ function Saved() {
           ? studios.map((s) => (
               <article key={s.name} className="rounded-3xl border border-border bg-card p-4">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={s.photo}
-                    alt={s.name}
-                    className="h-14 w-14 rounded-2xl object-cover"
-                  />
+                  <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-2xl object-cover" />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-[14px]">{s.name}</h3>
                     <p className="truncate text-[11px] text-muted-foreground">
@@ -61,11 +57,7 @@ function Saved() {
           : talents.slice(0, 3).map((t) => (
               <article key={t.id} className="rounded-3xl border border-border bg-card p-4">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={t.photo}
-                    alt={t.name}
-                    className="h-14 w-14 rounded-2xl object-cover"
-                  />
+                  <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-2xl object-cover" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
                       <h3 className="truncate text-[14px]">{t.name}</h3>

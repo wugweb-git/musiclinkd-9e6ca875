@@ -19,7 +19,8 @@ export const Route = createFileRoute("/booking/$id/review")({
       { title: "Review your booking — MusicLinkd" },
       {
         name: "description",
-        content: "Everything in one place before you commit: room, date, time, add-ons, full price and the provider's terms.",
+        content:
+          "Everything in one place before you commit: room, date, time, add-ons, full price and the provider's terms.",
       },
       { property: "og:title", content: "Review your booking — MusicLinkd" },
       { property: "og:description", content: "Room, date, price and policies before you confirm." },
@@ -71,10 +72,15 @@ function Review() {
                 <Detail label="Duration" value={`${draft.hours} hr${draft.hours > 1 ? "s" : ""}`} />
                 <Detail label="Purpose" value={draft.purpose || "Not specified"} />
                 <Detail label="Project" value={draft.notes || "—"} />
-                <Detail label="Add-ons" value={draft.addOnIds.length ? `${draft.addOnIds.length} added` : "None"} />
+                <Detail
+                  label="Add-ons"
+                  value={draft.addOnIds.length ? `${draft.addOnIds.length} added` : "None"}
+                />
               </dl>
               {draft.requirements ? (
-                <p className="mt-3 border-t border-border pt-3 text-xs text-text2">{draft.requirements}</p>
+                <p className="mt-3 border-t border-border pt-3 text-xs text-text2">
+                  {draft.requirements}
+                </p>
               ) : null}
               <button
                 type="button"
@@ -93,7 +99,12 @@ function Review() {
             <h2 className="mt-6 text-[17px]">Provider terms</h2>
             <div className="mt-3 space-y-2">
               {b.policies.map((p) => (
-                <PolicyCard key={p.title} title={p.title} body={p.body} critical={p.critical ?? false} />
+                <PolicyCard
+                  key={p.title}
+                  title={p.title}
+                  body={p.body}
+                  critical={p.critical ?? false}
+                />
               ))}
             </div>
 
@@ -117,7 +128,10 @@ function Review() {
           navigate(
             price.deposit > 0
               ? { to: "/booking/$id/pay", params: { id: b.id } }
-              : { to: "/booking/confirmed/$ref", params: { ref: instant ? "MLB-NEW-C" : "MLB-NEW-R" } },
+              : {
+                  to: "/booking/confirmed/$ref",
+                  params: { ref: instant ? "MLB-NEW-C" : "MLB-NEW-R" },
+                },
           )
         }
       />

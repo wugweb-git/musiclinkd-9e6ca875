@@ -7,9 +7,16 @@ export const Route = createFileRoute("/auth/locked")({
   head: () => ({
     meta: [
       { title: "Account temporarily locked — MusicLinkd" },
-      { name: "description", content: "Your MusicLinkd sign-in is paused after repeated attempts. Here's how to get back in." },
+      {
+        name: "description",
+        content:
+          "Your MusicLinkd sign-in is paused after repeated attempts. Here's how to get back in.",
+      },
       { property: "og:title", content: "Account temporarily locked — MusicLinkd" },
-      { property: "og:description", content: "Security hold on sign-in. Reset your password to continue." },
+      {
+        property: "og:description",
+        content: "Security hold on sign-in. Reset your password to continue.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

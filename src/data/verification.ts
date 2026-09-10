@@ -38,9 +38,21 @@ export const verificationTypes: VerificationType[] = [
     verifies: "That the person behind this account is real and matches the ID on file.",
     whatOthersSee: "An ID-verified badge next to your name. Never your documents or ID number.",
     requirements: [
-      { label: "Government photo ID", why: "Confirms your legal name matches this account.", kind: "document" },
-      { label: "Selfie match", why: "Confirms the ID belongs to you and not someone else.", kind: "document" },
-      { label: "Phone number on file", why: "Used only to contact you about this review.", kind: "info" },
+      {
+        label: "Government photo ID",
+        why: "Confirms your legal name matches this account.",
+        kind: "document",
+      },
+      {
+        label: "Selfie match",
+        why: "Confirms the ID belongs to you and not someone else.",
+        kind: "document",
+      },
+      {
+        label: "Phone number on file",
+        why: "Used only to contact you about this review.",
+        kind: "info",
+      },
     ],
     turnaround: "Usually 1–2 days",
     appliesTo: "Every profile",
@@ -52,9 +64,21 @@ export const verificationTypes: VerificationType[] = [
     verifies: "That you have real credited work in the industry.",
     whatOthersSee: "A Pro badge on your profile, in Discover, on services and on reviews.",
     requirements: [
-      { label: "2 credited releases or clients", why: "Evidence the work is genuinely yours.", kind: "info" },
-      { label: "Portfolio with published work", why: "Reviewers check credits against your portfolio.", kind: "info" },
-      { label: "Professional affiliation (optional)", why: "Label, studio or agency you work with, if any.", kind: "info" },
+      {
+        label: "2 credited releases or clients",
+        why: "Evidence the work is genuinely yours.",
+        kind: "info",
+      },
+      {
+        label: "Portfolio with published work",
+        why: "Reviewers check credits against your portfolio.",
+        kind: "info",
+      },
+      {
+        label: "Professional affiliation (optional)",
+        why: "Label, studio or agency you work with, if any.",
+        kind: "info",
+      },
     ],
     turnaround: "3–5 days",
     appliesTo: "Talent profiles",
@@ -66,9 +90,21 @@ export const verificationTypes: VerificationType[] = [
     verifies: "That the business is registered and this account may act for it.",
     whatOthersSee: "A verified business badge on the business profile and its listings.",
     requirements: [
-      { label: "GST or registration certificate", why: "Confirms the business legally exists.", kind: "document" },
-      { label: "Business address", why: "Matched against the registration certificate.", kind: "info" },
-      { label: "Authorised signatory ID", why: "Confirms you may represent this business.", kind: "document" },
+      {
+        label: "GST or registration certificate",
+        why: "Confirms the business legally exists.",
+        kind: "document",
+      },
+      {
+        label: "Business address",
+        why: "Matched against the registration certificate.",
+        kind: "info",
+      },
+      {
+        label: "Authorised signatory ID",
+        why: "Confirms you may represent this business.",
+        kind: "document",
+      },
     ],
     turnaround: "3–7 days",
     appliesTo: "Business profiles",
@@ -80,9 +116,21 @@ export const verificationTypes: VerificationType[] = [
     verifies: "That the space exists, is bookable and looks like its photos.",
     whatOthersSee: "A verified space badge on the listing and in booking search.",
     requirements: [
-      { label: "Address proof", why: "Confirms the space is at the address you list.", kind: "document" },
-      { label: "6 room photos", why: "Renters must see the real room, not stock images.", kind: "document" },
-      { label: "Equipment list", why: "Shown to renters so expectations match reality.", kind: "info" },
+      {
+        label: "Address proof",
+        why: "Confirms the space is at the address you list.",
+        kind: "document",
+      },
+      {
+        label: "6 room photos",
+        why: "Renters must see the real room, not stock images.",
+        kind: "document",
+      },
+      {
+        label: "Equipment list",
+        why: "Shown to renters so expectations match reality.",
+        kind: "info",
+      },
     ],
     turnaround: "3–5 days",
     appliesTo: "Bookable resources",
@@ -111,7 +159,10 @@ export const myVerifications: VerificationRequest[] = [
     submitted: "12 Aug",
     decided: "13 Aug",
     reviewer: "MusicLinkd Trust",
-    documents: [{ name: "Government photo ID", state: "uploaded" }, { name: "Selfie match", state: "uploaded" }],
+    documents: [
+      { name: "Government photo ID", state: "uploaded" },
+      { name: "Selfie match", state: "uploaded" },
+    ],
   },
   {
     id: "vr-2",
@@ -177,10 +228,16 @@ export function overallStatus(reqs: VerificationRequest[] = myVerifications): Ve
 }
 
 /** True when a level can be started — professional and business need identity first. */
-export function eligibility(key: VerificationType["key"], reqs: VerificationRequest[] = myVerifications) {
+export function eligibility(
+  key: VerificationType["key"],
+  reqs: VerificationRequest[] = myVerifications,
+) {
   const identityDone = reqs.some((r) => r.type === "identity" && r.status === "verified");
   if (key !== "identity" && !identityDone) {
-    return { allowed: false, reason: "Verify your identity first — every other badge builds on it." };
+    return {
+      allowed: false,
+      reason: "Verify your identity first — every other badge builds on it.",
+    };
   }
   return { allowed: true, reason: "" };
 }
@@ -191,7 +248,11 @@ export const trustSignals = [
   { key: "professional", label: "Pro verified", detail: "Credited work confirmed on 2+ releases." },
   { key: "response", label: "Responds in 2h", detail: "Median first reply over the last 30 days." },
   { key: "reviews", label: "4.9 from 38 reviews", detail: "Reviews only from completed bookings." },
-  { key: "since", label: "On MusicLinkd since 2019", detail: "Account age and continuous activity." },
+  {
+    key: "since",
+    label: "On MusicLinkd since 2019",
+    detail: "Account age and continuous activity.",
+  },
 ];
 
 /** VERIFY-15 — the badge must read the same everywhere it appears. */
@@ -199,7 +260,10 @@ export const badgePlacements = [
   { surface: "Profile", detail: "Next to your name in the hero, at 16px." },
   { surface: "Search", detail: "After the name in every result row." },
   { surface: "Discovery", detail: "On talent cards and swipe cards." },
-  { surface: "Marketplace", detail: "On the seller line of a listing, never on the listing title." },
+  {
+    surface: "Marketplace",
+    detail: "On the seller line of a listing, never on the listing title.",
+  },
   { surface: "Business", detail: "On the business header and each of its spaces." },
   { surface: "Opportunities", detail: "On the poster of a call, so applicants know who is real." },
   { surface: "Messaging", detail: "In the conversation header only, not on every bubble." },
@@ -227,12 +291,33 @@ export const privacyPoints = [
 ];
 
 export const verificationFaq = [
-  { q: "Why verify?", a: "Verified profiles are easier to trust, rank higher in Discover and Search, and can be booked without a deposit." },
-  { q: "What is required?", a: "Identity needs a government photo ID and a selfie. Professional needs credited work. Business needs registration documents." },
-  { q: "How is my information used?", a: "Only to make the verification decision. Documents are never shown publicly and are not used for anything else." },
-  { q: "How long does review take?", a: "Each level shows its own turnaround. Identity is usually the fastest; business documents take longest." },
-  { q: "What happens if I am rejected?", a: "You get the reviewer's reason and can resubmit. Accepted documents are kept so you only fix what failed." },
+  {
+    q: "Why verify?",
+    a: "Verified profiles are easier to trust, rank higher in Discover and Search, and can be booked without a deposit.",
+  },
+  {
+    q: "What is required?",
+    a: "Identity needs a government photo ID and a selfie. Professional needs credited work. Business needs registration documents.",
+  },
+  {
+    q: "How is my information used?",
+    a: "Only to make the verification decision. Documents are never shown publicly and are not used for anything else.",
+  },
+  {
+    q: "How long does review take?",
+    a: "Each level shows its own turnaround. Identity is usually the fastest; business documents take longest.",
+  },
+  {
+    q: "What happens if I am rejected?",
+    a: "You get the reviewer's reason and can resubmit. Accepted documents are kept so you only fix what failed.",
+  },
 ];
 
-export const verificationSteps = ["Requirements", "Your details", "Documents", "Review", "Submitted"] as const;
+export const verificationSteps = [
+  "Requirements",
+  "Your details",
+  "Documents",
+  "Review",
+  "Submitted",
+] as const;
 export type VerificationStep = (typeof verificationSteps)[number];

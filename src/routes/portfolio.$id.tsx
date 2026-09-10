@@ -23,10 +23,14 @@ export const Route = createFileRoute("/portfolio/$id")({
       { title: "Work detail — MusicLinkd portfolio" },
       {
         name: "description",
-        content: "Preview a portfolio work exactly as people will see it, then edit, share or publish.",
+        content:
+          "Preview a portfolio work exactly as people will see it, then edit, share or publish.",
       },
       { property: "og:title", content: "Work detail — MusicLinkd portfolio" },
-      { property: "og:description", content: "Media, credits, metadata and visibility for this work." },
+      {
+        property: "og:description",
+        content: "Media, credits, metadata and visibility for this work.",
+      },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],

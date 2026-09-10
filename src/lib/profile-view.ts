@@ -10,7 +10,10 @@ function roleLabel(key: string | undefined | null): string | null {
   return roleDefs.find((r) => r.key === key)?.label ?? key;
 }
 
-export function mergeProfileRow(base: PersonProfile, row: ProfileRow | null | undefined): PersonProfile {
+export function mergeProfileRow(
+  base: PersonProfile,
+  row: ProfileRow | null | undefined,
+): PersonProfile {
   if (!row) return base;
   const primary = roleLabel(row.roles?.[0]);
   const linkMap = asLinkMap(row.links);
@@ -23,7 +26,7 @@ export function mergeProfileRow(base: PersonProfile, row: ProfileRow | null | un
     username: row.username || base.username,
     name: row.display_name || base.name,
     ...(row.avatar_url ? { photo: row.avatar_url } : {}),
-    headline: row.headline ? roleLabel(row.headline) ?? row.headline : primary ?? base.headline,
+    headline: row.headline ? (roleLabel(row.headline) ?? row.headline) : (primary ?? base.headline),
     primaryRole: primary ?? base.primaryRole,
     secondaryRoles: (row.roles ?? []).slice(1).map((r) => roleLabel(r) ?? r),
     location: [row.city, row.state].filter(Boolean).join(", ") || base.location,

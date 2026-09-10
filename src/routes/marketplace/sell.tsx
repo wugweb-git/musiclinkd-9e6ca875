@@ -8,9 +8,16 @@ export const Route = createFileRoute("/marketplace/sell")({
   head: () => ({
     meta: [
       { title: "Create a Listing | MusicLinkd Market" },
-      { name: "description", content: "List instruments, gear, rentals, services or studio time to India's music industry." },
+      {
+        name: "description",
+        content:
+          "List instruments, gear, rentals, services or studio time to India's music industry.",
+      },
       { property: "og:title", content: "Create a Listing | MusicLinkd Market" },
-      { property: "og:description", content: "Publish a listing to 72,000+ verified music professionals." },
+      {
+        property: "og:description",
+        content: "Publish a listing to 72,000+ verified music professionals.",
+      },
     ],
   }),
   component: Sell,
@@ -37,11 +44,19 @@ function Sell() {
 
   return (
     <Screen>
-      <TopBar title="Create listing" subtitle={`Step ${step + 1} of 4 · ${labels[step]}`} back="/marketplace" />
+      <TopBar
+        title="Create listing"
+        subtitle={`Step ${step + 1} of 4 · ${labels[step]}`}
+        back="/marketplace"
+      />
       <div className="px-5 pt-4">
         <div className="mb-5 flex gap-1.5">
           {labels.map((l, i) => (
-            <span key={l} className="h-1 flex-1 rounded-full" style={{ background: i <= step ? "var(--primary)" : "var(--border)" }} />
+            <span
+              key={l}
+              className="h-1 flex-1 rounded-full"
+              style={{ background: i <= step ? "var(--primary)" : "var(--border)" }}
+            />
           ))}
         </div>
 
@@ -53,7 +68,12 @@ function Sell() {
                 onClick={() => setType(t.label)}
                 className={`flex w-full items-center gap-3 rounded-3xl border p-4 text-left ${type === t.label ? "border-primary" : "border-border"} bg-card`}
               >
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg" style={{ background: "var(--pink-container)" }}>{t.emoji}</span>
+                <span
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg"
+                  style={{ background: "var(--pink-container)" }}
+                >
+                  {t.emoji}
+                </span>
                 <span className="text-sm font-semibold">{t.label}</span>
               </button>
             ))}
@@ -64,49 +84,83 @@ function Sell() {
           <div>
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2 flex aspect-square items-center justify-center rounded-3xl border border-dashed border-border bg-card text-center text-xs text-muted-foreground">
-                Cover photo<br />Tap to add
+                Cover photo
+                <br />
+                Tap to add
               </div>
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex aspect-square items-center justify-center rounded-2xl border border-dashed border-border bg-card text-lg text-muted-foreground">+</div>
+                <div
+                  key={i}
+                  className="flex aspect-square items-center justify-center rounded-2xl border border-dashed border-border bg-card text-lg text-muted-foreground"
+                >
+                  +
+                </div>
               ))}
             </div>
-            <p className="mt-3 text-[11px] text-muted-foreground">Drag to reorder. First photo becomes the cover. Video and audio previews are supported for services.</p>
+            <p className="mt-3 text-[11px] text-muted-foreground">
+              Drag to reorder. First photo becomes the cover. Video and audio previews are supported
+              for services.
+            </p>
           </div>
         ) : null}
 
         {step === 2 ? (
           <div className="space-y-4">
             <Field label="Title">
-              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Fender Stratocaster, 2022" className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary" />
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Fender Stratocaster, 2022"
+                className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
+              />
             </Field>
             <Field label="Price (₹)">
-              <input value={price} onChange={(e) => setPrice(e.target.value)} inputMode="numeric" placeholder="1,84,000" className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary" />
+              <input
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                inputMode="numeric"
+                placeholder="1,84,000"
+                className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
+              />
             </Field>
             {type !== "Service" && type !== "Studio / space" ? (
               <Field label="Condition">
                 <div className="flex flex-wrap gap-2">
                   {conditions.map((c) => (
-                    <Chip key={c} active={condition === c} onClick={() => setCondition(c)}>{c}</Chip>
+                    <Chip key={c} active={condition === c} onClick={() => setCondition(c)}>
+                      {c}
+                    </Chip>
                   ))}
                 </div>
               </Field>
             ) : null}
             <Field label="Description">
-              <textarea rows={4} placeholder="Condition, history, what's included..." className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary" />
+              <textarea
+                rows={4}
+                placeholder="Condition, history, what's included..."
+                className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+              />
             </Field>
             <Field label="Location">
-              <input defaultValue="Dadar, Mumbai" className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary" />
+              <input
+                defaultValue="Dadar, Mumbai"
+                className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
+              />
             </Field>
           </div>
         ) : null}
 
         {step === 3 ? (
           <div className="overflow-hidden rounded-3xl border border-border bg-card">
-            <div className="flex h-40 items-center justify-center bg-subtle text-xs text-muted-foreground">Cover photo</div>
+            <div className="flex h-40 items-center justify-center bg-subtle text-xs text-muted-foreground">
+              Cover photo
+            </div>
             <div className="p-4">
               <PriceBlock price={price ? `₹${price}` : "₹1,84,000"} size="lg" />
               <h2 className="mt-1 text-[16px]">{title || "Fender Stratocaster, 2022"}</h2>
-              <p className="text-[11px] text-muted-foreground">{type} · {condition} · Dadar, Mumbai</p>
+              <p className="text-[11px] text-muted-foreground">
+                {type} · {condition} · Dadar, Mumbai
+              </p>
               <div className="mt-3 flex items-center gap-3 rounded-2xl bg-subtle p-3">
                 <img src={seller.photo} alt="" className="h-10 w-10 rounded-xl object-cover" />
                 <div>
@@ -114,7 +168,9 @@ function Sell() {
                   <p className="text-[10px] text-muted-foreground">{seller.role}</p>
                 </div>
               </div>
-              <div className="mt-3"><TrustPill label="Verified identity" /></div>
+              <div className="mt-3">
+                <TrustPill label="Verified identity" />
+              </div>
             </div>
           </div>
         ) : null}
@@ -122,15 +178,23 @@ function Sell() {
 
       <div className="px-5 py-6">
         {step < 3 ? (
-          <Btn className="w-full" onClick={() => setStep(step + 1)}>Continue</Btn>
+          <Btn className="w-full" onClick={() => setStep(step + 1)}>
+            Continue
+          </Btn>
         ) : (
           <>
-            <Link to="/marketplace/mine"><Btn className="w-full">Publish listing</Btn></Link>
-            <Btn variant="outline" className="mt-2 w-full">Save draft</Btn>
+            <Link to="/marketplace/mine">
+              <Btn className="w-full">Publish listing</Btn>
+            </Link>
+            <Btn variant="outline" className="mt-2 w-full">
+              Save draft
+            </Btn>
           </>
         )}
         {step > 0 ? (
-          <Btn variant="ghost" className="mt-2 w-full" onClick={() => setStep(step - 1)}>Back</Btn>
+          <Btn variant="ghost" className="mt-2 w-full" onClick={() => setStep(step - 1)}>
+            Back
+          </Btn>
         ) : null}
       </div>
     </Screen>
@@ -140,7 +204,9 @@ function Sell() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
       {children}
     </div>
   );

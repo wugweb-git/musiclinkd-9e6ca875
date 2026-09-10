@@ -9,7 +9,11 @@ export const Route = createFileRoute("/services/$id/enquiry")({
   head: () => ({
     meta: [
       { title: "Enquire about a service | MusicLinkd" },
-      { name: "description", content: "Ask about a service or request a custom quote when your project does not fit a standard package." },
+      {
+        name: "description",
+        content:
+          "Ask about a service or request a custom quote when your project does not fit a standard package.",
+      },
       { property: "og:title", content: "Enquire about a service | MusicLinkd" },
       { property: "og:description", content: "Ask a question or request a custom quote." },
       { property: "og:type", content: "website" },
@@ -35,7 +39,10 @@ function ServiceEnquiry() {
       <Screen>
         <TopBar title="Enquiry" back="/services" />
         <div className="px-5 pt-6">
-          <EmptyState title="Service not found" body="This service may have been paused or removed." />
+          <EmptyState
+            title="Service not found"
+            body="This service may have been paused or removed."
+          />
         </div>
       </Screen>
     );
@@ -48,7 +55,9 @@ function ServiceEnquiry() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
-            <h2 className="mt-3 text-[19px] leading-tight">{mode === "Custom quote" ? "Quote request sent" : "Question sent"}</h2>
+            <h2 className="mt-3 text-[19px] leading-tight">
+              {mode === "Custom quote" ? "Quote request sent" : "Question sent"}
+            </h2>
             <p className="mt-2 text-[13px] text-muted-foreground">
               {mode === "Custom quote"
                 ? "You will get a priced answer, usually within a day. Nothing is committed until you accept it."
@@ -63,7 +72,10 @@ function ServiceEnquiry() {
     );
   }
 
-  const ready = mode === "Quick question" ? message.trim().length > 7 : scope.trim().length > 7 && budget.trim().length > 0;
+  const ready =
+    mode === "Quick question"
+      ? message.trim().length > 7
+      : scope.trim().length > 7 && budget.trim().length > 0;
 
   return (
     <Screen>
@@ -87,7 +99,9 @@ function ServiceEnquiry() {
 
         {mode === "Quick question" ? (
           <Card>
-            <label htmlFor="q" className="text-sm font-semibold">Your question</label>
+            <label htmlFor="q" className="text-sm font-semibold">
+              Your question
+            </label>
             <textarea
               id="q"
               rows={5}
@@ -100,7 +114,9 @@ function ServiceEnquiry() {
         ) : (
           <Card className="space-y-3">
             <div>
-              <label htmlFor="scope" className="text-sm font-semibold">What is the work?</label>
+              <label htmlFor="scope" className="text-sm font-semibold">
+                What is the work?
+              </label>
               <textarea
                 id="scope"
                 rows={4}
@@ -111,7 +127,9 @@ function ServiceEnquiry() {
               />
             </div>
             <div>
-              <label htmlFor="budget" className="text-sm font-semibold">Budget range</label>
+              <label htmlFor="budget" className="text-sm font-semibold">
+                Budget range
+              </label>
               <input
                 id="budget"
                 value={budget}
@@ -120,7 +138,9 @@ function ServiceEnquiry() {
                 className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
               />
             </div>
-            <p className="text-[12px] text-muted-foreground">A range gets a real number back. "Best price" usually gets ignored.</p>
+            <p className="text-[12px] text-muted-foreground">
+              A range gets a real number back. "Best price" usually gets ignored.
+            </p>
           </Card>
         )}
 

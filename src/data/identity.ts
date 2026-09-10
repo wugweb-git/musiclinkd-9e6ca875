@@ -76,16 +76,70 @@ export const myBusiness = {
 
 /** Seeded destinations, one per result screen plus every failure state. */
 export const destinations: QrDestination[] = [
-  { code: myIdentity.code, type: "profile", entityId: myIdentity.entityId, publicRoute: `/profile/${myIdentity.username}`, status: "active" },
-  { code: "ananya", type: "profile", entityId: talents[0]!.id, publicRoute: `/talent/${talents[0]!.id}`, status: "active" },
-  { code: myBusiness.code, type: "business", entityId: myBusiness.entityId, publicRoute: `/booking/${myBusiness.entityId}`, status: "active" },
-  { code: "live-room-a", type: "service", entityId: "live-room-a", publicRoute: `/booking/${myBusiness.entityId}/service`, status: "active" },
-  { code: "strat-62", type: "listing", entityId: listings[0]!.id, publicRoute: `/marketplace/${listings[0]!.id}`, status: "active" },
-  { code: "neon-monsoon", type: "portfolioItem", entityId: demoPortfolio[0]!.id, publicRoute: `/portfolio/${demoPortfolio[0]!.id}`, status: "active" },
-  { code: "old-poster", type: "profile", entityId: talents[2]!.id, publicRoute: `/talent/${talents[2]!.id}`, status: "expired" },
-  { code: "private-band", type: "band", entityId: "the-kite-notes", publicRoute: "/band", status: "private" },
+  {
+    code: myIdentity.code,
+    type: "profile",
+    entityId: myIdentity.entityId,
+    publicRoute: `/profile/${myIdentity.username}`,
+    status: "active",
+  },
+  {
+    code: "ananya",
+    type: "profile",
+    entityId: talents[0]!.id,
+    publicRoute: `/talent/${talents[0]!.id}`,
+    status: "active",
+  },
+  {
+    code: myBusiness.code,
+    type: "business",
+    entityId: myBusiness.entityId,
+    publicRoute: `/booking/${myBusiness.entityId}`,
+    status: "active",
+  },
+  {
+    code: "live-room-a",
+    type: "service",
+    entityId: "live-room-a",
+    publicRoute: `/booking/${myBusiness.entityId}/service`,
+    status: "active",
+  },
+  {
+    code: "strat-62",
+    type: "listing",
+    entityId: listings[0]!.id,
+    publicRoute: `/marketplace/${listings[0]!.id}`,
+    status: "active",
+  },
+  {
+    code: "neon-monsoon",
+    type: "portfolioItem",
+    entityId: demoPortfolio[0]!.id,
+    publicRoute: `/portfolio/${demoPortfolio[0]!.id}`,
+    status: "active",
+  },
+  {
+    code: "old-poster",
+    type: "profile",
+    entityId: talents[2]!.id,
+    publicRoute: `/talent/${talents[2]!.id}`,
+    status: "expired",
+  },
+  {
+    code: "private-band",
+    type: "band",
+    entityId: "the-kite-notes",
+    publicRoute: "/band",
+    status: "private",
+  },
   { code: "gone", type: "profile", entityId: "removed-user", publicRoute: "/", status: "deleted" },
-  { code: "paused", type: "business", entityId: myBusiness.entityId, publicRoute: `/booking/${myBusiness.entityId}`, status: "deactivated" },
+  {
+    code: "paused",
+    type: "business",
+    entityId: myBusiness.entityId,
+    publicRoute: `/booking/${myBusiness.entityId}`,
+    status: "deactivated",
+  },
 ];
 
 export function resolveCode(code: string): QrDestination {
@@ -190,7 +244,10 @@ export function previewFor(d: QrDestination): DestinationPreview | null {
 }
 
 /** Copy for every non-active resolution, so no screen leaks a reason it shouldn't. */
-export const statusCopy: Record<Exclude<QrStatus, "active">, { title: string; body: string; cta: string }> = {
+export const statusCopy: Record<
+  Exclude<QrStatus, "active">,
+  { title: string; body: string; cta: string }
+> = {
   invalid: {
     title: "This isn't a valid MusicLinkd QR code",
     body: "The code didn't match anything on MusicLinkd. Check you're scanning a MusicLinkd code and try again.",
@@ -221,11 +278,41 @@ export const statusCopy: Record<Exclude<QrStatus, "active">, { title: string; bo
 /** Controlled presentation styles — nothing that harms scannability. */
 export type QrStyle = "light" | "dark" | "branded" | "minimal";
 
-export const qrStyles: { value: QrStyle; label: string; blurb: string; dark: string; light: string }[] = [
-  { value: "light", label: "Light", blurb: "Black on white — the most reliable scan.", dark: "#111827", light: "#FFFFFF" },
-  { value: "dark", label: "Dark", blurb: "White on ink for dark posters and stages.", dark: "#FAFAFA", light: "#111827" },
-  { value: "branded", label: "MusicLinkd", blurb: "Brand pink on white, contrast checked.", dark: "#B31E58", light: "#FFFFFF" },
-  { value: "minimal", label: "Minimal", blurb: "Soft charcoal, no frame, no wordmark.", dark: "#1F2937", light: "#FAFAFA" },
+export const qrStyles: {
+  value: QrStyle;
+  label: string;
+  blurb: string;
+  dark: string;
+  light: string;
+}[] = [
+  {
+    value: "light",
+    label: "Light",
+    blurb: "Black on white — the most reliable scan.",
+    dark: "#111827",
+    light: "#FFFFFF",
+  },
+  {
+    value: "dark",
+    label: "Dark",
+    blurb: "White on ink for dark posters and stages.",
+    dark: "#FAFAFA",
+    light: "#111827",
+  },
+  {
+    value: "branded",
+    label: "MusicLinkd",
+    blurb: "Brand pink on white, contrast checked.",
+    dark: "#B31E58",
+    light: "#FFFFFF",
+  },
+  {
+    value: "minimal",
+    label: "Minimal",
+    blurb: "Soft charcoal, no frame, no wordmark.",
+    dark: "#1F2937",
+    light: "#FAFAFA",
+  },
 ];
 
 export function styleFor(value: QrStyle) {
@@ -234,11 +321,31 @@ export function styleFor(value: QrStyle) {
 
 /** Print layouts are previews only — no print-production pipeline. */
 export const printFormats = [
-  { id: "business-card", label: "Business card", size: "89 × 51 mm", blurb: "Name, role and QR on the back." },
+  {
+    id: "business-card",
+    label: "Business card",
+    size: "89 × 51 mm",
+    blurb: "Name, role and QR on the back.",
+  },
   { id: "poster", label: "Poster", size: "A3", blurb: "Big QR for a venue wall or noticeboard." },
-  { id: "studio-sign", label: "Studio sign", size: "150 × 150 mm", blurb: "Reception or door sign for your space." },
-  { id: "event-badge", label: "Event badge", size: "100 × 140 mm", blurb: "Conference or showcase badge insert." },
-  { id: "portfolio-card", label: "Portfolio card", size: "A6", blurb: "Hand out with a release or demo." },
+  {
+    id: "studio-sign",
+    label: "Studio sign",
+    size: "150 × 150 mm",
+    blurb: "Reception or door sign for your space.",
+  },
+  {
+    id: "event-badge",
+    label: "Event badge",
+    size: "100 × 140 mm",
+    blurb: "Conference or showcase badge insert.",
+  },
+  {
+    id: "portfolio-card",
+    label: "Portfolio card",
+    size: "A6",
+    blurb: "Hand out with a release or demo.",
+  },
 ] as const;
 
 /** Analytics are read-only demo figures surfaced from the existing profile analytics. */
@@ -271,6 +378,16 @@ export const qrContract = {
   module: "QR & Digital Identity",
   dataSource: ["profile", "businessProfile", "share"],
   entities: ["user", "profile", "business", "portfolio", "service", "listing"],
-  states: ["loading", "ready", "scanning", "resolved", "invalid", "private", "deleted", "offline", "error"],
+  states: [
+    "loading",
+    "ready",
+    "scanning",
+    "resolved",
+    "invalid",
+    "private",
+    "deleted",
+    "offline",
+    "error",
+  ],
   actions: ["scan", "share", "download", "copy", "saveContact", "open"],
 } as const;

@@ -190,7 +190,9 @@ function Body({ data }: { data: DashboardData }) {
           >
             <div className="min-w-0 flex-1">
               <p className="truncate text-[17px] font-bold leading-snug">{headline.title}</p>
-              <p className="mt-0.5 line-clamp-2 text-[12px] text-muted-foreground">{headline.body}</p>
+              <p className="mt-0.5 line-clamp-2 text-[12px] text-muted-foreground">
+                {headline.body}
+              </p>
               <span className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-primary">
                 {headline.cta} <ArrowRight size={13} />
               </span>
@@ -216,12 +218,18 @@ function Body({ data }: { data: DashboardData }) {
       <section className="pt-6">
         <SectionHeader title="Opportunities" action={<Link to="/opportunities">See all</Link>} />
         <div className="grid grid-cols-2 gap-3 px-5">
-          <Link to="/opportunities" className="min-w-0 rounded-3xl border border-border bg-card p-4">
+          <Link
+            to="/opportunities"
+            className="min-w-0 rounded-3xl border border-border bg-card p-4"
+          >
             <p className="text-[24px] font-bold leading-none">5</p>
             <p className="mt-2 truncate text-[12px] font-semibold">Matching you</p>
             <p className="truncate text-[11px] text-muted-foreground">Singers, mixers, gigs</p>
           </Link>
-          <Link to="/opportunities/applications" className="min-w-0 rounded-3xl border border-border bg-card p-4">
+          <Link
+            to="/opportunities/applications"
+            className="min-w-0 rounded-3xl border border-border bg-card p-4"
+          >
             <p className="text-[24px] font-bold leading-none">2</p>
             <p className="mt-2 truncate text-[12px] font-semibold">Your applications</p>
             <p className="truncate text-[11px] text-muted-foreground">1 shortlisted</p>

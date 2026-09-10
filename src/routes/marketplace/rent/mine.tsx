@@ -33,7 +33,10 @@ function MyRentals() {
         subtitle="1 active · 1 upcoming"
         back="/marketplace/rent"
         right={
-          <Link to="/marketplace/rent/listings" className="shrink-0 text-xs font-semibold text-primary">
+          <Link
+            to="/marketplace/rent/listings"
+            className="shrink-0 text-xs font-semibold text-primary"
+          >
             Listings
           </Link>
         }

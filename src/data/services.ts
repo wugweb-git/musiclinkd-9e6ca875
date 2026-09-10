@@ -73,7 +73,12 @@ export const myServices: Service[] = [
     unit: "per song",
     description:
       "Studio-quality lead vocals with stacked harmonies, comped and tuned, delivered as stems.",
-    deliverables: ["Comped lead take", "Up to 4 harmony stacks", "Dry + processed stems", "1 revision pass"],
+    deliverables: [
+      "Comped lead take",
+      "Up to 4 harmony stacks",
+      "Dry + processed stems",
+      "1 revision pass",
+    ],
     requirements: ["Instrumental with a guide melody", "Reference track", "Target key and tempo"],
     workMode: "Remote or in studio",
     turnaround: "3–4 days",
@@ -114,7 +119,8 @@ export const myServices: Service[] = [
     pricingModel: "per_song",
     basePrice: 12000,
     unit: "per song",
-    description: "Analogue-flavoured mixes for indie, pop and film songs. Stems in, radio-ready mix out.",
+    description:
+      "Analogue-flavoured mixes for indie, pop and film songs. Stems in, radio-ready mix out.",
     deliverables: ["Stereo mix (WAV 24/48)", "Instrumental & TV mixes", "2 revision rounds"],
     requirements: ["Labelled stems", "Rough mix reference", "Tempo map"],
     workMode: "Remote",
@@ -135,7 +141,8 @@ export const myServices: Service[] = [
     pricingModel: "per_day",
     basePrice: 45000,
     unit: "per show",
-    description: "Acoustic trio set for venues, weddings and private events across Mumbai and Pune.",
+    description:
+      "Acoustic trio set for venues, weddings and private events across Mumbai and Pune.",
     deliverables: ["45-minute set", "Own in-ear monitors", "Soundcheck 2h before"],
     requirements: ["PA system", "Two vocal mics", "Green room"],
     workMode: "In studio",
@@ -173,7 +180,12 @@ export const timeOff = [
   { id: "off-2", label: "Family holiday", range: "2–9 Oct" },
 ];
 
-export const availabilityStates = ["Available now", "Booking ahead", "Selective", "Not available"] as const;
+export const availabilityStates = [
+  "Available now",
+  "Booking ahead",
+  "Selective",
+  "Not available",
+] as const;
 export type AvailabilityState = (typeof availabilityStates)[number];
 
 export const bookingWindows = ["Same day", "24 hours notice", "3 days notice", "1 week notice"];

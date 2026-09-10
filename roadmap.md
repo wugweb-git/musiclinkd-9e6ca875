@@ -58,6 +58,13 @@
 ## Notes
 - Payments: seller is in India, so Lovable's built-in Stripe/Paddle are unavailable.
   Razorpay recommended (UPI, cards, INR) — awaiting user's decision before wiring.
+- [ ] No accessibility linting exists. `eslint-plugin-jsx-a11y` is not registered in
+  `eslint.config.js`, so the `jsx-a11y/*` rules have never run — three
+  `eslint-disable-next-line jsx-a11y/media-has-caption` comments were sitting in
+  `ml/portfolio.tsx` disabling a rule that was never loaded. AGENTS.md mandates WCAG AA,
+  4.5:1 contrast, `:focus-visible` on every control and a 48dp touch floor; none of that is
+  machine-checked today. Wiring up jsx-a11y would automate a large share of the manual
+  checking currently planned as per-screen review.
 
 ## Verify / follow-up (requested Sep 2)
 - Person Profile: confirm `/profile/$username`, `/me` owner mode, `/profile/edit`,

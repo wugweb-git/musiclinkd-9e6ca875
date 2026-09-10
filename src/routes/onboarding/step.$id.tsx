@@ -257,7 +257,11 @@ function StepBody({
     case "instruments":
       return (
         <div className="space-y-5">
-          <ChipPicker options={instruments} selected={d.instruments} onToggle={(v) => toggle("instruments", v)} />
+          <ChipPicker
+            options={instruments}
+            selected={d.instruments}
+            onToggle={(v) => toggle("instruments", v)}
+          />
           {d.instruments.length > 1 ? (
             <div>
               <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
@@ -275,12 +279,15 @@ function StepBody({
 
     case "specialisation": {
       const spec = d.primaryRole ? specialisationByRole[d.primaryRole] : undefined;
-      if (!spec) return <p className="text-sm text-muted-foreground">Nothing extra needed for your role.</p>;
+      if (!spec)
+        return <p className="text-sm text-muted-foreground">Nothing extra needed for your role.</p>;
       return (
         <div className="space-y-6">
           {spec.groups.map((g) => (
             <div key={g.label}>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">{g.label}</p>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                {g.label}
+              </p>
               <ChipPicker
                 options={g.options}
                 selected={d.specialisation[g.label] ?? []}
@@ -297,10 +304,18 @@ function StepBody({
     }
 
     case "genres":
-      return <ChipPicker options={genres} selected={d.genres} onToggle={(v) => toggle("genres", v)} />;
+      return (
+        <ChipPicker options={genres} selected={d.genres} onToggle={(v) => toggle("genres", v)} />
+      );
 
     case "languages":
-      return <ChipPicker options={languages} selected={d.languages} onToggle={(v) => toggle("languages", v)} />;
+      return (
+        <ChipPicker
+          options={languages}
+          selected={d.languages}
+          onToggle={(v) => toggle("languages", v)}
+        />
+      );
 
     case "location":
       return (
@@ -335,15 +350,32 @@ function StepBody({
       );
 
     case "work-mode":
-      return <OptionList options={workModes} selected={d.workModes} onToggle={(k) => toggle("workModes", k)} />;
+      return (
+        <OptionList
+          options={workModes}
+          selected={d.workModes}
+          onToggle={(k) => toggle("workModes", k)}
+        />
+      );
 
     case "availability":
       return (
-        <ChipPicker options={availabilityFor} selected={d.availability} onToggle={(v) => toggle("availability", v)} />
+        <ChipPicker
+          options={availabilityFor}
+          selected={d.availability}
+          onToggle={(v) => toggle("availability", v)}
+        />
       );
 
     case "intent":
-      return <ChipPicker options={intents} selected={d.intents} onToggle={(v) => toggle("intents", v)} columns />;
+      return (
+        <ChipPicker
+          options={intents}
+          selected={d.intents}
+          onToggle={(v) => toggle("intents", v)}
+          columns
+        />
+      );
 
     case "experience":
       return (
@@ -408,11 +440,22 @@ function StepBody({
       );
 
     case "contact":
-      return <OptionList options={contactChannels} selected={d.contact} onToggle={(k) => toggle("contact", k)} />;
+      return (
+        <OptionList
+          options={contactChannels}
+          selected={d.contact}
+          onToggle={(k) => toggle("contact", k)}
+        />
+      );
 
     case "discovery":
       return (
-        <ChipPicker options={discoveryPrefs} selected={d.discovery} onToggle={(v) => toggle("discovery", v)} columns />
+        <ChipPicker
+          options={discoveryPrefs}
+          selected={d.discovery}
+          onToggle={(v) => toggle("discovery", v)}
+          columns
+        />
       );
 
     case "visibility":
@@ -434,7 +477,8 @@ function StepBody({
             onToggle={(v) => set({ businessIntent: d.businessIntent === v ? null : v })}
           />
           <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
-            Choosing one hands you over to Business setup after onboarding. Your personal profile stays yours.
+            Choosing one hands you over to Business setup after onboarding. Your personal profile
+            stays yours.
           </p>
         </div>
       );
@@ -443,8 +487,16 @@ function StepBody({
       return (
         <OptionList
           options={[
-            { key: "yes", label: "Yes, I'm in a band or crew", hint: "We'll help you create a shared profile." },
-            { key: "no", label: "Not right now", hint: "You can add one any time from your profile." },
+            {
+              key: "yes",
+              label: "Yes, I'm in a band or crew",
+              hint: "We'll help you create a shared profile.",
+            },
+            {
+              key: "no",
+              label: "Not right now",
+              hint: "You can add one any time from your profile.",
+            },
           ]}
           selected={[d.bandIntent ? "yes" : "no"]}
           onToggle={(k) => set({ bandIntent: k === "yes" })}

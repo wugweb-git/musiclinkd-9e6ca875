@@ -67,7 +67,14 @@ function ProviderCalendar() {
       <main className="px-5 pt-4">
         {view === "Day" ? <DayView date={cursor} onDate={setCursor} /> : null}
         {view === "Week" ? <WeekView from={cursor} onPick={setCursor} /> : null}
-        {view === "Month" ? <MonthView onPick={(d) => { setCursor(d); setView("Day"); }} /> : null}
+        {view === "Month" ? (
+          <MonthView
+            onPick={(d) => {
+              setCursor(d);
+              setView("Day");
+            }}
+          />
+        ) : null}
       </main>
     </Screen>
   );
@@ -81,11 +88,19 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
   };
   return (
     <div className="flex min-w-0 items-center justify-between gap-3">
-      <button type="button" onClick={() => shift(-1)} className="min-h-11 px-2 text-sm font-semibold text-primary">
+      <button
+        type="button"
+        onClick={() => shift(-1)}
+        className="min-h-11 px-2 text-sm font-semibold text-primary"
+      >
         ← Prev
       </button>
       <p className="min-w-0 truncate text-[15px] font-bold">{formatDate(date)}</p>
-      <button type="button" onClick={() => shift(1)} className="min-h-11 px-2 text-sm font-semibold text-primary">
+      <button
+        type="button"
+        onClick={() => shift(1)}
+        className="min-h-11 px-2 text-sm font-semibold text-primary"
+      >
         Next →
       </button>
     </div>
@@ -101,7 +116,9 @@ function BlockRow({ b }: { b: Booking }) {
     >
       <span className="w-[62px] shrink-0 text-[12px] font-bold leading-tight">
         {formatTime(b.start)}
-        <span className="block text-[10px] font-semibold text-muted-foreground">{formatTime(b.end)}</span>
+        <span className="block text-[10px] font-semibold text-muted-foreground">
+          {formatTime(b.end)}
+        </span>
       </span>
       <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-primary" aria-hidden />
       <div className="min-w-0 flex-1">
@@ -173,7 +190,9 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
                 ))}
               </div>
             ) : (
-              <p className="rounded-2xl bg-subtle px-4 py-2.5 text-[11px] text-text2">Open all day</p>
+              <p className="rounded-2xl bg-subtle px-4 py-2.5 text-[11px] text-text2">
+                Open all day
+              </p>
             )}
           </div>
         );

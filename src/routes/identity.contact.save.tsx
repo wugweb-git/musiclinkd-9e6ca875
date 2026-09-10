@@ -13,7 +13,11 @@ export const Route = createFileRoute("/identity/contact/save")({
   head: () => ({
     meta: [
       { title: "Save contact — MusicLinkd" },
-      { name: "description", content: "Review exactly which details get saved to your phone before adding a MusicLinkd contact." },
+      {
+        name: "description",
+        content:
+          "Review exactly which details get saved to your phone before adding a MusicLinkd contact.",
+      },
       { property: "og:title", content: "Save a MusicLinkd contact" },
       { property: "og:description", content: "Nothing is added to your phone until you confirm." },
     ],
@@ -30,7 +34,10 @@ function SaveContact() {
       <TopBar title="Save contact" subtitle="Review before saving" back="/identity/contact" />
       <main className="px-5 pt-4">
         {phase === "done" ? (
-          <StateCard title="Contact saved" body={`${myIdentity.name} was added to your phone contacts with their MusicLinkd profile link.`}>
+          <StateCard
+            title="Contact saved"
+            body={`${myIdentity.name} was added to your phone contacts with their MusicLinkd profile link.`}
+          >
             <Link to="/identity/contact">
               <Btn className="w-full">
                 <Check size={16} className="mr-2" /> Done
@@ -38,7 +45,10 @@ function SaveContact() {
             </Link>
           </StateCard>
         ) : phase === "error" ? (
-          <StateCard title="Couldn't save the contact" body="Your browser blocked the download or contacts access. You can copy the details manually instead.">
+          <StateCard
+            title="Couldn't save the contact"
+            body="Your browser blocked the download or contacts access. You can copy the details manually instead."
+          >
             <Btn onClick={() => setPhase("ready")}>Try again</Btn>
           </StateCard>
         ) : (
@@ -48,11 +58,25 @@ function SaveContact() {
                 Will be saved
               </p>
               <div className="mt-3 flex flex-col gap-2">
-                <ActionRow icon={<UserRoundPlus size={17} />} label={myIdentity.name} hint={myIdentity.role} />
-                {c.phone.shared ? <ActionRow icon={<Check size={17} />} label={c.phone.value} hint="Mobile" /> : null}
-                {c.email.shared ? <ActionRow icon={<Check size={17} />} label={c.email.value} hint="Email" /> : null}
-                {c.company.shared ? <ActionRow icon={<Check size={17} />} label={c.company.value} hint="Company" /> : null}
-                <ActionRow icon={<Check size={17} />} label={`musiclinkd.app/q/${myIdentity.code}`} hint="Profile link" />
+                <ActionRow
+                  icon={<UserRoundPlus size={17} />}
+                  label={myIdentity.name}
+                  hint={myIdentity.role}
+                />
+                {c.phone.shared ? (
+                  <ActionRow icon={<Check size={17} />} label={c.phone.value} hint="Mobile" />
+                ) : null}
+                {c.email.shared ? (
+                  <ActionRow icon={<Check size={17} />} label={c.email.value} hint="Email" />
+                ) : null}
+                {c.company.shared ? (
+                  <ActionRow icon={<Check size={17} />} label={c.company.value} hint="Company" />
+                ) : null}
+                <ActionRow
+                  icon={<Check size={17} />}
+                  label={`musiclinkd.app/q/${myIdentity.code}`}
+                  hint="Profile link"
+                />
               </div>
             </section>
 
@@ -71,7 +95,9 @@ function SaveContact() {
                 {phase === "saving" ? "Saving…" : "Save to contacts"}
               </Btn>
               <Link to="/identity/contact" className="flex-1">
-                <Btn variant="outline" className="w-full">Cancel</Btn>
+                <Btn variant="outline" className="w-full">
+                  Cancel
+                </Btn>
               </Link>
             </div>
           </>

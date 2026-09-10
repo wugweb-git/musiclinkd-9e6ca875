@@ -3,13 +3,21 @@ import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
-import { getBusiness, businessRoleLabel, rolePermissions, type BusinessRole } from "@/data/business";
+import {
+  getBusiness,
+  businessRoleLabel,
+  rolePermissions,
+  type BusinessRole,
+} from "@/data/business";
 
 export const Route = createFileRoute("/business/$id/team")({
   head: () => ({
     meta: [
       { title: "Team & roles | MusicLinkd" },
-      { name: "description", content: "Invite staff, set what each role can do and remove people from your business." },
+      {
+        name: "description",
+        content: "Invite staff, set what each role can do and remove people from your business.",
+      },
       { property: "og:title", content: "Team & roles | MusicLinkd" },
       { property: "og:description", content: "Owners, managers, engineers and staff." },
       { property: "og:type", content: "website" },
@@ -47,7 +55,12 @@ function TeamScreen() {
         subtitle={b.name}
         back="/business/$id"
         right={
-          <button type="button" onClick={() => setInvite(true)} aria-label="Invite member" className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground">
+          <button
+            type="button"
+            onClick={() => setInvite(true)}
+            aria-label="Invite member"
+            className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
+          >
             <UserPlus size={16} />
           </button>
         }
@@ -63,7 +76,12 @@ function TeamScreen() {
                 onClick={() => setEditing(m.id)}
                 className="flex w-full items-center gap-3 border-b border-border py-2.5 text-left last:border-0"
               >
-                <img src={m.photo} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" loading="lazy" />
+                <img
+                  src={m.photo}
+                  alt=""
+                  className="h-10 w-10 shrink-0 rounded-full object-cover"
+                  loading="lazy"
+                />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-semibold">{m.name}</span>
                   <span className="block text-[11px] text-muted-foreground">
@@ -92,13 +110,17 @@ function TeamScreen() {
       <Sheet open={invite} onClose={() => setInvite(false)} title="Invite to team">
         <div className="space-y-3">
           <label className="block">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Email or @username</span>
+            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              Email or @username
+            </span>
             <input
               placeholder="@kabir"
               className="mt-1.5 min-h-12 w-full rounded-2xl border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
             />
           </label>
-          <p className="text-[12px] text-muted-foreground">They keep their own profile and appear on your team page once they accept.</p>
+          <p className="text-[12px] text-muted-foreground">
+            They keep their own profile and appear on your team page once they accept.
+          </p>
           <Btn className="w-full" onClick={() => setInvite(false)}>
             Send invite
           </Btn>
@@ -124,7 +146,9 @@ function TeamScreen() {
             variant="ghost"
             className="w-full"
             onClick={() => {
-              setMembers((list) => list.map((m) => (m.id === editing ? { ...m, status: "removed" as const } : m)));
+              setMembers((list) =>
+                list.map((m) => (m.id === editing ? { ...m, status: "removed" as const } : m)),
+              );
               setEditing(null);
             }}
           >

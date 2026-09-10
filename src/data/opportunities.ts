@@ -7,24 +7,12 @@
  */
 
 export type OpportunityKind =
-  | "Person"
-  | "Gig"
-  | "Project"
-  | "Studio"
-  | "Venue"
-  | "Equipment"
-  | "Collaborator";
+  "Person" | "Gig" | "Project" | "Studio" | "Venue" | "Equipment" | "Collaborator";
 
 export type OpportunityStatus = "open" | "reviewing" | "closed" | "draft" | "filled";
 
 export type ApplicationStatus =
-  | "draft"
-  | "submitted"
-  | "viewed"
-  | "shortlisted"
-  | "accepted"
-  | "rejected"
-  | "withdrawn";
+  "draft" | "submitted" | "viewed" | "shortlisted" | "accepted" | "rejected" | "withdrawn";
 
 export type OpportunityCategory = {
   key: string;
@@ -80,7 +68,13 @@ export type Opportunity = {
   postedAt: string;
   closesAt: string;
   /** opportunity_compensation */
-  compensation: { type: "Paid" | "Revenue share" | "Unpaid / credit"; min?: number; max?: number; unit: string; negotiable: boolean };
+  compensation: {
+    type: "Paid" | "Revenue share" | "Unpaid / credit";
+    min?: number;
+    max?: number;
+    unit: string;
+    negotiable: boolean;
+  };
   summary: string;
   brief: string[];
   /** opportunity_requirement[] */
@@ -121,7 +115,8 @@ export const opportunities: Opportunity[] = [
     postedAt: "2 days ago",
     closesAt: "Closes in 9 days",
     compensation: { type: "Paid", min: 25000, max: 40000, unit: "per song", negotiable: true },
-    summary: "Warm mid-range vocal for a 3-minute indie-pop single. Two studio days in Andheri plus remote comps.",
+    summary:
+      "Warm mid-range vocal for a 3-minute indie-pop single. Two studio days in Andheri plus remote comps.",
     brief: [
       "Reference: Prateek Kuhad meets Lifafa — intimate, breathy, restrained.",
       "Scratch vocal and stems will be shared after shortlisting.",
@@ -140,7 +135,11 @@ export const opportunities: Opportunity[] = [
     views: 412,
     saved: true,
     matchScore: 92,
-    matchReasons: ["Your genres match", "You're available those dates", "3 portfolio tracks fit the brief"],
+    matchReasons: [
+      "Your genres match",
+      "You're available those dates",
+      "3 portfolio tracks fit the brief",
+    ],
     featured: true,
   },
   {
@@ -164,7 +163,8 @@ export const opportunities: Opportunity[] = [
     postedAt: "5 hours ago",
     closesAt: "Closes in 14 days",
     compensation: { type: "Paid", min: 8000, max: 12000, unit: "per track", negotiable: true },
-    summary: "Tracked and edited, needs a mixer who can keep guitars aggressive without losing the vocal.",
+    summary:
+      "Tracked and edited, needs a mixer who can keep guitars aggressive without losing the vocal.",
     brief: [
       "Sessions delivered as Pro Tools or stems at 48k/24-bit.",
       "Two revision rounds per track built into the fee.",
@@ -206,7 +206,11 @@ export const opportunities: Opportunity[] = [
     closesAt: "Closes in 4 days",
     compensation: { type: "Paid", min: 15000, unit: "per night", negotiable: false },
     summary: "Funk/soul house band, two nights, one paid rehearsal. Backline provided.",
-    brief: ["Set list shared 5 days out.", "Load-in 6pm, downbeat 9pm.", "Backline: DW kit, you bring cymbals and snare."],
+    brief: [
+      "Set list shared 5 days out.",
+      "Load-in 6pm, downbeat 9pm.",
+      "Backline: DW kit, you bring cymbals and snare.",
+    ],
     requirements: [
       { label: "Funk / soul pocket", must: true },
       { label: "Own cymbals + snare", must: true },
@@ -242,8 +246,13 @@ export const opportunities: Opportunity[] = [
     postedAt: "3 days ago",
     closesAt: "Closes in 6 days",
     compensation: { type: "Paid", min: 18000, max: 30000, unit: "per day", negotiable: true },
-    summary: "Looking for a live room that fits a 5-piece with isolation for drums and a decent piano.",
-    brief: ["Three consecutive days in October.", "Engineer can be in-house or ours.", "Need a tie-line to a control room with good monitoring."],
+    summary:
+      "Looking for a live room that fits a 5-piece with isolation for drums and a decent piano.",
+    brief: [
+      "Three consecutive days in October.",
+      "Engineer can be in-house or ours.",
+      "Need a tie-line to a control room with good monitoring.",
+    ],
     requirements: [
       { label: "Live room 400+ sq ft", must: true },
       { label: "Drum isolation", must: true },
@@ -280,7 +289,11 @@ export const opportunities: Opportunity[] = [
     closesAt: "Closes in 2 days",
     compensation: { type: "Paid", min: 60000, unit: "flat", negotiable: false },
     summary: "60-second brand film. Needs punchy, street-leaning Hindi with one English hook line.",
-    brief: ["Locked picture and scratch bed shared on shortlist.", "Two rounds of client revisions.", "Buyout for 12 months, India + digital."],
+    brief: [
+      "Locked picture and scratch bed shared on shortlist.",
+      "Two rounds of client revisions.",
+      "Buyout for 12 months, India + digital.",
+    ],
     requirements: [
       { label: "Hindi writing samples", must: true },
       { label: "Ad / brand film experience", must: true },
@@ -354,7 +367,8 @@ export const myApplications: Application[] = [
     opportunityId: "op-3",
     status: "viewed",
     submittedAt: "20 hours ago",
-    message: "Funk/soul is my home turf — two nights work, I have my own cymbals and a Ludwig snare.",
+    message:
+      "Funk/soul is my home turf — two nights work, I have my own cymbals and a Ludwig snare.",
     portfolioIds: ["pf-5"],
     timeline: [
       { label: "Applied", at: "1 Sep, 22:31", done: true },
@@ -381,7 +395,9 @@ export function getApplication(id: string) {
   return myApplications.find((a) => a.id === id);
 }
 
-export function applicationTone(s: ApplicationStatus): "neutral" | "good" | "warn" | "bad" | "brand" {
+export function applicationTone(
+  s: ApplicationStatus,
+): "neutral" | "good" | "warn" | "bad" | "brand" {
   if (s === "accepted") return "good";
   if (s === "shortlisted") return "brand";
   if (s === "rejected" || s === "withdrawn") return "bad";
@@ -467,10 +483,21 @@ export const applicants: Applicant[] = [
     verified: true,
     matchScore: 94,
     matchReasons: ["Available on your dates", "Played 5 live sessions", "Same city"],
-    message: "Live sessions are most of my work — here are two multi-cam ones so you can see the playing.",
+    message:
+      "Live sessions are most of my work — here are two multi-cam ones so you can see the playing.",
     portfolio: [
-      { id: "pf-a", title: "Live at Bandra Base", kind: "video", cover: u("photo-1470225620780-dba8ba36b745") },
-      { id: "pf-b", title: "Rhodes takes — reel", kind: "audio", cover: u("photo-1520523839897-bd0b52f945a0") },
+      {
+        id: "pf-a",
+        title: "Live at Bandra Base",
+        kind: "video",
+        cover: u("photo-1470225620780-dba8ba36b745"),
+      },
+      {
+        id: "pf-b",
+        title: "Rhodes takes — reel",
+        kind: "audio",
+        cover: u("photo-1520523839897-bd0b52f945a0"),
+      },
     ],
     status: "shortlisted",
     appliedAt: "2 days ago",
@@ -488,7 +515,14 @@ export const applicants: Applicant[] = [
     matchScore: 71,
     matchReasons: ["Strong arrangement credits"],
     message: "Happy to travel. I can also chart the session out ahead of the day.",
-    portfolio: [{ id: "pf-c", title: "Arrangement reel 2026", kind: "audio", cover: u("photo-1507838153414-b4b713384a76") }],
+    portfolio: [
+      {
+        id: "pf-c",
+        title: "Arrangement reel 2026",
+        kind: "audio",
+        cover: u("photo-1507838153414-b4b713384a76"),
+      },
+    ],
     status: "submitted",
     appliedAt: "3 days ago",
   },
@@ -505,7 +539,14 @@ export const applicants: Applicant[] = [
     matchScore: 66,
     matchReasons: ["Same city", "Produces in your genre"],
     message: "Would love in — I lean more electronic but can play it straight.",
-    portfolio: [{ id: "pf-d", title: "Modular set", kind: "video", cover: u("photo-1493225457124-a3eb161ffa5f") }],
+    portfolio: [
+      {
+        id: "pf-d",
+        title: "Modular set",
+        kind: "video",
+        cover: u("photo-1493225457124-a3eb161ffa5f"),
+      },
+    ],
     status: "viewed",
     appliedAt: "4 days ago",
   },

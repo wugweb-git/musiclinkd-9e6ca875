@@ -11,10 +11,14 @@ export const Route = createFileRoute("/marketplace/rent/nearby")({
       { title: "Rentals Near You | MusicLinkd" },
       {
         name: "description",
-        content: "Instruments, audio, DJ and live equipment available for rent close to you in Mumbai.",
+        content:
+          "Instruments, audio, DJ and live equipment available for rent close to you in Mumbai.",
       },
       { property: "og:title", content: "Rentals Near You | MusicLinkd" },
-      { property: "og:description", content: "Location-first rental discovery with same-day pickup options." },
+      {
+        property: "og:description",
+        content: "Location-first rental discovery with same-day pickup options.",
+      },
     ],
   }),
   component: NearbyRentals,
@@ -59,7 +63,9 @@ function NearbyRentals() {
       </div>
 
       <div className="flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
-        <Chip active={cat === "All"} onClick={() => setCat("All")}>All</Chip>
+        <Chip active={cat === "All"} onClick={() => setCat("All")}>
+          All
+        </Chip>
         {rentalCategories.map((c) => (
           <Chip key={c.slug} active={cat === c.slug} onClick={() => setCat(c.slug)}>
             {c.emoji} {c.label}
@@ -75,7 +81,9 @@ function NearbyRentals() {
 
       <section className="px-5 pt-6">
         <h2 className="text-[16px]">Providers around you</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">Verified rental partners within {radius}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          Verified rental partners within {radius}
+        </p>
         <div className="mt-3 space-y-3">
           {providers.slice(0, 3).map((p) => (
             <ProviderCard key={p.id} p={p} />

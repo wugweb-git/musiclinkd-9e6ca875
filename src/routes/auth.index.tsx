@@ -67,7 +67,11 @@ function AuthPage() {
   async function submit() {
     setError(null);
     if (!email.includes("@")) {
-      setError({ kind: "unknown", title: "Enter a valid email", body: "We use your email to secure your account." });
+      setError({
+        kind: "unknown",
+        title: "Enter a valid email",
+        body: "We use your email to secure your account.",
+      });
       return;
     }
     if (signup && passwordScore(password) < 2) {
@@ -165,7 +169,11 @@ function AuthPage() {
         Continue with Google
       </Btn>
       <div className="mt-3">
-        <Btn variant="outline" className="w-full" onClick={() => void navigate({ to: "/auth/phone" })}>
+        <Btn
+          variant="outline"
+          className="w-full"
+          onClick={() => void navigate({ to: "/auth/phone" })}
+        >
           Continue with phone
         </Btn>
       </div>

@@ -10,7 +10,8 @@ export const Route = createFileRoute("/booking/$id/addons")({
       { title: "Equipment & add-ons — MusicLinkd booking" },
       {
         name: "description",
-        content: "Add an engineer, a drum kit, extra mics or a marketplace rental to your session and watch the price update.",
+        content:
+          "Add an engineer, a drum kit, extra mics or a marketplace rental to your session and watch the price update.",
       },
       { property: "og:title", content: "Equipment & add-ons — MusicLinkd booking" },
       { property: "og:description", content: "Engineers, backline and rentals for your session." },

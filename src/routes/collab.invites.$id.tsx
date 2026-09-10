@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Btn, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
-import { Card, Field, Label, PermissionState, StickyBar, Tag, TextInput } from "@/components/ml/collab";
+import {
+  Card,
+  Field,
+  Label,
+  PermissionState,
+  StickyBar,
+  Tag,
+  TextInput,
+} from "@/components/ml/collab";
 import { getInvitation } from "@/data/collab";
 
 export const Route = createFileRoute("/collab/invites/$id")({
@@ -13,10 +21,14 @@ export const Route = createFileRoute("/collab/invites/$id")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Review a MusicLinkd collaboration invitation: role, scope, timeline and who's involved.",
+          content:
+            "Review a MusicLinkd collaboration invitation: role, scope, timeline and who's involved.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: "Accept, decline or ask a question before you commit." },
+        {
+          property: "og:description",
+          content: "Accept, decline or ask a question before you commit.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -40,7 +52,6 @@ function InviteDetail() {
       </Screen>
     );
   }
-
 
   return (
     <Screen bottomNav={false}>
@@ -83,7 +94,8 @@ function InviteDetail() {
             {inv.budget ?? "To be agreed between collaborators"}
           </p>
           <p className="mt-1 text-[12px] text-muted-foreground">
-            <span className="font-semibold text-foreground">Credit:</span> {inv.proposedRole} credit on release
+            <span className="font-semibold text-foreground">Credit:</span> {inv.proposedRole} credit
+            on release
           </p>
         </Card>
 

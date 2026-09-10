@@ -24,10 +24,7 @@ function Messages() {
         title="Messages"
         subtitle="3 unread"
         right={
-          <Link
-            to="/collab"
-            className="text-[11px] font-bold uppercase tracking-wide text-primary"
-          >
+          <Link to="/collab" className="text-[11px] font-bold uppercase tracking-wide text-primary">
             Collabs
           </Link>
         }
@@ -65,7 +62,9 @@ function Messages() {
             <div className="min-w-0 flex-1">
               <h3 className="truncate text-[14px]">{t.name}</h3>
               <p className="truncate text-[11px] text-muted-foreground">
-                {i === 0 ? "Sending the reference track tonight." : "Sounds good — let's lock dates."}
+                {i === 0
+                  ? "Sending the reference track tonight."
+                  : "Sounds good — let's lock dates."}
               </p>
             </div>
             {i < 3 ? (

@@ -10,18 +10,21 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Check, ChevronLeft, Camera, Image as ImageIcon, Trash2, WifiOff, MapPin } from "lucide-react";
+import {
+  Check,
+  ChevronLeft,
+  Camera,
+  Image as ImageIcon,
+  Trash2,
+  WifiOff,
+  MapPin,
+} from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn, Sheet } from "@/components/ml/ui";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { draftToProfile, profileToDraft } from "@/lib/profile-map";
-import {
-  emptyDraft,
-  visibleSteps,
-  type OnboardingDraft,
-} from "@/data/onboarding";
-
+import { emptyDraft, visibleSteps, type OnboardingDraft } from "@/data/onboarding";
 
 /* ------------------------------------------------------------------ */
 /* Draft store — local-first, synced to the account when signed in     */
@@ -108,7 +111,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
           setDraft((local) => {
             // Whichever copy is further along wins; the other fills the blanks.
             const localAhead = local.completedSteps.length >= remote.completedSteps.length;
-            const base = localAhead ? { ...remote, ...prune(local) } : { ...local, ...prune(remote) };
+            const base = localAhead
+              ? { ...remote, ...prune(local) }
+              : { ...local, ...prune(remote) };
             const merged = {
               ...base,
               completedSteps: Array.from(
@@ -176,7 +181,8 @@ function prune(d: OnboardingDraft): Partial<OnboardingDraft> {
   for (const [k, v] of Object.entries(d)) {
     if (v === null || v === undefined || v === "") continue;
     if (Array.isArray(v) && v.length === 0) continue;
-    if (!Array.isArray(v) && typeof v === "object" && Object.keys(v as object).length === 0) continue;
+    if (!Array.isArray(v) && typeof v === "object" && Object.keys(v as object).length === 0)
+      continue;
     out[k] = v;
   }
   return out as Partial<OnboardingDraft>;
@@ -187,7 +193,6 @@ export function useOnboarding(): Store {
   if (!ctx) throw new Error("useOnboarding must be used inside OnboardingProvider");
   return ctx;
 }
-
 
 export function resumeTarget(draft: OnboardingDraft): string {
   const list = visibleSteps(draft);
@@ -253,7 +258,10 @@ export function StepShell({
               aria-valuemax={100}
               aria-label="Onboarding progress"
             >
-              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${pct}%` }}
+              />
             </div>
           </div>
           {onSkip ? (
@@ -316,7 +324,9 @@ export function ChipPicker({
             aria-pressed={on}
             onClick={() => onToggle(o)}
             className={`flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${
-              on ? "border-transparent bg-navy text-background" : "border-border bg-card text-foreground"
+              on
+                ? "border-transparent bg-navy text-background"
+                : "border-border bg-card text-foreground"
             }`}
           >
             {on ? <Check size={14} /> : null}
@@ -357,7 +367,9 @@ export function ChoiceGrid({
             </span>
             <span>
               <span className="block text-sm font-semibold">{o.label}</span>
-              <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground">{o.hint}</span>
+              <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground">
+                {o.hint}
+              </span>
             </span>
           </button>
         );
@@ -400,7 +412,9 @@ export function OptionList({
               </span>
               <span className="min-w-0">
                 <span className="block text-sm font-semibold">{o.label}</span>
-                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{o.hint}</span>
+                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
+                  {o.hint}
+                </span>
               </span>
             </button>
           </li>
@@ -435,11 +449,13 @@ export function InlineField({
   maxLength?: number;
   inputId: string;
 }) {
-  const shared =
-    "w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground";
+  const shared = "w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground";
   return (
     <div>
-      <label htmlFor={inputId} className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground">
+      <label
+        htmlFor={inputId}
+        className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground"
+      >
         {label}
       </label>
       <div
@@ -470,7 +486,9 @@ export function InlineField({
         )}
       </div>
       <div className="mt-1.5 flex items-start justify-between gap-3">
-        <p className={`text-xs ${error ? "text-destructive" : ok ? "text-success" : "text-muted-foreground"}`}>
+        <p
+          className={`text-xs ${error ? "text-destructive" : ok ? "text-success" : "text-muted-foreground"}`}
+        >
           {error ?? ok ?? hint ?? ""}
         </p>
         {maxLength ? (
@@ -538,9 +556,21 @@ export function PhotoPicker({
       <Sheet open={open} onClose={() => setOpen(false)} title={label}>
         <ul className="space-y-2">
           {[
-            { icon: <Camera size={18} />, label: "Take photo", src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400" },
-            { icon: <ImageIcon size={18} />, label: "Choose from gallery", src: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400" },
-            { icon: <ImageIcon size={18} />, label: "Use existing photo", src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400" },
+            {
+              icon: <Camera size={18} />,
+              label: "Take photo",
+              src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
+            },
+            {
+              icon: <ImageIcon size={18} />,
+              label: "Choose from gallery",
+              src: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
+            },
+            {
+              icon: <ImageIcon size={18} />,
+              label: "Use existing photo",
+              src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400",
+            },
           ].map((o) => (
             <li key={o.label}>
               <button
@@ -581,7 +611,10 @@ export function SelectField({
 }) {
   return (
     <div>
-      <label htmlFor={selectId} className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground">
+      <label
+        htmlFor={selectId}
+        className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground"
+      >
         {label}
       </label>
       <select
@@ -614,7 +647,8 @@ export function OfflineBanner() {
     >
       <WifiOff size={16} className="mt-0.5 shrink-0 text-warn" />
       <p className="text-xs leading-relaxed text-text2">
-        You're offline. Your answers are kept on this device and will sync when you're back online — nothing has been saved to your profile yet.
+        You're offline. Your answers are kept on this device and will sync when you're back online —
+        nothing has been saved to your profile yet.
       </p>
     </div>
   );
@@ -625,7 +659,11 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
     <div role="alert" className="mb-4 rounded-2xl border border-destructive/40 bg-card p-4">
       <p className="text-sm font-semibold text-destructive">We couldn't save that</p>
       <p className="mt-1 text-xs text-text2">{message}</p>
-      <button type="button" onClick={onRetry} className="mt-3 min-h-11 text-xs font-bold text-primary">
+      <button
+        type="button"
+        onClick={onRetry}
+        className="mt-3 min-h-11 text-xs font-bold text-primary"
+      >
         Try again
       </button>
     </div>
@@ -634,7 +672,10 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
 
 export function SavingBanner({ label = "Saving your answers…" }: { label?: string }) {
   return (
-    <div role="status" className="mb-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
+    <div
+      role="status"
+      className="mb-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4"
+    >
       <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
       <p className="text-xs text-text2">{label}</p>
     </div>
@@ -652,7 +693,11 @@ export function SyncBanner({
   localNote?: string;
 }) {
   if (state === "saving" || state === "loading") {
-    return <SavingBanner label={state === "loading" ? "Loading your saved answers…" : "Saving to your account…"} />;
+    return (
+      <SavingBanner
+        label={state === "loading" ? "Loading your saved answers…" : "Saving to your account…"}
+      />
+    );
   }
   if (state === "offline") return <OfflineBanner />;
   if (state === "error") {
@@ -672,7 +717,6 @@ export function SyncBanner({
   }
   return null;
 }
-
 
 export function StepSkeleton() {
   return (
@@ -714,11 +758,17 @@ export function ReadinessCard({
     <div className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
       <span
         className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
-          done ? "bg-success text-background" : "border border-border bg-subtle text-muted-foreground"
+          done
+            ? "bg-success text-background"
+            : "border border-border bg-subtle text-muted-foreground"
         }`}
         aria-hidden
       >
-        {done ? <Check size={13} strokeWidth={3} /> : <span className="text-[11px] font-bold">·</span>}
+        {done ? (
+          <Check size={13} strokeWidth={3} />
+        ) : (
+          <span className="text-[11px] font-bold">·</span>
+        )}
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">
@@ -729,7 +779,9 @@ export function ReadinessCard({
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
         {flow ? (
-          <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
+          <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            {flow}
+          </p>
         ) : null}
         {!done && action ? <div className="mt-2">{action}</div> : null}
       </div>
@@ -768,4 +820,3 @@ export function HandoffCard({
     </div>
   );
 }
-

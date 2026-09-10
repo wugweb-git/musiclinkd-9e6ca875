@@ -67,7 +67,9 @@ function ProposalAccepted() {
             </div>
             <div>
               <Label>Participants</Label>
-              <p className="text-[13px]">{project ? `${project.participants.length} people` : "2 people"}</p>
+              <p className="text-[13px]">
+                {project ? `${project.participants.length} people` : "2 people"}
+              </p>
             </div>
           </div>
         </Card>

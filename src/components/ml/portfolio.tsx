@@ -132,7 +132,6 @@ export function AudioPreview({ src, title }: { src: string; title: string }) {
         Audio preview
       </p>
       <p className="mt-1 truncate text-sm font-semibold">{title}</p>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
     </div>
   );
@@ -219,7 +218,10 @@ export function MediaStatePill({ state }: { state: MediaState }) {
       : c.tone === "warn"
         ? { background: "var(--warn-container)", color: "var(--warn)" }
         : c.tone === "bad"
-          ? { background: "var(--danger-container, var(--warn-container))", color: "var(--danger, #DC2626)" }
+          ? {
+              background: "var(--danger-container, var(--warn-container))",
+              color: "var(--danger, #DC2626)",
+            }
           : { background: "var(--surface-subtle)", color: "var(--muted-foreground)" };
   return (
     <span
@@ -366,7 +368,6 @@ export function AudioPlayer({
           <p className="text-[11px] text-muted-foreground">Audio</p>
         </div>
       </div>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
     </div>
   );
@@ -389,8 +390,12 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
     );
   }
   return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption
-    <video controls src={src} className="w-full rounded-3xl border border-border" aria-label={title} />
+    <video
+      controls
+      src={src}
+      className="w-full rounded-3xl border border-border"
+      aria-label={title}
+    />
   );
 }
 

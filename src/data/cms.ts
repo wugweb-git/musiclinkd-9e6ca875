@@ -41,10 +41,25 @@ export const contentPages: ContentPage[] = [
     updated: "Updated 2 Sep 2026",
     kind: "guide",
     blocks: [
-      { type: "para", text: "A MusicLinkd profile is a professional identity, not a social feed. Clients scan it in under a minute and look for the same five things every time." },
+      {
+        type: "para",
+        text: "A MusicLinkd profile is a professional identity, not a social feed. Clients scan it in under a minute and look for the same five things every time.",
+      },
       { type: "heading", text: "What clients check" },
-      { type: "list", items: ["One clear role line", "Two audio samples that start strong", "A rate range", "Verification badges", "Recent reviews from completed work"] },
-      { type: "callout", text: "Profiles with two published portfolio items receive roughly three times more first messages." },
+      {
+        type: "list",
+        items: [
+          "One clear role line",
+          "Two audio samples that start strong",
+          "A rate range",
+          "Verification badges",
+          "Recent reviews from completed work",
+        ],
+      },
+      {
+        type: "callout",
+        text: "Profiles with two published portfolio items receive roughly three times more first messages.",
+      },
       { type: "cta", label: "Open my portfolio", route: "/portfolio" },
     ],
     related: ["pricing-your-first-service", "how-verification-works"],
@@ -58,9 +73,21 @@ export const contentPages: ContentPage[] = [
     updated: "Updated 28 Aug 2026",
     kind: "guide",
     blocks: [
-      { type: "para", text: "Price the outcome, not the hours. Clients compare a finished mix against other finished mixes, so publish a per-deliverable rate with a clear revision count." },
+      {
+        type: "para",
+        text: "Price the outcome, not the hours. Clients compare a finished mix against other finished mixes, so publish a per-deliverable rate with a clear revision count.",
+      },
       { type: "heading", text: "A simple structure" },
-      { type: "list", items: ["Base deliverable and what is included", "Number of revisions", "Turnaround", "Add-ons priced separately", "Cancellation window"] },
+      {
+        type: "list",
+        items: [
+          "Base deliverable and what is included",
+          "Number of revisions",
+          "Turnaround",
+          "Add-ons priced separately",
+          "Cancellation window",
+        ],
+      },
       { type: "cta", label: "Add a service", route: "/profile/edit" },
     ],
     related: ["profile-that-gets-booked", "booking-policies-explained"],
@@ -74,9 +101,23 @@ export const contentPages: ContentPage[] = [
     updated: "Updated 5 Sep 2026",
     kind: "faq",
     blocks: [
-      { type: "para", text: "Verification confirms specific facts, not quality. Each badge has its own evidence requirements and is reviewed by a person." },
-      { type: "list", items: ["Identity — a government ID and a selfie match", "Professional — two credited releases or clients", "Business — registration documents", "Studio — address proof and room photos"] },
-      { type: "callout", text: "Documents are only used for the review and are never shown on your public profile." },
+      {
+        type: "para",
+        text: "Verification confirms specific facts, not quality. Each badge has its own evidence requirements and is reviewed by a person.",
+      },
+      {
+        type: "list",
+        items: [
+          "Identity — a government ID and a selfie match",
+          "Professional — two credited releases or clients",
+          "Business — registration documents",
+          "Studio — address proof and room photos",
+        ],
+      },
+      {
+        type: "callout",
+        text: "Documents are only used for the review and are never shown on your public profile.",
+      },
       { type: "cta", label: "Start verification", route: "/verification" },
     ],
     related: ["review-policy", "profile-that-gets-booked"],
@@ -90,9 +131,19 @@ export const contentPages: ContentPage[] = [
     updated: "Updated 30 Aug 2026",
     kind: "guide",
     blocks: [
-      { type: "para", text: "Every bookable resource publishes one policy set. Customers see it before they request, and it is attached to the booking record." },
+      {
+        type: "para",
+        text: "Every bookable resource publishes one policy set. Customers see it before they request, and it is attached to the booking record.",
+      },
       { type: "heading", text: "The three settings that matter" },
-      { type: "list", items: ["Cancellation window and refund tiers", "Whether a hold expires automatically", "Buffer time between sessions"] },
+      {
+        type: "list",
+        items: [
+          "Cancellation window and refund tiers",
+          "Whether a hold expires automatically",
+          "Buffer time between sessions",
+        ],
+      },
       { type: "cta", label: "Open provider policies", route: "/provider/policies" },
     ],
     related: ["review-policy", "how-verification-works"],
@@ -106,8 +157,19 @@ export const contentPages: ContentPage[] = [
     updated: "Updated 1 Sep 2026",
     kind: "policy",
     blocks: [
-      { type: "para", text: "Reviews exist to describe completed work. Only a completed booking, order or rental unlocks a review, and both sides submit blind." },
-      { type: "list", items: ["No editing after publishing", "One response per review", "Contact details and off-platform payment requests are removed", "Flagged reviews are re-checked within 48 hours"] },
+      {
+        type: "para",
+        text: "Reviews exist to describe completed work. Only a completed booking, order or rental unlocks a review, and both sides submit blind.",
+      },
+      {
+        type: "list",
+        items: [
+          "No editing after publishing",
+          "One response per review",
+          "Contact details and off-platform payment requests are removed",
+          "Flagged reviews are re-checked within 48 hours",
+        ],
+      },
       { type: "cta", label: "Open my reviews", route: "/reviews" },
     ],
     related: ["how-verification-works", "community-guidelines"],
@@ -121,8 +183,19 @@ export const contentPages: ContentPage[] = [
     updated: "Updated 18 Aug 2026",
     kind: "policy",
     blocks: [
-      { type: "para", text: "MusicLinkd is a professional network. Keep negotiations, briefs and payment discussions on the platform so both sides have a record." },
-      { type: "list", items: ["No harassment or discrimination", "No misrepresenting credits", "No off-platform payment pressure", "No reselling other people's work as your own"] },
+      {
+        type: "para",
+        text: "MusicLinkd is a professional network. Keep negotiations, briefs and payment discussions on the platform so both sides have a record.",
+      },
+      {
+        type: "list",
+        items: [
+          "No harassment or discrimination",
+          "No misrepresenting credits",
+          "No off-platform payment pressure",
+          "No reselling other people's work as your own",
+        ],
+      },
     ],
     related: ["review-policy"],
   },
@@ -135,7 +208,15 @@ export const contentPages: ContentPage[] = [
     updated: "Updated 10 Sep 2026",
     kind: "release",
     blocks: [
-      { type: "list", items: ["Equipment rentals with calendar availability", "Collaboration workspaces with milestones and files", "QR digital identity and share cards", "Provider pricing and policy controls"] },
+      {
+        type: "list",
+        items: [
+          "Equipment rentals with calendar availability",
+          "Collaboration workspaces with milestones and files",
+          "QR digital identity and share cards",
+          "Provider pricing and policy controls",
+        ],
+      },
       { type: "cta", label: "Open my QR identity", route: "/identity/qr" },
     ],
     related: ["profile-that-gets-booked"],
@@ -144,4 +225,8 @@ export const contentPages: ContentPage[] = [
 
 export const getPage = (slug: string) => contentPages.find((p) => p.slug === slug);
 export const pagesInCategory = (key: string) => contentPages.filter((p) => p.category === key);
-export const popularSlugs = ["profile-that-gets-booked", "how-verification-works", "booking-policies-explained"];
+export const popularSlugs = [
+  "profile-that-gets-booked",
+  "how-verification-works",
+  "booking-policies-explained",
+];

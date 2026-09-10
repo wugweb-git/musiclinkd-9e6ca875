@@ -14,9 +14,15 @@ export const Route = createFileRoute("/business/new")({
   head: () => ({
     meta: [
       { title: "Create a business | MusicLinkd" },
-      { name: "description", content: "Set up a studio, label, venue or agency with its own team, spaces and bookings." },
+      {
+        name: "description",
+        content: "Set up a studio, label, venue or agency with its own team, spaces and bookings.",
+      },
       { property: "og:title", content: "Create a business | MusicLinkd" },
-      { property: "og:description", content: "A business profile is separate from your personal profile." },
+      {
+        property: "og:description",
+        content: "A business profile is separate from your personal profile.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -41,12 +47,19 @@ function NewBusiness() {
 
   return (
     <Screen bottomNav={false}>
-      <TopBar title="Create business" subtitle={`Step ${idx + 1} of ${steps.length}`} back="/business" />
+      <TopBar
+        title="Create business"
+        subtitle={`Step ${idx + 1} of ${steps.length}`}
+        back="/business"
+      />
 
       <div className="px-5 pt-3">
         <div className="flex gap-1.5" aria-hidden>
           {steps.map((s, i) => (
-            <span key={s} className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`} />
+            <span
+              key={s}
+              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`}
+            />
           ))}
         </div>
       </div>
@@ -62,7 +75,9 @@ function NewBusiness() {
                   type="button"
                   onClick={() => setType(t.key)}
                   className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left ${
-                    type === t.key ? "border-primary bg-pink-container/40" : "border-border bg-background"
+                    type === t.key
+                      ? "border-primary bg-pink-container/40"
+                      : "border-border bg-background"
                   }`}
                 >
                   <span aria-hidden className="text-[20px]">
@@ -81,8 +96,18 @@ function NewBusiness() {
         {step === "basics" ? (
           <Card className="space-y-3">
             <h1 className="text-[16px] font-bold">Name and one line</h1>
-            <Field label="Business name" value={name} onChange={setName} placeholder="Soundhouse Bandra" />
-            <Field label="Tagline" value={tagline} onChange={setTagline} placeholder="Two rooms, one tape machine." />
+            <Field
+              label="Business name"
+              value={name}
+              onChange={setName}
+              placeholder="Soundhouse Bandra"
+            />
+            <Field
+              label="Tagline"
+              value={tagline}
+              onChange={setTagline}
+              placeholder="Two rooms, one tape machine."
+            />
             <p className="text-[11px] text-muted-foreground">
               This is a separate profile — your personal profile stays exactly as it is.
             </p>
@@ -99,7 +124,12 @@ function NewBusiness() {
                 </Chip>
               ))}
             </div>
-            <Field label="Address" value={address} onChange={setAddress} placeholder="Street, area, pin code" />
+            <Field
+              label="Address"
+              value={address}
+              onChange={setAddress}
+              placeholder="Street, area, pin code"
+            />
             <p className="text-[11px] text-muted-foreground">
               The exact address is only shown once a booking is confirmed.
             </p>
@@ -109,9 +139,15 @@ function NewBusiness() {
         {step === "spaces" ? (
           <Card className="space-y-3">
             <h1 className="text-[16px] font-bold">Rooms or spaces</h1>
-            <Field label="How many bookable spaces?" value={spaces} onChange={setSpaces} placeholder="2" />
+            <Field
+              label="How many bookable spaces?"
+              value={spaces}
+              onChange={setSpaces}
+              placeholder="2"
+            />
             <p className="text-[12px] text-muted-foreground">
-              You can add photos, gear lists and hourly rates for each space after creating the business.
+              You can add photos, gear lists and hourly rates for each space after creating the
+              business.
             </p>
           </Card>
         ) : null}
@@ -119,7 +155,12 @@ function NewBusiness() {
         {step === "team" ? (
           <Card className="space-y-3">
             <h1 className="text-[16px] font-bold">Invite your team</h1>
-            <Field label="Emails or @usernames" value={invites} onChange={setInvites} placeholder="@kabir, farah@studio.in" />
+            <Field
+              label="Emails or @usernames"
+              value={invites}
+              onChange={setInvites}
+              placeholder="@kabir, farah@studio.in"
+            />
             <p className="text-[12px] text-muted-foreground">
               Managers can edit and accept bookings. Engineers only see sessions assigned to them.
             </p>
@@ -136,8 +177,13 @@ function NewBusiness() {
               ["Spaces", spaces],
               ["Invites", invites || "None yet"],
             ].map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-4 border-b border-border py-2 last:border-0">
-                <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{k}</span>
+              <div
+                key={k}
+                className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
+              >
+                <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                  {k}
+                </span>
                 <span className="max-w-[60%] text-right text-[13px] font-semibold">{v}</span>
               </div>
             ))}
@@ -199,7 +245,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}

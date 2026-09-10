@@ -5,7 +5,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { Btn } from "@/components/ml/ui";
 import { Field, TextInput, StickyBar } from "@/components/ml/collab";
 import { ContributorPicker, MediaUploader, SelectableChips } from "@/components/ml/portfolio";
-import { creditRoles, genres, visibilityOptions, workType, type PortfolioItem } from "@/data/portfolio";
+import {
+  creditRoles,
+  genres,
+  visibilityOptions,
+  workType,
+  type PortfolioItem,
+} from "@/data/portfolio";
 import { savePortfolioItem } from "@/lib/portfolio.functions";
 
 export function WorkForm({
@@ -31,7 +37,9 @@ export function WorkForm({
   const [collabList, setCollabList] = useState<string[]>(initial?.collaborators ?? []);
   const [mediaUrl, setMediaUrl] = useState(initial?.media_url ?? "");
   const [coverUrl, setCoverUrl] = useState(initial?.cover_url ?? "");
-  const [visibility, setVisibility] = useState<string>(initial ? (initial.published ? "public" : "private") : "public");
+  const [visibility, setVisibility] = useState<string>(
+    initial ? (initial.published ? "public" : "private") : "public",
+  );
   const [busy, setBusy] = useState(false);
 
   async function submit(publish: boolean) {
@@ -118,7 +126,11 @@ export function WorkForm({
           <TextInput value={year} onChange={setYear} placeholder="2025" />
         </Field>
 
-        <Field label="Contributors" optional hint="Search MusicLinkd first — invite by name if they're not here yet">
+        <Field
+          label="Contributors"
+          optional
+          hint="Search MusicLinkd first — invite by name if they're not here yet"
+        >
           <ContributorPicker value={collabList} onChange={setCollabList} />
         </Field>
 

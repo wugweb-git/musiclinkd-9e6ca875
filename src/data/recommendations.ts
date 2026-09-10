@@ -22,7 +22,8 @@ export type Recommendation = {
   verified?: boolean;
 };
 
-const u = (id: string, w = 500) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const u = (id: string, w = 500) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 export const recommendations: Recommendation[] = [
   {
@@ -89,13 +90,39 @@ export const recommendations: Recommendation[] = [
 ];
 
 export const recSections: { key: string; title: string; blurb: string; ids: string[] }[] = [
-  { key: "next", title: "Because of your next session", blurb: "Tied to your confirmed booking on 19 Sep", ids: ["rec-1", "rec-2"] },
-  { key: "saved", title: "From things you saved", blurb: "Based on saved listings and profiles", ids: ["rec-3"] },
-  { key: "work", title: "Work you could take", blurb: "Opportunities and collaborations that fit your profile", ids: ["rec-4", "rec-5"] },
-  { key: "learn", title: "Worth reading", blurb: "Short guides matched to what you are setting up", ids: ["rec-6"] },
+  {
+    key: "next",
+    title: "Because of your next session",
+    blurb: "Tied to your confirmed booking on 19 Sep",
+    ids: ["rec-1", "rec-2"],
+  },
+  {
+    key: "saved",
+    title: "From things you saved",
+    blurb: "Based on saved listings and profiles",
+    ids: ["rec-3"],
+  },
+  {
+    key: "work",
+    title: "Work you could take",
+    blurb: "Opportunities and collaborations that fit your profile",
+    ids: ["rec-4", "rec-5"],
+  },
+  {
+    key: "learn",
+    title: "Worth reading",
+    blurb: "Short guides matched to what you are setting up",
+    ids: ["rec-6"],
+  },
 ];
 
-export const feedbackOptions = ["Not relevant", "Already know them", "Wrong city", "Wrong budget", "Show less like this"];
+export const feedbackOptions = [
+  "Not relevant",
+  "Already know them",
+  "Wrong city",
+  "Wrong budget",
+  "Show less like this",
+];
 
 export const recPreferences = [
   { key: "genres", label: "Use my genres", on: true, hint: "Indie folk, alt pop" },

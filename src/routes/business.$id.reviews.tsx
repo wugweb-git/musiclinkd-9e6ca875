@@ -8,7 +8,10 @@ export const Route = createFileRoute("/business/$id/reviews")({
   head: () => ({
     meta: [
       { title: "Business reviews | MusicLinkd" },
-      { name: "description", content: "Read reviews left after real sessions and reply to them as the business owner." },
+      {
+        name: "description",
+        content: "Read reviews left after real sessions and reply to them as the business owner.",
+      },
       { property: "og:title", content: "Business reviews | MusicLinkd" },
       { property: "og:description", content: "Verified reviews and owner replies." },
       { property: "og:type", content: "website" },
@@ -30,7 +33,10 @@ function BusinessReviews() {
       <Screen>
         <TopBar title="Reviews" back="/business" />
         <div className="px-5 pt-6">
-          <EmptyState title="Business not found" body="This business may have been removed or is no longer public." />
+          <EmptyState
+            title="Business not found"
+            body="This business may have been removed or is no longer public."
+          />
         </div>
       </Screen>
     );
@@ -38,7 +44,11 @@ function BusinessReviews() {
 
   return (
     <Screen>
-      <TopBar title="Reviews" subtitle={`${b.stats.rating} · ${b.stats.reviews} reviews`} back={`/business/${b.id}`} />
+      <TopBar
+        title="Reviews"
+        subtitle={`${b.stats.rating} · ${b.stats.reviews} reviews`}
+        back={`/business/${b.id}`}
+      />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         {businessReviews.length ? (
@@ -47,7 +57,12 @@ function BusinessReviews() {
             return (
               <Card key={r.id}>
                 <div className="flex items-center gap-3">
-                  <img src={r.photo} alt="" className="h-10 w-10 rounded-full object-cover" loading="lazy" />
+                  <img
+                    src={r.photo}
+                    alt=""
+                    className="h-10 w-10 rounded-full object-cover"
+                    loading="lazy"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{r.author}</p>
                     <p className="text-[12px] text-muted-foreground">{r.at}</p>
@@ -95,7 +110,10 @@ function BusinessReviews() {
             );
           })
         ) : (
-          <EmptyState title="No reviews yet" body="Reviews appear here after a completed session or order." />
+          <EmptyState
+            title="No reviews yet"
+            body="Reviews appear here after a completed session or order."
+          />
         )}
       </div>
     </Screen>

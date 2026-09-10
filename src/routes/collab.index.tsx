@@ -93,7 +93,19 @@ function CollabHome() {
         right={
           <button
             type="button"
-            onClick={() => setSim(sim === "ok" ? "loading" : sim === "loading" ? "error" : sim === "error" ? "offline" : sim === "offline" ? "empty" : "ok")}
+            onClick={() =>
+              setSim(
+                sim === "ok"
+                  ? "loading"
+                  : sim === "loading"
+                    ? "error"
+                    : sim === "error"
+                      ? "offline"
+                      : sim === "offline"
+                        ? "empty"
+                        : "ok",
+              )
+            }
             className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
           >
             States
@@ -157,7 +169,11 @@ function CollabHome() {
                 >
                   <Card>
                     <div className="flex gap-3">
-                      <img src={inv.artwork} alt="" className="h-16 w-16 rounded-2xl object-cover" />
+                      <img
+                        src={inv.artwork}
+                        alt=""
+                        className="h-16 w-16 rounded-2xl object-cover"
+                      />
                       <div className="min-w-0 flex-1">
                         <h3 className="truncate text-[15px]">{inv.projectName}</h3>
                         <p className="truncate text-[11px] text-muted-foreground">
