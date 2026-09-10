@@ -6,7 +6,10 @@
 
 /*
  * MusicLinkd — Gestalt Design System tokens (v9, reconciled 31 Aug 2026).
- * Brand pink #EA4C89, paper #FCFCFD, hairline #ECECF1. NOTE: --navy is retired in
+ * Brand pink #EA4C89, ground --background #ECECF1, hairline --border #D5D5DE.
+ * (Corrected 10 Sep: this line read "paper #FCFCFD, hairline #ECECF1" and was stale on both
+ * counts — #ECECF1 is the ground, not the hairline, and #FCFCFD was replaced as the ground for
+ * the contrast reason spelled out at --background below.) NOTE: --navy is retired in
  * tokens.json (--color-ink #0D0D0D "replaces --black, --text and the retired --navy",
  * and action.primary = ink, so the primary button is black, not pink). Migrating it
  * is a colour-identity change across every screen and is not done here.
