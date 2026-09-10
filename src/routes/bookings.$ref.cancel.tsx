@@ -10,7 +10,8 @@ export const Route = createFileRoute("/bookings/$ref/cancel")({
       { title: "Cancel booking — MusicLinkd" },
       {
         name: "description",
-        content: "Review the refund you'd receive under the provider's policy before cancelling your session.",
+        content:
+          "Review the refund you'd receive under the provider's policy before cancelling your session.",
       },
       { property: "og:title", content: "Cancel booking — MusicLinkd" },
       { property: "og:description", content: "Refund preview and confirmation before cancelling." },
@@ -59,7 +60,8 @@ function Cancel() {
           <div className="rounded-3xl border border-border bg-card p-5">
             <p className="font-semibold">Booking cancelled</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {b.name} has been notified. Any refund reaches your original payment method in 5–7 working days.
+              {b.name} has been notified. Any refund reaches your original payment method in 5–7
+              working days.
             </p>
             <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
               <Detail label="Reference" value={bk.ref} />
@@ -119,7 +121,9 @@ function Cancel() {
         </div>
 
         <label className="mt-4 block">
-          <span className="text-xs font-semibold text-text2">Message to the provider (optional)</span>
+          <span className="text-xs font-semibold text-text2">
+            Message to the provider (optional)
+          </span>
           <textarea
             rows={3}
             placeholder="Anything they should know…"

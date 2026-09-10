@@ -50,7 +50,9 @@ function SignOutScreen() {
           Stay signed in
         </Btn>
       </div>
-      <TrustNote>Using a shared device? Signing out also clears saved drafts on this browser.</TrustNote>
+      <TrustNote>
+        Using a shared device? Signing out also clears saved drafts on this browser.
+      </TrustNote>
     </AuthScreen>
   );
 }

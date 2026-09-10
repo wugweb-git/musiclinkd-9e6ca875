@@ -10,13 +10,7 @@ import {
   RentalPriceBlock,
   RentalReportSheet,
 } from "@/components/ml/rental";
-import {
-  equipment,
-  equipmentById,
-  inr,
-  providerById,
-  rentalReviews,
-} from "@/data/rentals";
+import { equipment, equipmentById, inr, providerById, rentalReviews } from "@/data/rentals";
 
 export const Route = createFileRoute("/marketplace/rent/e/$id")({
   head: ({ params }) => {
@@ -208,10 +202,14 @@ function RentalDetail() {
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Link to="/marketplace/rent/provider/$id" params={{ id: p.id }}>
-              <Btn variant="outline" className="w-full">View profile</Btn>
+              <Btn variant="outline" className="w-full">
+                View profile
+              </Btn>
             </Link>
             <Link to="/messages">
-              <Btn variant="outline" className="w-full">Message</Btn>
+              <Btn variant="outline" className="w-full">
+                Message
+              </Btn>
             </Link>
           </div>
         </div>
@@ -230,7 +228,10 @@ function RentalDetail() {
               <p className="mt-2 text-[13px] leading-relaxed text-text2">{r.body}</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {r.tags.map((t) => (
-                  <span key={t} className="rounded-full bg-subtle px-2 py-1 text-[10px] font-semibold text-text2">
+                  <span
+                    key={t}
+                    className="rounded-full bg-subtle px-2 py-1 text-[10px] font-semibold text-text2"
+                  >
                     {t}
                   </span>
                 ))}
@@ -261,7 +262,8 @@ function RentalDetail() {
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="truncate text-[15px] font-bold">
-              {inr(e.daily)} <span className="text-[11px] font-normal text-muted-foreground">/ day</span>
+              {inr(e.daily)}{" "}
+              <span className="text-[11px] font-normal text-muted-foreground">/ day</span>
             </p>
             <p className="truncate text-[10px] text-muted-foreground">
               Deposit {inr(e.deposit)} · {e.availability}

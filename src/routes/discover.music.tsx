@@ -8,7 +8,11 @@ export const Route = createFileRoute("/discover/music")({
   head: () => ({
     meta: [
       { title: "Discover music | MusicLinkd" },
-      { name: "description", content: "Hear new work from musicians, producers and studios across the Indian music scene." },
+      {
+        name: "description",
+        content:
+          "Hear new work from musicians, producers and studios across the Indian music scene.",
+      },
       { property: "og:title", content: "Discover music | MusicLinkd" },
       { property: "og:description", content: "New releases and sessions from the community." },
       { property: "og:type", content: "website" },
@@ -54,15 +58,21 @@ function DiscoverMusic() {
             ))}
           </div>
         ) : (
-          <EmptyState title="Nothing published yet" body="As people add work to their portfolios it appears here." />
+          <EmptyState
+            title="Nothing published yet"
+            body="As people add work to their portfolios it appears here."
+          />
         )}
 
         <div>
           <p className="mb-2 text-sm font-semibold">Trending searches</p>
           <div className="flex flex-wrap gap-2">
             {trending.map((t) => (
-              <span key={t.label} className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold">
-                {t.label}
+              <span
+                key={t.name}
+                className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold"
+              >
+                {t.name}
               </span>
             ))}
           </div>

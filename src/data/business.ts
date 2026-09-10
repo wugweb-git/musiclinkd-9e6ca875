@@ -9,9 +9,19 @@ export type BusinessRole = "owner" | "manager" | "engineer" | "staff";
 export type MemberStatus = "active" | "invited" | "removed";
 
 export const businessTypes: { key: BusinessType; label: string; emoji: string; blurb: string }[] = [
-  { key: "studio", label: "Recording studio", emoji: "🎛️", blurb: "Rooms, engineers and hourly bookings." },
+  {
+    key: "studio",
+    label: "Recording studio",
+    emoji: "🎛️",
+    blurb: "Rooms, engineers and hourly bookings.",
+  },
   { key: "label", label: "Label", emoji: "💿", blurb: "Releases, roster and A&R calls." },
-  { key: "production_house", label: "Production house", emoji: "🎬", blurb: "Film, ad and content music teams." },
+  {
+    key: "production_house",
+    label: "Production house",
+    emoji: "🎬",
+    blurb: "Film, ad and content music teams.",
+  },
   { key: "venue", label: "Venue", emoji: "🎪", blurb: "Live rooms, capacity and event calendar." },
   { key: "agency", label: "Artist agency", emoji: "🤝", blurb: "Represent and book artists." },
   { key: "rental", label: "Rental house", emoji: "📦", blurb: "Backline and gear on rent." },
@@ -63,7 +73,8 @@ export type BusinessProfile = {
   ownerUsername: string;
 };
 
-const img = (id: string, w = 800) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const img = (id: string, w = 800) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 export const myBusinesses: BusinessProfile[] = [
   {
@@ -116,9 +127,30 @@ export const myBusinesses: BusinessProfile[] = [
       },
     ],
     members: [
-      { id: "bm-1", name: "Ananya Rao", photo: img("photo-1494790108377-be9c29b29330", 120), role: "owner", status: "active", since: "2016" },
-      { id: "bm-2", name: "Kabir Menon", photo: img("photo-1500648767791-00dcc994a43e", 120), role: "engineer", status: "active", since: "2019" },
-      { id: "bm-3", name: "Farah Sheikh", photo: img("photo-1534528741775-53994a69daeb", 120), role: "manager", status: "invited", since: "2026" },
+      {
+        id: "bm-1",
+        name: "Ananya Rao",
+        photo: img("photo-1494790108377-be9c29b29330", 120),
+        role: "owner",
+        status: "active",
+        since: "2016",
+      },
+      {
+        id: "bm-2",
+        name: "Kabir Menon",
+        photo: img("photo-1500648767791-00dcc994a43e", 120),
+        role: "engineer",
+        status: "active",
+        since: "2019",
+      },
+      {
+        id: "bm-3",
+        name: "Farah Sheikh",
+        photo: img("photo-1534528741775-53994a69daeb", 120),
+        role: "manager",
+        status: "invited",
+        since: "2026",
+      },
     ],
     credits: [
       { title: "Neon Monsoon — LP", meta: "Tracked & mixed · 2025" },
@@ -167,7 +199,8 @@ export const businessLeads: BusinessLead[] = [
   {
     id: "ld-1",
     name: "Meher Kapoor",
-    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80",
+    photo:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80",
     intent: "Studio A · 6 hours",
     message: "Tracking a four-piece on the 18th, need a drum room and a house engineer.",
     at: "2 hours ago",
@@ -176,7 +209,8 @@ export const businessLeads: BusinessLead[] = [
   {
     id: "ld-2",
     name: "Vikram Nair",
-    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
+    photo:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
     intent: "Mixing · 3 songs",
     message: "Have stems ready from a home session. What's your turnaround in September?",
     at: "Yesterday",
@@ -185,7 +219,8 @@ export const businessLeads: BusinessLead[] = [
   {
     id: "ld-3",
     name: "Sana Qureshi",
-    photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+    photo:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
     intent: "Studio B · vocals",
     message: "Two vocal days, flexible on dates. Do you have a Sunday slot?",
     at: "3 days ago",
@@ -193,12 +228,13 @@ export const businessLeads: BusinessLead[] = [
   },
 ];
 
-export const leadStatusTone: Record<BusinessLead["status"], "brand" | "warn" | "good" | "neutral"> = {
-  new: "brand",
-  replied: "warn",
-  booked: "good",
-  closed: "neutral",
-};
+export const leadStatusTone: Record<BusinessLead["status"], "brand" | "warn" | "good" | "neutral"> =
+  {
+    new: "brand",
+    replied: "warn",
+    booked: "good",
+    closed: "neutral",
+  };
 
 export const businessAnalytics = {
   views: 2840,
@@ -225,7 +261,8 @@ export const businessReviews = [
   {
     id: "brv-1",
     author: "Neon Monsoon",
-    photo: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=120&q=80",
+    photo:
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=120&q=80",
     rating: 5,
     at: "2 weeks ago",
     body: "Booked five nights for the LP. The live room is genuinely quiet and Kabir kept the takes moving.",
@@ -234,7 +271,8 @@ export const businessReviews = [
   {
     id: "brv-2",
     author: "Sana Qureshi",
-    photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+    photo:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
     rating: 4,
     at: "1 month ago",
     body: "Great vocal chain. Parking is a nightmare on weekends — worth warning people.",
@@ -243,14 +281,47 @@ export const businessReviews = [
 ];
 
 export const relatedBusinesses = [
-  { id: "biz-2", name: "Island City Sound", type: "studio" as BusinessType, city: "Mumbai", note: "Similar rooms, Lower Parel" },
-  { id: "biz-3", name: "Backline Bombay", type: "rental" as BusinessType, city: "Mumbai", note: "Backline rental nearby" },
-  { id: "biz-4", name: "Antisocial", type: "venue" as BusinessType, city: "Mumbai", note: "Live room, 300 capacity" },
+  {
+    id: "biz-2",
+    name: "Island City Sound",
+    type: "studio" as BusinessType,
+    city: "Mumbai",
+    note: "Similar rooms, Lower Parel",
+  },
+  {
+    id: "biz-3",
+    name: "Backline Bombay",
+    type: "rental" as BusinessType,
+    city: "Mumbai",
+    note: "Backline rental nearby",
+  },
+  {
+    id: "biz-4",
+    name: "Antisocial",
+    type: "venue" as BusinessType,
+    city: "Mumbai",
+    note: "Live room, 300 capacity",
+  },
 ];
 
 export const businessVerificationChecks = [
-  { key: "registration", label: "Business registration", detail: "GST or shop licence in the business name", done: true },
+  {
+    key: "registration",
+    label: "Business registration",
+    detail: "GST or shop licence in the business name",
+    done: true,
+  },
   { key: "address", label: "Address proof", detail: "Utility bill or rent agreement", done: true },
-  { key: "owner", label: "Owner identity", detail: "Government ID of the account owner", done: false },
-  { key: "photos", label: "Premises photos", detail: "At least three photos of the actual space", done: false },
+  {
+    key: "owner",
+    label: "Owner identity",
+    detail: "Government ID of the account owner",
+    done: false,
+  },
+  {
+    key: "photos",
+    label: "Premises photos",
+    detail: "At least three photos of the actual space",
+    done: false,
+  },
 ];

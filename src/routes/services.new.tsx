@@ -19,7 +19,10 @@ export const Route = createFileRoute("/services/new")({
   head: () => ({
     meta: [
       { title: "Add a service | MusicLinkd" },
-      { name: "description", content: "Describe what you offer, set a price and let people book it directly." },
+      {
+        name: "description",
+        content: "Describe what you offer, set a price and let people book it directly.",
+      },
       { property: "og:title", content: "Add a service | MusicLinkd" },
       { property: "og:description", content: "Create a bookable service in five short steps." },
       { property: "og:type", content: "website" },
@@ -46,12 +49,19 @@ function NewService() {
 
   return (
     <Screen bottomNav={false}>
-      <TopBar title="Add a service" subtitle={`Step ${idx + 1} of ${steps.length}`} back="/services" />
+      <TopBar
+        title="Add a service"
+        subtitle={`Step ${idx + 1} of ${steps.length}`}
+        back="/services"
+      />
 
       <div className="px-5 pt-3">
         <div className="flex gap-1.5" aria-hidden>
           {steps.map((s, i) => (
-            <span key={s} className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`} />
+            <span
+              key={s}
+              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`}
+            />
           ))}
         </div>
       </div>
@@ -62,7 +72,11 @@ function NewService() {
             <h1 className="text-[16px] font-bold">What are you offering?</h1>
             <div className="flex flex-wrap gap-2">
               {serviceCategories.map((c) => (
-                <Chip key={c.key} active={category === c.label} onClick={() => setCategory(c.label)}>
+                <Chip
+                  key={c.key}
+                  active={category === c.label}
+                  onClick={() => setCategory(c.label)}
+                >
                   {c.emoji} {c.label}
                 </Chip>
               ))}
@@ -73,9 +87,16 @@ function NewService() {
         {step === "basics" ? (
           <Card className="space-y-3">
             <h1 className="text-[16px] font-bold">Describe it plainly</h1>
-            <Field label="Title" value={title} onChange={setTitle} placeholder="Session vocals — lead & harmonies" />
+            <Field
+              label="Title"
+              value={title}
+              onChange={setTitle}
+              placeholder="Session vocals — lead & harmonies"
+            />
             <label className="block">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Description</span>
+              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                Description
+              </span>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -100,7 +121,12 @@ function NewService() {
                 </Chip>
               ))}
             </div>
-            <Field label="Starting price (₹)" value={price} onChange={setPrice} placeholder="8000" />
+            <Field
+              label="Starting price (₹)"
+              value={price}
+              onChange={setPrice}
+              placeholder="8000"
+            />
             <p className="text-[11px] text-muted-foreground">
               You can still send a custom quote from a booking request.
             </p>
@@ -110,9 +136,16 @@ function NewService() {
         {step === "delivery" ? (
           <Card className="space-y-3">
             <h1 className="text-[16px] font-bold">Delivery & notice</h1>
-            <Field label="Turnaround" value={turnaround} onChange={setTurnaround} placeholder="3–4 days" />
+            <Field
+              label="Turnaround"
+              value={turnaround}
+              onChange={setTurnaround}
+              placeholder="3–4 days"
+            />
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Notice needed</span>
+              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                Notice needed
+              </span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {bookingWindows.map((w) => (
                   <Chip key={w} active={notice === w} onClick={() => setNotice(w)}>
@@ -121,7 +154,10 @@ function NewService() {
                 ))}
               </div>
             </div>
-            <Link to="/services/availability" className="block text-[12px] font-semibold text-primary">
+            <Link
+              to="/services/availability"
+              className="block text-[12px] font-semibold text-primary"
+            >
               Set your weekly availability →
             </Link>
           </Card>
@@ -137,13 +173,19 @@ function NewService() {
               ["Turnaround", turnaround],
               ["Notice", notice],
             ].map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-4 border-b border-border py-2 last:border-0">
-                <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{k}</span>
+              <div
+                key={k}
+                className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
+              >
+                <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                  {k}
+                </span>
                 <span className="max-w-[60%] text-right text-[13px] font-semibold">{v}</span>
               </div>
             ))}
             <p className="pt-1 text-[12px] text-muted-foreground">
-              Publishing adds this to your profile and to Discover results for {category.toLowerCase()}.
+              Publishing adds this to your profile and to Discover results for{" "}
+              {category.toLowerCase()}.
             </p>
           </Card>
         ) : null}
@@ -193,7 +235,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}

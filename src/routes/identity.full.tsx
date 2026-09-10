@@ -17,9 +17,15 @@ export const Route = createFileRoute("/identity/full")({
   head: () => ({
     meta: [
       { title: "Fullscreen QR — MusicLinkd ID" },
-      { name: "description", content: "Show your MusicLinkd QR full screen so anyone can scan it across a room." },
+      {
+        name: "description",
+        content: "Show your MusicLinkd QR full screen so anyone can scan it across a room.",
+      },
       { property: "og:title", content: "Fullscreen MusicLinkd QR" },
-      { property: "og:description", content: "Maximum brightness, maximum contrast, nothing in the way of the scan." },
+      {
+        property: "og:description",
+        content: "Maximum brightness, maximum contrast, nothing in the way of the scan.",
+      },
     ],
   }),
   component: FullscreenQr,
@@ -47,7 +53,12 @@ function FullscreenQr() {
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-6">
-        <QrCode value={url} size={300} style={style} label={`Fullscreen MusicLinkd QR for ${myIdentity.name}`} />
+        <QrCode
+          value={url}
+          size={300}
+          style={style}
+          label={`Fullscreen MusicLinkd QR for ${myIdentity.name}`}
+        />
         <div className="text-center">
           <p className="text-[18px]">{myIdentity.name}</p>
           <p className="text-[13px]" style={{ opacity: 0.6 }}>

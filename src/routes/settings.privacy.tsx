@@ -8,7 +8,10 @@ export const Route = createFileRoute("/settings/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy | MusicLinkd" },
-      { name: "description", content: "Choose who can see your profile, message you and find you in Discover." },
+      {
+        name: "description",
+        content: "Choose who can see your profile, message you and find you in Discover.",
+      },
       { property: "og:title", content: "Privacy | MusicLinkd" },
       { property: "og:description", content: "Control your visibility on MusicLinkd." },
       { property: "og:type", content: "website" },
@@ -35,7 +38,11 @@ function PrivacyScreen() {
             </div>
             <div className="flex flex-wrap gap-2">
               {c.options.map((o) => (
-                <Chip key={o} active={values[c.key] === o} onClick={() => setValues((v) => ({ ...v, [c.key]: o }))}>
+                <Chip
+                  key={o}
+                  active={values[c.key] === o}
+                  onClick={() => setValues((v) => ({ ...v, [c.key]: o }))}
+                >
                   {o}
                 </Chip>
               ))}
@@ -45,12 +52,16 @@ function PrivacyScreen() {
 
         <Card className="space-y-2">
           <p className="text-[13px] font-semibold">Blocked people</p>
-          <p className="text-[12px] text-muted-foreground">Nobody blocked. Blocking hides your profile from them everywhere.</p>
+          <p className="text-[12px] text-muted-foreground">
+            Nobody blocked. Blocking hides your profile from them everywhere.
+          </p>
         </Card>
 
         <Card className="space-y-2">
           <p className="text-[13px] font-semibold">Your data</p>
-          <p className="text-[12px] text-muted-foreground">Request a copy of your profile, portfolio and bookings.</p>
+          <p className="text-[12px] text-muted-foreground">
+            Request a copy of your profile, portfolio and bookings.
+          </p>
           <Btn variant="outline" className="w-full">
             Request a copy
           </Btn>

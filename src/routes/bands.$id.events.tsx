@@ -9,7 +9,10 @@ export const Route = createFileRoute("/bands/$id/events")({
   head: () => ({
     meta: [
       { title: "Band shows and opportunities | MusicLinkd" },
-      { name: "description", content: "Upcoming shows for the band and the gigs it can apply to as a group." },
+      {
+        name: "description",
+        content: "Upcoming shows for the band and the gigs it can apply to as a group.",
+      },
       { property: "og:title", content: "Band shows and opportunities | MusicLinkd" },
       { property: "og:description", content: "Upcoming shows and gigs to apply for." },
       { property: "og:type", content: "website" },
@@ -31,7 +34,10 @@ function BandEvents() {
       <Screen>
         <TopBar title="Shows" back="/bands" />
         <div className="px-5 pt-6">
-          <EmptyState title="Band not found" body="This band may have been deleted or made private." />
+          <EmptyState
+            title="Band not found"
+            body="This band may have been deleted or made private."
+          />
         </div>
       </Screen>
     );
@@ -54,17 +60,27 @@ function BandEvents() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{e.title}</p>
-                      <p className="mt-1 text-[13px] text-muted-foreground">{e.venue} · {e.city}</p>
+                      <p className="mt-1 text-[13px] text-muted-foreground">
+                        {e.venue} · {e.city}
+                      </p>
                       <p className="mt-1 text-[12px] text-muted-foreground">{e.date}</p>
                     </div>
-                    <StatusPill label={e.status} tone={e.status === "confirmed" ? "good" : "warn"} />
+                    <StatusPill
+                      label={e.status}
+                      tone={e.status === "confirmed" ? "good" : "warn"}
+                    />
                   </div>
                 </Card>
               ))}
-              <Btn variant="outline" className="w-full">Add a show</Btn>
+              <Btn variant="outline" className="w-full">
+                Add a show
+              </Btn>
             </div>
           ) : (
-            <EmptyState title="No shows booked" body="Add a date so members and followers know where to be.">
+            <EmptyState
+              title="No shows booked"
+              body="Add a date so members and followers know where to be."
+            >
               <Btn>Add a show</Btn>
             </EmptyState>
           )
@@ -74,14 +90,19 @@ function BandEvents() {
               <Link key={o.id} to="/opportunities/$id" params={{ id: o.id }} className="block">
                 <Card>
                   <p className="text-sm font-semibold">{o.title}</p>
-                  <p className="mt-1 text-[13px] text-muted-foreground">{o.city} · {o.workMode}</p>
+                  <p className="mt-1 text-[13px] text-muted-foreground">
+                    {o.city} · {o.workMode}
+                  </p>
                   <p className="mt-2 text-[12px] text-muted-foreground">Apply as {band.name}</p>
                 </Card>
               </Link>
             ))}
           </div>
         ) : (
-          <EmptyState title="Nothing open right now" body="Live gigs looking for a full band will show up here." />
+          <EmptyState
+            title="Nothing open right now"
+            body="Live gigs looking for a full band will show up here."
+          />
         )}
       </div>
     </Screen>

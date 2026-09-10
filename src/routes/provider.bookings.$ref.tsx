@@ -26,10 +26,14 @@ export const Route = createFileRoute("/provider/bookings/$ref")({
       { title: "Session detail — MusicLinkd provider" },
       {
         name: "description",
-        content: "Everything you need to run the session: customer, room, timing, add-ons and payout status.",
+        content:
+          "Everything you need to run the session: customer, room, timing, add-ons and payout status.",
       },
       { property: "og:title", content: "Session detail — MusicLinkd provider" },
-      { property: "og:description", content: "Customer, room, timing and payout for a confirmed session." },
+      {
+        property: "og:description",
+        content: "Customer, room, timing and payout for a confirmed session.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -75,7 +79,12 @@ function ProviderBookingDetail() {
 
         <div className="mt-4 rounded-3xl border border-border bg-card p-4">
           <div className="flex items-center gap-3">
-            <img src={bk.customerAvatar} alt="" className="h-12 w-12 rounded-full object-cover" loading="lazy" />
+            <img
+              src={bk.customerAvatar}
+              alt=""
+              className="h-12 w-12 rounded-full object-cover"
+              loading="lazy"
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold">{bk.customer}</p>
               <p className="truncate text-xs text-muted-foreground">{bk.customerRole}</p>

@@ -22,7 +22,10 @@ export const Route = createFileRoute("/verification/")({
           "Verify your identity, professional credits, business or studio to build trust on MusicLinkd.",
       },
       { property: "og:title", content: "Verification & Trust | MusicLinkd" },
-      { property: "og:description", content: "Identity, professional, business and studio verification." },
+      {
+        property: "og:description",
+        content: "Identity, professional, business and studio verification.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -39,9 +42,18 @@ const overallCopy: Record<string, { title: string; body: string }> = {
     title: "One request in review",
     body: "A reviewer is checking your documents by hand. You will get a notification with the decision.",
   },
-  verified: { title: "You are verified", body: "Your badge shows on your profile, listings, reviews and messages." },
-  rejected: { title: "One request needs changes", body: "Open the request below to see what the reviewer asked for." },
-  expired: { title: "A badge has expired", body: "Renew it to keep the badge visible on your listings." },
+  verified: {
+    title: "You are verified",
+    body: "Your badge shows on your profile, listings, reviews and messages.",
+  },
+  rejected: {
+    title: "One request needs changes",
+    body: "Open the request below to see what the reviewer asked for.",
+  },
+  expired: {
+    title: "A badge has expired",
+    body: "Renew it to keep the badge visible on your listings.",
+  },
 };
 
 function VerificationHub() {
@@ -62,7 +74,9 @@ function VerificationHub() {
           </div>
           <p className="text-[13px] text-text2">{copy.body}</p>
           <Link to="/verification/choose">
-            <Btn className="w-full">{overall === "unverified" ? "Get verified" : "Add another badge"}</Btn>
+            <Btn className="w-full">
+              {overall === "unverified" ? "Get verified" : "Add another badge"}
+            </Btn>
           </Link>
         </Card>
 
@@ -74,7 +88,13 @@ function VerificationHub() {
               const status = req?.status ?? "unverified";
               const gate = eligibility(t.key);
               return (
-                <Link key={t.key} to="/verification/$type" params={{ type: t.key }} search={{ step: 0 }} className="block">
+                <Link
+                  key={t.key}
+                  to="/verification/$type"
+                  params={{ type: t.key }}
+                  search={{ step: 0 }}
+                  className="block"
+                >
                   <Card className="space-y-2">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -121,8 +141,16 @@ function VerificationHub() {
 
         <section className="space-y-2 pb-4">
           <h2 className="text-[15px]">Related</h2>
-          <Row title="Where the badge appears" subtitle="Profile, search, listings, reviews" to="/verification/badge" />
-          <Row title="How your documents are used" subtitle="Verification privacy" to="/verification/privacy" />
+          <Row
+            title="Where the badge appears"
+            subtitle="Profile, search, listings, reviews"
+            to="/verification/badge"
+          />
+          <Row
+            title="How your documents are used"
+            subtitle="Verification privacy"
+            to="/verification/privacy"
+          />
           <Row
             title="How verification works"
             subtitle="Guide · 4 min read"

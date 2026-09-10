@@ -11,10 +11,14 @@ export const Route = createFileRoute("/collab/new/collaborators")({
       { title: "Add collaborators — MusicLinkd" },
       {
         name: "description",
-        content: "Search MusicLinkd by name, username, role, instrument or business and invite collaborators.",
+        content:
+          "Search MusicLinkd by name, username, role, instrument or business and invite collaborators.",
       },
       { property: "og:title", content: "Add collaborators — MusicLinkd" },
-      { property: "og:description", content: "Invite the people who'll work on this project with you." },
+      {
+        property: "og:description",
+        content: "Invite the people who'll work on this project with you.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -127,8 +131,8 @@ function AddCollaborators() {
           <Card>
             <p className="text-[13px] font-semibold">Invite by link</p>
             <p className="mb-3 text-[11px] text-muted-foreground">
-              Anyone with the link can request to join. You approve every request, and you can disable
-              the link at any time.
+              Anyone with the link can request to join. You approve every request, and you can
+              disable the link at any time.
             </p>
             <div className="flex gap-2">
               <Btn variant="outline" className="flex-1">
@@ -150,16 +154,19 @@ function AddCollaborators() {
             </Btn>
           </Link>
           <Link to="/collab/$id" params={{ id: "raat-ki-rani" }} className="flex-[2]">
-            <Btn className="w-full">
-              {count ? `Create & invite ${count}` : "Create project"}
-            </Btn>
+            <Btn className="w-full">{count ? `Create & invite ${count}` : "Create project"}</Btn>
           </Link>
         </div>
       </StickyBar>
 
-      <Sheet open={rolePickerFor !== null} onClose={() => setRolePickerFor(null)} title="Select role">
+      <Sheet
+        open={rolePickerFor !== null}
+        onClose={() => setRolePickerFor(null)}
+        title="Select role"
+      >
         <p className="mb-4 text-[12px] text-muted-foreground">
-          Roles come from the MusicLinkd role taxonomy so credits stay consistent across the platform.
+          Roles come from the MusicLinkd role taxonomy so credits stay consistent across the
+          platform.
         </p>
         <div className="flex flex-wrap gap-2 pb-2">
           {collabRoles.map((r) => (

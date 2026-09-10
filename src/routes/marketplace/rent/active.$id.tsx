@@ -2,11 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, Chip, Sheet } from "@/components/ml/ui";
 import { Rating } from "@/components/ml/market";
-import {
-  ProviderSummary,
-  RentalCalendar,
-  RentalStatusPill,
-} from "@/components/ml/rental";
+import { ProviderSummary, RentalCalendar, RentalStatusPill } from "@/components/ml/rental";
 import { bookingById, equipmentById, inr, providerById } from "@/data/rentals";
 
 export const Route = createFileRoute("/marketplace/rent/active/$id")({
@@ -103,10 +99,14 @@ function RentalBooking() {
           <ProviderSummary p={p} />
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Link to="/messages">
-              <Btn variant="outline" className="w-full">Message</Btn>
+              <Btn variant="outline" className="w-full">
+                Message
+              </Btn>
             </Link>
             <Link to="/marketplace/rent/provider/$id" params={{ id: p.id }}>
-              <Btn variant="outline" className="w-full">Profile</Btn>
+              <Btn variant="outline" className="w-full">
+                Profile
+              </Btn>
             </Link>
           </div>
         </div>
@@ -129,10 +129,14 @@ function RentalBooking() {
                 Rate provider & equipment
               </Btn>
               <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
-                <Btn variant="outline" className="w-full">Book again</Btn>
+                <Btn variant="outline" className="w-full">
+                  Book again
+                </Btn>
               </Link>
               <Link to="/marketplace/rent/c/$slug" params={{ slug: e.category }} className="block">
-                <Btn variant="outline" className="w-full">Browse similar equipment</Btn>
+                <Btn variant="outline" className="w-full">
+                  Browse similar equipment
+                </Btn>
               </Link>
             </>
           ) : null}
@@ -172,7 +176,10 @@ function RentalBooking() {
           {[
             { k: "Equipment", v: e.name },
             { k: "Return date", v: b.returnBy ?? b.end },
-            { k: "Return method", v: b.fulfilment === "Pickup" ? "Drop at provider" : "Provider collects" },
+            {
+              k: "Return method",
+              v: b.fulfilment === "Pickup" ? "Drop at provider" : "Provider collects",
+            },
           ].map((r) => (
             <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
               <dt className="text-xs text-muted-foreground">{r.k}</dt>
@@ -185,7 +192,9 @@ function RentalBooking() {
         </p>
         <div className="flex flex-wrap gap-2">
           {["Same as received", "Minor wear", "Damage to report"].map((c) => (
-            <Chip key={c} active={c === "Same as received"}>{c}</Chip>
+            <Chip key={c} active={c === "Same as received"}>
+              {c}
+            </Chip>
           ))}
         </div>
         <button className="mt-4 w-full rounded-3xl border border-dashed border-border py-6 text-[12px] font-semibold text-muted-foreground">
@@ -239,15 +248,19 @@ function RentalBooking() {
           What went well
         </p>
         <div className="mb-4 flex flex-wrap gap-2">
-          {["Equipment condition", "Accuracy", "Communication", "Pickup", "Delivery", "Value"].map((t) => (
-            <Chip
-              key={t}
-              active={tags.includes(t)}
-              onClick={() => setTags((s) => (s.includes(t) ? s.filter((x) => x !== t) : [...s, t]))}
-            >
-              {t}
-            </Chip>
-          ))}
+          {["Equipment condition", "Accuracy", "Communication", "Pickup", "Delivery", "Value"].map(
+            (t) => (
+              <Chip
+                key={t}
+                active={tags.includes(t)}
+                onClick={() =>
+                  setTags((s) => (s.includes(t) ? s.filter((x) => x !== t) : [...s, t]))
+                }
+              >
+                {t}
+              </Chip>
+            ),
+          )}
         </div>
         <textarea
           rows={3}

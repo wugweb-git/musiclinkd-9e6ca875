@@ -1,6 +1,15 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
-import { Check, FileText, Lock, Paperclip, RefreshCw, ShieldCheck, Trash2, Eye } from "lucide-react";
+import {
+  Check,
+  FileText,
+  Lock,
+  Paperclip,
+  RefreshCw,
+  ShieldCheck,
+  Trash2,
+  Eye,
+} from "lucide-react";
 import { Screen, TopBar, Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Row } from "@/components/ml/kit";
 import {
@@ -18,7 +27,9 @@ type Search = { step: number; mode?: "new" };
 export const Route = createFileRoute("/verification/$type")({
   validateSearch: (search: Record<string, unknown>): Search => {
     const raw = Number(search["step"]);
-    const step = Number.isFinite(raw) ? Math.min(Math.max(Math.trunc(raw), 0), verificationSteps.length - 1) : 0;
+    const step = Number.isFinite(raw)
+      ? Math.min(Math.max(Math.trunc(raw), 0), verificationSteps.length - 1)
+      : 0;
     return search["mode"] === "new" ? { step, mode: "new" } : { step };
   },
   loader: ({ params }) => {
@@ -29,7 +40,12 @@ export const Route = createFileRoute("/verification/$type")({
   head: ({ loaderData }) => {
     const def = loaderData ? verificationTypes.find((t) => t.key === loaderData.key) : undefined;
     if (!def) {
-      return { meta: [{ title: "Verification unavailable | MusicLinkd" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [
+          { title: "Verification unavailable | MusicLinkd" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
     return {
       meta: [
@@ -51,7 +67,10 @@ function TypeNotFound() {
     <Screen>
       <TopBar title="Verification" back="/verification" />
       <div className="px-5 pt-6">
-        <EmptyState title="That verification type does not exist" body="Pick one of the supported levels instead.">
+        <EmptyState
+          title="That verification type does not exist"
+          body="Pick one of the supported levels instead."
+        >
           <Link to="/verification/choose">
             <Btn className="w-full">See verification types</Btn>
           </Link>
@@ -118,8 +137,16 @@ function VerificationRequestScreen() {
             </div>
           </Card>
           <p className="text-[13px] text-text2">{def.whatOthersSee}</p>
-          <Row title="Where the badge appears" subtitle="Profile, search, listings, reviews" to="/verification/badge" />
-          <Row title="Document privacy" subtitle="What we keep and for how long" to="/verification/privacy" />
+          <Row
+            title="Where the badge appears"
+            subtitle="Profile, search, listings, reviews"
+            to="/verification/badge"
+          />
+          <Row
+            title="Document privacy"
+            subtitle="What we keep and for how long"
+            to="/verification/privacy"
+          />
         </div>
       </Screen>
     );
@@ -136,8 +163,8 @@ function VerificationRequestScreen() {
               <StatusPill label={statusLabel.in_review} tone={statusTone.in_review} />
             </div>
             <p className="text-[13px] text-text2">
-              Submitted {existing.submitted}. A reviewer checks each request by hand — {def.turnaround.toLowerCase()}.
-              You will get a notification with the decision.
+              Submitted {existing.submitted}. A reviewer checks each request by hand —{" "}
+              {def.turnaround.toLowerCase()}. You will get a notification with the decision.
             </p>
           </Card>
           <Card className="space-y-2">
@@ -151,10 +178,15 @@ function VerificationRequestScreen() {
           </Card>
           <Card className="py-3">
             <p className="text-[12px] text-text2">
-              You can withdraw this request while it is in review. Withdrawing removes the documents from the queue.
+              You can withdraw this request while it is in review. Withdrawing removes the documents
+              from the queue.
             </p>
           </Card>
-          <Row title="Document privacy" subtitle="How this review works" to="/verification/privacy" />
+          <Row
+            title="Document privacy"
+            subtitle="How this review works"
+            to="/verification/privacy"
+          />
         </div>
       </Screen>
     );
@@ -190,7 +222,8 @@ function VerificationRequestScreen() {
           </Card>
           <Btn
             className="w-full"
-            onClick={() => {              void go(2);
+            onClick={() => {
+              void go(2);
             }}
           >
             Resubmit
@@ -216,12 +249,14 @@ function VerificationRequestScreen() {
               <StatusPill label={statusLabel.expired} tone={statusTone.expired} />
             </div>
             <p className="text-[13px] text-text2">
-              This badge expired on {existing.expiresOn}. It is hidden from your listings until you renew.
+              This badge expired on {existing.expiresOn}. It is hidden from your listings until you
+              renew.
             </p>
           </Card>
           <Btn
             className="w-full"
-            onClick={() => {              void go(0);
+            onClick={() => {
+              void go(0);
             }}
           >
             Renew verification
@@ -267,7 +302,10 @@ function Wizard({
       <div className="px-5 pt-3">
         <div className="flex gap-1.5" aria-hidden>
           {verificationSteps.map((s, i) => (
-            <span key={s} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-subtle"}`} />
+            <span
+              key={s}
+              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-subtle"}`}
+            />
           ))}
         </div>
       </div>
@@ -294,7 +332,8 @@ function Wizard({
             <Card className="flex gap-3 py-3">
               <Lock size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
               <p className="text-[12px] text-text2">
-                We never ask for bank details, passwords or your Aadhaar number. Review time: {def.turnaround.toLowerCase()}.
+                We never ask for bank details, passwords or your Aadhaar number. Review time:{" "}
+                {def.turnaround.toLowerCase()}.
               </p>
             </Card>
             <Btn className="w-full" onClick={() => void go(1)}>
@@ -308,7 +347,9 @@ function Wizard({
             <p className="text-[13px] text-text2">Only the details this badge actually needs.</p>
             {infos.length === 0 ? (
               <Card className="py-3">
-                <p className="text-[13px] text-text2">No extra details needed — go straight to documents.</p>
+                <p className="text-[13px] text-text2">
+                  No extra details needed — go straight to documents.
+                </p>
               </Card>
             ) : (
               infos.map((r) => (
@@ -327,7 +368,8 @@ function Wizard({
             )}
             <Card className="py-3">
               <p className="text-[12px] text-text2">
-                These details are read only by the Trust team for this review. They are never shown on your profile.
+                These details are read only by the Trust team for this review. They are never shown
+                on your profile.
               </p>
             </Card>
             <div className="flex gap-2">
@@ -344,7 +386,9 @@ function Wizard({
               </Btn>
             </div>
             {infos.length > 0 && !infoDone ? (
-              <p className="text-center text-[12px] text-muted-foreground">Fill every field to continue.</p>
+              <p className="text-center text-[12px] text-muted-foreground">
+                Fill every field to continue.
+              </p>
             ) : null}
           </>
         ) : null}
@@ -368,7 +412,9 @@ function Wizard({
                   </div>
                   {file ? (
                     <>
-                      <p className="truncate rounded-[14px] bg-subtle px-3 py-2 text-[12px]">{file}</p>
+                      <p className="truncate rounded-[14px] bg-subtle px-3 py-2 text-[12px]">
+                        {file}
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -380,7 +426,10 @@ function Wizard({
                         <button
                           type="button"
                           onClick={() =>
-                            setFiles((f) => ({ ...f, [r.label]: `${r.label.toLowerCase().replace(/\s+/g, "-")}-v2.jpg` }))
+                            setFiles((f) => ({
+                              ...f,
+                              [r.label]: `${r.label.toLowerCase().replace(/\s+/g, "-")}-v2.jpg`,
+                            }))
                           }
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibold"
                         >
@@ -405,7 +454,10 @@ function Wizard({
                     <button
                       type="button"
                       onClick={() =>
-                        setFiles((f) => ({ ...f, [r.label]: `${r.label.toLowerCase().replace(/\s+/g, "-")}.jpg` }))
+                        setFiles((f) => ({
+                          ...f,
+                          [r.label]: `${r.label.toLowerCase().replace(/\s+/g, "-")}.jpg`,
+                        }))
                       }
                       className="inline-flex items-center gap-1 rounded-full bg-subtle px-3 py-2 text-[12px] font-semibold"
                     >
@@ -418,7 +470,8 @@ function Wizard({
             <Card className="flex gap-3 py-3">
               <Lock size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
               <p className="text-[12px] text-text2">
-                Documents are private. Only the Trust team can open them, and they are never shown on your profile.
+                Documents are private. Only the Trust team can open them, and they are never shown
+                on your profile.
               </p>
             </Card>
             <div className="flex gap-2">
@@ -435,7 +488,9 @@ function Wizard({
               </Btn>
             </div>
             {!docsDone ? (
-              <p className="text-center text-[12px] text-muted-foreground">Attach every document to continue.</p>
+              <p className="text-center text-[12px] text-muted-foreground">
+                Attach every document to continue.
+              </p>
             ) : null}
           </>
         ) : null}
@@ -474,8 +529,8 @@ function Wizard({
                 className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
               />
               <span className="text-[12px] text-text2">
-                I confirm these documents are mine and accurate, and I allow the MusicLinkd Trust team to review them
-                for this verification.
+                I confirm these documents are mine and accurate, and I allow the MusicLinkd Trust
+                team to review them for this verification.
               </span>
             </label>
             <div className="flex gap-2">
@@ -492,7 +547,9 @@ function Wizard({
               </Btn>
             </div>
             {!consent ? (
-              <p className="text-center text-[12px] text-muted-foreground">Give consent to submit.</p>
+              <p className="text-center text-[12px] text-muted-foreground">
+                Give consent to submit.
+              </p>
             ) : null}
           </>
         ) : null}
@@ -506,20 +563,28 @@ function Wizard({
               <h2 className="text-[18px] leading-tight">Submitted for review</h2>
               <StatusPill label={statusLabel.in_review} tone={statusTone.in_review} />
               <p className="text-[13px] text-text2">
-                A reviewer checks each request by hand. {def.turnaround} for {def.title.toLowerCase()}. We will notify
-                you as soon as there is a decision.
+                A reviewer checks each request by hand. {def.turnaround} for{" "}
+                {def.title.toLowerCase()}. We will notify you as soon as there is a decision.
               </p>
             </Card>
             <Card className="space-y-2 py-3">
               <h3 className="text-[14px]">What happens next</h3>
               <p className="text-[12px] text-text2">1. The Trust team opens your documents.</p>
-              <p className="text-[12px] text-text2">2. If anything is unclear you get a note with what to fix.</p>
-              <p className="text-[12px] text-text2">3. On approval the badge appears everywhere at once.</p>
+              <p className="text-[12px] text-text2">
+                2. If anything is unclear you get a note with what to fix.
+              </p>
+              <p className="text-[12px] text-text2">
+                3. On approval the badge appears everywhere at once.
+              </p>
             </Card>
             <Link to="/verification">
               <Btn className="w-full">Back to verification</Btn>
             </Link>
-            <Row title="Where the badge appears" subtitle="Profile, search, listings, reviews" to="/verification/badge" />
+            <Row
+              title="Where the badge appears"
+              subtitle="Profile, search, listings, reviews"
+              to="/verification/badge"
+            />
           </>
         ) : null}
       </div>

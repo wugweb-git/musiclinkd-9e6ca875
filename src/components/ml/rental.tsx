@@ -2,12 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type ReactNode } from "react";
 import { CalendarDays, Package, Truck, MapPin } from "lucide-react";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
-import {
-  ConditionBadge,
-  LocationRow,
-  Rating,
-  SaveButton,
-} from "./market";
+import { ConditionBadge, LocationRow, Rating, SaveButton } from "./market";
 import {
   inr,
   priceFor,
@@ -17,7 +12,13 @@ import {
   type RentalStatus,
 } from "@/data/rentals";
 
-export function RentalAvailabilityBadge({ text, tone = "ok" }: { text: string; tone?: "ok" | "warn" | "off" }) {
+export function RentalAvailabilityBadge({
+  text,
+  tone = "ok",
+}: {
+  text: string;
+  tone?: "ok" | "warn" | "off";
+}) {
   const map = {
     ok: { bg: "var(--success-container)", fg: "var(--success)" },
     warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
@@ -114,7 +115,9 @@ export function EquipmentCard({ e }: { e: Equipment }) {
           </Link>
         </div>
         <Link to="/marketplace/rent/request/$id" params={{ id: e.id }} className="mt-3 block">
-          <Btn variant="outline" className="w-full">Check availability</Btn>
+          <Btn variant="outline" className="w-full">
+            Check availability
+          </Btn>
         </Link>
       </div>
     </article>
@@ -128,7 +131,12 @@ export function EquipmentTile({ e }: { e: Equipment }) {
       params={{ id: e.id }}
       className="block w-[176px] shrink-0 overflow-hidden rounded-3xl border border-border bg-card"
     >
-      <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-[124px] w-full object-cover" />
+      <img
+        src={e.photos[0]}
+        alt={e.name}
+        loading="lazy"
+        className="h-[124px] w-full object-cover"
+      />
       <div className="p-3">
         <RentalPriceBlock e={e} />
         <h3 className="mt-1 line-clamp-2 text-[12px] leading-snug">{e.name}</h3>
@@ -146,7 +154,12 @@ export function EquipmentRow({ e, action }: { e: Equipment; action?: ReactNode }
   return (
     <article className="flex gap-3 rounded-3xl border border-border bg-card p-3">
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="shrink-0">
-        <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-24 w-24 rounded-2xl object-cover" />
+        <img
+          src={e.photos[0]}
+          alt={e.name}
+          loading="lazy"
+          className="h-24 w-24 rounded-2xl object-cover"
+        />
       </Link>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
@@ -271,8 +284,7 @@ export function RentalCalendar({
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
           const isBlocked = blocked.has(day);
-          const inRange =
-            start !== null && end !== null && day >= start && day <= end;
+          const inRange = start !== null && end !== null && day >= start && day <= end;
           const isEdge = day === start || day === end;
           return (
             <button
@@ -298,12 +310,15 @@ export function RentalCalendar({
       </div>
       <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-muted-foreground">
         <span className="inline-flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full" style={{ background: "var(--primary)" }} /> Selected
+          <span className="h-2 w-2 rounded-full" style={{ background: "var(--primary)" }} />{" "}
+          Selected
         </span>
         <span className="inline-flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-border" /> Unavailable
         </span>
-        <span>Min {e.minDays} day{e.minDays > 1 ? "s" : ""} · notice {e.noticePeriod}</span>
+        <span>
+          Min {e.minDays} day{e.minDays > 1 ? "s" : ""} · notice {e.noticePeriod}
+        </span>
       </div>
     </div>
   );
@@ -379,7 +394,14 @@ export function FulfilmentPicker({
 }) {
   const options = [
     ...(e.pickup
-      ? [{ id: "Pickup", icon: Package, line: `${e.location} · free`, note: "Collect from the provider" }]
+      ? [
+          {
+            id: "Pickup",
+            icon: Package,
+            line: `${e.location} · free`,
+            note: "Collect from the provider",
+          },
+        ]
       : []),
     ...(e.delivery
       ? [
@@ -448,7 +470,12 @@ export function BookingCard({
   return (
     <article className="rounded-3xl border border-border bg-card p-3">
       <div className="flex gap-3">
-        <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-20 w-20 shrink-0 rounded-2xl object-cover" />
+        <img
+          src={e.photos[0]}
+          alt={e.name}
+          loading="lazy"
+          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className="line-clamp-2 text-[13px] leading-snug">{e.name}</h3>
@@ -484,7 +511,11 @@ export function RentalRequestCard({
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
       <div className="flex items-start gap-3">
-        <img src={e.photos[0]} alt={e.name} className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+        <img
+          src={e.photos[0]}
+          alt={e.name}
+          className="h-14 w-14 shrink-0 rounded-2xl object-cover"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[13px] font-semibold">{e.name}</p>
           <p className="truncate text-[11px] text-muted-foreground">
@@ -587,10 +618,7 @@ export function RentalFilterSheet({
       ))}
 
       {!more ? (
-        <button
-          onClick={() => setMore(true)}
-          className="mb-5 text-xs font-semibold text-primary"
-        >
+        <button onClick={() => setMore(true)} className="mb-5 text-xs font-semibold text-primary">
           More filters
         </button>
       ) : null}
@@ -643,7 +671,9 @@ function RentalSwitch({
       className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left"
     >
       <span className="text-sm font-medium">{label}</span>
-      <span className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}>
+      <span
+        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}
+      >
         <span
           className={`absolute top-1 h-5 w-5 rounded-full bg-card transition-all ${value ? "left-6" : "left-1"}`}
         />

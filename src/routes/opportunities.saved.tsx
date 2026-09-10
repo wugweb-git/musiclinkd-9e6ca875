@@ -27,13 +27,23 @@ function SavedOpportunities() {
       <TopBar title="Saved" subtitle="Only you can see this list" back="/opportunities" />
       <div className="space-y-3 px-5 pt-4 pb-4">
         {list.length === 0 ? (
-          <EmptyState title="No saved opportunities" body="Tap the bookmark on any opportunity to keep it here while you decide.">
+          <EmptyState
+            title="No saved opportunities"
+            body="Tap the bookmark on any opportunity to keep it here while you decide."
+          >
             <Link to="/opportunities">
               <Btn className="w-full">Browse opportunities</Btn>
             </Link>
           </EmptyState>
         ) : (
-          list.map((o) => <OpportunityCard key={o.id} o={o} saved={has(o.id) || o.saved} onSave={() => toggle(o.id)} />)
+          list.map((o) => (
+            <OpportunityCard
+              key={o.id}
+              o={o}
+              saved={has(o.id) || o.saved}
+              onSave={() => toggle(o.id)}
+            />
+          ))
         )}
       </div>
     </Screen>

@@ -14,10 +14,14 @@ export const Route = createFileRoute("/collab/$id/participants")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Who is on the project, what each person is responsible for, and their credit role.",
+          content:
+            "Who is on the project, what each person is responsible for, and their credit role.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: "Clear roles and responsibilities for every collaborator." },
+        {
+          property: "og:description",
+          content: "Clear roles and responsibilities for every collaborator.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -43,7 +47,6 @@ function Participants() {
     );
   }
 
-
   const canManage = project.myRole === "Composer" || project.owner === "You";
   const active = project.participants.filter((p) => p.status === "owner" || p.status === "active");
   const pending = project.participants.filter((p) => p.status === "invited");
@@ -55,7 +58,9 @@ function Participants() {
       {active.length === 0 ? (
         <Card className="mb-5 text-center">
           <p className="text-[13px] font-semibold">No collaborators yet</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">Add collaborators to get the project moving.</p>
+          <p className="mt-1 text-[12px] text-muted-foreground">
+            Add collaborators to get the project moving.
+          </p>
           <Link to="/collab/new/collaborators">
             <Btn className="mt-3 w-full">Add collaborators</Btn>
           </Link>
@@ -109,7 +114,8 @@ function Participants() {
       <Card className="mb-5">
         <p className="text-[13px] font-semibold">Roles and permissions</p>
         <p className="mt-1 text-[11px] text-muted-foreground">
-          Owners manage everything. Collaborators upload and comment. Viewers can only read the project.
+          Owners manage everything. Collaborators upload and comment. Viewers can only read the
+          project.
         </p>
         <button
           type="button"
@@ -153,7 +159,8 @@ function Participants() {
           ))}
         </div>
         <p className="pb-2 text-[12px] text-muted-foreground">
-          Roles are shared across profiles, credits and discovery so your work is searchable everywhere.
+          Roles are shared across profiles, credits and discovery so your work is searchable
+          everywhere.
         </p>
       </Sheet>
     </WorkspaceShell>

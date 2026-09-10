@@ -16,7 +16,10 @@ export const Route = createFileRoute("/services/availability")({
   head: () => ({
     meta: [
       { title: "Availability | MusicLinkd" },
-      { name: "description", content: "Weekly hours, notice period and time off — the calendar every booking checks." },
+      {
+        name: "description",
+        content: "Weekly hours, notice period and time off — the calendar every booking checks.",
+      },
       { property: "og:title", content: "Availability | MusicLinkd" },
       { property: "og:description", content: "Control when people can book you." },
       { property: "og:type", content: "website" },
@@ -58,10 +61,15 @@ function Availability() {
         <Card className="space-y-3">
           <h2 className="text-[15px]">Weekly hours</h2>
           {days.map((d) => (
-            <div key={d.day} className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0">
+            <div
+              key={d.day}
+              className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0"
+            >
               <div className="min-w-0">
                 <p className="text-[13px] font-semibold">{d.day}</p>
-                <p className="text-[11px] text-muted-foreground">{d.enabled ? `${d.from} – ${d.to}` : "Unavailable"}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {d.enabled ? `${d.from} – ${d.to}` : "Unavailable"}
+                </p>
               </div>
               <button
                 type="button"
@@ -71,7 +79,9 @@ function Availability() {
                 onClick={() => toggleDay(d.day)}
                 className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${d.enabled ? "bg-primary" : "bg-subtle"}`}
               >
-                <span className={`block h-5 w-5 rounded-full bg-background transition-transform ${d.enabled ? "translate-x-5" : ""}`} />
+                <span
+                  className={`block h-5 w-5 rounded-full bg-background transition-transform ${d.enabled ? "translate-x-5" : ""}`}
+                />
               </button>
             </div>
           ))}
@@ -91,13 +101,20 @@ function Availability() {
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-[15px]">Time off</h2>
-            <button type="button" onClick={() => setAddOff(true)} className="inline-flex items-center gap-1 text-[12px] font-semibold text-primary">
+            <button
+              type="button"
+              onClick={() => setAddOff(true)}
+              className="inline-flex items-center gap-1 text-[12px] font-semibold text-primary"
+            >
               <Plus size={14} /> Add
             </button>
           </div>
           {off.length ? (
             off.map((o) => (
-              <div key={o.id} className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0">
+              <div
+                key={o.id}
+                className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0"
+              >
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{o.label}</p>
                   <p className="text-[11px] text-muted-foreground">{o.range}</p>
@@ -112,7 +129,10 @@ function Availability() {
               </div>
             ))
           ) : (
-            <EmptyState title="No time off" body="Block dates you are travelling or on another project." />
+            <EmptyState
+              title="No time off"
+              body="Block dates you are travelling or on another project."
+            />
           )}
         </Card>
 
@@ -121,7 +141,8 @@ function Availability() {
             <CalendarOff size={15} /> Bookings already confirmed
           </p>
           <p className="text-[12px] text-muted-foreground">
-            Changing hours never cancels a confirmed booking — manage those in your provider calendar.
+            Changing hours never cancels a confirmed booking — manage those in your provider
+            calendar.
           </p>
           <Link to="/provider/bookings/calendar">
             <Btn variant="ghost" className="w-full">

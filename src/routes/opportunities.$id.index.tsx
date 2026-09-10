@@ -1,10 +1,30 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bookmark, Flag, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } from "lucide-react";
+import {
+  Bookmark,
+  Flag,
+  Share2,
+  CalendarDays,
+  MapPin,
+  Wallet,
+  CheckCircle2,
+  Circle,
+} from "lucide-react";
 import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
-import { MatchBar, PosterRow, statusTone, useSavedOpportunities } from "@/components/ml/opportunity";
-import { getOpportunity, categoryLabel, payLabel, reportReasons, myApplications } from "@/data/opportunities";
+import {
+  MatchBar,
+  PosterRow,
+  statusTone,
+  useSavedOpportunities,
+} from "@/components/ml/opportunity";
+import {
+  getOpportunity,
+  categoryLabel,
+  payLabel,
+  reportReasons,
+  myApplications,
+} from "@/data/opportunities";
 
 export const Route = createFileRoute("/opportunities/$id/")({
   head: ({ params }) => {
@@ -38,7 +58,10 @@ function OpportunityDetail() {
       <Screen>
         <TopBar title="Opportunity" back="/opportunities" />
         <div className="px-5 pt-6">
-          <EmptyState title="This opportunity is gone" body="It was closed, filled or removed by the poster.">
+          <EmptyState
+            title="This opportunity is gone"
+            body="It was closed, filled or removed by the poster."
+          >
             <Link to="/opportunities">
               <Btn className="w-full">Browse open opportunities</Btn>
             </Link>
@@ -117,13 +140,18 @@ function OpportunityDetail() {
               )}
               <p className="text-[13px]">
                 {r.label}
-                <span className="ml-1 text-[11px] uppercase tracking-wide text-muted-foreground">{r.must ? "must have" : "nice to have"}</span>
+                <span className="ml-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  {r.must ? "must have" : "nice to have"}
+                </span>
               </p>
             </div>
           ))}
           <div className="flex flex-wrap gap-1.5 pt-1">
             {[...o.genres, ...o.languages].map((g) => (
-              <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold">
+              <span
+                key={g}
+                className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold"
+              >
                 {g}
               </span>
             ))}
@@ -152,10 +180,18 @@ function OpportunityDetail() {
             aria-label={saved ? "Saved" : "Save"}
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-background"
           >
-            <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
+            <Bookmark
+              size={18}
+              className={saved ? "text-primary" : "text-muted-foreground"}
+              fill={saved ? "currentColor" : "none"}
+            />
           </button>
           {existing ? (
-            <Link to="/opportunities/applications/$aid" params={{ aid: existing.id }} className="min-w-0 flex-1">
+            <Link
+              to="/opportunities/applications/$aid"
+              params={{ aid: existing.id }}
+              className="min-w-0 flex-1"
+            >
               <Btn className="w-full">View your application · {existing.status}</Btn>
             </Link>
           ) : o.status === "closed" ? (
@@ -163,7 +199,12 @@ function OpportunityDetail() {
               Applications closed
             </Btn>
           ) : (
-            <Link to="/opportunities/$id/apply" params={{ id: o.id }} search={{ step: "portfolio" }} className="min-w-0 flex-1">
+            <Link
+              to="/opportunities/$id/apply"
+              params={{ id: o.id }}
+              search={{ step: "portfolio" }}
+              className="min-w-0 flex-1"
+            >
               <Btn className="w-full">Apply</Btn>
             </Link>
           )}

@@ -13,7 +13,10 @@ export const Route = createFileRoute("/collab/$id/milestones/new")({
         content: "Add a milestone with an owner, due date and notes to a MusicLinkd collaboration.",
       },
       { property: "og:title", content: "Add a milestone | MusicLinkd" },
-      { property: "og:description", content: "Break a music project into stages everyone can track." },
+      {
+        property: "og:description",
+        content: "Break a music project into stages everyone can track.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -48,7 +51,12 @@ function NewMilestone() {
           <TextInput value={name} onChange={setName} placeholder="e.g. Final vocal comp" />
         </Field>
         <Field label="Description" optional>
-          <TextInput value={desc} onChange={setDesc} multiline placeholder="What has to be true to call this done?" />
+          <TextInput
+            value={desc}
+            onChange={setDesc}
+            multiline
+            placeholder="What has to be true to call this done?"
+          />
         </Field>
         <Field label="Owner">
           <div className="flex flex-wrap gap-2">

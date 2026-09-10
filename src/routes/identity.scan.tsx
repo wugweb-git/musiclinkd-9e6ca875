@@ -7,16 +7,29 @@ import { useEffect, useState } from "react";
 import { Camera, ScanLine, ShieldQuestion } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { CameraSurface, ScanFrame, ScannerControls, StateCard, ActionRow } from "@/components/ml/qr";
+import {
+  CameraSurface,
+  ScanFrame,
+  ScannerControls,
+  StateCard,
+  ActionRow,
+} from "@/components/ml/qr";
 import { destinations, scanHistory } from "@/data/identity";
 
 export const Route = createFileRoute("/identity/scan")({
   head: () => ({
     meta: [
       { title: "Scan a MusicLinkd QR code" },
-      { name: "description", content: "Point your camera at a MusicLinkd QR to open a profile, studio, service, listing or portfolio work instantly." },
+      {
+        name: "description",
+        content:
+          "Point your camera at a MusicLinkd QR to open a profile, studio, service, listing or portfolio work instantly.",
+      },
       { property: "og:title", content: "Scan a MusicLinkd QR" },
-      { property: "og:description", content: "Meet someone at a gig, scan their code, keep the connection." },
+      {
+        property: "og:description",
+        content: "Meet someone at a gig, scan their code, keep the connection.",
+      },
     ],
   }),
   component: Scanner,

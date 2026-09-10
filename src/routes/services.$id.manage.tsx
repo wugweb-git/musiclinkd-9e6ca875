@@ -9,7 +9,11 @@ export const Route = createFileRoute("/services/$id/manage")({
   head: () => ({
     meta: [
       { title: "Manage a service | MusicLinkd" },
-      { name: "description", content: "Pause, duplicate or delete a service, and see what happens to bookings already in the calendar." },
+      {
+        name: "description",
+        content:
+          "Pause, duplicate or delete a service, and see what happens to bookings already in the calendar.",
+      },
       { property: "og:title", content: "Manage a service | MusicLinkd" },
       { property: "og:description", content: "Pause, duplicate or delete a service." },
       { property: "og:type", content: "website" },
@@ -32,7 +36,10 @@ function ManageService() {
       <Screen>
         <TopBar title="Manage" back="/services" />
         <div className="px-5 pt-6">
-          <EmptyState title="Service not found" body="This service may have already been deleted." />
+          <EmptyState
+            title="Service not found"
+            body="This service may have already been deleted."
+          />
         </div>
       </Screen>
     );
@@ -47,7 +54,9 @@ function ManageService() {
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{s.title}</p>
-              <p className="text-[12px] text-muted-foreground">{s.stats.bookings} bookings · {s.stats.enquiries} enquiries</p>
+              <p className="text-[12px] text-muted-foreground">
+                {s.stats.bookings} bookings · {s.stats.enquiries} enquiries
+              </p>
             </div>
             <StatusPill label={status} tone={serviceStatusTone[status]} />
           </div>
@@ -57,7 +66,8 @@ function ManageService() {
           <Card>
             <p className="text-sm font-semibold">This service is paused</p>
             <p className="mt-1 text-[13px] text-muted-foreground">
-              It is hidden from Discover and search, and no new enquiries can come in. Bookings already confirmed still stand.
+              It is hidden from Discover and search, and no new enquiries can come in. Bookings
+              already confirmed still stand.
             </p>
           </Card>
         ) : null}
@@ -66,7 +76,9 @@ function ManageService() {
           <Row
             icon={status === "active" ? <EyeOff size={16} /> : <Eye size={16} />}
             title={status === "active" ? "Pause this service" : "Make it live again"}
-            subtitle={status === "active" ? "Hide it while you are full" : "Show it in Discover and search"}
+            subtitle={
+              status === "active" ? "Hide it while you are full" : "Show it in Discover and search"
+            }
             onClick={() => setStatus(status === "active" ? "paused" : "active")}
           />
           <Row
@@ -75,13 +87,19 @@ function ManageService() {
             subtitle={duplicated ? "Copy created as a draft" : "Start a new service from this one"}
             onClick={() => setDuplicated(true)}
           />
-          <Row icon={<Trash2 size={16} />} title="Delete this service" subtitle="Permanent, and it cannot be restored" onClick={() => setConfirmDelete(true)} />
+          <Row
+            icon={<Trash2 size={16} />}
+            title="Delete this service"
+            subtitle="Permanent, and it cannot be restored"
+            onClick={() => setConfirmDelete(true)}
+          />
         </div>
 
         <Card>
           <p className="text-sm font-semibold">Before you delete</p>
           <p className="mt-1 text-[13px] text-muted-foreground">
-            Deleting removes the listing and its reviews' link to it. Confirmed bookings are unaffected and stay in your calendar.
+            Deleting removes the listing and its reviews' link to it. Confirmed bookings are
+            unaffected and stay in your calendar.
           </p>
         </Card>
       </div>
@@ -93,7 +111,9 @@ function ManageService() {
         onClose={() => setConfirmDelete(false)}
       >
         <Btn onClick={() => navigate({ to: "/services" })}>Delete service</Btn>
-        <Btn variant="ghost" onClick={() => setConfirmDelete(false)}>Keep it</Btn>
+        <Btn variant="ghost" onClick={() => setConfirmDelete(false)}>
+          Keep it
+        </Btn>
       </Dialog>
     </Screen>
   );

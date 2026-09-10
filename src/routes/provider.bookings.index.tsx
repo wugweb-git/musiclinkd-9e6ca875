@@ -25,10 +25,14 @@ export const Route = createFileRoute("/provider/bookings/")({
       { title: "Provider bookings — MusicLinkd" },
       {
         name: "description",
-        content: "Review incoming requests, see today's sessions and manage the calendar for the space you run.",
+        content:
+          "Review incoming requests, see today's sessions and manage the calendar for the space you run.",
       },
       { property: "og:title", content: "Provider bookings — MusicLinkd" },
-      { property: "og:description", content: "Requests, today's schedule and earnings for your space." },
+      {
+        property: "og:description",
+        content: "Requests, today's schedule and earnings for your space.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -62,10 +66,26 @@ function ProviderBookings() {
 
       <main className="px-5 pt-2">
         <div className="grid grid-cols-2 gap-2">
-          <Stat icon={<CalendarClock size={15} />} label="Pending requests" value={`${providerStats.pending}`} />
-          <Stat icon={<TrendingUp size={15} />} label="Occupancy" value={`${providerStats.utilisation}%`} />
-          <Stat icon={<IndianRupee size={15} />} label="This month" value={inr(providerStats.revenueMonth)} />
-          <Stat icon={<Star size={15} />} label="Cancellations" value={`${providerStats.cancellations}`} />
+          <Stat
+            icon={<CalendarClock size={15} />}
+            label="Pending requests"
+            value={`${providerStats.pending}`}
+          />
+          <Stat
+            icon={<TrendingUp size={15} />}
+            label="Occupancy"
+            value={`${providerStats.utilisation}%`}
+          />
+          <Stat
+            icon={<IndianRupee size={15} />}
+            label="This month"
+            value={inr(providerStats.revenueMonth)}
+          />
+          <Stat
+            icon={<Star size={15} />}
+            label="Cancellations"
+            value={`${providerStats.cancellations}`}
+          />
         </div>
 
         <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1">

@@ -26,7 +26,10 @@ export const Route = createFileRoute("/welcome")({
 });
 
 const proofPoints = [
-  { title: "Show the work, not a CV", body: "Tracks, credits and clips in one professional profile." },
+  {
+    title: "Show the work, not a CV",
+    body: "Tracks, credits and clips in one professional profile.",
+  },
   { title: "Get found for real jobs", body: "Sessions, gigs, studio time and label briefs." },
   { title: "Book with confidence", body: "Verified people, clear rates, real availability." },
 ];
@@ -65,7 +68,9 @@ function WelcomeScreen() {
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[14px] font-semibold">{p.title}</span>
-                  <span className="mt-0.5 block text-[12.5px] leading-relaxed text-text2">{p.body}</span>
+                  <span className="mt-0.5 block text-[12.5px] leading-relaxed text-text2">
+                    {p.body}
+                  </span>
                 </span>
               </li>
             ))}
@@ -73,7 +78,10 @@ function WelcomeScreen() {
         </div>
 
         <div className="mt-8 space-y-3">
-          <Btn className="w-full" onClick={() => void navigate({ to: "/auth", search: { mode: "signup" } })}>
+          <Btn
+            className="w-full"
+            onClick={() => void navigate({ to: "/auth", search: { mode: "signup" } })}
+          >
             Create your account
           </Btn>
           <Btn
@@ -89,9 +97,7 @@ function WelcomeScreen() {
           >
             Look around first
           </Link>
-          <TrustNote>
-            Free to join. Your work stays yours — you choose what is public.
-          </TrustNote>
+          <TrustNote>Free to join. Your work stays yours — you choose what is public.</TrustNote>
           <LegalNote />
         </div>
       </div>

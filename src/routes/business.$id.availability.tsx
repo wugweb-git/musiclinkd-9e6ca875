@@ -9,7 +9,11 @@ export const Route = createFileRoute("/business/$id/availability")({
   head: () => ({
     meta: [
       { title: "Business availability | MusicLinkd" },
-      { name: "description", content: "Set opening hours, notice period and blackout dates so the calendar only shows real slots." },
+      {
+        name: "description",
+        content:
+          "Set opening hours, notice period and blackout dates so the calendar only shows real slots.",
+      },
       { property: "og:title", content: "Business availability | MusicLinkd" },
       { property: "og:description", content: "Opening hours, notice period and blackout dates." },
       { property: "og:type", content: "website" },
@@ -30,7 +34,10 @@ function BusinessAvailability() {
       <Screen>
         <TopBar title="Availability" back="/business" />
         <div className="px-5 pt-6">
-          <EmptyState title="Business not found" body="This business may have been removed or you no longer have access to it." />
+          <EmptyState
+            title="Business not found"
+            body="This business may have been removed or you no longer have access to it."
+          />
         </div>
       </Screen>
     );
@@ -66,16 +73,23 @@ function BusinessAvailability() {
 
         <Card>
           <p className="text-sm font-semibold">Blackout dates</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">Days the rooms are closed, whatever the calendar says.</p>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Days the rooms are closed, whatever the calendar says.
+          </p>
           <div className="mt-3 space-y-2">
             {timeOff.map((t) => (
-              <div key={t.label} className="flex items-center justify-between rounded-[16px] border border-border px-3 py-2 text-[13px]">
+              <div
+                key={t.label}
+                className="flex items-center justify-between rounded-[16px] border border-border px-3 py-2 text-[13px]"
+              >
                 <span className="font-semibold">{t.label}</span>
                 <span className="text-muted-foreground">{t.range}</span>
               </div>
             ))}
           </div>
-          <Btn variant="outline" className="mt-3 w-full">Add blackout dates</Btn>
+          <Btn variant="outline" className="mt-3 w-full">
+            Add blackout dates
+          </Btn>
         </Card>
 
         <Btn className="w-full" onClick={() => setSaved(true)}>

@@ -2,10 +2,16 @@ import { useState } from "react";
 import { Btn, Chip, Sheet } from "./ui";
 
 const groups: { label: string; options: string[] }[] = [
-  { label: "Role", options: ["Singer", "Session Musician", "DJ", "Composer", "Engineer", "Producer"] },
+  {
+    label: "Role",
+    options: ["Singer", "Session Musician", "DJ", "Composer", "Engineer", "Producer"],
+  },
   { label: "Language", options: ["Hindi", "Tamil", "Punjabi", "Marathi", "Telugu", "English"] },
   { label: "Genre", options: ["Hindi Film", "Indie", "Hip-Hop", "Carnatic", "Sufi", "Electronic"] },
-  { label: "City / area", options: ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Kolkata", "Goa"] },
+  {
+    label: "City / area",
+    options: ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Kolkata", "Goa"],
+  },
   { label: "Availability", options: ["Available now", "Within 2 weeks", "Selective"] },
   { label: "Experience level", options: ["Emerging", "Established", "Industry veteran"] },
 ];
@@ -26,10 +32,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl">Refine search</h2>
-        <button
-          onClick={() => setSelected([])}
-          className="text-xs font-semibold text-primary"
-        >
+        <button onClick={() => setSelected([])} className="text-xs font-semibold text-primary">
           Clear all
         </button>
       </div>

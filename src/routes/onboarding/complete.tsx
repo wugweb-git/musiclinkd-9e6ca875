@@ -6,7 +6,12 @@ import { saveMyProfile } from "@/lib/portfolio.functions";
 import { draftToProfile } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { Btn, TopBar } from "@/components/ml/ui";
-import { HandoffCard, OnboardingProvider, ReadinessCard, useOnboarding } from "@/components/ml/onboarding";
+import {
+  HandoffCard,
+  OnboardingProvider,
+  ReadinessCard,
+  useOnboarding,
+} from "@/components/ml/onboarding";
 import { completionPercent, readiness } from "@/data/onboarding";
 
 export const Route = createFileRoute("/onboarding/complete")({
@@ -15,7 +20,8 @@ export const Route = createFileRoute("/onboarding/complete")({
       { title: "Your profile is live — MusicLinkd" },
       {
         name: "description",
-        content: "Your MusicLinkd profile is published. See what's ready, what's missing and the next step that gets you hired.",
+        content:
+          "Your MusicLinkd profile is published. See what's ready, what's missing and the next step that gets you hired.",
       },
       { property: "og:title", content: "Your profile is live — MusicLinkd" },
       { property: "og:description", content: "What's ready on your profile and what to do next." },

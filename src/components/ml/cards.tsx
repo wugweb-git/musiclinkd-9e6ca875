@@ -2,13 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { Talent } from "@/data/discover";
 import { AvailabilityBadge, Btn, VerifiedBadge } from "./ui";
 
-export function TalentRow({
-  t,
-  onPreview,
-}: {
-  t: Talent;
-  onPreview?: (t: Talent) => void;
-}) {
+export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent) => void }) {
   return (
     <article className="rounded-3xl border border-border bg-card p-4">
       <button
@@ -28,9 +22,7 @@ export function TalentRow({
             {t.verified ? <VerifiedBadge /> : null}
           </div>
           <p className="truncate text-xs text-muted-foreground">{t.role}</p>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-            📍 {t.location}
-          </p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">📍 {t.location}</p>
         </div>
         <AvailabilityBadge status={t.availability} />
       </button>
@@ -44,7 +36,10 @@ export function TalentRow({
             {g}
           </span>
         ))}
-        <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold" style={{ background: "var(--purple-container)", color: "var(--purple)" }}>
+        <span
+          className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
+          style={{ background: "var(--purple-container)", color: "var(--purple)" }}
+        >
           {t.languages.join(" · ")}
         </span>
       </div>

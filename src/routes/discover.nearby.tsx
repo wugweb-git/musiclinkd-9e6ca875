@@ -9,7 +9,10 @@ export const Route = createFileRoute("/discover/nearby")({
   head: () => ({
     meta: [
       { title: "Nearby on MusicLinkd" },
-      { name: "description", content: "Musicians, studios and rooms close enough to actually work with this week." },
+      {
+        name: "description",
+        content: "Musicians, studios and rooms close enough to actually work with this week.",
+      },
       { property: "og:title", content: "Nearby on MusicLinkd" },
       { property: "og:description", content: "People and studios close to you." },
       { property: "og:type", content: "website" },
@@ -36,12 +39,17 @@ function Nearby() {
             </span>
             <h2 className="mt-3 text-[19px] leading-tight">Show people near you</h2>
             <p className="mt-2 text-[13px] text-muted-foreground">
-              We only use your location to sort results by distance. It is never shown on your profile.
+              We only use your location to sort results by distance. It is never shown on your
+              profile.
             </p>
           </Card>
-          <Btn className="w-full" onClick={() => setAllowed(true)}>Use my location</Btn>
+          <Btn className="w-full" onClick={() => setAllowed(true)}>
+            Use my location
+          </Btn>
           <Link to="/search" className="block">
-            <Btn variant="ghost" className="w-full">Pick a city instead</Btn>
+            <Btn variant="ghost" className="w-full">
+              Pick a city instead
+            </Btn>
           </Link>
         </div>
       </Screen>
@@ -68,7 +76,12 @@ function Nearby() {
               {studios.slice(0, 4).map((s) => (
                 <Card key={s.name}>
                   <div className="flex items-center gap-3">
-                    <img src={s.image} alt="" className="h-12 w-12 rounded-[14px] object-cover" loading="lazy" />
+                    <img
+                      src={s.photo}
+                      alt=""
+                      className="h-12 w-12 rounded-[14px] object-cover"
+                      loading="lazy"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{s.name}</p>
                       <p className="truncate text-[12px] text-muted-foreground">{s.location}</p>
@@ -89,10 +102,17 @@ function Nearby() {
               <Link key={t.id} to="/talent/$id" params={{ id: t.id }} className="block">
                 <Card>
                   <div className="flex items-center gap-3">
-                    <img src={t.photo} alt="" className="h-11 w-11 rounded-full object-cover" loading="lazy" />
+                    <img
+                      src={t.photo}
+                      alt=""
+                      className="h-11 w-11 rounded-full object-cover"
+                      loading="lazy"
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.name}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">{t.role} · {t.location}</p>
+                      <p className="truncate text-[12px] text-muted-foreground">
+                        {t.role} · {t.location}
+                      </p>
                     </div>
                   </div>
                 </Card>

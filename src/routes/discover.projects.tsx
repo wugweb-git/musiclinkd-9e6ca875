@@ -7,7 +7,11 @@ export const Route = createFileRoute("/discover/projects")({
   head: () => ({
     meta: [
       { title: "Discover projects | MusicLinkd" },
-      { name: "description", content: "Albums, films and releases in progress that are still looking for people to join." },
+      {
+        name: "description",
+        content:
+          "Albums, films and releases in progress that are still looking for people to join.",
+      },
       { property: "og:title", content: "Discover projects | MusicLinkd" },
       { property: "og:description", content: "Projects in progress looking for collaborators." },
       { property: "og:type", content: "website" },
@@ -33,7 +37,9 @@ function DiscoverProjects() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{o.title}</p>
-                      <p className="mt-1 text-[13px] text-muted-foreground">{o.city} · {o.workMode}</p>
+                      <p className="mt-1 text-[13px] text-muted-foreground">
+                        {o.city} · {o.workMode}
+                      </p>
                     </div>
                     <StatusPill label={o.kind} tone="brand" />
                   </div>
@@ -43,7 +49,10 @@ function DiscoverProjects() {
             ))}
           </div>
         ) : (
-          <EmptyState title="No open projects" body="Projects looking for collaborators will appear here.">
+          <EmptyState
+            title="No open projects"
+            body="Projects looking for collaborators will appear here."
+          >
             <Link to="/collab/new">
               <Btn>Start your own</Btn>
             </Link>

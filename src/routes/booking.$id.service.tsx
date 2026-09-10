@@ -9,10 +9,14 @@ export const Route = createFileRoute("/booking/$id/service")({
       { title: "Choose a room or service — MusicLinkd booking" },
       {
         name: "description",
-        content: "Pick the room, booth or service you want to book, with capacity, gear and rates side by side.",
+        content:
+          "Pick the room, booth or service you want to book, with capacity, gear and rates side by side.",
       },
       { property: "og:title", content: "Choose a room or service — MusicLinkd booking" },
-      { property: "og:description", content: "Capacity, equipment and rates for every bookable room." },
+      {
+        property: "og:description",
+        content: "Capacity, equipment and rates for every bookable room.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

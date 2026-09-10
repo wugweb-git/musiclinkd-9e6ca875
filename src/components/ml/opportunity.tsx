@@ -110,7 +110,11 @@ export function OpportunityCard({
           aria-label={saved ? "Remove from saved" : "Save opportunity"}
           className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background"
         >
-          <Bookmark size={16} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
+          <Bookmark
+            size={16}
+            className={saved ? "text-primary" : "text-muted-foreground"}
+            fill={saved ? "currentColor" : "none"}
+          />
         </button>
       ) : null}
       <Link to="/opportunities/$id" params={{ id: o.id }} className="block pr-10">
@@ -137,7 +141,9 @@ export function OpportunityCard({
         </div>
         <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
           <img src={o.poster.photo} alt="" className="h-7 w-7 rounded-full object-cover" />
-          <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground">{o.poster.name}</span>
+          <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground">
+            {o.poster.name}
+          </span>
           <span className="shrink-0 text-[12px] font-bold text-primary">{o.matchScore}% fit</span>
         </div>
       </Link>
@@ -153,7 +159,15 @@ export function ApplicationCard({ a, o }: { a: Application; o?: Opportunity }) {
           <h3 className="min-w-0 flex-1 text-[15px] leading-snug">{o?.title ?? "Opportunity"}</h3>
           <StatusPill
             label={a.status}
-            tone={a.status === "shortlisted" ? "brand" : a.status === "accepted" ? "good" : a.status === "rejected" ? "bad" : "neutral"}
+            tone={
+              a.status === "shortlisted"
+                ? "brand"
+                : a.status === "accepted"
+                  ? "good"
+                  : a.status === "rejected"
+                    ? "bad"
+                    : "neutral"
+            }
           />
         </div>
         <p className="truncate text-[12px] text-muted-foreground">
@@ -167,7 +181,11 @@ export function ApplicationCard({ a, o }: { a: Application; o?: Opportunity }) {
 
 export function ApplicantCard({ a }: { a: Applicant }) {
   return (
-    <Link to="/opportunities/$id/applicants/$aid" params={{ id: a.opportunityId, aid: a.id }} className="block">
+    <Link
+      to="/opportunities/$id/applicants/$aid"
+      params={{ id: a.opportunityId, aid: a.id }}
+      className="block"
+    >
       <Card className="space-y-3">
         <div className="flex items-center gap-3">
           <img src={a.photo} alt="" className="h-12 w-12 rounded-full object-cover" />
@@ -188,7 +206,12 @@ export function ApplicantCard({ a }: { a: Applicant }) {
           ))}
         </div>
         <div className="flex items-center justify-between">
-          <StatusPill label={a.status} tone={a.status === "shortlisted" ? "brand" : a.status === "rejected" ? "bad" : "neutral"} />
+          <StatusPill
+            label={a.status}
+            tone={
+              a.status === "shortlisted" ? "brand" : a.status === "rejected" ? "bad" : "neutral"
+            }
+          />
           <span className="text-[12px] text-muted-foreground">{a.appliedAt}</span>
         </div>
       </Card>

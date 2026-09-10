@@ -7,7 +7,10 @@ export const Route = createFileRoute("/auth/maintenance")({
   head: () => ({
     meta: [
       { title: "Scheduled maintenance — MusicLinkd" },
-      { name: "description", content: "MusicLinkd is briefly unavailable while we ship an update." },
+      {
+        name: "description",
+        content: "MusicLinkd is briefly unavailable while we ship an update.",
+      },
       { property: "og:title", content: "Scheduled maintenance — MusicLinkd" },
       { property: "og:description", content: "We'll be back shortly." },
       { property: "og:type", content: "website" },

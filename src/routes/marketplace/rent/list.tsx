@@ -16,7 +16,10 @@ export const Route = createFileRoute("/marketplace/rent/list")({
           "List your instruments, audio, studio, DJ or live equipment for rent to verified music professionals in India.",
       },
       { property: "og:title", content: "Rent Out Equipment | MusicLinkd" },
-      { property: "og:description", content: "Set your dates, pricing, deposit and terms in a few steps." },
+      {
+        property: "og:description",
+        content: "Set your dates, pricing, deposit and terms in a few steps.",
+      },
     ],
   }),
   component: ListForRent,
@@ -41,7 +44,11 @@ function ListForRent() {
     <Screen>
       <TopBar
         title={published ? "Listing published" : "Rent out equipment"}
-        subtitle={published ? "Live on MusicLinkd Market" : `Step ${step + 1} of ${steps.length} · ${steps[step]}`}
+        subtitle={
+          published
+            ? "Live on MusicLinkd Market"
+            : `Step ${step + 1} of ${steps.length} · ${steps[step]}`
+        }
         back="/marketplace/rent"
       />
 
@@ -68,14 +75,16 @@ function ListForRent() {
             </div>
             <h2 className="text-xl">Your rental is live</h2>
             <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">
-              Renters near you can now check availability and send requests. You'll be notified for every
-              enquiry.
+              Renters near you can now check availability and send requests. You'll be notified for
+              every enquiry.
             </p>
             <Link to="/marketplace/rent/listings" className="mt-6 block">
               <Btn className="w-full">Go to my listings</Btn>
             </Link>
             <Link to="/marketplace/rent" className="mt-2 block">
-              <Btn variant="outline" className="w-full">Back to rentals</Btn>
+              <Btn variant="outline" className="w-full">
+                Back to rentals
+              </Btn>
             </Link>
           </div>
         ) : null}
@@ -110,7 +119,8 @@ function ListForRent() {
           <>
             <h2 className="text-[17px]">Add photos</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Show the actual equipment you are renting — not stock images. First photo becomes the cover.
+              Show the actual equipment you are renting — not stock images. First photo becomes the
+              cover.
             </p>
             <div className="mt-4 grid grid-cols-3 gap-2">
               {sample.photos.map((src, i) => (
@@ -240,14 +250,17 @@ function ListForRent() {
           <>
             <h2 className="text-[17px]">Availability</h2>
             <p className="mt-1 text-xs text-muted-foreground">
-              Tap dates to mark when the equipment is available. Blocked dates stay hidden from renters.
+              Tap dates to mark when the equipment is available. Blocked dates stay hidden from
+              renters.
             </p>
             <div className="mt-4">
               <RentalCalendar
                 e={sample}
                 start={start}
                 end={end}
-                onSelect={(d) => (start === null || end !== null ? (setStart(d), setEnd(null)) : setEnd(d))}
+                onSelect={(d) =>
+                  start === null || end !== null ? (setStart(d), setEnd(null)) : setEnd(d)
+                }
               />
             </div>
             <div className="mt-4 space-y-3">
@@ -262,7 +275,9 @@ function ListForRent() {
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {f.options.map((o, i) => (
-                      <Chip key={o} active={i === 0}>{o}</Chip>
+                      <Chip key={o} active={i === 0}>
+                        {o}
+                      </Chip>
                     ))}
                   </div>
                 </div>
@@ -274,7 +289,9 @@ function ListForRent() {
         {!published && step === 4 ? (
           <>
             <h2 className="text-[17px]">Preview your listing</h2>
-            <p className="mt-1 text-xs text-muted-foreground">This is exactly what renters will see.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              This is exactly what renters will see.
+            </p>
             <article className="mt-4 overflow-hidden rounded-3xl border border-border bg-card">
               <img src={sample.photos[cover]} alt="" className="h-44 w-full object-cover" />
               <div className="p-4">
@@ -302,7 +319,9 @@ function ListForRent() {
           <div className="mt-6 space-y-2">
             <Btn
               className="w-full"
-              onClick={() => (step === steps.length - 1 ? setPublished(true) : setStep((s) => s + 1))}
+              onClick={() =>
+                step === steps.length - 1 ? setPublished(true) : setStep((s) => s + 1)
+              }
             >
               {step === steps.length - 1 ? "Publish rental" : "Continue"}
             </Btn>
@@ -312,7 +331,9 @@ function ListForRent() {
                   Back
                 </Btn>
               ) : null}
-              <Btn variant="ghost" className="flex-1">Save draft</Btn>
+              <Btn variant="ghost" className="flex-1">
+                Save draft
+              </Btn>
             </div>
           </div>
         ) : null}

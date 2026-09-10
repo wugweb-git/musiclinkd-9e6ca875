@@ -12,9 +12,16 @@ export const Route = createFileRoute("/identity/contact")({
   head: () => ({
     meta: [
       { title: "Digital business card — MusicLinkd" },
-      { name: "description", content: "Your professional card: name, role, the contact details you choose to share, and a QR that always stays current." },
+      {
+        name: "description",
+        content:
+          "Your professional card: name, role, the contact details you choose to share, and a QR that always stays current.",
+      },
       { property: "og:title", content: "Digital business card on MusicLinkd" },
-      { property: "og:description", content: "Share once, stay reachable — no reprints when details change." },
+      {
+        property: "og:description",
+        content: "Share once, stay reachable — no reprints when details change.",
+      },
     ],
   }),
   component: BusinessCard,
@@ -26,8 +33,12 @@ function BusinessCard() {
   const shared = [
     c.phone.shared ? { icon: <Phone size={17} />, label: c.phone.value, hint: "Mobile" } : null,
     c.email.shared ? { icon: <Mail size={17} />, label: c.email.value, hint: "Email" } : null,
-    c.company.shared ? { icon: <Building2 size={17} />, label: c.company.value, hint: "Studio" } : null,
-    c.website.shared ? { icon: <Globe size={17} />, label: c.website.value, hint: "Website" } : null,
+    c.company.shared
+      ? { icon: <Building2 size={17} />, label: c.company.value, hint: "Studio" }
+      : null,
+    c.website.shared
+      ? { icon: <Globe size={17} />, label: c.website.value, hint: "Website" }
+      : null,
   ].filter(Boolean) as { icon: React.ReactNode; label: string; hint: string }[];
 
   return (
@@ -38,7 +49,9 @@ function BusinessCard() {
           <div className="flex items-center gap-4 bg-navy px-5 py-5 text-background">
             <img src={myIdentity.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
             <div className="min-w-0">
-              <h2 className="truncate text-[19px] leading-tight text-background">{myIdentity.name}</h2>
+              <h2 className="truncate text-[19px] leading-tight text-background">
+                {myIdentity.name}
+              </h2>
               <p className="truncate text-[13px] text-background/70">{myIdentity.role}</p>
               <p className="truncate text-[12px] text-background/50">{myIdentity.location}</p>
             </div>
@@ -70,14 +83,20 @@ function BusinessCard() {
               <UserRoundPlus size={16} className="mr-2" /> Save contact
             </Btn>
           </Link>
-          <Btn variant="outline" className="flex-1" onClick={() => void nativeShare({ title: myIdentity.name, url })}>
+          <Btn
+            variant="outline"
+            className="flex-1"
+            onClick={() => void nativeShare({ title: myIdentity.name, url })}
+          >
             Share card
           </Btn>
         </div>
 
         <div className="mt-3">
           <Link to="/identity/settings">
-            <Btn variant="ghost" className="w-full">Manage shared details</Btn>
+            <Btn variant="ghost" className="w-full">
+              Manage shared details
+            </Btn>
           </Link>
         </div>
       </main>

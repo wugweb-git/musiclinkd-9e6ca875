@@ -16,10 +16,14 @@ export const Route = createFileRoute("/bookings/")({
       { title: "My bookings — MusicLinkd" },
       {
         name: "description",
-        content: "Every studio, jam room and session you've booked — upcoming, pending, completed and cancelled.",
+        content:
+          "Every studio, jam room and session you've booked — upcoming, pending, completed and cancelled.",
       },
       { property: "og:title", content: "My bookings — MusicLinkd" },
-      { property: "og:description", content: "Track upcoming, pending and past MusicLinkd bookings." },
+      {
+        property: "og:description",
+        content: "Track upcoming, pending and past MusicLinkd bookings.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -72,7 +76,10 @@ function MyBookings() {
         {sim === "loading" ? (
           <BookingSkeleton />
         ) : sim === "error" ? (
-          <ErrorState message="We couldn't load your bookings just now." onRetry={() => setSim("ok")} />
+          <ErrorState
+            message="We couldn't load your bookings just now."
+            onRetry={() => setSim("ok")}
+          />
         ) : list.length === 0 ? (
           <EmptyState
             title="No bookings yet"

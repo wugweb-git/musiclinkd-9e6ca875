@@ -8,7 +8,10 @@ export const Route = createFileRoute("/reviews/$id/edit")({
   head: () => ({
     meta: [
       { title: "Edit your review | MusicLinkd" },
-      { name: "description", content: "Change the wording of a review you left, or delete it entirely." },
+      {
+        name: "description",
+        content: "Change the wording of a review you left, or delete it entirely.",
+      },
       { property: "og:title", content: "Edit your review | MusicLinkd" },
       { property: "og:description", content: "Update or delete a review you wrote." },
       { property: "og:type", content: "website" },
@@ -52,7 +55,9 @@ function EditReview() {
         </Card>
 
         <Card>
-          <label htmlFor="body" className="text-sm font-semibold">What you wrote</label>
+          <label htmlFor="body" className="text-sm font-semibold">
+            What you wrote
+          </label>
           <textarea
             id="body"
             rows={6}
@@ -62,7 +67,11 @@ function EditReview() {
           />
         </Card>
 
-        <Btn className="w-full" disabled={body.trim().length < 10} onClick={() => navigate({ to: "/reviews" })}>
+        <Btn
+          className="w-full"
+          disabled={body.trim().length < 10}
+          onClick={() => navigate({ to: "/reviews" })}
+        >
           Save changes
         </Btn>
         <Btn variant="ghost" className="w-full" onClick={() => setConfirm(true)}>
@@ -77,7 +86,9 @@ function EditReview() {
         onClose={() => setConfirm(false)}
       >
         <Btn onClick={() => navigate({ to: "/reviews" })}>Delete review</Btn>
-        <Btn variant="ghost" onClick={() => setConfirm(false)}>Keep it</Btn>
+        <Btn variant="ghost" onClick={() => setConfirm(false)}>
+          Keep it
+        </Btn>
       </Dialog>
     </Screen>
   );

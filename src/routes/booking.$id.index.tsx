@@ -1,12 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bookmark, MessageCircle, Share2 } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
-import {
-  BookableHero,
-  EntityMetaRow,
-  PolicyCard,
-  StickyBar,
-} from "@/components/ml/booking";
+import { BookableHero, EntityMetaRow, PolicyCard, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
 
@@ -72,8 +67,16 @@ function BookingEntry() {
           <h3 className="text-[17px]">Rooms &amp; services</h3>
           <div className="mt-3 space-y-2">
             {b.resources.map((r) => (
-              <div key={r.id} className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3">
-                <img src={r.photo} alt="" className="h-14 w-14 shrink-0 rounded-2xl object-cover" loading="lazy" />
+              <div
+                key={r.id}
+                className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3"
+              >
+                <img
+                  src={r.photo}
+                  alt=""
+                  className="h-14 w-14 shrink-0 rounded-2xl object-cover"
+                  loading="lazy"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{r.name}</p>
                   <p className="truncate text-xs text-muted-foreground">
@@ -103,7 +106,10 @@ function BookingEntry() {
           <h3 className="text-[17px]">Equipment highlights</h3>
           <div className="mt-3 flex flex-wrap gap-2">
             {[...new Set(b.resources.flatMap((r) => r.equipment))].map((e) => (
-              <span key={e} className="rounded-full border border-border px-3 py-1.5 text-xs text-text2">
+              <span
+                key={e}
+                className="rounded-full border border-border px-3 py-1.5 text-xs text-text2"
+              >
                 {e}
               </span>
             ))}
@@ -114,7 +120,12 @@ function BookingEntry() {
           <h3 className="text-[17px]">Booking policies</h3>
           <div className="mt-3 space-y-2">
             {b.policies.slice(0, 3).map((p) => (
-              <PolicyCard key={p.title} title={p.title} body={p.body} critical={p.critical ?? false} />
+              <PolicyCard
+                key={p.title}
+                title={p.title}
+                body={p.body}
+                critical={p.critical ?? false}
+              />
             ))}
           </div>
           <Link

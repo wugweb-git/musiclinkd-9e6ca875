@@ -155,19 +155,13 @@ function Discover() {
               params={{ username: t.id }}
               className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3"
             >
-              <img
-                src={t.photo}
-                alt={t.name}
-                className="h-14 w-14 rounded-2xl object-cover"
-              />
+              <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-2xl object-cover" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1">
                   <h3 className="truncate text-[14px]">{t.name}</h3>
                   {t.verified ? <VerifiedBadge size={14} /> : null}
                 </div>
-                <p className="truncate text-[11px] text-muted-foreground">
-                  {t.role} · 2.4 km away
-                </p>
+                <p className="truncate text-[11px] text-muted-foreground">{t.role} · 2.4 km away</p>
               </div>
               <span className="text-[11px] font-semibold text-primary">{t.rate}</span>
             </Link>
@@ -178,11 +172,7 @@ function Discover() {
               to="/studio"
               className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3"
             >
-              <img
-                src={s.photo}
-                alt={s.name}
-                className="h-14 w-14 rounded-2xl object-cover"
-              />
+              <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-2xl object-cover" />
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-[14px]">{s.name}</h3>
                 <p className="truncate text-[11px] text-muted-foreground">

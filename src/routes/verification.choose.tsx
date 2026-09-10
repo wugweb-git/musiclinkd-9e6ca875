@@ -19,7 +19,10 @@ export const Route = createFileRoute("/verification/choose")({
         content: "Compare identity, professional, business and studio verification on MusicLinkd.",
       },
       { property: "og:title", content: "Choose a verification type | MusicLinkd" },
-      { property: "og:description", content: "What each badge verifies, what people see and what is required." },
+      {
+        property: "og:description",
+        content: "What each badge verifies, what people see and what is required.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -57,21 +60,29 @@ function ChooseType() {
 
               <dl className="space-y-2 text-[13px]">
                 <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">Verifies</dt>
+                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Verifies
+                  </dt>
                   <dd className="text-text2">{t.verifies}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">People see</dt>
+                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    People see
+                  </dt>
                   <dd className="text-text2">{t.whatOthersSee}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">You need</dt>
+                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    You need
+                  </dt>
                   <dd className="text-text2">{t.requirements.map((r) => r.label).join(" · ")}</dd>
                 </div>
               </dl>
 
               {locked ? (
-                <p className="rounded-[16px] bg-subtle px-3 py-2 text-[12px] text-text2">{gate.reason}</p>
+                <p className="rounded-[16px] bg-subtle px-3 py-2 text-[12px] text-text2">
+                  {gate.reason}
+                </p>
               ) : (
                 <p className="flex items-center gap-1 text-[13px] font-semibold text-primary">
                   {status === "unverified" ? "See requirements" : "Open request"}
@@ -83,7 +94,13 @@ function ChooseType() {
 
           if (locked) return <div key={t.key}>{body}</div>;
           return (
-            <Link key={t.key} to="/verification/$type" params={{ type: t.key }} search={{ step: 0 }} className="block">
+            <Link
+              key={t.key}
+              to="/verification/$type"
+              params={{ type: t.key }}
+              search={{ step: 0 }}
+              className="block"
+            >
               {body}
             </Link>
           );
@@ -93,7 +110,11 @@ function ChooseType() {
           <p className="text-[13px] font-semibold">Not sure which one?</p>
           <p className="mt-1 text-[12px] text-text2">
             Read{" "}
-            <Link to="/help/$slug" params={{ slug: "how-verification-works" }} className="font-semibold text-primary">
+            <Link
+              to="/help/$slug"
+              params={{ slug: "how-verification-works" }}
+              className="font-semibold text-primary"
+            >
               how verification works
             </Link>{" "}
             or check{" "}

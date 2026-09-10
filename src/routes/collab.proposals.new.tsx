@@ -105,13 +105,18 @@ function NewProposal() {
         </Field>
 
         <Field label="Notes" optional>
-          <TextInput value={notes} onChange={setNotes} multiline placeholder="Anything else they should know" />
+          <TextInput
+            value={notes}
+            onChange={setNotes}
+            multiline
+            placeholder="Anything else they should know"
+          />
         </Field>
 
         <Label>Before you send</Label>
         <p className="mb-6 text-[11px] text-muted-foreground">
-          A proposal is a working agreement between collaborators, not a legal contract. Payments and contracts
-          are handled outside MusicLinkd.
+          A proposal is a working agreement between collaborators, not a legal contract. Payments
+          and contracts are handled outside MusicLinkd.
         </p>
       </main>
       <StickyBar>

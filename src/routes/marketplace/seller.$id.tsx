@@ -43,14 +43,20 @@ function SellerProfile() {
           </div>
           <p className="mt-3 text-sm text-text2">{s.bio}</p>
           <div className="mt-4 flex gap-2">
-            <Link to="/messages" className="flex-1"><Btn className="w-full">Message</Btn></Link>
-            <Btn variant="outline" className="flex-1">Follow</Btn>
+            <Link to="/messages" className="flex-1">
+              <Btn className="w-full">Message</Btn>
+            </Link>
+            <Btn variant="outline" className="flex-1">
+              Follow
+            </Btn>
           </div>
         </div>
 
         <h2 className="mt-6 text-[16px]">Listings ({items.length})</h2>
         <div className="mt-2 space-y-3">
-          {items.map((l) => <ListingCard key={l.id} l={l} />)}
+          {items.map((l) => (
+            <ListingCard key={l.id} l={l} />
+          ))}
         </div>
 
         <h2 className="mt-6 text-[16px]">Reviews</h2>
@@ -61,7 +67,9 @@ function SellerProfile() {
                 <p className="text-[13px] font-semibold">{r.name}</p>
                 <Rating value={r.rating} />
               </div>
-              <p className="text-[11px] text-muted-foreground">{r.role} · {r.context} · {r.date}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {r.role} · {r.context} · {r.date}
+              </p>
               <p className="mt-2 text-sm text-text2">{r.body}</p>
             </article>
           ))}

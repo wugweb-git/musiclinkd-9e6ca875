@@ -37,9 +37,16 @@ export const Route = createFileRoute("/identity/qr")({
   head: () => ({
     meta: [
       { title: "Your MusicLinkd ID — QR & digital identity" },
-      { name: "description", content: "Share your MusicLinkd professional identity instantly with a scannable QR code, share card or digital business card." },
+      {
+        name: "description",
+        content:
+          "Share your MusicLinkd professional identity instantly with a scannable QR code, share card or digital business card.",
+      },
       { property: "og:title", content: "Your MusicLinkd ID" },
-      { property: "og:description", content: "A portable professional identity for studios, events and business cards." },
+      {
+        property: "og:description",
+        content: "A portable professional identity for studios, events and business cards.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -66,7 +73,11 @@ function DigitalId() {
         subtitle={`@${myIdentity.username}`}
         back="/me"
         right={
-          <Link to="/identity/settings" aria-label="QR settings" className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card">
+          <Link
+            to="/identity/settings"
+            aria-label="QR settings"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+          >
             <Settings2 size={17} />
           </Link>
         }
@@ -122,7 +133,9 @@ function DigitalId() {
                   onClick={() => setStyle(s)}
                   aria-pressed={style === s}
                   className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold capitalize ${
-                    style === s ? "border-transparent bg-navy text-background" : "border-border bg-card"
+                    style === s
+                      ? "border-transparent bg-navy text-background"
+                      : "border-border bg-card"
                   }`}
                 >
                   {s === "branded" ? "MusicLinkd" : s}
@@ -133,14 +146,51 @@ function DigitalId() {
             <div className="mt-6">
               <SectionHeader title="Use it everywhere" />
               <div className="flex flex-col gap-2">
-                <ActionRow icon={<IdCard size={17} />} label="Digital business card" hint="Name, role, contact you choose to share" to="/identity/contact" />
-                <ActionRow icon={<QrIcon size={17} />} label="Share card" hint="A printable identity card" to="/identity/card" />
-                <ActionRow icon={<Building2 size={17} />} label="Business QR" hint="Octave Sound Labs" to="/identity/business" />
-                <ActionRow icon={<Palette size={17} />} label="Customise presentation" to="/identity/customize" />
-                <ActionRow icon={<Printer size={17} />} label="Print preview" hint="Card, poster, studio sign, badge" to="/identity/print" />
-                <ActionRow icon={<ScanLine size={17} />} label="Scan a MusicLinkd QR" to="/identity/scan" />
-                <ActionRow icon={<History size={17} />} label="Scan history" to="/identity/history" />
-                <ActionRow icon={<BarChart3 size={17} />} label="QR analytics" hint="Scans, visits, conversions" to="/identity/analytics" />
+                <ActionRow
+                  icon={<IdCard size={17} />}
+                  label="Digital business card"
+                  hint="Name, role, contact you choose to share"
+                  to="/identity/contact"
+                />
+                <ActionRow
+                  icon={<QrIcon size={17} />}
+                  label="Share card"
+                  hint="A printable identity card"
+                  to="/identity/card"
+                />
+                <ActionRow
+                  icon={<Building2 size={17} />}
+                  label="Business QR"
+                  hint="Octave Sound Labs"
+                  to="/identity/business"
+                />
+                <ActionRow
+                  icon={<Palette size={17} />}
+                  label="Customise presentation"
+                  to="/identity/customize"
+                />
+                <ActionRow
+                  icon={<Printer size={17} />}
+                  label="Print preview"
+                  hint="Card, poster, studio sign, badge"
+                  to="/identity/print"
+                />
+                <ActionRow
+                  icon={<ScanLine size={17} />}
+                  label="Scan a MusicLinkd QR"
+                  to="/identity/scan"
+                />
+                <ActionRow
+                  icon={<History size={17} />}
+                  label="Scan history"
+                  to="/identity/history"
+                />
+                <ActionRow
+                  icon={<BarChart3 size={17} />}
+                  label="QR analytics"
+                  hint="Scans, visits, conversions"
+                  to="/identity/analytics"
+                />
               </div>
             </div>
 

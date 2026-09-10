@@ -7,7 +7,10 @@ export const Route = createFileRoute("/opportunities/$id/analytics")({
   head: () => ({
     meta: [
       { title: "Opportunity performance | MusicLinkd" },
-      { name: "description", content: "Views, saves, applications and where your opportunity is being seen." },
+      {
+        name: "description",
+        content: "Views, saves, applications and where your opportunity is being seen.",
+      },
       { property: "og:title", content: "Opportunity performance | MusicLinkd" },
       { property: "og:description", content: "How your posted requirement is performing." },
       { property: "og:type", content: "website" },
@@ -25,7 +28,11 @@ function OpportunityAnalytics() {
 
   return (
     <Screen>
-      <TopBar title="Performance" subtitle={o?.title ?? "Your opportunity"} back="/opportunities/mine" />
+      <TopBar
+        title="Performance"
+        subtitle={o?.title ?? "Your opportunity"}
+        back="/opportunities/mine"
+      />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <div className="grid grid-cols-2 gap-2">
           {[
@@ -45,7 +52,12 @@ function OpportunityAnalytics() {
           <h2 className="text-[15px]">Views · last 7 days</h2>
           <div className="flex h-28 items-end gap-2">
             {a.daily.map((d, i) => (
-              <div key={i} className="flex-1 rounded-t-lg bg-primary/80" style={{ height: `${(d / peak) * 100}%` }} aria-label={`${d} views`} />
+              <div
+                key={i}
+                className="flex-1 rounded-t-lg bg-primary/80"
+                style={{ height: `${(d / peak) * 100}%` }}
+                aria-label={`${d} views`}
+              />
             ))}
           </div>
         </Card>
@@ -60,7 +72,8 @@ function OpportunityAnalytics() {
         <Card className="space-y-1">
           <p className="text-[13px] font-semibold">Getting fewer applications than expected?</p>
           <p className="text-[12px] text-muted-foreground">
-            Posts with a stated budget and 3 or fewer must-haves receive roughly three times more applications.
+            Posts with a stated budget and 3 or fewer must-haves receive roughly three times more
+            applications.
           </p>
           <Link to="/opportunities/$id/manage" params={{ id }}>
             <Btn variant="ghost" className="w-full">

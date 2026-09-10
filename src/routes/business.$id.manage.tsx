@@ -9,7 +9,10 @@ export const Route = createFileRoute("/business/$id/manage")({
   head: () => ({
     meta: [
       { title: "Manage business | MusicLinkd" },
-      { name: "description", content: "Edit details, spaces, team, availability and verification for your business." },
+      {
+        name: "description",
+        content: "Edit details, spaces, team, availability and verification for your business.",
+      },
       { property: "og:title", content: "Manage business | MusicLinkd" },
       { property: "og:description", content: "Everything the owner controls in one place." },
       { property: "og:type", content: "website" },
@@ -48,15 +51,45 @@ function ManageBusiness() {
               {businessTypeLabel(b.type)} · {b.city}
             </p>
           </div>
-          <StatusPill label={b.verified ? "verified" : "unverified"} tone={b.verified ? "good" : "neutral"} />
+          <StatusPill
+            label={b.verified ? "verified" : "unverified"}
+            tone={b.verified ? "good" : "neutral"}
+          />
         </Card>
 
         <div className="space-y-2">
-          <Row icon={<Pencil size={16} />} title="Details" subtitle="Name, about, contact, hours" to="/business/new" />
-          <Row icon={<Image size={16} />} title="Photos & spaces" subtitle={`${b.spaces.length} bookable spaces`} to="/business/$id" params={{ id }} />
-          <Row icon={<Users size={16} />} title="Team & roles" subtitle={`${b.members.filter((m) => m.status === "active").length} active`} to="/business/$id/team" params={{ id }} />
-          <Row icon={<CalendarClock size={16} />} title="Availability & bookings" subtitle="Calendar, requests, policies" to="/provider/bookings/calendar" />
-          <Row icon={<ShieldCheck size={16} />} title="Business verification" subtitle={b.verified ? "Verified — renews yearly" : "Get the verified badge"} to="/verification/choose" />
+          <Row
+            icon={<Pencil size={16} />}
+            title="Details"
+            subtitle="Name, about, contact, hours"
+            to="/business/new"
+          />
+          <Row
+            icon={<Image size={16} />}
+            title="Photos & spaces"
+            subtitle={`${b.spaces.length} bookable spaces`}
+            to="/business/$id"
+            params={{ id }}
+          />
+          <Row
+            icon={<Users size={16} />}
+            title="Team & roles"
+            subtitle={`${b.members.filter((m) => m.status === "active").length} active`}
+            to="/business/$id/team"
+            params={{ id }}
+          />
+          <Row
+            icon={<CalendarClock size={16} />}
+            title="Availability & bookings"
+            subtitle="Calendar, requests, policies"
+            to="/provider/bookings/calendar"
+          />
+          <Row
+            icon={<ShieldCheck size={16} />}
+            title="Business verification"
+            subtitle={b.verified ? "Verified — renews yearly" : "Get the verified badge"}
+            to="/verification/choose"
+          />
         </div>
 
         <Card className="space-y-2">
@@ -64,7 +97,8 @@ function ManageBusiness() {
             <Trash2 size={15} /> Delete business
           </p>
           <p className="text-[12px] text-muted-foreground">
-            Removes the profile, spaces and team. Past bookings and reviews stay with the people involved.
+            Removes the profile, spaces and team. Past bookings and reviews stay with the people
+            involved.
           </p>
           <Btn variant="outline" className="w-full" onClick={() => setConfirmDelete(true)}>
             Delete {b.name}
@@ -94,7 +128,12 @@ function ManageBusiness() {
         </div>
       </Dialog>
 
-      <Dialog open={deleted} title="Business deleted" body="The profile is no longer visible on MusicLinkd." onClose={() => setDeleted(false)}>
+      <Dialog
+        open={deleted}
+        title="Business deleted"
+        body="The profile is no longer visible on MusicLinkd."
+        onClose={() => setDeleted(false)}
+      >
         <Link to="/business">
           <Btn className="w-full">Back to businesses</Btn>
         </Link>

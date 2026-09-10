@@ -13,7 +13,8 @@ export const Route = createFileRoute("/collab/$id/settings")({
         { title: `${title} | MusicLinkd` },
         {
           name: "description",
-          content: "Visibility, notifications, agreements and lifecycle controls for a MusicLinkd collaboration.",
+          content:
+            "Visibility, notifications, agreements and lifecycle controls for a MusicLinkd collaboration.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
         { property: "og:description", content: "Control who sees the project and how it ends." },
@@ -74,13 +75,25 @@ function Settings() {
         <Label>Notifications</Label>
         <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
           <SwitchRow label="New files" value={notifyFiles} onChange={setNotifyFiles} />
-          <SwitchRow label="Milestone updates" value={notifyMilestones} onChange={setNotifyMilestones} />
-          <SwitchRow label="Every discussion post" value={notifyDiscussion} onChange={setNotifyDiscussion} />
+          <SwitchRow
+            label="Milestone updates"
+            value={notifyMilestones}
+            onChange={setNotifyMilestones}
+          />
+          <SwitchRow
+            label="Every discussion post"
+            value={notifyDiscussion}
+            onChange={setNotifyDiscussion}
+          />
         </div>
 
         <Label>Credits</Label>
         <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
-          <SwitchRow label="Show credits on my profile" value={showCredits} onChange={setShowCredits} />
+          <SwitchRow
+            label="Show credits on my profile"
+            value={showCredits}
+            onChange={setShowCredits}
+          />
           <RowLink title="Manage sharing link" to="/collab/$id/share" params={{ id: project.id }} />
         </div>
 
@@ -125,17 +138,20 @@ function Settings() {
                 ))}
               </ul>
               <p className="text-[12px] text-muted-foreground">
-                <span className="font-semibold text-foreground">Timeline:</span> {project.agreement.timeline}
+                <span className="font-semibold text-foreground">Timeline:</span>{" "}
+                {project.agreement.timeline}
               </p>
               <p className="text-[12px] text-muted-foreground">
                 <span className="font-semibold text-foreground">Compensation:</span>{" "}
                 {project.agreement.compensation}
               </p>
               <p className="text-[12px] text-muted-foreground">
-                <span className="font-semibold text-foreground">Ownership:</span> {project.agreement.ownership}
+                <span className="font-semibold text-foreground">Ownership:</span>{" "}
+                {project.agreement.ownership}
               </p>
               <p className="text-[12px] text-muted-foreground">
-                <span className="font-semibold text-foreground">Credit:</span> {project.agreement.credit}
+                <span className="font-semibold text-foreground">Credit:</span>{" "}
+                {project.agreement.credit}
               </p>
               <p className="mt-3 text-[11px] text-muted-foreground">
                 This is a working agreement between collaborators, not a legal contract.

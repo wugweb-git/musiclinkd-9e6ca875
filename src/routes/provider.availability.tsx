@@ -10,10 +10,14 @@ export const Route = createFileRoute("/provider/availability")({
       { title: "Manage availability — MusicLinkd provider" },
       {
         name: "description",
-        content: "Set opening hours, block dates, adjust rates and choose instant or request-first booking.",
+        content:
+          "Set opening hours, block dates, adjust rates and choose instant or request-first booking.",
       },
       { property: "og:title", content: "Manage availability — MusicLinkd provider" },
-      { property: "og:description", content: "Opening hours, blocked dates and booking rules for your space." },
+      {
+        property: "og:description",
+        content: "Opening hours, blocked dates and booking rules for your space.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -54,7 +58,9 @@ function Availability() {
                 aria-pressed={on}
                 onClick={() => setOpen((v) => (on ? v.filter((x) => x !== d) : [...v, d]))}
                 className={`min-h-11 min-w-[52px] rounded-full border px-3 text-sm font-semibold ${
-                  on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-text2"
+                  on
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-text2"
                 }`}
               >
                 {d}
@@ -73,7 +79,9 @@ function Availability() {
             timezone={b.timezone}
             fromPrice={r.tiers[0]?.price ?? 0}
             selected={blocked[0]}
-            onSelect={(d) => setBlocked((v) => (v.includes(d) ? v.filter((x) => x !== d) : [d, ...v]))}
+            onSelect={(d) =>
+              setBlocked((v) => (v.includes(d) ? v.filter((x) => x !== d) : [d, ...v]))
+            }
           />
         </div>
         {blocked.length ? (

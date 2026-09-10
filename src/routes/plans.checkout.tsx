@@ -6,12 +6,17 @@ import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
 
 export const Route = createFileRoute("/plans/checkout")({
   validateSearch: (s: Record<string, unknown>): { plan: PlanKey } => ({
-    plan: (["free", "pro", "business"] as const).includes(s["plan"] as PlanKey) ? (s["plan"] as PlanKey) : "pro",
+    plan: (["free", "pro", "business"] as const).includes(s["plan"] as PlanKey)
+      ? (s["plan"] as PlanKey)
+      : "pro",
   }),
   head: () => ({
     meta: [
       { title: "Confirm Your Plan | MusicLinkd" },
-      { name: "description", content: "Review your MusicLinkd plan, billing cycle and payment method before confirming." },
+      {
+        name: "description",
+        content: "Review your MusicLinkd plan, billing cycle and payment method before confirming.",
+      },
       { property: "og:title", content: "Confirm Your Plan | MusicLinkd" },
       { property: "og:description", content: "Review your plan and billing before confirming." },
       { property: "og:type", content: "website" },
@@ -52,26 +57,41 @@ function Checkout() {
             >
               <span className="min-w-0">
                 <span className="block text-[13px] font-semibold capitalize">{c}</span>
-                <span className="block truncate text-[12px] text-muted-foreground">{c === "monthly" ? `${p.price} ${p.period}` : p.yearly}</span>
+                <span className="block truncate text-[12px] text-muted-foreground">
+                  {c === "monthly" ? `${p.price} ${p.period}` : p.yearly}
+                </span>
               </span>
-              <span className={`h-4 w-4 shrink-0 rounded-full border-4 ${cycle === c ? "border-primary" : "border-border"}`} />
+              <span
+                className={`h-4 w-4 shrink-0 rounded-full border-4 ${cycle === c ? "border-primary" : "border-border"}`}
+              />
             </button>
           ))}
         </Card>
 
         <Card className="space-y-2">
           <h2 className="text-[15px]">Payment method</h2>
-          <Row title={currentSubscription.method} subtitle="Change payment method" onClick={() => undefined} />
-          <p className="text-[12px] text-muted-foreground">Payments are not processed in this design build.</p>
+          <Row
+            title={currentSubscription.method}
+            subtitle="Change payment method"
+            onClick={() => undefined}
+          />
+          <p className="text-[12px] text-muted-foreground">
+            Payments are not processed in this design build.
+          </p>
         </Card>
 
         <Card className="space-y-1.5">
           <h2 className="text-[15px]">Summary</h2>
-          <SummaryLine label={`${p.name} · ${cycle}`} value={cycle === "monthly" ? p.price : (p.yearly.split(" · ")[0] ?? p.yearly)} />
+          <SummaryLine
+            label={`${p.name} · ${cycle}`}
+            value={cycle === "monthly" ? p.price : (p.yearly.split(" · ")[0] ?? p.yearly)}
+          />
           <SummaryLine label="GST (18%)" value="Included" />
           <div className="mt-2 flex items-center justify-between border-t border-border pt-2">
             <span className="text-[13px] font-semibold">Total today</span>
-            <span className="text-[17px] font-bold">{cycle === "monthly" ? p.price : (p.yearly.split(" · ")[0] ?? p.yearly)}</span>
+            <span className="text-[17px] font-bold">
+              {cycle === "monthly" ? p.price : (p.yearly.split(" · ")[0] ?? p.yearly)}
+            </span>
           </div>
         </Card>
 
@@ -84,14 +104,32 @@ function Checkout() {
         >
           {state === "processing" ? "Processing…" : `Confirm ${p.name}`}
         </Btn>
-        <p className="text-center text-[12px] text-muted-foreground">Cancel any time. Your plan stays active until the end of the paid period.</p>
+        <p className="text-center text-[12px] text-muted-foreground">
+          Cancel any time. Your plan stays active until the end of the paid period.
+        </p>
       </div>
 
-      <Dialog open={state === "done"} title={`${p.name} is active`} body="Your new limits and boosts are available immediately." onClose={() => setState("idle")}>
-        <Link to="/plans/manage"><Btn className="w-full">Manage subscription</Btn></Link>
-        <Link to="/me"><Btn variant="outline" className="w-full">Back to profile</Btn></Link>
+      <Dialog
+        open={state === "done"}
+        title={`${p.name} is active`}
+        body="Your new limits and boosts are available immediately."
+        onClose={() => setState("idle")}
+      >
+        <Link to="/plans/manage">
+          <Btn className="w-full">Manage subscription</Btn>
+        </Link>
+        <Link to="/me">
+          <Btn variant="outline" className="w-full">
+            Back to profile
+          </Btn>
+        </Link>
       </Dialog>
-      <Dialog open={state === "failed"} title="Payment could not be completed" body="No money was taken. Try another method or retry in a minute." onClose={() => setState("idle")}>
+      <Dialog
+        open={state === "failed"}
+        title="Payment could not be completed"
+        body="No money was taken. Try another method or retry in a minute."
+        onClose={() => setState("idle")}
+      >
         <Btn onClick={() => setState("idle")}>Try again</Btn>
       </Dialog>
     </Screen>

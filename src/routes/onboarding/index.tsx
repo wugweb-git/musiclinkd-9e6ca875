@@ -52,11 +52,26 @@ function Welcome() {
 
         <ul className="mt-8 space-y-3">
           {[
-            { icon: <Compass size={18} />, title: "Get found for the right work", body: "Role, genres, languages and city power discovery." },
-            { icon: <Sparkles size={18} />, title: "A feed that fits you", body: "We shape recommendations around what you're here for." },
-            { icon: <ShieldCheck size={18} />, title: "Private by default", body: "Contact details stay hidden until you share them." },
+            {
+              icon: <Compass size={18} />,
+              title: "Get found for the right work",
+              body: "Role, genres, languages and city power discovery.",
+            },
+            {
+              icon: <Sparkles size={18} />,
+              title: "A feed that fits you",
+              body: "We shape recommendations around what you're here for.",
+            },
+            {
+              icon: <ShieldCheck size={18} />,
+              title: "Private by default",
+              body: "Contact details stay hidden until you share them.",
+            },
           ].map((f) => (
-            <li key={f.title} className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
+            <li
+              key={f.title}
+              className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4"
+            >
               <span className="mt-0.5 text-primary">{f.icon}</span>
               <span>
                 <span className="block text-sm font-semibold">{f.title}</span>

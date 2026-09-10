@@ -7,7 +7,11 @@ export const Route = createFileRoute("/plans/earnings")({
   head: () => ({
     meta: [
       { title: "Earnings & Payouts | MusicLinkd" },
-      { name: "description", content: "Track earnings from bookings, services and rentals, and manage your payout account." },
+      {
+        name: "description",
+        content:
+          "Track earnings from bookings, services and rentals, and manage your payout account.",
+      },
       { property: "og:title", content: "Earnings & Payouts | MusicLinkd" },
       { property: "og:description", content: "Earnings from bookings, services and rentals." },
       { property: "og:type", content: "website" },
@@ -23,12 +27,17 @@ function Earnings() {
       <TopBar title="Earnings" subtitle={earnings.range} back="/plans/manage" />
       <div className="space-y-4 px-5 pt-4">
         <Card>
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Net earnings</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            Net earnings
+          </p>
           <p className="mt-1 text-[34px] font-bold leading-none">{earnings.net}</p>
           <p className="mt-2 text-[12px] text-muted-foreground">{earnings.fees}</p>
           <div className="mt-4 space-y-2">
             {earnings.lines.map((l) => (
-              <div key={l.label} className="flex items-center justify-between rounded-2xl bg-subtle px-4 py-3">
+              <div
+                key={l.label}
+                className="flex items-center justify-between rounded-2xl bg-subtle px-4 py-3"
+              >
                 <span className="text-[13px] font-semibold">{l.label}</span>
                 <span className="text-[13px] font-bold">{l.value}</span>
               </div>
@@ -40,19 +49,38 @@ function Earnings() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="text-[15px]">Payout account</h2>
-              <p className="mt-1 truncate text-[12px] text-muted-foreground">{payoutAccount.label}</p>
+              <p className="mt-1 truncate text-[12px] text-muted-foreground">
+                {payoutAccount.label}
+              </p>
             </div>
-            <StatusPill label={payoutAccount.state === "verified" ? "Verified" : payoutAccount.state === "pending" ? "Pending" : "Missing"} tone={payoutAccount.state === "verified" ? "good" : "warn"} />
+            <StatusPill
+              label={
+                payoutAccount.state === "verified"
+                  ? "Verified"
+                  : payoutAccount.state === "pending"
+                    ? "Pending"
+                    : "Missing"
+              }
+              tone={payoutAccount.state === "verified" ? "good" : "warn"}
+            />
           </div>
-          <p className="text-[13px] text-text2">Next payout {payoutAccount.nextPayout} · {payoutAccount.pending}</p>
-          <Btn variant="outline" className="w-full">Change payout account</Btn>
+          <p className="text-[13px] text-text2">
+            Next payout {payoutAccount.nextPayout} · {payoutAccount.pending}
+          </p>
+          <Btn variant="outline" className="w-full">
+            Change payout account
+          </Btn>
         </Card>
 
         <div className="space-y-2 pb-4">
           <Row title="Bookings" subtitle="Where most earnings come from" to="/bookings" />
           <Row title="Marketplace orders" subtitle="Sales and rentals" to="/marketplace" />
           <Row title="Plans & billing" subtitle="Invoices and plan changes" to="/plans/manage" />
-          <Link to="/help/$slug" params={{ slug: "pricing-your-first-service" }}><Btn variant="ghost" className="w-full">How pricing and fees work</Btn></Link>
+          <Link to="/help/$slug" params={{ slug: "pricing-your-first-service" }}>
+            <Btn variant="ghost" className="w-full">
+              How pricing and fees work
+            </Btn>
+          </Link>
         </div>
       </div>
     </Screen>

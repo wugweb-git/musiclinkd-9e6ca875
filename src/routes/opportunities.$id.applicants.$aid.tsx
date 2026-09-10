@@ -12,7 +12,10 @@ export const Route = createFileRoute("/opportunities/$id/applicants/$aid")({
     return {
       meta: [
         { title },
-        { name: "description", content: "Applicant profile, attached portfolio, fit reasons and shortlist actions." },
+        {
+          name: "description",
+          content: "Applicant profile, attached portfolio, fit reasons and shortlist actions.",
+        },
         { property: "og:title", content: title },
         { property: "og:description", content: "Review an applicant's work before you shortlist." },
         { property: "og:type", content: "profile" },
@@ -35,7 +38,10 @@ function ApplicantDetail() {
       <Screen>
         <TopBar title="Applicant" back="/opportunities/mine" />
         <div className="px-5 pt-6">
-          <EmptyState title="Applicant not found" body="This application may have been withdrawn." />
+          <EmptyState
+            title="Applicant not found"
+            body="This application may have been withdrawn."
+          />
         </div>
       </Screen>
     );
@@ -55,7 +61,8 @@ function ApplicantDetail() {
               </div>
               <p className="truncate text-[13px] text-muted-foreground">{a.headline}</p>
               <p className="mt-0.5 flex items-center gap-1 text-[12px] text-muted-foreground">
-                <Star size={12} className="text-primary" fill="currentColor" /> {a.rating} · {a.city}
+                <Star size={12} className="text-primary" fill="currentColor" /> {a.rating} ·{" "}
+                {a.city}
               </p>
             </div>
           </div>
@@ -84,7 +91,10 @@ function ApplicantDetail() {
           <h2 className="mb-2 text-[15px]">Attached work</h2>
           <div className="grid grid-cols-2 gap-2">
             {a.portfolio.map((p) => (
-              <div key={p.id} className="overflow-hidden rounded-[20px] border border-border bg-card">
+              <div
+                key={p.id}
+                className="overflow-hidden rounded-[20px] border border-border bg-card"
+              >
                 <img src={p.cover} alt="" className="h-24 w-full object-cover" />
                 <div className="p-3">
                   <p className="truncate text-[13px] font-semibold">{p.title}</p>
@@ -133,7 +143,9 @@ function ApplicantDetail() {
       >
         <Btn
           onClick={() => {
-            setConfirmed(decision === "reject" ? "Applicant declined" : "Shortlisted — conversation opened");
+            setConfirmed(
+              decision === "reject" ? "Applicant declined" : "Shortlisted — conversation opened",
+            );
             setDecision(null);
           }}
         >

@@ -28,10 +28,14 @@ export const Route = createFileRoute("/booking/$id/schedule")({
       { title: "Pick a date and time — MusicLinkd booking" },
       {
         name: "description",
-        content: "Live availability by day, open time slots and duration options with the price updating as you choose.",
+        content:
+          "Live availability by day, open time slots and duration options with the price updating as you choose.",
       },
       { property: "og:title", content: "Pick a date and time — MusicLinkd booking" },
-      { property: "og:description", content: "Availability, time slots and duration for your session." },
+      {
+        property: "og:description",
+        content: "Availability, time slots and duration for your session.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -214,10 +218,14 @@ function Schedule() {
         onPrimary={() => navigate({ to: "/booking/$id/details", params: { id: b.id } })}
       />
 
-      <Sheet open={conflict} onClose={() => setConflict(false)} title="This time is no longer available">
+      <Sheet
+        open={conflict}
+        onClose={() => setConflict(false)}
+        title="This time is no longer available"
+      >
         <p className="text-sm text-text2">
-          Someone booked {draft.date ? formatDate(draft.date) : "this date"} at 12:00 PM while you were choosing.
-          Your other selections are saved.
+          Someone booked {draft.date ? formatDate(draft.date) : "this date"} at 12:00 PM while you
+          were choosing. Your other selections are saved.
         </p>
         <div className="mt-5 space-y-2">
           <Btn className="w-full" onClick={() => setConflict(false)}>

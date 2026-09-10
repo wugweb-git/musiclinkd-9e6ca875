@@ -18,7 +18,15 @@ const toneStyle: Record<Tone, { bg: string; fg: string }> = {
 };
 
 /** One status system across every flow. */
-export function StatusPill({ label, tone = "neutral", icon }: { label: string; tone?: Tone; icon?: ReactNode }) {
+export function StatusPill({
+  label,
+  tone = "neutral",
+  icon,
+}: {
+  label: string;
+  tone?: Tone;
+  icon?: ReactNode;
+}) {
   const c = toneStyle[tone];
   return (
     <span
@@ -32,7 +40,11 @@ export function StatusPill({ label, tone = "neutral", icon }: { label: string; t
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-[24px] border border-border bg-card p-4 ${className}`}>{children}</section>;
+  return (
+    <section className={`rounded-[24px] border border-border bg-card p-4 ${className}`}>
+      {children}
+    </section>
+  );
 }
 
 export function Segmented<T extends string>({
@@ -54,7 +66,9 @@ export function Segmented<T extends string>({
           aria-selected={value === o}
           onClick={() => onChange(o)}
           className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold ${
-            value === o ? "border-transparent bg-navy text-background" : "border-border bg-card text-foreground"
+            value === o
+              ? "border-transparent bg-navy text-background"
+              : "border-border bg-card text-foreground"
           }`}
         >
           {o}
@@ -84,16 +98,21 @@ export function Row({
   const inner = (
     <>
       {icon ? (
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-primary">{icon}</span>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-primary">
+          {icon}
+        </span>
       ) : null}
       <span className="min-w-0 flex-1 text-left">
         <span className="block truncate text-sm font-semibold">{title}</span>
-        {subtitle ? <span className="block truncate text-[12px] text-muted-foreground">{subtitle}</span> : null}
+        {subtitle ? (
+          <span className="block truncate text-[12px] text-muted-foreground">{subtitle}</span>
+        ) : null}
       </span>
       {right ?? <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />}
     </>
   );
-  const cls = "flex w-full items-center gap-3 rounded-[20px] border border-border bg-card px-4 py-3";
+  const cls =
+    "flex w-full items-center gap-3 rounded-[20px] border border-border bg-card px-4 py-3";
   if (to) {
     return (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -153,7 +172,17 @@ export function Stars({ value, size = 14 }: { value: number; size?: number }) {
   );
 }
 
-export function Meter({ label, value, max, hint }: { label: string; value: number; max: number; hint?: string }) {
+export function Meter({
+  label,
+  value,
+  max,
+  hint,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  hint?: string;
+}) {
   const pct = max ? Math.round((value / max) * 100) : 0;
   return (
     <div>
@@ -192,8 +221,16 @@ export function Dialog({
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 mx-auto flex w-full max-w-[430px] items-center justify-center px-6" role="dialog" aria-modal>
-      <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]" />
+    <div
+      className="fixed inset-0 z-50 mx-auto flex w-full max-w-[430px] items-center justify-center px-6"
+      role="dialog"
+      aria-modal
+    >
+      <button
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]"
+      />
       <div className="relative w-full rounded-[24px] border border-border bg-card p-5">
         <h2 className="text-[19px] leading-tight">{title}</h2>
         {body ? <p className="mt-2 text-[13px] text-muted-foreground">{body}</p> : null}

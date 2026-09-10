@@ -72,7 +72,11 @@ export function draftToProfile(d: OnboardingDraft, step?: string) {
     availability: d.availability[0] ?? null,
     ...(d.photo ? { avatar_url: d.photo } : {}),
     links: asLinkMap(d.links),
-    discovery_prefs: { topics: d.discovery, businessIntent: d.businessIntent, bandIntent: d.bandIntent },
+    discovery_prefs: {
+      topics: d.discovery,
+      businessIntent: d.businessIntent,
+      bandIntent: d.bandIntent,
+    },
     onboarding_draft: d as unknown as Record<string, unknown>,
     ...(step ? { onboarding_step: step } : {}),
   };
@@ -146,5 +150,9 @@ export function profileGaps(row: ProfileRow | null | undefined) {
     { id: "links", label: "Links", done: Object.keys(asLinkMap(row?.links)).length > 0 },
   ];
   const done = checks.filter((c) => c.done).length;
-  return { checks, missing: checks.filter((c) => !c.done), percent: Math.round((done / checks.length) * 100) };
+  return {
+    checks,
+    missing: checks.filter((c) => !c.done),
+    percent: Math.round((done / checks.length) * 100),
+  };
 }

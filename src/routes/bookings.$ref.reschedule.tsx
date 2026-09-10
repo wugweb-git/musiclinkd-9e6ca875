@@ -23,7 +23,8 @@ export const Route = createFileRoute("/bookings/$ref/reschedule")({
       { title: "Reschedule booking — MusicLinkd" },
       {
         name: "description",
-        content: "Move your session to a new date and time. The provider confirms the change before it's final.",
+        content:
+          "Move your session to a new date and time. The provider confirms the change before it's final.",
       },
       { property: "og:title", content: "Reschedule booking — MusicLinkd" },
       { property: "og:description", content: "Pick a new date and time for your session." },
@@ -91,7 +92,8 @@ function Reschedule() {
             Current: {formatDate(bk.date)} · {formatTime(bk.start)} – {formatTime(bk.end)}
           </p>
           <p className="mt-1 text-text2">
-            Free reschedule up to 48 hrs before the session. Later changes may carry the provider's fee.
+            Free reschedule up to 48 hrs before the session. Later changes may carry the provider's
+            fee.
           </p>
         </div>
 
@@ -113,7 +115,12 @@ function Reschedule() {
           <>
             <h2 className="mt-6 text-[17px]">New start time</h2>
             <div className="mt-3">
-              <SlotPicker slots={day.slots} value={start} onChange={setStart} timezone={b.timezone} />
+              <SlotPicker
+                slots={day.slots}
+                value={start}
+                onChange={setStart}
+                timezone={b.timezone}
+              />
             </div>
           </>
         ) : null}

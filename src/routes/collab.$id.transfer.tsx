@@ -18,7 +18,10 @@ export const Route = createFileRoute("/collab/$id/transfer")({
             "Hand ownership of a MusicLinkd collaboration to another participant, with a clear summary of what changes.",
         },
         { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: "Change who owns and administers this music project." },
+        {
+          property: "og:description",
+          content: "Change who owns and administers this music project.",
+        },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary" },
       ],
@@ -69,7 +72,8 @@ function Transfer() {
             {eligible.length === 0 ? (
               <Card className="mb-5">
                 <p className="text-[12px] text-muted-foreground">
-                  Ownership can only move to an active participant. Add someone to the project first.
+                  Ownership can only move to an active participant. Add someone to the project
+                  first.
                 </p>
               </Card>
             ) : (

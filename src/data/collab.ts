@@ -4,13 +4,7 @@
  */
 
 export type CollabStatus =
-  | "draft"
-  | "proposed"
-  | "active"
-  | "onHold"
-  | "completed"
-  | "cancelled"
-  | "archived";
+  "draft" | "proposed" | "active" | "onHold" | "completed" | "cancelled" | "archived";
 
 export type CollabType =
   | "Song"
@@ -92,7 +86,8 @@ export type Participant = {
   contribution: string;
 };
 
-export type CollabFileKind = "audio" | "video" | "image" | "document" | "lyrics" | "contract" | "reference";
+export type CollabFileKind =
+  "audio" | "video" | "image" | "document" | "lyrics" | "contract" | "reference";
 
 export type AudioVersion = {
   id: string;
@@ -245,7 +240,10 @@ export type Proposal = {
 /* Meta                                                                */
 /* ------------------------------------------------------------------ */
 
-export const statusMeta: Record<CollabStatus, { label: string; tone: "ok" | "warn" | "info" | "off" | "bad" }> = {
+export const statusMeta: Record<
+  CollabStatus,
+  { label: string; tone: "ok" | "warn" | "info" | "off" | "bad" }
+> = {
   draft: { label: "Draft", tone: "off" },
   proposed: { label: "Proposed", tone: "info" },
   active: { label: "Active", tone: "ok" },
@@ -255,7 +253,10 @@ export const statusMeta: Record<CollabStatus, { label: string; tone: "ok" | "war
   archived: { label: "Archived", tone: "off" },
 };
 
-export const milestoneMeta: Record<MilestoneStatus, { label: string; tone: "ok" | "warn" | "info" | "off" | "bad" }> = {
+export const milestoneMeta: Record<
+  MilestoneStatus,
+  { label: string; tone: "ok" | "warn" | "info" | "off" | "bad" }
+> = {
   todo: { label: "To do", tone: "off" },
   inProgress: { label: "In progress", tone: "info" },
   done: { label: "Done", tone: "ok" },
@@ -522,7 +523,13 @@ export const projects: Project[] = [
     ],
     tasks: [
       { id: "t1", name: "Send Mix v3 notes", owner: "Ananya Sharma", due: "2 Sep", done: false },
-      { id: "t2", name: "Book guitar overdub slot", owner: "Vedanshu Srivastava", due: "4 Sep", done: false },
+      {
+        id: "t2",
+        name: "Book guitar overdub slot",
+        owner: "Vedanshu Srivastava",
+        due: "4 Sep",
+        done: false,
+      },
       { id: "t3", name: "Upload artwork draft", owner: "Rahul Iyer", due: "29 Aug", done: true },
     ],
     discussion: [
@@ -534,7 +541,11 @@ export const projects: Project[] = [
         body: "Mix v3 is up. Rode the lead vocal manually through the chorus — tell me if it sits right now.",
         attachment: "Mix v3 · 3:58",
         replies: [
-          { author: "Ananya Sharma", body: "Way better. Second chorus still a touch shy.", time: "1h ago" },
+          {
+            author: "Ananya Sharma",
+            body: "Way better. Second chorus still a touch shy.",
+            time: "1h ago",
+          },
         ],
       },
       {
@@ -574,18 +585,48 @@ export const projects: Project[] = [
     ],
     activity: [
       { id: "a1", kind: "file", text: "uploaded Mix v3", actor: "Rahul Iyer", time: "2h ago" },
-      { id: "a2", kind: "comment", text: "commented on Mix v3", actor: "Ananya Sharma", time: "1h ago" },
-      { id: "a3", kind: "milestone", text: "completed Recording complete", actor: "Ananya Sharma", time: "27 Aug" },
+      {
+        id: "a2",
+        kind: "comment",
+        text: "commented on Mix v3",
+        actor: "Ananya Sharma",
+        time: "1h ago",
+      },
+      {
+        id: "a3",
+        kind: "milestone",
+        text: "completed Recording complete",
+        actor: "Ananya Sharma",
+        time: "27 Aug",
+      },
       { id: "a4", kind: "joined", text: "joined as Engineer", actor: "Kabir Nair", time: "20 Aug" },
-      { id: "a5", kind: "status", text: "moved the project to Active", actor: "Rahul Iyer", time: "14 Aug" },
-      { id: "a6", kind: "proposal", text: "accepted the collaboration proposal", actor: "Ananya Sharma", time: "13 Aug" },
+      {
+        id: "a5",
+        kind: "status",
+        text: "moved the project to Active",
+        actor: "Rahul Iyer",
+        time: "14 Aug",
+      },
+      {
+        id: "a6",
+        kind: "proposal",
+        text: "accepted the collaboration proposal",
+        actor: "Ananya Sharma",
+        time: "13 Aug",
+      },
     ],
     agreement: {
       scope: "One original Hindi single: composition, vocal recording, production, mix and master.",
-      deliverables: ["Approved lyric sheet", "Final mix (WAV 24/48)", "Master for streaming + DDP", "Stems"],
+      deliverables: [
+        "Approved lyric sheet",
+        "Final mix (WAV 24/48)",
+        "Master for streaming + DDP",
+        "Stems",
+      ],
       timeline: "12 Aug – 30 Sep 2026",
       compensation: "₹1,80,000 total, split 40/30/30 on delivery milestones.",
-      ownership: "Master owned jointly by the three writers; label licence to be negotiated separately.",
+      ownership:
+        "Master owned jointly by the three writers; label licence to be negotiated separately.",
       credit: "Composed by Vedanshu Srivastava · Produced by Rahul Iyer · Vocals by Ananya Sharma",
     },
   },
@@ -595,7 +636,8 @@ export const projects: Project[] = [
     type: "EP",
     status: "active",
     artwork: u("photo-1501386761578-eac5c94b800a"),
-    description: "Four-track live EP recorded across two nights at Octave Sound Labs with a seven-piece band.",
+    description:
+      "Four-track live EP recorded across two nights at Octave Sound Labs with a seven-piece band.",
     myRole: "Producer",
     owner: "Vedanshu Srivastava",
     location: "Mumbai",
@@ -666,7 +708,15 @@ export const projects: Project[] = [
         notes: "",
       },
     ],
-    tasks: [{ id: "t1", name: "Confirm horn section fees", owner: "Vedanshu Srivastava", due: "6 Sep", done: false }],
+    tasks: [
+      {
+        id: "t1",
+        name: "Confirm horn section fees",
+        owner: "Vedanshu Srivastava",
+        due: "6 Sep",
+        done: false,
+      },
+    ],
     discussion: [
       {
         id: "d1",
@@ -688,8 +738,20 @@ export const projects: Project[] = [
       },
     ],
     activity: [
-      { id: "a1", kind: "status", text: "confirmed tracking dates", actor: "Octave Sound Labs", time: "Yesterday" },
-      { id: "a2", kind: "joined", text: "joined as Studio", actor: "Octave Sound Labs", time: "28 Aug" },
+      {
+        id: "a1",
+        kind: "status",
+        text: "confirmed tracking dates",
+        actor: "Octave Sound Labs",
+        time: "Yesterday",
+      },
+      {
+        id: "a2",
+        kind: "joined",
+        text: "joined as Studio",
+        actor: "Octave Sound Labs",
+        time: "28 Aug",
+      },
     ],
   },
   {
@@ -698,7 +760,8 @@ export const projects: Project[] = [
     type: "Film / Media",
     status: "onHold",
     artwork: u("photo-1489599849927-2ee91cede3ba"),
-    description: "38 minutes of original score for an independent feature. Paused while the edit is re-locked.",
+    description:
+      "38 minutes of original score for an independent feature. Paused while the edit is re-locked.",
     myRole: "Composer",
     owner: "Vedanshu Srivastava",
     location: "Remote",
@@ -773,7 +836,13 @@ export const projects: Project[] = [
     ],
     notes: [],
     activity: [
-      { id: "a1", kind: "status", text: "put the project on hold", actor: "Sanya Rao", time: "12 Aug" },
+      {
+        id: "a1",
+        kind: "status",
+        text: "put the project on hold",
+        actor: "Sanya Rao",
+        time: "12 Aug",
+      },
     ],
   },
   {
@@ -840,7 +909,13 @@ export const projects: Project[] = [
     discussion: [],
     notes: [],
     activity: [
-      { id: "a1", kind: "status", text: "marked the project complete", actor: "Ananya Sharma", time: "12 Jun" },
+      {
+        id: "a1",
+        kind: "status",
+        text: "marked the project complete",
+        actor: "Ananya Sharma",
+        time: "12 Jun",
+      },
     ],
   },
   {
@@ -896,7 +971,15 @@ export const projects: Project[] = [
     tasks: [],
     discussion: [],
     notes: [],
-    activity: [{ id: "a1", kind: "status", text: "cancelled the project", actor: "Vedanshu Srivastava", time: "18 Feb" }],
+    activity: [
+      {
+        id: "a1",
+        kind: "status",
+        text: "cancelled the project",
+        actor: "Vedanshu Srivastava",
+        time: "18 Feb",
+      },
+    ],
   },
   {
     id: "chai-tapes",
@@ -955,7 +1038,8 @@ export const invitations: Invitation[] = [
     inviterRole: "Producer · Independent",
     inviterPhoto: p("photo-1487412720507-e7ab37603c6f"),
     proposedRole: "Composer",
-    description: "A 25-second theme plus three stingers for a documentary podcast about Mumbai's live circuit.",
+    description:
+      "A 25-second theme plus three stingers for a documentary podcast about Mumbai's live circuit.",
     timeline: "15 Sep – 30 Sep 2026",
     sentAt: "5 days ago",
   },
@@ -971,7 +1055,12 @@ export const proposals: Proposal[] = [
     fromPhoto: kabir.photo,
     role: "Engineer",
     scope: "Mix and master the finished single, including two rounds of revisions.",
-    deliverables: ["Final mix (WAV 24/48)", "Streaming master", "DDP for CD", "Instrumental + TV mix"],
+    deliverables: [
+      "Final mix (WAV 24/48)",
+      "Streaming master",
+      "DDP for CD",
+      "Instrumental + TV mix",
+    ],
     timeline: "12 Sep – 24 Sep 2026",
     compensation: "₹55,000 on delivery",
     notes: "Happy to hold the week of the 22nd if you confirm by the 5th.",

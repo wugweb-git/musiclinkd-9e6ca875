@@ -7,7 +7,10 @@ export const Route = createFileRoute("/auth/success")({
   head: () => ({
     meta: [
       { title: "Account created — MusicLinkd" },
-      { name: "description", content: "Your MusicLinkd account is ready. Set up your professional profile next." },
+      {
+        name: "description",
+        content: "Your MusicLinkd account is ready. Set up your professional profile next.",
+      },
       { property: "og:title", content: "Account created — MusicLinkd" },
       { property: "og:description", content: "Welcome to MusicLinkd. Let's build your profile." },
       { property: "og:type", content: "website" },

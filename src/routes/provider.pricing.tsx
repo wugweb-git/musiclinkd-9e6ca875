@@ -45,7 +45,8 @@ function Pricing() {
 
       <main className="space-y-6 px-5 pb-40 pt-4">
         <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
-          Rates shown here are what customers see on the booking screens. Changes apply to new bookings only.
+          Rates shown here are what customers see on the booking screens. Changes apply to new
+          bookings only.
         </p>
 
         {entity.resources.map((r) => (
@@ -87,7 +88,8 @@ function Pricing() {
         <section className="min-w-0">
           <h2 className="text-[17px]">Deposit</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            Share of the total collected when a booking is confirmed. The balance is due at the studio.
+            Share of the total collected when a booking is confirmed. The balance is due at the
+            studio.
           </p>
           <div className="mt-3 rounded-3xl border border-border bg-card p-4">
             <label htmlFor="deposit" className="text-[12px] font-semibold">

@@ -22,7 +22,10 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
     >
       {sent ? (
         <div className="py-10 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full" style={{ background: "var(--success-container)" }}>
+          <div
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+            style={{ background: "var(--success-container)" }}
+          >
             <span className="text-2xl">✓</span>
           </div>
           <h2 className="text-xl">Request sent</h2>

@@ -18,7 +18,10 @@ export const Route = createFileRoute("/marketplace/rent/c/$slug")({
           content: `Rent ${c?.label.toLowerCase() ?? "music"} equipment from verified providers near you, with clear pricing, deposits and availability.`,
         },
         { property: "og:title", content: title },
-        { property: "og:description", content: "Browse rental equipment by category on MusicLinkd." },
+        {
+          property: "og:description",
+          content: "Browse rental equipment by category on MusicLinkd.",
+        },
       ],
     };
   },

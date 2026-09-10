@@ -81,19 +81,28 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
             <div className="flex flex-col items-center">
               <span
                 className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${
-                  done ? "bg-primary text-primary-foreground" : "border border-border bg-subtle text-muted-foreground"
+                  done
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-subtle text-muted-foreground"
                 }`}
                 aria-hidden
               >
                 {done ? <Check size={11} strokeWidth={3} /> : "·"}
               </span>
               {i < bookingTimeline.length - 1 ? (
-                <span className={`w-px flex-1 ${done ? "bg-primary" : "bg-border"}`} style={{ minHeight: 18 }} />
+                <span
+                  className={`w-px flex-1 ${done ? "bg-primary" : "bg-border"}`}
+                  style={{ minHeight: 18 }}
+                />
               ) : null}
             </div>
-            <p className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-text2" : "text-muted-foreground"}`}>
+            <p
+              className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-text2" : "text-muted-foreground"}`}
+            >
               {s.label}
-              {current ? <span className="ml-2 text-[11px] font-bold uppercase text-primary">Now</span> : null}
+              {current ? (
+                <span className="ml-2 text-[11px] font-bold uppercase text-primary">Now</span>
+              ) : null}
             </p>
           </li>
         );
@@ -160,7 +169,9 @@ export function BookableEntityCard({ b }: { b: Bookable }) {
     >
       <img src={b.hero} alt={b.name} className="h-36 w-full object-cover" loading="lazy" />
       <div className="p-4">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{b.kind}</p>
+        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          {b.kind}
+        </p>
         <p className="mt-0.5 flex items-center gap-1.5 truncate font-semibold">
           {b.name} {b.verified ? <VerifiedBadge size={14} /> : null}
         </p>
@@ -189,7 +200,12 @@ export function ResourceCard({
       }`}
     >
       <div className="flex gap-3 p-3">
-        <img src={r.photo} alt="" className="h-20 w-20 shrink-0 rounded-2xl object-cover" loading="lazy" />
+        <img
+          src={r.photo}
+          alt=""
+          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+          loading="lazy"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{r.name}</p>
           <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>
@@ -263,7 +279,9 @@ export function AvailabilityCalendar({
         <button
           type="button"
           aria-label="Previous month"
-          onClick={() => setCursor((c) => (c.m === 0 ? { y: c.y - 1, m: 11 } : { ...c, m: c.m - 1 }))}
+          onClick={() =>
+            setCursor((c) => (c.m === 0 ? { y: c.y - 1, m: 11 } : { ...c, m: c.m - 1 }))
+          }
           className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
         >
           ‹
@@ -272,7 +290,9 @@ export function AvailabilityCalendar({
         <button
           type="button"
           aria-label="Next month"
-          onClick={() => setCursor((c) => (c.m === 11 ? { y: c.y + 1, m: 0 } : { ...c, m: c.m + 1 }))}
+          onClick={() =>
+            setCursor((c) => (c.m === 11 ? { y: c.y + 1, m: 0 } : { ...c, m: c.m + 1 }))
+          }
           className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
         >
           ›
@@ -301,7 +321,11 @@ export function AvailabilityCalendar({
               aria-label={`${formatDate(iso)} — ${a.state}`}
               aria-pressed={isSel}
               className={`flex h-12 flex-col items-center justify-center rounded-2xl text-sm ${
-                isSel ? "bg-primary text-primary-foreground" : disabled ? "bg-transparent" : "bg-subtle"
+                isSel
+                  ? "bg-primary text-primary-foreground"
+                  : disabled
+                    ? "bg-transparent"
+                    : "bg-subtle"
               } ${inMonth ? "" : "opacity-35"} ${isSel ? "" : dayStyle[a.state]}`}
             >
               <span className={isSel ? "font-bold" : ""}>{d.getDate()}</span>
@@ -453,14 +477,18 @@ export function AddOnCard({
   onToggle: () => void;
 }) {
   return (
-    <div className={`rounded-3xl border bg-card p-4 ${selected ? "border-primary" : "border-border"}`}>
+    <div
+      className={`rounded-3xl border bg-card p-4 ${selected ? "border-primary" : "border-border"}`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{a.name}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">{a.description}</p>
           <p className="mt-1.5 text-sm font-semibold">
             {inr(a.price)}
-            {a.perHour ? <span className="text-xs font-normal text-muted-foreground"> / hour</span> : null}
+            {a.perHour ? (
+              <span className="text-xs font-normal text-muted-foreground"> / hour</span>
+            ) : null}
           </p>
           {a.rentalListingId ? (
             <Link
@@ -525,10 +553,14 @@ function Row({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3 py-1">
-      <span className={`min-w-0 flex-1 truncate text-sm ${muted ? "text-muted-foreground" : "text-text2"}`}>
+      <span
+        className={`min-w-0 flex-1 truncate text-sm ${muted ? "text-muted-foreground" : "text-text2"}`}
+      >
         {label}
       </span>
-      <span className={`shrink-0 text-sm ${strong ? "text-base font-bold" : "font-semibold"}`}>{value}</span>
+      <span className={`shrink-0 text-sm ${strong ? "text-base font-bold" : "font-semibold"}`}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -545,7 +577,11 @@ export function PolicyCard({
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
-        {critical ? <AlertTriangle size={14} className="text-primary" /> : <Info size={14} className="text-muted-foreground" />}
+        {critical ? (
+          <AlertTriangle size={14} className="text-primary" />
+        ) : (
+          <Info size={14} className="text-muted-foreground" />
+        )}
         {title}
       </p>
       <p className="mt-1 text-xs leading-relaxed text-text2">{body}</p>
@@ -597,7 +633,12 @@ export function BookingSummaryCard({
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
       <div className="flex gap-3">
-        <img src={r.photo} alt="" className="h-16 w-16 shrink-0 rounded-2xl object-cover" loading="lazy" />
+        <img
+          src={r.photo}
+          alt=""
+          className="h-16 w-16 shrink-0 rounded-2xl object-cover"
+          loading="lazy"
+        />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{b.name}</p>
           <p className="truncate text-xs text-muted-foreground">{r.name}</p>
@@ -619,7 +660,9 @@ export function BookingSummaryCard({
 export function Detail({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dt className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </dt>
       <dd className="mt-0.5 truncate text-sm font-semibold">{value}</dd>
     </div>
   );
@@ -680,7 +723,11 @@ export function ProviderRequestCard({
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
       <div className="flex items-start gap-3">
-        <img src={booking.customerAvatar} alt="" className="h-11 w-11 shrink-0 rounded-full object-cover" />
+        <img
+          src={booking.customerAvatar}
+          alt=""
+          className="h-11 w-11 shrink-0 rounded-full object-cover"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{booking.customer}</p>
           <p className="truncate text-xs text-muted-foreground">{booking.customerRole}</p>
@@ -690,7 +737,8 @@ export function ProviderRequestCard({
       <div className="mt-3 rounded-2xl bg-subtle px-3 py-2 text-xs text-text2">
         <p className="font-semibold text-foreground">{entityResource}</p>
         <p className="mt-0.5">
-          {formatDate(booking.date)} · {formatTime(booking.start)} – {formatTime(booking.end)} · {booking.hours} hrs
+          {formatDate(booking.date)} · {formatTime(booking.start)} – {formatTime(booking.end)} ·{" "}
+          {booking.hours} hrs
         </p>
         <p className="mt-0.5">
           {booking.people} people · {booking.purpose}
@@ -715,10 +763,15 @@ export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean 
     <div className="rounded-3xl border border-border bg-card p-4">
       <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Payment</p>
       <Row label="Total booking value" value={inr(p.total)} />
-      <Row label={paid ? "Deposit paid" : "Deposit due now"} value={inr(p.deposit || p.total)} strong />
+      <Row
+        label={paid ? "Deposit paid" : "Deposit due now"}
+        value={inr(p.deposit || p.total)}
+        strong
+      />
       <Row label="Balance at the studio" value={inr(p.deposit ? p.balance : 0)} muted />
       <p className="mt-3 text-[11px] text-muted-foreground">
-        Payments are handled by the provider's payment partner. MusicLinkd never stores your card details.
+        Payments are handled by the provider's payment partner. MusicLinkd never stores your card
+        details.
       </p>
     </div>
   );
@@ -730,7 +783,10 @@ export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean 
 
 export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
-    <div role="status" className="mb-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
+    <div
+      role="status"
+      className="mb-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-4"
+    >
       <WifiOff size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">You're offline</p>
@@ -739,7 +795,11 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
         </p>
       </div>
       {onRetry ? (
-        <button type="button" onClick={onRetry} className="min-h-11 shrink-0 text-xs font-bold text-primary">
+        <button
+          type="button"
+          onClick={onRetry}
+          className="min-h-11 shrink-0 text-xs font-bold text-primary"
+        >
           Retry
         </button>
       ) : null}

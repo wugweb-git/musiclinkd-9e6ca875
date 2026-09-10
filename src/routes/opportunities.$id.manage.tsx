@@ -44,7 +44,10 @@ function ManageOpportunity() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <StatusPill label={paused ? "paused" : o.status} tone={paused ? "warn" : statusTone(o.status)} />
+            <StatusPill
+              label={paused ? "paused" : o.status}
+              tone={paused ? "warn" : statusTone(o.status)}
+            />
             <span className="text-[12px] text-muted-foreground">{o.closesAt}</span>
           </div>
           <div className="grid grid-cols-3 gap-2 pt-1">
@@ -62,15 +65,40 @@ function ManageOpportunity() {
         </Card>
 
         <div className="space-y-2">
-          <Row icon={<Users size={16} />} title="Applicants" subtitle={`${o.applicantSummary.new} new`} to="/opportunities/$id/applicants" params={{ id }} />
-          <Row icon={<BarChart3 size={16} />} title="Analytics" subtitle="Views, saves, conversion" to="/opportunities/$id/analytics" params={{ id }} />
-          <Row icon={<Pencil size={16} />} title="Edit details" subtitle="Title, budget, requirements" to="/opportunities/new" />
+          <Row
+            icon={<Users size={16} />}
+            title="Applicants"
+            subtitle={`${o.applicantSummary.new} new`}
+            to="/opportunities/$id/applicants"
+            params={{ id }}
+          />
+          <Row
+            icon={<BarChart3 size={16} />}
+            title="Analytics"
+            subtitle="Views, saves, conversion"
+            to="/opportunities/$id/analytics"
+            params={{ id }}
+          />
+          <Row
+            icon={<Pencil size={16} />}
+            title="Edit details"
+            subtitle="Title, budget, requirements"
+            to="/opportunities/new"
+          />
           <Row
             icon={<PauseCircle size={16} />}
             title={paused ? "Resume opportunity" : "Pause applications"}
-            subtitle={paused ? "Visible and accepting applications" : "Stays visible, stops new applications"}
+            subtitle={
+              paused
+                ? "Visible and accepting applications"
+                : "Stays visible, stops new applications"
+            }
             onClick={() => setPaused((p) => !p)}
-            right={<span className="text-[12px] font-semibold text-primary">{paused ? "Resume" : "Pause"}</span>}
+            right={
+              <span className="text-[12px] font-semibold text-primary">
+                {paused ? "Resume" : "Pause"}
+              </span>
+            }
           />
           <Row
             icon={<XCircle size={16} />}
@@ -84,7 +112,8 @@ function ManageOpportunity() {
         <Card className="space-y-1">
           <p className="text-[13px] font-semibold">Hired someone?</p>
           <p className="text-[12px] text-muted-foreground">
-            Convert the shortlist into a booking or a collaboration — reviews only come from completed work.
+            Convert the shortlist into a booking or a collaboration — reviews only come from
+            completed work.
           </p>
           <Link to="/bookings">
             <Btn variant="ghost" className="w-full">

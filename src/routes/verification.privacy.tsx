@@ -10,10 +10,14 @@ export const Route = createFileRoute("/verification/privacy")({
       { title: "Verification privacy | MusicLinkd" },
       {
         name: "description",
-        content: "What MusicLinkd stores during verification, who reviews it, and how to withdraw a request.",
+        content:
+          "What MusicLinkd stores during verification, who reviews it, and how to withdraw a request.",
       },
       { property: "og:title", content: "Verification privacy | MusicLinkd" },
-      { property: "og:description", content: "Your verification documents are never shown publicly." },
+      {
+        property: "og:description",
+        content: "Your verification documents are never shown publicly.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -24,12 +28,17 @@ export const Route = createFileRoute("/verification/privacy")({
 function VerificationPrivacy() {
   return (
     <Screen>
-      <TopBar title="Document privacy" subtitle="What happens to what you upload" back="/verification" />
+      <TopBar
+        title="Document privacy"
+        subtitle="What happens to what you upload"
+        back="/verification"
+      />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="flex gap-3">
           <ShieldCheck size={18} className="mt-0.5 shrink-0 text-primary" aria-hidden />
           <p className="text-[13px] text-text2">
-            Verification documents are private. Other members only ever see the badge and its status.
+            Verification documents are private. Other members only ever see the badge and its
+            status.
           </p>
         </Card>
 
@@ -62,7 +71,11 @@ function VerificationPrivacy() {
             to="/help/$slug"
             params={{ slug: "how-verification-works" }}
           />
-          <Row title="Back to verification" subtitle="Your badges and requests" to="/verification" />
+          <Row
+            title="Back to verification"
+            subtitle="Your badges and requests"
+            to="/verification"
+          />
         </section>
       </div>
     </Screen>
