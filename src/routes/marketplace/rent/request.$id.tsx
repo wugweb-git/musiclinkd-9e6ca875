@@ -185,10 +185,14 @@ function RequestFlow() {
                 </div>
               ))}
             </dl>
-            <label className="mb-1.5 mt-4 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            <label
+              htmlFor="message-to-provider-optional"
+              className="mb-1.5 mt-4 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+            >
               Message to provider (optional)
             </label>
             <textarea
+              id="message-to-provider-optional"
               value={note}
               onChange={(ev) => setNote(ev.target.value)}
               rows={3}

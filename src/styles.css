@@ -123,7 +123,10 @@
   --secondary: oklch(0.98 0.004 286.33);
   --secondary-foreground: oklch(0.1713 0.0539 282.44);
   --muted: oklch(0.98 0.004 286.33);
-  --muted-foreground: oklch(0.5955 0.0257 285.59);
+  /* Was oklch(0.5955 …) = 4.04:1 on card white, under the 4.5:1 AA floor for
+     normal text — and this is the colour of nearly every caption in the app.
+     0.56 measures 4.66:1. Still clears 3:1 for the icon uses. */
+  --muted-foreground: oklch(0.56 0.0257 285.59);
   /* Accent is a neutral hover surface. Purple lives on the category badge only. */
   --accent: oklch(0.98 0.004 286.33);
   --accent-foreground: oklch(0.1591 0 89.88);

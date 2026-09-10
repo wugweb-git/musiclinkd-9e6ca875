@@ -20,8 +20,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   `docs/`, `src/routes/README.md`. The `.lovable/plan` documents are the only record of why 18
   flows were built design-only and exist nowhere else.
 
+### Added
+
+- `eslint-plugin-jsx-a11y` registered in `eslint.config.js`. Accessibility is now machine-checked
+  for the first time; `heading-has-content` and `anchor-has-content` are scoped off for the
+  vendored `src/components/ui/` primitives, whose content arrives via `{...props}`
+
 ### Changed
 
+- `--muted-foreground` darkened to `oklch(0.56 …)`: it measured **4.04:1** on card white, under the
+  4.5:1 AA floor, and it is the colour of nearly every caption in the app. Now 4.66:1
 - `AGENTS.md` now states explicitly that `Co-Authored-By: Wugweb <admin@wugweb.com>` is the only
   commit trailer, and that no assistant/tool identity may be added as a second one
 
@@ -48,7 +56,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   chip copies in `booking`/`collab-workspace`/`onboarding` now match the bottom nav
 - Owner-row icons on `/me` are muted rather than pink, so pink reads as accent again
 - `--accent` is a neutral hover surface; purple is confined to the category badge
-- Renamed the `--text-2` *colour* token to `--text-secondary`. Mapping the type ramp into
+- Renamed the `--text-2` _colour_ token to `--text-secondary`. Mapping the type ramp into
   Tailwind's `--text-*` namespace collided with it, and one would have silently won
 - Category badge contrast was 3.72:1, below the 4.5:1 `AGENTS.md` mandates. The new
   `--status-category-*` pair measures 8.77:1

@@ -114,6 +114,7 @@ export function SearchBar({
         onFocus={onFocus}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
+        aria-label={placeholder ?? "Search"}
         className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
       />
       <span className="h-6 w-px bg-border" />

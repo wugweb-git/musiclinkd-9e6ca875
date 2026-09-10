@@ -132,6 +132,7 @@ export function AudioPreview({ src, title }: { src: string; title: string }) {
         Audio preview
       </p>
       <p className="mt-1 truncate text-sm font-semibold">{title}</p>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied external link (YouTube/Spotify/SoundCloud); no caption track exists to attach, and an empty <track> would assert captions that are not there */}
       <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
     </div>
   );
@@ -368,6 +369,7 @@ export function AudioPlayer({
           <p className="text-1 text-muted-foreground">Audio</p>
         </div>
       </div>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied external link (YouTube/Spotify/SoundCloud); no caption track exists to attach, and an empty <track> would assert captions that are not there */}
       <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
     </div>
   );
@@ -390,6 +392,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
     );
   }
   return (
+    // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied external link (YouTube/Spotify/SoundCloud); no caption track exists to attach, and an empty <track> would assert captions that are not there
     <video
       controls
       src={src}
