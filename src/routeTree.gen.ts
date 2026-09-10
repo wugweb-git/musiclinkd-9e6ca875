@@ -18,6 +18,7 @@ import { Route as HelpRouteImport } from './routes/help'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlansRouteImport } from './routes/plans'
+import { Route as RecentlyViewedRouteImport } from './routes/recently-viewed'
 import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as RecommendedRouteImport } from './routes/recommended'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -45,6 +46,10 @@ import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as CollabNewRouteImport } from './routes/collab.new'
+import { Route as DiscoverCommunityRouteImport } from './routes/discover.community'
+import { Route as DiscoverMusicRouteImport } from './routes/discover.music'
+import { Route as DiscoverNearbyRouteImport } from './routes/discover.nearby'
+import { Route as DiscoverProjectsRouteImport } from './routes/discover.projects'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
 import { Route as IdentityAnalyticsRouteImport } from './routes/identity.analytics'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
@@ -254,6 +259,11 @@ const PlansRoute = PlansRouteImport.update({
   path: '/plans',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecentlyViewedRoute = RecentlyViewedRouteImport.update({
+  id: '/recently-viewed',
+  path: '/recently-viewed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecommendationsRoute = RecommendationsRouteImport.update({
   id: '/recommendations',
   path: '/recommendations',
@@ -387,6 +397,26 @@ const CollabIndexRoute = CollabIndexRouteImport.update({
 const CollabNewRoute = CollabNewRouteImport.update({
   id: '/collab/new',
   path: '/collab/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverCommunityRoute = DiscoverCommunityRouteImport.update({
+  id: '/discover/community',
+  path: '/discover/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverMusicRoute = DiscoverMusicRouteImport.update({
+  id: '/discover/music',
+  path: '/discover/music',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverNearbyRoute = DiscoverNearbyRouteImport.update({
+  id: '/discover/nearby',
+  path: '/discover/nearby',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverProjectsRoute = DiscoverProjectsRouteImport.update({
+  id: '/discover/projects',
+  path: '/discover/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpSlugRoute = HelpSlugRouteImport.update({
@@ -1228,6 +1258,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
+  '/recently-viewed': typeof RecentlyViewedRoute
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1251,6 +1282,10 @@ export interface FileRoutesByFullPath {
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/discover/community': typeof DiscoverCommunityRoute
+  '/discover/music': typeof DiscoverMusicRoute
+  '/discover/nearby': typeof DiscoverNearbyRoute
+  '/discover/projects': typeof DiscoverProjectsRoute
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
@@ -1429,6 +1464,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
+  '/recently-viewed': typeof RecentlyViewedRoute
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1451,6 +1487,10 @@ export interface FileRoutesByTo {
   '/bands/new': typeof BandsNewRoute
   '/business/new': typeof BusinessNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/discover/community': typeof DiscoverCommunityRoute
+  '/discover/music': typeof DiscoverMusicRoute
+  '/discover/nearby': typeof DiscoverNearbyRoute
+  '/discover/projects': typeof DiscoverProjectsRoute
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
@@ -1630,6 +1670,7 @@ export interface FileRoutesById {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/plans': typeof PlansRouteWithChildren
+  '/recently-viewed': typeof RecentlyViewedRoute
   '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1653,6 +1694,10 @@ export interface FileRoutesById {
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
   '/collab/new': typeof CollabNewRouteWithChildren
+  '/discover/community': typeof DiscoverCommunityRoute
+  '/discover/music': typeof DiscoverMusicRoute
+  '/discover/nearby': typeof DiscoverNearbyRoute
+  '/discover/projects': typeof DiscoverProjectsRoute
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
@@ -1833,6 +1878,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recently-viewed'
     | '/recommendations'
     | '/recommended'
     | '/reset-password'
@@ -1856,6 +1902,10 @@ export interface FileRouteTypes {
     | '/booking/$id'
     | '/business/new'
     | '/collab/new'
+    | '/discover/community'
+    | '/discover/music'
+    | '/discover/nearby'
+    | '/discover/projects'
     | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
@@ -2034,6 +2084,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recently-viewed'
     | '/recommendations'
     | '/recommended'
     | '/reset-password'
@@ -2056,6 +2107,10 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/business/new'
     | '/collab/new'
+    | '/discover/community'
+    | '/discover/music'
+    | '/discover/nearby'
+    | '/discover/projects'
     | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
@@ -2234,6 +2289,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/plans'
+    | '/recently-viewed'
     | '/recommendations'
     | '/recommended'
     | '/reset-password'
@@ -2257,6 +2313,10 @@ export interface FileRouteTypes {
     | '/booking/$id'
     | '/business/new'
     | '/collab/new'
+    | '/discover/community'
+    | '/discover/music'
+    | '/discover/nearby'
+    | '/discover/projects'
     | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
@@ -2436,6 +2496,7 @@ export interface RootRouteChildren {
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   PlansRoute: typeof PlansRouteWithChildren
+  RecentlyViewedRoute: typeof RecentlyViewedRoute
   RecommendationsRoute: typeof RecommendationsRouteWithChildren
   RecommendedRoute: typeof RecommendedRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -2457,6 +2518,10 @@ export interface RootRouteChildren {
   BookingIdRoute: typeof BookingIdRouteWithChildren
   BusinessNewRoute: typeof BusinessNewRoute
   CollabNewRoute: typeof CollabNewRouteWithChildren
+  DiscoverCommunityRoute: typeof DiscoverCommunityRoute
+  DiscoverMusicRoute: typeof DiscoverMusicRoute
+  DiscoverNearbyRoute: typeof DiscoverNearbyRoute
+  DiscoverProjectsRoute: typeof DiscoverProjectsRoute
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
   IdentityBusinessRoute: typeof IdentityBusinessRoute
   IdentityCardRoute: typeof IdentityCardRoute
@@ -2662,6 +2727,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlansRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recently-viewed': {
+      id: '/recently-viewed'
+      path: '/recently-viewed'
+      fullPath: '/recently-viewed'
+      preLoaderRoute: typeof RecentlyViewedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recommendations': {
       id: '/recommendations'
       path: '/recommendations'
@@ -2849,6 +2921,34 @@ declare module '@tanstack/react-router' {
       path: '/collab/new'
       fullPath: '/collab/new'
       preLoaderRoute: typeof CollabNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/community': {
+      id: '/discover/community'
+      path: '/discover/community'
+      fullPath: '/discover/community'
+      preLoaderRoute: typeof DiscoverCommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/music': {
+      id: '/discover/music'
+      path: '/discover/music'
+      fullPath: '/discover/music'
+      preLoaderRoute: typeof DiscoverMusicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/nearby': {
+      id: '/discover/nearby'
+      path: '/discover/nearby'
+      fullPath: '/discover/nearby'
+      preLoaderRoute: typeof DiscoverNearbyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/projects': {
+      id: '/discover/projects'
+      path: '/discover/projects'
+      fullPath: '/discover/projects'
+      preLoaderRoute: typeof DiscoverProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/help/$slug': {
@@ -4178,6 +4278,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   PlansRoute: PlansRouteWithChildren,
+  RecentlyViewedRoute: RecentlyViewedRoute,
   RecommendationsRoute: RecommendationsRouteWithChildren,
   RecommendedRoute: RecommendedRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -4199,6 +4300,10 @@ const rootRouteChildren: RootRouteChildren = {
   BookingIdRoute: BookingIdRouteWithChildren,
   BusinessNewRoute: BusinessNewRoute,
   CollabNewRoute: CollabNewRouteWithChildren,
+  DiscoverCommunityRoute: DiscoverCommunityRoute,
+  DiscoverMusicRoute: DiscoverMusicRoute,
+  DiscoverNearbyRoute: DiscoverNearbyRoute,
+  DiscoverProjectsRoute: DiscoverProjectsRoute,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
   IdentityBusinessRoute: IdentityBusinessRoute,
   IdentityCardRoute: IdentityCardRoute,
