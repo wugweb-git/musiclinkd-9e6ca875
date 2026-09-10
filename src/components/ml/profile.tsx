@@ -31,7 +31,7 @@ export function ProfileSection({
   return (
     <section className="mt-6">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <h2 className="text-[17px]">{title}</h2>
+        <h2 className="text-2-lg">{title}</h2>
         {action ? (
           <button type="button" onClick={onAction} className="text-xs font-semibold text-primary">
             {action}
@@ -56,7 +56,7 @@ export function ProfileEmpty({
 }) {
   return (
     <div className="rounded-3xl border border-dashed border-border bg-card p-5 text-center">
-      <h3 className="text-[14px]">{title}</h3>
+      <h3 className="text-2">{title}</h3>
       <p className="mx-auto mt-1 max-w-[260px] text-xs leading-relaxed text-muted-foreground">
         {body}
       </p>
@@ -94,7 +94,7 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
   const industry = tier === "Industry Verified" || tier === "Professional";
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-1 font-bold uppercase tracking-wide"
       style={{
         background: industry ? "var(--pink-container)" : "var(--surface-subtle)",
         color: industry ? "var(--primary)" : "var(--text-2)",
@@ -111,7 +111,7 @@ export function StatusBadge({ status }: { status: string }) {
   const busy = status === "Busy" || status === "Touring";
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{
         background: busy ? "var(--surface-subtle)" : "var(--success-container)",
         color: busy ? "var(--text-2)" : "var(--success)",
@@ -136,10 +136,10 @@ export function TagChip({
   const styles: Record<string, { background: string; color: string }> = {
     subtle: { background: "var(--surface-subtle)", color: "var(--text-2)" },
     pink: { background: "var(--pink-container)", color: "var(--primary)" },
-    purple: { background: "var(--purple-container)", color: "var(--purple)" },
+    purple: { background: "var(--status-category-bg)", color: "var(--status-category-text)" },
   };
   return (
-    <span className="rounded-full px-3 py-1.5 text-[11px] font-semibold" style={styles[tone]}>
+    <span className="rounded-full px-3 py-1.5 text-1 font-semibold" style={styles[tone]}>
       {children}
     </span>
   );
@@ -157,7 +157,7 @@ export function ChipGroup({
   if (!items.length) return null;
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
-      <p className="mb-2.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+      <p className="mb-2.5 text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -174,7 +174,7 @@ export function ChipGroup({
 export function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <span className="max-w-[58%] text-right text-xs font-semibold">{value}</span>
@@ -246,7 +246,7 @@ export function ProfileHero({
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <h1 className="text-[24px] leading-tight">{p.name}</h1>
+          <h1 className="text-3 leading-tight">{p.name}</h1>
           <VerificationBadge tier={p.verification} />
         </div>
         <p className="mt-0.5 text-xs text-muted-foreground">
@@ -260,7 +260,7 @@ export function ProfileHero({
           <StatusBadge status={p.availability} />
         </div>
         {owner && p.privacy !== "Public" ? (
-          <p className="mt-2 text-[11px] font-semibold text-warn">Visibility: {p.privacy}</p>
+          <p className="mt-2 text-1 font-semibold text-warn">Visibility: {p.privacy}</p>
         ) : null}
       </div>
     </header>
@@ -278,8 +278,8 @@ export function StatRow({ p }: { p: PersonProfile }) {
     <div className="mt-4 grid grid-cols-4 gap-2 rounded-3xl border border-border bg-card p-3">
       {stats.map((s) => (
         <div key={s.label} className="text-center">
-          <p className="text-[15px] font-bold leading-tight">{s.value}</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">{s.label}</p>
+          <p className="text-2 font-bold leading-tight">{s.value}</p>
+          <p className="mt-0.5 text-1 text-muted-foreground">{s.label}</p>
         </div>
       ))}
     </div>
@@ -300,13 +300,13 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
       <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/25 to-transparent" />
       <div className="absolute inset-x-4 bottom-4 text-background">
         <span
-          className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+          className="rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
           style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
         >
           Featured {featured.kind}
         </span>
-        <h3 className="mt-2 text-[19px] text-background">{featured.title}</h3>
-        <p className="text-[11px] opacity-85">{featured.meta}</p>
+        <h3 className="mt-2 text-3 text-background">{featured.title}</h3>
+        <p className="text-1 opacity-85">{featured.meta}</p>
       </div>
     </article>
   );
@@ -331,11 +331,11 @@ export function AudioTrackCard({
         className="h-14 w-14 rounded-2xl object-cover"
       />
       <div className="min-w-0 flex-1">
-        <h3 className="truncate text-[14px]">{track.title}</h3>
-        <p className="truncate text-[11px] text-muted-foreground">
+        <h3 className="truncate text-2">{track.title}</h3>
+        <p className="truncate text-1 text-muted-foreground">
           {track.role} · {track.project}
         </p>
-        <p className="mt-0.5 text-[11px] text-muted-foreground">{track.duration}</p>
+        <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
       </div>
       <button
         type="button"
@@ -361,7 +361,7 @@ export function MiniPlayer({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-16 z-40 mx-auto w-full max-w-[430px] px-3 pb-2">
+    <div className="fixed inset-x-0 bottom-16 z-40 mx-auto w-full max-w-app px-3 pb-2">
       <div className="flex items-center gap-3 rounded-3xl border border-border bg-card p-2.5">
         <img
           src={track.artwork}
@@ -370,7 +370,7 @@ export function MiniPlayer({
           className="h-11 w-11 rounded-2xl object-cover"
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[12px] font-semibold">{track.title}</p>
+          <p className="truncate text-1 font-semibold">{track.title}</p>
           <div className="mt-1.5 flex h-5 items-end gap-[2px]" aria-hidden>
             {Array.from({ length: 34 }).map((_, i) => (
               <span
@@ -415,13 +415,13 @@ export function VideoCard({ v }: { v: VideoItem }) {
             <Play size={16} aria-hidden />
           </span>
         </span>
-        <span className="absolute bottom-2 right-2 rounded-full bg-navy/80 px-2 py-0.5 text-[10px] font-semibold text-background">
+        <span className="absolute bottom-2 right-2 rounded-full bg-navy/80 px-2 py-0.5 text-1 font-semibold text-background">
           {v.duration}
         </span>
       </div>
       <div className="p-3">
-        <h3 className="truncate text-[13px]">{v.title}</h3>
-        <p className="truncate text-[11px] text-muted-foreground">{v.context}</p>
+        <h3 className="truncate text-2">{v.title}</h3>
+        <p className="truncate text-1 text-muted-foreground">{v.context}</p>
       </div>
     </article>
   );
@@ -455,12 +455,12 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="min-w-0 flex-1 truncate text-[14px]">{p.name}</h3>
+          <h3 className="min-w-0 flex-1 truncate text-2">{p.name}</h3>
           <TagChip tone={p.status === "Released" ? "subtle" : "pink"}>{p.status}</TagChip>
         </div>
-        <p className="truncate text-[11px] text-muted-foreground">{p.role}</p>
-        <p className="truncate text-[11px] text-muted-foreground">with {p.collaborators}</p>
-        <p className="mt-1 text-[11px] font-semibold text-primary">
+        <p className="truncate text-1 text-muted-foreground">{p.role}</p>
+        <p className="truncate text-1 text-muted-foreground">with {p.collaborators}</p>
+        <p className="mt-1 text-1 font-semibold text-primary">
           {p.genre} · {p.year}
         </p>
       </div>
@@ -472,13 +472,11 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
   return (
     <article className="rounded-3xl border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-[15px]">{s.name}</h3>
+        <h3 className="text-2">{s.name}</h3>
         {s.from ? (
-          <span className="shrink-0 text-[13px] font-bold text-primary">{s.from}</span>
+          <span className="shrink-0 text-2 font-bold text-primary">{s.from}</span>
         ) : (
-          <span className="shrink-0 text-[11px] font-semibold text-muted-foreground">
-            On enquiry
-          </span>
+          <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
       </div>
       <p className="mt-1 text-xs leading-relaxed text-text2">{s.description}</p>
@@ -499,8 +497,8 @@ export function ExperienceCard({ e }: { e: ExperienceItem }) {
     <div className="flex gap-3 px-4 py-4">
       <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
       <div className="min-w-0">
-        <h3 className="text-[14px]">{e.title}</h3>
-        <p className="text-[11px] font-semibold text-muted-foreground">
+        <h3 className="text-2">{e.title}</h3>
+        <p className="text-1 font-semibold text-muted-foreground">
           {e.org} · {e.period}
         </p>
         <p className="mt-1 text-xs leading-relaxed text-text2">{e.detail}</p>
@@ -519,8 +517,8 @@ export function CollaboratorCard({ c }: { c: Collaborator }) {
         loading="lazy"
         className="h-16 w-16 rounded-2xl object-cover"
       />
-      <p className="mt-2 w-20 truncate text-center text-[11px] font-semibold">{c.name}</p>
-      <p className="text-[10px] text-muted-foreground">{c.kind}</p>
+      <p className="mt-2 w-20 truncate text-center text-1 font-semibold">{c.name}</p>
+      <p className="text-1 text-muted-foreground">{c.kind}</p>
     </>
   );
   if (!c.link) return <div className="flex shrink-0 flex-col items-center">{inner}</div>;
@@ -540,23 +538,21 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
     <article className="rounded-3xl border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-[14px]">{r.by}</h3>
-          <p className="truncate text-[11px] text-muted-foreground">{r.org}</p>
+          <h3 className="truncate text-2">{r.by}</h3>
+          <p className="truncate text-1 text-muted-foreground">{r.org}</p>
         </div>
         <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-warn">
           <Star size={12} fill="currentColor" aria-hidden />
           {r.stars}.0
         </span>
       </div>
-      <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+      <p className="mt-1.5 text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {r.context}
       </p>
       <p className="mt-2 text-xs leading-relaxed text-text2">{r.text}</p>
       {r.response ? (
         <div className="mt-3 rounded-2xl bg-subtle p-3">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-            Response
-          </p>
+          <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Response</p>
           <p className="mt-1 text-xs text-text2">{r.response}</p>
         </div>
       ) : null}
@@ -574,12 +570,12 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="text-[14px]">{o.title}</h3>
+          <h3 className="text-2">{o.title}</h3>
           <p className="mt-0.5 text-xs text-text2">{o.detail}</p>
         </div>
         <Link
           to="/messages"
-          className="shrink-0 rounded-full bg-navy px-3.5 py-2 text-[11px] font-semibold text-background"
+          className="shrink-0 rounded-full bg-navy px-3.5 py-2 text-1 font-semibold text-background"
         >
           Respond
         </Link>
@@ -603,8 +599,8 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
         className="h-12 w-12 rounded-2xl object-cover"
       />
       <div className="min-w-0">
-        <h3 className="truncate text-[13px]">{m.title}</h3>
-        <p className="truncate text-[11px] text-muted-foreground">{m.meta}</p>
+        <h3 className="truncate text-2">{m.title}</h3>
+        <p className="truncate text-1 text-muted-foreground">{m.meta}</p>
       </div>
     </Link>
   );
@@ -618,7 +614,7 @@ export function SocialLinks({ links }: { links: { label: string; handle: string 
           key={l.label}
           href="#"
           onClick={(e) => e.preventDefault()}
-          className="flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-[11px] font-semibold"
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-1 font-semibold"
         >
           {l.label}
           <span className="text-muted-foreground">{l.handle}</span>
@@ -645,7 +641,7 @@ function QrBlock({ seed }: { seed: string }) {
       {cells.map((on, i) => (
         <span
           key={i}
-          className="aspect-square rounded-[2px]"
+          className="aspect-square rounded-xs"
           style={{ background: on ? "var(--navy)" : "transparent" }}
         />
       ))}
@@ -674,11 +670,11 @@ export function ShareSheet({
           <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-2xl object-cover" />
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <h3 className="truncate text-[16px] text-background">{p.name}</h3>
+              <h3 className="truncate text-2 text-background">{p.name}</h3>
               <BadgeCheck size={14} aria-label="Verified" />
             </div>
-            <p className="truncate text-[11px] opacity-80">{p.primaryRole}</p>
-            <p className="truncate text-[11px] opacity-80">{p.location}</p>
+            <p className="truncate text-1 opacity-80">{p.primaryRole}</p>
+            <p className="truncate text-1 opacity-80">{p.location}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 border-t border-background/15 p-4">
@@ -686,11 +682,11 @@ export function ShareSheet({
             <QrBlock seed={p.username} />
           </div>
           <div className="min-w-0 text-background">
-            <p className="text-[10px] font-bold uppercase tracking-wide opacity-70">
+            <p className="text-1 font-bold uppercase tracking-wide opacity-70">
               MusicLinkd identity
             </p>
-            <p className="mt-1 truncate text-[13px] font-semibold">{url}</p>
-            <p className="mt-1 text-[11px] opacity-75">Scan to open this profile in MusicLinkd.</p>
+            <p className="mt-1 truncate text-2 font-semibold">{url}</p>
+            <p className="mt-1 text-1 opacity-75">Scan to open this profile in MusicLinkd.</p>
           </div>
         </div>
       </div>
@@ -752,7 +748,7 @@ export function MoreSheet({
           );
         })}
       </div>
-      <p className="mt-3 flex items-center gap-2 px-1 text-[11px] text-muted-foreground">
+      <p className="mt-3 flex items-center gap-2 px-1 text-1 text-muted-foreground">
         <ShieldCheck size={13} aria-hidden />
         Reports are reviewed by the MusicLinkd trust team.
       </p>
@@ -775,8 +771,8 @@ export function CompletionCard({
       style={{ background: "var(--pink-container)" }}
     >
       <div className="flex items-baseline justify-between">
-        <h3 className="text-[15px]">Your profile is {percent}% complete</h3>
-        <span className="text-[11px] font-semibold text-primary">{missing.length} left</span>
+        <h3 className="text-2">Your profile is {percent}% complete</h3>
+        <span className="text-1 font-semibold text-primary">{missing.length} left</span>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-card">
         <div

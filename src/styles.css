@@ -5,20 +5,63 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * MusicLinkd — Gestalt Design System tokens (v4/v5 master).
+ * MusicLinkd — Gestalt Design System tokens (v9, reconciled 31 Aug 2026).
  * Brand pink #EA4C89, midnight navy #0D0B26, paper #FCFCFD, hairline #ECECF1.
- * Flat surfaces: 1px borders, radius 24 on cards, shadows avoided.
+ *
+ * Radius scale is 8 / 16 / 32 / pill — nothing else is a step.
+ * Cards lift with --elevation-2; the 1px border is the fallback for cards on white.
+ * Purple is the category badge only — never a general accent.
+ * Type is four fluid ramps; never an arbitrary px size.
  */
 
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /*
+   * Radius. The scale is 8 / 16 / 32 / pill. `xl`, `2xl` and `3xl` are retained as
+   * aliases of 32px so the ~450 existing utility usages keep rendering on-scale
+   * instead of silently falling back to Tailwind's defaults (which would collapse
+   * 2xl from 40px to 16px). They fold into `rounded-lg` when Phase 8 sweeps routes.
+   */
   --radius-sm: 8px;
   --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-lg: 32px;
   --radius-xl: 32px;
-  --radius-2xl: 40px;
+  --radius-2xl: 32px;
+  --radius-3xl: 32px;
+
+  /*
+   * Type. Fluid ramps, min at a 360px viewport and max at 1280px. At the 412px
+   * target they render just above their minimums: 10.1 / 14.2 / 17.3 / 20.5 / 28.9px.
+   *
+   * --text-2-lg is a fifth, deliberate step for section headers. The 4-token core
+   * bans *arbitrary* sizes, not a considered step; without it every heading that was
+   * 17px collapses onto --text-2 and becomes the same size as the body copy beneath
+   * it, which flattens the hierarchy on every screen. See the foundation.gestalt.*
+   * scales in frontend/guide/README.md, which exist for exactly this case.
+   */
+  --text-1: clamp(0.625rem, 0.576rem + 0.217vw, 0.75rem); /* 10 → 12px */
+  --text-1--line-height: 1.45;
+  --text-2: clamp(0.875rem, 0.777rem + 0.435vw, 1.125rem); /* 14 → 18px */
+  --text-2--line-height: 1.5;
+  --text-2-lg: clamp(1.0625rem, 0.94rem + 0.543vw, 1.375rem); /* 17 → 22px */
+  --text-2-lg--line-height: 1.3;
+  --text-3: clamp(1.25rem, 1.054rem + 0.87vw, 1.75rem); /* 20 → 28px */
+  --text-3--line-height: 1.25;
+  --text-4: clamp(1.75rem, 1.359rem + 1.739vw, 2.75rem); /* 28 → 44px */
+  --text-4--line-height: 1.1;
+
+  /* Spacing steps. Numeric utilities (p-1, gap-4 …) are untouched. */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-nav-clear: 96px;
+
+  /* The mobile shell width, previously repeated as max-w-[430px] in 55 places. */
+  --container-app: 430px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -46,10 +89,27 @@
   --color-warn: var(--warn);
   --color-subtle: var(--surface-subtle);
   --color-text2: var(--text-2);
+
+  /* Category badge — the only sanctioned use of purple. */
+  --color-status-category-bg: var(--status-category-bg);
+  --color-status-category-text: var(--status-category-text);
+
+  /* Selection. Navy is primary; pink means selected. One active state, everywhere. */
+  --color-selected-bg: var(--selected-bg);
+  --color-selected-text: var(--selected-text);
+
+  --shadow-elevation-1: var(--elevation-1);
+  --shadow-elevation-2: var(--elevation-2);
+  --shadow-elevation-3: var(--elevation-3);
+  --shadow-elevation-4: var(--elevation-4);
+
+  --ease-standard: var(--easing-standard);
+  --ease-enter: var(--easing-enter);
+  --ease-spring: var(--easing-spring);
 }
 
 :root {
-  --radius: 24px;
+  --radius: 32px;
   --background: oklch(0.9913 0.0013 286.38);
   --foreground: oklch(0.1591 0 89.88);
   --card: oklch(1 0 89.88);
@@ -62,8 +122,9 @@
   --secondary-foreground: oklch(0.1713 0.0539 282.44);
   --muted: oklch(0.98 0.004 286.33);
   --muted-foreground: oklch(0.5955 0.0257 285.59);
-  --accent: oklch(0.6056 0.2189 292.72);
-  --accent-foreground: oklch(1 0 89.88);
+  /* Accent is a neutral hover surface. Purple lives on the category badge only. */
+  --accent: oklch(0.98 0.004 286.33);
+  --accent-foreground: oklch(0.1591 0 89.88);
   --destructive: oklch(0.5771 0.2152 27.33);
   --destructive-foreground: oklch(1 0 89.88);
   --border: oklch(0.9445 0.0067 286.27);
@@ -86,6 +147,49 @@
   --pink-strong: oklch(0.52 0.2 0.71);
   --gradient-brand: linear-gradient(135deg, var(--primary), var(--purple));
   --gradient-navy: linear-gradient(150deg, oklch(0.1713 0.0539 282.44), oklch(0.28 0.07 288));
+
+  /* Category badge pair. Text is darkened to clear 4.5:1 on its own tint. */
+  --status-category-bg: color-mix(in oklab, var(--purple) 12%, white);
+  --status-category-text: oklch(0.4 0.19 292.72);
+
+  /*
+   * Selected pair. Uses --pink-strong rather than --primary: --primary at L=0.65 on
+   * its own 10% tint is roughly 3:1, which passes for an icon but fails 4.5:1 for the
+   * chip label. This mirrors the `brand` tone already in kit.tsx.
+   */
+  --selected-bg: var(--pink-container);
+  --selected-text: var(--pink-strong);
+
+  /* Elevation. Navy-tinted rather than black so lifts read warm on paper. */
+  --elevation-1: 0 1px 2px color-mix(in oklab, var(--navy) 6%, transparent);
+  --elevation-2:
+    0 2px 8px color-mix(in oklab, var(--navy) 8%, transparent),
+    0 1px 2px color-mix(in oklab, var(--navy) 4%, transparent);
+  --elevation-3:
+    0 8px 24px color-mix(in oklab, var(--navy) 10%, transparent),
+    0 2px 6px color-mix(in oklab, var(--navy) 6%, transparent);
+  --elevation-4:
+    0 16px 48px color-mix(in oklab, var(--navy) 14%, transparent),
+    0 4px 12px color-mix(in oklab, var(--navy) 8%, transparent);
+
+  /* Motion. */
+  --duration-1: 125ms;
+  --duration-2: 200ms;
+  --duration-3: 320ms;
+  --duration-4: 500ms;
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --easing-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Focus. Every interactive control shows this on :focus-visible. */
+  --focus-ring: 2px solid var(--primary);
+  --focus-ring-offset: 2px;
+
+  /* Opacity steps. */
+  --opacity-1: 0.08;
+  --opacity-2: 0.16;
+  --opacity-3: 0.32;
+  --opacity-4: 0.64;
 }
 
 @layer base {
@@ -107,6 +211,22 @@
     font-family: var(--font-display);
     letter-spacing: -0.02em;
     font-weight: 700;
+  }
+
+  :focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

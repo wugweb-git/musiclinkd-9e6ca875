@@ -30,7 +30,7 @@ export function StatusPill({
   const c = toneStyle[tone];
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{ background: c.bg, color: c.fg }}
     >
       {icon ?? <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.fg }} />}
@@ -41,7 +41,9 @@ export function StatusPill({
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-[24px] border border-border bg-card p-4 ${className}`}>
+    <section
+      className={`rounded-lg border border-border bg-card p-4 shadow-elevation-2 ${className}`}
+    >
       {children}
     </section>
   );
@@ -67,7 +69,7 @@ export function Segmented<T extends string>({
           onClick={() => onChange(o)}
           className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold ${
             value === o
-              ? "border-transparent bg-navy text-background"
+              ? "border-transparent bg-selected-bg text-selected-text"
               : "border-border bg-card text-foreground"
           }`}
         >
@@ -105,14 +107,13 @@ export function Row({
       <span className="min-w-0 flex-1 text-left">
         <span className="block truncate text-sm font-semibold">{title}</span>
         {subtitle ? (
-          <span className="block truncate text-[12px] text-muted-foreground">{subtitle}</span>
+          <span className="block truncate text-1 text-muted-foreground">{subtitle}</span>
         ) : null}
       </span>
       {right ?? <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />}
     </>
   );
-  const cls =
-    "flex w-full items-center gap-3 rounded-[20px] border border-border bg-card px-4 py-3";
+  const cls = "flex w-full items-center gap-3 rounded-md border border-border bg-card px-4 py-3";
   if (to) {
     return (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -138,9 +139,9 @@ export function EmptyState({
   children?: ReactNode;
 }) {
   return (
-    <div className="rounded-[24px] border border-dashed border-border bg-card px-6 py-10 text-center">
-      <h3 className="text-[17px] leading-tight">{title}</h3>
-      <p className="mx-auto mt-2 max-w-[280px] text-[13px] text-muted-foreground">{body}</p>
+    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
+      <h3 className="text-2-lg leading-tight">{title}</h3>
+      <p className="mx-auto mt-2 max-w-[280px] text-2 text-muted-foreground">{body}</p>
       {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
     </div>
   );
@@ -150,7 +151,7 @@ export function Loading({ rows = 3 }: { rows?: number }) {
   return (
     <div className="flex flex-col gap-2" aria-busy>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-20 animate-pulse rounded-[20px] bg-subtle" />
+        <div key={i} className="h-20 animate-pulse rounded-md bg-subtle" />
       ))}
     </div>
   );
@@ -186,7 +187,7 @@ export function Meter({
   const pct = max ? Math.round((value / max) * 100) : 0;
   return (
     <div>
-      <div className="flex items-baseline justify-between text-[13px]">
+      <div className="flex items-baseline justify-between text-2">
         <span className="font-semibold">{label}</span>
         <span className="text-muted-foreground">{hint ?? value}</span>
       </div>
@@ -200,7 +201,7 @@ export function Meter({
 /** Reason chip used by recommendations everywhere they appear. */
 export function ReasonChip({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-block max-w-full break-words rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold leading-snug text-text2">
+    <span className="inline-block max-w-full break-words rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold leading-snug text-text2">
       {children}
     </span>
   );
@@ -222,7 +223,7 @@ export function Dialog({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-50 mx-auto flex w-full max-w-[430px] items-center justify-center px-6"
+      className="fixed inset-0 z-50 mx-auto flex w-full max-w-app items-center justify-center px-6"
       role="dialog"
       aria-modal
     >
@@ -231,9 +232,9 @@ export function Dialog({
         onClick={onClose}
         className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]"
       />
-      <div className="relative w-full rounded-[24px] border border-border bg-card p-5">
-        <h2 className="text-[19px] leading-tight">{title}</h2>
-        {body ? <p className="mt-2 text-[13px] text-muted-foreground">{body}</p> : null}
+      <div className="relative w-full rounded-lg border border-border bg-card p-5">
+        <h2 className="text-3 leading-tight">{title}</h2>
+        {body ? <p className="mt-2 text-2 text-muted-foreground">{body}</p> : null}
         {children ? <div className="mt-4 flex flex-col gap-2">{children}</div> : null}
       </div>
     </div>

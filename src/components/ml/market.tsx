@@ -39,7 +39,7 @@ export function SaveButton({
 export function ConditionBadge({ value }: { value: string }) {
   return (
     <span
-      className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{ background: "var(--surface-subtle)", color: "var(--text-2)" }}
     >
       {value}
@@ -56,7 +56,7 @@ export function Rating({
 }) {
   if (!value) return null;
   return (
-    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-warn">
+    <span className="inline-flex items-center gap-1 text-1 font-semibold text-warn">
       <Star size={12} fill="currentColor" strokeWidth={0} />
       {value}
       {count ? <span className="text-muted-foreground">({count})</span> : null}
@@ -66,7 +66,7 @@ export function Rating({
 
 export function LocationRow({ text }: { text: string }) {
   return (
-    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+    <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
       <MapPin size={12} strokeWidth={1.8} />
       <span className="truncate">{text}</span>
     </span>
@@ -84,10 +84,8 @@ export function PriceBlock({
 }) {
   return (
     <div className="flex items-baseline gap-1">
-      <span className={size === "lg" ? "text-2xl font-bold" : "text-[15px] font-bold"}>
-        {price}
-      </span>
-      {note ? <span className="text-[11px] text-muted-foreground">{note}</span> : null}
+      <span className={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}>{price}</span>
+      {note ? <span className="text-1 text-muted-foreground">{note}</span> : null}
     </div>
   );
 }
@@ -95,8 +93,8 @@ export function PriceBlock({
 export function TrustPill({ label }: { label: string }) {
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold"
-      style={{ background: "var(--purple-container)", color: "var(--purple)" }}
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-semibold"
+      style={{ background: "var(--status-category-bg)", color: "var(--status-category-text)" }}
     >
       <ShieldCheck size={11} strokeWidth={2.2} />
       {label}
@@ -127,8 +125,8 @@ export function CategoryTile({
       >
         {emoji}
       </span>
-      <span className="text-[12px] font-semibold leading-tight">{label}</span>
-      <span className="text-[10px] text-muted-foreground">{count}</span>
+      <span className="text-1 font-semibold leading-tight">{label}</span>
+      <span className="text-1 text-muted-foreground">{count}</span>
     </Link>
   );
 }
@@ -172,7 +170,7 @@ export function ListingCard({
             onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
           />
         </div>
-        <span className="absolute left-2 top-2 rounded-full bg-navy/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-background backdrop-blur">
+        <span className="absolute left-2 top-2 rounded-full bg-navy/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
           {meta.tag}
         </span>
       </div>
@@ -185,11 +183,11 @@ export function ListingCard({
             <Rating value={l.rating} count={l.reviews} />
           )}
         </div>
-        <h3 className="mt-1.5 line-clamp-2 text-[14px] leading-snug">{l.title}</h3>
-        <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">{l.subtitle}</p>
+        <h3 className="mt-1.5 line-clamp-2 text-2 leading-snug">{l.title}</h3>
+        <p className="mt-0.5 line-clamp-1 text-1 text-muted-foreground">{l.subtitle}</p>
         <div className="mt-2.5 flex items-center justify-between">
           <LocationRow text={`${l.location} · ${l.distance}`} />
-          <span className="text-[10px] text-muted-foreground">{meta.line}</span>
+          <span className="text-1 text-muted-foreground">{meta.line}</span>
         </div>
       </div>
     </Link>
@@ -217,8 +215,8 @@ export function ListingTile({ l }: { l: Listing }) {
       </div>
       <div className="p-3">
         <PriceBlock price={l.price} note={l.priceNote} />
-        <h3 className="mt-1 line-clamp-2 text-[12px] leading-snug">{l.title}</h3>
-        <p className="mt-1 truncate text-[10px] text-muted-foreground">{l.distance}</p>
+        <h3 className="mt-1 line-clamp-2 text-1 leading-snug">{l.title}</h3>
+        <p className="mt-1 truncate text-1 text-muted-foreground">{l.distance}</p>
       </div>
     </Link>
   );
@@ -240,7 +238,7 @@ export function ListingRow({ l }: { l: Listing }) {
         <div className="flex items-start justify-between gap-2">
           <Link to="/marketplace/l/$id" params={{ id: l.id }} className="min-w-0">
             <PriceBlock price={l.price} note={l.priceNote} />
-            <h3 className="line-clamp-2 text-[13px] leading-snug">{l.title}</h3>
+            <h3 className="line-clamp-2 text-2 leading-snug">{l.title}</h3>
           </Link>
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
         </div>
@@ -250,7 +248,7 @@ export function ListingRow({ l }: { l: Listing }) {
           <LocationRow text={l.distance} />
         </div>
         {l.reason ? (
-          <p className="mt-1.5 truncate text-[10px] font-semibold text-primary">{l.reason}</p>
+          <p className="mt-1.5 truncate text-1 font-semibold text-primary">{l.reason}</p>
         ) : null}
       </div>
     </article>
@@ -279,14 +277,14 @@ export function SellerSummary({
       <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-2xl object-cover" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <p className="truncate text-[14px] font-semibold">{seller.name}</p>
+          <p className="truncate text-2 font-semibold">{seller.name}</p>
           {seller.verified ? <VerifiedBadge size={14} /> : null}
         </div>
-        <p className="truncate text-[11px] text-muted-foreground">{seller.role}</p>
+        <p className="truncate text-1 text-muted-foreground">{seller.role}</p>
         {compact ? null : (
           <div className="mt-1 flex items-center gap-2">
             <Rating value={seller.rating} count={seller.reviews} />
-            <span className="text-[10px] text-muted-foreground">Replies {seller.responseTime}</span>
+            <span className="text-1 text-muted-foreground">Replies {seller.responseTime}</span>
           </div>
         )}
       </div>
@@ -313,7 +311,7 @@ export function EmptyState({
       >
         {emoji}
       </div>
-      <h3 className="text-[15px]">{title}</h3>
+      <h3 className="text-2">{title}</h3>
       <p className="mx-auto mt-1 max-w-[260px] text-xs text-muted-foreground">{body}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
@@ -370,7 +368,7 @@ export function MarketFilterSheet({
 
       {filterGroups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
             {g.label}
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -501,12 +499,12 @@ export function OfferSheet({
           <div className="mb-5 flex items-center gap-3 rounded-3xl border border-border p-3">
             <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-2xl object-cover" />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-semibold">{listing.title}</p>
-              <p className="text-[11px] text-muted-foreground">Asking {listing.price}</p>
+              <p className="truncate text-2 font-semibold">{listing.title}</p>
+              <p className="text-1 text-muted-foreground">Asking {listing.price}</p>
             </div>
           </div>
 
-          <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
             Your offer
           </label>
           <input
@@ -517,7 +515,7 @@ export function OfferSheet({
             className="mb-4 h-14 w-full rounded-full border border-border bg-card px-5 text-base font-semibold outline-none focus:border-primary"
           />
 
-          <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
             Message (optional)
           </label>
           <textarea
@@ -527,7 +525,7 @@ export function OfferSheet({
             placeholder="I can collect from Dadar this weekend."
             className="mb-3 w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
           />
-          <p className="mb-5 text-[11px] text-muted-foreground">
+          <p className="mb-5 text-1 text-muted-foreground">
             Offers expire after 48 hours. Payment is arranged directly with the seller.
           </p>
 
@@ -589,8 +587,8 @@ export function SectionRow({
     <section className="mb-7">
       <div className="mb-3 flex items-baseline justify-between px-5">
         <div>
-          <h2 className="text-[17px]">{title}</h2>
-          {hint ? <p className="text-[11px] text-muted-foreground">{hint}</p> : null}
+          <h2 className="text-2-lg">{title}</h2>
+          {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {to ? (
           <Link to={to} className="text-xs font-semibold text-primary">

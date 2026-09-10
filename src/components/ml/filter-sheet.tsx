@@ -39,7 +39,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
 
       {groups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
             {g.label}
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
         <Toggle label="Session musician available" value={session} onChange={setSession} />
       </div>
 
-      <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
         Sort by
       </h3>
       <div className="mb-6 flex flex-wrap gap-2">

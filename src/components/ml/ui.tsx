@@ -10,8 +10,8 @@ export function Screen({
   bottomNav?: boolean;
 }) {
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[430px] flex-col bg-background">
-      <div className={bottomNav ? "flex-1 pb-24" : "flex-1 pb-8"}>{children}</div>
+    <div className="mx-auto flex min-h-screen w-full max-w-app flex-col bg-background">
+      <div className={bottomNav ? "flex-1 pb-nav-clear" : "flex-1 pb-8"}>{children}</div>
       {bottomNav ? <BottomNav /> : null}
     </div>
   );
@@ -28,7 +28,7 @@ const navItems = [
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-app border-t border-border bg-card/95 backdrop-blur">
       <ul className="flex items-stretch justify-between px-2 pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const active = path === item.to;
@@ -51,7 +51,7 @@ export function BottomNav() {
                   />
                 </span>
                 <span
-                  className={`text-[10px] font-semibold ${active ? "text-primary" : "text-muted-foreground"}`}
+                  className={`text-1 font-semibold ${active ? "text-primary" : "text-muted-foreground"}`}
                 >
                   {item.label}
                 </span>
@@ -87,7 +87,7 @@ export function TopBar({
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
-        <h1 className="truncate text-[22px] leading-tight">{title}</h1>
+        <h1 className="truncate text-3 leading-tight">{title}</h1>
         {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
       </div>
       {right}
@@ -137,7 +137,7 @@ export function Chip({
       onClick={onClick}
       className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
         active
-          ? "border-transparent bg-navy text-background"
+          ? "border-transparent bg-selected-bg text-selected-text"
           : "border-border bg-card text-foreground"
       }`}
     >
@@ -149,7 +149,7 @@ export function Chip({
 export function VerifiedBadge({ size = 16 }: { size?: number }) {
   return (
     <span
-      className="inline-flex items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
+      className="inline-flex items-center justify-center rounded-full bg-primary text-1 font-bold text-primary-foreground"
       style={{ width: size, height: size }}
       title="Verified"
     >
@@ -167,7 +167,7 @@ export function AvailabilityBadge({ status }: { status: string }) {
   const c = map[status] ?? map["Booked"]!;
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{ background: c.bg, color: c.fg }}
     >
       <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.fg }} />
@@ -222,13 +222,13 @@ export function Sheet({
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 mx-auto flex w-full max-w-[430px] flex-col justify-end">
+    <div className="fixed inset-0 z-50 mx-auto flex w-full max-w-app flex-col justify-end">
       <button
         aria-label="Close"
         onClick={onClose}
         className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]"
       />
-      <div className="relative max-h-[88vh] overflow-y-auto rounded-t-[32px] border border-border bg-card px-5 pb-8 pt-3 no-scrollbar">
+      <div className="relative max-h-[88vh] overflow-y-auto rounded-t-lg border border-border bg-card px-5 pb-8 pt-3 no-scrollbar">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
         {title ? <h2 className="mb-4 text-xl">{title}</h2> : null}
         {children}
@@ -240,7 +240,7 @@ export function Sheet({
 export function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-3 px-5">
-      <h2 className="min-w-0 truncate text-[17px]">{title}</h2>
+      <h2 className="min-w-0 truncate text-2-lg">{title}</h2>
       {action ? (
         <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-primary">
           {action}

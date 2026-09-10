@@ -34,7 +34,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="truncate text-[16px] font-semibold">{item.title}</h3>
+            <h3 className="truncate text-2 font-semibold">{item.title}</h3>
             <StatusPill published={item.published} />
           </div>
           <p className="mt-0.5 text-xs text-muted-foreground">
@@ -48,7 +48,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
             <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
           ) : null}
           {item.collaborators.length ? (
-            <p className="mt-1.5 truncate text-[11px] text-muted-foreground">
+            <p className="mt-1.5 truncate text-1 text-muted-foreground">
               with {item.collaborators.join(", ")}
             </p>
           ) : null}
@@ -61,7 +61,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
 export function StatusPill({ published }: { published: boolean }) {
   return (
     <span
-      className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={
         published
           ? { background: "var(--success-container)", color: "var(--success)" }
@@ -102,7 +102,7 @@ export function StateCard({
       style={tone === "error" ? { borderColor: "var(--danger, #DC2626)" } : undefined}
       role={tone === "error" ? "alert" : undefined}
     >
-      <h3 className="text-[17px]">{title}</h3>
+      <h3 className="text-2-lg">{title}</h3>
       <p className="mx-auto mt-1.5 max-w-[280px] text-sm text-muted-foreground">{body}</p>
       {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
     </div>
@@ -128,7 +128,7 @@ export function SignedOutCard({ what = "your portfolio" }: { what?: string }) {
 export function AudioPreview({ src, title }: { src: string; title: string }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
-      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
         Audio preview
       </p>
       <p className="mt-1 truncate text-sm font-semibold">{title}</p>
@@ -189,8 +189,8 @@ export function PortfolioHeader({
 }) {
   const stat = (n: number, label: string) => (
     <div key={label} className="min-w-0">
-      <p className="text-[20px] leading-none tabular-nums">{n}</p>
-      <p className="mt-1 truncate text-[11px] text-muted-foreground">{label}</p>
+      <p className="text-3 leading-none tabular-nums">{n}</p>
+      <p className="mt-1 truncate text-1 text-muted-foreground">{label}</p>
     </div>
   );
   return (
@@ -225,7 +225,7 @@ export function MediaStatePill({ state }: { state: MediaState }) {
           : { background: "var(--surface-subtle)", color: "var(--muted-foreground)" };
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={style}
     >
       <span aria-hidden>●</span>
@@ -272,7 +272,7 @@ export function MediaUploader({
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
           {type} media
         </p>
         <MediaStatePill state={state} />
@@ -365,7 +365,7 @@ export function AudioPlayer({
         )}
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{title}</p>
-          <p className="text-[11px] text-muted-foreground">Audio</p>
+          <p className="text-1 text-muted-foreground">Audio</p>
         </div>
       </div>
       <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
@@ -383,7 +383,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
         rel="noreferrer"
         className="block rounded-3xl border border-border bg-card p-4"
       >
-        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Video</p>
+        <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
         <p className="mt-1 truncate text-xs text-primary">{src}</p>
       </a>
@@ -579,7 +579,7 @@ export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
     <div className="grid grid-cols-2 gap-3">
       {rows.map(([label, n]) => (
         <div key={label} className="rounded-3xl border border-border bg-card p-4">
-          <p className="text-[22px] leading-none tabular-nums">{n.toLocaleString("en-IN")}</p>
+          <p className="text-3 leading-none tabular-nums">{n.toLocaleString("en-IN")}</p>
           <p className="mt-1 text-xs text-muted-foreground">{label}</p>
         </div>
       ))}

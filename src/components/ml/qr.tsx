@@ -52,7 +52,7 @@ export function QrCode({
 
   return (
     <div
-      className={`flex items-center justify-center rounded-[24px] ${className}`}
+      className={`flex items-center justify-center rounded-lg ${className}`}
       style={{ background: s.light, width: size, height: size }}
     >
       {src ? (
@@ -61,11 +61,11 @@ export function QrCode({
           alt={label ?? `QR code for ${value}`}
           width={size}
           height={size}
-          className="h-full w-full rounded-[24px]"
+          className="h-full w-full rounded-lg"
         />
       ) : (
         <div
-          className="h-full w-full animate-pulse rounded-[24px] bg-subtle"
+          className="h-full w-full animate-pulse rounded-lg bg-subtle"
           aria-label="Generating QR code"
         />
       )}
@@ -102,10 +102,10 @@ export function QrIdentityCard({
   const onInk = style === "dark";
   return (
     <article
-      className="overflow-hidden rounded-[24px] border border-border p-5 text-center"
+      className="overflow-hidden rounded-lg border border-border p-5 text-center"
       style={{ background: s.light, color: s.dark }}
     >
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ opacity: 0.6 }}>
+      <p className="text-1 font-bold uppercase tracking-[0.18em]" style={{ opacity: 0.6 }}>
         MusicLinkd
       </p>
 
@@ -117,16 +117,16 @@ export function QrIdentityCard({
           style={{ border: `2px solid ${s.dark}20` }}
         />
         <div className="flex items-center justify-center gap-1.5">
-          <h2 className="text-[19px] leading-tight" style={{ color: s.dark }}>
+          <h2 className="text-3 leading-tight" style={{ color: s.dark }}>
             {name}
           </h2>
           {verified ? <VerifiedBadge size={15} /> : null}
         </div>
-        <p className="text-[13px]" style={{ opacity: 0.72 }}>
+        <p className="text-2" style={{ opacity: 0.72 }}>
           {role}
         </p>
         {tagline && !compact ? (
-          <p className="max-w-[240px] text-[12px]" style={{ opacity: 0.6 }}>
+          <p className="max-w-[240px] text-1" style={{ opacity: 0.6 }}>
             {tagline}
           </p>
         ) : null}
@@ -141,10 +141,10 @@ export function QrIdentityCard({
         />
       </div>
 
-      <p className="mt-4 text-[12px] font-semibold" style={{ opacity: onInk ? 0.85 : 0.7 }}>
+      <p className="mt-4 text-1 font-semibold" style={{ opacity: onInk ? 0.85 : 0.7 }}>
         musiclinkd.app/q/{code}
       </p>
-      <p className="text-[11px]" style={{ opacity: 0.5 }}>
+      <p className="text-1" style={{ opacity: 0.5 }}>
         @{handle}
       </p>
     </article>
@@ -159,10 +159,10 @@ export function ScanFrame({ scanning }: { scanning: boolean }) {
   return (
     <div className="relative mx-auto aspect-square w-[260px]" aria-hidden>
       {[
-        "left-0 top-0 border-l-4 border-t-4 rounded-tl-[24px]",
-        "right-0 top-0 border-r-4 border-t-4 rounded-tr-[24px]",
-        "left-0 bottom-0 border-l-4 border-b-4 rounded-bl-[24px]",
-        "right-0 bottom-0 border-r-4 border-b-4 rounded-br-[24px]",
+        "left-0 top-0 border-l-4 border-t-4 rounded-tl-lg",
+        "right-0 top-0 border-r-4 border-t-4 rounded-tr-lg",
+        "left-0 bottom-0 border-l-4 border-b-4 rounded-bl-lg",
+        "right-0 bottom-0 border-r-4 border-b-4 rounded-br-lg",
       ].map((c) => (
         <span key={c} className={`absolute h-12 w-12 border-primary ${c}`} />
       ))}
@@ -175,7 +175,7 @@ export function ScanFrame({ scanning }: { scanning: boolean }) {
 
 export function CameraSurface({ children }: { children: ReactNode }) {
   return (
-    <div className="relative flex min-h-[440px] flex-1 items-center justify-center overflow-hidden rounded-[24px] bg-navy">
+    <div className="relative flex min-h-[440px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-navy">
       <div className="absolute inset-0 opacity-40 [background:radial-gradient(120%_80%_at_50%_20%,#374151,transparent)]" />
       <div className="relative w-full px-6">{children}</div>
     </div>
@@ -232,8 +232,8 @@ const kindLabel: Record<DestinationPreview["kind"], string> = {
 
 export function DestinationPreviewCard({ preview }: { preview: DestinationPreview }) {
   return (
-    <section className="rounded-[24px] border border-border bg-card p-4">
-      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+    <section className="rounded-lg border border-border bg-card p-4">
+      <p className="text-1 font-bold uppercase tracking-[0.14em] text-muted-foreground">
         {kindLabel[preview.kind]}
       </p>
       <div className="mt-3 flex gap-3">
@@ -242,19 +242,19 @@ export function DestinationPreviewCard({ preview }: { preview: DestinationPrevie
             src={preview.image}
             alt=""
             className={`h-20 w-20 shrink-0 object-cover ${
-              preview.kind === "profile" ? "rounded-full" : "rounded-[16px]"
+              preview.kind === "profile" ? "rounded-full" : "rounded-md"
             }`}
           />
         ) : null}
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-1.5">
-            <h2 className="min-w-0 text-[18px] leading-tight">{preview.title}</h2>
+            <h2 className="min-w-0 text-2 leading-tight">{preview.title}</h2>
             {preview.verified ? <VerifiedBadge size={15} /> : null}
           </div>
-          <p className="mt-1 text-[13px] text-muted-foreground">{preview.subtitle}</p>
-          <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{preview.meta}</p>
+          <p className="mt-1 text-2 text-muted-foreground">{preview.subtitle}</p>
+          <p className="mt-0.5 truncate text-1 text-muted-foreground">{preview.meta}</p>
           {preview.extra ? (
-            <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{preview.extra}</p>
+            <p className="mt-0.5 truncate text-1 text-muted-foreground">{preview.extra}</p>
           ) : null}
         </div>
       </div>
@@ -276,8 +276,8 @@ export function StateCard({
   children?: ReactNode;
 }) {
   return (
-    <section className="rounded-[24px] border border-border bg-card p-6 text-center">
-      <h2 className="text-[19px] leading-tight">{title}</h2>
+    <section className="rounded-lg border border-border bg-card p-6 text-center">
+      <h2 className="text-3 leading-tight">{title}</h2>
       <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">{body}</p>
       {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
     </section>
@@ -304,14 +304,12 @@ export function ActionRow({
       </span>
       <span className="min-w-0 flex-1 text-left">
         <span className="block truncate text-sm font-semibold">{label}</span>
-        {hint ? (
-          <span className="block truncate text-[12px] text-muted-foreground">{hint}</span>
-        ) : null}
+        {hint ? <span className="block truncate text-1 text-muted-foreground">{hint}</span> : null}
       </span>
     </>
   );
   const cls =
-    "flex w-full items-center gap-3 rounded-[20px] border border-border bg-card px-4 py-3 text-left";
+    "flex w-full items-center gap-3 rounded-md border border-border bg-card px-4 py-3 text-left";
   if (to) {
     return (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -338,7 +336,7 @@ export function CopyLinkRow({ url }: { url: string }) {
   );
   return (
     <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5">
-      <span className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground">{url}</span>
+      <span className="min-w-0 flex-1 truncate text-2 text-muted-foreground">{url}</span>
       <button
         type="button"
         aria-label="Copy link"
@@ -427,7 +425,7 @@ export function ShareActions({
 
 export function DownloadNote() {
   return (
-    <p className="px-1 text-[12px] text-muted-foreground">
+    <p className="px-1 text-1 text-muted-foreground">
       Downloads save through your browser. On some Android browsers the image opens in a new tab —
       long-press to save it.
     </p>
@@ -466,5 +464,5 @@ export function PrimaryPair({
 }
 
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-[20px] bg-subtle ${className}`} />;
+  return <div className={`animate-pulse rounded-md bg-subtle ${className}`} />;
 }

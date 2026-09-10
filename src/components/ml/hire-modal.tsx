@@ -64,7 +64,7 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
                 </span>
                 <span className="flex-1">
                   <span className="block text-sm font-semibold">{o.label}</span>
-                  <span className="block text-[11px] text-muted-foreground">{o.desc}</span>
+                  <span className="block text-1 text-muted-foreground">{o.desc}</span>
                 </span>
                 <span
                   className={`h-5 w-5 rounded-full border-2 ${
@@ -82,7 +82,7 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
               <Field label="Timeline" placeholder="Mid-Sept 2026" />
             </div>
             <div>
-              <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
                 Message
               </label>
               <textarea
@@ -105,7 +105,7 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
 function Field({ label, placeholder }: { label: string; placeholder: string }) {
   return (
     <div>
-      <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </label>
       <input

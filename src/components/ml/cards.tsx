@@ -18,7 +18,7 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <h3 className="truncate text-[15px]">{t.name}</h3>
+            <h3 className="truncate text-2">{t.name}</h3>
             {t.verified ? <VerifiedBadge /> : null}
           </div>
           <p className="truncate text-xs text-muted-foreground">{t.role}</p>
@@ -31,14 +31,14 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
         {t.genres.slice(0, 3).map((g) => (
           <span
             key={g}
-            className="rounded-full bg-subtle px-2.5 py-1 text-[10px] font-semibold text-text2"
+            className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-text2"
           >
             {g}
           </span>
         ))}
         <span
-          className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
-          style={{ background: "var(--purple-container)", color: "var(--purple)" }}
+          className="rounded-full px-2.5 py-1 text-1 font-semibold"
+          style={{ background: "var(--status-category-bg)", color: "var(--status-category-text)" }}
         >
           {t.languages.join(" · ")}
         </span>
@@ -87,11 +87,11 @@ export function TalentCard({ t }: { t: Talent }) {
       </div>
       <div className="p-3">
         <div className="flex items-center gap-1">
-          <h3 className="truncate text-[13px]">{t.name}</h3>
+          <h3 className="truncate text-2">{t.name}</h3>
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
-        <p className="truncate text-[11px] text-muted-foreground">{t.role}</p>
-        <div className="mt-2 flex items-center justify-between text-[11px]">
+        <p className="truncate text-1 text-muted-foreground">{t.role}</p>
+        <div className="mt-2 flex items-center justify-between text-1">
           <span className="font-semibold text-warn">{t.rating} ★</span>
           <span className="text-muted-foreground">{t.followers}</span>
         </div>
@@ -115,11 +115,11 @@ export function TalentGridCard({ t }: { t: Talent }) {
       />
       <div className="p-3">
         <div className="flex items-center gap-1">
-          <h3 className="truncate text-[13px]">{t.name}</h3>
+          <h3 className="truncate text-2">{t.name}</h3>
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
-        <p className="truncate text-[11px] text-muted-foreground">{t.location}</p>
-        <p className="mt-1 text-[11px] font-semibold text-primary">{t.rate}</p>
+        <p className="truncate text-1 text-muted-foreground">{t.location}</p>
+        <p className="mt-1 text-1 font-semibold text-primary">{t.rate}</p>
       </div>
     </Link>
   );

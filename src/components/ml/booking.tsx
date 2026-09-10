@@ -51,7 +51,7 @@ export function BookingStatusPill({ status }: { status: BookingStatus }) {
   const c = toneStyle[meta.tone]!;
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{ background: c.bg, color: c.fg }}
     >
       <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.fg }} aria-hidden />
@@ -62,7 +62,7 @@ export function BookingStatusPill({ status }: { status: BookingStatus }) {
 
 export function PaymentPill({ status }: { status: PaymentStatus }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-text2">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-text2">
       {paymentMeta[status]}
     </span>
   );
@@ -80,7 +80,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
           <li key={s.status} className="flex gap-3">
             <div className="flex flex-col items-center">
               <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${
+                className={`flex h-5 w-5 items-center justify-center rounded-full text-1 ${
                   done
                     ? "bg-primary text-primary-foreground"
                     : "border border-border bg-subtle text-muted-foreground"
@@ -101,7 +101,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
             >
               {s.label}
               {current ? (
-                <span className="ml-2 text-[11px] font-bold uppercase text-primary">Now</span>
+                <span className="ml-2 text-1 font-bold uppercase text-primary">Now</span>
               ) : null}
             </p>
           </li>
@@ -131,10 +131,10 @@ export function BookableHero({ b }: { b: Bookable }) {
       />
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-navy/80 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
-        <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-text2">
+        <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-text2">
           {b.kind}
         </span>
-        <h1 className="mt-2 flex items-center gap-2 text-[24px] leading-tight text-background">
+        <h1 className="mt-2 flex items-center gap-2 text-3 leading-tight text-background">
           <span className="truncate">{b.name}</span>
           {b.verified ? <VerifiedBadge size={16} /> : null}
         </h1>
@@ -169,9 +169,7 @@ export function BookableEntityCard({ b }: { b: Bookable }) {
     >
       <img src={b.hero} alt={b.name} className="h-36 w-full object-cover" loading="lazy" />
       <div className="p-4">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-          {b.kind}
-        </p>
+        <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{b.kind}</p>
         <p className="mt-0.5 flex items-center gap-1.5 truncate font-semibold">
           {b.name} {b.verified ? <VerifiedBadge size={14} /> : null}
         </p>
@@ -209,7 +207,7 @@ export function ResourceCard({
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{r.name}</p>
           <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-text2">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-1 text-text2">
             <span className="inline-flex items-center gap-1">
               <Users size={12} /> Up to {r.capacity}
             </span>
@@ -221,7 +219,7 @@ export function ResourceCard({
       </div>
       <div className="flex flex-wrap gap-1.5 px-3 pb-3">
         {r.equipment.slice(0, 3).map((e) => (
-          <span key={e} className="rounded-full bg-subtle px-2.5 py-1 text-[11px] text-text2">
+          <span key={e} className="rounded-full bg-subtle px-2.5 py-1 text-1 text-text2">
             {e}
           </span>
         ))}
@@ -229,7 +227,7 @@ export function ResourceCard({
       <div className="flex items-center justify-between border-t border-border px-4 py-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold">{inr(from)}</p>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             {r.model === "instant" ? "Instant booking" : "Request to book"}
           </p>
         </div>
@@ -299,7 +297,7 @@ export function AvailabilityCalendar({
         </button>
       </div>
 
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-muted-foreground">
+      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-1 font-bold uppercase text-muted-foreground">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={`${d}-${i}`}>{d}</span>
         ))}
@@ -347,12 +345,12 @@ export function AvailabilityCalendar({
         })}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-[11px] text-text2">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-text2">
         <Legend color="var(--success)" label="Available" />
         <Legend color="var(--warn)" label="Limited" />
         <Legend color="var(--border)" label="Unavailable / closed" />
       </div>
-      <p className="mt-2 text-[11px] text-muted-foreground">All times shown in {timezone}.</p>
+      <p className="mt-2 text-1 text-muted-foreground">All times shown in {timezone}.</p>
     </div>
   );
 }
@@ -407,7 +405,7 @@ export function SlotPicker({
           );
         })}
       </div>
-      <p className="mt-2 text-[11px] text-muted-foreground">Slots are shown in {timezone}.</p>
+      <p className="mt-2 text-1 text-muted-foreground">Slots are shown in {timezone}.</p>
     </div>
   );
 }
@@ -438,7 +436,9 @@ export function DurationPicker({
               onClick={() => onChange(o.hours === 0 ? (customHours ?? 4) : o.hours)}
               aria-pressed={active}
               className={`min-h-11 rounded-full border px-4 text-xs font-semibold ${
-                active ? "border-transparent bg-navy text-background" : "border-border bg-card"
+                active
+                  ? "border-transparent bg-selected-bg text-selected-text"
+                  : "border-border bg-card"
               }`}
             >
               {o.label}
@@ -493,7 +493,7 @@ export function AddOnCard({
           {a.rentalListingId ? (
             <Link
               to="/marketplace/rent"
-              className="mt-1 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-primary"
+              className="mt-1 inline-flex items-center gap-1 text-1 font-bold uppercase tracking-wide text-primary"
             >
               Rental marketplace <ChevronRight size={12} />
             </Link>
@@ -504,7 +504,7 @@ export function AddOnCard({
             {selected ? "Added" : "Add"}
           </Btn>
         ) : (
-          <span className="rounded-full bg-subtle px-3 py-2 text-[11px] font-semibold text-muted-foreground">
+          <span className="rounded-full bg-subtle px-3 py-2 text-1 font-semibold text-muted-foreground">
             Unavailable
           </span>
         )}
@@ -532,7 +532,7 @@ export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: bo
         </>
       ) : null}
       {!compact ? (
-        <p className="mt-3 text-[11px] text-muted-foreground">
+        <p className="mt-3 text-1 text-muted-foreground">
           Prices come from the provider's configured rates. Nothing is charged until you confirm.
         </p>
       ) : null}
@@ -660,9 +660,7 @@ export function BookingSummaryCard({
 export function Detail({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </dt>
+      <dt className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 truncate text-sm font-semibold">{value}</dd>
     </div>
   );
@@ -704,7 +702,7 @@ export function BookingListCard({
         <span className="font-semibold text-foreground">{inr(booking.amount)}</span>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <span className="text-[11px] text-muted-foreground">#{booking.ref}</span>
+        <span className="text-1 text-muted-foreground">#{booking.ref}</span>
         <span className="inline-flex items-center gap-1 text-xs font-bold text-primary">
           View booking <ChevronRight size={14} />
         </span>
@@ -761,7 +759,7 @@ export function ProviderRequestCard({
 export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
-      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Payment</p>
+      <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Payment</p>
       <Row label="Total booking value" value={inr(p.total)} />
       <Row
         label={paid ? "Deposit paid" : "Deposit due now"}
@@ -769,7 +767,7 @@ export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean 
         strong
       />
       <Row label="Balance at the studio" value={inr(p.deposit ? p.balance : 0)} muted />
-      <p className="mt-3 text-[11px] text-muted-foreground">
+      <p className="mt-3 text-1 text-muted-foreground">
         Payments are handled by the provider's payment partner. MusicLinkd never stores your card
         details.
       </p>
@@ -890,11 +888,11 @@ export function StickyBar({
   secondary?: ReactNode | undefined;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+    <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
           {price ? <p className="truncate text-base font-bold">{price}</p> : null}
-          {hint ? <p className="truncate text-[11px] text-muted-foreground">{hint}</p> : null}
+          {hint ? <p className="truncate text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {secondary}
         <Btn
