@@ -19,7 +19,10 @@
 
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* One family only — Inter. The token stays as the seam for headings (they
+   * carry their own weight and letter-spacing), but it no longer points at a
+   * second face. Headings render at 700, which Inter already ships. */
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /*
    * Radius. The scale is 8 / 16 / 32 / pill. `xl`, `2xl` and `3xl` are retained as
