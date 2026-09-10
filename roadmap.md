@@ -58,6 +58,26 @@
 ## Notes
 - Payments: seller is in India, so Lovable's built-in Stripe/Paddle are unavailable.
   Razorpay recommended (UPI, cards, INR) — awaiting user's decision before wiring.
+- [ ] The Lovable **project knowledge** field is the source of the wrong type scale. It states
+  "four fluid clamp() tokens — 10–12px, 14–18px, 20–28px, 28–44px" and "JetBrains Mono for
+  metadata". The generated `frontend/guide/system/ml-tokens.css` says **12–13 / 16–18 / 22–28 /
+  32–44**, and `tokens.json` has no mono font at all (it has `--font-eyebrow`, Unica One). It also
+  still lists navy `#0D0B26`, which `tokens.json` records as retired and replaced by
+  `--color-ink #0D0D0D`. Knowledge is fed to the Lovable agent on every prompt, so every screen it
+  generates inherits these three errors. Highest-leverage fix available, and outside this repo.
+- [ ] The Lovable **project description** field still holds the original superseded brief verbatim
+  — `Primary: #5B4BFF`, `Secondary: #8B5CF6`, `Radius: 16px`, `Google Sans Roboto`,
+  `Material Design 3`. It is the same corrupted text that was in `README.md` (same missing "D" in
+  "esign a premium Android…"), so the README was pasted from it. Phase 1 fixed the repo copy;
+  this one is project metadata and out of the repo's reach.
+- [ ] `js-yaml` 4.3.0 carries two high-severity advisories (GHSA-5p4m-2wfm-xmqj,
+  GHSA-2883-xcg3-v3hh — CPU exhaustion, not RCE). Lovable's scan attributes them to
+  `@tanstack/react-start`, which has no direct js-yaml dependency; the real chains are
+  `@eslint/eslintrc` (lint-time) and
+  `react-start → start-plugin-core → xmlbuilder2@^4.0.3 → js-yaml@^4.1.1` (build-time). **Neither
+  is in the request path.** The fix is js-yaml 5.x (latest 5.4.1); the advisory says it was not
+  backported to 4.x, and xmlbuilder2 pins `^4.1.1`, so forcing it needs an override that risks the
+  build. Deferred deliberately — revisit when xmlbuilder2 accepts js-yaml 5.
 - [ ] No accessibility linting exists. `eslint-plugin-jsx-a11y` is not registered in
   `eslint.config.js`, so the `jsx-a11y/*` rules have never run — three
   `eslint-disable-next-line jsx-a11y/media-has-caption` comments were sitting in
