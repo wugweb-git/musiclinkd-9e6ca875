@@ -84,7 +84,7 @@ export function WorkForm({
         <p className="text-2xl" aria-hidden>
           {t.emoji}
         </p>
-        <h2 className="mt-1 text-[17px]">{t.label}</h2>
+        <h2 className="mt-1 text-2">{t.label}</h2>
         <p className="text-xs text-muted-foreground">{t.blurb}</p>
       </div>
 

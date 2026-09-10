@@ -212,19 +212,19 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
         <div className="rounded-3xl border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
                 Profile insights
               </p>
-              <h2 className="mt-1 text-[17px]">{profileInsights.range}</h2>
+              <h2 className="mt-1 text-2">{profileInsights.range}</h2>
             </div>
             <BarChart3 size={18} className="text-primary" aria-hidden />
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
             {profileInsights.headline.map((item) => (
               <div key={item.label} className="rounded-2xl bg-subtle p-3">
-                <p className="text-[11px] text-muted-foreground">{item.label}</p>
+                <p className="text-1 text-muted-foreground">{item.label}</p>
                 <p className="mt-1 text-lg font-bold">{item.value}</p>
-                <p className="text-[10px] font-semibold text-primary">{item.delta}</p>
+                <p className="text-1 font-semibold text-primary">{item.delta}</p>
               </div>
             ))}
           </div>
@@ -250,7 +250,7 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
       to={to}
       className="flex min-w-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3 text-xs font-semibold"
     >
-      <span className="shrink-0 text-primary">{icon}</span>
+      <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
       <ChevronRight size={14} className="ml-auto shrink-0 text-muted-foreground" aria-hidden />
     </Link>
@@ -449,13 +449,11 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
                   className="aspect-square w-full object-cover"
                 />
                 <div className="p-3">
-                  <h3 className="truncate text-[13px]">{release.title}</h3>
-                  <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                  <h3 className="truncate text-1">{release.title}</h3>
+                  <p className="mt-1 truncate text-1 text-muted-foreground">
                     {release.kind} · {release.year}
                   </p>
-                  <p className="mt-1 truncate text-[10px] font-semibold text-primary">
-                    {release.label}
-                  </p>
+                  <p className="mt-1 truncate text-1 font-semibold text-primary">{release.label}</p>
                 </div>
               </article>
             ))}
@@ -571,9 +569,7 @@ function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; 
       <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-subtle text-primary">
         {icon}
       </span>
-      <p className="mt-3 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
+      <p className="mt-3 text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 truncate text-xs font-semibold">{value}</p>
     </div>
   );

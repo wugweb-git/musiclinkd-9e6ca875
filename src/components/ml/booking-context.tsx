@@ -74,7 +74,7 @@ export function BookingDraftProvider({ id, children }: { id: string; children: R
 
   if (!value) {
     return (
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] items-center justify-center bg-background px-8 text-center">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app items-center justify-center bg-background px-8 text-center">
         <div>
           <p className="text-lg font-semibold">This space is unavailable</p>
           <p className="mt-1 text-sm text-muted-foreground">

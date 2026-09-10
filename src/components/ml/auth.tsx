@@ -6,7 +6,7 @@ import { Check, Eye, EyeOff, Music2, ShieldCheck, X } from "lucide-react";
 
 export function AuthScreen({ children, brand = true }: { children: ReactNode; brand?: boolean }) {
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col bg-background">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background">
       <div className="flex-1 px-5 pb-10 pt-6">
         {brand ? <Brand /> : null}
         {children}
@@ -24,7 +24,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
       >
         <Music2 size={18} className="text-primary" />
       </span>
-      <span className="text-[17px] font-semibold tracking-tight">MusicLinkd</span>
+      <span className="text-2 font-semibold tracking-tight">MusicLinkd</span>
     </div>
   );
 }
@@ -32,15 +32,15 @@ export function Brand({ compact = false }: { compact?: boolean }) {
 export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-[26px] font-semibold leading-tight tracking-tight">{title}</h1>
-      {sub ? <p className="mt-2 text-[13px] leading-relaxed text-text2">{sub}</p> : null}
+      <h1 className="text-3 font-semibold leading-tight tracking-tight">{title}</h1>
+      {sub ? <p className="mt-2 text-1 leading-relaxed text-text2">{sub}</p> : null}
     </div>
   );
 }
 
 export function Divider({ label }: { label: string }) {
   return (
-    <div className="my-6 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+    <div className="my-6 flex items-center gap-3 text-1 font-semibold uppercase tracking-wide text-muted-foreground">
       <span className="h-px flex-1 bg-border" />
       {label}
       <span className="h-px flex-1 bg-border" />
@@ -77,7 +77,7 @@ export function AuthNotice({
       className="mb-5 rounded-3xl px-4 py-3.5"
       style={{ background: s.bg }}
     >
-      <p className={`text-[13px] font-semibold ${s.fg}`}>{title}</p>
+      <p className={`text-1 font-semibold ${s.fg}`}>{title}</p>
       {children ? (
         <div className="mt-1 text-[12.5px] leading-relaxed text-text2">{children}</div>
       ) : null}
@@ -109,7 +109,7 @@ export function LabeledInput({
 }) {
   return (
     <label className="mb-4 block">
-      <span className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="mb-2 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <input
@@ -119,9 +119,9 @@ export function LabeledInput({
         autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-13 w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-[15px] outline-none placeholder:text-muted-foreground focus:border-primary"
+        className="h-13 w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground focus:border-primary"
       />
-      {hint ? <span className="mt-1.5 block text-[12px] text-text2">{hint}</span> : null}
+      {hint ? <span className="mt-1.5 block text-1 text-text2">{hint}</span> : null}
     </label>
   );
 }
@@ -142,7 +142,7 @@ export function PasswordInput({
   const [show, setShow] = useState(false);
   return (
     <label className="mb-4 block">
-      <span className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="mb-2 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <span className="flex items-center rounded-2xl border border-border bg-card pr-2 focus-within:border-primary">
@@ -152,7 +152,7 @@ export function PasswordInput({
           autoComplete={autoComplete}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="h-13 min-w-0 flex-1 bg-transparent px-4 py-3.5 text-[15px] outline-none placeholder:text-muted-foreground"
+          className="h-13 min-w-0 flex-1 bg-transparent px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground"
         />
         <button
           type="button"
@@ -191,8 +191,8 @@ export function PasswordRequirements({ value }: { value: string }) {
   return (
     <div className="mb-5 rounded-3xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <span className="text-[12px] font-semibold">Password strength</span>
-        <span className="text-[12px] text-text2">{value ? label : "—"}</span>
+        <span className="text-1 font-semibold">Password strength</span>
+        <span className="text-1 text-text2">{value ? label : "—"}</span>
       </div>
       <div className="mb-3 flex gap-1.5">
         {[0, 1, 2, 3].map((i) => (
@@ -228,7 +228,7 @@ export function PasswordRequirements({ value }: { value: string }) {
 
 export function LegalNote() {
   return (
-    <p className="mt-6 text-center text-[12px] leading-relaxed text-text2">
+    <p className="mt-6 text-center text-1 leading-relaxed text-text2">
       By continuing you agree to our{" "}
       <Link to="/legal/terms" className="font-semibold text-primary">
         Terms
@@ -244,7 +244,7 @@ export function LegalNote() {
 
 export function TrustNote({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-5 flex items-start gap-2 text-[12px] leading-relaxed text-text2">
+    <p className="mt-5 flex items-start gap-2 text-1 leading-relaxed text-text2">
       <ShieldCheck size={14} className="mt-0.5 shrink-0 text-primary" />
       <span>{children}</span>
     </p>

@@ -231,7 +231,7 @@ export function StepShell({
 }) {
   const pct = Math.round((step / total) * 100);
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col bg-background">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-background/95 px-5 pb-3 pt-4 backdrop-blur">
         <div className="flex items-center gap-3">
           {onBack ? (
@@ -247,7 +247,7 @@ export function StepShell({
             <span className="h-10 w-10" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
               {group} · Step {step} of {total}
             </p>
             <div
@@ -280,7 +280,7 @@ export function StepShell({
 
       <main className="flex-1 px-5 pb-40 pt-5">
         {banner}
-        <h1 className="text-[26px] leading-tight">{title}</h1>
+        <h1 className="text-3 leading-tight">{title}</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
         <p
           className="mt-3 rounded-2xl px-4 py-3 text-xs leading-relaxed text-text2"
@@ -291,7 +291,7 @@ export function StepShell({
         <div className="mt-6">{children}</div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         {footer}
       </div>
     </div>
@@ -325,7 +325,7 @@ export function ChipPicker({
             onClick={() => onToggle(o)}
             className={`flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${
               on
-                ? "border-transparent bg-navy text-background"
+                ? "border-transparent bg-selected-bg text-selected-text"
                 : "border-border bg-card text-foreground"
             }`}
           >
@@ -367,7 +367,7 @@ export function ChoiceGrid({
             </span>
             <span>
               <span className="block text-sm font-semibold">{o.label}</span>
-              <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground">
+              <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
                 {o.hint}
               </span>
             </span>
@@ -530,7 +530,7 @@ export function PhotoPicker({
           aria-live="polite"
         >
           {uploading ? (
-            <span className="text-[11px] font-semibold text-muted-foreground">Uploading…</span>
+            <span className="text-1 font-semibold text-muted-foreground">Uploading…</span>
           ) : photo ? (
             <img src={photo} alt={`${label} preview`} className="h-full w-full object-cover" />
           ) : (
@@ -764,22 +764,18 @@ export function ReadinessCard({
         }`}
         aria-hidden
       >
-        {done ? (
-          <Check size={13} strokeWidth={3} />
-        ) : (
-          <span className="text-[11px] font-bold">·</span>
-        )}
+        {done ? <Check size={13} strokeWidth={3} /> : <span className="text-1 font-bold">·</span>}
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">
           {label}{" "}
-          <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <span className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
             {done ? "Done" : "To do"}
           </span>
         </p>
         <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
         {flow ? (
-          <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <p className="mt-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
             {flow}
           </p>
         ) : null}
@@ -804,7 +800,7 @@ export function HandoffCard({
 }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-5">
-      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
+      <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
       <h3 className="mt-1 text-lg">{title}</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
       <div className="mt-4 flex items-center gap-2">

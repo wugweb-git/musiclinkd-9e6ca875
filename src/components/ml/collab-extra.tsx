@@ -8,8 +8,8 @@ import type { CollabFile } from "@/data/collab";
 export function DeletedState({ body }: { body?: string }) {
   return (
     <Card className="text-center">
-      <p className="mb-1 text-[15px] font-semibold">This collaboration is no longer available</p>
-      <p className="mb-4 text-[12px] text-muted-foreground">
+      <p className="mb-1 text-2 font-semibold">This collaboration is no longer available</p>
+      <p className="mb-4 text-1 text-muted-foreground">
         {body ?? "It may have been deleted by the owner, or you no longer have access to it."}
       </p>
       <Link to="/collab">
@@ -31,19 +31,19 @@ export function MediaTile({ file, projectId }: { file: CollabFile; projectId: st
         {file.cover ? (
           <img src={file.cover} alt="" className="h-full w-full object-cover" />
         ) : (
-          <span className="flex h-full w-full items-center justify-center text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <span className="flex h-full w-full items-center justify-center text-1 font-semibold uppercase tracking-wide text-muted-foreground">
             {file.kind}
           </span>
         )}
         {!file.available ? (
-          <span className="absolute inset-0 flex items-center justify-center bg-background/80 text-[10px] font-semibold text-muted-foreground">
+          <span className="absolute inset-0 flex items-center justify-center bg-background/80 text-1 font-semibold text-muted-foreground">
             Unavailable
           </span>
         ) : null}
       </div>
       <div className="px-3 py-2">
-        <p className="truncate text-[12px] font-medium">{file.name}</p>
-        <p className="truncate text-[10px] text-muted-foreground">
+        <p className="truncate text-1 font-medium">{file.name}</p>
+        <p className="truncate text-1 text-muted-foreground">
           {file.uploadedBy} · {file.date}
         </p>
       </div>
@@ -66,8 +66,8 @@ export function OutcomePanel({
   return (
     <Card className="mb-5">
       <Tag tone={tone}>{tone === "ok" ? "Confirmed" : "Closed"}</Tag>
-      <h2 className="mt-3 text-[18px] font-semibold">{title}</h2>
-      <p className="mt-1 text-[13px] text-muted-foreground">{body}</p>
+      <h2 className="mt-3 text-2 font-semibold">{title}</h2>
+      <p className="mt-1 text-1 text-muted-foreground">{body}</p>
       {children ? <div className="mt-4">{children}</div> : null}
     </Card>
   );
@@ -87,12 +87,12 @@ export function ConfirmPanel({
 }) {
   return (
     <Card className="mb-5">
-      <h2 className="text-[17px] font-semibold">{title}</h2>
-      <p className="mt-1 text-[13px] text-muted-foreground">{body}</p>
+      <h2 className="text-2 font-semibold">{title}</h2>
+      <p className="mt-1 text-1 text-muted-foreground">{body}</p>
       <Label>What happens</Label>
       <ul className="space-y-1.5">
         {consequences.map((c) => (
-          <li key={c} className="text-[12px] text-muted-foreground">
+          <li key={c} className="text-1 text-muted-foreground">
             · {c}
           </li>
         ))}

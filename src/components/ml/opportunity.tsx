@@ -52,10 +52,10 @@ export function useSavedOpportunities() {
 
 export function MatchBar({ score, reasons }: { score: number; reasons: string[] }) {
   return (
-    <div className="rounded-[20px] bg-subtle p-3">
+    <div className="rounded-md bg-subtle p-3">
       <div className="flex items-baseline justify-between">
-        <span className="text-[12px] font-semibold">Fit for you</span>
-        <span className="text-[13px] font-bold text-primary">{score}%</span>
+        <span className="text-1 font-semibold">Fit for you</span>
+        <span className="text-1 font-bold text-primary">{score}%</span>
       </div>
       <div className="mt-1.5 h-1.5 rounded-full bg-card">
         <div className="h-1.5 rounded-full bg-primary" style={{ width: `${score}%` }} />
@@ -76,7 +76,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
     <Link
       to="/profile/$username"
       params={{ username: o.poster.username }}
-      className="flex items-center gap-3 rounded-[20px] border border-border bg-card p-3"
+      className="flex items-center gap-3 rounded-md border border-border bg-card p-3"
     >
       <img src={o.poster.photo} alt="" className="h-11 w-11 rounded-full object-cover" />
       <span className="min-w-0 flex-1">
@@ -84,7 +84,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
           <span className="truncate text-sm font-semibold">{o.poster.name}</span>
           {o.poster.verified ? <VerifiedBadge size={14} /> : null}
         </span>
-        <span className="block truncate text-[12px] text-muted-foreground">
+        <span className="block truncate text-1 text-muted-foreground">
           {o.poster.kindLabel} · ★ {o.poster.rating} · {o.poster.hires} hires
         </span>
       </span>
@@ -102,7 +102,7 @@ export function OpportunityCard({
   onSave?: () => void;
 }) {
   return (
-    <article className="relative rounded-[24px] border border-border bg-card p-4">
+    <article className="relative rounded-lg border border-border bg-card p-4">
       {onSave ? (
         <button
           type="button"
@@ -123,9 +123,9 @@ export function OpportunityCard({
           <StatusPill label={o.workMode} />
           {o.featured ? <StatusPill label="Featured" tone="warn" /> : null}
         </div>
-        <h3 className="mt-2 text-[17px] leading-snug">{o.title}</h3>
-        <p className="mt-1 line-clamp-2 text-[13px] text-muted-foreground">{o.summary}</p>
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-muted-foreground">
+        <h3 className="mt-2 text-2 leading-snug">{o.title}</h3>
+        <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{o.summary}</p>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <Wallet size={13} /> {payLabel(o)}
           </span>
@@ -141,10 +141,10 @@ export function OpportunityCard({
         </div>
         <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
           <img src={o.poster.photo} alt="" className="h-7 w-7 rounded-full object-cover" />
-          <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground">
+          <span className="min-w-0 flex-1 truncate text-1 text-muted-foreground">
             {o.poster.name}
           </span>
-          <span className="shrink-0 text-[12px] font-bold text-primary">{o.matchScore}% fit</span>
+          <span className="shrink-0 text-1 font-bold text-primary">{o.matchScore}% fit</span>
         </div>
       </Link>
     </article>
@@ -156,7 +156,7 @@ export function ApplicationCard({ a, o }: { a: Application; o?: Opportunity }) {
     <Link to="/opportunities/applications/$aid" params={{ aid: a.id }} className="block">
       <Card className="space-y-2">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="min-w-0 flex-1 text-[15px] leading-snug">{o?.title ?? "Opportunity"}</h3>
+          <h3 className="min-w-0 flex-1 text-2 leading-snug">{o?.title ?? "Opportunity"}</h3>
           <StatusPill
             label={a.status}
             tone={
@@ -170,10 +170,10 @@ export function ApplicationCard({ a, o }: { a: Application; o?: Opportunity }) {
             }
           />
         </div>
-        <p className="truncate text-[12px] text-muted-foreground">
+        <p className="truncate text-1 text-muted-foreground">
           {o?.poster.name ?? "—"} · applied {a.submittedAt}
         </p>
-        <p className="line-clamp-2 text-[13px] text-text2">{a.message}</p>
+        <p className="line-clamp-2 text-1 text-text2">{a.message}</p>
       </Card>
     </Link>
   );
@@ -194,11 +194,11 @@ export function ApplicantCard({ a }: { a: Applicant }) {
               <span className="truncate text-sm font-semibold">{a.name}</span>
               {a.verified ? <VerifiedBadge size={14} /> : null}
             </div>
-            <p className="truncate text-[12px] text-muted-foreground">
+            <p className="truncate text-1 text-muted-foreground">
               {a.headline} · {a.city}
             </p>
           </div>
-          <span className="shrink-0 text-[13px] font-bold text-primary">{a.matchScore}%</span>
+          <span className="shrink-0 text-1 font-bold text-primary">{a.matchScore}%</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {a.matchReasons.slice(0, 2).map((r) => (
@@ -212,7 +212,7 @@ export function ApplicantCard({ a }: { a: Applicant }) {
               a.status === "shortlisted" ? "brand" : a.status === "rejected" ? "bad" : "neutral"
             }
           />
-          <span className="text-[12px] text-muted-foreground">{a.appliedAt}</span>
+          <span className="text-1 text-muted-foreground">{a.appliedAt}</span>
         </div>
       </Card>
     </Link>

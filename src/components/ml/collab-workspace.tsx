@@ -36,7 +36,7 @@ export function WorkspaceShell({
             <Link
               to="/collab/$id/settings"
               params={{ id: project.id }}
-              className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+              className="text-1 font-bold uppercase tracking-wide text-muted-foreground"
             >
               Settings
             </Link>
@@ -45,7 +45,7 @@ export function WorkspaceShell({
       />
       <div className="flex items-center gap-2 px-5 pt-3">
         <StatusPill status={project.status} />
-        <span className="truncate text-[11px] text-muted-foreground">{project.timeline}</span>
+        <span className="truncate text-1 text-muted-foreground">{project.timeline}</span>
       </div>
       <nav className="mt-3 flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
         {tabs.map((t) => {
@@ -57,7 +57,7 @@ export function WorkspaceShell({
               params={{ id: project.id }}
               className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold ${
                 active
-                  ? "border-transparent bg-navy text-background"
+                  ? "border-transparent bg-selected-bg text-selected-text"
                   : "border-border bg-card text-foreground"
               }`}
             >

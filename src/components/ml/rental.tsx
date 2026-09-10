@@ -22,12 +22,12 @@ export function RentalAvailabilityBadge({
   const map = {
     ok: { bg: "var(--success-container)", fg: "var(--success)" },
     warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-    off: { bg: "var(--surface-subtle)", fg: "var(--text-2)" },
+    off: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
   } as const;
   const c = map[tone];
   return (
     <span
-      className="inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{ background: c.bg, color: c.fg }}
     >
       <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: c.fg }} />
@@ -40,13 +40,13 @@ export function RentalPriceBlock({ e, size = "md" }: { e: Equipment; size?: "md"
   return (
     <div className="min-w-0">
       <div className="flex items-baseline gap-1">
-        <span className={size === "lg" ? "text-2xl font-bold" : "text-[15px] font-bold"}>
+        <span className={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}>
           {inr(e.daily)}
         </span>
-        <span className="text-[11px] text-muted-foreground">/ day</span>
+        <span className="text-1 text-muted-foreground">/ day</span>
       </div>
       {size === "lg" ? (
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className="mt-1 text-1 text-muted-foreground">
           {inr(e.weekly)} / week · {inr(e.monthly)} / month
         </p>
       ) : null}
@@ -60,14 +60,14 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
     "Offer sent": ["var(--purple-container)", "var(--purple)"],
     Confirmed: ["var(--pink-container)", "var(--primary)"],
     Active: ["var(--success-container)", "var(--success)"],
-    Completed: ["var(--surface-subtle)", "var(--text-2)"],
-    Cancelled: ["var(--surface-subtle)", "var(--text-2)"],
-    Declined: ["var(--surface-subtle)", "var(--text-2)"],
+    Completed: ["var(--surface-subtle)", "var(--text-secondary)"],
+    Cancelled: ["var(--surface-subtle)", "var(--text-secondary)"],
+    Declined: ["var(--surface-subtle)", "var(--text-secondary)"],
   };
   const [bg, fg] = tone[status];
   return (
     <span
-      className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+      className="shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{ background: bg, color: fg }}
     >
       {status}
@@ -82,7 +82,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full bg-navy/85 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-background backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full bg-navy/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
             Rental
           </span>
         </div>
@@ -92,8 +92,8 @@ export function EquipmentCard({ e }: { e: Equipment }) {
         <div className="flex items-start justify-between gap-2">
           <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="min-w-0 flex-1">
             <RentalPriceBlock e={e} />
-            <h3 className="mt-1 line-clamp-2 text-[15px] leading-snug">{e.name}</h3>
-            <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+            <h3 className="mt-1 line-clamp-2 text-2 leading-snug">{e.name}</h3>
+            <p className="mt-0.5 truncate text-1 text-muted-foreground">
               {e.brand} · {e.model}
             </p>
           </Link>
@@ -109,7 +109,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
           <Link
             to="/marketplace/rent/provider/$id"
             params={{ id: e.providerId }}
-            className="shrink-0 truncate text-[11px] font-semibold text-primary"
+            className="shrink-0 truncate text-1 font-semibold text-primary"
           >
             View provider
           </Link>
@@ -139,8 +139,8 @@ export function EquipmentTile({ e }: { e: Equipment }) {
       />
       <div className="p-3">
         <RentalPriceBlock e={e} />
-        <h3 className="mt-1 line-clamp-2 text-[12px] leading-snug">{e.name}</h3>
-        <p className="mt-1 truncate text-[10px] text-muted-foreground">{e.distance}</p>
+        <h3 className="mt-1 line-clamp-2 text-1 leading-snug">{e.name}</h3>
+        <p className="mt-1 truncate text-1 text-muted-foreground">{e.distance}</p>
         <div className="mt-2">
           <RentalAvailabilityBadge text={e.availableFrom ?? "Enquire"} />
         </div>
@@ -165,7 +165,7 @@ export function EquipmentRow({ e, action }: { e: Equipment; action?: ReactNode }
         <div className="flex items-start justify-between gap-2">
           <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="min-w-0">
             <RentalPriceBlock e={e} />
-            <h3 className="line-clamp-2 text-[13px] leading-snug">{e.name}</h3>
+            <h3 className="line-clamp-2 text-1 leading-snug">{e.name}</h3>
           </Link>
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
         </div>
@@ -175,7 +175,7 @@ export function EquipmentRow({ e, action }: { e: Equipment; action?: ReactNode }
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
           <LocationRow text={e.distance} />
-          <span className="truncate text-[10px] text-muted-foreground">by {providerName(e)}</span>
+          <span className="truncate text-1 text-muted-foreground">by {providerName(e)}</span>
         </div>
         {action ? <div className="mt-2">{action}</div> : null}
       </div>
@@ -199,14 +199,14 @@ export function ProviderSummary({ p, compact }: { p: Provider; compact?: boolean
       <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-2xl object-cover" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <p className="truncate text-[14px] font-semibold">{p.name}</p>
+          <p className="truncate text-2 font-semibold">{p.name}</p>
           {p.verified ? <VerifiedBadge size={14} /> : null}
         </div>
-        <p className="truncate text-[11px] text-muted-foreground">{p.role}</p>
+        <p className="truncate text-1 text-muted-foreground">{p.role}</p>
         {compact ? null : (
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <Rating value={p.rating} count={p.reviews} />
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-1 text-muted-foreground">
               {p.completedRentals} rentals · replies {p.responseTime.toLowerCase()}
             </span>
           </div>
@@ -228,8 +228,11 @@ export function ProviderCard({ p }: { p: Provider }) {
         {p.badges.map((b) => (
           <span
             key={b}
-            className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
-            style={{ background: "var(--purple-container)", color: "var(--purple)" }}
+            className="rounded-full px-2.5 py-1 text-1 font-semibold"
+            style={{
+              background: "var(--status-category-bg)",
+              color: "var(--status-category-text)",
+            }}
           >
             {b}
           </span>
@@ -267,14 +270,14 @@ export function RentalCalendar({
   return (
     <div className="rounded-3xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-[14px] font-semibold">
+        <p className="text-2 font-semibold">
           {month.toLocaleString("en-IN", { month: "long", year: "numeric" })}
         </p>
         <CalendarDays size={16} className="text-muted-foreground" />
       </div>
       <div className="grid grid-cols-7 gap-1 text-center">
         {DAY_LABELS.map((d, i) => (
-          <span key={`${d}${i}`} className="py-1 text-[10px] font-bold text-muted-foreground">
+          <span key={`${d}${i}`} className="py-1 text-1 font-bold text-muted-foreground">
             {d}
           </span>
         ))}
@@ -292,7 +295,7 @@ export function RentalCalendar({
               type="button"
               disabled={isBlocked}
               onClick={() => onSelect(day)}
-              className={`flex h-9 items-center justify-center rounded-2xl text-[12px] font-semibold transition-colors ${
+              className={`flex h-9 items-center justify-center rounded-2xl text-1 font-semibold transition-colors ${
                 isBlocked ? "text-muted-foreground line-through opacity-50" : ""
               }`}
               style={
@@ -308,7 +311,7 @@ export function RentalCalendar({
           );
         })}
       </div>
-      <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-muted-foreground">
+      <div className="mt-3 flex flex-wrap gap-3 text-1 text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <span className="h-2 w-2 rounded-full" style={{ background: "var(--primary)" }} />{" "}
           Selected
@@ -352,13 +355,13 @@ export function PriceBreakdown({
       <div className="space-y-2.5">
         {rows.map((r) => (
           <div key={r.k} className="flex items-start justify-between gap-3">
-            <span className="text-[12px] text-muted-foreground">{r.k}</span>
-            <span className="shrink-0 text-[12px] font-semibold">{r.v}</span>
+            <span className="text-1 text-muted-foreground">{r.k}</span>
+            <span className="shrink-0 text-1 font-semibold">{r.v}</span>
           </div>
         ))}
       </div>
       <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-        <span className="text-[13px] font-semibold">Estimated total</span>
+        <span className="text-1 font-semibold">Estimated total</span>
         <span className="text-xl font-bold">{inr(total)}</span>
       </div>
       <div
@@ -366,16 +369,16 @@ export function PriceBreakdown({
         style={{ background: "var(--warn-container)" }}
       >
         <div className="min-w-0">
-          <p className="text-[12px] font-bold" style={{ color: "var(--warn)" }}>
+          <p className="text-1 font-bold" style={{ color: "var(--warn)" }}>
             Refundable security deposit
           </p>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             Held by the provider, returned after the equipment is checked.
           </p>
         </div>
-        <span className="shrink-0 text-[13px] font-bold">{inr(deposit)}</span>
+        <span className="shrink-0 text-1 font-bold">{inr(deposit)}</span>
       </div>
-      <p className="mt-3 text-[11px] text-muted-foreground">
+      <p className="mt-3 text-1 text-muted-foreground">
         Estimate only. Nothing is charged on MusicLinkd — the provider confirms the final amount in
         your conversation.
       </p>
@@ -417,7 +420,7 @@ export function FulfilmentPicker({
 
   if (!options.length) {
     return (
-      <div className="rounded-3xl border border-dashed border-border p-4 text-[12px] text-muted-foreground">
+      <div className="rounded-3xl border border-dashed border-border p-4 text-1 text-muted-foreground">
         Pickup only — arrange collection with the provider in your conversation.
       </div>
     );
@@ -442,8 +445,8 @@ export function FulfilmentPicker({
               <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[13px] font-semibold">{o.id}</span>
-              <span className="block truncate text-[11px] text-muted-foreground">{o.line}</span>
+              <span className="block text-1 font-semibold">{o.id}</span>
+              <span className="block truncate text-1 text-muted-foreground">{o.line}</span>
             </span>
             <span
               className={`h-5 w-5 shrink-0 rounded-full border-2 ${active ? "border-primary" : "border-border"}`}
@@ -478,14 +481,14 @@ export function BookingCard({
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="line-clamp-2 text-[13px] leading-snug">{e.name}</h3>
+            <h3 className="line-clamp-2 text-1 leading-snug">{e.name}</h3>
             <RentalStatusPill status={b.status} />
           </div>
-          <p className="mt-1 truncate text-[11px] text-muted-foreground">{provider.name}</p>
-          <p className="mt-1 text-[11px] font-semibold">
+          <p className="mt-1 truncate text-1 text-muted-foreground">{provider.name}</p>
+          <p className="mt-1 text-1 font-semibold">
             {b.start} → {b.end} · {b.days} days
           </p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
+          <p className="mt-0.5 text-1 text-muted-foreground">
             {b.fulfilment} · {inr(b.total)} {b.timeRemaining ? `· ${b.timeRemaining}` : ""}
           </p>
         </div>
@@ -517,8 +520,8 @@ export function RentalRequestCard({
           className="h-14 w-14 shrink-0 rounded-2xl object-cover"
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold">{e.name}</p>
-          <p className="truncate text-[11px] text-muted-foreground">
+          <p className="truncate text-1 font-semibold">{e.name}</p>
+          <p className="truncate text-1 text-muted-foreground">
             {dates} · {quantity} unit{quantity > 1 ? "s" : ""} · {price}
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -591,7 +594,7 @@ export function RentalFilterSheet({
         </button>
       </div>
 
-      <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
         Rental dates
       </h3>
       <div className="mb-5 flex flex-wrap gap-2">
@@ -604,7 +607,7 @@ export function RentalFilterSheet({
 
       {groups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
             {g.label}
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -714,7 +717,7 @@ export function RentalReportSheet({ open, onClose }: { open: boolean; onClose: (
           </button>
         ))}
       </div>
-      <p className="mt-3 text-[11px] text-muted-foreground">
+      <p className="mt-3 text-1 text-muted-foreground">
         Reports go to MusicLinkd moderation. Nobody is told who reported a listing.
       </p>
     </Sheet>
@@ -723,7 +726,7 @@ export function RentalReportSheet({ open, onClose }: { open: boolean; onClose: (
 
 export function RentalLocationRow({ text }: { text: string }) {
   return (
-    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
+    <span className="inline-flex items-center gap-1 text-1 font-semibold text-muted-foreground">
       <MapPin size={12} /> {text}
     </span>
   );
