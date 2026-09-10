@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
 import { TalentCard } from "@/components/ml/cards";
+import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import {
   dashboardData,
   continueCards,
@@ -137,13 +138,7 @@ function Header() {
           <Bell size={18} />
           <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
         </Link>
-        <Link to="/me" aria-label="Your profile">
-          <img
-            src={dashboardData.user.photo}
-            alt="Your profile"
-            className="h-10 w-10 rounded-full border border-border object-cover"
-          />
-        </Link>
+        <ViewerAvatar className="h-10 w-10" />
       </div>
     </header>
   );
@@ -151,6 +146,8 @@ function Header() {
 
 function Body({ data }: { data: DashboardData }) {
   const { user } = data;
+  const { displayName } = useViewer();
+  const viewerFirstName = firstNameOf(displayName);
   const headline = headlineUpdate(data);
   const cont = continueCards(data);
   const tiles = forYouTiles(data);
@@ -161,7 +158,8 @@ function Body({ data }: { data: DashboardData }) {
       {/* 1 — Greeting */}
       <section className="min-w-0 px-5 pt-5">
         <h1 className="break-words text-[28px] leading-tight">
-          {greeting()}, {user.firstName}
+          {greeting()}
+          {viewerFirstName ? `, ${viewerFirstName}` : ""}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {isEmpty ? "Your network is quiet today." : "Here's your MusicLinkd today."}

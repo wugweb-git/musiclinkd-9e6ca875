@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { TalentCard } from "@/components/ml/cards";
+import { ViewerAvatar } from "@/components/ml/viewer";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 
 export const Route = createFileRoute("/")({
@@ -38,11 +39,7 @@ function Discover() {
             <button className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card">
               🔔
             </button>
-            <img
-              src={talents[1]!.photo}
-              alt="Your profile"
-              className="h-11 w-11 rounded-full border border-border object-cover"
-            />
+            <ViewerAvatar />
           </div>
         </div>
         <div className="mt-4">
