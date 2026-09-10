@@ -504,10 +504,14 @@ export function OfferSheet({
             </div>
           </div>
 
-          <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
+          <label
+            htmlFor="your-offer"
+            className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
+          >
             Your offer
           </label>
           <input
+            id="your-offer"
             inputMode="numeric"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
@@ -515,10 +519,14 @@ export function OfferSheet({
             className="mb-4 h-14 w-full rounded-full border border-border bg-card px-5 text-base font-semibold outline-none focus:border-primary"
           />
 
-          <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
+          <label
+            htmlFor="message-optional"
+            className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
+          >
             Message (optional)
           </label>
           <textarea
+            id="message-optional"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={3}

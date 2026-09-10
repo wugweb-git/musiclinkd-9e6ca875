@@ -82,10 +82,14 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
               <Field label="Timeline" placeholder="Mid-Sept 2026" />
             </div>
             <div>
-              <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
+              <label
+                htmlFor="message"
+                className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
+              >
                 Message
               </label>
               <textarea
+                id="message"
                 rows={4}
                 defaultValue="Hi Ananya — we're cutting a Hindi-Sufi title track in Mumbai and would love your vocals on the hook."
                 className="w-full rounded-2xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"

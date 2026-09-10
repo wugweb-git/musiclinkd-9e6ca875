@@ -434,7 +434,7 @@ export function GalleryGrid({ images }: { images: string[] }) {
         <img
           key={src}
           src={src}
-          alt={`Portfolio image ${i + 1}`}
+          alt={`Portfolio work ${i + 1}`}
           loading="lazy"
           className={`w-full rounded-2xl object-cover ${i === 0 ? "col-span-2 row-span-2 h-full min-h-[168px]" : "h-20"}`}
         />
@@ -610,15 +610,16 @@ export function SocialLinks({ links }: { links: { label: string; handle: string 
   return (
     <div className="flex flex-wrap gap-2">
       {links.map((l) => (
-        <a
+        <button
           key={l.label}
-          href="#"
-          onClick={(e) => e.preventDefault()}
-          className="flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-1 font-semibold"
+          type="button"
+          disabled
+          title="Linking out is not wired up yet"
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-1 font-semibold disabled:opacity-64"
         >
           {l.label}
           <span className="text-muted-foreground">{l.handle}</span>
-        </a>
+        </button>
       ))}
     </div>
   );

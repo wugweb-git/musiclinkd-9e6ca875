@@ -169,20 +169,30 @@ function ListForRent() {
                 </div>
               ))}
               <div>
-                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <span
+                  id="grp-subcategory"
+                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                >
                   Sub-category
-                </label>
-                <div className="flex flex-wrap gap-2">
+                </span>
+                <div
+                  className="flex flex-wrap gap-2"
+                  role="group"
+                  aria-labelledby="grp-subcategory"
+                >
                   {(category?.subs ?? []).slice(0, 8).map((s) => (
                     <Chip key={s}>{s}</Chip>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <span
+                  id="grp-condition"
+                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                >
                   Condition
-                </label>
-                <div className="flex flex-wrap gap-2">
+                </span>
+                <div className="flex flex-wrap gap-2" role="group" aria-labelledby="grp-condition">
                   {["New", "Like New", "Excellent", "Good", "Fair"].map((c) => (
                     <Chip key={c} active={condition === c} onClick={() => setCondition(c)}>
                       {c}
@@ -191,10 +201,14 @@ function ListForRent() {
                 </div>
               </div>
               <div>
-                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <label
+                  htmlFor="description-included-accessories"
+                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                >
                   Description & included accessories
                 </label>
                 <textarea
+                  id="description-included-accessories"
                   rows={4}
                   placeholder="Serviced between rentals. Includes windscreen, yoke mount, XLR cable and padded case."
                   className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
@@ -215,20 +229,27 @@ function ListForRent() {
                 ))}
               </div>
               <div>
-                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <label
+                  htmlFor="security-deposit"
+                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                >
                   Security deposit
                 </label>
                 <input
+                  id="security-deposit"
                   inputMode="numeric"
                   placeholder="₹15,000"
                   className="w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <span
+                  id="grp-fulfilment"
+                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                >
                   Fulfilment
-                </label>
-                <div className="flex flex-wrap gap-2">
+                </span>
+                <div className="flex flex-wrap gap-2" role="group" aria-labelledby="grp-fulfilment">
                   {["Pickup", "Provider delivery", "Courier"].map((f) => (
                     <Chip
                       key={f}
