@@ -37,7 +37,7 @@ function AuthSuccess() {
 
       <div className="mb-7 rounded-3xl border border-border bg-card p-4">
         <p className="text-[13px] font-semibold">What happens next</p>
-        <ol className="mt-2 space-y-1.5 text-[12.5px] leading-relaxed text-text2">
+        <ol className="mt-2 space-y-1.5 text-1 leading-relaxed text-text2">
           <li>1. Choose your roles and city</li>
           <li>2. Add a photo, headline and skills</li>
           <li>3. Upload one piece of work — that's what gets you hired</li>

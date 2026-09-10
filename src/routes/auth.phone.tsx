@@ -64,7 +64,7 @@ function PhoneAuth() {
 
       <TrustNote>Your number is never shown on your public profile.</TrustNote>
 
-      <p className="mt-6 text-center text-[12.5px] text-text2">
+      <p className="mt-6 text-center text-1 text-text2">
         <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
           Use email instead
         </Link>

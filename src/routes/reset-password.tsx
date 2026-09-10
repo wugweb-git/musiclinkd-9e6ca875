@@ -104,7 +104,7 @@ function ResetPassword() {
         <Btn className="w-full" onClick={() => void navigate({ to: "/auth/forgot" })}>
           Send a new link
         </Btn>
-        <p className="mt-6 text-center text-[12.5px] text-text2">
+        <p className="mt-6 text-center text-1 text-text2">
           <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
             Back to sign in
           </Link>

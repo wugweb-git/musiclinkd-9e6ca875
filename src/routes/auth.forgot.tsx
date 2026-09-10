@@ -107,7 +107,7 @@ function ForgotPassword() {
           <TrustNote>
             For your safety we show the same message whether or not an account exists.
           </TrustNote>
-          <p className="mt-6 text-center text-[12.5px] text-text2">
+          <p className="mt-6 text-center text-1 text-text2">
             Remembered it?{" "}
             <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
               Sign in

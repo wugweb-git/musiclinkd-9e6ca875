@@ -101,7 +101,7 @@ function OtpScreen() {
         Verify and continue
       </Btn>
 
-      <div className="mt-5 text-center text-[12.5px] text-text2">
+      <div className="mt-5 text-center text-1 text-text2">
         {seconds > 0 ? (
           <span>Resend code in 0:{String(seconds).padStart(2, "0")}</span>
         ) : (
@@ -115,7 +115,7 @@ function OtpScreen() {
         )}
       </div>
 
-      <p className="mt-4 text-center text-[12.5px] text-text2">
+      <p className="mt-4 text-center text-1 text-text2">
         <button
           type="button"
           onClick={() => void navigate({ to: "/auth/phone" })}
