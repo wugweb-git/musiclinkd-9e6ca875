@@ -2,11 +2,27 @@ import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { Check, Eye, EyeOff, Music2, ShieldCheck, X } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+
 /* ---------------------------------------------------------------- shell */
 
-export function AuthScreen({ children, brand = true }: { children: ReactNode; brand?: boolean }) {
+export function AuthScreen({
+  children,
+  brand = true,
+  className = "",
+}: {
+  children: ReactNode;
+  brand?: boolean | undefined;
+  /** Override the ground. Defaults to the page grey; /welcome sits on white. */
+  className?: string | undefined;
+}) {
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background">
+    <div
+      className={cn(
+        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background",
+        className,
+      )}
+    >
       <div className="flex-1 px-5 pb-10 pt-6">
         {brand ? <Brand /> : null}
         {children}
