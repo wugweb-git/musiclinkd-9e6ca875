@@ -133,27 +133,35 @@
   --popover-foreground: oklch(0.1591 0 89.88);
   --primary: oklch(0.6515 0.1995 0.71);
   --primary-foreground: oklch(1 0 89.88);
-  --secondary: oklch(0.98 0.004 286.33);
+  --secondary: #f8f8fb;
   --secondary-foreground: oklch(0.1713 0.0539 282.44);
-  --muted: oklch(0.98 0.004 286.33);
+  --muted: #f8f8fb;
   /* Was oklch(0.5955 …) = 4.04:1 on card white, under the 4.5:1 AA floor for
      normal text — and this is the colour of nearly every caption in the app.
      0.56 measures 4.66:1. Still clears 3:1 for the icon uses. */
   --muted-foreground: oklch(0.56 0.0257 285.59);
   /* Accent is a neutral hover surface. Purple lives on the category badge only. */
-  --accent: oklch(0.98 0.004 286.33);
+  --accent: #f8f8fb;
   --accent-foreground: oklch(0.1591 0 89.88);
   --destructive: oklch(0.5771 0.2152 27.33);
   --destructive-foreground: oklch(1 0 89.88);
-  --border: oklch(0.9445 0.0067 286.27);
-  --input: oklch(0.9445 0.0067 286.27);
+  /*
+   * #D5D5DE — tokens.json `line`. Was oklch(0.9445 …) ≈ 1.147:1 against the card
+   * fill, which is below the step at which an edge is visible, so every divider,
+   * card outline and input border in the app was decorative rather than
+   * structural. This is 1.458:1: a hairline you can actually see, which is what
+   * separates one section from the next.
+   */
+  --border: #d5d5de;
+  --input: #d5d5de;
   --ring: oklch(0.6515 0.1995 0.71);
 
   --navy: oklch(0.1713 0.0539 282.44);
   --purple: oklch(0.6056 0.2189 292.72);
   --success: oklch(0.7227 0.192 149.58);
   --warn: oklch(0.7686 0.1647 70.08);
-  --surface-subtle: oklch(0.98 0.004 286.33);
+  /* tokens.json `surface` — the sunken step between paper and a white card. */
+  --surface-subtle: #f8f8fb;
   --text-secondary: oklch(0.53 0.0255 274.39);
 
   --pink-container: #fce7f3;
