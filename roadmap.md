@@ -55,9 +55,79 @@
 - [x] FLOW 20 Recommendations — /recommendations, /recommendations/settings
 - [x] FLOW 22 CMS / content pages — /help, /help/$slug, /help/category/$key
 
+## Onboarding — the actual step sequence (written down 10 Sep, per Phase 9 §9.4)
+
+**This section records what the flow IS, not what it should be. The ordering decision is
+Vedanshu's; this is the input to it.** The phase spec (Phase 9) is authoritative for the entry
+gate, the auth prerequisite and the splash decision — deliberately not restated here, because
+this repo already has three documents disagreeing about tokens and does not need a fourth
+disagreeing about routing.
+
+**Route path:** `/onboarding` → `step/$id` × N → `preview` → `complete` → `done`.
+`preview` is reached automatically from the last step (`step.$id.tsx:115`), and `complete`
+carries `back="/onboarding/preview"`. `resume` and `skip` are peers, entered from inside a step.
+
+**20 steps in 7 groups** (`src/data/onboarding.ts:512-800`). 4 required, 16 optional.
+Order is array order; `visibleSteps()` filters, it never reorders.
+
+| # | Step | Group | Req? | Notes |
+|---|---|---|---|---|
+| 1 | `identity` | Identity | **required** | name + username |
+| 2 | `photo` | Identity | optional | |
+| 3 | `role` | Profession | **required** | primary role |
+| 4 | `secondary-roles` | Profession | optional | |
+| 5 | `instruments` | Expertise | optional | **conditional** — only if a selected role has `r.instruments` |
+| 6 | `specialisation` | Expertise | optional | **conditional** — only if `specialisationByRole[primaryRole]` exists |
+| 7 | `genres` | Expertise | optional | |
+| 8 | `languages` | Expertise | optional | |
+| 9 | `location` | Context | **required** | |
+| 10 | `work-mode` | Context | optional | |
+| 11 | `availability` | Intent | optional | |
+| 12 | `intent` | Intent | optional | |
+| 13 | `experience` | Intent | optional | |
+| 14 | `bio` | Profile | optional | |
+| 15 | `links` | Profile | optional | |
+| 16 | `contact` | Profile | optional | |
+| 17 | `discovery` | Personalisation | optional | |
+| 18 | `visibility` | Personalisation | **required** | |
+| 19 | `business` | Personalisation | optional | |
+| 20 | `band` | Personalisation | optional | |
+
+### Mechanical faults found while writing this down — report only, do not fix
+
+- [ ] **Skip stops working the moment the entry gate lands.** `skip.tsx` writes nothing, so
+      `onboarding_complete` stays false — correct on its own. But it tells the user *"You can
+      use MusicLinkd right away"* and exits to `/feed`, and under the Phase 9 branch table a
+      false flag bounces them to `/onboarding/resume` — whose only two buttons are *Continue
+      setup* and *Start over* (`resume.tsx:83-98`). **Neither exits to the app.** Exempting
+      `/onboarding/*` from the gate does not help; `/feed` is the gated side. Resolving this is
+      a product decision (grace state? a `skipped` flag distinct from incomplete? gate lets
+      incomplete users through?) and is Vedanshu's call.
+- [ ] **`skip.tsx:57` promises a surface that does not exist** — *"You'll find 'Complete your
+      profile' in Settings."* Nothing anywhere in `src/` links into `/onboarding`. Recorded as
+      false copy; not rewritten, per the standing no-copy-changes rule.
+- [ ] **`onboarding_complete = true` is written in exactly one place**, `complete.tsx:51`. Any
+      path that reaches the app without passing through `complete` leaves the user permanently
+      incomplete.
+- [ ] **`handoffs` is a dead `StepId`** (`onboarding.ts:498`) — in the union, no `StepDef`, no
+      other reference in `src/`.
+- [ ] **The rest of `dashboardData.user` is still fabricated.** The avatar and greeting name now
+      resolve to the real viewer (`src/components/ml/viewer.tsx`, 10 Sep), but `user.available`
+      (`feed.tsx:170`), `user.role` (`feed.tsx:173`) and `data.user.profileCompletion`
+      (`feed.tsx:317,322`) still read hardcoded values from `dashboard.ts:54-60` — every user is
+      "Music Producer · Mix Engineer", open to collaborations, 72% complete. Wiring these needs
+      real dashboard data, not a bug fix; left for the backend/route-sweep work.
+- [ ] **`preview` is a peer route, not a step** — no `StepDef`, no entry in `steps`, so it is
+      invisible to `visibleSteps()`, `stepIndex()` and `completionPercent()`. It is nonetheless
+      in the linear path. Whether it becomes a step is Vedanshu's call.
+
 ## Notes
 - Payments: seller is in India, so Lovable's built-in Stripe/Paddle are unavailable.
   Razorpay recommended (UPI, cards, INR) — awaiting user's decision before wiring.
+- `/onboarding/complete` and `/onboarding/done` are **sequential, not duplicates** — do not
+  delete either. Full detail in Phase 9 §9.4.
+- `--navy` **still resolves in the app** and renders as intended; what is retired is the
+  *upstream* `tokens.json` entry. Tracked debt, not a bug. Full detail in Phase 9 §9.7.
 - [ ] `--color-paper` in `tokens.json` is internally inconsistent three ways. Its description says
   the value was changed to `#ECECF1` because `#FCFCFD` sat 1.03:1 from the card fill and made every
   card an invisible container — but its own `$value` and the generated `ml-tokens.css` both still
