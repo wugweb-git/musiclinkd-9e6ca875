@@ -43,9 +43,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   chip copies in `booking`/`collab-workspace`/`onboarding` now match the bottom nav
 - Owner-row icons on `/me` are muted rather than pink, so pink reads as accent again
 - `--accent` is a neutral hover surface; purple is confined to the category badge
-
-### Fixed
-
 - Renamed the `--text-2` *colour* token to `--text-secondary`. Mapping the type ramp into
   Tailwind's `--text-*` namespace collided with it, and one would have silently won
 - Category badge contrast was 3.72:1, below the 4.5:1 `AGENTS.md` mandates. The new
