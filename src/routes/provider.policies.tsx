@@ -90,7 +90,7 @@ function Policies() {
 
         <section>
           <h2 className="text-[17px]">Cancellation window</h2>
-          <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1">
+          <div className="rail no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1">
             {cancellationWindows.map((w) => (
               <Chip key={w} active={window === w} onClick={() => setWindow(w)}>
                 {w}

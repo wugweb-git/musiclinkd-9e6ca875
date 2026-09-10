@@ -52,7 +52,7 @@ function Files() {
 
   return (
     <WorkspaceShell project={project} tab="files">
-      <div className="mb-4 flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="rail mb-4 flex gap-2 overflow-x-auto no-scrollbar">
         {kinds.map((k) => (
           <Chip key={k} active={k === kind} onClick={() => setKind(k)}>
             {k}

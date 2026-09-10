@@ -52,7 +52,7 @@ function Recommended() {
         back="/"
       />
 
-      <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {["Singers", "Studios", "Collaborators", "Opportunities"].map((c, idx) => (
           <span
             key={c}

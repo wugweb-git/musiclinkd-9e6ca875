@@ -55,7 +55,7 @@ function Requests() {
         }
       />
 
-      <div className="no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
+      <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
         {tabs.map((t) => (
           <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
             {t}

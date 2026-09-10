@@ -89,7 +89,7 @@ function OpportunitiesHome() {
 
         <section>
           <h2 className="mb-2 text-[15px]">Browse by need</h2>
-          <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
+          <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
             {opportunityCategories.slice(0, 10).map((c) => (
               <Link
                 key={c.key}

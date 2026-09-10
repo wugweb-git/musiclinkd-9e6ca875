@@ -69,7 +69,7 @@ function NotificationsScreen() {
         }
       />
 
-      <div className="no-scrollbar flex gap-2 overflow-x-auto px-5 pt-3">
+      <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-3">
         {filters.map((f) => (
           <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
             {f}

@@ -62,7 +62,7 @@ function MyBookings() {
         }
       />
 
-      <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {tabs.map((t) => (
           <Chip key={t.key} active={t.key === tab} onClick={() => setTab(t.key)}>
             {t.label}

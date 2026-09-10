@@ -47,7 +47,7 @@ export function WorkspaceShell({
         <StatusPill status={project.status} />
         <span className="truncate text-1 text-muted-foreground">{project.timeline}</span>
       </div>
-      <nav className="mt-3 flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
+      <nav className="rail mt-3 flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
         {tabs.map((t) => {
           const active = t.key === tab;
           return (

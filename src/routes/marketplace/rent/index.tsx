@@ -82,7 +82,7 @@ function RentHome() {
         </Link>
       </header>
 
-      <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {["For You", "Available today", "Near me", "Delivery", "Under ₹1k/day"].map((c, i) => (
           <Chip key={c} active={i === 0}>
             {c}
@@ -91,7 +91,7 @@ function RentHome() {
       </div>
 
       <SectionRow title="Browse categories">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {rentalCategories.map((c) => (
             <Link
               key={c.slug}
@@ -125,7 +125,7 @@ function RentHome() {
       </SectionRow>
 
       <SectionRow title="Near you" hint="Within 10 km of Dadar" to="/marketplace/rent/nearby">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {nearby.map((e) => (
             <EquipmentTile key={e.id} e={e} />
           ))}
@@ -133,7 +133,7 @@ function RentHome() {
       </SectionRow>
 
       <SectionRow title="Popular rentals" hint="Most rented in Mumbai this month">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {popular.map((e) => (
             <EquipmentTile key={e.id} e={e} />
           ))}
@@ -141,7 +141,7 @@ function RentHome() {
       </SectionRow>
 
       <SectionRow title="Recently viewed" to="/marketplace/rent/saved">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {equipment.slice(2, 6).map((e) => (
             <EquipmentTile key={e.id} e={e} />
           ))}
@@ -149,7 +149,7 @@ function RentHome() {
       </SectionRow>
 
       <SectionRow title="Saved rentals" to="/marketplace/rent/saved">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {equipment.slice(0, 3).map((e) => (
             <EquipmentTile key={e.id} e={e} />
           ))}

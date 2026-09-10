@@ -83,7 +83,7 @@ function ServicesHome() {
           />
         </div>
 
-        <div className="no-scrollbar flex gap-2 overflow-x-auto">
+        <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
           {filters.map((f) => (
             <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
               {f}

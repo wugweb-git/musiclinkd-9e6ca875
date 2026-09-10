@@ -52,7 +52,7 @@ function Discover() {
         </div>
       </header>
 
-      <div className="flex gap-2 overflow-x-auto px-5 pb-5 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 pb-5 no-scrollbar">
         {quickCategories.map((c) => (
           <Link
             key={c.label}
@@ -72,7 +72,7 @@ function Discover() {
 
       <section className="pb-6">
         <SectionHeader title="Featured talent" action={<Link to="/search">See all</Link>} />
-        <div className="flex gap-3 overflow-x-auto px-5 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {talents.slice(0, 4).map((t) => (
             <TalentCard key={t.id} t={t} />
           ))}
@@ -81,7 +81,7 @@ function Discover() {
 
       <section className="pb-6">
         <SectionHeader title="Trending this week" action={<Link to="/search">See all</Link>} />
-        <div className="flex gap-3 overflow-x-auto px-5 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {trending.map((t) => (
             <article
               key={t.name}

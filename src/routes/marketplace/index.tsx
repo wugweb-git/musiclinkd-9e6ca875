@@ -72,7 +72,7 @@ function MarketHome() {
         </Link>
       </header>
 
-      <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {["For You", "Nearby", "Rentals", "Services", "Studios", "Saved"].map((c, i) => (
           <Chip key={c} active={i === 0}>
             {c}
@@ -81,7 +81,7 @@ function MarketHome() {
       </div>
 
       <SectionRow title="Browse categories">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {marketCategories.map((c) => (
             <CategoryTile key={c.slug} {...c} />
           ))}
@@ -101,7 +101,7 @@ function MarketHome() {
       </SectionRow>
 
       <SectionRow title="Near you" hint="Within 10 km of Dadar" to="/marketplace/nearby">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {nearby.map((l) => (
             <ListingTile key={l.id} l={l} />
           ))}
@@ -109,7 +109,7 @@ function MarketHome() {
       </SectionRow>
 
       <SectionRow title="Trending in Mumbai" hint="Most saved this week">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {trending.map((l) => (
             <ListingTile key={l.id} l={l} />
           ))}
@@ -117,7 +117,7 @@ function MarketHome() {
       </SectionRow>
 
       <SectionRow title="Recently viewed" to="/marketplace/saved">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {listings.slice(2, 6).map((l) => (
             <ListingTile key={l.id} l={l} />
           ))}

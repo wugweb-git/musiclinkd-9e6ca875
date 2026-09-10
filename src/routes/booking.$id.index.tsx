@@ -139,7 +139,7 @@ function BookingEntry() {
 
         <section className="mt-6">
           <h3 className="text-[17px]">Gallery</h3>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <div className="rail mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
             {b.gallery.map((g) => (
               <img
                 key={g}

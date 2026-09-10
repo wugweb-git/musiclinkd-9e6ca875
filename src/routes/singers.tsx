@@ -64,7 +64,7 @@ function Singers() {
         </Link>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {chips.map((c) => (
           <Chip key={c} active={active.includes(c)} onClick={() => toggle(c)}>
             {c}
@@ -72,7 +72,7 @@ function Singers() {
         ))}
       </div>
 
-      <div className="flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
         {["Vocal range", "Language", "City", "Availability"].map((f) => (
           <button
             key={f}

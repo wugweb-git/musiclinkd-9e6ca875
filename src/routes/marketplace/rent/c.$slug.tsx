@@ -46,7 +46,7 @@ function RentCategory() {
         subtitle={`${items.length} available · Mumbai`}
         back="/marketplace/rent"
       />
-      <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {["All", ...(cat?.subs ?? [])].map((s) => (
           <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
             {s}

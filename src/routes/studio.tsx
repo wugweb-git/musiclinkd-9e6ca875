@@ -102,7 +102,7 @@ function Studio() {
 
       <section className="pt-6">
         <h2 className="mb-3 px-5 text-[15px]">Studio photos</h2>
-        <div className="flex gap-3 overflow-x-auto px-5 no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {photos.map((p) => (
             <img
               key={p}

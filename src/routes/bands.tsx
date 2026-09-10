@@ -105,7 +105,7 @@ function BandsIndex() {
                       </span>
                     </div>
                     {b.lookingFor.length ? (
-                      <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
+                      <div className="rail no-scrollbar mt-3 flex gap-2 overflow-x-auto">
                         {b.lookingFor.map((l) => (
                           <span
                             key={l}
