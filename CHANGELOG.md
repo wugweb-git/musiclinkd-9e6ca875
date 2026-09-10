@@ -20,6 +20,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   `docs/`, `src/routes/README.md`. The `.lovable/plan` documents are the only record of why 18
   flows were built design-only and exist nowhere else.
 
+### Changed
+
+- `AGENTS.md` now states explicitly that `Co-Authored-By: Wugweb <admin@wugweb.com>` is the only
+  commit trailer, and that no assistant/tool identity may be added as a second one
+
 ### Fixed
 
 - Discover and Recently-viewed screens rendered `undefined` to users: `discover.music.tsx` read
