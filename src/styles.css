@@ -112,7 +112,20 @@
 
 :root {
   --radius: 32px;
-  --background: oklch(0.9913 0.0013 286.38);
+  /*
+   * #ECECF1. Was #FCFCFD, which measured 1.025:1 against the #FFFFFF card fill —
+   * roughly six times below the step at which a person can see a surface edge, so
+   * every card, row and summary in the product was an invisible container and
+   * screens read as text floating on white. This puts the card step at 1.177:1:
+   * cards become white shapes on grey instead of outlined boxes.
+   *
+   * tokens.json records this change in --color-paper's description but never applied
+   * it to the value; its $value and the generated ml-tokens.css both still say
+   * #FCFCFD. That description also claims #ECECF1 is "the SAME value as
+   * --color-line" — it is not; line is #D5D5DE, a different grey. Both recorded in
+   * roadmap.md rather than resolved here.
+   */
+  --background: #ececf1;
   --foreground: oklch(0.1591 0 89.88);
   --card: oklch(1 0 89.88);
   --card-foreground: oklch(0.1591 0 89.88);

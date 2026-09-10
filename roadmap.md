@@ -58,6 +58,15 @@
 ## Notes
 - Payments: seller is in India, so Lovable's built-in Stripe/Paddle are unavailable.
   Razorpay recommended (UPI, cards, INR) — awaiting user's decision before wiring.
+- [ ] `--color-paper` in `tokens.json` is internally inconsistent three ways. Its description says
+  the value was changed to `#ECECF1` because `#FCFCFD` sat 1.03:1 from the card fill and made every
+  card an invisible container — but its own `$value` and the generated `ml-tokens.css` both still
+  say `#FCFCFD`. The same description claims `#ECECF1` is "the SAME value as `--color-line`";
+  `line` is `#D5D5DE`, a different grey (1.238:1 apart). The app now uses `#ECECF1` as the ground
+  on the brand owner's instruction; `tokens.json` should be corrected upstream to match.
+- [ ] `--muted-foreground` measures 4.66:1 on the white card fill but **3.22:1 on the `#ECECF1`
+  ground**. Captions inside cards are fine; any secondary text placed directly on the page ground
+  fails AA and needs `--text-secondary` (5.3:1) or darker.
 - [ ] The Lovable **project knowledge** field is the source of the wrong type scale. It states
   "four fluid clamp() tokens — 10–12px, 14–18px, 20–28px, 28–44px" and "JetBrains Mono for
   metadata". The generated `frontend/guide/system/ml-tokens.css` says **12–13 / 16–18 / 22–28 /

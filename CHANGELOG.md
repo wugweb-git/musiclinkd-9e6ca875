@@ -28,6 +28,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Page ground is `#ECECF1`, not `#FCFCFD`. The old value measured **1.025:1** against the `#FFFFFF`
+  card fill, so every card, row and summary was an invisible container and screens read as text
+  floating on white. The card step is now 1.177:1 — cards read as white shapes on grey
 - `--muted-foreground` darkened to `oklch(0.56 …)`: it measured **4.04:1** on card white, under the
   4.5:1 AA floor, and it is the colour of nearly every caption in the app. Now 4.66:1
 - `AGENTS.md` now states explicitly that `Co-Authored-By: Wugweb <admin@wugweb.com>` is the only
