@@ -28,6 +28,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Hairlines are `#D5D5DE` (`tokens.json` `line`), not `oklch(0.9445 …)`. The old value measured
+  **1.147:1** against the card fill — below the step at which an edge is visible, so every divider,
+  card outline and input border was decorative rather than structural. Now **1.458:1**
+- `--secondary`, `--muted`, `--accent` and `--surface-subtle` snapped to `#F8F8FB` (`tokens.json`
+  `surface`), the sunken step between paper and a white card. Four near-identical greys, one token
 - Page ground is `#ECECF1`, not `#FCFCFD`. The old value measured **1.025:1** against the `#FFFFFF`
   card fill, so every card, row and summary was an invisible container and screens read as text
   floating on white. The card step is now 1.177:1 — cards read as white shapes on grey
