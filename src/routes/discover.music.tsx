@@ -61,8 +61,8 @@ function DiscoverMusic() {
           <p className="mb-2 text-sm font-semibold">Trending searches</p>
           <div className="flex flex-wrap gap-2">
             {trending.map((t) => (
-              <span key={t.label} className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold">
-                {t.label}
+              <span key={t.name} className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold">
+                {t.name}
               </span>
             ))}
           </div>

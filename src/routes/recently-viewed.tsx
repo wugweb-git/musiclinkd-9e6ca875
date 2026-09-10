@@ -60,7 +60,7 @@ function RecentlyViewed() {
                 {spaces.map((s) => (
                   <Card key={s.name}>
                     <div className="flex items-center gap-3">
-                      <img src={s.image} alt="" className="h-11 w-11 rounded-[14px] object-cover" loading="lazy" />
+                      <img src={s.photo} alt="" className="h-11 w-11 rounded-[14px] object-cover" loading="lazy" />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">{s.name}</p>
                         <p className="truncate text-[12px] text-muted-foreground">{s.location}</p>
