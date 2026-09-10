@@ -74,7 +74,7 @@ function VerifyEmail() {
 
       <div className="rounded-3xl border border-border bg-card p-4">
         <p className="text-[13px] font-semibold">Not arrived?</p>
-        <ul className="mt-2 space-y-1.5 text-[12.5px] leading-relaxed text-text2">
+        <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-text2">
           <li>• Check spam and promotions folders.</li>
           <li>• Make sure the address above is spelled correctly.</li>
           <li>• Links expire after 24 hours — resend a fresh one.</li>
@@ -96,7 +96,7 @@ function VerifyEmail() {
 
       <TrustNote>We only email you about your account and things you asked for.</TrustNote>
 
-      <p className="mt-6 text-center text-[12.5px] text-text2">
+      <p className="mt-6 text-center text-1 text-text2">
         Already confirmed?{" "}
         <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
           Sign in

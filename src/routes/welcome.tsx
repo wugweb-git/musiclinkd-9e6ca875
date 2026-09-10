@@ -29,15 +29,20 @@ export const Route = createFileRoute("/welcome")({
 });
 
 /**
- * PLACEHOLDER FIGURES — these are not measured. They are transcribed from the
- * original design comp and the database does not support them. Wire them to a
- * real count or cut the block before this screen faces the public; shipping them
- * as-is is a marketing claim we cannot substantiate.
+ * What is on the platform, not how much of it.
+ *
+ * The comp carried "12,000+ Musicians / 3,500+ Studios / 800+ Labels & Agencies".
+ * Those figures were transcribed from a design mockup and nothing in the database
+ * supports them, so they are not shipped: they would be an unsubstantiated claim
+ * made to real users on the first screen they see.
+ *
+ * If real counts land, this is where they go — add a `value` and the render can
+ * put it back in a bold span ahead of the label.
  */
-const stats = [
-  { value: "12,000+", label: "Musicians" },
-  { value: "3,500+", label: "Studios" },
-  { value: "800+", label: "Labels & Agencies" },
+const audience = [
+  "Singers, session musicians and producers",
+  "Recording studios and rehearsal rooms",
+  "Labels, agencies and venues",
 ];
 
 function GoogleIcon() {
@@ -145,13 +150,10 @@ function WelcomeScreen() {
           </p>
 
           <ul className="mt-9 space-y-4">
-            {stats.map((s) => (
-              <li key={s.label} className="flex items-center gap-3">
+            {audience.map((a) => (
+              <li key={a} className="flex items-center gap-3">
                 <Plus size={14} className="shrink-0 text-muted-foreground" aria-hidden />
-                <span className="min-w-0 text-2">
-                  <span className="font-bold">{s.value}</span>{" "}
-                  <span className="text-text2">{s.label}</span>
-                </span>
+                <span className="min-w-0 text-2 text-text2">{a}</span>
               </li>
             ))}
           </ul>

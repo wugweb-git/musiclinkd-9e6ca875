@@ -94,9 +94,7 @@ export function AuthNotice({
       style={{ background: s.bg }}
     >
       <p className={`text-1 font-semibold ${s.fg}`}>{title}</p>
-      {children ? (
-        <div className="mt-1 text-[12.5px] leading-relaxed text-text2">{children}</div>
-      ) : null}
+      {children ? <div className="mt-1 text-1 leading-relaxed text-text2">{children}</div> : null}
       {action ? <div className="mt-3">{action}</div> : null}
     </div>
   );
@@ -221,7 +219,7 @@ export function PasswordRequirements({ value }: { value: string }) {
       </div>
       <ul className="space-y-1.5">
         {checks.map((c) => (
-          <li key={c.label} className="flex items-center gap-2 text-[12.5px] text-text2">
+          <li key={c.label} className="flex items-center gap-2 text-1 text-text2">
             <span
               className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
               style={{ background: c.ok ? "var(--pink-container)" : "var(--border)" }}

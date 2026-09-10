@@ -54,7 +54,7 @@ function PrivacyPage() {
           {sections.map((s) => (
             <section key={s.title} className="rounded-3xl border border-border bg-card p-4">
               <h2 className="text-[14px] font-semibold">{s.title}</h2>
-              <p className="mt-1.5 text-[12.5px] leading-relaxed text-text2">{s.body}</p>
+              <p className="mt-1.5 text-1 leading-relaxed text-text2">{s.body}</p>
             </section>
           ))}
         </div>

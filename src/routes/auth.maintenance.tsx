@@ -37,7 +37,7 @@ function MaintenanceScreen() {
         Check again
       </Btn>
       <TrustNote>Nothing in progress is lost — drafts stay on your device.</TrustNote>
-      <p className="mt-6 text-center text-[12.5px] text-text2">
+      <p className="mt-6 text-center text-1 text-text2">
         <Link to="/help" className="font-semibold text-primary">
           Read status updates
         </Link>
