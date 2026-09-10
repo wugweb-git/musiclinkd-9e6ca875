@@ -1,12 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Mail, Plus, Smartphone } from "lucide-react";
 
-import { Btn } from "@/components/ml/ui";
 import { AuthScreen, LegalNote } from "@/components/ml/auth";
-import { LogoMark } from "@/components/ml/logo";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -64,6 +63,45 @@ function GoogleIcon() {
   );
 }
 
+/**
+ * The comp's CTA treatment is not the Btn vocabulary: two of the three entries
+ * are borderless rows and the primary is a rounded rectangle rather than a pill.
+ * Built here on the system's own radius step and the 48dp touch floor instead of
+ * bending Btn, whose rounded-full is load-bearing on every other screen.
+ *
+ * Filled uses --foreground, the app's near-black. The design guide's rule is
+ * "black is the primary button, not pink"; this repo has no --ink token yet, and
+ * --foreground is the same near-black, so it gets there without touching --navy.
+ */
+function CtaRow({
+  children,
+  onClick,
+  filled = false,
+  disabled = false,
+  className = "",
+}: {
+  children: ReactNode;
+  onClick: () => void;
+  filled?: boolean | undefined;
+  disabled?: boolean | undefined;
+  className?: string | undefined;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-5 text-2 font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60",
+        filled ? "bg-foreground text-background" : "text-foreground",
+        className,
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
 function WelcomeScreen() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
@@ -88,23 +126,13 @@ function WelcomeScreen() {
   }
 
   return (
-    <AuthScreen brand={false}>
+    <AuthScreen brand={false} className="bg-card">
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
-        <div className="flex items-center justify-center gap-2 pb-10 pt-2">
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-sm"
-            style={{ background: "var(--primary)" }}
-          >
-            <LogoMark className="h-auto w-5 text-primary-foreground" />
-          </span>
-          <span className="text-2 font-semibold tracking-tight">MusicLinkd</span>
-        </div>
-
-        <div className="flex-1">
+        <div className="flex-1 pt-4">
           <h2 className="text-3 font-bold tracking-tight">MusicLinkd</h2>
-          <p className="mt-0.5 text-2 font-semibold text-primary">Professional Network For Music</p>
+          <p className="mt-1 text-2 font-semibold text-primary">Professional Network For Music</p>
 
-          <h1 className="mt-6 text-4 font-bold leading-[1.06] tracking-tight">
+          <h1 className="mt-7 text-4 font-bold leading-[1.04] tracking-tight">
             Connect.
             <br />
             Collaborate.
@@ -112,19 +140,14 @@ function WelcomeScreen() {
             Create.
           </h1>
 
-          <p className="mt-4 text-2 leading-relaxed text-text2">
+          <p className="mt-5 text-2 leading-relaxed text-text2">
             Build your profile, discover opportunities, connect with the music industry.
           </p>
 
-          <ul className="mt-8 space-y-4">
+          <ul className="mt-9 space-y-4">
             {stats.map((s) => (
               <li key={s.label} className="flex items-center gap-3">
-                <span
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-primary"
-                  style={{ background: "var(--pink-container)" }}
-                >
-                  <Plus size={13} aria-hidden />
-                </span>
+                <Plus size={14} className="shrink-0 text-muted-foreground" aria-hidden />
                 <span className="min-w-0 text-2">
                   <span className="font-bold">{s.value}</span>{" "}
                   <span className="text-text2">{s.label}</span>
@@ -134,34 +157,21 @@ function WelcomeScreen() {
           </ul>
         </div>
 
-        <div className="mt-10 space-y-3">
-          <Btn
-            variant="outline"
-            className="w-full gap-2"
-            disabled={busy}
-            onClick={() => void google()}
-          >
+        <div className="mt-10">
+          <CtaRow onClick={() => void google()} disabled={busy}>
             <GoogleIcon />
             Continue with Google
-          </Btn>
+          </CtaRow>
 
-          <Btn
-            variant="navy"
-            className="w-full gap-2"
-            onClick={() => void navigate({ to: "/auth/phone" })}
-          >
+          <CtaRow filled className="my-2" onClick={() => void navigate({ to: "/auth/phone" })}>
             <Smartphone size={17} aria-hidden />
             Continue with Mobile
-          </Btn>
+          </CtaRow>
 
-          <Btn
-            variant="ghost"
-            className="w-full gap-2"
-            onClick={() => void navigate({ to: "/auth", search: { mode: "signup" } })}
-          >
+          <CtaRow onClick={() => void navigate({ to: "/auth", search: { mode: "signup" } })}>
             <Mail size={17} aria-hidden />
             Continue with Email &amp; Password
-          </Btn>
+          </CtaRow>
 
           <LegalNote />
         </div>
