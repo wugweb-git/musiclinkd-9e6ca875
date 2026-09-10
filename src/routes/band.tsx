@@ -119,7 +119,7 @@ function Band() {
       </Section>
 
       <Section title="Live performance videos">
-        <div className="flex gap-3 overflow-x-auto no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
           {[
             { t: "Choo Lo — NH7 Weekender", v: "2.1M" },
             { t: "Aaoge Tum Kabhi — Live", v: "5.4M" },

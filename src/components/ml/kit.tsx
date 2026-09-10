@@ -57,7 +57,7 @@ export function Segmented<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="no-scrollbar flex gap-2 overflow-x-auto" role="tablist">
+    <div className="rail no-scrollbar flex gap-2 overflow-x-auto" role="tablist">
       {options.map((o) => (
         <button
           key={o}

@@ -38,7 +38,7 @@ function Mine() {
           </Link>
         }
       />
-      <div className="flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {tabs.map((t) => (
           <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
             {t}

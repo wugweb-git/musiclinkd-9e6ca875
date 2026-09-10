@@ -185,7 +185,7 @@ function ListingDetail() {
         </div>
 
         <h2 className="mt-6 text-[16px]">Related listings</h2>
-        <div className="mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+        <div className="rail mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
           {listings
             .filter((x) => x.id !== l.id)
             .slice(0, 4)

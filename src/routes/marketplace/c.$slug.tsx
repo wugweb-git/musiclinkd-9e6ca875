@@ -43,7 +43,7 @@ function CategoryScreen() {
         subtitle={`${cat?.count ?? 0} listings in India`}
         back="/marketplace"
       />
-      <div className="flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {["All", ...subs].map((s) => (
           <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
             {s}

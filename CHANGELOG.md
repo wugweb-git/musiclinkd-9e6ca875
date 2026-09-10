@@ -28,6 +28,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Horizontal rails snap to item edges. All **65** rails in `src/` paired `overflow-x-auto` with
+  `no-scrollbar`, which removes the only affordance that content continues — so a rail stopped
+  wherever the finger left it and clipped the card mid-item. A new `rail` utility adds
+  `scroll-snap-type: x mandatory` plus a child `scroll-snap-align`, so applying one class to the
+  container is the whole change
 - Hairlines are `#D5D5DE` (`tokens.json` `line`), not `oklch(0.9445 …)`. The old value measured
   **1.147:1** against the card fill — below the step at which an edge is visible, so every divider,
   card outline and input border was decorative rather than structural. Now **1.458:1**

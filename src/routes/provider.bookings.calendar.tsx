@@ -56,7 +56,7 @@ function ProviderCalendar() {
     <Screen>
       <TopBar title="Calendar" subtitle="Octave Sound Labs" back="/provider/bookings" />
 
-      <div className="no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
+      <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
         {views.map((v) => (
           <Chip key={v} active={view === v} onClick={() => setView(v)}>
             {v}

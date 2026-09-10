@@ -21,7 +21,7 @@ export const Route = createFileRoute("/marketplace/nearby")({
   component: () => (
     <Screen>
       <TopBar title="Nearby" subtitle="Dadar, Mumbai · within 15 km" back="/marketplace" />
-      <div className="flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {["All", "5 km", "15 km", "50 km", "Studios", "Rentals"].map((c, i) => (
           <Chip key={c} active={i === 0}>
             {c}

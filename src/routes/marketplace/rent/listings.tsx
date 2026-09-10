@@ -54,7 +54,7 @@ function MyListings() {
           </Link>
         }
       />
-      <div className="flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {tabs.map((t) => (
           <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
             {t}
@@ -65,7 +65,7 @@ function MyListings() {
       <div className="space-y-3 px-5 pb-6">
         {tab === "Active" ? (
           <>
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+            <div className="rail flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {statusBuckets.map((s) => (
                 <Chip key={s} active={bucket === s} onClick={() => setBucket(s)}>
                   {s}

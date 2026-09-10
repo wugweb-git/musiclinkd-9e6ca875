@@ -94,7 +94,7 @@ function RentalDetail() {
           ))}
         </div>
       </div>
-      <div className="flex gap-2 overflow-x-auto px-5 pt-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 pt-3 no-scrollbar">
         {e.photos.map((src, i) => (
           <button key={src} onClick={() => setShot(i)} className="shrink-0">
             <img
@@ -243,7 +243,7 @@ function RentalDetail() {
         <h2 className="mt-6 text-[16px]">Related equipment</h2>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto px-5 pb-5 no-scrollbar">
+      <div className="rail flex gap-3 overflow-x-auto px-5 pb-5 no-scrollbar">
         {related.map((x) => (
           <EquipmentTile key={x.id} e={x} />
         ))}

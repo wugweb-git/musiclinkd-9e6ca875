@@ -61,7 +61,7 @@ function Nearby() {
       <TopBar title="Nearby" subtitle="Sorted by distance" back="/" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        <div className="no-scrollbar flex gap-2 overflow-x-auto">
+        <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
           {radii.map((r) => (
             <Chip key={r} active={radius === r} onClick={() => setRadius(r)}>
               {r}

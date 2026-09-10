@@ -97,7 +97,7 @@ export function PersonProfileExperience({
 
       <nav
         aria-label="Profile sections"
-        className="sticky top-0 z-20 mt-5 flex gap-2 overflow-x-auto border-b border-border bg-background/95 px-5 py-3 backdrop-blur no-scrollbar"
+        className="rail sticky top-0 z-20 mt-5 flex gap-2 overflow-x-auto border-b border-border bg-background/95 px-5 py-3 backdrop-blur no-scrollbar"
       >
         {tabs.map((item) => (
           <Chip key={item} active={tab === item} onClick={() => setTab(item)}>
@@ -387,7 +387,7 @@ function Portfolio({
         </div>
       </ProfileSection>
       <ProfileSection title="Video">
-        <div className="flex gap-3 overflow-x-auto no-scrollbar">
+        <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
           {p.video.length ? (
             p.video.map((video) => <VideoCard key={video.id} v={video} />)
           ) : (
@@ -580,7 +580,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
     <>
       {p.collaborators.length ? (
         <ProfileSection title="Works with">
-          <div className="flex gap-4 overflow-x-auto pb-1 no-scrollbar">
+          <div className="rail flex gap-4 overflow-x-auto pb-1 no-scrollbar">
             {p.collaborators.map((collaborator) => (
               <CollaboratorCard key={collaborator.id} c={collaborator} />
             ))}
@@ -598,7 +598,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
       ) : null}
       {p.market.length ? (
         <ProfileSection title="Marketplace">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar">
+          <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
             {p.market.map((entry) => (
               <MarketEntryCard key={entry.id} m={entry} />
             ))}

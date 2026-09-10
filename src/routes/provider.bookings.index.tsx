@@ -88,7 +88,7 @@ function ProviderBookings() {
           />
         </div>
 
-        <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
+        <div className="rail no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
           <WorkspaceLink to="/provider/bookings/requests" label="Requests" />
           <WorkspaceLink to="/provider/bookings/calendar" label="Calendar" />
           <WorkspaceLink to="/provider/availability" label="Availability" />
@@ -96,7 +96,7 @@ function ProviderBookings() {
           <WorkspaceLink to="/provider/policies" label="Policies" />
         </div>
 
-        <div className="-mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
           {tabs.map((t) => (
             <Chip key={t} active={t === tab} onClick={() => setTab(t)}>
               {t}

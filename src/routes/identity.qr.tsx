@@ -125,7 +125,7 @@ function DigitalId() {
               </Link>
             </div>
 
-            <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+            <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">
               {(["light", "dark", "branded", "minimal"] as QrStyle[]).map((s) => (
                 <button
                   key={s}

@@ -52,7 +52,7 @@ function BusinessLeads() {
       <TopBar title="Leads" subtitle={b.name} back={`/business/${b.id}/dashboard`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        <div className="no-scrollbar flex gap-2 overflow-x-auto">
+        <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
           {filters.map((f) => (
             <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
               {f}

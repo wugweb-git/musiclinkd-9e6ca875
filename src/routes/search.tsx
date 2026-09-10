@@ -52,7 +52,7 @@ function SearchResults() {
           <h1 className="text-[20px]">Search results</h1>
         </div>
         <SearchBar value={q} onChange={setQ} />
-        <div className="mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">
           <Chip active>Verified</Chip>
           <Chip>Available now</Chip>
           <Chip>Mumbai</Chip>

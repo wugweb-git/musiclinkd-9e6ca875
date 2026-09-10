@@ -54,7 +54,7 @@ function NearbyRentals() {
         </button>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {radii.map((r) => (
           <Chip key={r} active={radius === r} onClick={() => setRadius(r)}>
             {r}
@@ -62,7 +62,7 @@ function NearbyRentals() {
         ))}
       </div>
 
-      <div className="flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
+      <div className="rail flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
         <Chip active={cat === "All"} onClick={() => setCat("All")}>
           All
         </Chip>

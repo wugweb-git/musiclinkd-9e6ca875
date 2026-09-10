@@ -258,7 +258,7 @@ function Body({ data }: { data: DashboardData }) {
             </div>
           ) : null}
           {data.forYou.length ? (
-            <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
+            <div className="rail no-scrollbar mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
               {data.forYou.map((t) => (
                 <TalentCard key={t.id} t={t} />
               ))}
@@ -331,7 +331,7 @@ function Body({ data }: { data: DashboardData }) {
             <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
           </Link>
         </div>
-        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
+        <div className="rail no-scrollbar mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
           <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track / EP" />
           <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
           <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />

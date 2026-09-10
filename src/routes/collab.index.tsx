@@ -121,7 +121,7 @@ function CollabHome() {
         />
       </div>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto px-5 no-scrollbar">
+      <div className="rail mt-3 flex gap-2 overflow-x-auto px-5 no-scrollbar">
         {tabs.map((t) => (
           <Chip key={t.key} active={t.key === tab} onClick={() => setTab(t.key)}>
             {t.label}

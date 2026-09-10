@@ -39,7 +39,7 @@ function Availability() {
     <Screen>
       <TopBar title="Availability" subtitle={b.name} back="/provider/bookings" />
       <main className="px-5 pt-2">
-        <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
+        <div className="rail -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
           {b.resources.map((x) => (
             <Chip key={x.id} active={x.id === resourceId} onClick={() => setResourceId(x.id)}>
               {x.name}

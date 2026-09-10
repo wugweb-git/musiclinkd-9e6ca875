@@ -66,7 +66,7 @@ function AddCollaborators() {
           placeholder="Name, username, role, instrument or business"
         />
       </div>
-      <div className="mt-3 flex gap-2 overflow-x-auto px-5 no-scrollbar">
+      <div className="rail mt-3 flex gap-2 overflow-x-auto px-5 no-scrollbar">
         {facets.map((f) => (
           <Chip key={f} active={f === facet} onClick={() => setFacet(f)}>
             {f}

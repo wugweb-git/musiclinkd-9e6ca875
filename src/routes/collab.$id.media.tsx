@@ -64,7 +64,7 @@ function Media() {
 
   return (
     <WorkspaceShell project={project} tab="files">
-      <div className="mb-4 flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="rail mb-4 flex gap-2 overflow-x-auto no-scrollbar">
         {filters.map((f) => (
           <Chip key={f.key} active={f.key === filter} onClick={() => setFilter(f.key)}>
             {f.label}
