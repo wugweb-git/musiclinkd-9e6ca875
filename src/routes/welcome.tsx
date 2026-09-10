@@ -132,7 +132,7 @@ function WelcomeScreen() {
           <h2 className="text-3 font-bold tracking-tight">MusicLinkd</h2>
           <p className="mt-1 text-2 font-semibold text-primary">Professional Network For Music</p>
 
-          <h1 className="mt-7 text-4 font-bold leading-[1.04] tracking-tight">
+          <h1 className="mt-7 text-5 font-bold tracking-tight">
             Connect.
             <br />
             Collaborate.

@@ -43,11 +43,15 @@
    * they are mapped here into Tailwind's --text-* namespace so the utilities read
    * text-1..text-4. At the 412px target: 12.0 / 16.1 / 22.3 / 32.6px.
    *
-   * Four steps, not five. These are fluid RANGES (12-13 / 16-18 / 22-28 / 32-44),
-   * so they span 12->44px continuously; the gaps between them are deliberate. The
-   * 4-token core is a stated constraint of the system, and every other foundation
-   * group (space, radius, size, opacity, weight, elevation, zIndex, icon, avatar)
-   * is likewise exactly four.
+   * FIVE steps as of 11 Sep 2026. Four was a stated constraint of the system; the
+   * cap was lifted deliberately at the brand owner's instruction, and --type-5 was
+   * added for HERO headlines only — the pre-auth landing. Screen titles stay on
+   * --type-4; if a second call site for --type-5 appears, question it before
+   * adding, because one hero per product is the point of the step.
+   *
+   * Ranges are fluid and continuous: 12-13 / 16-18 / 22-28 / 32-44 / 40-56.
+   * Every other foundation group (space, radius, size, opacity, weight,
+   * elevation, zIndex, icon, avatar) is still exactly four.
    */
   --text-1: var(--type-1);
   --text-1--line-height: 1.45;
@@ -57,6 +61,9 @@
   --text-3--line-height: 1.25;
   --text-4: var(--type-4);
   --text-4--line-height: 1.1;
+  /* Hero only. See the note above before reaching for this. */
+  --text-5: var(--type-5);
+  --text-5--line-height: 1.04;
 
   /* Spacing steps. Numeric utilities (p-1, gap-4 …) are untouched. */
   --spacing-xs: 4px;
@@ -139,10 +146,15 @@
   --secondary: #f8f8fb;
   --secondary-foreground: oklch(0.1713 0.0539 282.44);
   --muted: #f8f8fb;
-  /* Was oklch(0.5955 …) = 4.04:1 on card white, under the 4.5:1 AA floor for
-     normal text — and this is the colour of nearly every caption in the app.
-     0.56 measures 4.66:1. Still clears 3:1 for the icon uses. */
-  --muted-foreground: oklch(0.56 0.0257 285.59);
+  /*
+   * tokens.json `muted`. Adopted 11 Sep 2026, replacing oklch(0.56 0.0257 285.59)
+   * which resolved to #737383 — a bluer, lighter grey than the foundation and the
+   * cause of the AA failure recorded in roadmap.md: it passed on the white card
+   * fill but measured ~3.2:1 on the #ECECF1 ground, and this is the colour of
+   * nearly every caption in the app. #66666F clears 4.5:1 on BOTH grounds, which
+   * is why the two-tier grey below is no longer needed to stay legal.
+   */
+  --muted-foreground: #66666f;
   /* Accent is a neutral hover surface. Purple lives on the category badge only. */
   --accent: #f8f8fb;
   --accent-foreground: oklch(0.1591 0 89.88);
@@ -165,7 +177,15 @@
   --warn: oklch(0.7686 0.1647 70.08);
   /* tokens.json `surface` — the sunken step between paper and a white card. */
   --surface-subtle: #f8f8fb;
-  --text-secondary: oklch(0.53 0.0255 274.39);
+  /*
+   * Also tokens.json `muted`. Was oklch(0.53 0.0255 274.39) = #676B7B, which was
+   * the darker half of a two-tier grey that existed so secondary text on the page
+   * ground could clear AA. With --muted-foreground now on the foundation value,
+   * both tiers are the same colour and the split has no job left. Kept as a
+   * separate token only because `text-text2` is on ~100 call sites; merging the
+   * two is a follow-up, not a colour decision.
+   */
+  --text-secondary: #66666f;
 
   --pink-container: #fce7f3;
   --purple-container: color-mix(in oklab, var(--purple) 10%, transparent);
@@ -200,6 +220,8 @@
   --type-2: clamp(16px, calc(16px + 2 * (100vw - 360px) / 1080), 18px);
   --type-3: clamp(22px, calc(22px + 6 * (100vw - 360px) / 1080), 28px);
   --type-4: clamp(32px, calc(32px + 12 * (100vw - 360px) / 1080), 44px);
+  /* Hero. 40.8px at the 412px target, 56px at 1440. */
+  --type-5: clamp(40px, calc(40px + 16 * (100vw - 360px) / 1080), 56px);
 
   /* Motion, verbatim from the generated ml-tokens.css. */
   --duration-1: 125ms;
