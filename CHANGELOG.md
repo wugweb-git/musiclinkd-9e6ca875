@@ -28,6 +28,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The favicon is now the MusicLinkd waveform, white on brand pink `#EA4C89`. Until now,
+  `public/favicon.ico` had been Lovable's template heart since the template commit (`afc4a22`).
+  The glyph comes from the guide's `brand/assets/favicon-mark.svg`. That file's white plate is
+  invisible on a light tab strip, so the mark sits on a pink square instead. Three files: an SVG
+  for current browsers, a 32px ICO fallback and a 180px apple-touch icon
 - Horizontal rails snap to item edges. All **65** rails in `src/` paired `overflow-x-auto` with
   `no-scrollbar`, which removes the only affordance that content continues — so a rail stopped
   wherever the finger left it and clipped the card mid-item. A new `rail` utility adds
