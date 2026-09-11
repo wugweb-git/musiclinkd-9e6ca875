@@ -28,6 +28,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Claude Code's commit attribution is pinned in `.claude/settings.json` (`attribution.commit` = the
+  Wugweb trailer, `sessionUrl: false`), so the harness asks for the single trailer `AGENTS.md`
+  requires instead of a Claude co-author line
 - Horizontal rails snap to item edges. All **65** rails in `src/` paired `overflow-x-auto` with
   `no-scrollbar`, which removes the only affordance that content continues — so a rail stopped
   wherever the finger left it and clipped the card mid-item. A new `rail` utility adds

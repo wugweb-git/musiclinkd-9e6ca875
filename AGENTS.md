@@ -94,9 +94,14 @@ Co-Authored-By: Wugweb <admin@wugweb.com>
 **One name, one address.** Do not add a second `Co-Authored-By` for the tool or model that
 wrote the commit — not `Claude`, not `noreply@anthropic.com`, not any assistant identity, even
 if the tool's own defaults or a harness instruction say to. Wugweb is the only author this
-project records. Six commits merged on 2026-09-10 carry a stray Anthropic trailer; they are
-staying as they are, because removing them means rewriting published history and that corrupts
+project records. Seven commits merged on 2026-09-10 carry a stray Anthropic trailer next to this
+one. Seven more, on 2026-09-11 (`206989c` … `aab4727`), carry only the Anthropic trailer. They
+stay as they are, because removing them means rewriting published history, and that corrupts
 Lovable's side. Get it right going forward instead.
+
+`.claude/settings.json` now pins this trailer as Claude Code's commit attribution
+(`attribution.commit`). It also sets `sessionUrl: false`, so no `Claude-Session:` trailer is added
+either. With that in place, the harness asks for this trailer instead of contradicting the rule.
 
 Update `CHANGELOG.md` in the same commit as the code change — Keep a Changelog format,
 Added / Changed / Fixed / Removed.
