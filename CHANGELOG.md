@@ -28,11 +28,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
-- The favicon is now the MusicLinkd waveform, white on brand pink `#EA4C89`. Until now,
-  `public/favicon.ico` had been Lovable's template heart since the template commit (`afc4a22`).
-  The glyph comes from the guide's `brand/assets/favicon-mark.svg`. That file's white plate is
-  invisible on a light tab strip, so the mark sits on a pink square instead. Three files: an SVG
-  for current browsers, a 32px ICO fallback and a 180px apple-touch icon
+- Claude Code's commit attribution is pinned in `.claude/settings.json` (`attribution.commit` = the
+  Wugweb trailer, `sessionUrl: false`), so the harness asks for the single trailer `AGENTS.md`
+  requires instead of a Claude co-author line
 - Horizontal rails snap to item edges. All **65** rails in `src/` paired `overflow-x-auto` with
   `no-scrollbar`, which removes the only affordance that content continues — so a rail stopped
   wherever the finger left it and clipped the card mid-item. A new `rail` utility adds
@@ -74,10 +72,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   chip copies in `booking`/`collab-workspace`/`onboarding` now match the bottom nav
 - Owner-row icons on `/me` are muted rather than pink, so pink reads as accent again
 - `--accent` is a neutral hover surface; purple is confined to the category badge
-- Renamed the `--text-2` _colour_ token to `--text-secondary`. Mapping the type ramp into
-  Tailwind's `--text-*` namespace collided with it, and one would have silently won
-- Category badge contrast was 3.72:1, below the 4.5:1 `AGENTS.md` mandates. The new
-  `--status-category-*` pair measures 8.77:1
+- Renamed the `--text-2` _colour_ token to `--text-secondary`. Mapping the type ramp into Tailwind's `--text-*` namespace collided with it, and one would have silently won
+- Category badge contrast was 3.72:1, below the 4.5:1 `AGENTS.md` mandates. The new `--status-category-*` pair measures 8.77:1
 
 ### Known gaps
 
@@ -95,7 +91,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   retired --navy", and `action.primary = ink` — the primary button is black, not pink). Not
   migrated here: it is a colour-identity change on every screen
 - No accessibility linting: `eslint-plugin-jsx-a11y` is not registered in `eslint.config.js`, so
-  the WCAG AA, contrast, `:focus-visible` and 48dp touch-target rules `AGENTS.md` mandates are
-  not machine-checked. Tracked in `roadmap.md`.
+  the WCAG AA, contrast, `:focus-visible` and 48dp touch-target rules `AGENTS.md` mandates are not
+  machine-checked. Tracked in `roadmap.md`.
 - 18 `react-refresh/only-export-components` warnings remain (non-blocking; clearing them means
   splitting 10 component files to isolate their exports).
