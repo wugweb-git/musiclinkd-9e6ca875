@@ -174,17 +174,18 @@ Order is array order; `visibleSteps()` filters, it never reorders.
 - [x] `--muted-foreground` on the `#ECECF1` ground: fixed by PR #15, which adopted `tokens.json`
   `muted` `#66666F`. It measures **4.83:1** on the ground and 5.68:1 on the white card, so both
   clear AA. `--text-secondary` is now an alias of it.
-- [ ] The Lovable **project knowledge** field has been rewritten since this note (the type scale,
-  retired fonts and retired navy are now correct). It is still out of step with the code in 13 Sep
-  checks:
-  - It lists four type ramps; the app has five (`--type-5`, hero).
-  - It says weights 400–800 are loaded; the link loads 400–700.
-  - It says `-0.02em` was removed from `h1..h4`; the code keeps it, per the 11 Sep decision.
-  - It lists ground `paper #FCFCFD`; the app ground is `#ECECF1`.
-  - It says "45 Radix primitives"; there are 46.
-  - It describes `profiles` RLS as "public SELECT"; that is now visibility-gated.
-  - It has no rule about parent routes needing `<Outlet />`, the cause of the 26-route bug.
-  Knowledge is fed to the Lovable agent on every prompt.
+- [x] The Lovable **project knowledge** now matches the code (replaced 13 Sep). Changes:
+  - five type ramps including `--type-5`
+  - loaded weights 400–700
+  - no heading letter-spacing, which was removed from the code in `1831fd6`
+  - app ground `#ECECF1`
+  - 46 primitives
+  - `profiles` RLS gated by visibility
+  - `viewport-fit=cover`
+  - the new rule that parent routes need `<Outlet />` or an index leaf
+  - a CI note
+
+  The previous text is kept in the 13 Sep handoff.
 - [ ] The Lovable **project description** field still holds the original superseded brief verbatim
   — `Primary: #5B4BFF`, `Secondary: #8B5CF6`, `Radius: 16px`, `Google Sans Roboto`,
   `Material Design 3`. It is the same corrupted text that was in `README.md` (same missing "D" in
