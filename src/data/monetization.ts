@@ -147,3 +147,28 @@ export const cancelReasons = [
   "Taking a break",
   "Other",
 ];
+
+/** Invoice detail / receipt lines — design-only, no payment provider is wired. */
+export const invoiceLines: Record<string, { label: string; value: string }[]> = {
+  "in-2609": [
+    { label: "Pro monthly", value: "₹423" },
+    { label: "GST 18%", value: "₹76" },
+  ],
+  "in-2481": [
+    { label: "Pro monthly", value: "₹423" },
+    { label: "GST 18%", value: "₹76" },
+  ],
+  "in-2350": [
+    { label: "Pro monthly", value: "₹423" },
+    { label: "GST 18%", value: "₹76" },
+    { label: "Refund issued", value: "−₹499" },
+  ],
+};
+
+export const invoiceBilledTo = {
+  name: "Vedanshu Srivastava",
+  place: "Mumbai, Maharashtra, India",
+  gstin: "Not provided",
+};
+
+export const getInvoice = (id: string) => invoices.find((i) => i.id === id);
