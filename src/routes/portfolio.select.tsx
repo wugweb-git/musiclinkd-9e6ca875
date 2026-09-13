@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, StateCard } from "@/components/ml/portfolio";
 import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -52,11 +52,7 @@ function PortfolioSelect() {
           <StateCard
             title="No work to share yet"
             body="Add a track, project or performance and you can attach it to any conversation."
-            action={
-              <Link to="/portfolio/new">
-                <Btn>Add work</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/portfolio/new">Add work</BtnLink>}
           />
         ) : null}
 

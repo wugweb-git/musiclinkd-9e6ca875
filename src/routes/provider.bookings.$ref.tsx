@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { MessageCircle, Users } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import {
   BookingStatusPill,
   BookingTimeline,
@@ -55,11 +55,7 @@ function ProviderBookingDetail() {
           <EmptyState
             title="Session not found"
             body="It may have been cancelled or moved."
-            action={
-              <Link to="/provider/bookings">
-                <Btn>Back to workspace</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/provider/bookings">Back to workspace</BtnLink>}
           />
         </div>
       </Screen>
@@ -119,16 +115,12 @@ function ProviderBookingDetail() {
         </div>
 
         <div className="mt-6 space-y-2">
-          <Link to="/messages" className="block">
-            <Btn variant="outline" className="w-full">
-              <MessageCircle size={15} className="mr-1.5" /> Message {bk.customer.split(" ")[0]}
-            </Btn>
-          </Link>
-          <Link to="/provider/availability" className="block">
-            <Btn variant="ghost" className="w-full">
-              Block or adjust this room's calendar
-            </Btn>
-          </Link>
+          <BtnLink to="/messages" variant="outline" className="w-full">
+            <MessageCircle size={15} className="mr-1.5" /> Message {bk.customer.split(" ")[0]}
+          </BtnLink>
+          <BtnLink to="/provider/availability" variant="ghost" className="w-full">
+            Block or adjust this room's calendar
+          </BtnLink>
         </div>
       </main>
     </Screen>

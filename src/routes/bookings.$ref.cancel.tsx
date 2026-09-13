@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Detail, EmptyState, PolicyCard, StickyBar } from "@/components/ml/booking";
 import { formatDate, formatTime, getBookable, getBooking, getResource, inr } from "@/data/booking";
 
@@ -67,9 +67,9 @@ function Cancel() {
               <Detail label="Reference" value={bk.ref} />
               <Detail label="Refund" value={inr(refund)} />
             </dl>
-            <Link to="/bookings" className="mt-4 block">
-              <Btn className="w-full">Back to bookings</Btn>
-            </Link>
+            <BtnLink to="/bookings" className="mt-4 w-full">
+              Back to bookings
+            </BtnLink>
           </div>
         </main>
       </Screen>

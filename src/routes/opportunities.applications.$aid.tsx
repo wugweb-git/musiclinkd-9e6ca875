@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MessageCircle, CheckCircle2, Circle } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
 import { getApplication, getOpportunity, applicationTone } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
@@ -114,21 +114,22 @@ function ApplicationDetail() {
         </Card>
 
         {a.threadId ? (
-          <Link to="/messages">
-            <Btn className="w-full">
-              <span className="inline-flex items-center gap-2">
-                <MessageCircle size={16} /> Open conversation
-              </span>
-            </Btn>
-          </Link>
+          <BtnLink to="/messages" className="w-full">
+            <span className="inline-flex items-center gap-2">
+              <MessageCircle size={16} /> Open conversation
+            </span>
+          </BtnLink>
         ) : null}
 
         {o ? (
-          <Link to="/opportunities/$id" params={{ id: o.id }}>
-            <Btn variant="outline" className="w-full">
-              View the opportunity
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/opportunities/$id"
+            params={{ id: o.id }}
+            variant="outline"
+            className="w-full"
+          >
+            View the opportunity
+          </BtnLink>
         ) : null}
 
         {["submitted", "viewed", "shortlisted"].includes(a.status) ? (
@@ -163,9 +164,9 @@ function ApplicationDetail() {
         body="It's been removed from the poster's list."
         onClose={() => setDone(false)}
       >
-        <Link to="/opportunities/applications">
-          <Btn className="w-full">Back to applications</Btn>
-        </Link>
+        <BtnLink to="/opportunities/applications" className="w-full">
+          Back to applications
+        </BtnLink>
       </Dialog>
     </Screen>
   );

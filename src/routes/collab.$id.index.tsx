@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn } from "@/components/ml/ui";
+import { BtnLink } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import {
   Card,
@@ -149,14 +149,12 @@ function Overview() {
       </div>
 
       <div className="mb-8 flex gap-3">
-        <Link to="/messages" className="flex-1">
-          <Btn variant="outline" className="w-full">
-            Open messages
-          </Btn>
-        </Link>
-        <Link to="/collab/$id/discussion" params={{ id: project.id }} className="flex-1">
-          <Btn className="w-full">Post an update</Btn>
-        </Link>
+        <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
+          Open messages
+        </BtnLink>
+        <BtnLink to="/collab/$id/discussion" params={{ id: project.id }} className="flex-1 w-full">
+          Post an update
+        </BtnLink>
       </div>
     </WorkspaceShell>
   );

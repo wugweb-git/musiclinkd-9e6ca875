@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
-import { Screen, SearchBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
 import { SectionRow } from "@/components/ml/market";
 import {
   EquipmentCard,
@@ -163,9 +163,9 @@ function RentHome() {
             Rent it out to 72,000+ verified music professionals. You set the dates, deposit and
             terms.
           </p>
-          <Link to="/marketplace/rent/list" className="mt-4 block">
-            <Btn className="w-full">Rent out equipment</Btn>
-          </Link>
+          <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">
+            Rent out equipment
+          </BtnLink>
           <div className="mt-2 flex justify-center gap-4 text-xs font-semibold text-primary">
             <Link to="/marketplace/rent/mine">My rentals</Link>
             <Link to="/marketplace/rent/listings">My listings</Link>

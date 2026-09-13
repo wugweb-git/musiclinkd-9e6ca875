@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Eye, Users, Bookmark } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
 import { myOpportunities } from "@/data/opportunities";
@@ -46,9 +46,9 @@ function MyOpportunities() {
             title="You haven't posted yet"
             body="Post a requirement and receive applications with portfolios attached."
           >
-            <Link to="/opportunities/new" search={{ step: "basics" }}>
-              <Btn className="w-full">Post an opportunity</Btn>
-            </Link>
+            <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
+              Post an opportunity
+            </BtnLink>
           </EmptyState>
         ) : (
           myOpportunities.map((o) => (
@@ -70,21 +70,30 @@ function MyOpportunities() {
               </div>
               <div className="flex gap-2">
                 {o.status === "draft" ? (
-                  <Link to="/opportunities/new" search={{ step: "preview" }} className="flex-1">
-                    <Btn className="w-full">Finish draft</Btn>
-                  </Link>
+                  <BtnLink
+                    to="/opportunities/new"
+                    search={{ step: "preview" }}
+                    className="flex-1 w-full"
+                  >
+                    Finish draft
+                  </BtnLink>
                 ) : (
-                  <Link to="/opportunities/$id/applicants" params={{ id: o.id }} className="flex-1">
-                    <Btn className="w-full">
-                      Applicants{o.applicantSummary.new ? ` · ${o.applicantSummary.new} new` : ""}
-                    </Btn>
-                  </Link>
+                  <BtnLink
+                    to="/opportunities/$id/applicants"
+                    params={{ id: o.id }}
+                    className="flex-1 w-full"
+                  >
+                    Applicants{o.applicantSummary.new ? ` · ${o.applicantSummary.new} new` : ""}
+                  </BtnLink>
                 )}
-                <Link to="/opportunities/$id/manage" params={{ id: o.id }} className="flex-1">
-                  <Btn variant="outline" className="w-full">
-                    Manage
-                  </Btn>
-                </Link>
+                <BtnLink
+                  to="/opportunities/$id/manage"
+                  params={{ id: o.id }}
+                  variant="outline"
+                  className="flex-1 w-full"
+                >
+                  Manage
+                </BtnLink>
               </div>
             </Card>
           ))

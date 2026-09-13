@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, ReorderList, StateCard } from "@/components/ml/portfolio";
 import { demoPortfolio, FEATURED_LIMIT, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -79,11 +79,7 @@ function Reorder() {
           <StateCard
             title="Nothing to reorder yet"
             body="Add your first work and it will show up here."
-            action={
-              <Link to="/portfolio/new">
-                <Btn>Add work</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/portfolio/new">Add work</BtnLink>}
           />
         ) : null}
 

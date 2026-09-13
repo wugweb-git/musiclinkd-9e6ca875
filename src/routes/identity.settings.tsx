@@ -2,10 +2,10 @@
  * FLOW-23 · QR-22 "QR & sharing settings" · route: /identity/settings
  * Privacy controls that decide what any share can contain.
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { myIdentity } from "@/data/identity";
 
 export const Route = createFileRoute("/identity/settings")({
@@ -102,11 +102,9 @@ function QrSettings() {
           <Btn className="flex-1" onClick={() => toast.success("Sharing preferences updated")}>
             Save
           </Btn>
-          <Link to="/identity/analytics" className="flex-1">
-            <Btn variant="outline" className="w-full">
-              View analytics
-            </Btn>
-          </Link>
+          <BtnLink to="/identity/analytics" variant="outline" className="flex-1 w-full">
+            View analytics
+          </BtnLink>
         </div>
 
         <p className="mt-3 px-1 pb-2 text-[12px] text-muted-foreground">

@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Flag, ShieldCheck } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Segmented, Stars, StatusPill, EmptyState, Meter, Row } from "@/components/ml/kit";
 import {
   receivedReviews,
@@ -112,9 +112,9 @@ function ReviewsHub() {
                     <StatusPill key={c} label={c} />
                   ))}
                 </div>
-                <Link to="/reviews/write/$id" params={{ id: p.id }}>
-                  <Btn className="w-full">Write review</Btn>
-                </Link>
+                <BtnLink to="/reviews/write/$id" params={{ id: p.id }} className="w-full">
+                  Write review
+                </BtnLink>
               </Card>
             ))
           ) : (

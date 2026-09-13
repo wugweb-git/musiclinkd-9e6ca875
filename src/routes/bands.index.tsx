@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Users } from "lucide-react";
-import { Screen, TopBar, SearchBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, SearchBar, BtnLink } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
 import { bands, myBandId } from "@/data/band";
 
@@ -62,9 +62,9 @@ function BandsIndex() {
             title="No bands here yet"
             body="Create your group and invite the people you already play with."
           >
-            <Link to="/bands/new">
-              <Btn className="w-full">Create a band</Btn>
-            </Link>
+            <BtnLink to="/bands/new" className="w-full">
+              Create a band
+            </BtnLink>
           </EmptyState>
         ) : (
           <div className="space-y-3">

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
+import { BtnLink, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
 import {
   Card,
   Field,
@@ -107,23 +107,28 @@ function InviteDetail() {
             placeholder="Anything you want to clarify before accepting?"
           />
         </Field>
-        <Link to="/messages">
-          <Btn variant="ghost" className="mb-4 w-full">
-            Send question in Connections
-          </Btn>
-        </Link>
+        <BtnLink to="/messages" variant="ghost" className="mb-4 w-full">
+          Send question in Connections
+        </BtnLink>
       </main>
 
       <StickyBar>
         <div className="flex gap-3">
-          <Link to="/collab/invites/declined/$id" params={{ id: inv.id }} className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Decline
-            </Btn>
-          </Link>
-          <Link to="/collab/invites/accepted/$id" params={{ id: inv.id }} className="flex-[2]">
-            <Btn className="w-full">Accept as {inv.proposedRole}</Btn>
-          </Link>
+          <BtnLink
+            to="/collab/invites/declined/$id"
+            params={{ id: inv.id }}
+            variant="outline"
+            className="flex-1 w-full"
+          >
+            Decline
+          </BtnLink>
+          <BtnLink
+            to="/collab/invites/accepted/$id"
+            params={{ id: inv.id }}
+            className="flex-[2] w-full"
+          >
+            Accept as {inv.proposedRole}
+          </BtnLink>
         </div>
       </StickyBar>
     </Screen>

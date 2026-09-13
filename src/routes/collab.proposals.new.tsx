@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Field, Label, StickyBar, TextInput } from "@/components/ml/collab";
 import { OutcomePanel } from "@/components/ml/collab-extra";
 import { collabRoles, projects } from "@/data/collab";
@@ -45,9 +45,9 @@ function NewProposal() {
             title="Proposal sent"
             body={`Your proposal for ${project} is with them now. You'll be notified when they accept, decline or counter.`}
           >
-            <Link to="/collab">
-              <Btn className="w-full">Back to collaborations</Btn>
-            </Link>
+            <BtnLink to="/collab" className="w-full">
+              Back to collaborations
+            </BtnLink>
           </OutcomePanel>
         </main>
       </Screen>
@@ -121,11 +121,9 @@ function NewProposal() {
       </main>
       <StickyBar>
         <div className="flex gap-3">
-          <Link to="/collab" className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Save draft
-            </Btn>
-          </Link>
+          <BtnLink to="/collab" variant="outline" className="flex-1 w-full">
+            Save draft
+          </BtnLink>
           <Btn className="flex-1" onClick={() => setSent(true)}>
             Send proposal
           </Btn>

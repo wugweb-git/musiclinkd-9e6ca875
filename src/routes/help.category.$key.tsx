@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { EmptyState, Row } from "@/components/ml/kit";
 import { contentCategories, pagesInCategory } from "@/data/cms";
 
@@ -43,9 +43,9 @@ function CategoryPage() {
           ))
         ) : (
           <EmptyState title="Nothing here yet" body="We are still writing guides for this topic.">
-            <Link to="/help">
-              <Btn className="w-full">Browse all guides</Btn>
-            </Link>
+            <BtnLink to="/help" className="w-full">
+              Browse all guides
+            </BtnLink>
           </EmptyState>
         )}
       </div>

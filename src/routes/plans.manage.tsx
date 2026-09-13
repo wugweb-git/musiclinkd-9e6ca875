@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Row, StatusPill, Meter, Dialog } from "@/components/ml/kit";
 import {
   plans,
@@ -113,11 +113,9 @@ function ManagePlan() {
             subtitle="Bookings, services and rentals"
             to="/plans/earnings"
           />
-          <Link to="/plans">
-            <Btn variant="outline" className="w-full">
-              Change plan
-            </Btn>
-          </Link>
+          <BtnLink to="/plans" variant="outline" className="w-full">
+            Change plan
+          </BtnLink>
           <Btn variant="ghost" className="w-full" onClick={() => setCancelOpen(true)}>
             Cancel subscription
           </Btn>

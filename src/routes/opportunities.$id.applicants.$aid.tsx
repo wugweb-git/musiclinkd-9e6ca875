@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MessageCircle, Star, CalendarDays } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { Card, StatusPill, ReasonChip, EmptyState, Dialog } from "@/components/ml/kit";
 import { applicants } from "@/data/opportunities";
 
@@ -75,11 +75,14 @@ function ApplicantDetail() {
               <ReasonChip key={r}>{r}</ReasonChip>
             ))}
           </div>
-          <Link to="/profile/$username" params={{ username: a.username }}>
-            <Btn variant="outline" className="w-full">
-              View full profile
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/profile/$username"
+            params={{ username: a.username }}
+            variant="outline"
+            className="w-full"
+          >
+            View full profile
+          </BtnLink>
         </Card>
 
         <Card className="space-y-2">
@@ -105,13 +108,11 @@ function ApplicantDetail() {
           </div>
         </section>
 
-        <Link to="/messages">
-          <Btn variant="outline" className="w-full">
-            <span className="inline-flex items-center gap-2">
-              <MessageCircle size={16} /> Message {a.name.split(" ")[0]}
-            </span>
-          </Btn>
-        </Link>
+        <BtnLink to="/messages" variant="outline" className="w-full">
+          <span className="inline-flex items-center gap-2">
+            <MessageCircle size={16} /> Message {a.name.split(" ")[0]}
+          </span>
+        </BtnLink>
       </div>
 
       <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
@@ -157,30 +158,24 @@ function ApplicantDetail() {
       </Dialog>
 
       <Dialog open={confirmed !== null} title={confirmed ?? ""} onClose={() => setConfirmed(null)}>
-        <Link to="/opportunities/$id/applicants" params={{ id }}>
-          <Btn className="w-full">Back to applicants</Btn>
-        </Link>
+        <BtnLink to="/opportunities/$id/applicants" params={{ id }} className="w-full">
+          Back to applicants
+        </BtnLink>
       </Dialog>
 
       <Sheet open={hire} onClose={() => setHire(false)} title="How do you want to work together?">
         <div className="space-y-2">
-          <Link to="/booking/$id" params={{ id: "svc-1" }} className="block">
-            <Btn className="w-full">
-              <span className="inline-flex items-center gap-2">
-                <CalendarDays size={16} /> Create a booking
-              </span>
-            </Btn>
-          </Link>
-          <Link to="/collab/new" className="block">
-            <Btn variant="outline" className="w-full">
-              Start a collaboration
-            </Btn>
-          </Link>
-          <Link to="/messages" className="block">
-            <Btn variant="ghost" className="w-full">
-              Keep talking first
-            </Btn>
-          </Link>
+          <BtnLink to="/booking/$id" params={{ id: "svc-1" }} className="w-full">
+            <span className="inline-flex items-center gap-2">
+              <CalendarDays size={16} /> Create a booking
+            </span>
+          </BtnLink>
+          <BtnLink to="/collab/new" variant="outline" className="w-full">
+            Start a collaboration
+          </BtnLink>
+          <BtnLink to="/messages" variant="ghost" className="w-full">
+            Keep talking first
+          </BtnLink>
         </div>
       </Sheet>
     </Screen>

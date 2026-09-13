@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, StateCard, WorkAnalytics } from "@/components/ml/portfolio";
 import { analyticsFor, demoPortfolio, portfolioTotals, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -64,11 +64,7 @@ function PortfolioAnalytics() {
                 <StateCard
                   title="Nothing to measure yet"
                   body="Publish your first work and performance data starts collecting."
-                  action={
-                    <Link to="/portfolio/new">
-                      <Btn>Add work</Btn>
-                    </Link>
-                  }
+                  action={<BtnLink to="/portfolio/new">Add work</BtnLink>}
                 />
               ) : null}
               {items.map((item) => {

@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Info, ShieldCheck } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Dialog, StatusPill, Row } from "@/components/ml/kit";
 import { getWhy } from "@/data/search-meta";
 import { feedbackOptions } from "@/data/recommendations";
@@ -114,9 +114,9 @@ function WhyThisResult() {
         body={`We will show fewer results like this. Reason recorded: ${sent ?? ""}.`}
         onClose={() => setSent(null)}
       >
-        <Link to="/recommendations">
-          <Btn className="w-full">Back to recommendations</Btn>
-        </Link>
+        <BtnLink to="/recommendations" className="w-full">
+          Back to recommendations
+        </BtnLink>
         <Btn variant="ghost" onClick={() => setSent(null)}>
           Stay here
         </Btn>

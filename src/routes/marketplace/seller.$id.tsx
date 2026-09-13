@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { ListingCard, Rating, SellerSummary, TrustPill } from "@/components/ml/market";
 import { bySeller, reviews, sellerById } from "@/data/market";
 
@@ -43,9 +43,9 @@ function SellerProfile() {
           </div>
           <p className="mt-3 text-sm text-muted-foreground">{s.bio}</p>
           <div className="mt-4 flex gap-2">
-            <Link to="/messages" className="flex-1">
-              <Btn className="w-full">Message</Btn>
-            </Link>
+            <BtnLink to="/messages" className="flex-1 w-full">
+              Message
+            </BtnLink>
             <Btn variant="outline" className="flex-1">
               Follow
             </Btn>

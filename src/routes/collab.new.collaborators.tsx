@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Chip, Btn, SearchBar, Sheet } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Chip, Btn, BtnLink, SearchBar, Sheet } from "@/components/ml/ui";
 import { VerifiedBadge } from "@/components/ml/ui";
 import { Card, EmptyState, Label, StickyBar } from "@/components/ml/collab";
 import { candidates, collabRoles, type CollabRole } from "@/data/collab";
@@ -148,14 +148,12 @@ function AddCollaborators() {
 
       <StickyBar>
         <div className="flex gap-3">
-          <Link to="/collab" className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Save draft
-            </Btn>
-          </Link>
-          <Link to="/collab/$id" params={{ id: "raat-ki-rani" }} className="flex-[2]">
-            <Btn className="w-full">{count ? `Create & invite ${count}` : "Create project"}</Btn>
-          </Link>
+          <BtnLink to="/collab" variant="outline" className="flex-1 w-full">
+            Save draft
+          </BtnLink>
+          <BtnLink to="/collab/$id" params={{ id: "raat-ki-rani" }} className="flex-[2] w-full">
+            {count ? `Create & invite ${count}` : "Create project"}
+          </BtnLink>
         </div>
       </StickyBar>
 

@@ -36,6 +36,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- **Link buttons are one element.** 241 `<Link><Btn/></Link>` pairs in 129 files (a `<button>`
+  inside an `<a>`: invalid HTML, two tab stops, and screen readers announce both) are now
+  `<BtnLink>`, a `createLink` anchor that shares `Btn`'s classes and keeps typed `to`/`params`.
+  Hrefs are unchanged. Layout is unchanged except in `flex-1`/`flex-[2]` rows: the padding now sits
+  on the flex item, so equal-share rows are truly equal (on `/recommendations`, Open is the same
+  width as Save and Hide instead of 72px), and 1:2 pairs shift by about 15px.
 - **`/feed` renders its data on the server.** A fake 450ms timer wrapped data that was already
   static, so the server sent only a skeleton. The greeting is now set after mount, so a UTC server
   no longer picks the time of day for a reader in another timezone.

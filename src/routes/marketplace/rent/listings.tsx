@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { EquipmentRow, RentalStatusPill } from "@/components/ml/rental";
 import { equipment, equipmentById, inr, rentalNotifications, rentalRequests } from "@/data/rentals";
@@ -157,11 +157,7 @@ function MyListings() {
             emoji="📝"
             title="No drafts"
             body="Start a rental listing and we'll keep it here until you publish."
-            action={
-              <Link to="/marketplace/rent/list">
-                <Btn>Rent out equipment</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/marketplace/rent/list">Rent out equipment</BtnLink>}
           />
         ) : null}
 

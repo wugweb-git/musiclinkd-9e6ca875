@@ -2,10 +2,10 @@
  * FLOW-23 · QR-20 "Save contact" · route: /identity/contact/save
  * states: ready, saving, success, error
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, UserRoundPlus } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { StateCard, ActionRow } from "@/components/ml/qr";
 import { myIdentity } from "@/data/identity";
 
@@ -38,11 +38,9 @@ function SaveContact() {
             title="Contact saved"
             body={`${myIdentity.name} was added to your phone contacts with their MusicLinkd profile link.`}
           >
-            <Link to="/identity/contact">
-              <Btn className="w-full">
-                <Check size={16} className="mr-2" /> Done
-              </Btn>
-            </Link>
+            <BtnLink to="/identity/contact" className="w-full">
+              <Check size={16} className="mr-2" /> Done
+            </BtnLink>
           </StateCard>
         ) : phase === "error" ? (
           <StateCard
@@ -94,11 +92,9 @@ function SaveContact() {
               >
                 {phase === "saving" ? "Saving…" : "Save to contacts"}
               </Btn>
-              <Link to="/identity/contact" className="flex-1">
-                <Btn variant="outline" className="w-full">
-                  Cancel
-                </Btn>
-              </Link>
+              <BtnLink to="/identity/contact" variant="outline" className="flex-1 w-full">
+                Cancel
+              </BtnLink>
             </div>
           </>
         )}

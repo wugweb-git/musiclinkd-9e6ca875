@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Sparkles, Compass, ShieldCheck } from "lucide-react";
-import { Btn } from "@/components/ml/ui";
+import { Btn, BtnLink } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding, resumeTarget } from "@/components/ml/onboarding";
 import { visibleSteps } from "@/data/onboarding";
 
@@ -84,9 +84,9 @@ function Welcome() {
 
       <div className="mt-8 space-y-2">
         {hydrated && started ? (
-          <Link to="/onboarding/resume" className="block">
-            <Btn className="w-full">Continue setup</Btn>
-          </Link>
+          <BtnLink to="/onboarding/resume" className="w-full">
+            Continue setup
+          </BtnLink>
         ) : (
           <Btn
             className="w-full"
@@ -97,11 +97,9 @@ function Welcome() {
             Let's start
           </Btn>
         )}
-        <Link to="/onboarding/skip" className="block">
-          <Btn variant="ghost" className="w-full">
-            Skip for now
-          </Btn>
-        </Link>
+        <BtnLink to="/onboarding/skip" variant="ghost" className="w-full">
+          Skip for now
+        </BtnLink>
       </div>
     </div>
   );

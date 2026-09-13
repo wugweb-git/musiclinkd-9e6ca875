@@ -1,7 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 import { getOpportunity, payLabel } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
@@ -75,14 +75,12 @@ function ApplyFlow() {
               application is viewed.
             </p>
           </Card>
-          <Link to="/opportunities/applications">
-            <Btn className="w-full">Track my applications</Btn>
-          </Link>
-          <Link to="/opportunities">
-            <Btn variant="outline" className="w-full">
-              Browse more opportunities
-            </Btn>
-          </Link>
+          <BtnLink to="/opportunities/applications" className="w-full">
+            Track my applications
+          </BtnLink>
+          <BtnLink to="/opportunities" variant="outline" className="w-full">
+            Browse more opportunities
+          </BtnLink>
         </div>
       </Screen>
     );
@@ -140,11 +138,9 @@ function ApplyFlow() {
                 );
               })}
             </div>
-            <Link to="/portfolio/new">
-              <Btn variant="ghost" className="w-full">
-                Add new work to portfolio
-              </Btn>
-            </Link>
+            <BtnLink to="/portfolio/new" variant="ghost" className="w-full">
+              Add new work to portfolio
+            </BtnLink>
           </>
         ) : null}
 

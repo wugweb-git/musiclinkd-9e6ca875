@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { PartyPopper } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { saveMyProfile } from "@/lib/portfolio.functions";
 import { draftToProfile } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { BtnLink, TopBar } from "@/components/ml/ui";
 import {
   HandoffCard,
   OnboardingProvider,
@@ -98,9 +98,9 @@ function Complete() {
               {...(r.cta
                 ? {
                     action: (
-                      <Link to="/me">
-                        <Btn variant="outline">{r.cta}</Btn>
-                      </Link>
+                      <BtnLink to="/me" variant="outline">
+                        {r.cta}
+                      </BtnLink>
                     ),
                   }
                 : {})}
@@ -115,9 +115,9 @@ function Complete() {
             title="Add your portfolio"
             body="Tracks, videos and credits are what turn a profile view into an enquiry."
             action={
-              <Link to="/portfolio/new" className="block">
-                <Btn className="w-full">Add work</Btn>
-              </Link>
+              <BtnLink to="/portfolio/new" className="w-full">
+                Add work
+              </BtnLink>
             }
           />
           {d.businessIntent ? (
@@ -126,9 +126,9 @@ function Complete() {
               title={`Set up your ${d.businessIntent.toLowerCase()} profile`}
               body="Add your team, services and location so clients can book the business, not just you."
               action={
-                <Link to="/categories" className="block">
-                  <Btn className="w-full">Start business setup</Btn>
-                </Link>
+                <BtnLink to="/categories" className="w-full">
+                  Start business setup
+                </BtnLink>
               }
             />
           ) : null}
@@ -138,9 +138,9 @@ function Complete() {
               title="Create your band profile"
               body="A shared profile with members, shows and a joint calendar."
               action={
-                <Link to="/bands/new" className="block">
-                  <Btn className="w-full">Create band</Btn>
-                </Link>
+                <BtnLink to="/bands/new" className="w-full">
+                  Create band
+                </BtnLink>
               }
             />
           ) : null}
@@ -149,18 +149,18 @@ function Complete() {
             title="Verify your identity"
             body="Verified profiles rank higher in discovery and get more replies."
             action={
-              <Link to="/me" className="block">
-                <Btn className="w-full">Start verification</Btn>
-              </Link>
+              <BtnLink to="/me" className="w-full">
+                Start verification
+              </BtnLink>
             }
           />
         </div>
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <Link to="/onboarding/done" className="block">
-          <Btn className="w-full">Finish</Btn>
-        </Link>
+        <BtnLink to="/onboarding/done" className="w-full">
+          Finish
+        </BtnLink>
       </div>
     </div>
   );

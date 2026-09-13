@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarOff, Plus } from "lucide-react";
-import { Screen, TopBar, Btn, Chip, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
 import {
   weeklyAvailability,
@@ -144,11 +144,9 @@ function Availability() {
             Changing hours never cancels a confirmed booking — manage those in your provider
             calendar.
           </p>
-          <Link to="/provider/bookings/calendar">
-            <Btn variant="ghost" className="w-full">
-              Open calendar
-            </Btn>
-          </Link>
+          <BtnLink to="/provider/bookings/calendar" variant="ghost" className="w-full">
+            Open calendar
+          </BtnLink>
         </Card>
       </div>
 

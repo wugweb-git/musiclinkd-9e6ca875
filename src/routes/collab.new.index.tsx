@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { Field, TextInput, StickyBar, Label } from "@/components/ml/collab";
 import { collabRoles, collabTypes } from "@/data/collab";
 
@@ -113,14 +113,12 @@ function CreateCollab() {
 
       <StickyBar>
         <div className="flex gap-3">
-          <Link to="/collab" className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Save draft
-            </Btn>
-          </Link>
-          <Link to="/collab/new/collaborators" className="flex-[2]">
-            <Btn className="w-full">Continue</Btn>
-          </Link>
+          <BtnLink to="/collab" variant="outline" className="flex-1 w-full">
+            Save draft
+          </BtnLink>
+          <BtnLink to="/collab/new/collaborators" className="flex-[2] w-full">
+            Continue
+          </BtnLink>
         </div>
       </StickyBar>
     </Screen>

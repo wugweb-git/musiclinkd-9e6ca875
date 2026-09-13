@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MoreHorizontal, Settings2, Sparkles } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { Card, EmptyState, Loading, ReasonChip, Segmented } from "@/components/ml/kit";
 import {
   recommendations,
@@ -80,14 +80,12 @@ function Recs() {
           <Loading rows={4} />
         ) : !anything ? (
           <EmptyState title={recEmptyCopy.title} body={recEmptyCopy.body}>
-            <Link to="/profile/edit">
-              <Btn className="w-full">Complete my profile</Btn>
-            </Link>
-            <Link to="/">
-              <Btn variant="outline" className="w-full">
-                Browse Discover instead
-              </Btn>
-            </Link>
+            <BtnLink to="/profile/edit" className="w-full">
+              Complete my profile
+            </BtnLink>
+            <BtnLink to="/" variant="outline" className="w-full">
+              Browse Discover instead
+            </BtnLink>
           </EmptyState>
         ) : (
           recSections.map((s) => {
@@ -136,9 +134,9 @@ function Recs() {
                         </div>
                       </div>
                       <div className="flex gap-2 border-t border-border p-3">
-                        <Link {...r.link} className="flex-1">
-                          <Btn className="w-full text-xs">Open</Btn>
-                        </Link>
+                        <BtnLink {...r.link} className="flex-1 w-full text-xs">
+                          Open
+                        </BtnLink>
                         <Btn variant="outline" className="flex-1 text-xs">
                           Save
                         </Btn>
@@ -164,11 +162,9 @@ function Recs() {
             Every card shows why it is here. Hide anything and it stops influencing future
             suggestions.
           </p>
-          <Link to="/recommendations/settings">
-            <Btn variant="outline" className="w-full">
-              Recommendation settings
-            </Btn>
-          </Link>
+          <BtnLink to="/recommendations/settings" variant="outline" className="w-full">
+            Recommendation settings
+          </BtnLink>
         </Card>
       </div>
 

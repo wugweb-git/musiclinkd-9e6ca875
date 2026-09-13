@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Bell, BellOff, Search, Trash2 } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
 import { savedSearches, timeAgo } from "@/data/search-meta";
 
@@ -85,13 +85,11 @@ function SavedSearches() {
               </div>
 
               <div className="flex gap-2">
-                <Link to="/search" className="flex-1">
-                  <Btn className="w-full">
-                    <span className="inline-flex items-center gap-2">
-                      <Search size={16} aria-hidden /> Run search
-                    </span>
-                  </Btn>
-                </Link>
+                <BtnLink to="/search" className="flex-1 w-full">
+                  <span className="inline-flex items-center gap-2">
+                    <Search size={16} aria-hidden /> Run search
+                  </span>
+                </BtnLink>
                 <Btn
                   variant="outline"
                   aria-label={`Delete ${s.label}`}
@@ -107,9 +105,9 @@ function SavedSearches() {
             title="No saved searches"
             body="Run a search, apply the filters that matter, then save it. We will tell you when something new matches."
           >
-            <Link to="/search">
-              <Btn className="w-full">Start a search</Btn>
-            </Link>
+            <BtnLink to="/search" className="w-full">
+              Start a search
+            </BtnLink>
           </EmptyState>
         )}
 

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { BtnLink, TopBar } from "@/components/ml/ui";
 import { visibilityOptions } from "@/data/portfolio";
 
 export const Route = createFileRoute("/portfolio/settings")({
@@ -103,9 +103,9 @@ function PortfolioSettings() {
         </div>
 
         <div className="mt-8 flex gap-2">
-          <Link to="/portfolio" className="flex-1">
-            <Btn className="w-full">Done</Btn>
-          </Link>
+          <BtnLink to="/portfolio" className="flex-1 w-full">
+            Done
+          </BtnLink>
         </div>
       </main>
     </div>

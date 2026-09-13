@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Dialog } from "@/components/ml/kit";
 import { businessTypes, type BusinessType } from "@/data/business";
 
@@ -218,14 +218,12 @@ function NewBusiness() {
         onClose={() => setCreated(false)}
       >
         <div className="space-y-2">
-          <Link to="/business">
-            <Btn className="w-full">Open business</Btn>
-          </Link>
-          <Link to="/verification/choose">
-            <Btn variant="ghost" className="w-full">
-              Verify this business
-            </Btn>
-          </Link>
+          <BtnLink to="/business" className="w-full">
+            Open business
+          </BtnLink>
+          <BtnLink to="/verification/choose" variant="ghost" className="w-full">
+            Verify this business
+          </BtnLink>
         </div>
       </Dialog>
     </Screen>

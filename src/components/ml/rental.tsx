@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type ReactNode } from "react";
 import { CalendarDays, Package, Truck, MapPin } from "lucide-react";
-import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
+import { Btn, BtnLink, Chip, Sheet, VerifiedBadge } from "./ui";
 import { ConditionBadge, LocationRow, Rating, SaveButton } from "./market";
 import {
   inr,
@@ -114,11 +114,14 @@ export function EquipmentCard({ e }: { e: Equipment }) {
             View provider
           </Link>
         </div>
-        <Link to="/marketplace/rent/request/$id" params={{ id: e.id }} className="mt-3 block">
-          <Btn variant="outline" className="w-full">
-            Check availability
-          </Btn>
-        </Link>
+        <BtnLink
+          to="/marketplace/rent/request/$id"
+          params={{ id: e.id }}
+          variant="outline"
+          className="mt-3 w-full"
+        >
+          Check availability
+        </BtnLink>
       </div>
     </article>
   );

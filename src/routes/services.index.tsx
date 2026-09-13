@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarClock, Plus, Settings2 } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Row } from "@/components/ml/kit";
 import { myServices, priceLabel, serviceStatusTone, type ServiceStatus } from "@/data/services";
 
@@ -127,9 +127,9 @@ function ServicesHome() {
             title={`No ${filter.toLowerCase()} services`}
             body="Publish a service so people can book you without asking for a quote first."
           >
-            <Link to="/services/new" search={{ step: "category" as const }}>
-              <Btn className="w-full">Add a service</Btn>
-            </Link>
+            <BtnLink to="/services/new" search={{ step: "category" as const }} className="w-full">
+              Add a service
+            </BtnLink>
           </EmptyState>
         )}
       </div>

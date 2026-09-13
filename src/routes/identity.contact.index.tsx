@@ -2,9 +2,9 @@
  * FLOW-23 · QR-19 "Digital business card" · route: /identity/contact
  * Only fields the owner marked shareable appear here.
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Building2, Globe, Mail, Phone, UserRoundPlus } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { QrCode, ActionRow, nativeShare } from "@/components/ml/qr";
 import { canonicalUrl, myIdentity } from "@/data/identity";
 
@@ -78,11 +78,9 @@ function BusinessCard() {
         </div>
 
         <div className="mt-4 flex gap-2">
-          <Link to="/identity/contact/save" className="flex-1">
-            <Btn className="w-full">
-              <UserRoundPlus size={16} className="mr-2" /> Save contact
-            </Btn>
-          </Link>
+          <BtnLink to="/identity/contact/save" className="flex-1 w-full">
+            <UserRoundPlus size={16} className="mr-2" /> Save contact
+          </BtnLink>
           <Btn
             variant="outline"
             className="flex-1"
@@ -93,11 +91,9 @@ function BusinessCard() {
         </div>
 
         <div className="mt-3">
-          <Link to="/identity/settings">
-            <Btn variant="ghost" className="w-full">
-              Manage shared details
-            </Btn>
-          </Link>
+          <BtnLink to="/identity/settings" variant="ghost" className="w-full">
+            Manage shared details
+          </BtnLink>
         </div>
       </main>
     </Screen>

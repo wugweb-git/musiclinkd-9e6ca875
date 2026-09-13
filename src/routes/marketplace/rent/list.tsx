@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Camera, Star } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { ConditionBadge, LocationRow } from "@/components/ml/market";
 import { RentalAvailabilityBadge, RentalCalendar } from "@/components/ml/rental";
 import { equipment, rentalCategories } from "@/data/rentals";
@@ -78,14 +78,12 @@ function ListForRent() {
               Renters near you can now check availability and send requests. You'll be notified for
               every enquiry.
             </p>
-            <Link to="/marketplace/rent/listings" className="mt-6 block">
-              <Btn className="w-full">Go to my listings</Btn>
-            </Link>
-            <Link to="/marketplace/rent" className="mt-2 block">
-              <Btn variant="outline" className="w-full">
-                Back to rentals
-              </Btn>
-            </Link>
+            <BtnLink to="/marketplace/rent/listings" className="mt-6 w-full">
+              Go to my listings
+            </BtnLink>
+            <BtnLink to="/marketplace/rent" variant="outline" className="mt-2 w-full">
+              Back to rentals
+            </BtnLink>
           </div>
         ) : null}
 

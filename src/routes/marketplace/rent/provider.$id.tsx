@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip, VerifiedBadge } from "@/components/ml/ui";
 import { EmptyState, Rating } from "@/components/ml/market";
 import { EquipmentRow, RentalReportSheet } from "@/components/ml/rental";
 import { equipmentByProvider, providerById, rentalReviews } from "@/data/rentals";
@@ -93,9 +93,9 @@ function ProviderProfile() {
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Link to="/messages">
-            <Btn className="w-full">Message</Btn>
-          </Link>
+          <BtnLink to="/messages" className="w-full">
+            Message
+          </BtnLink>
           <Btn variant="outline" className="w-full">
             Follow
           </Btn>

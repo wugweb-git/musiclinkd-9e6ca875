@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Btn } from "@/components/ml/ui";
+import { BtnLink } from "@/components/ml/ui";
 import { Card, Label, Tag } from "@/components/ml/collab";
 import type { CollabFile } from "@/data/collab";
 
@@ -12,9 +12,9 @@ export function DeletedState({ body }: { body?: string }) {
       <p className="mb-4 text-1 text-muted-foreground">
         {body ?? "It may have been deleted by the owner, or you no longer have access to it."}
       </p>
-      <Link to="/collab">
-        <Btn variant="outline">Back to collaborations</Btn>
-      </Link>
+      <BtnLink to="/collab" variant="outline">
+        Back to collaborations
+      </BtnLink>
     </Card>
   );
 }

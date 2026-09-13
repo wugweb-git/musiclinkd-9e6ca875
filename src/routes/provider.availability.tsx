@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { AvailabilityCalendar, PolicyCard } from "@/components/ml/booking";
 import { bookables, formatDate, inr } from "@/data/booking";
 
@@ -151,11 +151,9 @@ function Availability() {
         <Btn className="mt-6 w-full" onClick={() => undefined}>
           Save availability
         </Btn>
-        <Link to="/provider/bookings" className="mt-2 block">
-          <Btn variant="ghost" className="w-full">
-            Back to workspace
-          </Btn>
-        </Link>
+        <BtnLink to="/provider/bookings" variant="ghost" className="mt-2 w-full">
+          Back to workspace
+        </BtnLink>
       </main>
     </Screen>
   );

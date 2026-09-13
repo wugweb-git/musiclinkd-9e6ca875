@@ -1,8 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
-import { Btn, Screen, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
@@ -183,9 +183,9 @@ function EditProfile() {
             <p className="mt-1.5 text-sm text-muted-foreground">
               Your profile lives on your account, so changes follow you to every device.
             </p>
-            <Link to="/auth" search={{ mode: "signin" }} className="mt-4 block">
-              <Btn className="w-full">Sign in</Btn>
-            </Link>
+            <BtnLink to="/auth" search={{ mode: "signin" }} className="mt-4 w-full">
+              Sign in
+            </BtnLink>
           </div>
         </main>
       </Screen>

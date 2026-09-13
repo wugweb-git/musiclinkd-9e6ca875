@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
 import {
   analyticsFor,
   AudioPlayer,
@@ -93,11 +93,7 @@ function WorkDetail() {
           <StateCard
             title="This work is no longer available"
             body="It may have been deleted, archived, or you don't have permission to view it."
-            action={
-              <Link to="/portfolio">
-                <Btn>Back to portfolio</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/portfolio">Back to portfolio</BtnLink>}
           />
         ) : null}
 
@@ -168,16 +164,16 @@ function WorkDetail() {
 
             <div className="mt-6 flex flex-wrap gap-2">
               {demo ? null : (
-                <Link to="/portfolio/$id/edit" params={{ id }}>
-                  <Btn>Edit</Btn>
-                </Link>
+                <BtnLink to="/portfolio/$id/edit" params={{ id }}>
+                  Edit
+                </BtnLink>
               )}
               <Btn variant="outline" onClick={share}>
                 Share
               </Btn>
-              <Link to="/portfolio/new">
-                <Btn variant="outline">Add another</Btn>
-              </Link>
+              <BtnLink to="/portfolio/new" variant="outline">
+                Add another
+              </BtnLink>
             </div>
 
             {demo ? null : (

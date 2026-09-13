@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, StickyBar } from "@/components/ml/collab";
 import { ConfirmPanel, DeletedState, OutcomePanel } from "@/components/ml/collab-extra";
 import { getProject } from "@/data/collab";
@@ -69,11 +69,14 @@ function RemoveCollaborator() {
             <p className="mt-1 text-[12px] text-muted-foreground">
               Transfer ownership first if the owner needs to step away.
             </p>
-            <Link to="/collab/$id/transfer" params={{ id: project.id }}>
-              <Btn variant="outline" className="mt-3 w-full">
-                Transfer ownership
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/collab/$id/transfer"
+              params={{ id: project.id }}
+              variant="outline"
+              className="mt-3 w-full"
+            >
+              Transfer ownership
+            </BtnLink>
           </Card>
         ) : removed ? (
           <OutcomePanel
@@ -81,9 +84,9 @@ function RemoveCollaborator() {
             title="Collaborator removed"
             body={`${person.name} no longer has access to ${project.name}.`}
           >
-            <Link to="/collab/$id/participants" params={{ id: project.id }}>
-              <Btn className="w-full">Back to people</Btn>
-            </Link>
+            <BtnLink to="/collab/$id/participants" params={{ id: project.id }} className="w-full">
+              Back to people
+            </BtnLink>
           </OutcomePanel>
         ) : (
           <ConfirmPanel
@@ -101,11 +104,14 @@ function RemoveCollaborator() {
       {canManage && !removed ? (
         <StickyBar>
           <div className="flex gap-3">
-            <Link to="/collab/$id/participants" params={{ id: project.id }} className="flex-1">
-              <Btn variant="outline" className="w-full">
-                Cancel
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/collab/$id/participants"
+              params={{ id: project.id }}
+              variant="outline"
+              className="flex-1 w-full"
+            >
+              Cancel
+            </BtnLink>
             <Btn className="flex-1" onClick={() => setRemoved(true)}>
               Remove
             </Btn>

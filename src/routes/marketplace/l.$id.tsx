@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Share2, Flag } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   ConditionBadge,
   ListingTile,
@@ -156,11 +156,14 @@ function ListingDetail() {
               </div>
             ))}
           </div>
-          <Link to="/marketplace/seller/$id" params={{ id: seller.id }} className="mt-3 block">
-            <Btn variant="outline" className="w-full">
-              View profile
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/marketplace/seller/$id"
+            params={{ id: seller.id }}
+            variant="outline"
+            className="mt-3 w-full"
+          >
+            View profile
+          </BtnLink>
         </div>
 
         <h2 className="mt-6 text-[16px]">Reviews</h2>
@@ -207,9 +210,9 @@ function ListingDetail() {
           <Btn variant="outline" className="flex-1" onClick={() => setOffer(true)}>
             {cta[0]}
           </Btn>
-          <Link to="/messages" className="flex-1">
-            <Btn className="w-full">{cta[1]}</Btn>
-          </Link>
+          <BtnLink to="/messages" className="flex-1 w-full">
+            {cta[1]}
+          </BtnLink>
         </div>
       </div>
 

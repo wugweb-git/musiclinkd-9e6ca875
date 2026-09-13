@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarDays, MessageSquare, QrCode, Settings2, Share2, UserPlus } from "lucide-react";
-import { Screen, TopBar, Btn, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Row } from "@/components/ml/kit";
 import { getBand, myBandId, bandRoleCopy } from "@/data/band";
 
@@ -38,9 +38,9 @@ function BandProfile() {
             title="This band is no longer available"
             body="It may have been deleted or made private by its owner."
           >
-            <Link to="/bands">
-              <Btn className="w-full">Back to bands</Btn>
-            </Link>
+            <BtnLink to="/bands" className="w-full">
+              Back to bands
+            </BtnLink>
           </EmptyState>
         </div>
       </Screen>
@@ -272,11 +272,9 @@ function BandProfile() {
               </div>
             ) : (
               <EmptyState title="No releases yet" body="Add band work from your portfolio.">
-                <Link to="/portfolio">
-                  <Btn variant="outline" className="w-full">
-                    Open portfolio
-                  </Btn>
-                </Link>
+                <BtnLink to="/portfolio" variant="outline" className="w-full">
+                  Open portfolio
+                </BtnLink>
               </EmptyState>
             )
           ) : null}

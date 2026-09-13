@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CreditCard, Lock, Smartphone, AlertTriangle, CheckCircle2 } from "lucide-react";
-import { TopBar, Btn } from "@/components/ml/ui";
+import { TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { PaymentSummaryCard, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
@@ -45,9 +45,9 @@ function Pay() {
           ["Balance at the studio", inr(price.balance)],
         ]}
         primary={
-          <Link to="/booking/confirmed/$ref" params={{ ref: "MLB-NEW-C" }} className="block">
-            <Btn className="w-full">View booking</Btn>
-          </Link>
+          <BtnLink to="/booking/confirmed/$ref" params={{ ref: "MLB-NEW-C" }} className="w-full">
+            View booking
+          </BtnLink>
         }
       />
     );

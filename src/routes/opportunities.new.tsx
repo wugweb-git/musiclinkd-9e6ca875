@@ -1,7 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
 
@@ -92,14 +92,12 @@ function CreateOpportunity() {
               notified on every application.
             </p>
           </Card>
-          <Link to="/opportunities/mine">
-            <Btn className="w-full">Manage it</Btn>
-          </Link>
-          <Link to="/opportunities">
-            <Btn variant="outline" className="w-full">
-              Back to opportunities
-            </Btn>
-          </Link>
+          <BtnLink to="/opportunities/mine" className="w-full">
+            Manage it
+          </BtnLink>
+          <BtnLink to="/opportunities" variant="outline" className="w-full">
+            Back to opportunities
+          </BtnLink>
         </div>
       </Screen>
     );
@@ -197,11 +195,9 @@ function CreateOpportunity() {
                 Confirmed hires can be converted into a booking in one tap — availability stays
                 owned by Booking.
               </p>
-              <Link to="/provider/availability">
-                <Btn variant="ghost" className="w-full">
-                  Open availability
-                </Btn>
-              </Link>
+              <BtnLink to="/provider/availability" variant="ghost" className="w-full">
+                Open availability
+              </BtnLink>
             </Card>
           </>
         ) : null}
@@ -327,11 +323,9 @@ function CreateOpportunity() {
               Back
             </Btn>
           ) : (
-            <Link to="/opportunities/mine" className="flex-1">
-              <Btn variant="outline" className="w-full">
-                Save draft
-              </Btn>
-            </Link>
+            <BtnLink to="/opportunities/mine" variant="outline" className="flex-1 w-full">
+              Save draft
+            </BtnLink>
           )}
           <Btn className="flex-1" disabled={!canContinue} onClick={() => go(order[idx + 1]!)}>
             {step === "preview" ? "Publish" : "Continue"}

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Btn } from "@/components/ml/ui";
+import { Btn, BtnLink } from "@/components/ml/ui";
 import {
   analyticsFor,
   contributorDirectory,
@@ -115,9 +115,9 @@ export function SignedOutCard({ what = "your portfolio" }: { what?: string }) {
       title="Sign in to manage your work"
       body={`Create a free MusicLinkd account to publish and edit ${what}. You're seeing demo work below.`}
       action={
-        <Link to="/auth" search={{ mode: "signin" }}>
-          <Btn>Sign in or sign up</Btn>
-        </Link>
+        <BtnLink to="/auth" search={{ mode: "signin" }}>
+          Sign in or sign up
+        </BtnLink>
       }
     />
   );

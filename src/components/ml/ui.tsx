@@ -1,5 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Link, createLink, useRouterState } from "@tanstack/react-router";
+import type { AnchorHTMLAttributes, ReactNode, Ref } from "react";
 import { Home, Compass, Store, MessageCircle, User } from "lucide-react";
 
 export function Screen({
@@ -168,29 +168,55 @@ export function Btn({
   disabled = false,
 }: {
   children: ReactNode;
-  variant?: "primary" | "ink" | "ghost" | "outline";
+  variant?: BtnVariant;
   className?: string;
   onClick?: () => void;
   type?: "button" | "submit";
   disabled?: boolean;
 }) {
-  const styles: Record<string, string> = {
-    primary: "bg-primary text-primary-foreground",
-    ink: "bg-ink text-background",
-    outline: "border border-border bg-card text-foreground",
-    ghost: "bg-subtle text-muted-foreground",
-  };
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 ${styles[variant]} ${className}`}
+      className={btnClass(variant, className)}
     >
       {children}
     </button>
   );
 }
+
+type BtnVariant = "primary" | "ink" | "ghost" | "outline";
+
+const btnVariants: Record<BtnVariant, string> = {
+  primary: "bg-primary text-primary-foreground",
+  ink: "bg-ink text-background",
+  outline: "border border-border bg-card text-foreground",
+  ghost: "bg-subtle text-muted-foreground",
+};
+
+function btnClass(variant: BtnVariant, className: string) {
+  return `inline-flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 ${btnVariants[variant]} ${className}`;
+}
+
+function BtnAnchor({
+  variant = "primary",
+  className = "",
+  children,
+  ...props
+}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+  variant?: BtnVariant;
+  ref?: Ref<HTMLAnchorElement>;
+}) {
+  return (
+    <a {...props} className={btnClass(variant, className)}>
+      {children}
+    </a>
+  );
+}
+
+/** A router link that looks like `Btn`. One element, one tab stop — never wrap `Btn` in `Link`. */
+export const BtnLink = createLink(BtnAnchor);
 
 export function Sheet({
   open,

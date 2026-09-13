@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row } from "@/components/ml/kit";
 import { recPreferences } from "@/data/recommendations";
 
@@ -70,11 +70,14 @@ function RecSettings() {
         <div className="space-y-2">
           <Row title="Saved items" subtitle="Saved profiles, listings and spaces" to="/" />
           <Row title="Discover" subtitle="Browse everything without personalisation" to="/" />
-          <Link to="/help/$slug" params={{ slug: "profile-that-gets-booked" }}>
-            <Btn variant="ghost" className="w-full">
-              How recommendations are built
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/help/$slug"
+            params={{ slug: "profile-that-gets-booked" }}
+            variant="ghost"
+            className="w-full"
+          >
+            How recommendations are built
+          </BtnLink>
         </div>
       </div>
     </Screen>

@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, StatusPill } from "@/components/ml/kit";
 import { earnings, payoutAccount } from "@/data/monetization";
 
@@ -76,11 +76,14 @@ function Earnings() {
           <Row title="Bookings" subtitle="Where most earnings come from" to="/bookings" />
           <Row title="Marketplace orders" subtitle="Sales and rentals" to="/marketplace" />
           <Row title="Plans & billing" subtitle="Invoices and plan changes" to="/plans/manage" />
-          <Link to="/help/$slug" params={{ slug: "pricing-your-first-service" }}>
-            <Btn variant="ghost" className="w-full">
-              How pricing and fees work
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/help/$slug"
+            params={{ slug: "pricing-your-first-service" }}
+            variant="ghost"
+            className="w-full"
+          >
+            How pricing and fees work
+          </BtnLink>
         </div>
       </div>
     </Screen>

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { PauseCircle } from "lucide-react";
-import { Btn } from "@/components/ml/ui";
+import { BtnLink } from "@/components/ml/ui";
 import { OnboardingProvider, resumeTarget, useOnboarding } from "@/components/ml/onboarding";
 import { readiness } from "@/data/onboarding";
 
@@ -60,14 +60,12 @@ function SkipLater() {
       </div>
 
       <div className="mt-8 space-y-2">
-        <Link to="/onboarding/step/$id" params={{ id: target }} className="block">
-          <Btn className="w-full">Continue setup</Btn>
-        </Link>
-        <Link to="/feed" className="block">
-          <Btn variant="ghost" className="w-full">
-            Explore MusicLinkd first
-          </Btn>
-        </Link>
+        <BtnLink to="/onboarding/step/$id" params={{ id: target }} className="w-full">
+          Continue setup
+        </BtnLink>
+        <BtnLink to="/feed" variant="ghost" className="w-full">
+          Explore MusicLinkd first
+        </BtnLink>
       </div>
     </div>
   );

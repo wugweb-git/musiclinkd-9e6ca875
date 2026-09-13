@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import {
   AvailabilityCalendar,
   CalendarSkeleton,
@@ -135,16 +135,12 @@ function Schedule() {
                           Go to {formatDate(next.date)}
                         </Btn>
                       ) : null}
-                      <Link to="/messages">
-                        <Btn variant="outline" className="w-full">
-                          Message provider
-                        </Btn>
-                      </Link>
-                      <Link to="/studio">
-                        <Btn variant="ghost" className="w-full">
-                          See similar spaces
-                        </Btn>
-                      </Link>
+                      <BtnLink to="/messages" variant="outline" className="w-full">
+                        Message provider
+                      </BtnLink>
+                      <BtnLink to="/studio" variant="ghost" className="w-full">
+                        See similar spaces
+                      </BtnLink>
                     </div>
                   }
                 />

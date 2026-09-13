@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, Building2 } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { myBusinesses, businessTypeLabel } from "@/data/business";
 
@@ -83,9 +83,9 @@ function BusinessHome() {
             title="No business yet"
             body="A business profile is separate from you — it has its own team, spaces and bookings."
           >
-            <Link to="/business/new" search={{ step: "type" as const }}>
-              <Btn className="w-full">Create a business</Btn>
-            </Link>
+            <BtnLink to="/business/new" search={{ step: "type" as const }} className="w-full">
+              Create a business
+            </BtnLink>
           </EmptyState>
         )}
 
