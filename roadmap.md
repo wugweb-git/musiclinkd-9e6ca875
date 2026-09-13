@@ -56,10 +56,17 @@
         Rahul Iyer's profile. The 11 people and businesses the app links to are seeded in the live DB
         (migration `20260913090949`), with their own content in `src/data/linked-profiles.ts`.
         `/profile/me` redirects to `/me`. (13 Sep)
-  - [ ] Most seed profiles still borrow Rahul Iyer's sections: `ananya` and every `fromTalent()`
-        profile spread `...rahul`, so Discover talent pages show his tracks, projects and reviews.
-        A real profile with no seed does the same through `ownerProfile`. Needs content per profile,
-        or an empty-state design for sections a profile doesn't have.
+  - [x] No profile borrows Rahul Iyer's sections. Seed profiles, `fromTalent()` and real profiles
+        with no seed (`profileFromRow`, also used by `/me` when signed in) start from
+        `emptySections()`, so a section the record lacks renders its empty state. The hero, share
+        sheet and About tab handle a missing photo, cover, role, availability, bio, details and links,
+        and the Verified tick shows only for verified tiers. (13 Sep)
+- Home and theming (13 Sep)
+  - [x] The Home headline showed a hard-coded 9 "new opportunities" linking to the swipe deck. It now
+        counts the open opportunities (the same list as the tiles) and links to `/opportunities`.
+  - [ ] Dark mode, deferred by the owner. `@custom-variant dark` is declared in `src/styles.css`, but
+        no `.dark` palette exists, so the 10 `dark:` utilities never apply. Either build it or
+        delete them.
   - [x] `20260913090949` recorded in `supabase_migrations.schema_migrations` (13 Sep).
 - FLOW 03 — Add Portfolio
   - [x] `src/data/portfolio.ts`, `src/components/ml/portfolio.tsx`

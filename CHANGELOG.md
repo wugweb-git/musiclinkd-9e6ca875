@@ -47,6 +47,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - **An unknown `/profile/$username` is a 404**, not Rahul Iyer's profile. The route loads the real
   row first, and a username with neither a row nor a seed profile throws `notFound()`.
   `/profile/me` redirects to `/me`.
+- **No profile shows another person's sections.** Ananya, every Discover talent and real profiles with
+  no seed used to spread Rahul Iyer's fixture. They now start from `emptySections()`, and a missing
+  section renders its empty state. `/me` builds from the signed-in user's own record. The profile
+  header and share sheet handle a missing photo, cover, role, location and availability, and the
+  Verified tick shows only for verified tiers.
+- **The Home headline counts real data.** "N new opportunities" counts the open opportunities (the
+  list the tiles use) and links to `/opportunities`, instead of a hard-coded 9 linking to the swipe
+  deck.
 
 ### Added
 
