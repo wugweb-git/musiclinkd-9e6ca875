@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, notFound } from "@tanstack/react-router";
 import {
   Check,
   FileText,
@@ -10,7 +10,7 @@ import {
   Trash2,
   Eye,
 } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Row } from "@/components/ml/kit";
 import {
   verificationTypes,
@@ -71,9 +71,9 @@ function TypeNotFound() {
           title="That verification type does not exist"
           body="Pick one of the supported levels instead."
         >
-          <Link to="/verification/choose">
-            <Btn className="w-full">See verification types</Btn>
-          </Link>
+          <BtnLink to="/verification/choose" className="w-full">
+            See verification types
+          </BtnLink>
         </EmptyState>
       </div>
     </Screen>
@@ -104,14 +104,17 @@ function VerificationRequestScreen() {
         <TopBar title={def.title} subtitle="Locked" back="/verification/choose" />
         <div className="px-5 pt-6">
           <EmptyState title="Verify your identity first" body={gate.reason}>
-            <Link to="/verification/$type" params={{ type: "identity" }} search={{ step: 0 }}>
-              <Btn className="w-full">Start identity verification</Btn>
-            </Link>
-            <Link to="/verification/choose">
-              <Btn variant="outline" className="w-full">
-                Back to types
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/verification/$type"
+              params={{ type: "identity" }}
+              search={{ step: 0 }}
+              className="w-full"
+            >
+              Start identity verification
+            </BtnLink>
+            <BtnLink to="/verification/choose" variant="outline" className="w-full">
+              Back to types
+            </BtnLink>
           </EmptyState>
         </div>
       </Screen>
@@ -231,11 +234,9 @@ function VerificationRequestScreen() {
           >
             Resubmit
           </Btn>
-          <Link to="/verification/choose">
-            <Btn variant="outline" className="w-full">
-              Review requirements
-            </Btn>
-          </Link>
+          <BtnLink to="/verification/choose" variant="outline" className="w-full">
+            Review requirements
+          </BtnLink>
         </div>
       </Screen>
     );
@@ -587,9 +588,9 @@ function Wizard({
                 3. On approval the badge appears everywhere at once.
               </p>
             </Card>
-            <Link to="/verification">
-              <Btn className="w-full">Back to verification</Btn>
-            </Link>
+            <BtnLink to="/verification" className="w-full">
+              Back to verification
+            </BtnLink>
             <Row
               title="Where the badge appears"
               subtitle="Profile, search, listings, reviews"

@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, Minus, Sparkles } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, Row } from "@/components/ml/kit";
 import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
 
@@ -47,11 +47,9 @@ function Plans() {
             Renews {currentSubscription.renewsOn} · {currentSubscription.amount}{" "}
             {currentSubscription.billingCycle}
           </p>
-          <Link to="/plans/manage">
-            <Btn variant="outline" className="w-full">
-              Manage subscription
-            </Btn>
-          </Link>
+          <BtnLink to="/plans/manage" variant="outline" className="w-full">
+            Manage subscription
+          </BtnLink>
         </Card>
 
         <Segmented value={cycle} options={cycles} onChange={setCycle} />
@@ -114,11 +112,9 @@ function Plans() {
 
         <div className="space-y-2 pb-4">
           {selected !== currentSubscription.planKey ? (
-            <Link to="/plans/checkout" search={{ plan: selected }}>
-              <Btn className="w-full">
-                Continue with {plans.find((p) => p.key === selected)?.name}
-              </Btn>
-            </Link>
+            <BtnLink to="/plans/checkout" search={{ plan: selected }} className="w-full">
+              Continue with {plans.find((p) => p.key === selected)?.name}
+            </BtnLink>
           ) : (
             <Btn variant="outline" className="w-full">
               This is your current plan

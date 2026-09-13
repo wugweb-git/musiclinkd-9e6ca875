@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, Phone, Globe2, Mail, Settings2 } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { getBusiness, businessTypeLabel, businessRoleLabel } from "@/data/business";
 
@@ -85,14 +85,12 @@ function BusinessProfileScreen() {
         <p className="text-[13px] leading-relaxed">{b.tagline}</p>
 
         <div className="grid grid-cols-3 gap-2">
-          <Link to="/messages">
-            <Btn variant="ink" className="w-full px-2 text-xs">
-              Message
-            </Btn>
-          </Link>
-          <Link to="/booking/$id" params={{ id: "svc-1" }}>
-            <Btn className="w-full px-2 text-xs">Book</Btn>
-          </Link>
+          <BtnLink to="/messages" variant="ink" className="w-full px-2 text-xs">
+            Message
+          </BtnLink>
+          <BtnLink to="/booking/$id" params={{ id: "svc-1" }} className="w-full px-2 text-xs">
+            Book
+          </BtnLink>
           <Btn variant="outline" className="w-full px-2 text-xs">
             Follow
           </Btn>

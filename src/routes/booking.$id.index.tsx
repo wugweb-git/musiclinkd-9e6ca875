@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Bookmark, MessageCircle, Share2 } from "lucide-react";
-import { Btn } from "@/components/ml/ui";
+import { Btn, BtnLink } from "@/components/ml/ui";
 import { BookableHero, EntityMetaRow, PolicyCard, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
@@ -50,11 +50,9 @@ function BookingEntry() {
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.about}</p>
 
         <div className="mt-4 flex gap-2">
-          <Link to="/messages" className="flex-1">
-            <Btn variant="outline" className="w-full">
-              <MessageCircle size={15} className="mr-1.5" /> Message
-            </Btn>
-          </Link>
+          <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
+            <MessageCircle size={15} className="mr-1.5" /> Message
+          </BtnLink>
           <Btn variant="outline" className="px-4" onClick={() => undefined}>
             <Bookmark size={16} />
           </Btn>

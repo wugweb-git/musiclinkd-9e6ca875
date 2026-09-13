@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, Meter } from "@/components/ml/kit";
 import { opportunityAnalytics, myOpportunities } from "@/data/opportunities";
 
@@ -75,11 +75,14 @@ function OpportunityAnalytics() {
             Posts with a stated budget and 3 or fewer must-haves receive roughly three times more
             applications.
           </p>
-          <Link to="/opportunities/$id/manage" params={{ id }}>
-            <Btn variant="ghost" className="w-full">
-              Edit the post
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/opportunities/$id/manage"
+            params={{ id }}
+            variant="ghost"
+            className="w-full"
+          >
+            Edit the post
+          </BtnLink>
         </Card>
       </div>
     </Screen>

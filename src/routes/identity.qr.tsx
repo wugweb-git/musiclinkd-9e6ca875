@@ -20,7 +20,7 @@ import {
   Share2,
   IdCard,
 } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet, SectionHeader } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet, SectionHeader } from "@/components/ml/ui";
 import {
   QrIdentityCard,
   CopyLinkRow,
@@ -118,11 +118,14 @@ function DigitalId() {
               <Btn className="flex-1" onClick={() => setShare(true)}>
                 <Share2 size={16} className="mr-2" /> Share
               </Btn>
-              <Link to="/identity/full" search={{ style }} className="flex-1">
-                <Btn variant="outline" className="w-full">
-                  <Maximize2 size={16} className="mr-2" /> Fullscreen
-                </Btn>
-              </Link>
+              <BtnLink
+                to="/identity/full"
+                search={{ style }}
+                variant="outline"
+                className="flex-1 w-full"
+              >
+                <Maximize2 size={16} className="mr-2" /> Fullscreen
+              </BtnLink>
             </div>
 
             <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">
@@ -213,11 +216,9 @@ function DigitalId() {
           <DownloadNote />
         </div>
         <div className="mt-4">
-          <Link to="/identity/card">
-            <Btn variant="outline" className="w-full">
-              <Download size={16} className="mr-2" /> Make a share card instead
-            </Btn>
-          </Link>
+          <BtnLink to="/identity/card" variant="outline" className="w-full">
+            <Download size={16} className="mr-2" /> Make a share card instead
+          </BtnLink>
         </div>
       </Sheet>
     </Screen>

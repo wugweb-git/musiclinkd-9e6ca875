@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import {
   AvailabilityCalendar,
   Detail,
@@ -74,9 +74,9 @@ function Reschedule() {
                 value={`${date ? formatDate(date) : "—"} · ${start ? formatTime(start) : "—"}`}
               />
             </dl>
-            <Link to="/bookings/$ref" params={{ ref: bk.ref }} className="mt-4 block">
-              <Btn className="w-full">Back to booking</Btn>
-            </Link>
+            <BtnLink to="/bookings/$ref" params={{ ref: bk.ref }} className="mt-4 w-full">
+              Back to booking
+            </BtnLink>
           </div>
         </main>
       </Screen>

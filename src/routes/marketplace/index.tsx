@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
-import { Screen, SearchBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
 import {
   CategoryTile,
   ListingCard,
@@ -130,9 +130,9 @@ function MarketHome() {
           <p className="mt-1 text-xs text-muted-foreground">
             List it to 72,000+ verified music professionals. Free while Market is in Beta.
           </p>
-          <Link to="/marketplace/sell" className="mt-4 block">
-            <Btn className="w-full">Create a listing</Btn>
-          </Link>
+          <BtnLink to="/marketplace/sell" className="mt-4 w-full">
+            Create a listing
+          </BtnLink>
           <Link
             to="/marketplace/mine"
             className="mt-2 block text-center text-xs font-semibold text-primary"

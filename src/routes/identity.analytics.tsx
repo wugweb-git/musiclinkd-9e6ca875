@@ -2,8 +2,8 @@
  * FLOW-23 · QR-23 "QR analytics" · route: /identity/analytics
  * Aggregate, owner-only counts. Reuses profile analytics language, adds no new tracking.
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { qrAnalytics } from "@/data/identity";
 
 export const Route = createFileRoute("/identity/analytics")({
@@ -71,11 +71,9 @@ function QrAnalytics() {
         </p>
 
         <div className="mt-4">
-          <Link to="/identity/print">
-            <Btn variant="outline" className="w-full">
-              Print more of what works
-            </Btn>
-          </Link>
+          <BtnLink to="/identity/print" variant="outline" className="w-full">
+            Print more of what works
+          </BtnLink>
         </div>
       </main>
     </Screen>

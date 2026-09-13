@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { Card, Label, Tag } from "@/components/ml/collab";
 import { DeletedState } from "@/components/ml/collab-extra";
@@ -92,14 +92,17 @@ function Roles() {
       </p>
 
       <div className="mb-8 flex gap-3">
-        <Link to="/collab/$id/participants" params={{ id: project.id }} className="flex-1">
-          <Btn variant="outline" className="w-full">
-            Manage people
-          </Btn>
-        </Link>
-        <Link to="/collab/$id/agreement" params={{ id: project.id }} className="flex-1">
-          <Btn className="w-full">View agreement</Btn>
-        </Link>
+        <BtnLink
+          to="/collab/$id/participants"
+          params={{ id: project.id }}
+          variant="outline"
+          className="flex-1 w-full"
+        >
+          Manage people
+        </BtnLink>
+        <BtnLink to="/collab/$id/agreement" params={{ id: project.id }} className="flex-1 w-full">
+          View agreement
+        </BtnLink>
       </div>
     </WorkspaceShell>
   );

@@ -8,7 +8,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import QRCode from "qrcode";
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { Btn, VerifiedBadge } from "./ui";
+import { Btn, BtnLink, VerifiedBadge } from "./ui";
 import { canonicalUrl, styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 
 /* ------------------------------------------------------------------ */
@@ -443,11 +443,9 @@ export function PrimaryPair({
 }) {
   const wrap = (a: PairAction, variant: "primary" | "outline") =>
     a.to ? (
-      <Link to={a.to} className="flex-1">
-        <Btn variant={variant} className="w-full">
-          {a.label}
-        </Btn>
-      </Link>
+      <BtnLink to={a.to} variant={variant} className="flex-1 w-full">
+        {a.label}
+      </BtnLink>
     ) : (
       <Btn variant={variant} className="flex-1" {...(a.onClick ? { onClick: a.onClick } : {})}>
         {a.label}

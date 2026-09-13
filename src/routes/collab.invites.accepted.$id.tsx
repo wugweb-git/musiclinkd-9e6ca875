@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, Label, ParticipantStack } from "@/components/ml/collab";
 import { DeletedState, OutcomePanel } from "@/components/ml/collab-extra";
 import { getInvitation, getProject } from "@/data/collab";
@@ -71,19 +71,17 @@ function InvitationAccepted() {
         </Card>
 
         <div className="mb-8 flex gap-3">
-          <Link to="/messages" className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Message
-            </Btn>
-          </Link>
+          <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
+            Message
+          </BtnLink>
           {project ? (
-            <Link to="/collab/$id" params={{ id: project.id }} className="flex-1">
-              <Btn className="w-full">Open project</Btn>
-            </Link>
+            <BtnLink to="/collab/$id" params={{ id: project.id }} className="flex-1 w-full">
+              Open project
+            </BtnLink>
           ) : (
-            <Link to="/collab" className="flex-1">
-              <Btn className="w-full">Open collaborations</Btn>
-            </Link>
+            <BtnLink to="/collab" className="flex-1 w-full">
+              Open collaborations
+            </BtnLink>
           )}
         </div>
       </main>

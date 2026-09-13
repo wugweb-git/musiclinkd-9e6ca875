@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Chip, Screen, Sheet, TopBar } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Btn, BtnLink, Chip, Screen, Sheet, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { EmptyState, FileRow, Label, PermissionState, UploadPanel } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
@@ -64,11 +64,14 @@ function Files() {
         <Btn className="flex-1" onClick={() => setUpload(true)}>
           Upload
         </Btn>
-        <Link to="/collab/$id/media" params={{ id: project.id }} className="flex-1">
-          <Btn variant="outline" className="w-full">
-            Media gallery
-          </Btn>
-        </Link>
+        <BtnLink
+          to="/collab/$id/media"
+          params={{ id: project.id }}
+          variant="outline"
+          className="flex-1 w-full"
+        >
+          Media gallery
+        </BtnLink>
       </div>
 
       {list.length === 0 ? (

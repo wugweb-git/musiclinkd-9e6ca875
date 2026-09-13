@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Screen, TopBar } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { Card, PermissionState, ProposalSummary, StickyBar } from "@/components/ml/collab";
 import { getProposal } from "@/data/collab";
 
@@ -78,27 +78,41 @@ function ProposalDetail() {
             <Btn variant="outline" className="flex-1">
               Withdraw
             </Btn>
-            <Link to="/collab/proposals/$id/counter" params={{ id: p.id }} className="flex-[2]">
-              <Btn className="w-full">Edit proposal</Btn>
-            </Link>
+            <BtnLink
+              to="/collab/proposals/$id/counter"
+              params={{ id: p.id }}
+              className="flex-[2] w-full"
+            >
+              Edit proposal
+            </BtnLink>
           </div>
         ) : (
           <div className="space-y-3">
             <div className="flex gap-3">
-              <Link to="/collab/proposals/declined/$id" params={{ id: p.id }} className="flex-1">
-                <Btn variant="outline" className="w-full">
-                  Decline
-                </Btn>
-              </Link>
-              <Link to="/collab/proposals/accepted/$id" params={{ id: p.id }} className="flex-[2]">
-                <Btn className="w-full">Accept terms</Btn>
-              </Link>
+              <BtnLink
+                to="/collab/proposals/declined/$id"
+                params={{ id: p.id }}
+                variant="outline"
+                className="flex-1 w-full"
+              >
+                Decline
+              </BtnLink>
+              <BtnLink
+                to="/collab/proposals/accepted/$id"
+                params={{ id: p.id }}
+                className="flex-[2] w-full"
+              >
+                Accept terms
+              </BtnLink>
             </div>
-            <Link to="/collab/proposals/$id/counter" params={{ id: p.id }}>
-              <Btn variant="ghost" className="w-full">
-                Counter with different terms
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/collab/proposals/$id/counter"
+              params={{ id: p.id }}
+              variant="ghost"
+              className="w-full"
+            >
+              Counter with different terms
+            </BtnLink>
           </div>
         )}
       </StickyBar>

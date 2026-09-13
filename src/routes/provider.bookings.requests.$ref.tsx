@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { MessageCircle, ShieldCheck } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Detail, EmptyState, PriceBreakdownCard, StickyBar } from "@/components/ml/booking";
 import {
   declineReasons,
@@ -50,11 +50,7 @@ function RequestReview() {
           <EmptyState
             title="Request no longer available"
             body="It was withdrawn or already handled."
-            action={
-              <Link to="/provider/bookings">
-                <Btn>Back to requests</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/provider/bookings">Back to requests</BtnLink>}
           />
         </div>
       </Screen>
@@ -77,9 +73,9 @@ function RequestReview() {
                 ? `${bk.customer} has been notified and the slot is now blocked on your calendar.`
                 : `${bk.customer} has been notified and the slot stays open for other bookings.`}
             </p>
-            <Link to="/provider/bookings" className="mt-4 block">
-              <Btn className="w-full">Back to workspace</Btn>
-            </Link>
+            <BtnLink to="/provider/bookings" className="mt-4 w-full">
+              Back to workspace
+            </BtnLink>
           </div>
         </main>
       </Screen>
@@ -129,11 +125,9 @@ function RequestReview() {
           <PriceBreakdownCard p={price} compact />
         </div>
 
-        <Link to="/messages" className="mt-3 block">
-          <Btn variant="outline" className="w-full">
-            <MessageCircle size={15} className="mr-1.5" /> Ask a question first
-          </Btn>
-        </Link>
+        <BtnLink to="/messages" variant="outline" className="mt-3 w-full">
+          <MessageCircle size={15} className="mr-1.5" /> Ask a question first
+        </BtnLink>
 
         <Btn variant="ghost" className="mt-2 w-full" onClick={() => setDecision("declining")}>
           Propose a different time or decline

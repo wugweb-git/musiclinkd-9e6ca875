@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
 import { studios, talents } from "@/data/discover";
 
@@ -46,11 +46,9 @@ function Nearby() {
           <Btn className="w-full" onClick={() => setAllowed(true)}>
             Use my location
           </Btn>
-          <Link to="/search" className="block">
-            <Btn variant="ghost" className="w-full">
-              Pick a city instead
-            </Btn>
-          </Link>
+          <BtnLink to="/search" variant="ghost" className="w-full">
+            Pick a city instead
+          </BtnLink>
         </div>
       </Screen>
     );

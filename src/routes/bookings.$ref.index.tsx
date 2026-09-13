@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { CalendarPlus, MapPin, MessageCircle, Navigation } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   BookingStatusPill,
   BookingTimeline,
@@ -55,11 +55,7 @@ function BookingDetail() {
           <EmptyState
             title="This booking is unavailable"
             body="It may have been cancelled, expired, removed, or you no longer have access to it."
-            action={
-              <Link to="/bookings">
-                <Btn>Return to bookings</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/bookings">Return to bookings</BtnLink>}
           />
         </div>
       </Screen>
@@ -146,11 +142,9 @@ function BookingDetail() {
         </div>
 
         <div className="mt-6 space-y-2">
-          <Link to="/messages" className="block">
-            <Btn variant="outline" className="w-full">
-              <MessageCircle size={15} className="mr-1.5" /> Message provider
-            </Btn>
-          </Link>
+          <BtnLink to="/messages" variant="outline" className="w-full">
+            <MessageCircle size={15} className="mr-1.5" /> Message provider
+          </BtnLink>
 
           {upcoming ? (
             <>
@@ -160,24 +154,30 @@ function BookingDetail() {
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
                 <Navigation size={15} className="mr-1.5" /> Get directions
               </Btn>
-              <Link to="/bookings/$ref/reschedule" params={{ ref: bk.ref }} className="block">
-                <Btn variant="ghost" className="w-full">
-                  Reschedule
-                </Btn>
-              </Link>
-              <Link to="/bookings/$ref/cancel" params={{ ref: bk.ref }} className="block">
-                <Btn variant="ghost" className="w-full">
-                  Cancel booking
-                </Btn>
-              </Link>
+              <BtnLink
+                to="/bookings/$ref/reschedule"
+                params={{ ref: bk.ref }}
+                variant="ghost"
+                className="w-full"
+              >
+                Reschedule
+              </BtnLink>
+              <BtnLink
+                to="/bookings/$ref/cancel"
+                params={{ ref: bk.ref }}
+                variant="ghost"
+                className="w-full"
+              >
+                Cancel booking
+              </BtnLink>
             </>
           ) : null}
 
           {completed ? (
             <>
-              <Link to="/booking/$id" params={{ id: b.id }} className="block">
-                <Btn className="w-full">Book again</Btn>
-              </Link>
+              <BtnLink to="/booking/$id" params={{ id: b.id }} className="w-full">
+                Book again
+              </BtnLink>
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
                 Leave a review
               </Btn>

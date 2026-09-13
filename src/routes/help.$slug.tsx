@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
 import { getPage } from "@/data/cms";
 
@@ -36,9 +36,9 @@ function HelpPage() {
             title="This page has moved"
             body="The guide you followed is no longer published. Search the help centre for the current version."
           >
-            <Link to="/help">
-              <Btn className="w-full">Back to help</Btn>
-            </Link>
+            <BtnLink to="/help" className="w-full">
+              Back to help
+            </BtnLink>
           </EmptyState>
         </div>
       </Screen>
@@ -93,9 +93,9 @@ function HelpPage() {
                 </Card>
               );
             return (
-              <Link key={i} {...b.link} className="block">
-                <Btn className="w-full">{b.label}</Btn>
-              </Link>
+              <BtnLink key={i} {...b.link} className="w-full">
+                {b.label}
+              </BtnLink>
             );
           })}
         </div>

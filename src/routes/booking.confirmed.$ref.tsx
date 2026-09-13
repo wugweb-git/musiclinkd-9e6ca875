@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { CalendarPlus, CheckCircle2, Clock, MessageCircle, Share2 } from "lucide-react";
-import { Btn } from "@/components/ml/ui";
+import { Btn, BtnLink } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
 import { bookables, formatDate, formatTime, inr, isoDate } from "@/data/booking";
 
@@ -81,14 +81,12 @@ function Confirmed() {
       </div>
 
       <div className="mt-8 space-y-2">
-        <Link to="/bookings" className="block">
-          <Btn className="w-full">View booking</Btn>
-        </Link>
-        <Link to="/messages" className="block">
-          <Btn variant="outline" className="w-full">
-            <MessageCircle size={15} className="mr-1.5" /> Message provider
-          </Btn>
-        </Link>
+        <BtnLink to="/bookings" className="w-full">
+          View booking
+        </BtnLink>
+        <BtnLink to="/messages" variant="outline" className="w-full">
+          <MessageCircle size={15} className="mr-1.5" /> Message provider
+        </BtnLink>
       </div>
     </div>
   );

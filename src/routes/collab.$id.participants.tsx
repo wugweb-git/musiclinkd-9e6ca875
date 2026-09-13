@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Btn, Screen, Sheet, Chip, TopBar } from "@/components/ml/ui";
+import { BtnLink, Screen, Sheet, Chip, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { Card, Label, ParticipantRow, PermissionState } from "@/components/ml/collab";
 import { collabRoles, getProject } from "@/data/collab";
@@ -61,9 +61,9 @@ function Participants() {
           <p className="mt-1 text-[12px] text-muted-foreground">
             Add collaborators to get the project moving.
           </p>
-          <Link to="/collab/new/collaborators">
-            <Btn className="mt-3 w-full">Add collaborators</Btn>
-          </Link>
+          <BtnLink to="/collab/new/collaborators" className="mt-3 w-full">
+            Add collaborators
+          </BtnLink>
         </Card>
       ) : (
         <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
@@ -142,14 +142,17 @@ function Participants() {
       </Link>
 
       <div className="mb-8 flex gap-3">
-        <Link to="/collab/new/collaborators" className="flex-1">
-          <Btn className="w-full">Invite more people</Btn>
-        </Link>
-        <Link to="/collab/$id/share" params={{ id: project.id }} className="flex-1">
-          <Btn variant="outline" className="w-full">
-            Share link
-          </Btn>
-        </Link>
+        <BtnLink to="/collab/new/collaborators" className="flex-1 w-full">
+          Invite more people
+        </BtnLink>
+        <BtnLink
+          to="/collab/$id/share"
+          params={{ id: project.id }}
+          variant="outline"
+          className="flex-1 w-full"
+        >
+          Share link
+        </BtnLink>
       </div>
 
       <Sheet open={roleSheet} onClose={() => setRoleSheet(false)} title="MusicLinkd role taxonomy">

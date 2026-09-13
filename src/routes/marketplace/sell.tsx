@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { PriceBlock, TrustPill } from "@/components/ml/market";
 import { sellers } from "@/data/market";
 
@@ -183,9 +183,9 @@ function Sell() {
           </Btn>
         ) : (
           <>
-            <Link to="/marketplace/mine">
-              <Btn className="w-full">Publish listing</Btn>
-            </Link>
+            <BtnLink to="/marketplace/mine" className="w-full">
+              Publish listing
+            </BtnLink>
             <Btn variant="outline" className="mt-2 w-full">
               Save draft
             </Btn>

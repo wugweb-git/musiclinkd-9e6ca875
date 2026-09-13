@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
 import { getBand } from "@/data/band";
 
@@ -57,9 +57,9 @@ function BandContact() {
               It goes to whoever handles bookings for the band. Replies land in Connections.
             </p>
           </Card>
-          <Link to="/messages" className="block">
-            <Btn className="w-full">Open Connections</Btn>
-          </Link>
+          <BtnLink to="/messages" className="w-full">
+            Open Connections
+          </BtnLink>
         </div>
       </Screen>
     );

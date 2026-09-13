@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Chip, Screen, TopBar } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { Field, PermissionState, StickyBar, TextInput } from "@/components/ml/collab";
 import { collabRoles, getProposal } from "@/data/collab";
 
@@ -79,14 +79,17 @@ function Counter() {
       </main>
       <StickyBar>
         <div className="flex gap-3">
-          <Link to="/collab/proposals/$id" params={{ id: p.id }} className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Cancel
-            </Btn>
-          </Link>
-          <Link to="/collab/proposals/$id" params={{ id: p.id }} className="flex-[2]">
-            <Btn className="w-full">Send counter</Btn>
-          </Link>
+          <BtnLink
+            to="/collab/proposals/$id"
+            params={{ id: p.id }}
+            variant="outline"
+            className="flex-1 w-full"
+          >
+            Cancel
+          </BtnLink>
+          <BtnLink to="/collab/proposals/$id" params={{ id: p.id }} className="flex-[2] w-full">
+            Send counter
+          </BtnLink>
         </div>
       </StickyBar>
     </Screen>

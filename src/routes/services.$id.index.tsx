@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
 import { getService, priceLabel, pricingModelLabel, serviceStatusTone } from "@/data/services";
 
@@ -147,24 +147,25 @@ function ServiceDetail() {
         </Card>
 
         <div className="grid grid-cols-2 gap-2">
-          <Link to="/services/availability">
-            <Btn variant="outline" className="w-full">
-              Availability
-            </Btn>
-          </Link>
-          <Link to="/booking/$id" params={{ id: s.id }}>
-            <Btn className="w-full">Preview booking</Btn>
-          </Link>
+          <BtnLink to="/services/availability" variant="outline" className="w-full">
+            Availability
+          </BtnLink>
+          <BtnLink to="/booking/$id" params={{ id: s.id }} className="w-full">
+            Preview booking
+          </BtnLink>
         </div>
       </div>
 
       <Sheet open={manage} onClose={() => setManage(false)} title="Manage service">
         <div className="space-y-2">
-          <Link to="/services/new" search={{ step: "category" as const }}>
-            <Btn variant="outline" className="w-full">
-              Edit details & pricing
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/services/new"
+            search={{ step: "category" as const }}
+            variant="outline"
+            className="w-full"
+          >
+            Edit details & pricing
+          </BtnLink>
           <Btn
             variant="outline"
             className="w-full"
@@ -194,9 +195,9 @@ function ServiceDetail() {
         body="Existing bookings are unaffected. You can publish it again any time."
         onClose={() => setRemoved(false)}
       >
-        <Link to="/services">
-          <Btn className="w-full">Back to services</Btn>
-        </Link>
+        <BtnLink to="/services" className="w-full">
+          Back to services
+        </BtnLink>
       </Dialog>
     </Screen>
   );

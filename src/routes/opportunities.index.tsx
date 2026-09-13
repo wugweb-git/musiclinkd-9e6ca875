@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus, Search, Bookmark, Briefcase } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities, opportunityCategories, myApplications } from "@/data/opportunities";
@@ -134,22 +134,20 @@ function OpportunitiesHome() {
           <p className="text-[13px] text-muted-foreground">
             Post a structured requirement and get applications with portfolios attached.
           </p>
-          <Link to="/opportunities/new" search={{ step: "basics" }}>
-            <Btn className="w-full">Post an opportunity</Btn>
-          </Link>
+          <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
+            Post an opportunity
+          </BtnLink>
         </Card>
       </div>
 
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Post an opportunity">
         <div className="space-y-2">
-          <Link to="/opportunities/new" search={{ step: "basics" }} className="block">
-            <Btn className="w-full">Start from scratch</Btn>
-          </Link>
-          <Link to="/opportunities/mine" className="block">
-            <Btn variant="outline" className="w-full">
-              My opportunities & drafts
-            </Btn>
-          </Link>
+          <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
+            Start from scratch
+          </BtnLink>
+          <BtnLink to="/opportunities/mine" variant="outline" className="w-full">
+            My opportunities & drafts
+          </BtnLink>
         </div>
       </Sheet>
     </Screen>

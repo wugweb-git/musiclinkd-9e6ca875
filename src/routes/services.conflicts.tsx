@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, CalendarClock } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 
 export const Route = createFileRoute("/services/conflicts")({
@@ -93,12 +93,10 @@ function Conflicts() {
           <EmptyState title="No conflicts" body="Your calendar is clean for the next four weeks." />
         )}
 
-        <Link to="/services/availability" className="block">
-          <Btn variant="outline" className="w-full">
-            <CalendarClock size={16} className="mr-2 inline" aria-hidden />
-            Adjust availability
-          </Btn>
-        </Link>
+        <BtnLink to="/services/availability" variant="outline" className="w-full">
+          <CalendarClock size={16} className="mr-2 inline" aria-hidden />
+          Adjust availability
+        </BtnLink>
       </div>
     </Screen>
   );

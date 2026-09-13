@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Chip, Screen, TopBar } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { Field, PermissionState, StickyBar, TextInput } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
 
@@ -72,9 +72,9 @@ function NewMilestone() {
         </Field>
       </main>
       <StickyBar>
-        <Link to="/collab/$id/timeline" params={{ id: project.id }}>
-          <Btn className="w-full">Save milestone</Btn>
-        </Link>
+        <BtnLink to="/collab/$id/timeline" params={{ id: project.id }} className="w-full">
+          Save milestone
+        </BtnLink>
       </StickyBar>
     </Screen>
   );

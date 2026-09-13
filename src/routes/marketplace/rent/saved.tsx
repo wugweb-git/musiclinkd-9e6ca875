@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
 import { equipment, providers, recentRentalSearches } from "@/data/rentals";
@@ -70,11 +70,7 @@ function SavedRentals() {
             emoji="🏢"
             title="No saved studios or spaces"
             body="Save rooms alongside equipment so you can line up a session and a backline in one go."
-            action={
-              <Link to="/marketplace">
-                <Btn>Explore Market</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/marketplace">Explore Market</BtnLink>}
           />
         ) : null}
 

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { BtnLink, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
 
 export const Route = createFileRoute("/onboarding/done")({
@@ -83,9 +83,9 @@ function Done() {
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <Link to="/feed" className="block">
-          <Btn className="w-full">Go to my home</Btn>
-        </Link>
+        <BtnLink to="/feed" className="w-full">
+          Go to my home
+        </BtnLink>
       </div>
     </div>
   );

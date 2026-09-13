@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Share2, Flag, Check } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { ConditionBadge, LocationRow, Rating, SaveButton } from "@/components/ml/market";
 import {
   EquipmentTile,
@@ -201,16 +201,17 @@ function RentalDetail() {
             ))}
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <Link to="/marketplace/rent/provider/$id" params={{ id: p.id }}>
-              <Btn variant="outline" className="w-full">
-                View profile
-              </Btn>
-            </Link>
-            <Link to="/messages">
-              <Btn variant="outline" className="w-full">
-                Message
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/marketplace/rent/provider/$id"
+              params={{ id: p.id }}
+              variant="outline"
+              className="w-full"
+            >
+              View profile
+            </BtnLink>
+            <BtnLink to="/messages" variant="outline" className="w-full">
+              Message
+            </BtnLink>
           </div>
         </div>
 
@@ -269,9 +270,9 @@ function RentalDetail() {
               Deposit {inr(e.deposit)} · {e.availability}
             </p>
           </div>
-          <Link to="/marketplace/rent/request/$id" params={{ id: e.id }} className="shrink-0">
-            <Btn>Check availability</Btn>
-          </Link>
+          <BtnLink to="/marketplace/rent/request/$id" params={{ id: e.id }} className="shrink-0">
+            Check availability
+          </BtnLink>
         </div>
       </div>
 

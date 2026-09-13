@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { Screen, TopBar, SearchBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState, SortSheet } from "@/components/ml/market";
 import {
   EquipmentRow,
@@ -139,11 +139,7 @@ function RentSearch() {
                 emoji="🔍"
                 title="No rentals matched"
                 body="Try a broader search, widen the distance, or set an alert and we'll tell you when it's listed."
-                action={
-                  <Link to="/marketplace/rent">
-                    <Btn>Browse all equipment</Btn>
-                  </Link>
-                }
+                action={<BtnLink to="/marketplace/rent">Browse all equipment</BtnLink>}
               />
             )}
           </div>

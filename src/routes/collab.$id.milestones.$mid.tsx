@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Label, Tag } from "@/components/ml/collab";
 import { DeletedState } from "@/components/ml/collab-extra";
 import { getProject, milestoneMeta } from "@/data/collab";
@@ -80,9 +80,13 @@ function MilestoneDetail() {
           <Btn variant="outline" className="flex-1" onClick={() => setDone(!done)}>
             {done ? "Reopen" : "Mark complete"}
           </Btn>
-          <Link to="/collab/$id/milestones/new" params={{ id: project.id }} className="flex-1">
-            <Btn className="w-full">Edit milestone</Btn>
-          </Link>
+          <BtnLink
+            to="/collab/$id/milestones/new"
+            params={{ id: project.id }}
+            className="flex-1 w-full"
+          >
+            Edit milestone
+          </BtnLink>
         </div>
 
         <p className="mb-5 text-[11px] text-muted-foreground">

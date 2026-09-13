@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { BarChart3, Users, Pencil, PauseCircle, XCircle } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Row, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
 import { myOpportunities, closeReasons } from "@/data/opportunities";
@@ -115,11 +115,9 @@ function ManageOpportunity() {
             Convert the shortlist into a booking or a collaboration — reviews only come from
             completed work.
           </p>
-          <Link to="/bookings">
-            <Btn variant="ghost" className="w-full">
-              Open bookings
-            </Btn>
-          </Link>
+          <BtnLink to="/bookings" variant="ghost" className="w-full">
+            Open bookings
+          </BtnLink>
         </Card>
       </div>
 
@@ -147,9 +145,9 @@ function ManageOpportunity() {
         body={`Applicants were notified: ${closed ?? ""}. It stays in your archive with all applications.`}
         onClose={() => setClosed(null)}
       >
-        <Link to="/opportunities/mine">
-          <Btn className="w-full">Back to my opportunities</Btn>
-        </Link>
+        <BtnLink to="/opportunities/mine" className="w-full">
+          Back to my opportunities
+        </BtnLink>
       </Dialog>
     </Screen>
   );

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card } from "@/components/ml/kit";
 import { privacyControls } from "@/data/settings";
 
@@ -65,11 +65,9 @@ function PrivacyScreen() {
           <Btn variant="outline" className="w-full">
             Request a copy
           </Btn>
-          <Link to="/settings/delete-account">
-            <Btn variant="ghost" className="w-full">
-              Delete account
-            </Btn>
-          </Link>
+          <BtnLink to="/settings/delete-account" variant="ghost" className="w-full">
+            Delete account
+          </BtnLink>
         </Card>
       </div>
     </Screen>

@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
-import { Screen, TopBar, SearchBar, Btn, Sheet, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, SearchBar, Btn, BtnLink, Sheet, Chip } from "@/components/ml/ui";
 import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities, opportunityCategories } from "@/data/opportunities";
@@ -96,11 +96,14 @@ function OpportunitySearch() {
             >
               Clear filters
             </Btn>
-            <Link to="/opportunities/new" search={{ step: "basics" }}>
-              <Btn variant="ghost" className="w-full">
-                Post what you need instead
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/opportunities/new"
+              search={{ step: "basics" }}
+              variant="ghost"
+              className="w-full"
+            >
+              Post what you need instead
+            </BtnLink>
           </EmptyState>
         ) : (
           <div className="space-y-3 pb-4">

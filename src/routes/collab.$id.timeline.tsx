@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Chip, Screen, TopBar } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { Card, EmptyState, Label, MilestoneRow, PermissionState } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
@@ -66,9 +66,9 @@ function Timeline() {
             title="No milestones yet"
             body="Break the project into stages so everyone can see progress."
             action={
-              <Link to="/collab/$id/milestones/new" params={{ id: project.id }}>
-                <Btn>Add milestone</Btn>
-              </Link>
+              <BtnLink to="/collab/$id/milestones/new" params={{ id: project.id }}>
+                Add milestone
+              </BtnLink>
             }
           />
         ) : (
@@ -129,9 +129,9 @@ function Timeline() {
         </>
       )}
 
-      <Link to="/collab/$id/milestones/new" params={{ id: project.id }}>
-        <Btn className="mb-8 w-full">Add milestone</Btn>
-      </Link>
+      <BtnLink to="/collab/$id/milestones/new" params={{ id: project.id }} className="mb-8 w-full">
+        Add milestone
+      </BtnLink>
     </WorkspaceShell>
   );
 }

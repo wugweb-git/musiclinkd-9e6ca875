@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities } from "@/data/opportunities";
@@ -31,9 +31,9 @@ function SavedOpportunities() {
             title="No saved opportunities"
             body="Tap the bookmark on any opportunity to keep it here while you decide."
           >
-            <Link to="/opportunities">
-              <Btn className="w-full">Browse opportunities</Btn>
-            </Link>
+            <BtnLink to="/opportunities" className="w-full">
+              Browse opportunities
+            </BtnLink>
           </EmptyState>
         ) : (
           list.map((o) => (

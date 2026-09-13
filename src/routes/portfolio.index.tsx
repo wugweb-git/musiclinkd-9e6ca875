@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
 import {
   PortfolioHeader,
   PortfolioSkeleton,
@@ -69,21 +69,19 @@ function PortfolioOverview() {
         />
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <Link to="/portfolio/new">
-            <Btn>Add work</Btn>
-          </Link>
-          <Link to="/portfolio/reorder">
-            <Btn variant="outline">Reorder</Btn>
-          </Link>
-          <Link to="/portfolio/analytics">
-            <Btn variant="outline">Performance</Btn>
-          </Link>
-          <Link to="/portfolio/select">
-            <Btn variant="outline">Share work</Btn>
-          </Link>
-          <Link to="/me">
-            <Btn variant="outline">Preview on profile</Btn>
-          </Link>
+          <BtnLink to="/portfolio/new">Add work</BtnLink>
+          <BtnLink to="/portfolio/reorder" variant="outline">
+            Reorder
+          </BtnLink>
+          <BtnLink to="/portfolio/analytics" variant="outline">
+            Performance
+          </BtnLink>
+          <BtnLink to="/portfolio/select" variant="outline">
+            Share work
+          </BtnLink>
+          <BtnLink to="/me" variant="outline">
+            Preview on profile
+          </BtnLink>
         </div>
 
         {!signedIn && !authLoading ? (
@@ -120,11 +118,7 @@ function PortfolioOverview() {
             <StateCard
               title="Your work belongs here"
               body={roleSuggestions["default"]!}
-              action={
-                <Link to="/portfolio/new">
-                  <Btn>Add work</Btn>
-                </Link>
-              }
+              action={<BtnLink to="/portfolio/new">Add work</BtnLink>}
             />
           ) : null}
 

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, SearchBar, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, SearchBar, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Row, Dialog, EmptyState } from "@/components/ml/kit";
 import { getBand } from "@/data/band";
 import { talents } from "@/data/discover";
@@ -40,11 +40,9 @@ function InviteMembers() {
           <p className="text-[12px] text-muted-foreground">
             Share a join link or your band QR with someone who is not on MusicLinkd yet.
           </p>
-          <Link to="/identity/qr">
-            <Btn variant="outline" className="w-full">
-              Open band QR
-            </Btn>
-          </Link>
+          <BtnLink to="/identity/qr" variant="outline" className="w-full">
+            Open band QR
+          </BtnLink>
         </Card>
 
         {results.length ? (
@@ -98,9 +96,9 @@ function InviteMembers() {
         body="They will see the invite in Notifications and can accept or decline from their profile."
         onClose={() => setSent(false)}
       >
-        <Link to="/bands/$id/manage" params={{ id }}>
-          <Btn className="w-full">View invitations</Btn>
-        </Link>
+        <BtnLink to="/bands/$id/manage" params={{ id }} className="w-full">
+          View invitations
+        </BtnLink>
       </Dialog>
     </Screen>
   );

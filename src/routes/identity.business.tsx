@@ -2,11 +2,11 @@
  * FLOW-23 · QR-03 "Business QR" · route: /identity/business
  * dataSource: businessProfile, share · states: ready · actions: share, download, copy
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Download, Printer, Share2 } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { QrIdentityCard, CopyLinkRow, ShareActions, DownloadNote } from "@/components/ml/qr";
 import { canonicalUrl, myBusiness } from "@/data/identity";
 
@@ -65,11 +65,9 @@ function BusinessQr() {
         </div>
 
         <div className="mt-3">
-          <Link to="/identity/print">
-            <Btn variant="ghost" className="w-full">
-              <Printer size={16} className="mr-2" /> Preview studio sign & poster
-            </Btn>
-          </Link>
+          <BtnLink to="/identity/print" variant="ghost" className="w-full">
+            <Printer size={16} className="mr-2" /> Preview studio sign & poster
+          </BtnLink>
         </div>
 
         <p className="mt-5 px-1 text-[12px] text-muted-foreground">

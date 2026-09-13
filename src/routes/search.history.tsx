@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Clock, X } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Dialog, EmptyState, Row, Segmented } from "@/components/ml/kit";
 import { searchHistory, scopeLabel, timeAgo } from "@/data/search-meta";
 
@@ -89,9 +89,9 @@ function SearchHistory() {
             title={cleared ? "History cleared" : "Nothing here yet"}
             body="Searches you run appear here so you can pick one back up. Nobody else can see them."
           >
-            <Link to="/search">
-              <Btn className="w-full">Start a search</Btn>
-            </Link>
+            <BtnLink to="/search" className="w-full">
+              Start a search
+            </BtnLink>
           </EmptyState>
         )}
 

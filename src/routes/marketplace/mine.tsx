@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState, ListingRow } from "@/components/ml/market";
 import { listings, offers } from "@/data/market";
 
@@ -69,11 +69,7 @@ function Mine() {
             emoji="📝"
             title="No drafts"
             body="Start a listing and we'll keep it here until you publish."
-            action={
-              <Link to="/marketplace/sell">
-                <Btn>Create a listing</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/marketplace/sell">Create a listing</BtnLink>}
           />
         ) : null}
 

@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { DeletedState, OutcomePanel } from "@/components/ml/collab-extra";
 import { getInvitation } from "@/data/collab";
 
@@ -51,14 +51,12 @@ function InvitationDeclined() {
         />
 
         <div className="mb-8 flex gap-3">
-          <Link to="/messages" className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Message {inv.inviter.split(" ")[0]}
-            </Btn>
-          </Link>
-          <Link to="/collab" className="flex-1">
-            <Btn className="w-full">Back to collaborations</Btn>
-          </Link>
+          <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
+            Message {inv.inviter.split(" ")[0]}
+          </BtnLink>
+          <BtnLink to="/collab" className="flex-1 w-full">
+            Back to collaborations
+          </BtnLink>
         </div>
       </main>
     </Screen>

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, StatusPill, Dialog, EmptyState, Segmented } from "@/components/ml/kit";
 import { getBand, bandRoleCopy, type BandRole } from "@/data/band";
 
@@ -53,9 +53,9 @@ function ManageBand() {
 
         {tab === "Members" ? (
           <>
-            <Link to="/bands/$id/invite" params={{ id: band.id }}>
-              <Btn className="w-full">Invite a member</Btn>
-            </Link>
+            <BtnLink to="/bands/$id/invite" params={{ id: band.id }} className="w-full">
+              Invite a member
+            </BtnLink>
             {band.members.map((m) => (
               <Card key={m.userId} className="space-y-3">
                 <div className="flex items-center gap-3">
@@ -130,9 +130,9 @@ function ManageBand() {
               title="No invitations yet"
               body="Invite people you already play with — they keep their own profile."
             >
-              <Link to="/bands/$id/invite" params={{ id: band.id }}>
-                <Btn className="w-full">Invite a member</Btn>
-              </Link>
+              <BtnLink to="/bands/$id/invite" params={{ id: band.id }} className="w-full">
+                Invite a member
+              </BtnLink>
             </EmptyState>
           )
         ) : null}

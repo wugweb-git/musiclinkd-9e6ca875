@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 import { businessLeads, getBusiness, leadStatusTone, type BusinessLead } from "@/data/business";
 
@@ -81,9 +81,9 @@ function BusinessLeads() {
                 </div>
                 <p className="mt-3 text-[13px]">{l.message}</p>
                 <div className="mt-3 flex gap-2">
-                  <Link to="/messages" className="flex-1">
-                    <Btn className="w-full">Reply</Btn>
-                  </Link>
+                  <BtnLink to="/messages" className="flex-1 w-full">
+                    Reply
+                  </BtnLink>
                   <Btn variant="ghost" className="flex-1">
                     Mark closed
                   </Btn>

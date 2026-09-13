@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { EmptyState, Label } from "@/components/ml/collab";
 import { DeletedState, MediaTile } from "@/components/ml/collab-extra";
@@ -78,9 +78,9 @@ function Media() {
           title="Nothing shared here yet"
           body="Upload the first reference, stem or document and everyone on the project can see it."
           action={
-            <Link to="/collab/$id/files" params={{ id: project.id }}>
-              <Btn>Go to files</Btn>
-            </Link>
+            <BtnLink to="/collab/$id/files" params={{ id: project.id }}>
+              Go to files
+            </BtnLink>
           }
         />
       ) : (

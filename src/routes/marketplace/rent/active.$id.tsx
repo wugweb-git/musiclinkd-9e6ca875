@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
 import { Rating } from "@/components/ml/market";
 import { ProviderSummary, RentalCalendar, RentalStatusPill } from "@/components/ml/rental";
 import { bookingById, equipmentById, inr, providerById } from "@/data/rentals";
@@ -98,16 +98,17 @@ function RentalBooking() {
         <div className="mt-2 rounded-lg border border-border bg-card p-4">
           <ProviderSummary p={p} />
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <Link to="/messages">
-              <Btn variant="outline" className="w-full">
-                Message
-              </Btn>
-            </Link>
-            <Link to="/marketplace/rent/provider/$id" params={{ id: p.id }}>
-              <Btn variant="outline" className="w-full">
-                Profile
-              </Btn>
-            </Link>
+            <BtnLink to="/messages" variant="outline" className="w-full">
+              Message
+            </BtnLink>
+            <BtnLink
+              to="/marketplace/rent/provider/$id"
+              params={{ id: p.id }}
+              variant="outline"
+              className="w-full"
+            >
+              Profile
+            </BtnLink>
           </div>
         </div>
 
@@ -128,16 +129,22 @@ function RentalBooking() {
               <Btn className="w-full" onClick={() => setReview(true)}>
                 Rate provider & equipment
               </Btn>
-              <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
-                <Btn variant="outline" className="w-full">
-                  Book again
-                </Btn>
-              </Link>
-              <Link to="/marketplace/rent/c/$slug" params={{ slug: e.category }} className="block">
-                <Btn variant="outline" className="w-full">
-                  Browse similar equipment
-                </Btn>
-              </Link>
+              <BtnLink
+                to="/marketplace/rent/e/$id"
+                params={{ id: e.id }}
+                variant="outline"
+                className="w-full"
+              >
+                Book again
+              </BtnLink>
+              <BtnLink
+                to="/marketplace/rent/c/$slug"
+                params={{ slug: e.category }}
+                variant="outline"
+                className="w-full"
+              >
+                Browse similar equipment
+              </BtnLink>
             </>
           ) : null}
           <button className="w-full py-2 text-[11px] font-semibold text-muted-foreground">

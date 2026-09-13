@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Star } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Dialog, EmptyState, StatusPill } from "@/components/ml/kit";
 import { pendingReviews, reviewPolicy } from "@/data/reviews";
 
@@ -39,9 +39,9 @@ function WriteReview() {
             title="This review window has closed"
             body="Reviews are open for 14 days after a transaction completes."
           >
-            <Link to="/reviews">
-              <Btn className="w-full">Back to reviews</Btn>
-            </Link>
+            <BtnLink to="/reviews" className="w-full">
+              Back to reviews
+            </BtnLink>
           </EmptyState>
         </div>
       </Screen>
@@ -125,9 +125,9 @@ function WriteReview() {
         body="It publishes once the other side submits theirs, or after 14 days."
         onClose={() => setDone(false)}
       >
-        <Link to="/reviews">
-          <Btn className="w-full">Back to reviews</Btn>
-        </Link>
+        <BtnLink to="/reviews" className="w-full">
+          Back to reviews
+        </BtnLink>
       </Dialog>
     </Screen>
   );

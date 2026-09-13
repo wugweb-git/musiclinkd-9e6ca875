@@ -5,7 +5,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ScanLine, Trash2 } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { ActionRow, StateCard } from "@/components/ml/qr";
 import { scanHistory } from "@/data/identity";
 
@@ -52,11 +52,9 @@ function ScanHistory() {
             title="No scans yet"
             body="Codes you scan appear here so you can find that studio or session player again."
           >
-            <Link to="/identity/scan">
-              <Btn className="w-full">
-                <ScanLine size={16} className="mr-2" /> Open scanner
-              </Btn>
-            </Link>
+            <BtnLink to="/identity/scan" className="w-full">
+              <ScanLine size={16} className="mr-2" /> Open scanner
+            </BtnLink>
           </StateCard>
         ) : (
           <div className="flex flex-col gap-2">

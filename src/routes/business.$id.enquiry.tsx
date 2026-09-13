@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
 import { getBusiness } from "@/data/business";
 
@@ -62,14 +62,12 @@ function BusinessEnquiry() {
               thread appears in Connections.
             </p>
           </Card>
-          <Link to="/messages" className="block">
-            <Btn className="w-full">Open Connections</Btn>
-          </Link>
-          <Link to="/business/$id" params={{ id: b.id }} className="block">
-            <Btn variant="ghost" className="w-full">
-              Back to {b.name}
-            </Btn>
-          </Link>
+          <BtnLink to="/messages" className="w-full">
+            Open Connections
+          </BtnLink>
+          <BtnLink to="/business/$id" params={{ id: b.id }} variant="ghost" className="w-full">
+            Back to {b.name}
+          </BtnLink>
         </div>
       </Screen>
     );
@@ -117,11 +115,14 @@ function BusinessEnquiry() {
           <p className="mt-1 text-[13px] text-muted-foreground">
             Pick a room and a date and skip the back and forth.
           </p>
-          <Link to="/booking/$id" params={{ id: "svc-1" }} className="mt-3 block">
-            <Btn variant="outline" className="w-full">
-              Book a room
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/booking/$id"
+            params={{ id: "svc-1" }}
+            variant="outline"
+            className="mt-3 w-full"
+          >
+            Book a room
+          </BtnLink>
         </Card>
       </div>
     </Screen>

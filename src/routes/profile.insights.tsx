@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { BtnLink, TopBar } from "@/components/ml/ui";
 import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
 
 export const Route = createFileRoute("/profile/insights")({
@@ -98,9 +98,9 @@ function Insights() {
               </li>
             ))}
           </ul>
-          <Link to="/profile/edit" className="mt-4 block">
-            <Btn className="w-full">Complete profile</Btn>
-          </Link>
+          <BtnLink to="/profile/edit" className="mt-4 w-full">
+            Complete profile
+          </BtnLink>
         </section>
       </main>
     </div>

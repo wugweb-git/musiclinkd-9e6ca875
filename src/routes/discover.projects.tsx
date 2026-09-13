@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 import { opportunities } from "@/data/opportunities";
 
@@ -53,9 +53,7 @@ function DiscoverProjects() {
             title="No open projects"
             body="Projects looking for collaborators will appear here."
           >
-            <Link to="/collab/new">
-              <Btn>Start your own</Btn>
-            </Link>
+            <BtnLink to="/collab/new">Start your own</BtnLink>
           </EmptyState>
         )}
       </div>

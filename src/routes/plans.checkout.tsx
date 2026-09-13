@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, Dialog, StatusPill } from "@/components/ml/kit";
 import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
 
@@ -115,14 +115,12 @@ function Checkout() {
         body="Your new limits and boosts are available immediately."
         onClose={() => setState("idle")}
       >
-        <Link to="/plans/manage">
-          <Btn className="w-full">Manage subscription</Btn>
-        </Link>
-        <Link to="/me">
-          <Btn variant="outline" className="w-full">
-            Back to profile
-          </Btn>
-        </Link>
+        <BtnLink to="/plans/manage" className="w-full">
+          Manage subscription
+        </BtnLink>
+        <BtnLink to="/me" variant="outline" className="w-full">
+          Back to profile
+        </BtnLink>
       </Dialog>
       <Dialog
         open={state === "failed"}

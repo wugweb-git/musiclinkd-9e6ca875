@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { BookingCard } from "@/components/ml/rental";
 import { bookings, equipmentById, providerById } from "@/data/rentals";
@@ -93,11 +93,7 @@ function MyRentals() {
             emoji="📭"
             title={`No ${tab.toLowerCase()} rentals`}
             body="When you rent equipment through MusicLinkd, it will appear here with dates, deposits and return reminders."
-            action={
-              <Link to="/marketplace/rent">
-                <Btn>Explore equipment</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/marketplace/rent">Explore equipment</BtnLink>}
           />
         )}
       </div>

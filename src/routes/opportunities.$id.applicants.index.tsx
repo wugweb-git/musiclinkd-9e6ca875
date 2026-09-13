@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Segmented, EmptyState, Loading } from "@/components/ml/kit";
 import { ApplicantCard } from "@/components/ml/opportunity";
 import { applicants, myOpportunities } from "@/data/opportunities";
@@ -57,11 +57,14 @@ function Applicants() {
             title="No applicants here yet"
             body="Sharing your opportunity in a conversation or on your profile usually doubles applications."
           >
-            <Link to="/opportunities/$id/analytics" params={{ id }}>
-              <Btn variant="outline" className="w-full">
-                See performance
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/opportunities/$id/analytics"
+              params={{ id }}
+              variant="outline"
+              className="w-full"
+            >
+              See performance
+            </BtnLink>
           </EmptyState>
         ) : (
           list.map((a) => <ApplicantCard key={a.id} a={a} />)

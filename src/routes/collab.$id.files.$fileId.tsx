@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Screen, TopBar } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { AudioPlayer, Card, Label, PermissionState, RowLink, Tag } from "@/components/ml/collab";
 import { fileKindMeta, getFile, getProject } from "@/data/collab";
 
@@ -116,11 +116,14 @@ function FileDetail() {
           <RowLink title="Remove file" danger />
         </div>
 
-        <Link to="/collab/$id/files" params={{ id: project.id }}>
-          <Btn variant="outline" className="mb-8 w-full">
-            Back to files
-          </Btn>
-        </Link>
+        <BtnLink
+          to="/collab/$id/files"
+          params={{ id: project.id }}
+          variant="outline"
+          className="mb-8 w-full"
+        >
+          Back to files
+        </BtnLink>
       </main>
     </Screen>
   );

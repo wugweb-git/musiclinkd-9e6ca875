@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
 import { studios, talents } from "@/data/discover";
 
@@ -35,9 +35,7 @@ function RecentlyViewed() {
             title="Nothing here yet"
             body="Profiles and studios you open will be listed here for a month."
           >
-            <Link to="/">
-              <Btn>Start discovering</Btn>
-            </Link>
+            <BtnLink to="/">Start discovering</BtnLink>
           </EmptyState>
         ) : (
           <>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import {
   BookingListCard,
   BookingSkeleton,
@@ -84,11 +84,7 @@ function MyBookings() {
           <EmptyState
             title="No bookings yet"
             body="When you book a studio, jam room or session it shows up here."
-            action={
-              <Link to="/studio">
-                <Btn>Discover studios &amp; spaces</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/studio">Discover studios &amp; spaces</BtnLink>}
           />
         ) : (
           <div className="space-y-3">

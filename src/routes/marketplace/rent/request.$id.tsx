@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   FulfilmentPicker,
   PriceBreakdown,
@@ -239,14 +239,12 @@ function RequestFlow() {
                 </div>
               ))}
             </dl>
-            <Link to="/marketplace/rent/mine" className="mt-5 block">
-              <Btn className="w-full">View rental</Btn>
-            </Link>
-            <Link to="/messages" className="mt-2 block">
-              <Btn variant="outline" className="w-full">
-                Message provider
-              </Btn>
-            </Link>
+            <BtnLink to="/marketplace/rent/mine" className="mt-5 w-full">
+              View rental
+            </BtnLink>
+            <BtnLink to="/messages" variant="outline" className="mt-2 w-full">
+              Message provider
+            </BtnLink>
           </div>
         ) : null}
       </div>

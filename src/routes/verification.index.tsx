@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShieldCheck, Lock } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, Row } from "@/components/ml/kit";
 import {
   verificationTypes,
@@ -73,11 +73,9 @@ function VerificationHub() {
             <StatusPill label={statusLabel[overall]} tone={statusTone[overall]} />
           </div>
           <p className="text-[13px] text-muted-foreground">{copy.body}</p>
-          <Link to="/verification/choose">
-            <Btn className="w-full">
-              {overall === "unverified" ? "Get verified" : "Add another badge"}
-            </Btn>
-          </Link>
+          <BtnLink to="/verification/choose" className="w-full">
+            {overall === "unverified" ? "Get verified" : "Add another badge"}
+          </BtnLink>
         </Card>
 
         <section>

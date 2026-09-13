@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Bookmark,
@@ -10,7 +10,7 @@ import {
   CheckCircle2,
   Circle,
 } from "lucide-react";
-import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
 import {
   MatchBar,
@@ -62,9 +62,9 @@ function OpportunityDetail() {
             title="This opportunity is gone"
             body="It was closed, filled or removed by the poster."
           >
-            <Link to="/opportunities">
-              <Btn className="w-full">Browse open opportunities</Btn>
-            </Link>
+            <BtnLink to="/opportunities" className="w-full">
+              Browse open opportunities
+            </BtnLink>
           </EmptyState>
         </div>
       </Screen>
@@ -187,26 +187,26 @@ function OpportunityDetail() {
             />
           </button>
           {existing ? (
-            <Link
+            <BtnLink
               to="/opportunities/applications/$aid"
               params={{ aid: existing.id }}
-              className="min-w-0 flex-1"
+              className="min-w-0 flex-1 w-full"
             >
-              <Btn className="w-full">View your application · {existing.status}</Btn>
-            </Link>
+              View your application · {existing.status}
+            </BtnLink>
           ) : o.status === "closed" ? (
             <Btn className="min-w-0 flex-1" disabled>
               Applications closed
             </Btn>
           ) : (
-            <Link
+            <BtnLink
               to="/opportunities/$id/apply"
               params={{ id: o.id }}
               search={{ step: "portfolio" }}
-              className="min-w-0 flex-1"
+              className="min-w-0 flex-1 w-full"
             >
-              <Btn className="w-full">Apply</Btn>
-            </Link>
+              Apply
+            </BtnLink>
           )}
         </div>
       </div>
@@ -216,16 +216,12 @@ function OpportunityDetail() {
           <Btn variant="outline" className="w-full">
             Copy link
           </Btn>
-          <Link to="/messages" className="block">
-            <Btn variant="outline" className="w-full">
-              Send in a conversation
-            </Btn>
-          </Link>
-          <Link to="/identity/qr" className="block">
-            <Btn variant="ghost" className="w-full">
-              Show as QR
-            </Btn>
-          </Link>
+          <BtnLink to="/messages" variant="outline" className="w-full">
+            Send in a conversation
+          </BtnLink>
+          <BtnLink to="/identity/qr" variant="ghost" className="w-full">
+            Show as QR
+          </BtnLink>
         </div>
       </Sheet>
 

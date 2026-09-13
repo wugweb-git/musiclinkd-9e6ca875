@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Label, StickyBar } from "@/components/ml/collab";
 import { ConfirmPanel, DeletedState, OutcomePanel } from "@/components/ml/collab-extra";
 import { getProject } from "@/data/collab";
@@ -57,9 +57,9 @@ function Transfer() {
             title="Ownership transferred"
             body={`${next} now owns ${project.name}. You stay on the project as a collaborator.`}
           >
-            <Link to="/collab/$id" params={{ id: project.id }}>
-              <Btn className="w-full">Open project</Btn>
-            </Link>
+            <BtnLink to="/collab/$id" params={{ id: project.id }} className="w-full">
+              Open project
+            </BtnLink>
           </OutcomePanel>
         ) : (
           <>
@@ -101,11 +101,14 @@ function Transfer() {
       {!done ? (
         <StickyBar>
           <div className="flex gap-3">
-            <Link to="/collab/$id/settings" params={{ id: project.id }} className="flex-1">
-              <Btn variant="outline" className="w-full">
-                Cancel
-              </Btn>
-            </Link>
+            <BtnLink
+              to="/collab/$id/settings"
+              params={{ id: project.id }}
+              variant="outline"
+              className="flex-1 w-full"
+            >
+              Cancel
+            </BtnLink>
             <Btn className="flex-1" onClick={() => setDone(true)}>
               Transfer
             </Btn>

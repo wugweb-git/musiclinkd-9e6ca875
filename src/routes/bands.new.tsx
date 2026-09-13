@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Meter, Row, Dialog } from "@/components/ml/kit";
 import { bandCreationSteps, myBandId } from "@/data/band";
 
@@ -183,11 +183,9 @@ function CreateBand() {
         <Btn onClick={() => navigate({ to: "/bands/$id", params: { id: myBandId } })}>
           Open band profile
         </Btn>
-        <Link to="/bands">
-          <Btn variant="outline" className="w-full">
-            Back to bands
-          </Btn>
-        </Link>
+        <BtnLink to="/bands" variant="outline" className="w-full">
+          Back to bands
+        </BtnLink>
       </Dialog>
     </Screen>
   );

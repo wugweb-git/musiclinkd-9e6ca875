@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Dialog } from "@/components/ml/kit";
 import {
   serviceCategories,
@@ -214,9 +214,9 @@ function NewService() {
         body="It is live on your profile and bookable straight away. You can pause it any time."
         onClose={() => setPublished(false)}
       >
-        <Link to="/services">
-          <Btn className="w-full">Back to services</Btn>
-        </Link>
+        <BtnLink to="/services" className="w-full">
+          Back to services
+        </BtnLink>
       </Dialog>
     </Screen>
   );

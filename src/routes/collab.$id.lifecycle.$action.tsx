@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Screen, TopBar } from "@/components/ml/ui";
+import { createFileRoute } from "@tanstack/react-router";
+import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { Card, Field, PermissionState, StickyBar, TextInput } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
 
@@ -111,9 +111,9 @@ function Lifecycle() {
               </p>
             </Card>
           ) : null}
-          <Link to="/collab">
-            <Btn className="w-full">Back to collaborations</Btn>
-          </Link>
+          <BtnLink to="/collab" className="w-full">
+            Back to collaborations
+          </BtnLink>
         </main>
       </Screen>
     );
@@ -144,11 +144,14 @@ function Lifecycle() {
 
       <StickyBar>
         <div className="flex gap-3">
-          <Link to="/collab/$id/settings" params={{ id: project.id }} className="flex-1">
-            <Btn variant="outline" className="w-full">
-              Keep as is
-            </Btn>
-          </Link>
+          <BtnLink
+            to="/collab/$id/settings"
+            params={{ id: project.id }}
+            variant="outline"
+            className="flex-1 w-full"
+          >
+            Keep as is
+          </BtnLink>
           <Btn
             variant={c.danger ? "ink" : "primary"}
             className="flex-[2]"

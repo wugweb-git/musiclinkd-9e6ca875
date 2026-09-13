@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Segmented, EmptyState, Loading } from "@/components/ml/kit";
 import { ApplicationCard } from "@/components/ml/opportunity";
 import { myApplications, getOpportunity } from "@/data/opportunities";
@@ -56,9 +56,9 @@ function Applications() {
             title="Nothing here"
             body="Apply to an opportunity and you'll be able to track it from this screen."
           >
-            <Link to="/opportunities">
-              <Btn className="w-full">Find opportunities</Btn>
-            </Link>
+            <BtnLink to="/opportunities" className="w-full">
+              Find opportunities
+            </BtnLink>
           </EmptyState>
         ) : (
           <div className="space-y-3 pb-4">

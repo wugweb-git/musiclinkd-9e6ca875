@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { Screen, TopBar, Chip, Btn, SearchBar, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Chip, Btn, BtnLink, SearchBar, Sheet } from "@/components/ml/ui";
 import {
   CollabSkeleton,
   EmptyState,
@@ -193,11 +193,9 @@ function CollabHome() {
                 </p>
               </Card>
             </Link>
-            <Link to="/collab/proposals/new" className="block">
-              <Btn variant="outline" className="w-full">
-                Send a proposal
-              </Btn>
-            </Link>
+            <BtnLink to="/collab/proposals/new" variant="outline" className="w-full">
+              Send a proposal
+            </BtnLink>
           </section>
         ) : null}
 
@@ -289,12 +287,10 @@ function EmptyForTab({ tab }: { tab: string }) {
         body="Start a project with someone you're already talking to, or find new people to work with."
         action={
           <div className="flex gap-3">
-            <Link to="/collab/new">
-              <Btn>Start a collaboration</Btn>
-            </Link>
-            <Link to="/">
-              <Btn variant="outline">Discover talent</Btn>
-            </Link>
+            <BtnLink to="/collab/new">Start a collaboration</BtnLink>
+            <BtnLink to="/" variant="outline">
+              Discover talent
+            </BtnLink>
           </div>
         }
       />
@@ -311,22 +307,14 @@ function EmptyForTab({ tab }: { tab: string }) {
       <EmptyState
         title="No drafts"
         body="Half-finished collaboration setups are saved here so you can pick them up later."
-        action={
-          <Link to="/collab/new">
-            <Btn>Create collaboration</Btn>
-          </Link>
-        }
+        action={<BtnLink to="/collab/new">Create collaboration</BtnLink>}
       />
     );
   return (
     <EmptyState
       title="No collaborations yet"
       body="Find musicians, producers, studios and businesses to work with."
-      action={
-        <Link to="/">
-          <Btn>Discover talent</Btn>
-        </Link>
-      }
+      action={<BtnLink to="/">Discover talent</BtnLink>}
     />
   );
 }

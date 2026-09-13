@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, ShieldCheck } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 import { businessVerificationChecks, getBusiness } from "@/data/business";
 
@@ -98,11 +98,9 @@ function BusinessVerification() {
             Documents are only read by the review team, never shown on your public page. The page
             only ever shows a badge.
           </p>
-          <Link to="/verification/privacy" className="mt-3 block">
-            <Btn variant="ghost" className="w-full">
-              How your documents are handled
-            </Btn>
-          </Link>
+          <BtnLink to="/verification/privacy" variant="ghost" className="mt-3 w-full">
+            How your documents are handled
+          </BtnLink>
         </Card>
 
         <Btn className="w-full" disabled={submitted} onClick={() => setSubmitted(true)}>

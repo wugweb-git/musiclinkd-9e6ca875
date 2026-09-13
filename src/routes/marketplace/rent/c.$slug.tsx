@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState, SortSheet } from "@/components/ml/market";
 import { EquipmentRow, RentalFilterSheet, rentalSortOptions } from "@/components/ml/rental";
 import { equipmentByCategory, rentalCategories } from "@/data/rentals";
@@ -80,11 +80,7 @@ function RentCategory() {
             emoji="📦"
             title="Nothing listed here yet"
             body="No providers have listed this sub-category in Mumbai. Try a wider area or set an alert."
-            action={
-              <Link to="/marketplace/rent/search">
-                <Btn>Search all rentals</Btn>
-              </Link>
-            }
+            action={<BtnLink to="/marketplace/rent/search">Search all rentals</BtnLink>}
           />
         )}
       </div>

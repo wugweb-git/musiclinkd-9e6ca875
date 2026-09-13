@@ -3,10 +3,10 @@
  * deleted / deactivated / offline / error states.
  * route: /identity/q/$code — the canonical resolver for every MusicLinkd QR.
  */
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MessageCircle, ScanLine, Share2, UserPlus } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   DestinationPreviewCard,
   StateCard,
@@ -68,11 +68,9 @@ function QrResult() {
             body="We can't open this code until you're back online. The code stays valid."
           >
             <Btn onClick={() => setPhase("done")}>Try again</Btn>
-            <Link to="/identity/scan">
-              <Btn variant="outline" className="w-full">
-                Back to scanner
-              </Btn>
-            </Link>
+            <BtnLink to="/identity/scan" variant="outline" className="w-full">
+              Back to scanner
+            </BtnLink>
           </StateCard>
         ) : preview ? (
           <>
@@ -119,11 +117,9 @@ function QrResult() {
             </div>
 
             <div className="mt-3">
-              <Link to="/identity/scan">
-                <Btn variant="ghost" className="w-full">
-                  <ScanLine size={16} className="mr-2" /> Scan another code
-                </Btn>
-              </Link>
+              <BtnLink to="/identity/scan" variant="ghost" className="w-full">
+                <ScanLine size={16} className="mr-2" /> Scan another code
+              </BtnLink>
             </div>
           </>
         ) : (
@@ -131,16 +127,12 @@ function QrResult() {
             title={statusCopy[dest.status === "active" ? "invalid" : dest.status].title}
             body={statusCopy[dest.status === "active" ? "invalid" : dest.status].body}
           >
-            <Link to="/identity/scan">
-              <Btn className="w-full">
-                {statusCopy[dest.status === "active" ? "invalid" : dest.status].cta}
-              </Btn>
-            </Link>
-            <Link to="/">
-              <Btn variant="outline" className="w-full">
-                <Share2 size={16} className="mr-2" /> Discover on MusicLinkd
-              </Btn>
-            </Link>
+            <BtnLink to="/identity/scan" className="w-full">
+              {statusCopy[dest.status === "active" ? "invalid" : dest.status].cta}
+            </BtnLink>
+            <BtnLink to="/" variant="outline" className="w-full">
+              <Share2 size={16} className="mr-2" /> Discover on MusicLinkd
+            </BtnLink>
           </StateCard>
         )}
       </main>

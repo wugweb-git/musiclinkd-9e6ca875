@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Users, Image, CalendarClock, ShieldCheck, Trash2, Pencil } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, EmptyState, Dialog, StatusPill } from "@/components/ml/kit";
 import { getBusiness, businessTypeLabel } from "@/data/business";
 
@@ -134,9 +134,9 @@ function ManageBusiness() {
         body="The profile is no longer visible on MusicLinkd."
         onClose={() => setDeleted(false)}
       >
-        <Link to="/business">
-          <Btn className="w-full">Back to businesses</Btn>
-        </Link>
+        <BtnLink to="/business" className="w-full">
+          Back to businesses
+        </BtnLink>
       </Dialog>
     </Screen>
   );

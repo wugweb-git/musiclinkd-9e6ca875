@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MapPin, Pencil } from "lucide-react";
-import { Btn, TopBar } from "@/components/ml/ui";
+import { BtnLink, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
 import { roles, visibleSteps } from "@/data/onboarding";
 
@@ -103,14 +103,12 @@ function Preview() {
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <Link to="/onboarding/complete" className="block">
-          <Btn className="w-full">Publish my profile</Btn>
-        </Link>
-        <Link to="/onboarding/skip" className="block">
-          <Btn variant="ghost" className="w-full">
-            Finish later
-          </Btn>
-        </Link>
+        <BtnLink to="/onboarding/complete" className="w-full">
+          Publish my profile
+        </BtnLink>
+        <BtnLink to="/onboarding/skip" variant="ghost" className="w-full">
+          Finish later
+        </BtnLink>
       </div>
     </div>
   );
