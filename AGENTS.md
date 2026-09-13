@@ -149,7 +149,13 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 `README.md` is stale — ignore its palette and type values.
 
-Radius **8 / 16 / 32 / pill** only; `24px` and `20px` are not on the scale. Type is five fluid `clamp()` tokens (`--type-1..5`; `--type-5` is hero-only), never arbitrary sizes. Brand pink `#EA4C89`; `#5B4BFF` is from a superseded brief and is always a bug. Purple is permitted only on the category badge. Photography comes from the local library — never Unsplash or stock.
+**Radius is the Material 3 shape scale** (13 Sep): `sm` 8 chips/small controls · `md` 12 small tiles, thumbnails, inputs · `lg` 16 **cards** and list containers · `xl` 20 large tiles · `2xl` 28 sheets and dialogs · `3xl` 32 hero only · `full` buttons and pills. Pick by role, not by look; no arbitrary `rounded-[…]`.
+
+Type is five fluid `clamp()` tokens (`--type-1..5`; `--type-5` is hero-only), never arbitrary sizes. **Spacing is Tailwind's numeric scale only** (`p-1` 4px … `p-8` 32px); the named `--spacing-xs/sm/md/lg` were removed. Secondary text is `text-muted-foreground` (`text-text2` is gone).
+
+Brand pink `#EA4C89`; `#5B4BFF` is from a superseded brief and is always a bug. **Near-black is `ink` `#0D0D0D`** (`bg-ink`, `Btn variant="ink"`); navy is retired and removed. Purple is permitted only on the category badge.
+
+Photography: Unsplash is fine. The team's own image library lives in the guide repo at `frontend/website/assets/img/` (inspiration, editorials, speakers).
 
 `:focus-visible` ring on every interactive control. 48dp touch floor; a control that should look smaller keeps an invisible 48dp hit area rather than growing.
 

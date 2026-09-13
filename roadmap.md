@@ -49,9 +49,8 @@
 - Profile follow-ups (from user)
   - [x] `src/routes/profile.insights.tsx` — owner analytics
   - [x] redirect `/talent/$id` → `/profile/$username` (the route has only redirected since 1 Sep)
-  - [ ] repoint the remaining `/talent/$id` links: `discover.nearby.tsx:102`,
-        `recently-viewed.tsx:48`, `data/identity.ts:90,125`. They still resolve through the
-        redirect.
+  - [x] repoint the remaining `/talent/$id` links. Done 13 Sep (`d526f17`); the redirect is kept
+        for old external links.
   - [x] `exactOptionalPropertyTypes` errors in `person-profile.tsx` (`tsc --noEmit` is clean)
 - FLOW 03 — Add Portfolio
   - [x] `src/data/portfolio.ts`, `src/components/ml/portfolio.tsx`
@@ -163,8 +162,22 @@ Order is array order; `visibleSteps()` filters, it never reorders.
   Razorpay recommended (UPI, cards, INR) — awaiting user's decision before wiring.
 - `/onboarding/complete` and `/onboarding/done` are **sequential, not duplicates** — do not
   delete either. Full detail in Phase 9 §9.4.
-- `--navy` **still resolves in the app** and renders as intended; what is retired is the
-  *upstream* `tokens.json` entry. Tracked debt, not a bug. Full detail in Phase 9 §9.7.
+- [x] Navy migrated to `ink` `#0D0D0D` on 13 Sep (`81c8953`). No `navy` remains in `src/`.
+- [x] **Phase 8 prerequisites, settled 13 Sep:**
+  - **Radius:** the Material 3 shape scale, with cards at 16px (`90a4676`).
+  - **Navy:** migrated to ink.
+  - **Photos:** there is no "never Unsplash" rule, and it has been removed from `AGENTS.md` and
+    the Lovable knowledge. The team library at `frontend/website/assets/img/` (guide repo) is
+    available. The Unsplash connector needs its account email confirmed before it can be used.
+  - **Still open for Phase 8 itself:** the 204-route sweep of arbitrary `text-[…]` sizes, the
+    inline `style`, and the `src/data` split.
+- [x] Route naming settled 13 Sep (`e2471e7`):
+  - `/band` redirects to `/bands`.
+  - The swipe deck lives at `/recommendations/swipe`, and `/recommended` redirects there.
+- [x] One spacing system (numeric only) and one secondary-text class (`text-muted-foreground`)
+  (`d526f17`).
+- [ ] The guide repo's `tokens.json` radius is still `8/16/32/pill`. The app now uses the Material 3
+  scale, so `foundation.radius` should adopt it upstream to keep the two in sync.
 - [ ] `--color-paper` in `tokens.json` is internally inconsistent three ways. Its description says
   the value was changed to `#ECECF1` because `#FCFCFD` sat 1.03:1 from the card fill and made every
   card an invisible container — but its own `$value` and the generated `ml-tokens.css` both still

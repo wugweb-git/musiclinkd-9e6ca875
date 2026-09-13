@@ -5,6 +5,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — 13 Sep 2026 token and route decisions
+
+- **Radius is now the Material 3 shape scale:** 4/8/12/16/20/28/32/full.
+  - Cards, rows and images went from 32px to 16px (`rounded-lg`, 372 call sites).
+  - Small tiles, thumbnails and inputs are 12px (`rounded-md`, 66).
+  - The Sheet top and the Dialog panel are 28px (`rounded-2xl`).
+  - `rounded-md` call sites (14) moved to `rounded-lg`, so they keep their 16px.
+  - Vendored `components/ui/` and arbitrary `rounded-[…]` are untouched. See `90a4676`.
+- **Navy is now ink `#0D0D0D`.**
+  - 33 classes, `Btn variant="navy"` renamed to `"ink"` (5 call sites), and `--gradient-navy`
+    renamed to `--gradient-ink`.
+  - Dark buttons, cards and scrims are neutral black instead of blue-tinted. See `81c8953`.
+- **One spacing system.** `--spacing-xs/sm/md/lg` had zero uses and are removed. No visual change.
+- **One secondary-text class.** 185 `text-text2` and 16 `var(--text-secondary)` became
+  `text-muted-foreground` / `var(--muted-foreground)`, and both aliases are removed. No visual
+  change. See `d526f17`.
+- **Routes:**
+  - `/band`, a hard-coded page for a band that isn't in the data, redirects to `/bands`.
+  - The onboarding "Create band" button now goes to `/bands/new`.
+  - The swipe deck moved from `/recommended` to `/recommendations/swipe`, and the old URL
+    redirects.
+  - The last `/talent/$id` links point at `/profile/$username`. See `e2471e7`, `d526f17`.
+- **`AGENTS.md`:** records the M3 radius roles, ink, numeric-only spacing and
+  `text-muted-foreground`. The "never Unsplash" line is removed; no such rule exists, and the
+  team library in the guide repo is noted instead.
+
 ### Added
 
 - `docs/pending-screens-audit-2026-09-13.md`: the 7 Sep pending-screens plan checked item by item
