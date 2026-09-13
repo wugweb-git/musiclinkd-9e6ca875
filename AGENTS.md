@@ -135,7 +135,7 @@ equality (`path === item.to`) leaves nearly every nested route unhighlighted.
 Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/components/ui/` before creating anything. Known duplicate pairs to **consolidate, not extend**:
 `AvailabilityBadge`/`StatusPill`, `Chip`/`Segmented`, `Sheet`/`Dialog`.
 
-`src/components/ui/` holds 45 installed Radix primitives — `dialog`, `sheet`, `drawer`, `alert-dialog`, `skeleton`. Use them. Hand-rolled modals in this repo have no focus trap, no Escape handler and no scroll lock.
+`src/components/ui/` holds 46 installed shadcn primitives (most Radix; `drawer` wraps vaul, `calendar` wraps react-day-picker) — `dialog`, `sheet`, `drawer`, `alert-dialog`, `skeleton`. Only `avatar` and `sonner` are imported today. Use them. Hand-rolled modals in this repo have no focus trap, no Escape handler and no scroll lock.
 
 **Never ship a control that does nothing.** A `<Btn>` or link with no handler and no destination is a bug. If the action is not built, disable it and label why.
 
@@ -149,13 +149,21 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 `README.md` is stale — ignore its palette and type values.
 
-Radius **8 / 16 / 32 / pill** only; `24px` and `20px` are not on the scale. Type is four fluid `clamp()` tokens, never arbitrary sizes. Brand pink `#EA4C89`; `#5B4BFF` is from a superseded brief and is always a bug. Purple is permitted only on the category badge. Photography comes from the local library — never Unsplash or stock.
+Radius **8 / 16 / 32 / pill** only; `24px` and `20px` are not on the scale. Type is five fluid `clamp()` tokens (`--type-1..5`; `--type-5` is hero-only), never arbitrary sizes. Brand pink `#EA4C89`; `#5B4BFF` is from a superseded brief and is always a bug. Purple is permitted only on the category badge. Photography comes from the local library — never Unsplash or stock.
 
 `:focus-visible` ring on every interactive control. 48dp touch floor; a control that should look smaller keeps an invisible 48dp hit area rather than growing.
 
 ### Routing
 
 Flat, dot-named files under `src/routes/` (`booking.$id.pay.tsx` → `/booking/:id/pay`). Dynamic segments use bare `$`. `__root.tsx` is the only shell. **`routeTree.gen.ts` is generated — never hand-edit.** No `src/pages/`, no `app/layout.tsx`. Every route defines its own `head()`. Wizards keep state in a `?step=` search param. Every route reachable from a real entry point.
+
+**A route file with children must render `<Outlet />`, or be an index leaf.** In flat routing,
+`bands.new.tsx` is a *child* of `bands.tsx` and renders inside the parent's `<Outlet />`. If the
+parent has none, the child URL silently shows the parent's screen, with the child's `<title>`.
+Twenty-six routes shipped this way until 13 Sep. When a screen has sub-pages, name the screen
+`bands.index.tsx` with `createFileRoute("/bands/")` (the `opportunities.index.tsx` pattern), or
+give `bands.tsx` a layout that renders `<Outlet />`. Before adding `x.y.tsx`, check whether `x.tsx`
+exists.
 
 ### Data
 

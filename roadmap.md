@@ -30,14 +30,51 @@
   - [x] `/onboarding/done` final screen + portfolio hand-off
   - [x] render pass on 412px viewport (no overflow, no console errors)
 
+## 13 Sep 2026 — landed and live (published build `e0e347e`)
+- [x] CI: `.github/workflows/ci.yml` runs bun install, typecheck, lint and build on every push and PR
+      to `main`. Lint blocks on correctness rules only; formatting is reported but doesn't block,
+      because Lovable's agent doesn't run Prettier.
+- [x] 26 child routes rendered their parent's screen (`/bands/new`, every band profile, `/reviews/*`,
+      `/plans/*`, `/help/*`, `/search/*` …). The cause was 12 parents without `<Outlet />`; they are
+      now `X.index.tsx`. See `CHANGELOG.md`.
+- [x] `viewport-fit=cover` added. The 10 `env(safe-area-inset-*)` uses were resolving to 0 on
+      notched phones.
+- [x] `profiles` RLS: migration `20260910131500` **applied to the live database**. The SELECT policy
+      is now `visibility = 'public' OR auth.uid() = id`, and the version is recorded in
+      `supabase_migrations.schema_migrations`.
+- [x] Pending-screens plan (7 Sep) audited against the code: 24 done · 9 partial · 4 not done. See
+      `docs/pending-screens-audit-2026-09-13.md` and the section below.
+
 ## Next
 - Profile follow-ups (from user)
-  - [ ] `src/routes/profile.insights.tsx` — owner analytics
-  - [ ] redirect `/talent/$id` → `/profile/$username`; repoint Discover/Search/collaborator links
-  - [ ] fix remaining `exactOptionalPropertyTypes` errors in `person-profile.tsx`
+  - [x] `src/routes/profile.insights.tsx` — owner analytics
+  - [x] redirect `/talent/$id` → `/profile/$username` (the route has only redirected since 1 Sep)
+  - [ ] repoint the remaining `/talent/$id` links: `discover.nearby.tsx:102`,
+        `recently-viewed.tsx:48`, `data/identity.ts:90,125`. They still resolve through the
+        redirect.
+  - [x] `exactOptionalPropertyTypes` errors in `person-profile.tsx` (`tsc --noEmit` is clean)
 - FLOW 03 — Add Portfolio
-  - [ ] `src/data/portfolio.ts`, `src/components/ml/portfolio.tsx`
-  - [ ] portfolio routes (overview, add, work detail, edit, reorder, settings, select)
+  - [x] `src/data/portfolio.ts`, `src/components/ml/portfolio.tsx`
+  - [x] portfolio routes (overview, add, work detail, edit, reorder, settings, select)
+
+## Pending-screens plan (7 Sep) — audit 13 Sep
+Full table: `docs/pending-screens-audit-2026-09-13.md`. **UI work below goes to Lovable, not Claude
+Code.**
+- [ ] **Wire in ~20 finished screens that no link reaches:**
+  - business enquiry
+  - services enquiry / manage / conflicts
+  - band portfolio / events / contact
+  - review reply / edit / report / request
+  - discover music / projects / community / nearby
+  - "why am I seeing this"
+  - application detail / withdraw
+- [ ] Partial — business services Edit/Pause do nothing; business gallery Edit/Hide/Add do nothing;
+      business Follow does nothing, there is no Share, and `relatedBusinesses` is never rendered;
+      Recently viewed is a static slice; no FAQ or announcements listing; no invoice receipt
+      detail; no onboarding offline state
+- [ ] Not done — archive a work · save-conflict screen · verification/services prompt at the end of
+      onboarding · splash/session check
+- [ ] No screen has a real loading skeleton or offline banner; the kit has neither primitive
 
 ## FLOW 23 — QR / Digital Identity & Sharing (requested Sep 2, design-only)
 - [ ] `src/data/identity.ts` — canonical QR destination model (type/entityId/publicRoute/status), seeded demo destinations
@@ -134,16 +171,20 @@ Order is array order; `visibleSteps()` filters, it never reorders.
   say `#FCFCFD`. The same description claims `#ECECF1` is "the SAME value as `--color-line`";
   `line` is `#D5D5DE`, a different grey (1.238:1 apart). The app now uses `#ECECF1` as the ground
   on the brand owner's instruction; `tokens.json` should be corrected upstream to match.
-- [ ] `--muted-foreground` measures 4.66:1 on the white card fill but **3.22:1 on the `#ECECF1`
-  ground**. Captions inside cards are fine; any secondary text placed directly on the page ground
-  fails AA and needs `--text-secondary` (5.3:1) or darker.
-- [ ] The Lovable **project knowledge** field is the source of the wrong type scale. It states
-  "four fluid clamp() tokens — 10–12px, 14–18px, 20–28px, 28–44px" and "JetBrains Mono for
-  metadata". The generated `frontend/guide/system/ml-tokens.css` says **12–13 / 16–18 / 22–28 /
-  32–44**, and `tokens.json` has no mono font at all (it has `--font-eyebrow`, Unica One). It also
-  still lists navy `#0D0B26`, which `tokens.json` records as retired and replaced by
-  `--color-ink #0D0D0D`. Knowledge is fed to the Lovable agent on every prompt, so every screen it
-  generates inherits these three errors. Highest-leverage fix available, and outside this repo.
+- [x] `--muted-foreground` on the `#ECECF1` ground: fixed by PR #15, which adopted `tokens.json`
+  `muted` `#66666F`. It measures **4.83:1** on the ground and 5.68:1 on the white card, so both
+  clear AA. `--text-secondary` is now an alias of it.
+- [ ] The Lovable **project knowledge** field has been rewritten since this note (the type scale,
+  retired fonts and retired navy are now correct). It is still out of step with the code in 13 Sep
+  checks:
+  - It lists four type ramps; the app has five (`--type-5`, hero).
+  - It says weights 400–800 are loaded; the link loads 400–700.
+  - It says `-0.02em` was removed from `h1..h4`; the code keeps it, per the 11 Sep decision.
+  - It lists ground `paper #FCFCFD`; the app ground is `#ECECF1`.
+  - It says "45 Radix primitives"; there are 46.
+  - It describes `profiles` RLS as "public SELECT"; that is now visibility-gated.
+  - It has no rule about parent routes needing `<Outlet />`, the cause of the 26-route bug.
+  Knowledge is fed to the Lovable agent on every prompt.
 - [ ] The Lovable **project description** field still holds the original superseded brief verbatim
   — `Primary: #5B4BFF`, `Secondary: #8B5CF6`, `Radius: 16px`, `Google Sans Roboto`,
   `Material Design 3`. It is the same corrupted text that was in `README.md` (same missing "D" in
@@ -157,13 +198,8 @@ Order is array order; `visibleSteps()` filters, it never reorders.
   is in the request path.** The fix is js-yaml 5.x (latest 5.4.1); the advisory says it was not
   backported to 4.x, and xmlbuilder2 pins `^4.1.1`, so forcing it needs an override that risks the
   build. Deferred deliberately — revisit when xmlbuilder2 accepts js-yaml 5.
-- [ ] No accessibility linting exists. `eslint-plugin-jsx-a11y` is not registered in
-  `eslint.config.js`, so the `jsx-a11y/*` rules have never run — three
-  `eslint-disable-next-line jsx-a11y/media-has-caption` comments were sitting in
-  `ml/portfolio.tsx` disabling a rule that was never loaded. AGENTS.md mandates WCAG AA,
-  4.5:1 contrast, `:focus-visible` on every control and a 48dp touch floor; none of that is
-  machine-checked today. Wiring up jsx-a11y would automate a large share of the manual
-  checking currently planned as per-screen review.
+- [x] Accessibility linting: `eslint-plugin-jsx-a11y` is registered in `eslint.config.js`, and CI
+  now runs it on every push. Contrast and the 48dp touch floor are still not machine-checked.
 
 ## Verify / follow-up (requested Sep 2)
 - Person Profile: confirm `/profile/$username`, `/me` owner mode, `/profile/edit`,
@@ -181,10 +217,6 @@ Order is array order; `visibleSteps()` filters, it never reorders.
 - [x] FLOW 05 Opportunities — /opportunities (home, categories, tabs), /opportunities/search (filters, sort, empty), /opportunities/$id (brief, requirements, fit, report, share), /opportunities/$id/apply (portfolio → pitch → review → sent), /opportunities/applications (+ detail, withdraw), /opportunities/saved, /opportunities/mine, /opportunities/new (6-step wizard → published), /opportunities/$id/applicants (+ applicant detail, shortlist, decline, hire hand-off), /opportunities/$id/manage (pause/close), /opportunities/$id/analytics. Home links added.
 
 ## Next flows
-- [ ] FLOW 11 Services & Availability
-- [ ] FLOW 12 Business Profiles
-- [ ] FLOW 13 Notifications
-- [ ] FLOW 21 Settings & Support
 - [x] FLOW 11 Services & Availability — /services, /services/$id, /services/new (5-step), /services/availability
 - [x] FLOW 12 Business Profiles — /business, /business/$id, /business/new (6-step), /business/$id/manage, /business/$id/team
 - [x] FLOW 13 Notifications — /notifications, /notifications/settings

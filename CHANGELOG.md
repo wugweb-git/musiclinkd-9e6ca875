@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- `docs/pending-screens-audit-2026-09-13.md`: the 7 Sep pending-screens plan checked item by item
+  against the code. Result: 24 done · 9 partial · 4 not done, plus ~20 finished screens that no
+  link reaches
+- `AGENTS.md` routing rule: a route file with children must render `<Outlet />` or be an index
+  leaf. The missing rule is how 26 routes came to render their parent's screen
 - Design tokens reconciled to v9 in `src/styles.css`, taken verbatim from
   `frontend/guide/system/ml-tokens.css` (generated from `tokens/tokens.json`): radius scale
   8/16/32/pill, four fluid type ramps (`--type-1..4` = 12–13 / 16–18 / 22–28 / 32–44px), four
