@@ -12,10 +12,9 @@
  * Brand pink #EA4C89, ground --background #ECECF1, hairline --border #D5D5DE.
  * (Corrected 10 Sep: this line read "paper #FCFCFD, hairline #ECECF1" and was stale on both
  * counts — #ECECF1 is the ground, not the hairline, and #FCFCFD was replaced as the ground for
- * the contrast reason spelled out at --background below.) NOTE: --navy is retired in
- * tokens.json (--color-ink #0D0D0D "replaces --black, --text and the retired --navy",
- * and action.primary = ink, so the primary button is black, not pink). Migrating it
- * is a colour-identity change across every screen and is not done here.
+ * the contrast reason spelled out at --background below.) Navy is retired: as in
+ * tokens.json, --ink #0D0D0D replaces it (migrated 13 Sep — every bg-navy, variant="navy"
+ * and --gradient-navy became ink).
  *
  * Radius scale is 8 / 16 / 32 / pill — nothing else is a step.
  * Cards lift with --elevation-2; the 1px border is the fallback for cards on white.
@@ -99,7 +98,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-navy: var(--navy);
+  --color-ink: var(--ink);
   --color-purple: var(--purple);
   --color-success: var(--success);
   --color-warn: var(--warn);
@@ -174,7 +173,7 @@
   --input: #d5d5de;
   --ring: oklch(0.6515 0.1995 0.71);
 
-  --navy: oklch(0.1713 0.0539 282.44);
+  --ink: #0d0d0d; /* tokens.json color.ink */
   --purple: oklch(0.6056 0.2189 292.72);
   --success: oklch(0.7227 0.192 149.58);
   --warn: oklch(0.7686 0.1647 70.08);
@@ -189,7 +188,7 @@
   --danger-container: color-mix(in oklab, var(--danger) 12%, transparent);
   --pink-strong: #c7295f; /* system: --color-pink-pressed. The ONLY pink permitted for text. */
   --gradient-brand: linear-gradient(135deg, var(--primary), var(--purple));
-  --gradient-navy: linear-gradient(150deg, oklch(0.1713 0.0539 282.44), oklch(0.28 0.07 288));
+  --gradient-ink: linear-gradient(150deg, #0d0d0d, #2b2b2b); /* ink -> inkPressed */
 
   /* Category badge pair. Text is darkened to clear 4.5:1 on its own tint. */
   --status-category-bg: color-mix(in srgb, var(--purple) 12%, #ffffff);

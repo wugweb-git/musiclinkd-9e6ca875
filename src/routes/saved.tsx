@@ -106,7 +106,7 @@ function Notes({ note, tags }: { note: string; tags: string[] }) {
 function Actions() {
   return (
     <div className="mt-3 flex gap-2">
-      <button className="min-h-11 flex-1 rounded-full bg-navy text-xs font-semibold text-background">
+      <button className="min-h-11 flex-1 rounded-full bg-ink text-xs font-semibold text-background">
         Message
       </button>
       <button className="min-h-11 flex-1 rounded-full border border-border text-xs font-semibold">

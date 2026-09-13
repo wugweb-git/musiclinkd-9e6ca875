@@ -129,7 +129,7 @@ export function BookableHero({ b }: { b: Bookable }) {
         className="h-56 w-full object-cover"
         loading="lazy"
       />
-      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-navy/80 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/80 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
         <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
           {b.kind}

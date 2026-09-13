@@ -137,7 +137,7 @@ export function PersonProfileExperience({
 function ViewerActions({ onHire }: { onHire: () => void }) {
   return (
     <div className="grid grid-cols-4 gap-2">
-      <Btn variant="navy" className="min-w-0 px-2 text-xs" onClick={() => undefined}>
+      <Btn variant="ink" className="min-w-0 px-2 text-xs" onClick={() => undefined}>
         Connect
       </Btn>
       <Link
@@ -170,7 +170,7 @@ function OwnerActions({ onShare, onInsights }: { onShare: () => void; onInsights
         <Share2 size={14} aria-hidden />
         Share
       </Btn>
-      <Btn variant="navy" className="min-w-0 gap-1 px-2 text-xs" onClick={onInsights}>
+      <Btn variant="ink" className="min-w-0 gap-1 px-2 text-xs" onClick={onInsights}>
         <BarChart3 size={14} aria-hidden />
         Stats
       </Btn>

@@ -75,8 +75,7 @@ function GoogleIcon() {
  * bending Btn, whose rounded-full is load-bearing on every other screen.
  *
  * Filled uses --foreground, the app's near-black. The design guide's rule is
- * "black is the primary button, not pink"; this repo has no --ink token yet, and
- * --foreground is the same near-black, so it gets there without touching --navy.
+ * "black is the primary button, not pink". --foreground is the same near-black as --ink.
  */
 function CtaRow({
   children,

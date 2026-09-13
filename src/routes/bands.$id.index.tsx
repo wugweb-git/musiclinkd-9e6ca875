@@ -119,7 +119,7 @@ function BandProfile() {
           )}
           <Link
             to="/bookings"
-            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-navy px-2 text-xs font-semibold text-background"
+            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-xs font-semibold text-background"
           >
             <CalendarDays size={14} aria-hidden />
             Book

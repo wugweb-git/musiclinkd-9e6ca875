@@ -48,7 +48,7 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
         <Link
           to="/profile/$username"
           params={{ username: t.id }}
-          className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-navy text-xs font-semibold text-background"
+          className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-ink text-xs font-semibold text-background"
         >
           View profile
         </Link>

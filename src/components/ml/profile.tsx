@@ -201,7 +201,7 @@ export function ProfileHero({
     <header>
       <div className="relative h-44">
         <img src={p.cover} alt={`${p.name} cover`} className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/25 to-navy/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
         {back ? (
           <Link
             to={back}
@@ -297,7 +297,7 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
         className="h-44 w-full object-cover"
         loading="lazy"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/25 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
       <div className="absolute inset-x-4 bottom-4 text-background">
         <span
           className="rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
@@ -415,7 +415,7 @@ export function VideoCard({ v }: { v: VideoItem }) {
             <Play size={16} aria-hidden />
           </span>
         </span>
-        <span className="absolute bottom-2 right-2 rounded-full bg-navy/80 px-2 py-0.5 text-1 font-semibold text-background">
+        <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-1 font-semibold text-background">
           {v.duration}
         </span>
       </div>
@@ -575,7 +575,7 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
         </div>
         <Link
           to="/messages"
-          className="shrink-0 rounded-full bg-navy px-3.5 py-2 text-1 font-semibold text-background"
+          className="shrink-0 rounded-full bg-ink px-3.5 py-2 text-1 font-semibold text-background"
         >
           Respond
         </Link>
@@ -643,7 +643,7 @@ function QrBlock({ seed }: { seed: string }) {
         <span
           key={i}
           className="aspect-square rounded-xs"
-          style={{ background: on ? "var(--navy)" : "transparent" }}
+          style={{ background: on ? "var(--ink)" : "transparent" }}
         />
       ))}
     </div>
@@ -665,7 +665,7 @@ export function ShareSheet({
     <Sheet open={open} onClose={onClose} title="Share profile">
       <div
         className="overflow-hidden rounded-3xl border border-border"
-        style={{ background: "var(--gradient-navy)" }}
+        style={{ background: "var(--gradient-ink)" }}
       >
         <div className="flex items-center gap-3 p-4 text-background">
           <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-2xl object-cover" />
@@ -701,7 +701,7 @@ export function ShareSheet({
         >
           {copied ? "Link copied" : "Copy link"}
         </Btn>
-        <Btn variant="navy">Share card</Btn>
+        <Btn variant="ink">Share card</Btn>
         <Btn variant="outline">Save contact</Btn>
         <Btn variant="ghost">Download QR</Btn>
       </div>

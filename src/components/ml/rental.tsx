@@ -82,7 +82,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full bg-navy/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
             Rental
           </span>
         </div>
