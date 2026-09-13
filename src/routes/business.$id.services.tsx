@@ -63,7 +63,8 @@ function BusinessServices() {
           icon={<CalendarClock size={16} />}
           title="Business availability"
           subtitle="Opening hours, blackout dates, notice"
-          to={`/business/${b.id}/availability`}
+          to="/business/$id/availability"
+          params={{ id: b.id }}
         />
 
         <div className="space-y-3">

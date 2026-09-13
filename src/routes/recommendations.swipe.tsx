@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { AvailabilityBadge, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
-import { talents, singers } from "@/data/discover";
+import { StatusPill } from "@/components/ml/kit";
+import { Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
+import { availabilityTone, talents, singers } from "@/data/discover";
 
 export const Route = createFileRoute("/recommendations/swipe")({
   head: () => ({
@@ -133,7 +134,7 @@ function Card({
             <h3 className="text-[18px]">{t.name}</h3>
             {t.verified ? <VerifiedBadge /> : null}
           </div>
-          <AvailabilityBadge status={t.availability} />
+          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
         </div>
         <p className="text-[11px] text-muted-foreground">
           {t.role} · {t.location}

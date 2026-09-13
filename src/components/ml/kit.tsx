@@ -3,7 +3,7 @@
  * These are enhancements to the existing system (same tokens, radii, type scale),
  * not a second design language.
  */
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChevronRight, Star } from "lucide-react";
 
@@ -91,8 +91,8 @@ export function Row({
   title: string;
   subtitle?: string;
   right?: ReactNode;
-  to?: string;
-  params?: Record<string, string>;
+  to?: LinkProps["to"];
+  params?: LinkProps["params"];
   onClick?: () => void;
 }) {
   const inner = (
@@ -114,8 +114,7 @@ export function Row({
   const cls = "flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-3";
   if (to) {
     return (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      <Link to={to as any} {...(params ? { params: params as any } : {})} className={cls}>
+      <Link to={to} {...(params ? { params } : {})} className={cls}>
         {inner}
       </Link>
     );

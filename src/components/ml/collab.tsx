@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Check,
@@ -705,8 +705,8 @@ export function RowLink({
 }: {
   title: string;
   subtitle?: string;
-  to?: string;
-  params?: Record<string, string>;
+  to?: LinkProps["to"];
+  params?: LinkProps["params"];
   onClick?: () => void;
   danger?: boolean;
 }) {
@@ -722,8 +722,8 @@ export function RowLink({
   if (to) {
     return (
       <Link
-        to={to as never}
-        params={params as never}
+        to={to}
+        {...(params ? { params } : {})}
         className="flex items-center gap-3 px-4 py-4 text-left"
       >
         {inner}

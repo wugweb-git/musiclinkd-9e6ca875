@@ -14,6 +14,13 @@ export type Talent = {
   rate: string;
 };
 
+/** Status-pill tone for a talent's availability. */
+export function availabilityTone(a: Talent["availability"]): "good" | "warn" | "neutral" {
+  if (a === "Available") return "good";
+  if (a === "Selective") return "warn";
+  return "neutral";
+}
+
 const u = (id: string, w = 400) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 

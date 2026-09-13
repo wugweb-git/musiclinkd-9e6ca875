@@ -55,6 +55,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - **The Home headline counts real data.** "N new opportunities" counts the open opportunities (the
   list the tiles use) and links to `/opportunities`, instead of a hard-coded 9 linking to the swipe
   deck.
+- **No casts on router links.** `Row`, `ActionRow`, `PrimaryPair`, the collab settings row, and the
+  collaborator and marketplace-entry links take the router's typed `to` and `params`. The
+  recommendation cards and help-page CTAs carry typed links. Typing them exposed two wrong
+  destinations: the studio recommendation opened `/booking` (no such route) and now opens `/studio`,
+  and the opportunity recommendation opened Home and now opens `/opportunities`.
+- **QR destinations resolve.** Rahul's personal QR opened `/profile/rahuliyer` and the Stratocaster
+  listing opened `/marketplace/fender-strat-62`; both 404. They now open `/profile/rahul-iyer` and
+  `/marketplace/l/fender-strat-62`.
+- **`HireModal` names who you are contacting.** It hard-coded Ananya Sharma's name, a "responds
+  within 6 hours" claim and a pre-filled message addressed to her, on every profile, search result and
+  the studio page. The caller now passes the subject.
+- **One status pill.** `AvailabilityBadge` duplicated `StatusPill`; its 4 call sites use `StatusPill`
+  with `availabilityTone()`, which renders identically.
+- **Removed dead code:** `RentalRequestCard`, `RentalLocationRow`, `BookableEntityCard` and
+  `MiniPlayer` had no callers, and `/feed`'s `QuietDestination` had an unused `"/verification"`.
 
 ### Added
 

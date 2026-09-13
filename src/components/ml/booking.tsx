@@ -159,28 +159,6 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
   );
 }
 
-export function BookableEntityCard({ b }: { b: Bookable }) {
-  const from = Math.min(...b.resources.flatMap((r) => r.tiers.map((t) => t.price)));
-  return (
-    <Link
-      to="/booking/$id"
-      params={{ id: b.id }}
-      className="block overflow-hidden rounded-lg border border-border bg-card"
-    >
-      <img src={b.hero} alt={b.name} className="h-36 w-full object-cover" loading="lazy" />
-      <div className="p-4">
-        <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{b.kind}</p>
-        <p className="mt-0.5 flex items-center gap-1.5 truncate font-semibold">
-          {b.name} {b.verified ? <VerifiedBadge size={14} /> : null}
-        </p>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-          {b.area}, {b.city} · from {inr(from)}
-        </p>
-      </div>
-    </Link>
-  );
-}
-
 export function ResourceCard({
   r,
   selected,

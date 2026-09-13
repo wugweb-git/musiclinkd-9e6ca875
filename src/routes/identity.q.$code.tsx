@@ -80,7 +80,10 @@ function QrResult() {
 
             <div className="mt-4">
               <PrimaryPair
-                primary={{ label: "Open on MusicLinkd", to: preview.route }}
+                primary={{
+                  label: "Open on MusicLinkd",
+                  onClick: () => void nav({ href: preview.route }),
+                }}
                 secondary={{
                   label: "Share",
                   onClick: () => void nativeShare({ title: preview.title, url }),
@@ -100,7 +103,7 @@ function QrResult() {
                 <Btn
                   variant="ghost"
                   className="flex-1"
-                  onClick={() => void nav({ to: preview.route as never })}
+                  onClick={() => void nav({ href: preview.route })}
                 >
                   <UserPlus size={16} className="mr-2" /> Connect
                 </Btn>

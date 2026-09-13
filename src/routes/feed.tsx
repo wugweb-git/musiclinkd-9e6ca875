@@ -377,7 +377,6 @@ type QuietDestination =
   | "/messages"
   | "/bookings"
   | "/bands"
-  | "/verification"
   | "/reviews"
   | "/plans"
   | "/help";

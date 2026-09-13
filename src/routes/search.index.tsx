@@ -1,16 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  AvailabilityBadge,
-  Btn,
-  Chip,
-  Screen,
-  SearchBar,
-  Sheet,
-  VerifiedBadge,
-} from "@/components/ml/ui";
+import { Btn, Chip, Screen, SearchBar, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { TalentRow } from "@/components/ml/cards";
-import { talents, type Talent } from "@/data/discover";
+import { StatusPill } from "@/components/ml/kit";
+import { availabilityTone, talents, type Talent } from "@/data/discover";
 import { FilterSheet } from "@/components/ml/filter-sheet";
 import { HireModal } from "@/components/ml/hire-modal";
 
@@ -37,7 +30,7 @@ function SearchResults() {
   const [q, setQ] = useState("vocalist mumbai");
   const [filters, setFilters] = useState(false);
   const [preview, setPreview] = useState<Talent | null>(null);
-  const [hire, setHire] = useState(false);
+  const [hire, setHire] = useState<Talent | null>(null);
 
   return (
     <Screen>
@@ -85,14 +78,18 @@ function SearchResults() {
           <ProfilePreview
             t={preview}
             onHire={() => {
+              setHire(preview);
               setPreview(null);
-              setHire(true);
             }}
           />
         ) : null}
       </Sheet>
 
-      <HireModal open={hire} onClose={() => setHire(false)} />
+      <HireModal
+        open={hire !== null}
+        onClose={() => setHire(null)}
+        subject={hire ? { name: hire.name, detail: `${hire.role} · ${hire.location}` } : undefined}
+      />
     </Screen>
   );
 }
@@ -113,7 +110,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
           </p>
         </div>
         <div className="absolute right-4 top-4">
-          <AvailabilityBadge status={t.availability} />
+          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
         </div>
       </div>
 

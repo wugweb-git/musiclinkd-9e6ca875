@@ -129,7 +129,11 @@ export function PersonProfileExperience({
 
       <ShareSheet p={p} open={shareOpen} onClose={() => setShareOpen(false)} />
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} name={p.name} />
-      <HireModal open={hireOpen} onClose={() => setHireOpen(false)} />
+      <HireModal
+        open={hireOpen}
+        onClose={() => setHireOpen(false)}
+        subject={{ name: p.name, detail: [p.primaryRole, p.location].filter(Boolean).join(" · ") }}
+      />
     </Screen>
   );
 }

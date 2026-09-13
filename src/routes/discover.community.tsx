@@ -66,7 +66,8 @@ function DiscoverCommunity() {
                 key={b.id}
                 title={b.name}
                 subtitle={`${b.city} · ${b.tagline}`}
-                to={`/business/${b.id}`}
+                to="/business/$id"
+                params={{ id: b.id }}
               />
             ))}
           </div>
