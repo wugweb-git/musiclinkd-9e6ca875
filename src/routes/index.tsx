@@ -85,7 +85,7 @@ function Discover() {
               className="relative h-40 w-[260px] shrink-0 overflow-hidden rounded-3xl border border-border"
             >
               <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy/85 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
               <span
                 className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase text-primary-foreground"
                 style={{ background: "var(--primary)" }}
@@ -109,7 +109,7 @@ function Discover() {
         <div className="space-y-3 px-5">
           <Link
             to="/recommendations/swipe"
-            className="flex items-center gap-4 rounded-3xl border border-border bg-navy p-4 text-background"
+            className="flex items-center gap-4 rounded-3xl border border-border bg-ink p-4 text-background"
           >
             <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-background/10 text-2xl">
               ✨

@@ -47,7 +47,7 @@ function PrintPreview() {
               aria-pressed={subject === s}
               className={`flex-1 rounded-full border px-4 py-2.5 text-xs font-semibold ${
                 subject === s
-                  ? "border-transparent bg-navy text-background"
+                  ? "border-transparent bg-ink text-background"
                   : "border-border bg-card"
               }`}
             >

@@ -62,7 +62,7 @@ function RentHome() {
           <div className="flex shrink-0 items-center gap-2">
             <Link
               to="/marketplace/rent/list"
-              className="inline-flex h-10 items-center gap-1 rounded-full bg-navy px-3.5 text-xs font-semibold text-background"
+              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-3.5 text-xs font-semibold text-background"
             >
               <Plus size={14} /> Rent out
             </Link>

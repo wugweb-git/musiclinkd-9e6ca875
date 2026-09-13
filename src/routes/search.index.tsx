@@ -73,7 +73,7 @@ function SearchResults() {
 
       <button
         onClick={() => setFilters(true)}
-        className="fixed bottom-24 left-1/2 z-40 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full bg-navy px-6 text-sm font-semibold text-background"
+        className="fixed bottom-24 left-1/2 z-40 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-background"
       >
         ⚙ Filters <span className="rounded-full bg-primary px-2 py-0.5 text-[10px]">3</span>
       </button>
@@ -102,7 +102,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
     <div>
       <div className="relative h-56 overflow-hidden rounded-3xl">
         <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/85 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4 text-background">
           <div className="flex items-center gap-1.5">
             <h2 className="text-[22px] text-background">{t.name}</h2>
@@ -165,7 +165,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         <Link
           to="/profile/$username"
           params={{ username: t.id }}
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-navy text-sm font-semibold text-background"
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-background"
         >
           View full profile
         </Link>

@@ -175,7 +175,7 @@ export function ScanFrame({ scanning }: { scanning: boolean }) {
 
 export function CameraSurface({ children }: { children: ReactNode }) {
   return (
-    <div className="relative flex min-h-[440px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-navy">
+    <div className="relative flex min-h-[440px] flex-1 items-center justify-center overflow-hidden rounded-lg bg-ink">
       <div className="absolute inset-0 opacity-40 [background:radial-gradient(120%_80%_at_50%_20%,#374151,transparent)]" />
       <div className="relative w-full px-6">{children}</div>
     </div>

@@ -170,7 +170,7 @@ export function ListingCard({
             onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
           />
         </div>
-        <span className="absolute left-2 top-2 rounded-full bg-navy/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
+        <span className="absolute left-2 top-2 rounded-full bg-ink/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
           {meta.tag}
         </span>
       </div>

@@ -134,7 +134,7 @@ function DigitalId() {
                   aria-pressed={style === s}
                   className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold capitalize ${
                     style === s
-                      ? "border-transparent bg-navy text-background"
+                      ? "border-transparent bg-ink text-background"
                       : "border-border bg-card"
                   }`}
                 >

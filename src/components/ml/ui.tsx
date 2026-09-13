@@ -186,7 +186,7 @@ export function Btn({
   disabled = false,
 }: {
   children: ReactNode;
-  variant?: "primary" | "navy" | "ghost" | "outline";
+  variant?: "primary" | "ink" | "ghost" | "outline";
   className?: string;
   onClick?: () => void;
   type?: "button" | "submit";
@@ -194,7 +194,7 @@ export function Btn({
 }) {
   const styles: Record<string, string> = {
     primary: "bg-primary text-primary-foreground",
-    navy: "bg-navy text-background",
+    ink: "bg-ink text-background",
     outline: "border border-border bg-card text-foreground",
     ghost: "bg-subtle text-muted-foreground",
   };
@@ -227,7 +227,7 @@ export function Sheet({
       <button
         aria-label="Close"
         onClick={onClose}
-        className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
       />
       <div className="relative max-h-[88vh] overflow-y-auto rounded-t-lg border border-border bg-card px-5 pb-8 pt-3 no-scrollbar">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />

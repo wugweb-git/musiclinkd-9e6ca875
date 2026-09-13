@@ -299,7 +299,7 @@ function Body({ data }: { data: DashboardData }) {
             </p>
             <Link
               to="/"
-              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-navy px-5 text-xs font-semibold text-background"
+              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-xs font-semibold text-background"
             >
               Discover talent
             </Link>
@@ -430,7 +430,7 @@ function StateBlock({
         </span>
         <h2 className="text-[17px]">{title}</h2>
         <p className="mt-1 text-[12px] text-muted-foreground">{body}</p>
-        <Btn variant="navy" className="mt-4 w-full" onClick={onRetry}>
+        <Btn variant="ink" className="mt-4 w-full" onClick={onRetry}>
           Try again
         </Btn>
       </div>

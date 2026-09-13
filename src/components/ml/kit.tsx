@@ -228,7 +228,7 @@ export function Dialog({
       <button
         aria-label="Close"
         onClick={onClose}
-        className="absolute inset-0 bg-navy/50 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
       />
       <div className="relative w-full rounded-lg border border-border bg-card p-5">
         <h2 className="text-2 leading-tight">{title}</h2>

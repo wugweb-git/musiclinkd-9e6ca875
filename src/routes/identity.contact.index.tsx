@@ -46,7 +46,7 @@ function BusinessCard() {
       <TopBar title="Digital card" subtitle={myIdentity.name} back="/identity/qr" />
       <main className="px-5 pt-4">
         <section className="overflow-hidden rounded-[24px] border border-border bg-card">
-          <div className="flex items-center gap-4 bg-navy px-5 py-5 text-background">
+          <div className="flex items-center gap-4 bg-ink px-5 py-5 text-background">
             <img src={myIdentity.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
             <div className="min-w-0">
               <h2 className="truncate text-[19px] leading-tight text-background">

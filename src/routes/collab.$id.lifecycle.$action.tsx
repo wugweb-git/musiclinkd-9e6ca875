@@ -150,7 +150,7 @@ function Lifecycle() {
             </Btn>
           </Link>
           <Btn
-            variant={c.danger ? "navy" : "primary"}
+            variant={c.danger ? "ink" : "primary"}
             className="flex-[2]"
             onClick={() => setConfirmed(true)}
           >

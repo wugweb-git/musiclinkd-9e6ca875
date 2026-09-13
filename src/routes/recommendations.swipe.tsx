@@ -57,7 +57,7 @@ function Recommended() {
           <span
             key={c}
             className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold ${
-              idx === 0 ? "bg-navy text-background" : "border border-border bg-card"
+              idx === 0 ? "bg-ink text-background" : "border border-border bg-card"
             }`}
           >
             {c}

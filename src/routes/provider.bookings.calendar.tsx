@@ -145,7 +145,7 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
           </p>
           <Link
             to="/provider/availability"
-            className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-navy px-5 text-xs font-semibold text-background"
+            className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-xs font-semibold text-background"
           >
             Edit availability
           </Link>

@@ -44,13 +44,13 @@ function Singers() {
           <div className="flex overflow-hidden rounded-full border border-border">
             <button
               onClick={() => setGrid(false)}
-              className={`h-10 w-10 text-sm ${!grid ? "bg-navy text-background" : "bg-card"}`}
+              className={`h-10 w-10 text-sm ${!grid ? "bg-ink text-background" : "bg-card"}`}
             >
               ☰
             </button>
             <button
               onClick={() => setGrid(true)}
-              className={`h-10 w-10 text-sm ${grid ? "bg-navy text-background" : "bg-card"}`}
+              className={`h-10 w-10 text-sm ${grid ? "bg-ink text-background" : "bg-card"}`}
             >
               ▦
             </button>

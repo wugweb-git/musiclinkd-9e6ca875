@@ -86,7 +86,7 @@ function BusinessProfileScreen() {
 
         <div className="grid grid-cols-3 gap-2">
           <Link to="/messages">
-            <Btn variant="navy" className="w-full px-2 text-xs">
+            <Btn variant="ink" className="w-full px-2 text-xs">
               Message
             </Btn>
           </Link>
