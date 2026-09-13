@@ -123,7 +123,7 @@ function ListingDetail() {
         </div>
 
         <h2 className="mt-6 text-[16px]">Description</h2>
-        <p className="mt-2 text-sm leading-relaxed text-text2">{l.description}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{l.description}</p>
 
         <h2 className="mt-6 text-[16px]">
           {l.type === "service"
@@ -174,9 +174,9 @@ function ListingDetail() {
               <p className="text-[11px] text-muted-foreground">
                 {r.role} · {r.context} · {r.date}
               </p>
-              <p className="mt-2 text-sm text-text2">{r.body}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
               {r.response ? (
-                <p className="mt-2 rounded-2xl bg-subtle p-3 text-xs text-text2">
+                <p className="mt-2 rounded-2xl bg-subtle p-3 text-xs text-muted-foreground">
                   Seller: {r.response}
                 </p>
               ) : null}

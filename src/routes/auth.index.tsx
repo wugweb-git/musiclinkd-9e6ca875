@@ -212,7 +212,7 @@ function AuthPage() {
       <button
         type="button"
         onClick={() => switchMode(signup ? "signin" : "signup")}
-        className="mt-5 w-full text-center text-[13.5px] text-text2"
+        className="mt-5 w-full text-center text-[13.5px] text-muted-foreground"
       >
         {signup ? (
           <>

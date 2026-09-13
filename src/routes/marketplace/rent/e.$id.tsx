@@ -140,7 +140,7 @@ function RentalDetail() {
         </div>
 
         <h2 className="mt-6 text-[16px]">Description</h2>
-        <p className="mt-2 text-sm leading-relaxed text-text2">{e.description}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{e.description}</p>
 
         <h2 className="mt-6 text-[16px]">Specifications</h2>
         <dl className="mt-2 divide-y divide-border rounded-3xl border border-border">
@@ -225,12 +225,12 @@ function RentalDetail() {
                 </div>
                 <Rating value={r.rating} />
               </div>
-              <p className="mt-2 text-[13px] leading-relaxed text-text2">{r.body}</p>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{r.body}</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {r.tags.map((t) => (
                   <span
                     key={t}
-                    className="rounded-full bg-subtle px-2 py-1 text-[10px] font-semibold text-text2"
+                    className="rounded-full bg-subtle px-2 py-1 text-[10px] font-semibold text-muted-foreground"
                   >
                     {t}
                   </span>

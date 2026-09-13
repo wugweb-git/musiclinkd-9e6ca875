@@ -31,7 +31,7 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
         {t.genres.slice(0, 3).map((g) => (
           <span
             key={g}
-            className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-text2"
+            className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground"
           >
             {g}
           </span>

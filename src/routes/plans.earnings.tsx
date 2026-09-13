@@ -64,7 +64,7 @@ function Earnings() {
               tone={payoutAccount.state === "verified" ? "good" : "warn"}
             />
           </div>
-          <p className="text-[13px] text-text2">
+          <p className="text-[13px] text-muted-foreground">
             Next payout {payoutAccount.nextPayout} · {payoutAccount.pending}
           </p>
           <Btn variant="outline" className="w-full">

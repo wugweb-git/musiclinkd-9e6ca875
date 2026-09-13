@@ -103,7 +103,7 @@ function RequestReview() {
               <p className="truncate text-xs text-muted-foreground">{bk.customerRole}</p>
             </div>
           </div>
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-[11px] font-semibold text-text2">
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-[11px] font-semibold text-muted-foreground">
             <ShieldCheck size={12} /> Verified profile · 4 past sessions
           </p>
         </div>
@@ -118,7 +118,9 @@ function RequestReview() {
             <Detail label="Add-ons" value={bk.addOnIds.length ? `${bk.addOnIds.length}` : "None"} />
           </dl>
           {bk.notes ? (
-            <p className="mt-3 border-t border-border pt-3 text-xs text-text2">"{bk.notes}"</p>
+            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+              "{bk.notes}"
+            </p>
           ) : null}
         </div>
 

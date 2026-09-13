@@ -83,7 +83,7 @@ function Policies() {
       <TopBar title="Policies" subtitle={entity?.name ?? "Your space"} back="/provider/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
-        <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
+        <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
           Customers see these before they request a session and must accept them to book. Keep them
           short and specific.
         </p>

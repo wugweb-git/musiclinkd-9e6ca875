@@ -136,7 +136,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         {[...t.genres, ...t.languages].map((x) => (
           <span
             key={x}
-            className="rounded-full bg-subtle px-3 py-1.5 text-[11px] font-semibold text-text2"
+            className="rounded-full bg-subtle px-3 py-1.5 text-[11px] font-semibold text-muted-foreground"
           >
             {x}
           </span>

@@ -41,7 +41,7 @@ function SellerProfile() {
             <TrustPill label="Verified identity" />
             <TrustPill label={`${s.reviews} transactions`} />
           </div>
-          <p className="mt-3 text-sm text-text2">{s.bio}</p>
+          <p className="mt-3 text-sm text-muted-foreground">{s.bio}</p>
           <div className="mt-4 flex gap-2">
             <Link to="/messages" className="flex-1">
               <Btn className="w-full">Message</Btn>
@@ -70,7 +70,7 @@ function SellerProfile() {
               <p className="text-[11px] text-muted-foreground">
                 {r.role} · {r.context} · {r.date}
               </p>
-              <p className="mt-2 text-sm text-text2">{r.body}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
             </article>
           ))}
         </div>

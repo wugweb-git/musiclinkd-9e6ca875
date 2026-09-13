@@ -87,7 +87,7 @@ export const destinations: QrDestination[] = [
     code: "ananya",
     type: "profile",
     entityId: talents[0]!.id,
-    publicRoute: `/talent/${talents[0]!.id}`,
+    publicRoute: `/profile/${talents[0]!.id}`,
     status: "active",
   },
   {
@@ -122,7 +122,7 @@ export const destinations: QrDestination[] = [
     code: "old-poster",
     type: "profile",
     entityId: talents[2]!.id,
-    publicRoute: `/talent/${talents[2]!.id}`,
+    publicRoute: `/profile/${talents[2]!.id}`,
     status: "expired",
   },
   {

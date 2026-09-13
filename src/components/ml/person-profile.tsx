@@ -177,7 +177,7 @@ function OwnerActions({ onShare, onInsights }: { onShare: () => void; onInsights
       <Link
         to="/profile/$username"
         params={{ username: "rahul-iyer" }}
-        className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-text2"
+        className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
       >
         <ExternalLink size={14} aria-hidden />
         Public
@@ -276,7 +276,7 @@ function Overview({
     <>
       <ProfileSection title="Professional summary">
         <div className="rounded-3xl border border-border bg-card p-4">
-          <p className="text-sm leading-relaxed text-text2">{p.shortBio}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
           <button
             type="button"
             className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary"
@@ -510,7 +510,7 @@ function About({ p }: { p: PersonProfile }) {
     <>
       <ProfileSection title="About">
         <div className="rounded-3xl border border-border bg-card p-4">
-          <p className="text-sm leading-relaxed text-text2">{p.longBio}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
         </div>
       </ProfileSection>
       <ProfileSection title="Professional details">

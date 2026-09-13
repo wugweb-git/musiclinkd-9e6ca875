@@ -146,7 +146,7 @@ function CreateBand() {
         {current === "Preview" ? (
           <Card className="space-y-3">
             <h2 className="text-[19px] leading-tight">{name || "Untitled band"}</h2>
-            <p className="text-[13px] text-text2">{tagline || "No description yet"}</p>
+            <p className="text-[13px] text-muted-foreground">{tagline || "No description yet"}</p>
             <p className="text-[12px] text-muted-foreground">
               {[genres.join(" · "), city].filter(Boolean).join(" · ") || "No genre or city set"}
             </p>

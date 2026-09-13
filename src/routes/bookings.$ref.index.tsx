@@ -81,7 +81,7 @@ function BookingDetail() {
             style={{ background: "var(--pink-container)" }}
           >
             <p className="font-semibold">Today at {formatTime(bk.start)}</p>
-            <p className="mt-0.5 text-xs text-text2">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Arrive 10 minutes early for load-in at {b.area}.
             </p>
           </div>
@@ -103,7 +103,7 @@ function BookingDetail() {
             <div className="min-w-0">
               <p className="truncate font-semibold">{b.name}</p>
               <p className="truncate text-xs text-muted-foreground">{r.name}</p>
-              <p className="mt-1 inline-flex items-center gap-1 text-xs text-text2">
+              <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
                 <MapPin size={12} /> {b.area}, {b.city}
               </p>
             </div>
@@ -117,7 +117,9 @@ function BookingDetail() {
             <Detail label="Amount" value={inr(bk.amount)} />
           </dl>
           {bk.notes ? (
-            <p className="mt-3 border-t border-border pt-3 text-xs text-text2">{bk.notes}</p>
+            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+              {bk.notes}
+            </p>
           ) : null}
         </div>
 

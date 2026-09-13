@@ -146,7 +146,7 @@ function ReviewsHub() {
             </div>
             <ul className="space-y-1.5">
               {reviewPolicy.map((p) => (
-                <li key={p} className="text-[12px] text-text2">
+                <li key={p} className="text-[12px] text-muted-foreground">
                   · {p}
                 </li>
               ))}
@@ -210,12 +210,12 @@ function ReviewCard({
         <Stars value={r.rating} />
       </div>
       <StatusPill label="Verified transaction" tone="good" />
-      <p className="text-[13px] text-text2">{r.body}</p>
+      <p className="text-[13px] text-muted-foreground">{r.body}</p>
       <div className="flex flex-wrap gap-2">
         {r.criteria.map((c) => (
           <span
             key={c.key}
-            className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold text-text2"
+            className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold text-muted-foreground"
           >
             {c.label} {c.value}
           </span>
@@ -226,7 +226,7 @@ function ReviewCard({
           <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
             Your response · {r.response.at}
           </p>
-          <p className="mt-1 text-[13px] text-text2">{r.response.body}</p>
+          <p className="mt-1 text-[13px] text-muted-foreground">{r.response.body}</p>
         </div>
       ) : null}
       {responding ? (

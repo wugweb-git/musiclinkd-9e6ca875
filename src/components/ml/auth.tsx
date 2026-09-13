@@ -49,7 +49,7 @@ export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-6">
       <h1 className="text-3 font-semibold leading-tight">{title}</h1>
-      {sub ? <p className="mt-2 text-1 leading-relaxed text-text2">{sub}</p> : null}
+      {sub ? <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{sub}</p> : null}
     </div>
   );
 }
@@ -94,7 +94,9 @@ export function AuthNotice({
       style={{ background: s.bg }}
     >
       <p className={`text-1 font-semibold ${s.fg}`}>{title}</p>
-      {children ? <div className="mt-1 text-1 leading-relaxed text-text2">{children}</div> : null}
+      {children ? (
+        <div className="mt-1 text-1 leading-relaxed text-muted-foreground">{children}</div>
+      ) : null}
       {action ? <div className="mt-3">{action}</div> : null}
     </div>
   );
@@ -135,7 +137,7 @@ export function LabeledInput({
         placeholder={placeholder}
         className="h-13 w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground focus:border-primary"
       />
-      {hint ? <span className="mt-1.5 block text-1 text-text2">{hint}</span> : null}
+      {hint ? <span className="mt-1.5 block text-1 text-muted-foreground">{hint}</span> : null}
     </label>
   );
 }
@@ -206,7 +208,7 @@ export function PasswordRequirements({ value }: { value: string }) {
     <div className="mb-5 rounded-3xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <span className="text-1 font-semibold">Password strength</span>
-        <span className="text-1 text-text2">{value ? label : "—"}</span>
+        <span className="text-1 text-muted-foreground">{value ? label : "—"}</span>
       </div>
       <div className="mb-3 flex gap-1.5">
         {[0, 1, 2, 3].map((i) => (
@@ -219,7 +221,7 @@ export function PasswordRequirements({ value }: { value: string }) {
       </div>
       <ul className="space-y-1.5">
         {checks.map((c) => (
-          <li key={c.label} className="flex items-center gap-2 text-1 text-text2">
+          <li key={c.label} className="flex items-center gap-2 text-1 text-muted-foreground">
             <span
               className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
               style={{ background: c.ok ? "var(--pink-container)" : "var(--border)" }}
@@ -242,7 +244,7 @@ export function PasswordRequirements({ value }: { value: string }) {
 
 export function LegalNote() {
   return (
-    <p className="mt-6 text-center text-1 leading-relaxed text-text2">
+    <p className="mt-6 text-center text-1 leading-relaxed text-muted-foreground">
       By continuing you agree to our{" "}
       <Link to="/legal/terms" className="font-semibold text-primary">
         Terms
@@ -258,7 +260,7 @@ export function LegalNote() {
 
 export function TrustNote({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-5 flex items-start gap-2 text-1 leading-relaxed text-text2">
+    <p className="mt-5 flex items-start gap-2 text-1 leading-relaxed text-muted-foreground">
       <ShieldCheck size={14} className="mt-0.5 shrink-0 text-primary" />
       <span>{children}</span>
     </p>

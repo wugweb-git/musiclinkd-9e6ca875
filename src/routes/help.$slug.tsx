@@ -52,7 +52,7 @@ function HelpPage() {
         <header className="space-y-2">
           <StatusPill label={page.kind} tone={page.kind === "policy" ? "warn" : "brand"} />
           <h1 className="text-[26px] font-bold leading-tight">{page.title}</h1>
-          <p className="text-[13px] text-text2">{page.summary}</p>
+          <p className="text-[13px] text-muted-foreground">{page.summary}</p>
           <p className="text-[11px] text-muted-foreground">
             {page.readTime} · {page.updated}
           </p>
@@ -68,7 +68,7 @@ function HelpPage() {
               );
             if (b.type === "para")
               return (
-                <p key={i} className="text-[14px] leading-relaxed text-text2">
+                <p key={i} className="text-[14px] leading-relaxed text-muted-foreground">
                   {b.text}
                 </p>
               );
@@ -76,7 +76,10 @@ function HelpPage() {
               return (
                 <ul key={i} className="space-y-2">
                   {b.items.map((it) => (
-                    <li key={it} className="flex gap-2.5 text-[14px] leading-relaxed text-text2">
+                    <li
+                      key={it}
+                      className="flex gap-2.5 text-[14px] leading-relaxed text-muted-foreground"
+                    >
                       <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                       <span className="min-w-0">{it}</span>
                     </li>

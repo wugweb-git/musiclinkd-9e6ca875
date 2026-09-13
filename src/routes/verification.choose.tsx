@@ -35,7 +35,7 @@ function ChooseType() {
     <Screen>
       <TopBar title="Get verified" subtitle="Pick the badge that fits you" back="/verification" />
       <div className="space-y-3 px-5 pt-4 pb-6">
-        <p className="text-[13px] text-text2">
+        <p className="text-[13px] text-muted-foreground">
           Every badge is reviewed by a person. We only ask for what the badge actually proves.
         </p>
 
@@ -63,24 +63,26 @@ function ChooseType() {
                   <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                     Verifies
                   </dt>
-                  <dd className="text-text2">{t.verifies}</dd>
+                  <dd className="text-muted-foreground">{t.verifies}</dd>
                 </div>
                 <div>
                   <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                     People see
                   </dt>
-                  <dd className="text-text2">{t.whatOthersSee}</dd>
+                  <dd className="text-muted-foreground">{t.whatOthersSee}</dd>
                 </div>
                 <div>
                   <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
                     You need
                   </dt>
-                  <dd className="text-text2">{t.requirements.map((r) => r.label).join(" · ")}</dd>
+                  <dd className="text-muted-foreground">
+                    {t.requirements.map((r) => r.label).join(" · ")}
+                  </dd>
                 </div>
               </dl>
 
               {locked ? (
-                <p className="rounded-[16px] bg-subtle px-3 py-2 text-[12px] text-text2">
+                <p className="rounded-[16px] bg-subtle px-3 py-2 text-[12px] text-muted-foreground">
                   {gate.reason}
                 </p>
               ) : (
@@ -108,7 +110,7 @@ function ChooseType() {
 
         <Card className="py-3">
           <p className="text-[13px] font-semibold">Not sure which one?</p>
-          <p className="mt-1 text-[12px] text-text2">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Read{" "}
             <Link
               to="/help/$slug"

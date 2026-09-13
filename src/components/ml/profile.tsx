@@ -97,7 +97,7 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
       className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-1 font-bold uppercase tracking-wide"
       style={{
         background: industry ? "var(--pink-container)" : "var(--surface-subtle)",
-        color: industry ? "var(--primary)" : "var(--text-secondary)",
+        color: industry ? "var(--primary)" : "var(--muted-foreground)",
       }}
       title={tier}
     >
@@ -114,12 +114,12 @@ export function StatusBadge({ status }: { status: string }) {
       className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
       style={{
         background: busy ? "var(--surface-subtle)" : "var(--success-container)",
-        color: busy ? "var(--text-secondary)" : "var(--success)",
+        color: busy ? "var(--muted-foreground)" : "var(--success)",
       }}
     >
       <span
         className="h-1.5 w-1.5 rounded-full"
-        style={{ background: busy ? "var(--text-secondary)" : "var(--success)" }}
+        style={{ background: busy ? "var(--muted-foreground)" : "var(--success)" }}
       />
       {status}
     </span>
@@ -134,7 +134,7 @@ export function TagChip({
   tone?: "subtle" | "pink" | "purple";
 }) {
   const styles: Record<string, { background: string; color: string }> = {
-    subtle: { background: "var(--surface-subtle)", color: "var(--text-secondary)" },
+    subtle: { background: "var(--surface-subtle)", color: "var(--muted-foreground)" },
     pink: { background: "var(--pink-container)", color: "var(--primary)" },
     purple: { background: "var(--status-category-bg)", color: "var(--status-category-text)" },
   };
@@ -479,7 +479,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
           <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
       </div>
-      <p className="mt-1 text-xs leading-relaxed text-text2">{s.description}</p>
+      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{s.description}</p>
       <div className="mt-3 flex flex-wrap gap-1.5">
         <TagChip>{s.mode}</TagChip>
         <TagChip>{s.turnaround}</TagChip>
@@ -501,7 +501,7 @@ export function ExperienceCard({ e }: { e: ExperienceItem }) {
         <p className="text-1 font-semibold text-muted-foreground">
           {e.org} · {e.period}
         </p>
-        <p className="mt-1 text-xs leading-relaxed text-text2">{e.detail}</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{e.detail}</p>
       </div>
     </div>
   );
@@ -549,11 +549,11 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
       <p className="mt-1.5 text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {r.context}
       </p>
-      <p className="mt-2 text-xs leading-relaxed text-text2">{r.text}</p>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{r.text}</p>
       {r.response ? (
         <div className="mt-3 rounded-2xl bg-subtle p-3">
           <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Response</p>
-          <p className="mt-1 text-xs text-text2">{r.response}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{r.response}</p>
         </div>
       ) : null}
     </article>
@@ -571,7 +571,7 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-2">{o.title}</h3>
-          <p className="mt-0.5 text-xs text-text2">{o.detail}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{o.detail}</p>
         </div>
         <Link
           to="/messages"
@@ -788,7 +788,7 @@ export function CompletionCard({
       </div>
       <ul className="mt-3 space-y-1.5">
         {missing.map((m) => (
-          <li key={m.id} className="flex items-center gap-2 text-xs text-text2">
+          <li key={m.id} className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
             {m.label}
           </li>

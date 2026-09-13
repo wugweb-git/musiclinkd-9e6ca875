@@ -44,7 +44,7 @@ function Pricing() {
       <TopBar title="Pricing" subtitle={entity.name} back="/provider/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
-        <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
+        <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
           Rates shown here are what customers see on the booking screens. Changes apply to new
           bookings only.
         </p>

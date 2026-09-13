@@ -72,7 +72,7 @@ function VerificationHub() {
             </div>
             <StatusPill label={statusLabel[overall]} tone={statusTone[overall]} />
           </div>
-          <p className="text-[13px] text-text2">{copy.body}</p>
+          <p className="text-[13px] text-muted-foreground">{copy.body}</p>
           <Link to="/verification/choose">
             <Btn className="w-full">
               {overall === "unverified" ? "Get verified" : "Add another badge"}
@@ -111,7 +111,7 @@ function VerificationHub() {
                           : {})}
                       />
                     </div>
-                    <p className="line-clamp-2 text-[12px] text-text2">
+                    <p className="line-clamp-2 text-[12px] text-muted-foreground">
                       {status === "rejected" && req?.reason
                         ? req.reason
                         : status === "expired"

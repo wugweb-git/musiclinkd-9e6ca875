@@ -57,7 +57,7 @@ function SavedSearches() {
                 {s.filters.map((f) => (
                   <span
                     key={f}
-                    className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-text2"
+                    className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground"
                   >
                     {f}
                   </span>

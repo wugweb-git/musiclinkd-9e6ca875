@@ -135,9 +135,9 @@ function ProviderProfile() {
                   </div>
                   <Rating value={r.rating} />
                 </div>
-                <p className="mt-2 text-[13px] leading-relaxed text-text2">{r.body}</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{r.body}</p>
                 {r.response ? (
-                  <p className="mt-2 rounded-2xl bg-subtle p-3 text-[12px] text-text2">
+                  <p className="mt-2 rounded-2xl bg-subtle p-3 text-[12px] text-muted-foreground">
                     <span className="font-semibold">{p.name}:</span> {r.response}
                   </p>
                 ) : null}
@@ -147,7 +147,7 @@ function ProviderProfile() {
 
         {tab === "About" ? (
           <>
-            <p className="rounded-3xl border border-border bg-card p-4 text-[13px] leading-relaxed text-text2">
+            <p className="rounded-3xl border border-border bg-card p-4 text-[13px] leading-relaxed text-muted-foreground">
               {p.bio}
             </p>
             <dl className="divide-y divide-border rounded-3xl border border-border">

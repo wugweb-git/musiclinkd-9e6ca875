@@ -71,11 +71,9 @@
   --text-5: var(--type-5);
   --text-5--line-height: 1.04;
 
-  /* Spacing steps. Numeric utilities (p-1, gap-4 …) are untouched. */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 32px;
+  /* Spacing uses Tailwind's numeric scale only (p-1 = 4px, p-2 = 8px, p-4 = 16px, p-8 = 32px).
+   * The named duplicates --spacing-xs/sm/md/lg had zero uses and were removed 13 Sep so there
+   * is one spacing system, not two. */
   --spacing-nav-clear: 96px;
 
   /* The mobile shell width, previously repeated as max-w-[430px] in 55 places. */
@@ -106,7 +104,6 @@
   --color-success: var(--success);
   --color-warn: var(--warn);
   --color-subtle: var(--surface-subtle);
-  --color-text2: var(--text-secondary);
 
   /* Category badge — the only sanctioned use of purple. */
   --color-status-category-bg: var(--status-category-bg);
@@ -183,16 +180,6 @@
   --warn: oklch(0.7686 0.1647 70.08);
   /* tokens.json `surface` — the sunken step between paper and a white card. */
   --surface-subtle: #f8f8fb;
-  /*
-   * Also tokens.json `muted`. Was oklch(0.53 0.0255 274.39) = #676B7B, which was
-   * the darker half of a two-tier grey that existed so secondary text on the page
-   * ground could clear AA. With --muted-foreground now on the foundation value,
-   * both tiers are the same colour and the split has no job left. Kept as a
-   * separate name only because `text-text2` is on ~100 call sites, but it now
-   * points at --muted-foreground rather than repeating the hex, so the two cannot
-   * drift apart. Renaming the call sites is a follow-up.
-   */
-  --text-secondary: var(--muted-foreground);
 
   --pink-container: #fce7f3;
   --purple-container: color-mix(in oklab, var(--purple) 10%, transparent);

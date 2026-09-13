@@ -163,7 +163,7 @@ export function AvailabilityBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; fg: string }> = {
     Available: { bg: "var(--success-container)", fg: "var(--success)" },
     Selective: { bg: "var(--warn-container)", fg: "var(--warn)" },
-    Booked: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
+    Booked: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
   };
   const c = map[status] ?? map["Booked"]!;
   return (
@@ -196,7 +196,7 @@ export function Btn({
     primary: "bg-primary text-primary-foreground",
     navy: "bg-navy text-background",
     outline: "border border-border bg-card text-foreground",
-    ghost: "bg-subtle text-text2",
+    ghost: "bg-subtle text-muted-foreground",
   };
   return (
     <button

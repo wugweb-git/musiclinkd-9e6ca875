@@ -41,7 +41,7 @@ function LockedScreen() {
 
       <div className="mb-6 rounded-3xl border border-border bg-card p-4">
         <p className="text-[13px] font-semibold">What you can do</p>
-        <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-text2">
+        <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
           <li>• Reset your password — that lifts the hold immediately.</li>
           <li>• Wait 15 minutes and try again.</li>
           <li>• Contact support if this wasn't you.</li>
@@ -59,7 +59,7 @@ function LockedScreen() {
 
       <TrustNote>Your account is not suspended and nothing has been deleted.</TrustNote>
 
-      <p className="mt-6 text-center text-1 text-text2">
+      <p className="mt-6 text-center text-1 text-muted-foreground">
         <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
           Back to sign in
         </Link>

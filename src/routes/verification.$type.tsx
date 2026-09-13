@@ -128,7 +128,7 @@ function VerificationRequestScreen() {
               <ShieldCheck size={24} className="text-primary" aria-hidden />
             </div>
             <h2 className="text-[18px] leading-tight">Verified</h2>
-            <p className="text-[13px] text-text2">
+            <p className="text-[13px] text-muted-foreground">
               Approved on {existing.decided} by {existing.reviewer ?? "the Trust team"}.
             </p>
             <div className="flex items-center justify-center gap-2 rounded-[16px] bg-subtle px-3 py-2">
@@ -136,7 +136,7 @@ function VerificationRequestScreen() {
               <VerifiedBadge size={14} />
             </div>
           </Card>
-          <p className="text-[13px] text-text2">{def.whatOthersSee}</p>
+          <p className="text-[13px] text-muted-foreground">{def.whatOthersSee}</p>
           <Row
             title="Where the badge appears"
             subtitle="Profile, search, listings, reviews"
@@ -162,7 +162,7 @@ function VerificationRequestScreen() {
               <h2 className="text-[17px] leading-tight">In review</h2>
               <StatusPill label={statusLabel.in_review} tone={statusTone.in_review} />
             </div>
-            <p className="text-[13px] text-text2">
+            <p className="text-[13px] text-muted-foreground">
               Submitted {existing.submitted}. A reviewer checks each request by hand —{" "}
               {def.turnaround.toLowerCase()}. You will get a notification with the decision.
             </p>
@@ -170,14 +170,17 @@ function VerificationRequestScreen() {
           <Card className="space-y-2">
             <h3 className="text-[14px]">What you sent</h3>
             {existing.documents.map((d) => (
-              <div key={d.name} className="flex items-center gap-2 text-[13px] text-text2">
+              <div
+                key={d.name}
+                className="flex items-center gap-2 text-[13px] text-muted-foreground"
+              >
                 <Check size={14} className="shrink-0 text-primary" aria-hidden />
                 <span className="min-w-0 break-words">{d.name}</span>
               </div>
             ))}
           </Card>
           <Card className="py-3">
-            <p className="text-[12px] text-text2">
+            <p className="text-[12px] text-muted-foreground">
               You can withdraw this request while it is in review. Withdrawing removes the documents
               from the queue.
             </p>
@@ -202,14 +205,14 @@ function VerificationRequestScreen() {
               <h2 className="text-[17px] leading-tight">Needs changes</h2>
               <StatusPill label={statusLabel.rejected} tone={statusTone.rejected} />
             </div>
-            <p className="text-[13px] text-text2">{existing.reason}</p>
+            <p className="text-[13px] text-muted-foreground">{existing.reason}</p>
             <p className="text-[12px] text-muted-foreground">Reviewed {existing.decided}</p>
           </Card>
           <Card className="space-y-2">
             <h3 className="text-[14px]">What to fix</h3>
             {existing.documents.map((d) => (
               <div key={d.name} className="flex items-center justify-between gap-3 text-[13px]">
-                <span className="min-w-0 break-words text-text2">{d.name}</span>
+                <span className="min-w-0 break-words text-muted-foreground">{d.name}</span>
                 <StatusPill
                   label={d.state === "rejected" ? "Replace" : "Accepted"}
                   tone={d.state === "rejected" ? "bad" : "good"}
@@ -248,7 +251,7 @@ function VerificationRequestScreen() {
               <h2 className="text-[17px] leading-tight">Verification expired</h2>
               <StatusPill label={statusLabel.expired} tone={statusTone.expired} />
             </div>
-            <p className="text-[13px] text-text2">
+            <p className="text-[13px] text-muted-foreground">
               This badge expired on {existing.expiresOn}. It is hidden from your listings until you
               renew.
             </p>
@@ -315,7 +318,7 @@ function Wizard({
           <>
             <Card className="space-y-2">
               <h2 className="text-[16px] leading-tight">What this badge proves</h2>
-              <p className="text-[13px] text-text2">{def.verifies}</p>
+              <p className="text-[13px] text-muted-foreground">{def.verifies}</p>
               <p className="text-[12px] text-muted-foreground">People see: {def.whatOthersSee}</p>
             </Card>
             <section>
@@ -324,14 +327,14 @@ function Wizard({
                 {def.requirements.map((r) => (
                   <Card key={r.label} className="py-3">
                     <p className="text-[13px] font-semibold break-words">{r.label}</p>
-                    <p className="mt-1 text-[12px] text-text2">{r.why}</p>
+                    <p className="mt-1 text-[12px] text-muted-foreground">{r.why}</p>
                   </Card>
                 ))}
               </div>
             </section>
             <Card className="flex gap-3 py-3">
               <Lock size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
-              <p className="text-[12px] text-text2">
+              <p className="text-[12px] text-muted-foreground">
                 We never ask for bank details, passwords or your Aadhaar number. Review time:{" "}
                 {def.turnaround.toLowerCase()}.
               </p>
@@ -344,10 +347,12 @@ function Wizard({
 
         {step === 1 ? (
           <>
-            <p className="text-[13px] text-text2">Only the details this badge actually needs.</p>
+            <p className="text-[13px] text-muted-foreground">
+              Only the details this badge actually needs.
+            </p>
             {infos.length === 0 ? (
               <Card className="py-3">
-                <p className="text-[13px] text-text2">
+                <p className="text-[13px] text-muted-foreground">
                   No extra details needed — go straight to documents.
                 </p>
               </Card>
@@ -367,7 +372,7 @@ function Wizard({
               ))
             )}
             <Card className="py-3">
-              <p className="text-[12px] text-text2">
+              <p className="text-[12px] text-muted-foreground">
                 These details are read only by the Trust team for this review. They are never shown
                 on your profile.
               </p>
@@ -395,7 +400,7 @@ function Wizard({
 
         {step === 2 ? (
           <>
-            <p className="text-[13px] text-text2">
+            <p className="text-[13px] text-muted-foreground">
               Attach each document. Previews stay on this device until you submit.
             </p>
             {docs.map((r) => {
@@ -469,7 +474,7 @@ function Wizard({
             })}
             <Card className="flex gap-3 py-3">
               <Lock size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
-              <p className="text-[12px] text-text2">
+              <p className="text-[12px] text-muted-foreground">
                 Documents are private. Only the Trust team can open them, and they are never shown
                 on your profile.
               </p>
@@ -499,7 +504,7 @@ function Wizard({
           <>
             <Card className="space-y-2">
               <h2 className="text-[16px] leading-tight">Review before you submit</h2>
-              <p className="text-[13px] text-text2">{def.title}</p>
+              <p className="text-[13px] text-muted-foreground">{def.title}</p>
             </Card>
             {infos.length > 0 ? (
               <Card className="space-y-2 py-3">
@@ -507,7 +512,7 @@ function Wizard({
                 {infos.map((r) => (
                   <div key={r.label} className="text-[13px]">
                     <p className="text-[12px] text-muted-foreground break-words">{r.label}</p>
-                    <p className="break-words text-text2">{values[r.label] || "—"}</p>
+                    <p className="break-words text-muted-foreground">{values[r.label] || "—"}</p>
                   </div>
                 ))}
               </Card>
@@ -515,7 +520,10 @@ function Wizard({
             <Card className="space-y-2 py-3">
               <h3 className="text-[14px]">Documents</h3>
               {docs.map((r) => (
-                <div key={r.label} className="flex items-center gap-2 text-[13px] text-text2">
+                <div
+                  key={r.label}
+                  className="flex items-center gap-2 text-[13px] text-muted-foreground"
+                >
                   <Check size={14} className="shrink-0 text-primary" aria-hidden />
                   <span className="min-w-0 break-words">{files[r.label] ?? "Missing"}</span>
                 </div>
@@ -528,7 +536,7 @@ function Wizard({
                 onChange={(e) => setConsent(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
               />
-              <span className="text-[12px] text-text2">
+              <span className="text-[12px] text-muted-foreground">
                 I confirm these documents are mine and accurate, and I allow the MusicLinkd Trust
                 team to review them for this verification.
               </span>
@@ -562,18 +570,20 @@ function Wizard({
               </div>
               <h2 className="text-[18px] leading-tight">Submitted for review</h2>
               <StatusPill label={statusLabel.in_review} tone={statusTone.in_review} />
-              <p className="text-[13px] text-text2">
+              <p className="text-[13px] text-muted-foreground">
                 A reviewer checks each request by hand. {def.turnaround} for{" "}
                 {def.title.toLowerCase()}. We will notify you as soon as there is a decision.
               </p>
             </Card>
             <Card className="space-y-2 py-3">
               <h3 className="text-[14px]">What happens next</h3>
-              <p className="text-[12px] text-text2">1. The Trust team opens your documents.</p>
-              <p className="text-[12px] text-text2">
+              <p className="text-[12px] text-muted-foreground">
+                1. The Trust team opens your documents.
+              </p>
+              <p className="text-[12px] text-muted-foreground">
                 2. If anything is unclear you get a note with what to fix.
               </p>
-              <p className="text-[12px] text-text2">
+              <p className="text-[12px] text-muted-foreground">
                 3. On approval the badge appears everywhere at once.
               </p>
             </Card>
@@ -593,7 +603,7 @@ function Wizard({
         <div className="flex h-48 items-center justify-center rounded-[20px] bg-subtle text-[12px] text-muted-foreground">
           {preview}
         </div>
-        <p className="mt-3 text-[12px] text-text2">
+        <p className="mt-3 text-[12px] text-muted-foreground">
           Preview only — this file stays on your device until you submit the request.
         </p>
       </Sheet>

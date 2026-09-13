@@ -87,7 +87,7 @@ function Notes({ note, tags }: { note: string; tags: string[] }) {
       <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
         Your note
       </p>
-      <p className="mt-1 text-xs text-text2">{note}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{note}</p>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {tags.map((tg) => (
           <span

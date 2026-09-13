@@ -34,7 +34,7 @@ function BadgeGuide() {
             <span className="text-[17px] leading-tight">Aarav Mehta</span>
             <VerifiedBadge />
           </div>
-          <p className="text-[13px] text-text2">
+          <p className="text-[13px] text-muted-foreground">
             The badge only ever means one thing: a person on the Trust team checked real evidence.
             It is never sold, never given for activity, and never awarded for a follower count.
           </p>

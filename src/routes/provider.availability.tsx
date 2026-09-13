@@ -60,7 +60,7 @@ function Availability() {
                 className={`min-h-11 min-w-[52px] rounded-full border px-3 text-sm font-semibold ${
                   on
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-text2"
+                    : "border-border bg-card text-muted-foreground"
                 }`}
               >
                 {d}
@@ -134,7 +134,7 @@ function Availability() {
           <div className="mt-2 space-y-1.5">
             {r.tiers.map((p) => (
               <div key={p.label} className="flex items-baseline justify-between text-xs">
-                <span className="text-text2">{p.label}</span>
+                <span className="text-muted-foreground">{p.label}</span>
                 <span className="font-semibold">{inr(p.price)}</span>
               </div>
             ))}

@@ -212,7 +212,9 @@ function EditProfile() {
         <main className="px-5 py-6">
           <div role="alert" className="rounded-3xl border border-destructive/40 bg-card p-5">
             <p className="text-sm font-semibold text-destructive">We couldn't load your profile</p>
-            <p className="mt-1 text-xs text-text2">Check your connection and try again.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Check your connection and try again.
+            </p>
             <Btn variant="outline" className="mt-4" onClick={fetchProfile}>
               Retry
             </Btn>
@@ -536,7 +538,7 @@ function Chips({
               key={o}
               type="button"
               onClick={() => onToggle(o)}
-              className={`min-h-9 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary bg-pink-container text-primary" : "border-border bg-card text-text2"}`}
+              className={`min-h-9 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary bg-pink-container text-primary" : "border-border bg-card text-muted-foreground"}`}
             >
               {labels?.[o] ?? o}
             </button>

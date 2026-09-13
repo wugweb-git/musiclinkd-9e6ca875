@@ -107,7 +107,7 @@ function WriteReview() {
           <StatusPill label="Blind review" tone="warn" />
           <ul className="space-y-1.5">
             {reviewPolicy.map((p) => (
-              <li key={p} className="text-[12px] text-text2">
+              <li key={p} className="text-[12px] text-muted-foreground">
                 · {p}
               </li>
             ))}

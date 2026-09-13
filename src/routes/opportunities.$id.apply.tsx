@@ -198,7 +198,7 @@ function ApplyFlow() {
             </Card>
             <Card className="space-y-2">
               <StatusPill label="Your pitch" />
-              <p className="text-[13px] text-text2">{message || "No message added."}</p>
+              <p className="text-[13px] text-muted-foreground">{message || "No message added."}</p>
               {rate ? <p className="text-[12px] text-muted-foreground">Rate: {rate}</p> : null}
             </Card>
             <p className="text-[12px] text-muted-foreground">

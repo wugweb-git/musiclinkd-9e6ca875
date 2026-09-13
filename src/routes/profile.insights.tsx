@@ -58,7 +58,7 @@ function Insights() {
           <div className="mt-3 divide-y divide-border rounded-3xl border border-border bg-card">
             {i.secondary.map((s) => (
               <div key={s.label} className="flex items-center justify-between px-4 py-3">
-                <span className="text-sm text-text2">{s.label}</span>
+                <span className="text-sm text-muted-foreground">{s.label}</span>
                 <span className="text-sm font-semibold tabular-nums">{s.value}</span>
               </div>
             ))}
@@ -93,7 +93,7 @@ function Insights() {
           </p>
           <ul className="mt-3 space-y-1.5">
             {profileCompletion.missing.map((m) => (
-              <li key={m.id} className="text-xs text-text2">
+              <li key={m.id} className="text-xs text-muted-foreground">
                 · {m.label}
               </li>
             ))}

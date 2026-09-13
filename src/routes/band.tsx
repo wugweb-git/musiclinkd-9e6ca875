@@ -88,7 +88,7 @@ function Band() {
             {["Indie Rock", "Alt Hindi", "Live Act", "Festival Ready"].map((g) => (
               <span
                 key={g}
-                className="rounded-full bg-subtle px-2.5 py-1 text-[10px] font-semibold text-text2"
+                className="rounded-full bg-subtle px-2.5 py-1 text-[10px] font-semibold text-muted-foreground"
               >
                 {g}
               </span>

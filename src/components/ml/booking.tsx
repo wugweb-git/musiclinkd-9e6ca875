@@ -43,7 +43,7 @@ const toneStyle: Record<string, { bg: string; fg: string }> = {
   ok: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
   info: { bg: "var(--pink-container)", fg: "var(--primary)" },
-  off: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
+  off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
 };
 
 export function BookingStatusPill({ status }: { status: BookingStatus }) {
@@ -62,7 +62,7 @@ export function BookingStatusPill({ status }: { status: BookingStatus }) {
 
 export function PaymentPill({ status }: { status: PaymentStatus }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-text2">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
       {paymentMeta[status]}
     </span>
   );
@@ -97,7 +97,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
               ) : null}
             </div>
             <p
-              className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-text2" : "text-muted-foreground"}`}
+              className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-muted-foreground" : "text-muted-foreground"}`}
             >
               {s.label}
               {current ? (
@@ -108,7 +108,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
         );
       })}
       {terminal ? (
-        <li className="mt-1 rounded-2xl bg-subtle px-3 py-2 text-xs text-text2">
+        <li className="mt-1 rounded-2xl bg-subtle px-3 py-2 text-xs text-muted-foreground">
           This booking ended as <span className="font-semibold">{statusMeta[status].label}</span>.
         </li>
       ) : null}
@@ -131,7 +131,7 @@ export function BookableHero({ b }: { b: Bookable }) {
       />
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-navy/80 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
-        <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-text2">
+        <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
           {b.kind}
         </span>
         <h1 className="mt-2 flex items-center gap-2 text-3 leading-tight text-background">
@@ -145,7 +145,7 @@ export function BookableHero({ b }: { b: Bookable }) {
 
 export function EntityMetaRow({ b }: { b: Bookable }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-text2">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
       <span className="inline-flex items-center gap-1">
         <Star size={13} className="text-primary" /> {b.rating} ({b.reviews})
       </span>
@@ -207,7 +207,7 @@ export function ResourceCard({
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{r.name}</p>
           <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-1 text-text2">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-1 text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Users size={12} /> Up to {r.capacity}
             </span>
@@ -219,7 +219,7 @@ export function ResourceCard({
       </div>
       <div className="flex flex-wrap gap-1.5 px-3 pb-3">
         {r.equipment.slice(0, 3).map((e) => (
-          <span key={e} className="rounded-full bg-subtle px-2.5 py-1 text-1 text-text2">
+          <span key={e} className="rounded-full bg-subtle px-2.5 py-1 text-1 text-muted-foreground">
             {e}
           </span>
         ))}
@@ -345,7 +345,7 @@ export function AvailabilityCalendar({
         })}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-text2">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-muted-foreground">
         <Legend color="var(--success)" label="Available" />
         <Legend color="var(--warn)" label="Limited" />
         <Legend color="var(--border)" label="Unavailable / closed" />
@@ -554,7 +554,7 @@ function Row({
   return (
     <div className="flex items-baseline justify-between gap-3 py-1">
       <span
-        className={`min-w-0 flex-1 truncate text-sm ${muted ? "text-muted-foreground" : "text-text2"}`}
+        className={`min-w-0 flex-1 truncate text-sm ${muted ? "text-muted-foreground" : "text-muted-foreground"}`}
       >
         {label}
       </span>
@@ -584,7 +584,7 @@ export function PolicyCard({
         )}
         {title}
       </p>
-      <p className="mt-1 text-xs leading-relaxed text-text2">{body}</p>
+      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{body}</p>
     </div>
   );
 }
@@ -606,7 +606,7 @@ export function AcknowledgeRow({
         onChange={(e) => onChange(e.target.checked)}
         className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--primary)]"
       />
-      <span className="text-xs leading-relaxed text-text2">{label}</span>
+      <span className="text-xs leading-relaxed text-muted-foreground">{label}</span>
     </label>
   );
 }
@@ -642,7 +642,7 @@ export function BookingSummaryCard({
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{b.name}</p>
           <p className="truncate text-xs text-muted-foreground">{r.name}</p>
-          <p className="mt-1 truncate text-xs text-text2">
+          <p className="mt-1 truncate text-xs text-muted-foreground">
             {b.area}, {b.city}
           </p>
         </div>
@@ -692,7 +692,7 @@ export function BookingListCard({
         </div>
         <BookingStatusPill status={booking.status} />
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text2">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <Calendar size={13} /> {formatDate(booking.date)}
         </span>
@@ -732,7 +732,7 @@ export function ProviderRequestCard({
         </div>
         <BookingStatusPill status={booking.status} />
       </div>
-      <div className="mt-3 rounded-2xl bg-subtle px-3 py-2 text-xs text-text2">
+      <div className="mt-3 rounded-2xl bg-subtle px-3 py-2 text-xs text-muted-foreground">
         <p className="font-semibold text-foreground">{entityResource}</p>
         <p className="mt-0.5">
           {formatDate(booking.date)} · {formatTime(booking.start)} – {formatTime(booking.end)} ·{" "}
@@ -788,7 +788,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
       <WifiOff size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">You're offline</p>
-        <p className="mt-0.5 text-xs text-text2">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Availability may have changed. We won't confirm a booking until you're back online.
         </p>
       </div>
@@ -818,7 +818,7 @@ export function ErrorState({
     <div role="alert" className="rounded-3xl border border-destructive/40 bg-card p-5 text-center">
       <AlertTriangle size={22} className="mx-auto text-destructive" />
       <p className="mt-2 font-semibold">{title}</p>
-      <p className="mt-1 text-xs text-text2">{message}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{message}</p>
       <Btn className="mt-4 w-full" onClick={onRetry}>
         Try again
       </Btn>
@@ -839,7 +839,7 @@ export function EmptyState({
     <div className="rounded-3xl border border-dashed border-border bg-card p-6 text-center">
       <Calendar size={22} className="mx-auto text-muted-foreground" />
       <p className="mt-2 font-semibold">{title}</p>
-      <p className="mt-1 text-xs text-text2">{body}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{body}</p>
       {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );

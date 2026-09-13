@@ -77,7 +77,9 @@ function HelpIndex() {
                             tone={p.kind === "policy" ? "warn" : "brand"}
                           />
                         </div>
-                        <p className="line-clamp-2 text-[12px] text-text2">{p.summary}</p>
+                        <p className="line-clamp-2 text-[12px] text-muted-foreground">
+                          {p.summary}
+                        </p>
                         <p className="text-[11px] text-muted-foreground">
                           {p.readTime} · {p.updated}
                         </p>

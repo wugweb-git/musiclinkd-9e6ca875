@@ -187,7 +187,7 @@ function Schedule() {
                 }}
               />
             </div>
-            <p className="mt-3 rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
+            <p className="mt-3 rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
               {formatTime(draft.start)} – {formatTime(endTime)} · {draft.hours} hr
               {draft.hours > 1 ? "s" : ""} · {b.timezone}
             </p>
@@ -223,7 +223,7 @@ function Schedule() {
         onClose={() => setConflict(false)}
         title="This time is no longer available"
       >
-        <p className="text-sm text-text2">
+        <p className="text-sm text-muted-foreground">
           Someone booked {draft.date ? formatDate(draft.date) : "this date"} at 12:00 PM while you
           were choosing. Your other selections are saved.
         </p>
