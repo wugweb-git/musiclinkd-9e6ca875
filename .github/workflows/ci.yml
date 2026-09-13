@@ -32,7 +32,9 @@ jobs:
       # without running Prettier, so gating on formatting would fail every Lovable
       # push and a permanently red check stops being read.
       - name: Lint
-        run: bunx eslint . --rule 'prettier/prettier: off'
+        # Block scalar: in a plain YAML scalar the ": " inside the rule would parse as a mapping.
+        run: |
+          bunx eslint . --rule 'prettier/prettier: off'
 
       # Non-blocking: formatting drift is reported, not enforced. Clear it with
       # `bunx eslint --fix <files>` in a follow-up commit.
