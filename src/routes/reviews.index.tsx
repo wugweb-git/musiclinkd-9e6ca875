@@ -13,7 +13,7 @@ import {
   type Review,
 } from "@/data/reviews";
 
-export const Route = createFileRoute("/reviews")({
+export const Route = createFileRoute("/reviews/")({
   head: () => ({
     meta: [
       { title: "Reviews & Ratings | MusicLinkd" },

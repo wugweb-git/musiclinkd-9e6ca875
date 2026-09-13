@@ -14,7 +14,7 @@ import { talents, type Talent } from "@/data/discover";
 import { FilterSheet } from "@/components/ml/filter-sheet";
 import { HireModal } from "@/components/ml/hire-modal";
 
-export const Route = createFileRoute("/search")({
+export const Route = createFileRoute("/search/")({
   head: () => ({
     meta: [
       { title: "Search Results | MusicLinkd" },

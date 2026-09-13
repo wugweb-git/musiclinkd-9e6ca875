@@ -4,7 +4,7 @@ import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
 import { Field, TextInput, StickyBar, Label } from "@/components/ml/collab";
 import { collabRoles, collabTypes } from "@/data/collab";
 
-export const Route = createFileRoute("/collab/new")({
+export const Route = createFileRoute("/collab/new/")({
   head: () => ({
     meta: [
       { title: "Create a collaboration — MusicLinkd" },

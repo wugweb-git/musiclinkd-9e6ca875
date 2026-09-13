@@ -4,7 +4,7 @@ import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
 import { getService, priceLabel, pricingModelLabel, serviceStatusTone } from "@/data/services";
 
-export const Route = createFileRoute("/services/$id")({
+export const Route = createFileRoute("/services/$id/")({
   head: () => ({
     meta: [
       { title: "Service details | MusicLinkd" },

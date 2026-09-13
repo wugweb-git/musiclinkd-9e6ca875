@@ -8,7 +8,7 @@ import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { QrCode, ActionRow, nativeShare } from "@/components/ml/qr";
 import { canonicalUrl, myIdentity } from "@/data/identity";
 
-export const Route = createFileRoute("/identity/contact")({
+export const Route = createFileRoute("/identity/contact/")({
   head: () => ({
     meta: [
       { title: "Digital business card — MusicLinkd" },

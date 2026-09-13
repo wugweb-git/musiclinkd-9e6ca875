@@ -11,7 +11,7 @@ import {
   type Recommendation,
 } from "@/data/recommendations";
 
-export const Route = createFileRoute("/recommendations")({
+export const Route = createFileRoute("/recommendations/")({
   head: () => ({
     meta: [
       { title: "For You — Recommendations | MusicLinkd" },

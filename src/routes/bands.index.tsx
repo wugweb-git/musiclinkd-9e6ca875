@@ -5,7 +5,7 @@ import { Screen, TopBar, SearchBar, Btn } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
 import { bands, myBandId } from "@/data/band";
 
-export const Route = createFileRoute("/bands")({
+export const Route = createFileRoute("/bands/")({
   head: () => ({
     meta: [
       { title: "Bands & Groups | MusicLinkd" },
