@@ -178,7 +178,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     const { data: row } = await client
       .from("profiles")
       .select(
-        "username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, availability, avatar_url, links, visibility",
+        "username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, experience_level, availability, avatar_url, links, visibility",
       )
       .eq("username", data.username)
       .maybeSingle();

@@ -121,7 +121,7 @@ export type PersonProfile = {
   primaryRole: string;
   secondaryRoles: string[];
   location: string;
-  availability: AvailabilityState;
+  availability?: AvailabilityState | undefined;
   verification: VerificationTier;
   privacy: "Public" | "Connections only" | "Private";
   yearsActive: string;
@@ -172,6 +172,51 @@ const shots = [
   u("photo-1571330735066-03aaa9429d89"),
   u("photo-1470225620780-dba8ba36b745"),
 ];
+
+/**
+ * Every section empty. A seed profile spreads this, never another person's profile, so a section its
+ * record lacks renders the screen's empty state instead of someone else's work.
+ */
+export function emptySections(): Omit<
+  PersonProfile,
+  "username" | "name" | "photo" | "headline" | "primaryRole" | "location"
+> {
+  return {
+    cover: "",
+    roleType: "Other",
+    secondaryRoles: [],
+    availability: undefined,
+    verification: "Basic",
+    privacy: "Public",
+    yearsActive: "",
+    shortBio: "",
+    longBio: "",
+    genres: [],
+    instruments: [],
+    languages: [],
+    influences: [],
+    specialisations: [],
+    professional: [],
+    stats: { connections: "—", followers: "—", plays: "—", credits: 0 },
+    rating: 0,
+    reviewCount: 0,
+    links: [],
+    featured: undefined,
+    audio: [],
+    video: [],
+    gallery: [],
+    projects: [],
+    discography: [],
+    services: [],
+    experience: [],
+    collaborators: [],
+    reviews: [],
+    opportunities: [],
+    market: [],
+    studio: undefined,
+    mutuals: [],
+  };
+}
 
 const rahul: PersonProfile = {
   username: "rahul-iyer",
@@ -483,7 +528,7 @@ const rahul: PersonProfile = {
 };
 
 const ananya: PersonProfile = {
-  ...rahul,
+  ...emptySections(),
   username: "ananya-sharma",
   name: "Ananya Sharma",
   photo: u("photo-1534528741775-53994a69daeb", 400),
@@ -559,9 +604,10 @@ const byUsername: Record<string, PersonProfile> = {
   ...Object.fromEntries(linkedProfileSeeds.map((s) => [s.profile.username, s.profile])),
 };
 
+/** A Discover talent's profile from its card record alone; sections the card lacks stay empty. */
 function fromTalent(t: Talent): PersonProfile {
   return {
-    ...rahul,
+    ...emptySections(),
     username: t.id,
     name: t.name,
     photo: t.photo,
@@ -580,13 +626,10 @@ function fromTalent(t: Talent): PersonProfile {
     verification: t.verified ? "Professional" : "Email Verified",
     genres: t.genres,
     languages: t.languages,
-    stats: { connections: "640", followers: t.followers, plays: "410k", credits: t.credits },
+    stats: { connections: "—", followers: t.followers, plays: "—", credits: t.credits },
     rating: t.rating,
-    reviewCount: 12,
     shortBio: `${t.role} working across ${t.genres.slice(0, 2).join(" and ")}. Starting at ${t.rate}.`,
     longBio: `${t.role} working across ${t.genres.join(", ")}. Sessions run remote or in person around ${t.location}, with starting rates from ${t.rate}.`,
-    market: [],
-    studio: undefined,
   };
 }
 

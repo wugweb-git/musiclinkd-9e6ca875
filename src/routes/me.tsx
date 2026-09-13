@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
 import { ownerProfile } from "@/data/profile";
 import { getMyProfile } from "@/lib/portfolio.functions";
-import { mergeProfileRow } from "@/lib/profile-view";
+import { mergeProfileRow, profileFromRow } from "@/lib/profile-view";
 import type { ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { Screen, TopBar } from "@/components/ml/ui";
@@ -31,7 +31,6 @@ export const Route = createFileRoute("/me")({
 });
 
 function MyProfile() {
-  const base = ownerProfile;
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);
   const [row, setRow] = useState<ProfileRow | null>(null);
@@ -48,7 +47,7 @@ function MyProfile() {
       .catch(() => setState("error"));
   }, [loading, signedIn, load]);
 
-  if (signedIn && state === "loading") {
+  if (loading || (signedIn && (state === "idle" || state === "loading"))) {
     return (
       <Screen>
         <TopBar title="My profile" />
@@ -62,5 +61,7 @@ function MyProfile() {
     );
   }
 
-  return <PersonProfileExperience p={mergeProfileRow(base, row)} owner />;
+  // Signed in: your own record, with empty states for what it doesn't hold. Signed out: the demo owner.
+  const view = signedIn ? mergeProfileRow(profileFromRow(row ?? {}), row) : ownerProfile;
+  return <PersonProfileExperience p={view} owner />;
 }
