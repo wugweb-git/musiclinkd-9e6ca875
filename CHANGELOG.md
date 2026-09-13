@@ -35,8 +35,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 - `--text-secondary` is now `var(--muted-foreground)` instead of a second copy of `#66666f`, so the
   two can't drift apart. No visual change
-- The auth wordmark (`ml/auth.tsx`, 16px) no longer carries `tracking-tight`. Inter wants roughly
-  −0.01em at that size, not −0.025em. Headings keep `-0.02em`, which was decided on 11 Sep
+- **Headings use Inter's normal tracking; all heading letter-spacing tuning is removed** (decided
+  13 Sep, replacing the 11 Sep "keep" decision). Removed:
+  - `-0.02em` on `h1..h4` (`styles.css`), which was compensation for Inter Tight;
+  - `tracking-tight` on the auth wordmark and `AuthHeading` (`ml/auth.tsx`);
+  - `tracking-tight` on the `/welcome` wordmark and hero (`welcome.tsx`);
+  - `tracking-tight` on the root error heading (`__root.tsx`).
+
+  Headings set very slightly wider. Positive tracking on uppercase eyebrow labels
+  (`tracking-[0.14em]`) is kept, since that aids legibility of caps; vendored `components/ui/` is
+  untouched
 - `styles.css` header comments corrected: type has five ramps, not four. `@custom-variant dark` is
   documented as deliberately inert, because there is no dark mode, and removing the line would let
   `dark:` utilities match in OS dark mode

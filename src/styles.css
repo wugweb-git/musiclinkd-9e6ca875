@@ -26,8 +26,8 @@
 @theme inline {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   /* One family only — Inter. The token stays as the seam for headings (they
-   * carry their own weight and letter-spacing), but it no longer points at a
-   * second face. Headings render at 700, which Inter already ships. */
+   * carry their own weight), but it no longer points at a second face.
+   * Headings render at 700, which Inter already ships, with normal tracking. */
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /*
@@ -267,7 +267,8 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    /* No letter-spacing: headings use Inter's normal tracking. The -0.02em that
+     * sat here was compensation for Inter Tight and was removed 13 Sep. */
     font-weight: 700;
   }
 

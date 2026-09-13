@@ -48,7 +48,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
 export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-3 font-semibold leading-tight tracking-tight">{title}</h1>
+      <h1 className="text-3 font-semibold leading-tight">{title}</h1>
       {sub ? <p className="mt-2 text-1 leading-relaxed text-text2">{sub}</p> : null}
     </div>
   );

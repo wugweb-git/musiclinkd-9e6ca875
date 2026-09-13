@@ -134,10 +134,10 @@ function WelcomeScreen() {
     <AuthScreen brand={false} className="bg-card">
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
         <div className="flex-1 pt-4">
-          <h2 className="text-3 font-bold tracking-tight">MusicLinkd</h2>
+          <h2 className="text-3 font-bold">MusicLinkd</h2>
           <p className="mt-1 text-2 font-semibold text-primary">Professional Network For Music</p>
 
-          <h1 className="mt-7 text-5 font-bold tracking-tight">
+          <h1 className="mt-7 text-5 font-bold">
             Connect.
             <br />
             Collaborate.
