@@ -16,6 +16,7 @@ import {
   Mic2,
   Pencil,
   Play,
+  Settings,
   Settings2,
   QrCode,
   Share2,
@@ -195,13 +196,9 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
     <section className="space-y-3 px-5 pt-5">
       <CompletionCard percent={profileCompletion.percent} missing={profileCompletion.missing} />
       <div className="grid grid-cols-2 gap-2">
-        <OwnerLink to="/profile/edit" icon={<FolderKanban size={16} />} label="Manage portfolio" />
-        <OwnerLink
-          to="/profile/edit"
-          icon={<BriefcaseBusiness size={16} />}
-          label="Manage services"
-        />
-        <OwnerLink to="/profile/edit" icon={<Clock3 size={16} />} label="Availability" />
+        <OwnerLink to="/portfolio" icon={<FolderKanban size={16} />} label="Manage portfolio" />
+        <OwnerLink to="/services" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
+        <OwnerLink to="/services/availability" icon={<Clock3 size={16} />} label="Availability" />
         <OwnerLink to="/identity/qr" icon={<QrCode size={16} />} label="My QR & digital ID" />
         <OwnerLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
         <OwnerLink to="/reviews" icon={<Star size={16} />} label="Reviews" />
@@ -210,6 +207,7 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
         <OwnerLink to="/recommendations" icon={<Sparkles size={16} />} label="For you" />
         <OwnerLink to="/help" icon={<LifeBuoy size={16} />} label="Help & guides" />
         <OwnerLink to="/profile/edit" icon={<Settings2 size={16} />} label="Profile settings" />
+        <OwnerLink to="/settings" icon={<Settings size={16} />} label="Settings" />
       </div>
 
       {insightsOpen ? (
@@ -240,6 +238,10 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
 
 type OwnerDestination =
   | "/profile/edit"
+  | "/portfolio"
+  | "/services"
+  | "/services/availability"
+  | "/settings"
   | "/identity/qr"
   | "/verification"
   | "/reviews"

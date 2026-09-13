@@ -53,7 +53,7 @@ function TeamScreen() {
       <TopBar
         title="Team"
         subtitle={b.name}
-        back="/business/$id"
+        back={`/business/${id}`}
         right={
           <button
             type="button"

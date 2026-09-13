@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarOff, Plus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
+import { Card, EmptyState, Row } from "@/components/ml/kit";
 import {
   weeklyAvailability,
   timeOff,
@@ -148,6 +148,13 @@ function Availability() {
             Open calendar
           </BtnLink>
         </Card>
+
+        <Row
+          icon={<CalendarOff size={16} />}
+          title="Booking conflicts"
+          subtitle="Requests that overlap your hours or time off"
+          to="/services/conflicts"
+        />
       </div>
 
       <Sheet open={addOff} onClose={() => setAddOff(false)} title="Add time off">
