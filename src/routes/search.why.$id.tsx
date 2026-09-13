@@ -101,7 +101,11 @@ function WhyThisResult() {
           subtitle="Choose which signals we may use"
           to="/recommendations/settings"
         />
-        <Row title="Privacy settings" subtitle="Control what your profile shares" to="/settings/privacy" />
+        <Row
+          title="Privacy settings"
+          subtitle="Control what your profile shares"
+          to="/settings/privacy"
+        />
       </div>
 
       <Dialog

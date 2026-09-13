@@ -95,12 +95,12 @@ function SearchHistory() {
           </EmptyState>
         )}
 
+        <Row title="Saved searches" subtitle="Keep a search and get alerts" to="/search/saved" />
         <Row
-          title="Saved searches"
-          subtitle="Keep a search and get alerts"
-          to="/search/saved"
+          title="Recently viewed"
+          subtitle="Profiles and listings you opened"
+          to="/recently-viewed"
         />
-        <Row title="Recently viewed" subtitle="Profiles and listings you opened" to="/recently-viewed" />
       </div>
 
       <Dialog

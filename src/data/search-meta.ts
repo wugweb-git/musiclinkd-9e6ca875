@@ -58,11 +58,41 @@ export const savedSearches: SavedSearch[] = [
 ];
 
 export const searchHistory: SearchHistoryEntry[] = [
-  { id: "sh-1", query: "sitar session player", scope: "talent", resultCount: 34, searchedAt: now - 2 * 3_600_000 },
-  { id: "sh-2", query: "mixing engineer bandra", scope: "talent", resultCount: 18, searchedAt: now - 9 * 3_600_000 },
-  { id: "sh-3", query: "jam room andheri", scope: "studios", resultCount: 11, searchedAt: now - day },
-  { id: "sh-4", query: "condenser microphone", scope: "market", resultCount: 62, searchedAt: now - 2 * day },
-  { id: "sh-5", query: "playback singer wanted", scope: "opportunities", resultCount: 7, searchedAt: now - 4 * day },
+  {
+    id: "sh-1",
+    query: "sitar session player",
+    scope: "talent",
+    resultCount: 34,
+    searchedAt: now - 2 * 3_600_000,
+  },
+  {
+    id: "sh-2",
+    query: "mixing engineer bandra",
+    scope: "talent",
+    resultCount: 18,
+    searchedAt: now - 9 * 3_600_000,
+  },
+  {
+    id: "sh-3",
+    query: "jam room andheri",
+    scope: "studios",
+    resultCount: 11,
+    searchedAt: now - day,
+  },
+  {
+    id: "sh-4",
+    query: "condenser microphone",
+    scope: "market",
+    resultCount: 62,
+    searchedAt: now - 2 * day,
+  },
+  {
+    id: "sh-5",
+    query: "playback singer wanted",
+    scope: "opportunities",
+    resultCount: 7,
+    searchedAt: now - 4 * day,
+  },
 ];
 
 export const scopeLabel: Record<SearchHistoryEntry["scope"], string> = {
@@ -87,10 +117,22 @@ export const whyExplanations: WhyExplanation[] = [
     subject: "This profile",
     headline: "Matched on your genres, city and a saved search",
     signals: [
-      { label: "Your genres", detail: "Indie folk and alt pop are on both profiles", weight: "strong" },
-      { label: "Distance", detail: "12 km from Mumbai, inside your 50 km radius", weight: "strong" },
+      {
+        label: "Your genres",
+        detail: "Indie folk and alt pop are on both profiles",
+        weight: "strong",
+      },
+      {
+        label: "Distance",
+        detail: "12 km from Mumbai, inside your 50 km radius",
+        weight: "strong",
+      },
       { label: "Saved search", detail: "Appears in “Hindi vocalists in Mumbai”", weight: "medium" },
-      { label: "Availability", detail: "Marked available in the week of your next booking", weight: "light" },
+      {
+        label: "Availability",
+        detail: "Marked available in the week of your next booking",
+        weight: "light",
+      },
     ],
     notUsed: ["Your messages", "Your payment history", "Anything from your contacts"],
   },
@@ -101,7 +143,11 @@ export const defaultWhy: WhyExplanation = {
   subject: "This result",
   headline: "Matched on your profile and recent activity",
   signals: [
-    { label: "Your roles and genres", detail: "Taken from your profile, editable any time", weight: "strong" },
+    {
+      label: "Your roles and genres",
+      detail: "Taken from your profile, editable any time",
+      weight: "strong",
+    },
     { label: "Your city", detail: "Results near you rank higher", weight: "medium" },
     { label: "Recent activity", detail: "What you searched, saved and opened", weight: "medium" },
   ],

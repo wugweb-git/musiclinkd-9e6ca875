@@ -51,6 +51,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- CI (`.github/workflows/ci.yml`, added 2026-09-13) failed on Lovable's first push after it landed:
+  214 Prettier errors and one `prefer-const` in the files that push wrote (`search.history`,
+  `search.saved`, `search.why.$id`, `src/data/search-meta.ts`, `src/integrations/supabase/types.ts`,
+  `previewAuthStorage.ts`). Formatting was cleared with `eslint --fix`, scoped to those files only.
+  `previewAuthStorage.ts`'s `timer` is now `const`, declared where it is assigned.
+- The CI Lint step now gates on correctness rules only (`prettier/prettier` off). Formatting runs
+  as a separate step that reports but doesn't fail the build. Lovable's agent never runs Prettier,
+  so the old gate would have gone red on every Lovable push
 - Discover and Recently-viewed screens rendered `undefined` to users: `discover.music.tsx` read
   `t.label` where the data has `name`, and `discover.nearby.tsx` / `recently-viewed.tsx` read
   `s.image` where the data has `photo`. Shipped in `d10513f` ("Added audio autoplay", a commit

@@ -48,9 +48,7 @@ function SavedSearches() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="truncate text-2 leading-tight">{s.label}</h2>
-                  <p className="mt-1 text-1 text-muted-foreground">
-                    Saved {timeAgo(s.createdAt)}
-                  </p>
+                  <p className="mt-1 text-1 text-muted-foreground">Saved {timeAgo(s.createdAt)}</p>
                 </div>
                 {s.newCount ? <StatusPill label={`${s.newCount} new`} tone="brand" /> : null}
               </div>
@@ -115,7 +113,11 @@ function SavedSearches() {
           </EmptyState>
         )}
 
-        <Row title="Search history" subtitle="Everything you searched recently" to="/search/history" />
+        <Row
+          title="Search history"
+          subtitle="Everything you searched recently"
+          to="/search/history"
+        />
         <Row
           title="Notification settings"
           subtitle="Choose how alerts reach you"
