@@ -78,7 +78,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      // viewport-fit=cover: without it every env(safe-area-inset-*) in the app resolves to 0,
+      // so the bottom nav and sticky headers sit under the notch and home indicator.
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "MusicLinkd — Discover Music Talent in India" },
       {
         name: "description",

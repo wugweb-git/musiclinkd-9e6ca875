@@ -40,7 +40,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
       >
         <Music2 size={18} className="text-primary" />
       </span>
-      <span className="text-2 font-semibold tracking-tight">MusicLinkd</span>
+      <span className="text-2 font-semibold">MusicLinkd</span>
     </div>
   );
 }

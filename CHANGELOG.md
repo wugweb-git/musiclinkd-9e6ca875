@@ -28,6 +28,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- `--text-secondary` is now `var(--muted-foreground)` instead of a second copy of `#66666f`, so the
+  two can't drift apart. No visual change
+- The auth wordmark (`ml/auth.tsx`, 16px) no longer carries `tracking-tight`. Inter wants roughly
+  −0.01em at that size, not −0.025em. Headings keep `-0.02em`, which was decided on 11 Sep
+- `styles.css` header comments corrected: type has five ramps, not four. `@custom-variant dark` is
+  documented as deliberately inert, because there is no dark mode, and removing the line would let
+  `dark:` utilities match in OS dark mode
 - Claude Code's commit attribution is pinned in `.claude/settings.json` (`attribution.commit` = the
   Wugweb trailer, `sessionUrl: false`), so the harness asks for the single trailer `AGENTS.md`
   requires instead of a Claude co-author line
@@ -51,6 +58,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- The viewport meta lacked `viewport-fit=cover`, so every `env(safe-area-inset-*)` in the app
+  resolved to 0. That is 10 uses, including the bottom nav (`ml/ui.tsx`) and the `/feed` header. On
+  notched iPhones the nav sat under the home indicator. This is a web fix and is independent of the
+  Capacitor decision
 - **26 routes rendered their parent's screen instead of their own.** In TanStack's flat routing,
   `bands.new.tsx` is a child of `bands.tsx`, so it renders inside the parent's `<Outlet />`. None of
   12 parents had one, so the child's content was silently dropped and the parent's UI showed at the

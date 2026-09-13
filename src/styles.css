@@ -2,6 +2,9 @@
 @source "../src";
 @import "tw-animate-css";
 
+/* Deliberately inert: there is no dark mode and no `.dark` class is ever set. Keep the
+ * declaration anyway — removing it would restore Tailwind's default media-query `dark:`
+ * variant, and `dark:` utilities (e.g. ui/alert.tsx) would start matching in OS dark mode. */
 @custom-variant dark (&:is(.dark *));
 
 /*
@@ -17,7 +20,7 @@
  * Radius scale is 8 / 16 / 32 / pill — nothing else is a step.
  * Cards lift with --elevation-2; the 1px border is the fallback for cards on white.
  * Purple is the category badge only — never a general accent.
- * Type is four fluid ramps; never an arbitrary px size.
+ * Type is five fluid ramps (--type-1..5; --type-5 is hero-only); never an arbitrary px size.
  */
 
 @theme inline {
@@ -185,10 +188,11 @@
    * the darker half of a two-tier grey that existed so secondary text on the page
    * ground could clear AA. With --muted-foreground now on the foundation value,
    * both tiers are the same colour and the split has no job left. Kept as a
-   * separate token only because `text-text2` is on ~100 call sites; merging the
-   * two is a follow-up, not a colour decision.
+   * separate name only because `text-text2` is on ~100 call sites, but it now
+   * points at --muted-foreground rather than repeating the hex, so the two cannot
+   * drift apart. Renaming the call sites is a follow-up.
    */
-  --text-secondary: #66666f;
+  --text-secondary: var(--muted-foreground);
 
   --pink-container: #fce7f3;
   --purple-container: color-mix(in oklab, var(--purple) 10%, transparent);
