@@ -5,7 +5,7 @@ export type Stat = {
   label: string;
   value: number;
   hint: string;
-  to: "/messages" | "/me" | "/recommended" | "/saved";
+  to: "/messages" | "/me" | "/recommendations/swipe" | "/saved";
 };
 
 export type ActivityEvent = {
@@ -73,7 +73,7 @@ export const dashboardData: DashboardData = {
       label: "Collab opportunities",
       value: 9,
       hint: "Matched to you",
-      to: "/recommended",
+      to: "/recommendations/swipe",
     },
   ],
   continueItems: [
@@ -168,7 +168,7 @@ export type DashLink =
   | "/"
   | "/messages"
   | "/me"
-  | "/recommended"
+  | "/recommendations/swipe"
   | "/saved"
   | "/search"
   | "/studio"

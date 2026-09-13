@@ -138,7 +138,7 @@ function Complete() {
               title="Create your band profile"
               body="A shared profile with members, shows and a joint calendar."
               action={
-                <Link to="/band" className="block">
+                <Link to="/bands/new" className="block">
                   <Btn className="w-full">Create band</Btn>
                 </Link>
               }

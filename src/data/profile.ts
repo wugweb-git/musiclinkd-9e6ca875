@@ -411,7 +411,7 @@ const rahul: PersonProfile = {
       name: "The Local Train",
       kind: "Artist",
       photo: u("photo-1514320291840-2e0a9bf2a9ae", 200),
-      link: { to: "/band" },
+      link: { to: "/bands" },
     },
   ],
   reviews: [

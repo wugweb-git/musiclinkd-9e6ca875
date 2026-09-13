@@ -129,7 +129,7 @@ export const destinations: QrDestination[] = [
     code: "private-band",
     type: "band",
     entityId: "the-kite-notes",
-    publicRoute: "/band",
+    publicRoute: "/bands/the-kite-notes",
     status: "private",
   },
   { code: "gone", type: "profile", entityId: "removed-user", publicRoute: "/", status: "deleted" },

@@ -108,7 +108,7 @@ function Discover() {
         />
         <div className="space-y-3 px-5">
           <Link
-            to="/recommended"
+            to="/recommendations/swipe"
             className="flex items-center gap-4 rounded-3xl border border-border bg-navy p-4 text-background"
           >
             <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-background/10 text-2xl">

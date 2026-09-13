@@ -93,6 +93,7 @@ import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsIndexRouteImport } from './routes/recommendations.index'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as RecommendationsSwipeRouteImport } from './routes/recommendations.swipe'
 import { Route as ReviewsIndexRouteImport } from './routes/reviews.index'
 import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
 import { Route as SearchIndexRouteImport } from './routes/search.index'
@@ -635,6 +636,11 @@ const RecommendationsIndexRoute = RecommendationsIndexRouteImport.update({
 const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
   id: '/recommendations/settings',
   path: '/recommendations/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsSwipeRoute = RecommendationsSwipeRouteImport.update({
+  id: '/recommendations/swipe',
+  path: '/recommendations/swipe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsIndexRoute = ReviewsIndexRouteImport.update({
@@ -1338,6 +1344,7 @@ export interface FileRoutesByFullPath {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/search/saved': typeof SearchSavedRoute
@@ -1546,6 +1553,7 @@ export interface FileRoutesByTo {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/search/saved': typeof SearchSavedRoute
@@ -1756,6 +1764,7 @@ export interface FileRoutesById {
   '/provider/policies': typeof ProviderPoliciesRoute
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/search/saved': typeof SearchSavedRoute
@@ -1967,6 +1976,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
     | '/search/saved'
@@ -2175,6 +2185,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
     | '/search/saved'
@@ -2384,6 +2395,7 @@ export interface FileRouteTypes {
     | '/provider/policies'
     | '/provider/pricing'
     | '/recommendations/settings'
+    | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
     | '/search/saved'
@@ -2594,6 +2606,7 @@ export interface RootRouteChildren {
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
   RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
+  RecommendationsSwipeRoute: typeof RecommendationsSwipeRoute
   ReviewsRequestRoute: typeof ReviewsRequestRoute
   SearchHistoryRoute: typeof SearchHistoryRoute
   SearchSavedRoute: typeof SearchSavedRoute
@@ -3313,6 +3326,13 @@ declare module '@tanstack/react-router' {
       path: '/recommendations/settings'
       fullPath: '/recommendations/settings'
       preLoaderRoute: typeof RecommendationsSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommendations/swipe': {
+      id: '/recommendations/swipe'
+      path: '/recommendations/swipe'
+      fullPath: '/recommendations/swipe'
+      preLoaderRoute: typeof RecommendationsSwipeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reviews/': {
@@ -4275,6 +4295,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
   RecommendationsSettingsRoute: RecommendationsSettingsRoute,
+  RecommendationsSwipeRoute: RecommendationsSwipeRoute,
   ReviewsRequestRoute: ReviewsRequestRoute,
   SearchHistoryRoute: SearchHistoryRoute,
   SearchSavedRoute: SearchSavedRoute,
