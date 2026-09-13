@@ -76,12 +76,12 @@ Code.**
 - [ ] No screen has a real loading skeleton or offline banner; the kit has neither primitive
 
 ## FLOW 23 — QR / Digital Identity & Sharing (requested Sep 2, design-only)
-- [ ] `src/data/identity.ts` — canonical QR destination model (type/entityId/publicRoute/status), seeded demo destinations
-- [ ] `src/components/ml/qr.tsx` — QR matrix renderer, identity card, scan frame, destination preview, share sheet
-- [ ] Routes: digital ID entry, personal/business QR, fullscreen, share sheet, scanner + scanning,
+- [x] `src/data/identity.ts` — canonical QR destination model (type/entityId/publicRoute/status), seeded demo destinations
+- [x] `src/components/ml/qr.tsx` — QR matrix renderer, identity card, scan frame, destination preview, share sheet
+- [x] Routes: digital ID entry, personal/business QR, fullscreen, share sheet, scanner + scanning,
       results (profile/business/service/marketplace/portfolio), invalid/expired/private/deleted/deactivated,
       customization, share card, digital business card, save contact, print preview, settings, analytics, scan history
-- [ ] Camera permission / denied / gallery-image scan fallbacks, loading / offline / network + share error states
+- [x] Camera permission / denied / gallery-image scan fallbacks, loading / offline / network + share error states
 
 ## FLOWS 15 / 16 / 17 / 18 / 20 / 22 (requested Sep 2, design-only, one coherent app)
 - [x] FLOW 15 Band — /bands, /bands/$id, /bands/new, /bands/$id/manage, /bands/$id/invite
@@ -149,8 +149,8 @@ Order is array order; `visibleSteps()` filters, it never reorders.
       other reference in `src/`.
 - [ ] **The rest of `dashboardData.user` is still fabricated.** The avatar and greeting name now
       resolve to the real viewer (`src/components/ml/viewer.tsx`, 10 Sep), but `user.available`
-      (`feed.tsx:170`), `user.role` (`feed.tsx:173`) and `data.user.profileCompletion`
-      (`feed.tsx:317,322`) still read hardcoded values from `dashboard.ts:54-60` — every user is
+      (`feed.tsx:185`), `user.role` (`feed.tsx:188`) and `data.user.profileCompletion`
+      (`feed.tsx:311,316`) still read hardcoded values from `dashboard.ts:55-61` — every user is
       "Music Producer · Mix Engineer", open to collaborations, 72% complete. Wiring these needs
       real dashboard data, not a bug fix; left for the backend/route-sweep work.
 - [ ] **`preview` is a peer route, not a step** — no `StepDef`, no entry in `steps`, so it is
