@@ -103,7 +103,7 @@ function Discussion() {
             </div>
             <p className="text-[13px] leading-relaxed">{d.body}</p>
             {d.attachment ? (
-              <p className="mt-2 rounded-2xl border border-border px-3 py-2 text-[11px] text-muted-foreground">
+              <p className="mt-2 rounded-lg border border-border px-3 py-2 text-[11px] text-muted-foreground">
                 Attached · {d.attachment}
               </p>
             ) : null}

@@ -132,7 +132,7 @@ function ListingDetail() {
               ? "Rental terms"
               : "Specifications"}
         </h2>
-        <dl className="mt-2 divide-y divide-border rounded-3xl border border-border">
+        <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
           {l.specs.map((s) => (
             <div key={s.label} className="flex items-center justify-between px-4 py-3">
               <dt className="text-xs text-muted-foreground">{s.label}</dt>
@@ -142,7 +142,7 @@ function ListingDetail() {
         </dl>
 
         <h2 className="mt-6 text-[16px]">{l.type === "product" ? "Seller" : "Provider"}</h2>
-        <div className="mt-2 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-2 rounded-lg border border-border bg-card p-4">
           <SellerSummary seller={seller} />
           <div className="mt-3 grid grid-cols-3 gap-2 text-center">
             {[
@@ -150,7 +150,7 @@ function ListingDetail() {
               { k: "Replies in", v: seller.responseTime },
               { k: "On MusicLinkd", v: `${seller.years} yrs` },
             ].map((x) => (
-              <div key={x.k} className="rounded-2xl bg-subtle py-2">
+              <div key={x.k} className="rounded-lg bg-subtle py-2">
                 <p className="text-[12px] font-bold">{x.v}</p>
                 <p className="text-[10px] text-muted-foreground">{x.k}</p>
               </div>
@@ -166,7 +166,7 @@ function ListingDetail() {
         <h2 className="mt-6 text-[16px]">Reviews</h2>
         <div className="mt-2 space-y-3">
           {reviews.slice(0, 2).map((r) => (
-            <article key={r.id} className="rounded-3xl border border-border bg-card p-4">
+            <article key={r.id} className="rounded-lg border border-border bg-card p-4">
               <div className="flex items-center justify-between">
                 <p className="text-[13px] font-semibold">{r.name}</p>
                 <Rating value={r.rating} />
@@ -176,7 +176,7 @@ function ListingDetail() {
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
               {r.response ? (
-                <p className="mt-2 rounded-2xl bg-subtle p-3 text-xs text-muted-foreground">
+                <p className="mt-2 rounded-lg bg-subtle p-3 text-xs text-muted-foreground">
                   Seller: {r.response}
                 </p>
               ) : null}

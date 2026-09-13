@@ -100,8 +100,8 @@ function RequestFlow() {
           })}
         </div>
 
-        <div className="mb-4 flex items-center gap-3 rounded-3xl border border-border bg-card p-3">
-          <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+        <div className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-semibold">{e.name}</p>
             <p className="truncate text-[11px] text-muted-foreground">
@@ -113,7 +113,7 @@ function RequestFlow() {
         {step === "dates" ? (
           <>
             <RentalCalendar e={e} start={start} end={end} onSelect={pick} />
-            <div className="mt-4 flex items-center justify-between rounded-3xl border border-border bg-card px-4 py-3">
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-[13px] font-semibold">Quantity</p>
                 <p className="text-[11px] text-muted-foreground">{e.quantity} available</p>
@@ -169,10 +169,10 @@ function RequestFlow() {
 
         {step === "request" ? (
           <>
-            <div className="rounded-3xl border border-border bg-card p-4">
+            <div className="rounded-lg border border-border bg-card p-4">
               <ProviderSummary p={p} />
             </div>
-            <dl className="mt-4 divide-y divide-border rounded-3xl border border-border">
+            <dl className="mt-4 divide-y divide-border rounded-lg border border-border">
               {[
                 { k: "Dates", v: `Aug ${start} – Aug ${end} (${days} days)` },
                 { k: "Quantity", v: `${qty}` },
@@ -197,7 +197,7 @@ function RequestFlow() {
               onChange={(ev) => setNote(ev.target.value)}
               rows={3}
               placeholder="Recording at Famous Studios, need it from 10 am on the 18th."
-              className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+              className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
             />
             <p className="mt-3 text-[11px] text-muted-foreground">
               No payment is taken now. The provider confirms availability and the final amount in
@@ -225,7 +225,7 @@ function RequestFlow() {
               {p.name} usually replies {p.responseTime.toLowerCase()}. You'll get a notification
               when they accept, decline or counter.
             </p>
-            <dl className="mt-5 divide-y divide-border rounded-3xl border border-border text-left">
+            <dl className="mt-5 divide-y divide-border rounded-lg border border-border text-left">
               {[
                 { k: "Reference", v: "ML-RNT-48310" },
                 { k: "Equipment", v: e.name },

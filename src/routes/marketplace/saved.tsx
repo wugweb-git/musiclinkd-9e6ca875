@@ -41,7 +41,7 @@ function SavedMarket() {
           ? ["condenser microphone · Mumbai", "sitar under ₹80,000", "jam room Bandra"].map((s) => (
               <article
                 key={s}
-                className="flex items-center justify-between rounded-3xl border border-border bg-card p-4"
+                className="flex items-center justify-between rounded-lg border border-border bg-card p-4"
               >
                 <div>
                   <p className="text-[13px] font-semibold">{s}</p>
@@ -57,9 +57,9 @@ function SavedMarket() {
                 key={s.id}
                 to="/marketplace/seller/$id"
                 params={{ id: s.id }}
-                className="flex items-center gap-3 rounded-3xl border border-border bg-card p-4"
+                className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
               >
-                <img src={s.photo} alt={s.name} className="h-12 w-12 rounded-2xl object-cover" />
+                <img src={s.photo} alt={s.name} className="h-12 w-12 rounded-md object-cover" />
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{s.name}</p>
                   <p className="truncate text-[11px] text-muted-foreground">{s.role}</p>

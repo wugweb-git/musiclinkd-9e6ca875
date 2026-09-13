@@ -46,7 +46,7 @@ function Preview() {
       />
 
       <main className="px-5 pt-4">
-        <section className="rounded-3xl border border-border bg-card p-5">
+        <section className="rounded-lg border border-border bg-card p-5">
           <div className="flex items-center gap-4">
             <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-border bg-subtle">
               {d.photo ? (
@@ -96,7 +96,7 @@ function Preview() {
         />
         <Row title="Visibility" items={[d.visibility]} onEdit={() => edit("visibility")} />
 
-        <p className="mt-6 rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
+        <p className="mt-6 rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
           Anything empty simply doesn't show on your profile. You can fill it in later from your
           profile settings.
         </p>
@@ -118,7 +118,7 @@ function Preview() {
 
 function Row({ title, items, onEdit }: { title: string; items: string[]; onEdit: () => void }) {
   return (
-    <section className="mt-3 rounded-3xl border border-border bg-card p-4">
+    <section className="mt-3 rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold">{title}</h2>
         <button

@@ -40,9 +40,9 @@ function Saved() {
       <div className="space-y-3 px-5">
         {tab === "Studios"
           ? studios.map((s) => (
-              <article key={s.name} className="rounded-3xl border border-border bg-card p-4">
+              <article key={s.name} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center gap-3">
-                  <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-2xl object-cover" />
+                  <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-[14px]">{s.name}</h3>
                     <p className="truncate text-[11px] text-muted-foreground">
@@ -55,9 +55,9 @@ function Saved() {
               </article>
             ))
           : talents.slice(0, 3).map((t) => (
-              <article key={t.id} className="rounded-3xl border border-border bg-card p-4">
+              <article key={t.id} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center gap-3">
-                  <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-2xl object-cover" />
+                  <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-md object-cover" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
                       <h3 className="truncate text-[14px]">{t.name}</h3>
@@ -83,7 +83,7 @@ function Saved() {
 
 function Notes({ note, tags }: { note: string; tags: string[] }) {
   return (
-    <div className="mt-3 rounded-2xl bg-subtle p-3">
+    <div className="mt-3 rounded-lg bg-subtle p-3">
       <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
         Your note
       </p>

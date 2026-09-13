@@ -63,7 +63,7 @@ function Studio() {
           </span>
         </div>
 
-        <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-3xl border border-border bg-card py-3 text-center">
+        <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
           <div>
             <p className="text-[15px] font-bold">₹1,800</p>
             <p className="text-[10px] uppercase text-muted-foreground">Per hour</p>
@@ -108,7 +108,7 @@ function Studio() {
               key={p}
               src={p}
               alt="Studio room"
-              className="h-32 w-[220px] shrink-0 rounded-2xl border border-border object-cover"
+              className="h-32 w-[220px] shrink-0 rounded-lg border border-border object-cover"
             />
           ))}
         </div>
@@ -116,7 +116,7 @@ function Studio() {
 
       <section className="px-5 pt-6">
         <h2 className="mb-3 text-[15px]">Availability · August 2026</h2>
-        <div className="rounded-3xl border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="grid grid-cols-7 gap-1.5 text-center">
             {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
               <span key={i} className="text-[10px] font-bold text-muted-foreground">
@@ -129,7 +129,7 @@ function Studio() {
               return (
                 <span
                   key={i}
-                  className={`flex h-9 items-center justify-center rounded-xl text-[11px] font-semibold ${
+                  className={`flex h-9 items-center justify-center rounded-md text-[11px] font-semibold ${
                     sel
                       ? "bg-primary text-primary-foreground"
                       : busy

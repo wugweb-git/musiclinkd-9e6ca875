@@ -60,7 +60,7 @@ function Complete() {
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
-        <section className="rounded-3xl border border-border bg-card p-5">
+        <section className="rounded-lg border border-border bg-card p-5">
           <PartyPopper size={26} className="text-primary" />
           <h1 className="mt-3 text-[24px] leading-tight">
             You're on MusicLinkd, {d.displayName.split(" ")[0] || "there"}

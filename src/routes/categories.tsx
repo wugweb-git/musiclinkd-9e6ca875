@@ -30,10 +30,10 @@ function Categories() {
           <Link
             key={c.slug}
             to={c.slug === "singers" ? "/singers" : "/search"}
-            className="rounded-3xl border border-border bg-card p-4"
+            className="rounded-lg border border-border bg-card p-4"
           >
             <span
-              className="flex h-12 w-12 items-center justify-center rounded-2xl text-xl"
+              className="flex h-12 w-12 items-center justify-center rounded-md text-xl"
               style={{ background: "var(--pink-container)" }}
             >
               {c.emoji}

@@ -70,7 +70,7 @@ function Welcome() {
           ].map((f) => (
             <li
               key={f.title}
-              className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4"
+              className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
             >
               <span className="mt-0.5 text-primary">{f.icon}</span>
               <span>

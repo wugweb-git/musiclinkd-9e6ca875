@@ -187,7 +187,7 @@ function Schedule() {
                 }}
               />
             </div>
-            <p className="mt-3 rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
+            <p className="mt-3 rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
               {formatTime(draft.start)} – {formatTime(endTime)} · {draft.hours} hr
               {draft.hours > 1 ? "s" : ""} · {b.timezone}
             </p>

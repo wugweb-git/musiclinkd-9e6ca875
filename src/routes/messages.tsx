@@ -32,7 +32,7 @@ function Messages() {
       <div className="px-5 pt-4">
         <Link
           to="/collab"
-          className="flex items-center justify-between rounded-3xl border border-border bg-card px-4 py-4"
+          className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-4"
         >
           <span className="min-w-0">
             <span className="block text-[14px] font-semibold">Collaborations</span>
@@ -44,7 +44,7 @@ function Messages() {
         </Link>
         <Link
           to="/portfolio/select"
-          className="mt-3 flex items-center justify-between rounded-3xl border border-border bg-card px-4 py-4"
+          className="mt-3 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-4"
         >
           <span className="min-w-0">
             <span className="block text-[14px] font-semibold">Share work</span>

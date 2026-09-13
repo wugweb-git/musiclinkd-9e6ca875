@@ -56,7 +56,7 @@ function ManageOpportunity() {
               { label: "Applicants", value: o.applicants },
               { label: "Shortlisted", value: o.applicantSummary.shortlisted },
             ].map((s) => (
-              <div key={s.label} className="rounded-2xl bg-subtle p-3">
+              <div key={s.label} className="rounded-lg bg-subtle p-3">
                 <p className="text-[11px] text-muted-foreground">{s.label}</p>
                 <p className="mt-1 text-[17px] font-bold">{s.value}</p>
               </div>

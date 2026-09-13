@@ -53,7 +53,7 @@ function Checkout() {
               key={c}
               type="button"
               onClick={() => setCycle(c)}
-              className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left ${cycle === c ? "border-primary" : "border-border"}`}
+              className={`flex w-full items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left ${cycle === c ? "border-primary" : "border-border"}`}
             >
               <span className="min-w-0">
                 <span className="block text-[13px] font-semibold capitalize">{c}</span>

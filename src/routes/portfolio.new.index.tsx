@@ -36,10 +36,10 @@ function AddWork() {
               key={t.kind}
               to="/portfolio/new/$kind"
               params={{ kind: t.kind }}
-              className="flex items-center gap-3 rounded-3xl border border-border bg-card p-4"
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
             >
               <span
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-xl"
                 style={{ background: "var(--surface-subtle)" }}
                 aria-hidden
               >

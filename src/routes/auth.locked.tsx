@@ -29,7 +29,7 @@ function LockedScreen() {
   return (
     <AuthScreen>
       <div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-3xl"
+        className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
         style={{ background: "color-mix(in oklab, var(--destructive) 12%, transparent)" }}
       >
         <ShieldAlert size={22} className="text-destructive" />
@@ -39,7 +39,7 @@ function LockedScreen() {
         sub="We saw several failed attempts on this account. This protects your work from someone guessing your password."
       />
 
-      <div className="mb-6 rounded-3xl border border-border bg-card p-4">
+      <div className="mb-6 rounded-lg border border-border bg-card p-4">
         <p className="text-[13px] font-semibold">What you can do</p>
         <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
           <li>• Reset your password — that lifts the hold immediately.</li>

@@ -229,7 +229,7 @@ export function Sheet({
         onClick={onClose}
         className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
       />
-      <div className="relative max-h-[88vh] overflow-y-auto rounded-t-lg border border-border bg-card px-5 pb-8 pt-3 no-scrollbar">
+      <div className="relative max-h-[88vh] overflow-y-auto rounded-t-2xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
         {title ? <h2 className="mb-4 text-xl">{title}</h2> : null}
         {children}

@@ -52,7 +52,7 @@ function SavedRentals() {
           ? recentRentalSearches.map((s) => (
               <article
                 key={s}
-                className="flex items-center justify-between gap-3 rounded-3xl border border-border bg-card p-4"
+                className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4"
               >
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{s}</p>

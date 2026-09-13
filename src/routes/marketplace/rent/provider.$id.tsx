@@ -51,7 +51,7 @@ function ProviderProfile() {
 
       <div className="px-5 py-4">
         <div className="flex items-start gap-3">
-          <img src={p.photo} alt={p.name} className="h-20 w-20 shrink-0 rounded-3xl object-cover" />
+          <img src={p.photo} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg object-cover" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <h1 className="truncate text-[20px] leading-tight">{p.name}</h1>
@@ -85,7 +85,7 @@ function ProviderProfile() {
             { k: "Replies", v: p.responseTime.replace("Under ", "<") },
             { k: "Active", v: `${p.years} yrs` },
           ].map((x) => (
-            <div key={x.k} className="rounded-2xl bg-subtle px-1 py-2">
+            <div key={x.k} className="rounded-lg bg-subtle px-1 py-2">
               <p className="truncate text-[12px] font-bold">{x.v}</p>
               <p className="text-[10px] text-muted-foreground">{x.k}</p>
             </div>
@@ -125,7 +125,7 @@ function ProviderProfile() {
 
         {tab === "Reviews"
           ? rentalReviews.map((r) => (
-              <article key={r.id} className="rounded-3xl border border-border bg-card p-4">
+              <article key={r.id} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-[13px] font-semibold">{r.name}</p>
@@ -137,7 +137,7 @@ function ProviderProfile() {
                 </div>
                 <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{r.body}</p>
                 {r.response ? (
-                  <p className="mt-2 rounded-2xl bg-subtle p-3 text-[12px] text-muted-foreground">
+                  <p className="mt-2 rounded-lg bg-subtle p-3 text-[12px] text-muted-foreground">
                     <span className="font-semibold">{p.name}:</span> {r.response}
                   </p>
                 ) : null}
@@ -147,10 +147,10 @@ function ProviderProfile() {
 
         {tab === "About" ? (
           <>
-            <p className="rounded-3xl border border-border bg-card p-4 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="rounded-lg border border-border bg-card p-4 text-[13px] leading-relaxed text-muted-foreground">
               {p.bio}
             </p>
-            <dl className="divide-y divide-border rounded-3xl border border-border">
+            <dl className="divide-y divide-border rounded-lg border border-border">
               {[
                 { k: "Based in", v: p.location },
                 { k: "On MusicLinkd", v: `${p.years} years` },

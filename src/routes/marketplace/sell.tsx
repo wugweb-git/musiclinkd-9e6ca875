@@ -66,10 +66,10 @@ function Sell() {
               <button
                 key={t.label}
                 onClick={() => setType(t.label)}
-                className={`flex w-full items-center gap-3 rounded-3xl border p-4 text-left ${type === t.label ? "border-primary" : "border-border"} bg-card`}
+                className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left ${type === t.label ? "border-primary" : "border-border"} bg-card`}
               >
                 <span
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg"
+                  className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
                   style={{ background: "var(--pink-container)" }}
                 >
                   {t.emoji}
@@ -83,7 +83,7 @@ function Sell() {
         {step === 1 ? (
           <div>
             <div className="grid grid-cols-3 gap-3">
-              <div className="col-span-2 flex aspect-square items-center justify-center rounded-3xl border border-dashed border-border bg-card text-center text-xs text-muted-foreground">
+              <div className="col-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-center text-xs text-muted-foreground">
                 Cover photo
                 <br />
                 Tap to add
@@ -91,7 +91,7 @@ function Sell() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="flex aspect-square items-center justify-center rounded-2xl border border-dashed border-border bg-card text-lg text-muted-foreground"
+                  className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-lg text-muted-foreground"
                 >
                   +
                 </div>
@@ -138,7 +138,7 @@ function Sell() {
               <textarea
                 rows={4}
                 placeholder="Condition, history, what's included..."
-                className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
               />
             </Field>
             <Field label="Location">
@@ -151,7 +151,7 @@ function Sell() {
         ) : null}
 
         {step === 3 ? (
-          <div className="overflow-hidden rounded-3xl border border-border bg-card">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
             <div className="flex h-40 items-center justify-center bg-subtle text-xs text-muted-foreground">
               Cover photo
             </div>
@@ -161,8 +161,8 @@ function Sell() {
               <p className="text-[11px] text-muted-foreground">
                 {type} · {condition} · Dadar, Mumbai
               </p>
-              <div className="mt-3 flex items-center gap-3 rounded-2xl bg-subtle p-3">
-                <img src={seller.photo} alt="" className="h-10 w-10 rounded-xl object-cover" />
+              <div className="mt-3 flex items-center gap-3 rounded-lg bg-subtle p-3">
+                <img src={seller.photo} alt="" className="h-10 w-10 rounded-md object-cover" />
                 <div>
                   <p className="text-[12px] font-semibold">{seller.name}</p>
                   <p className="text-[10px] text-muted-foreground">{seller.role}</p>

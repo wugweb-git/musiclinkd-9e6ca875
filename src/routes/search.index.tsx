@@ -100,7 +100,7 @@ function SearchResults() {
 function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
   return (
     <div>
-      <div className="relative h-56 overflow-hidden rounded-3xl">
+      <div className="relative h-56 overflow-hidden rounded-lg">
         <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4 text-background">
@@ -117,7 +117,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-3xl border border-border bg-card py-3 text-center">
+      <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
         <div>
           <p className="text-[15px] font-bold">{t.followers}</p>
           <p className="text-[10px] uppercase text-muted-foreground">Followers</p>
@@ -149,9 +149,9 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
           (p) => (
             <div
               key={p}
-              className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3"
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-subtle">
+              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-subtle">
                 ▶
               </span>
               <p className="flex-1 text-xs font-semibold">{p}</p>

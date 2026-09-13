@@ -57,7 +57,7 @@ function Cancel() {
       <Screen>
         <TopBar title="Cancelled" back="/bookings" />
         <main className="px-5 pt-6">
-          <div className="rounded-3xl border border-border bg-card p-5">
+          <div className="rounded-lg border border-border bg-card p-5">
             <p className="font-semibold">Booking cancelled</p>
             <p className="mt-1 text-sm text-muted-foreground">
               {b.name} has been notified. Any refund reaches your original payment method in 5–7
@@ -80,7 +80,7 @@ function Cancel() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
       <TopBar title="Cancel booking" subtitle={`#${bk.ref}`} back={`/bookings/${bk.ref}`} />
       <main className="px-5 pt-4">
-        <div className="rounded-3xl border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <p className="font-semibold">{b.name}</p>
           <p className="text-xs text-muted-foreground">{r.name}</p>
           <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
@@ -107,7 +107,7 @@ function Cancel() {
               type="button"
               onClick={() => setReason(x)}
               aria-pressed={reason === x}
-              className={`flex min-h-12 w-full items-center justify-between rounded-2xl border bg-card px-4 text-left text-sm ${
+              className={`flex min-h-12 w-full items-center justify-between rounded-lg border bg-card px-4 text-left text-sm ${
                 reason === x ? "border-primary" : "border-border"
               }`}
             >
@@ -127,7 +127,7 @@ function Cancel() {
           <textarea
             rows={3}
             placeholder="Anything they should know…"
-            className="mt-2 w-full resize-none rounded-2xl border border-border bg-card p-3 text-sm outline-none focus:border-primary"
+            className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-3 text-sm outline-none focus:border-primary"
           />
         </label>
       </main>

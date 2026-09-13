@@ -30,16 +30,18 @@
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /*
-   * Radius. The scale is 8 / 16 / 32 / pill. `xl`, `2xl` and `3xl` are retained as
-   * aliases of 32px so the ~450 existing utility usages keep rendering on-scale
-   * instead of silently falling back to Tailwind's defaults (which would collapse
-   * 2xl from 40px to 16px). They fold into `rounded-lg` when Phase 8 sweeps routes.
+   * Radius — the Material 3 shape scale (13 Sep 2026), the Android/mobile standard.
+   * Roles: sm 8 chips and small controls · md 12 small tiles, thumbnails, inputs ·
+   * lg 16 CARDS and list containers · xl 20 large tiles · 2xl 28 sheets and dialogs ·
+   * 3xl 32 hero / full-bleed only · full for buttons and pills. Cards were 32px before
+   * this change; every card now uses rounded-lg. Pick by role, never by look.
    */
+  --radius-xs: 4px;
   --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 32px;
-  --radius-xl: 32px;
-  --radius-2xl: 32px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
   --radius-3xl: 32px;
 
   /*
@@ -123,7 +125,7 @@
 }
 
 :root {
-  --radius: 32px;
+  --radius: 16px; /* shadcn base = the card radius */
   /*
    * #ECECF1. Was #FCFCFD, which measured 1.025:1 against the #FFFFFF card fill —
    * roughly six times below the step at which a person can see a surface edge, so

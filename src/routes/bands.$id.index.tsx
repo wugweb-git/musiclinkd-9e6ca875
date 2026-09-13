@@ -70,7 +70,7 @@ function BandProfile() {
           <img
             src={band.avatar}
             alt=""
-            className="h-20 w-20 shrink-0 rounded-3xl border-4 border-background object-cover"
+            className="h-20 w-20 shrink-0 rounded-lg border-4 border-background object-cover"
           />
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex items-center gap-1.5">

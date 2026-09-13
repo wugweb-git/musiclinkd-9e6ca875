@@ -74,7 +74,7 @@ function NewBusiness() {
                   key={t.key}
                   type="button"
                   onClick={() => setType(t.key)}
-                  className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left ${
+                  className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left ${
                     type === t.key
                       ? "border-primary bg-pink-container/40"
                       : "border-border bg-background"
@@ -252,7 +252,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? ""}
-        className="mt-1.5 min-h-12 w-full rounded-2xl border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
+        className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
       />
     </label>
   );

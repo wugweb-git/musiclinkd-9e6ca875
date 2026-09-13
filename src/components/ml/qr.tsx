@@ -242,7 +242,7 @@ export function DestinationPreviewCard({ preview }: { preview: DestinationPrevie
             src={preview.image}
             alt=""
             className={`h-20 w-20 shrink-0 object-cover ${
-              preview.kind === "profile" ? "rounded-full" : "rounded-md"
+              preview.kind === "profile" ? "rounded-full" : "rounded-lg"
             }`}
           />
         ) : null}
@@ -309,7 +309,7 @@ export function ActionRow({
     </>
   );
   const cls =
-    "flex w-full items-center gap-3 rounded-md border border-border bg-card px-4 py-3 text-left";
+    "flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left";
   if (to) {
     return (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -464,5 +464,5 @@ export function PrimaryPair({
 }
 
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-md bg-subtle ${className}`} />;
+  return <div className={`animate-pulse rounded-lg bg-subtle ${className}`} />;
 }

@@ -108,7 +108,7 @@ function Recs() {
                           src={r.image}
                           alt=""
                           loading="lazy"
-                          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+                          className="h-20 w-20 shrink-0 rounded-lg object-cover"
                         />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-2">
@@ -183,7 +183,7 @@ function Recs() {
                 if (feedbackFor) setHidden((p) => [...p, feedbackFor]);
                 setFeedbackFor(null);
               }}
-              className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
+              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
             >
               {f}
             </button>

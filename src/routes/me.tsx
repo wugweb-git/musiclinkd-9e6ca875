@@ -53,9 +53,9 @@ function MyProfile() {
       <Screen>
         <TopBar title="My profile" />
         <div className="space-y-3 px-5 py-6" aria-busy>
-          <div className="h-32 animate-pulse rounded-3xl bg-subtle" />
+          <div className="h-32 animate-pulse rounded-lg bg-subtle" />
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-2xl bg-subtle" />
+            <div key={i} className="h-16 animate-pulse rounded-lg bg-subtle" />
           ))}
         </div>
       </Screen>

@@ -64,7 +64,7 @@ function SavedSearches() {
                 ))}
               </div>
 
-              <div className="flex items-center justify-between gap-3 rounded-md bg-subtle px-4 py-3">
+              <div className="flex items-center justify-between gap-3 rounded-lg bg-subtle px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   {alerts[s.id] ? (
                     <Bell size={16} className="shrink-0 text-primary" aria-hidden />

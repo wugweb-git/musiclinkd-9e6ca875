@@ -117,10 +117,10 @@ export function CategoryTile({
     <Link
       to="/marketplace/c/$slug"
       params={{ slug }}
-      className="flex w-[104px] shrink-0 flex-col gap-2 rounded-3xl border border-border bg-card p-3"
+      className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg border border-border bg-card p-3"
     >
       <span
-        className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg"
+        className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
         style={{ background: "var(--pink-container)" }}
       >
         {emoji}
@@ -160,7 +160,7 @@ export function ListingCard({
     <Link
       to="/marketplace/l/$id"
       params={{ id: l.id }}
-      className="block overflow-hidden rounded-3xl border border-border bg-card"
+      className="block overflow-hidden rounded-lg border border-border bg-card"
     >
       <div className="relative">
         <img src={l.photos[0]} alt={l.title} loading="lazy" className="h-40 w-full object-cover" />
@@ -200,7 +200,7 @@ export function ListingTile({ l }: { l: Listing }) {
     <Link
       to="/marketplace/l/$id"
       params={{ id: l.id }}
-      className="block w-[168px] shrink-0 overflow-hidden rounded-3xl border border-border bg-card"
+      className="block w-[168px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
     >
       <div className="relative h-[124px]">
         <img
@@ -225,13 +225,13 @@ export function ListingTile({ l }: { l: Listing }) {
 export function ListingRow({ l }: { l: Listing }) {
   const [saved, setSaved] = useState(false);
   return (
-    <article className="flex gap-3 rounded-3xl border border-border bg-card p-3">
+    <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
       <Link to="/marketplace/l/$id" params={{ id: l.id }} className="shrink-0">
         <img
           src={l.photos[0]}
           alt={l.title}
           loading="lazy"
-          className="h-24 w-24 rounded-2xl object-cover"
+          className="h-24 w-24 rounded-lg object-cover"
         />
       </Link>
       <div className="min-w-0 flex-1">
@@ -274,7 +274,7 @@ export function SellerSummary({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-2xl object-cover" />
+      <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-md object-cover" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate text-2 font-semibold">{seller.name}</p>
@@ -304,9 +304,9 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center">
+    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
       <div
-        className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl text-2xl"
+        className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-md text-2xl"
         style={{ background: "var(--surface-subtle)" }}
       >
         {emoji}
@@ -320,7 +320,7 @@ export function EmptyState({
 
 export function ListingSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-border bg-card">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <div className="h-40 w-full animate-pulse bg-subtle" />
       <div className="space-y-2 p-3.5">
         <div className="h-4 w-24 animate-pulse rounded-full bg-subtle" />
@@ -381,7 +381,7 @@ export function MarketFilterSheet({
         </div>
       ))}
 
-      <div className="mb-6 divide-y divide-border rounded-3xl border border-border">
+      <div className="mb-6 divide-y divide-border rounded-lg border border-border">
         <SwitchRow label="Verified sellers only" value={verified} onChange={setVerified} />
         <SwitchRow label="Available right now" value={available} onChange={setAvailable} />
       </div>
@@ -437,7 +437,7 @@ export function SortSheet({
 }) {
   return (
     <Sheet open={open} onClose={onClose} title="Sort by">
-      <div className="divide-y divide-border rounded-3xl border border-border">
+      <div className="divide-y divide-border rounded-lg border border-border">
         {options.map((o) => (
           <button
             key={o}
@@ -496,8 +496,8 @@ export function OfferSheet({
       ) : (
         <>
           <h2 className="mb-4 text-xl">Make an offer</h2>
-          <div className="mb-5 flex items-center gap-3 rounded-3xl border border-border p-3">
-            <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-2xl object-cover" />
+          <div className="mb-5 flex items-center gap-3 rounded-lg border border-border p-3">
+            <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-md object-cover" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-1 font-semibold">{listing.title}</p>
               <p className="text-1 text-muted-foreground">Asking {listing.price}</p>
@@ -531,7 +531,7 @@ export function OfferSheet({
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
             placeholder="I can collect from Dadar this weekend."
-            className="mb-3 w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+            className="mb-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
           />
           <p className="mb-5 text-1 text-muted-foreground">
             Offers expire after 48 hours. Payment is arranged directly with the seller.
@@ -557,7 +557,7 @@ export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => v
   const [reason, setReason] = useState(reasons[0]!);
   return (
     <Sheet open={open} onClose={onClose} title="Report listing">
-      <div className="mb-5 divide-y divide-border rounded-3xl border border-border">
+      <div className="mb-5 divide-y divide-border rounded-lg border border-border">
         {reasons.map((r) => (
           <button
             key={r}

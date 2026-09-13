@@ -63,7 +63,7 @@ function ReviewsHub() {
           </div>
           <div className="grid grid-cols-3 gap-2 pt-1">
             {ratingSummary.criteria.map((c) => (
-              <div key={c.label} className="rounded-2xl bg-subtle p-3">
+              <div key={c.label} className="rounded-lg bg-subtle p-3">
                 <p className="truncate text-[11px] text-muted-foreground">{c.label}</p>
                 <p className="mt-1 text-[17px] font-bold">{c.value}</p>
               </div>
@@ -100,7 +100,7 @@ function ReviewsHub() {
                     src={p.photo}
                     alt=""
                     loading="lazy"
-                    className="h-12 w-12 shrink-0 rounded-2xl object-cover"
+                    className="h-12 w-12 shrink-0 rounded-md object-cover"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{p.title}</p>
@@ -168,7 +168,7 @@ function ReviewsHub() {
               key={r}
               type="button"
               onClick={() => setFlagging(null)}
-              className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
+              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
             >
               {r}
             </button>
@@ -222,7 +222,7 @@ function ReviewCard({
         ))}
       </div>
       {r.response ? (
-        <div className="rounded-2xl bg-subtle p-3">
+        <div className="rounded-lg bg-subtle p-3">
           <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
             Your response · {r.response.at}
           </p>
@@ -234,7 +234,7 @@ function ReviewCard({
           <textarea
             rows={3}
             placeholder="Reply once, publicly."
-            className="w-full rounded-2xl border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
+            className="w-full rounded-lg border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
           />
           <div className="flex gap-2">
             <Btn className="flex-1 text-xs" onClick={() => setResponding(false)}>

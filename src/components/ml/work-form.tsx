@@ -80,7 +80,7 @@ export function WorkForm({
 
   return (
     <>
-      <div className="rounded-3xl border border-border bg-card p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         <p className="text-2xl" aria-hidden>
           {t.emoji}
         </p>
@@ -152,7 +152,7 @@ export function WorkForm({
                 type="button"
                 onClick={() => setVisibility(v.value)}
                 aria-pressed={visibility === v.value}
-                className={`w-full rounded-2xl border p-4 text-left ${
+                className={`w-full rounded-lg border p-4 text-left ${
                   visibility === v.value ? "border-primary bg-card" : "border-border bg-card"
                 }`}
               >

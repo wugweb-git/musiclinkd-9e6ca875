@@ -283,7 +283,7 @@ export function StepShell({
         <h1 className="text-3 leading-tight">{title}</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
         <p
-          className="mt-3 rounded-2xl px-4 py-3 text-xs leading-relaxed text-muted-foreground"
+          className="mt-3 rounded-lg px-4 py-3 text-xs leading-relaxed text-muted-foreground"
           style={{ background: "var(--pink-container)" }}
         >
           {why}
@@ -357,7 +357,7 @@ export function ChoiceGrid({
             type="button"
             aria-pressed={on}
             onClick={() => onSelect(o.key)}
-            className={`flex min-h-[104px] flex-col items-start justify-between rounded-3xl border p-4 text-left transition-colors ${
+            className={`flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-colors ${
               on ? "border-primary bg-card" : "border-border bg-card"
             }`}
             style={on ? { background: "var(--pink-container)" } : undefined}
@@ -399,13 +399,13 @@ export function OptionList({
               type="button"
               aria-pressed={on}
               onClick={() => onToggle(o.key)}
-              className={`flex w-full items-start gap-3 rounded-3xl border p-4 text-left ${
+              className={`flex w-full items-start gap-3 rounded-lg border p-4 text-left ${
                 on ? "border-primary" : "border-border"
               } bg-card`}
             >
               <span
                 className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border ${
-                  multi ? "rounded-md" : "rounded-full"
+                  multi ? "rounded-lg" : "rounded-full"
                 } ${on ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
               >
                 {on ? <Check size={12} strokeWidth={3} /> : null}
@@ -459,7 +459,7 @@ export function InlineField({
         {label}
       </label>
       <div
-        className={`flex min-h-14 items-center gap-1 rounded-2xl border px-4 py-3 ${
+        className={`flex min-h-14 items-center gap-1 rounded-lg border px-4 py-3 ${
           error ? "border-destructive" : "border-border"
         } bg-card`}
       >
@@ -576,7 +576,7 @@ export function PhotoPicker({
               <button
                 type="button"
                 onClick={() => pick(o.src)}
-                className="flex min-h-14 w-full items-center gap-3 rounded-2xl border border-border bg-card px-4 text-sm font-semibold"
+                className="flex min-h-14 w-full items-center gap-3 rounded-lg border border-border bg-card px-4 text-sm font-semibold"
               >
                 {o.icon}
                 {o.label}
@@ -622,7 +622,7 @@ export function SelectField({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        className="min-h-14 w-full rounded-2xl border border-border bg-card px-4 text-sm outline-none disabled:opacity-50"
+        className="min-h-14 w-full rounded-lg border border-border bg-card px-4 text-sm outline-none disabled:opacity-50"
       >
         <option value="">{placeholder}</option>
         {options.map((o) => (
@@ -643,7 +643,7 @@ export function OfflineBanner() {
   return (
     <div
       role="status"
-      className="mb-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-4"
+      className="mb-4 flex items-start gap-3 rounded-lg border border-border bg-card p-4"
     >
       <WifiOff size={16} className="mt-0.5 shrink-0 text-warn" />
       <p className="text-xs leading-relaxed text-muted-foreground">
@@ -656,7 +656,7 @@ export function OfflineBanner() {
 
 export function ErrorBanner({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div role="alert" className="mb-4 rounded-2xl border border-destructive/40 bg-card p-4">
+    <div role="alert" className="mb-4 rounded-lg border border-destructive/40 bg-card p-4">
       <p className="text-sm font-semibold text-destructive">We couldn't save that</p>
       <p className="mt-1 text-xs text-muted-foreground">{message}</p>
       <button
@@ -674,7 +674,7 @@ export function SavingBanner({ label = "Saving your answers…" }: { label?: str
   return (
     <div
       role="status"
-      className="mb-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4"
+      className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card p-4"
     >
       <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
       <p className="text-xs text-muted-foreground">{label}</p>
@@ -710,7 +710,7 @@ export function SyncBanner({
   }
   if (state === "local") {
     return (
-      <div role="status" className="mb-4 rounded-2xl border border-border bg-card p-4">
+      <div role="status" className="mb-4 rounded-lg border border-border bg-card p-4">
         <p className="text-xs leading-relaxed text-muted-foreground">{localNote}</p>
       </div>
     );
@@ -722,7 +722,7 @@ export function StepSkeleton() {
   return (
     <div className="space-y-3" aria-hidden>
       {[0, 1, 2, 3, 4].map((i) => (
-        <div key={i} className="h-14 animate-pulse rounded-2xl bg-subtle" />
+        <div key={i} className="h-14 animate-pulse rounded-md bg-subtle" />
       ))}
     </div>
   );
@@ -755,7 +755,7 @@ export function ReadinessCard({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
+    <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
       <span
         className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
           done
@@ -799,7 +799,7 @@ export function HandoffCard({
   onLater?: () => void;
 }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-5">
+    <div className="rounded-lg border border-border bg-card p-5">
       <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
       <h3 className="mt-1 text-lg">{title}</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>

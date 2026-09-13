@@ -78,7 +78,7 @@ function PortfolioAnalytics() {
                     key={item.id}
                     to="/portfolio/$id"
                     params={{ id: item.id }}
-                    className="block rounded-3xl border border-border bg-card p-4"
+                    className="block rounded-lg border border-border bg-card p-4"
                   >
                     <p className="truncate text-sm font-semibold">{item.title}</p>
                     <p className="mt-1 text-xs text-muted-foreground">

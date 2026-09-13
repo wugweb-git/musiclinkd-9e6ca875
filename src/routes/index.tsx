@@ -54,10 +54,10 @@ function Discover() {
           <Link
             key={c.label}
             to="/categories"
-            className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-3xl border border-border bg-card px-2 py-3"
+            className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3"
           >
             <span
-              className="flex h-11 w-11 items-center justify-center rounded-2xl text-lg"
+              className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
               style={{ background: "var(--pink-container)" }}
             >
               {c.emoji}
@@ -82,7 +82,7 @@ function Discover() {
           {trending.map((t) => (
             <article
               key={t.name}
-              className="relative h-40 w-[260px] shrink-0 overflow-hidden rounded-3xl border border-border"
+              className="relative h-40 w-[260px] shrink-0 overflow-hidden rounded-lg border border-border"
             >
               <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
@@ -109,9 +109,9 @@ function Discover() {
         <div className="space-y-3 px-5">
           <Link
             to="/recommendations/swipe"
-            className="flex items-center gap-4 rounded-3xl border border-border bg-ink p-4 text-background"
+            className="flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background"
           >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-background/10 text-2xl">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-background/10 text-2xl">
               ✨
             </span>
             <div className="min-w-0 flex-1">
@@ -125,14 +125,14 @@ function Discover() {
           <div className="grid grid-cols-2 gap-3">
             <Link
               to="/recommendations"
-              className="min-w-0 rounded-3xl border border-border bg-card p-4"
+              className="min-w-0 rounded-lg border border-border bg-card p-4"
             >
               <p className="truncate text-[13px] font-semibold">Why you see this</p>
               <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
                 Explainable picks across people, spaces, gear and work
               </p>
             </Link>
-            <Link to="/bands" className="min-w-0 rounded-3xl border border-border bg-card p-4">
+            <Link to="/bands" className="min-w-0 rounded-lg border border-border bg-card p-4">
               <p className="truncate text-[13px] font-semibold">Bands near you</p>
               <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
                 Line-ups looking for members and shows
@@ -150,9 +150,9 @@ function Discover() {
               key={t.id}
               to="/profile/$username"
               params={{ username: t.id }}
-              className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3"
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
-              <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-2xl object-cover" />
+              <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1">
                   <h3 className="truncate text-[14px]">{t.name}</h3>
@@ -167,9 +167,9 @@ function Discover() {
             <Link
               key={s.name}
               to="/studio"
-              className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3"
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
-              <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-2xl object-cover" />
+              <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-[14px]">{s.name}</h3>
                 <p className="truncate text-[11px] text-muted-foreground">

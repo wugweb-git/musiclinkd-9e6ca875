@@ -169,11 +169,7 @@ function CollabHome() {
                 >
                   <Card>
                     <div className="flex gap-3">
-                      <img
-                        src={inv.artwork}
-                        alt=""
-                        className="h-16 w-16 rounded-2xl object-cover"
-                      />
+                      <img src={inv.artwork} alt="" className="h-16 w-16 rounded-lg object-cover" />
                       <div className="min-w-0 flex-1">
                         <h3 className="truncate text-[15px]">{inv.projectName}</h3>
                         <p className="truncate text-[11px] text-muted-foreground">

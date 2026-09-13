@@ -62,7 +62,7 @@ function Reschedule() {
       <Screen>
         <TopBar title="Reschedule" back="/bookings" />
         <main className="px-5 pt-6">
-          <div className="rounded-3xl border border-border bg-card p-5">
+          <div className="rounded-lg border border-border bg-card p-5">
             <p className="font-semibold">Reschedule request sent</p>
             <p className="mt-1 text-sm text-muted-foreground">
               {b.name} will confirm the new slot. Your original time stays held until they respond.
@@ -87,7 +87,7 @@ function Reschedule() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
       <TopBar title="Reschedule" subtitle={`#${bk.ref} · ${b.name}`} back={`/bookings/${bk.ref}`} />
       <main className="px-5 pt-4">
-        <div className="rounded-3xl bg-subtle p-4 text-xs">
+        <div className="rounded-lg bg-subtle p-4 text-xs">
           <p className="font-semibold text-text1">
             Current: {formatDate(bk.date)} · {formatTime(bk.start)} – {formatTime(bk.end)}
           </p>

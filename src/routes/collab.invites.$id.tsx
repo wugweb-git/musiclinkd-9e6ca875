@@ -57,7 +57,7 @@ function InviteDetail() {
     <Screen bottomNav={false}>
       <TopBar title="Collaboration invitation" subtitle={`Sent ${inv.sentAt}`} back="/collab" />
       <main className="px-5 pt-5">
-        <img src={inv.artwork} alt="" className="mb-4 h-40 w-full rounded-3xl object-cover" />
+        <img src={inv.artwork} alt="" className="mb-4 h-40 w-full rounded-lg object-cover" />
         <h2 className="text-[20px]">{inv.projectName}</h2>
         <div className="mt-3 mb-4 flex flex-wrap gap-2">
           <Tag>{inv.type}</Tag>

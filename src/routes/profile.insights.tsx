@@ -37,7 +37,7 @@ function Insights() {
           {i.headline.map((m) => {
             const up = m.delta.startsWith("+");
             return (
-              <article key={m.label} className="rounded-3xl border border-border bg-card p-4">
+              <article key={m.label} className="rounded-lg border border-border bg-card p-4">
                 <p className="text-[11px] text-muted-foreground">{m.label}</p>
                 <p className="mt-1 text-2xl tabular-nums">{m.value}</p>
                 <p
@@ -55,7 +55,7 @@ function Insights() {
 
         <section className="mt-6">
           <h2 className="text-[17px]">Engagement</h2>
-          <div className="mt-3 divide-y divide-border rounded-3xl border border-border bg-card">
+          <div className="mt-3 divide-y divide-border rounded-lg border border-border bg-card">
             {i.secondary.map((s) => (
               <div key={s.label} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm text-muted-foreground">{s.label}</span>
@@ -67,7 +67,7 @@ function Insights() {
 
         <section className="mt-6">
           <h2 className="text-[17px]">Where your audience is</h2>
-          <div className="mt-3 space-y-3 rounded-3xl border border-border bg-card p-4">
+          <div className="mt-3 space-y-3 rounded-lg border border-border bg-card p-4">
             {i.audience.map((a) => (
               <div key={a.city}>
                 <div className="flex items-baseline justify-between text-xs">
@@ -85,7 +85,7 @@ function Insights() {
           </div>
         </section>
 
-        <section className="mt-6 rounded-3xl border border-border bg-card p-5">
+        <section className="mt-6 rounded-lg border border-border bg-card p-5">
           <p className="text-sm font-semibold">Get seen more</p>
           <p className="mt-1 text-xs text-muted-foreground">
             {me.name.split(" ")[0]}, your profile is {profileCompletion.percent}% complete.

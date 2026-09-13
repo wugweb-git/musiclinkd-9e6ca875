@@ -209,7 +209,7 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
       </div>
 
       {insightsOpen ? (
-        <div className="rounded-3xl border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
@@ -221,7 +221,7 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
             {profileInsights.headline.map((item) => (
-              <div key={item.label} className="rounded-2xl bg-subtle p-3">
+              <div key={item.label} className="rounded-lg bg-subtle p-3">
                 <p className="text-1 text-muted-foreground">{item.label}</p>
                 <p className="mt-1 text-lg font-bold">{item.value}</p>
                 <p className="text-1 font-semibold text-primary">{item.delta}</p>
@@ -248,7 +248,7 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
   return (
     <Link
       to={to}
-      className="flex min-w-0 items-center gap-2 rounded-2xl border border-border bg-card px-3 py-3 text-xs font-semibold"
+      className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3 text-xs font-semibold"
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
@@ -275,7 +275,7 @@ function Overview({
   return (
     <>
       <ProfileSection title="Professional summary">
-        <div className="rounded-3xl border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
           <button
             type="button"
@@ -440,7 +440,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
             {p.discography.map((release) => (
               <article
                 key={release.id}
-                className="overflow-hidden rounded-3xl border border-border bg-card"
+                className="overflow-hidden rounded-lg border border-border bg-card"
               >
                 <img
                   src={release.cover}
@@ -468,7 +468,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
       </ProfileSection>
       <ProfileSection title="Experience & credits">
         {p.experience.length ? (
-          <div className="divide-y divide-border rounded-3xl border border-border bg-card">
+          <div className="divide-y divide-border rounded-lg border border-border bg-card">
             {p.experience.map((item) => (
               <ExperienceCard key={item.id} e={item} />
             ))}
@@ -509,12 +509,12 @@ function About({ p }: { p: PersonProfile }) {
   return (
     <>
       <ProfileSection title="About">
-        <div className="rounded-3xl border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
         </div>
       </ProfileSection>
       <ProfileSection title="Professional details">
-        <div className="divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="divide-y divide-border rounded-lg border border-border bg-card">
           {p.professional.map((item) => (
             <InfoRow key={item.label} label={item.label} value={item.value} />
           ))}
@@ -565,8 +565,8 @@ function About({ p }: { p: PersonProfile }) {
 
 function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-3xl border border-border bg-card p-3">
-      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-subtle text-primary">
+    <div className="min-w-0 rounded-lg border border-border bg-card p-3">
+      <span className="flex h-8 w-8 items-center justify-center rounded-md bg-subtle text-primary">
         {icon}
       </span>
       <p className="mt-3 text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -609,9 +609,9 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
         <ProfileSection title="Studio connection">
           <Link
             to={p.studio.to}
-            className="flex items-center gap-3 rounded-3xl border border-border bg-card p-4"
+            className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-subtle text-primary">
+            <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-primary">
               <Mic2 size={20} aria-hidden />
             </span>
             <span className="min-w-0 flex-1">

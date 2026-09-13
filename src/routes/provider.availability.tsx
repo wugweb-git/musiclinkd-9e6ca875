@@ -89,7 +89,7 @@ function Availability() {
             {blocked.map((d) => (
               <li
                 key={d}
-                className="flex min-h-12 items-center justify-between rounded-2xl border border-border bg-card px-4 text-sm"
+                className="flex min-h-12 items-center justify-between rounded-lg border border-border bg-card px-4 text-sm"
               >
                 {formatDate(d)}
                 <button
@@ -109,7 +109,7 @@ function Availability() {
           type="button"
           onClick={() => setInstant((v) => !v)}
           aria-pressed={instant}
-          className="mt-3 flex w-full items-center gap-3 rounded-3xl border border-border bg-card p-4 text-left"
+          className="mt-3 flex w-full items-center gap-3 rounded-lg border border-border bg-card p-4 text-left"
         >
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold">Instant booking</span>
@@ -129,7 +129,7 @@ function Availability() {
           </span>
         </button>
 
-        <div className="mt-3 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-3 rounded-lg border border-border bg-card p-4">
           <p className="text-sm font-semibold">Rate for {r.name}</p>
           <div className="mt-2 space-y-1.5">
             {r.tiers.map((p) => (

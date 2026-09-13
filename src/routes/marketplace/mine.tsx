@@ -81,7 +81,7 @@ function Mine() {
           ? offers.map((o) => (
               <article
                 key={o.id}
-                className="flex items-center justify-between rounded-3xl border border-border bg-card p-4"
+                className="flex items-center justify-between rounded-lg border border-border bg-card p-4"
               >
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{o.listing}</p>

@@ -46,7 +46,7 @@ function InvitationAccepted() {
     <Screen>
       <TopBar title="Invitation accepted" subtitle={inv.projectName} back="/collab" />
       <main className="px-5 pt-5">
-        <img src={inv.artwork} alt="" className="mb-4 h-36 w-full rounded-3xl object-cover" />
+        <img src={inv.artwork} alt="" className="mb-4 h-36 w-full rounded-lg object-cover" />
         <OutcomePanel
           title={`You're now collaborating on ${inv.projectName}`}
           body={`${inv.inviter} has been told you're in. Your role is ${inv.proposedRole}.`}

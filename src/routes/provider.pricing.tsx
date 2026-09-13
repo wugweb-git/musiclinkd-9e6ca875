@@ -44,7 +44,7 @@ function Pricing() {
       <TopBar title="Pricing" subtitle={entity.name} back="/provider/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
-        <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
+        <p className="rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
           Rates shown here are what customers see on the booking screens. Changes apply to new
           bookings only.
         </p>
@@ -91,7 +91,7 @@ function Pricing() {
             Share of the total collected when a booking is confirmed. The balance is due at the
             studio.
           </p>
-          <div className="mt-3 rounded-3xl border border-border bg-card p-4">
+          <div className="mt-3 rounded-lg border border-border bg-card p-4">
             <label htmlFor="deposit" className="text-[12px] font-semibold">
               Deposit percentage
             </label>
@@ -141,7 +141,7 @@ function MoneyRow({
 }) {
   const id = `rate-${label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
-    <div className="flex min-w-0 items-center gap-3 rounded-3xl border border-border bg-card p-3">
+    <div className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-3">
       <div className="min-w-0 flex-1">
         <label htmlFor={id} className="block truncate text-[13px] font-semibold">
           {label}

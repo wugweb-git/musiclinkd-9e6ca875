@@ -35,7 +35,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "mb-5 flex items-center gap-2" : "mb-7 flex items-center gap-2"}>
       <span
-        className="flex h-9 w-9 items-center justify-center rounded-2xl"
+        className="flex h-9 w-9 items-center justify-center rounded-md"
         style={{ background: "var(--pink-container)" }}
       >
         <Music2 size={18} className="text-primary" />
@@ -90,7 +90,7 @@ export function AuthNotice({
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className="mb-5 rounded-3xl px-4 py-3.5"
+      className="mb-5 rounded-lg px-4 py-3.5"
       style={{ background: s.bg }}
     >
       <p className={`text-1 font-semibold ${s.fg}`}>{title}</p>
@@ -135,7 +135,7 @@ export function LabeledInput({
         autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-13 w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground focus:border-primary"
+        className="h-13 w-full rounded-md border border-border bg-card px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground focus:border-primary"
       />
       {hint ? <span className="mt-1.5 block text-1 text-muted-foreground">{hint}</span> : null}
     </label>
@@ -161,7 +161,7 @@ export function PasswordInput({
       <span className="mb-2 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
-      <span className="flex items-center rounded-2xl border border-border bg-card pr-2 focus-within:border-primary">
+      <span className="flex items-center rounded-lg border border-border bg-card pr-2 focus-within:border-primary">
         <input
           type={show ? "text" : "password"}
           value={value}
@@ -205,7 +205,7 @@ export function PasswordRequirements({ value }: { value: string }) {
   const score = checks.filter((c) => c.ok).length;
   const label = score <= 1 ? "Weak" : score === 2 ? "Fair" : score === 3 ? "Good" : "Strong";
   return (
-    <div className="mb-5 rounded-3xl border border-border bg-card p-4">
+    <div className="mb-5 rounded-lg border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <span className="text-1 font-semibold">Password strength</span>
         <span className="text-1 text-muted-foreground">{value ? label : "—"}</span>

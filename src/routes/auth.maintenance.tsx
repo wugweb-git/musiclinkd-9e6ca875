@@ -24,7 +24,7 @@ function MaintenanceScreen() {
   return (
     <AuthScreen>
       <div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-3xl"
+        className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
         style={{ background: "var(--pink-container)" }}
       >
         <Wrench size={22} className="text-primary" />

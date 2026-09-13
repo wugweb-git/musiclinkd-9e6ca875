@@ -100,7 +100,7 @@ function RentalDetail() {
             <img
               src={src}
               alt=""
-              className="h-14 w-16 rounded-xl object-cover"
+              className="h-14 w-16 rounded-md object-cover"
               style={{ outline: i === shot ? "2px solid var(--primary)" : "none" }}
             />
           </button>
@@ -125,7 +125,7 @@ function RentalDetail() {
         </div>
 
         <div
-          className="mt-4 flex items-start justify-between gap-3 rounded-3xl p-4"
+          className="mt-4 flex items-start justify-between gap-3 rounded-lg p-4"
           style={{ background: "var(--warn-container)" }}
         >
           <div className="min-w-0">
@@ -143,7 +143,7 @@ function RentalDetail() {
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{e.description}</p>
 
         <h2 className="mt-6 text-[16px]">Specifications</h2>
-        <dl className="mt-2 divide-y divide-border rounded-3xl border border-border">
+        <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
           {e.specs.map((s) => (
             <div key={s.label} className="flex items-center justify-between gap-3 px-4 py-3">
               <dt className="text-xs text-muted-foreground">{s.label}</dt>
@@ -153,7 +153,7 @@ function RentalDetail() {
         </dl>
 
         <h2 className="mt-6 text-[16px]">What's included</h2>
-        <ul className="mt-2 space-y-2 rounded-3xl border border-border p-4">
+        <ul className="mt-2 space-y-2 rounded-lg border border-border p-4">
           {e.included.map((x) => (
             <li key={x} className="flex items-center gap-2 text-[13px]">
               <Check size={14} className="shrink-0 text-primary" /> {x}
@@ -162,7 +162,7 @@ function RentalDetail() {
         </ul>
 
         <h2 className="mt-6 text-[16px]">Rental terms</h2>
-        <dl className="mt-2 divide-y divide-border rounded-3xl border border-border">
+        <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
           {[
             { k: "Daily", v: inr(e.daily) },
             { k: "Weekly", v: inr(e.weekly) },
@@ -186,7 +186,7 @@ function RentalDetail() {
         </dl>
 
         <h2 className="mt-6 text-[16px]">Provider</h2>
-        <div className="mt-2 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-2 rounded-lg border border-border bg-card p-4">
           <ProviderSummary p={p} />
           <div className="mt-3 grid grid-cols-3 gap-2 text-center">
             {[
@@ -194,7 +194,7 @@ function RentalDetail() {
               { k: "Replies in", v: p.responseTime },
               { k: "Rentals", v: `${p.completedRentals}` },
             ].map((x) => (
-              <div key={x.k} className="rounded-2xl bg-subtle py-2">
+              <div key={x.k} className="rounded-lg bg-subtle py-2">
                 <p className="truncate text-[12px] font-bold">{x.v}</p>
                 <p className="text-[10px] text-muted-foreground">{x.k}</p>
               </div>
@@ -217,7 +217,7 @@ function RentalDetail() {
         <h2 className="mt-6 text-[16px]">Reviews</h2>
         <div className="mt-2 space-y-3">
           {rentalReviews.slice(0, 2).map((r) => (
-            <article key={r.id} className="rounded-3xl border border-border bg-card p-4">
+            <article key={r.id} className="rounded-lg border border-border bg-card p-4">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{r.name}</p>

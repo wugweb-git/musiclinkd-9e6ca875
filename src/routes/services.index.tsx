@@ -99,7 +99,7 @@ function ServicesHome() {
                   <div className="flex items-start gap-3">
                     <span
                       aria-hidden
-                      className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-subtle text-[18px]"
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-subtle text-[18px]"
                     >
                       {s.emoji}
                     </span>

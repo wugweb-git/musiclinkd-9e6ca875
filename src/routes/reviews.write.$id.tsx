@@ -55,7 +55,7 @@ function WriteReview() {
       <TopBar title="Write a review" subtitle={item.title} back="/reviews" />
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card className="flex items-center gap-3">
-          <img src={item.photo} alt="" className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+          <img src={item.photo} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{item.title}</p>
             <p className="truncate text-[12px] text-muted-foreground">{item.subtitle}</p>
@@ -96,7 +96,7 @@ function WriteReview() {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Describe the work, communication and whether you would book again."
-            className="w-full rounded-2xl border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
+            className="w-full rounded-lg border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
           />
           <p className="text-[12px] text-muted-foreground">
             {body.trim().length}/1000 · contact details are removed automatically.

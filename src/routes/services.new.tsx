@@ -102,7 +102,7 @@ function NewService() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 placeholder="What the client gets, how you work, what makes it yours."
-                className="mt-1.5 w-full rounded-2xl border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
+                className="mt-1.5 w-full rounded-lg border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
               />
             </label>
             <p className="text-[11px] text-muted-foreground">
@@ -242,7 +242,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? ""}
-        className="mt-1.5 min-h-12 w-full rounded-2xl border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
+        className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
       />
     </label>
   );

@@ -24,7 +24,7 @@ function OfflineScreen() {
   const navigate = useNavigate();
   return (
     <AuthScreen>
-      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-3xl bg-subtle">
+      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-subtle">
         <WifiOff size={22} className="text-muted-foreground" />
       </div>
       <AuthHeading
