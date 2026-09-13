@@ -1,4 +1,5 @@
 import { singers, talents, type Talent } from "./discover";
+import { linkedProfileSeeds } from "./linked-profiles";
 
 /**
  * FLOW-02 · Profile module data contract (design-time fixtures only).
@@ -555,6 +556,7 @@ const ananya: PersonProfile = {
 const byUsername: Record<string, PersonProfile> = {
   [rahul.username]: rahul,
   [ananya.username]: ananya,
+  ...Object.fromEntries(linkedProfileSeeds.map((s) => [s.profile.username, s.profile])),
 };
 
 function fromTalent(t: Talent): PersonProfile {
@@ -590,15 +592,17 @@ function fromTalent(t: Talent): PersonProfile {
 
 export const allTalent = [...talents, ...singers];
 
-export function getProfile(username: string): PersonProfile {
+/** The seed profile for a username, or undefined — never another person's profile. */
+export function getProfile(username: string): PersonProfile | undefined {
   const exact = byUsername[username];
   if (exact) return exact;
   const t = allTalent.find((x) => x.id === username);
-  return t ? fromTalent(t) : rahul;
+  return t ? fromTalent(t) : undefined;
 }
 
 /** Owner-mode fixtures (SCREEN 17 / 19 / 20). */
 export const ownerUsername = rahul.username;
+export const ownerProfile = rahul;
 
 export const profileCompletion = {
   percent: 78,

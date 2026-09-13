@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { Btn, TopBar } from "@/components/ml/ui";
-import { getProfile, ownerUsername, profileCompletion, profileInsights } from "@/data/profile";
+import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
 
 export const Route = createFileRoute("/profile/insights")({
   head: () => ({
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/profile/insights")({
 });
 
 function Insights() {
-  const me = getProfile(ownerUsername);
+  const me = ownerProfile;
   const i = profileInsights;
 
   return (

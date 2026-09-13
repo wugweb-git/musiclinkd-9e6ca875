@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
-import { getProfile, ownerUsername } from "@/data/profile";
+import { ownerProfile } from "@/data/profile";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { mergeProfileRow } from "@/lib/profile-view";
 import type { ProfileRow } from "@/lib/profile-map";
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/me")({
 });
 
 function MyProfile() {
-  const base = getProfile(ownerUsername);
+  const base = ownerProfile;
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);
   const [row, setRow] = useState<ProfileRow | null>(null);
