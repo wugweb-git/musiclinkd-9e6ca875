@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { BadgeCheck, Pause, Play, Share2, ShieldCheck, Star } from "lucide-react";
+import { BadgeCheck, Pause, Play, Share2, ShieldCheck, Star, User } from "lucide-react";
 import type {
   AudioTrack,
   Collaborator,
@@ -184,6 +184,11 @@ export function InfoRow({ label, value }: { label: string; value: string }) {
 
 /* ── Hero ──────────────────────────────────────────────────── */
 
+/** The verified tick is for verified tiers only, never a default. */
+function isVerifiedTier(tier: PersonProfile["verification"]) {
+  return tier === "Professional" || tier === "Industry Verified";
+}
+
 export function ProfileHero({
   p,
   owner,
@@ -200,8 +205,14 @@ export function ProfileHero({
   return (
     <header>
       <div className="relative h-44">
-        <img src={p.cover} alt={`${p.name} cover`} className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
+        {p.cover ? (
+          <>
+            <img src={p.cover} alt={`${p.name} cover`} className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
+          </>
+        ) : (
+          <div className="h-full w-full bg-subtle" />
+        )}
         {back ? (
           <Link
             to={back}
@@ -235,14 +246,22 @@ export function ProfileHero({
 
       <div className="-mt-10 px-5">
         <div className="relative w-20">
-          <img
-            src={p.photo}
-            alt={p.name}
-            className="h-20 w-20 rounded-lg border-2 border-background object-cover"
-          />
-          <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
-            <BadgeCheck size={13} aria-label="Verified" />
-          </span>
+          {p.photo ? (
+            <img
+              src={p.photo}
+              alt={p.name}
+              className="h-20 w-20 rounded-lg border-2 border-background object-cover"
+            />
+          ) : (
+            <span className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-background bg-card text-muted-foreground">
+              <User size={28} aria-label={p.name} />
+            </span>
+          )}
+          {isVerifiedTier(p.verification) ? (
+            <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
+              <BadgeCheck size={13} aria-label="Verified" />
+            </span>
+          ) : null}
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -250,15 +269,22 @@ export function ProfileHero({
           <VerificationBadge tier={p.verification} />
         </div>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          @{p.username} · {p.yearsActive}
+          @{p.username}
+          {p.yearsActive ? ` · ${p.yearsActive}` : ""}
         </p>
-        <p className="mt-2 text-sm font-semibold">
-          {[p.primaryRole, ...p.secondaryRoles].join(" · ")}
-        </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">📍 {p.location}</p>
-        <div className="mt-2.5">
-          <StatusBadge status={p.availability} />
-        </div>
+        {p.primaryRole ? (
+          <p className="mt-2 text-sm font-semibold">
+            {[p.primaryRole, ...p.secondaryRoles].join(" · ")}
+          </p>
+        ) : null}
+        {p.location ? (
+          <p className="mt-0.5 text-xs text-muted-foreground">📍 {p.location}</p>
+        ) : null}
+        {p.availability ? (
+          <div className="mt-2.5">
+            <StatusBadge status={p.availability} />
+          </div>
+        ) : null}
         {owner && p.privacy !== "Public" ? (
           <p className="mt-2 text-1 font-semibold text-warn">Visibility: {p.privacy}</p>
         ) : null}
@@ -663,11 +689,19 @@ export function ShareSheet({
         style={{ background: "var(--gradient-ink)" }}
       >
         <div className="flex items-center gap-3 p-4 text-background">
-          <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-md object-cover" />
+          {p.photo ? (
+            <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-md object-cover" />
+          ) : (
+            <span className="flex h-14 w-14 items-center justify-center rounded-md bg-background/15">
+              <User size={22} aria-hidden />
+            </span>
+          )}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <h3 className="truncate text-2 text-background">{p.name}</h3>
-              <BadgeCheck size={14} aria-label="Verified" />
+              {isVerifiedTier(p.verification) ? (
+                <BadgeCheck size={14} aria-label="Verified" />
+              ) : null}
             </div>
             <p className="truncate text-1 opacity-80">{p.primaryRole}</p>
             <p className="truncate text-1 opacity-80">{p.location}</p>

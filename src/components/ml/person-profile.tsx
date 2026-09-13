@@ -275,31 +275,41 @@ function Overview({
   return (
     <>
       <ProfileSection title="Professional summary">
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
-          <button
-            type="button"
-            className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary"
-            onClick={() => onTab("About")}
-          >
-            Read full profile <ChevronRight size={14} aria-hidden />
-          </button>
-        </div>
+        {p.shortBio ? (
+          <div className="rounded-lg border border-border bg-card p-4">
+            <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
+            <button
+              type="button"
+              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary"
+              onClick={() => onTab("About")}
+            >
+              Read full profile <ChevronRight size={14} aria-hidden />
+            </button>
+          </div>
+        ) : (
+          <ProfileEmpty
+            title="No summary yet"
+            body="This professional has not written a summary yet."
+            cta={owner ? "Write a summary" : undefined}
+          />
+        )}
       </ProfileSection>
       {p.featured ? (
         <ProfileSection title="Featured work">
           <FeaturedCard featured={p.featured} />
         </ProfileSection>
       ) : null}
-      <ProfileSection title="Music identity">
-        <div className="space-y-3">
-          <ChipGroup label="Genres" items={p.genres} tone="pink" />
-          <div className="grid grid-cols-2 gap-3">
-            <ChipGroup label="Instruments" items={p.instruments} />
-            <ChipGroup label="Languages" items={p.languages} />
+      {p.genres.length || p.instruments.length || p.languages.length ? (
+        <ProfileSection title="Music identity">
+          <div className="space-y-3">
+            <ChipGroup label="Genres" items={p.genres} tone="pink" />
+            <div className="grid grid-cols-2 gap-3">
+              <ChipGroup label="Instruments" items={p.instruments} />
+              <ChipGroup label="Languages" items={p.languages} />
+            </div>
           </div>
-        </div>
-      </ProfileSection>
+        </ProfileSection>
+      ) : null}
       {p.audio.length ? (
         <ProfileSection
           title="Audio portfolio"
@@ -509,29 +519,54 @@ function About({ p }: { p: PersonProfile }) {
   return (
     <>
       <ProfileSection title="About">
-        <div className="rounded-lg border border-border bg-card p-4">
-          <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
-        </div>
+        {p.longBio ? (
+          <div className="rounded-lg border border-border bg-card p-4">
+            <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
+          </div>
+        ) : (
+          <ProfileEmpty title="No bio yet" body="This professional has not written a bio yet." />
+        )}
       </ProfileSection>
       <ProfileSection title="Professional details">
-        <div className="divide-y divide-border rounded-lg border border-border bg-card">
-          {p.professional.map((item) => (
-            <InfoRow key={item.label} label={item.label} value={item.value} />
-          ))}
-        </div>
+        {p.professional.length ? (
+          <div className="divide-y divide-border rounded-lg border border-border bg-card">
+            {p.professional.map((item) => (
+              <InfoRow key={item.label} label={item.label} value={item.value} />
+            ))}
+          </div>
+        ) : (
+          <ProfileEmpty
+            title="No details yet"
+            body="Setup, tools and working details will appear here."
+          />
+        )}
       </ProfileSection>
       <ProfileSection title="Music identity">
-        <div className="space-y-3">
-          <ChipGroup label="Specialisations" items={p.specialisations} tone="purple" />
-          <ChipGroup label="Influences" items={p.influences} />
-          <div className="grid grid-cols-2 gap-3">
-            <ChipGroup label="Instruments" items={p.instruments} />
-            <ChipGroup label="Languages" items={p.languages} />
+        {p.specialisations.length ||
+        p.influences.length ||
+        p.instruments.length ||
+        p.languages.length ? (
+          <div className="space-y-3">
+            <ChipGroup label="Specialisations" items={p.specialisations} tone="purple" />
+            <ChipGroup label="Influences" items={p.influences} />
+            <div className="grid grid-cols-2 gap-3">
+              <ChipGroup label="Instruments" items={p.instruments} />
+              <ChipGroup label="Languages" items={p.languages} />
+            </div>
           </div>
-        </div>
+        ) : (
+          <ProfileEmpty
+            title="No music identity yet"
+            body="Specialisations, instruments and languages will appear here."
+          />
+        )}
       </ProfileSection>
       <ProfileSection title="External links">
-        <SocialLinks links={p.links} />
+        {p.links.length ? (
+          <SocialLinks links={p.links} />
+        ) : (
+          <ProfileEmpty title="No links yet" body="Streaming and social links will appear here." />
+        )}
       </ProfileSection>
       <ProfileSection title="Connections">
         <div className="grid grid-cols-2 gap-3">
@@ -541,8 +576,12 @@ function About({ p }: { p: PersonProfile }) {
             value={p.stats.connections}
           />
           <IdentityFact icon={<Globe2 size={16} />} label="Followers" value={p.stats.followers} />
-          <IdentityFact icon={<MapPin size={16} />} label="Location" value={p.location} />
-          <IdentityFact icon={<Clock3 size={16} />} label="Experience" value={p.yearsActive} />
+          <IdentityFact icon={<MapPin size={16} />} label="Location" value={p.location || "—"} />
+          <IdentityFact
+            icon={<Clock3 size={16} />}
+            label="Experience"
+            value={p.yearsActive || "—"}
+          />
         </div>
       </ProfileSection>
       <ProfileSection title="Reviews">

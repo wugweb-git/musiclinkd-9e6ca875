@@ -1,8 +1,8 @@
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
-import { getProfile, ownerProfile } from "@/data/profile";
+import { getProfile } from "@/data/profile";
 import { getPublicProfile } from "@/lib/portfolio.functions";
-import { mergeProfileRow } from "@/lib/profile-view";
+import { mergeProfileRow, profileFromRow } from "@/lib/profile-view";
 import type { ProfileRow } from "@/lib/profile-map";
 
 export const Route = createFileRoute("/profile/$username")({
@@ -19,15 +19,18 @@ export const Route = createFileRoute("/profile/$username")({
   head: ({ params, loaderData }) => {
     if (!loaderData) return { meta: [{ title: "Profile not found | MusicLinkd" }] };
     const profile = profileView(params.username, loaderData.row);
+    const title = profile.primaryRole
+      ? `${profile.name} — ${profile.primaryRole} | MusicLinkd`
+      : `${profile.name} | MusicLinkd`;
+    const description = profile.headline
+      ? `${profile.name}'s professional MusicLinkd profile: ${profile.headline}`
+      : `${profile.name}'s professional MusicLinkd profile.`;
     return {
       meta: [
-        { title: `${profile.name} — ${profile.primaryRole} | MusicLinkd` },
-        {
-          name: "description",
-          content: `${profile.name}'s professional MusicLinkd profile: ${profile.headline}`,
-        },
-        { property: "og:title", content: `${profile.name} — ${profile.primaryRole} | MusicLinkd` },
-        { property: "og:description", content: profile.headline },
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: profile.headline || description },
         { property: "og:type", content: "profile" },
         { name: "twitter:card", content: "summary_large_image" },
       ],
@@ -37,11 +40,11 @@ export const Route = createFileRoute("/profile/$username")({
 });
 
 /**
- * The real row over the seed profile. A real profile with no seed still borrows the owner fixture
- * for the sections the profiles table does not store yet (portfolio, reviews, services).
+ * The real row over the seed profile. A real profile with no seed gets only its own data; the
+ * sections the profiles table does not store render their empty states.
  */
 function profileView(username: string, row: ProfileRow | null) {
-  return mergeProfileRow(getProfile(username) ?? ownerProfile, row);
+  return mergeProfileRow(getProfile(username) ?? profileFromRow(row ?? { username }), row);
 }
 
 function PersonProfileRoute() {
