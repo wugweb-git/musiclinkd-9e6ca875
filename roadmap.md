@@ -52,6 +52,16 @@
   - [x] repoint the remaining `/talent/$id` links. Done 13 Sep (`d526f17`); the redirect is kept
         for old external links.
   - [x] `exactOptionalPropertyTypes` errors in `person-profile.tsx` (`tsc --noEmit` is clean)
+  - [x] `/profile/$username` returns 404 for a username with neither a real row nor a seed, instead of
+        Rahul Iyer's profile. The 11 people and businesses the app links to are seeded in the live DB
+        (migration `20260913090949`), with their own content in `src/data/linked-profiles.ts`.
+        `/profile/me` redirects to `/me`. (13 Sep)
+  - [ ] Most seed profiles still borrow Rahul Iyer's sections: `ananya` and every `fromTalent()`
+        profile spread `...rahul`, so Discover talent pages show his tracks, projects and reviews.
+        A real profile with no seed does the same through `ownerProfile`. Needs content per profile,
+        or an empty-state design for sections a profile doesn't have.
+  - [ ] Record `20260913090949` in `supabase_migrations.schema_migrations`; the write was not
+        permitted from Claude Code. The seed is idempotent, so a re-run changes nothing.
 - FLOW 03 — Add Portfolio
   - [x] `src/data/portfolio.ts`, `src/components/ml/portfolio.tsx`
   - [x] portfolio routes (overview, add, work detail, edit, reorder, settings, select)
