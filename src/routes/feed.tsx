@@ -25,9 +25,12 @@ import {
   continueCards,
   forYouTiles,
   headlineUpdate,
+  opportunityTiles,
   type ContinueCard,
   type DashboardData,
+  type ForYouTile,
 } from "@/data/dashboard";
+import { unreadCount } from "@/data/notifications";
 
 export const Route = createFileRoute("/feed")({
   head: () => ({
@@ -53,33 +56,21 @@ export const Route = createFileRoute("/feed")({
 type Status = "loading" | "ready" | "error" | "offline";
 
 function useDashboard() {
-  const [status, setStatus] = useState<Status>("loading");
-  const [data, setData] = useState<DashboardData | null>(null);
+  // The dashboard is seed data, so it is ready on the first render, the server's included.
+  // The loading and error branches are for when a real query replaces it.
+  const [status, setStatus] = useState<Status>("ready");
+  const data: DashboardData = dashboardData;
 
   const load = useCallback(() => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      setStatus("offline");
-      return;
-    }
-    setStatus("loading");
-    const t = setTimeout(() => {
-      try {
-        setData(dashboardData);
-        setStatus("ready");
-      } catch {
-        setStatus("error");
-      }
-    }, 450);
-    return () => clearTimeout(t);
+    setStatus(typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "ready");
   }, []);
 
   useEffect(() => {
-    const cleanup = load();
+    load();
     const onOffline = () => setStatus("offline");
     window.addEventListener("offline", onOffline);
     window.addEventListener("online", load);
     return () => {
-      cleanup?.();
       window.removeEventListener("offline", onOffline);
       window.removeEventListener("online", load);
     };
@@ -93,6 +84,13 @@ function greeting() {
   if (h < 12) return "Good morning";
   if (h < 17) return "Good afternoon";
   return "Good evening";
+}
+
+/** Set after mount: the server renders in UTC, so its greeting is wrong for the reader's clock. */
+function useGreeting() {
+  const [text, setText] = useState("Hello");
+  useEffect(() => setText(greeting()), []);
+  return text;
 }
 
 function Dashboard() {
@@ -131,12 +129,14 @@ function Header() {
       </p>
       <div className="flex shrink-0 items-center gap-2">
         <Link
-          to="/messages"
+          to="/notifications"
           aria-label="Notifications"
           className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
         >
           <Bell size={18} />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+          {unreadCount() > 0 ? (
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+          ) : null}
         </Link>
         <ViewerAvatar className="h-10 w-10" />
       </div>
@@ -144,13 +144,25 @@ function Header() {
   );
 }
 
+function StatTile({ tile }: { tile: ForYouTile }) {
+  return (
+    <Link to={tile.to} className="min-w-0 rounded-lg border border-border bg-card p-4">
+      <p className="text-[24px] font-bold leading-none">{tile.value}</p>
+      <p className="mt-2 truncate text-[12px] font-semibold">{tile.label}</p>
+      <p className="truncate text-[11px] text-muted-foreground">{tile.hint}</p>
+    </Link>
+  );
+}
+
 function Body({ data }: { data: DashboardData }) {
   const { user } = data;
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
+  const hello = useGreeting();
   const headline = headlineUpdate(data);
   const cont = continueCards(data);
   const tiles = forYouTiles(data);
+  const opportunityStats = opportunityTiles();
   const isEmpty = !headline && cont.length === 0 && data.activity.length === 0;
 
   return (
@@ -158,7 +170,7 @@ function Body({ data }: { data: DashboardData }) {
       {/* 1 — Greeting */}
       <section className="min-w-0 px-5 pt-5">
         <h1 className="break-words text-[28px] leading-tight">
-          {greeting()}
+          {hello}
           {viewerFirstName ? `, ${viewerFirstName}` : ""}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -216,19 +228,9 @@ function Body({ data }: { data: DashboardData }) {
       <section className="pt-6">
         <SectionHeader title="Opportunities" action={<Link to="/opportunities">See all</Link>} />
         <div className="grid grid-cols-2 gap-3 px-5">
-          <Link to="/opportunities" className="min-w-0 rounded-lg border border-border bg-card p-4">
-            <p className="text-[24px] font-bold leading-none">5</p>
-            <p className="mt-2 truncate text-[12px] font-semibold">Matching you</p>
-            <p className="truncate text-[11px] text-muted-foreground">Singers, mixers, gigs</p>
-          </Link>
-          <Link
-            to="/opportunities/applications"
-            className="min-w-0 rounded-lg border border-border bg-card p-4"
-          >
-            <p className="text-[24px] font-bold leading-none">2</p>
-            <p className="mt-2 truncate text-[12px] font-semibold">Your applications</p>
-            <p className="truncate text-[11px] text-muted-foreground">1 shortlisted</p>
-          </Link>
+          {opportunityStats.map((t) => (
+            <StatTile key={t.id} tile={t} />
+          ))}
         </div>
       </section>
 
@@ -240,15 +242,7 @@ function Body({ data }: { data: DashboardData }) {
           {tiles.length ? (
             <div className="grid grid-cols-2 gap-3 px-5">
               {tiles.map((t) => (
-                <Link
-                  key={t.id}
-                  to={t.to}
-                  className="min-w-0 rounded-lg border border-border bg-card p-4"
-                >
-                  <p className="text-[24px] font-bold leading-none">{t.value}</p>
-                  <p className="mt-2 truncate text-[12px] font-semibold">{t.label}</p>
-                  <p className="truncate text-[11px] text-muted-foreground">{t.hint}</p>
-                </Link>
+                <StatTile key={t.id} tile={t} />
               ))}
             </div>
           ) : null}

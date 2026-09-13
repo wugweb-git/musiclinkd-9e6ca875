@@ -34,6 +34,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   Every chip, pill and badge in `src/components/ml/` already renders `rounded-full`, and the M3
   change kept chips as pills. The old line would have had new screens build 8px chips.
 
+### Fixed
+
+- **`/feed` renders its data on the server.** A fake 450ms timer wrapped data that was already
+  static, so the server sent only a skeleton. The greeting is now set after mount, so a UTC server
+  no longer picks the time of day for a reader in another timezone.
+- **`/feed` opportunity counts are derived** from `data/opportunities.ts` the way `/opportunities`
+  derives them (open opportunities, active applications, shortlisted), not typed into the JSX.
+  Both tile grids share one `StatTile`.
+- **The `/feed` Bell opens `/notifications`**, not `/messages`, and its dot follows the unread count.
+- **`ui/skeleton` is neutral** (`bg-subtle`) instead of a pink tint.
+
 ### Added
 
 - `docs/pending-screens-audit-2026-09-13.md`: the 7 Sep pending-screens plan checked item by item
