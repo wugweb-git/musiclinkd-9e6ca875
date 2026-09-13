@@ -6,8 +6,13 @@ export type Stat = {
   label: string;
   value: number;
   hint: string;
-  to: "/messages" | "/me" | "/recommendations/swipe" | "/saved";
+  to: "/messages" | "/me" | "/recommendations/swipe" | "/saved" | "/opportunities";
 };
+
+/** Open opportunities: the one list both the headline update and the Opportunities tiles count. */
+function openOpportunities() {
+  return opportunities.filter((o) => o.status === "open");
+}
 
 export type ActivityEvent = {
   id: string;
@@ -72,9 +77,9 @@ export const dashboardData: DashboardData = {
     {
       key: "collabs",
       label: "Collab opportunities",
-      value: 9,
+      value: openOpportunities().length,
       hint: "Matched to you",
-      to: "/recommendations/swipe",
+      to: "/opportunities",
     },
   ],
   continueItems: [
@@ -307,9 +312,7 @@ export function forYouTiles(d: DashboardData): ForYouTile[] {
 
 /** Home's opportunity counts, derived the way /opportunities derives them. */
 export function opportunityTiles(): ForYouTile[] {
-  const open = opportunities
-    .filter((o) => o.status === "open")
-    .sort((a, b) => b.matchScore - a.matchScore);
+  const open = openOpportunities().sort((a, b) => b.matchScore - a.matchScore);
   const active = myApplications.filter((a) => a.status !== "rejected" && a.status !== "withdrawn");
   const shortlisted = myApplications.filter((a) => a.status === "shortlisted").length;
   return [
