@@ -108,7 +108,7 @@ function Pay() {
           />
         </div>
 
-        <p className="mt-4 flex items-start gap-2 rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
+        <p className="mt-4 flex items-start gap-2 rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
           <Lock size={14} className="mt-0.5 shrink-0" />
           You'll finish the payment in the provider's secure payment window. MusicLinkd never stores
           card details.

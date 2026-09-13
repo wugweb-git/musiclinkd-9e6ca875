@@ -89,7 +89,7 @@ function ProviderBookingDetail() {
               <p className="truncate font-semibold">{bk.customer}</p>
               <p className="truncate text-xs text-muted-foreground">{bk.customerRole}</p>
             </div>
-            <span className="inline-flex items-center gap-1 text-xs text-text2">
+            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
               <Users size={13} /> {bk.people}
             </span>
           </div>
@@ -102,7 +102,9 @@ function ProviderBookingDetail() {
             <Detail label="Value" value={inr(bk.amount)} />
           </dl>
           {bk.notes ? (
-            <p className="mt-3 border-t border-border pt-3 text-xs text-text2">{bk.notes}</p>
+            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+              {bk.notes}
+            </p>
           ) : null}
         </div>
 

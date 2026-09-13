@@ -58,7 +58,7 @@ function WhyThisResult() {
                 <p className="min-w-0 text-sm font-semibold">{s.label}</p>
                 <StatusPill label={weightLabel[s.weight]} tone={weightTone[s.weight]} />
               </div>
-              <p className="mt-1 text-1 text-text2">{s.detail}</p>
+              <p className="mt-1 text-1 text-muted-foreground">{s.detail}</p>
             </div>
           ))}
         </Card>
@@ -70,7 +70,7 @@ function WhyThisResult() {
           </div>
           <ul className="space-y-1.5">
             {why.notUsed.map((n) => (
-              <li key={n} className="text-1 text-text2">
+              <li key={n} className="text-1 text-muted-foreground">
                 {n}
               </li>
             ))}

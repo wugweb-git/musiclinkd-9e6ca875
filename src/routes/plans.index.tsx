@@ -99,7 +99,9 @@ function Plans() {
                           aria-hidden
                         />
                       )}
-                      <span className={f.included ? "text-text2" : "text-muted-foreground"}>
+                      <span
+                        className={f.included ? "text-muted-foreground" : "text-muted-foreground"}
+                      >
                         {f.label}
                       </span>
                     </li>

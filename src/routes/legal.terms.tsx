@@ -49,7 +49,7 @@ function TermsPage() {
     <Screen bottomNav={false}>
       <TopBar title="Terms of Use" subtitle="Last updated 2 September 2026" back="/welcome" />
       <main className="px-5 pb-12 pt-4">
-        <p className="text-[13px] leading-relaxed text-text2">
+        <p className="text-[13px] leading-relaxed text-muted-foreground">
           Short version: be honest about your work, treat other professionals well, and you keep the
           rights to everything you create.
         </p>
@@ -57,7 +57,7 @@ function TermsPage() {
           {sections.map((s) => (
             <section key={s.title} className="rounded-3xl border border-border bg-card p-4">
               <h2 className="text-[14px] font-semibold">{s.title}</h2>
-              <p className="mt-1.5 text-1 leading-relaxed text-text2">{s.body}</p>
+              <p className="mt-1.5 text-1 leading-relaxed text-muted-foreground">{s.body}</p>
             </section>
           ))}
         </div>

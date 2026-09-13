@@ -121,7 +121,7 @@ function Cancel() {
         </div>
 
         <label className="mt-4 block">
-          <span className="text-xs font-semibold text-text2">
+          <span className="text-xs font-semibold text-muted-foreground">
             Message to the provider (optional)
           </span>
           <textarea

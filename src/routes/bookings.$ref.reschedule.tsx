@@ -91,7 +91,7 @@ function Reschedule() {
           <p className="font-semibold text-text1">
             Current: {formatDate(bk.date)} · {formatTime(bk.start)} – {formatTime(bk.end)}
           </p>
-          <p className="mt-1 text-text2">
+          <p className="mt-1 text-muted-foreground">
             Free reschedule up to 48 hrs before the session. Later changes may carry the provider's
             fee.
           </p>

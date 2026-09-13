@@ -78,7 +78,7 @@ function Review() {
                 />
               </dl>
               {draft.requirements ? (
-                <p className="mt-3 border-t border-border pt-3 text-xs text-text2">
+                <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
                   {draft.requirements}
                 </p>
               ) : null}

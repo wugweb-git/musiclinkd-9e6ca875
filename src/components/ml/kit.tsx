@@ -10,7 +10,7 @@ import { ChevronRight, Star } from "lucide-react";
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
 const toneStyle: Record<Tone, { bg: string; fg: string }> = {
-  neutral: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
+  neutral: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
   good: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
   bad: { bg: "var(--danger-container)", fg: "var(--danger)" },
@@ -199,7 +199,7 @@ export function Meter({
 /** Reason chip used by recommendations everywhere they appear. */
 export function ReasonChip({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-block max-w-full break-words rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold leading-snug text-text2">
+    <span className="inline-block max-w-full break-words rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold leading-snug text-muted-foreground">
       {children}
     </span>
   );

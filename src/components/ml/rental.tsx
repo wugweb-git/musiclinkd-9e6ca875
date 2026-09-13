@@ -22,7 +22,7 @@ export function RentalAvailabilityBadge({
   const map = {
     ok: { bg: "var(--success-container)", fg: "var(--success)" },
     warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-    off: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
+    off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
   } as const;
   const c = map[tone];
   return (
@@ -60,9 +60,9 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
     "Offer sent": ["var(--purple-container)", "var(--purple)"],
     Confirmed: ["var(--pink-container)", "var(--primary)"],
     Active: ["var(--success-container)", "var(--success)"],
-    Completed: ["var(--surface-subtle)", "var(--text-secondary)"],
-    Cancelled: ["var(--surface-subtle)", "var(--text-secondary)"],
-    Declined: ["var(--surface-subtle)", "var(--text-secondary)"],
+    Completed: ["var(--surface-subtle)", "var(--muted-foreground)"],
+    Cancelled: ["var(--surface-subtle)", "var(--muted-foreground)"],
+    Declined: ["var(--surface-subtle)", "var(--muted-foreground)"],
   };
   const [bg, fg] = tone[status];
   return (

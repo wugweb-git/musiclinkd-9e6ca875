@@ -283,7 +283,7 @@ export function StepShell({
         <h1 className="text-3 leading-tight">{title}</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
         <p
-          className="mt-3 rounded-2xl px-4 py-3 text-xs leading-relaxed text-text2"
+          className="mt-3 rounded-2xl px-4 py-3 text-xs leading-relaxed text-muted-foreground"
           style={{ background: "var(--pink-container)" }}
         >
           {why}
@@ -646,7 +646,7 @@ export function OfflineBanner() {
       className="mb-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-4"
     >
       <WifiOff size={16} className="mt-0.5 shrink-0 text-warn" />
-      <p className="text-xs leading-relaxed text-text2">
+      <p className="text-xs leading-relaxed text-muted-foreground">
         You're offline. Your answers are kept on this device and will sync when you're back online —
         nothing has been saved to your profile yet.
       </p>
@@ -658,7 +658,7 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
   return (
     <div role="alert" className="mb-4 rounded-2xl border border-destructive/40 bg-card p-4">
       <p className="text-sm font-semibold text-destructive">We couldn't save that</p>
-      <p className="mt-1 text-xs text-text2">{message}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{message}</p>
       <button
         type="button"
         onClick={onRetry}
@@ -677,7 +677,7 @@ export function SavingBanner({ label = "Saving your answers…" }: { label?: str
       className="mb-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4"
     >
       <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
-      <p className="text-xs text-text2">{label}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -711,7 +711,7 @@ export function SyncBanner({
   if (state === "local") {
     return (
       <div role="status" className="mb-4 rounded-2xl border border-border bg-card p-4">
-        <p className="text-xs leading-relaxed text-text2">{localNote}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground">{localNote}</p>
       </div>
     );
   }

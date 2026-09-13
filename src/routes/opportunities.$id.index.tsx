@@ -100,7 +100,7 @@ function OpportunityDetail() {
             <StatusPill label={`${o.applicants} applied`} />
           </div>
           <h1 className="mt-2 text-[24px] leading-tight">{o.title}</h1>
-          <p className="mt-2 text-[14px] text-text2">{o.summary}</p>
+          <p className="mt-2 text-[14px] text-muted-foreground">{o.summary}</p>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
@@ -123,7 +123,7 @@ function OpportunityDetail() {
         <Card className="space-y-2">
           <h2 className="text-[15px]">The brief</h2>
           {o.brief.map((b) => (
-            <p key={b} className="text-[13px] leading-relaxed text-text2">
+            <p key={b} className="text-[13px] leading-relaxed text-muted-foreground">
               {b}
             </p>
           ))}

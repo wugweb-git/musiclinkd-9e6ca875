@@ -79,7 +79,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
     return (
       <Link to="/auth" search={{ mode: "signin" }} aria-label="Sign in">
         <Avatar className={shape}>
-          <AvatarFallback className="bg-card text-text2">
+          <AvatarFallback className="bg-card text-muted-foreground">
             <User size={18} aria-hidden />
           </AvatarFallback>
         </Avatar>
@@ -91,7 +91,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
     <Link to="/me" aria-label={displayName ? `Your profile — ${displayName}` : "Your profile"}>
       <Avatar className={shape}>
         {photo ? <AvatarImage src={photo} alt="" /> : null}
-        <AvatarFallback className="bg-card text-xs font-semibold text-text2">
+        <AvatarFallback className="bg-card text-xs font-semibold text-muted-foreground">
           {initials || <User size={18} aria-hidden />}
         </AvatarFallback>
       </Avatar>

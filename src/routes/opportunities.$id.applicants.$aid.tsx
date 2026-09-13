@@ -84,7 +84,7 @@ function ApplicantDetail() {
 
         <Card className="space-y-2">
           <h2 className="text-[15px]">Their message</h2>
-          <p className="text-[13px] text-text2">{a.message}</p>
+          <p className="text-[13px] text-muted-foreground">{a.message}</p>
         </Card>
 
         <section>

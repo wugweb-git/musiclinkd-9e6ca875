@@ -35,7 +35,7 @@ const toneStyle: Record<string, { bg: string; fg: string }> = {
   ok: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
   info: { bg: "var(--pink-container)", fg: "var(--primary)" },
-  off: { bg: "var(--surface-subtle)", fg: "var(--text-secondary)" },
+  off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
   bad: { bg: "color-mix(in oklab, var(--destructive) 10%, transparent)", fg: "var(--destructive)" },
 };
 
@@ -106,7 +106,7 @@ export function ParticipantStack({
       {rest > 0 ? (
         <span
           className="ml-[-8px] flex h-7 w-7 items-center justify-center rounded-full border-2 border-card text-1 font-bold"
-          style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
+          style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
         >
           +{rest}
         </span>
@@ -249,7 +249,7 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
       ) : (
         <span
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base"
-          style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
+          style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
         >
           {meta.icon}
         </span>
@@ -392,7 +392,7 @@ export function ActivityItem({ a }: { a: ActivityEntry }) {
     <li className="flex gap-3 py-3">
       <span
         className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-1"
-        style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
+        style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
       >
         {activityIcon[a.kind]}
       </span>

@@ -97,7 +97,9 @@ function BandsIndex() {
                         }
                       />
                     </div>
-                    <p className="mt-3 line-clamp-2 text-[13px] text-text2">{b.tagline}</p>
+                    <p className="mt-3 line-clamp-2 text-[13px] text-muted-foreground">
+                      {b.tagline}
+                    </p>
                     <div className="mt-3 flex items-center gap-2 text-[12px] text-muted-foreground">
                       <Users size={14} aria-hidden />
                       <span className="truncate">
@@ -109,7 +111,7 @@ function BandsIndex() {
                         {b.lookingFor.map((l) => (
                           <span
                             key={l}
-                            className="shrink-0 rounded-full bg-subtle px-3 py-1 text-[11px] font-semibold text-text2"
+                            className="shrink-0 rounded-full bg-subtle px-3 py-1 text-[11px] font-semibold text-muted-foreground"
                           >
                             Looking for: {l}
                           </span>

@@ -60,16 +60,16 @@ function ApplicationDetail() {
             <span className="text-[12px] text-muted-foreground">Applied {a.submittedAt}</span>
           </div>
           {a.status === "shortlisted" ? (
-            <p className="text-[13px] text-text2">
+            <p className="text-[13px] text-muted-foreground">
               You're on the shortlist. Keep the conversation going — most shortlists convert within
               a week.
             </p>
           ) : a.status === "rejected" ? (
-            <p className="text-[13px] text-text2">
+            <p className="text-[13px] text-muted-foreground">
               Not selected this time. Your profile stays visible to this poster for future posts.
             </p>
           ) : (
-            <p className="text-[13px] text-text2">
+            <p className="text-[13px] text-muted-foreground">
               The poster has your application. You'll be notified on any change.
             </p>
           )}
@@ -94,7 +94,7 @@ function ApplicationDetail() {
 
         <Card className="space-y-2">
           <h2 className="text-[15px]">What you sent</h2>
-          <p className="text-[13px] text-text2">{a.message}</p>
+          <p className="text-[13px] text-muted-foreground">{a.message}</p>
           {a.rateQuoted ? (
             <p className="text-[12px] text-muted-foreground">Rate quoted: {a.rateQuoted}</p>
           ) : null}

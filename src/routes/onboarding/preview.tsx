@@ -64,14 +64,16 @@ function Preview() {
                 {d.primaryInstrument ? ` · ${d.primaryInstrument}` : ""}
               </p>
               {d.city ? (
-                <p className="mt-1 inline-flex items-center gap-1 text-xs text-text2">
+                <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <MapPin size={12} /> {d.locality ? `${d.locality}, ` : ""}
                   {d.city}
                 </p>
               ) : null}
             </div>
           </div>
-          {d.bio ? <p className="mt-4 text-sm leading-relaxed text-text2">{d.bio}</p> : null}
+          {d.bio ? (
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{d.bio}</p>
+          ) : null}
           <p className="mt-3 text-[11px] text-muted-foreground">musiclinkd.com/{d.username}</p>
         </section>
 
@@ -94,7 +96,7 @@ function Preview() {
         />
         <Row title="Visibility" items={[d.visibility]} onEdit={() => edit("visibility")} />
 
-        <p className="mt-6 rounded-2xl bg-subtle px-4 py-3 text-xs text-text2">
+        <p className="mt-6 rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
           Anything empty simply doesn't show on your profile. You can fill it in later from your
           profile settings.
         </p>
@@ -132,7 +134,7 @@ function Row({ title, items, onEdit }: { title: string; items: string[]; onEdit:
           {items.map((x) => (
             <span
               key={x}
-              className="rounded-full bg-subtle px-3 py-1 text-xs font-semibold text-text2"
+              className="rounded-full bg-subtle px-3 py-1 text-xs font-semibold text-muted-foreground"
             >
               {x}
             </span>

@@ -40,7 +40,7 @@ export function ConditionBadge({ value }: { value: string }) {
   return (
     <span
       className="rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: "var(--surface-subtle)", color: "var(--text-secondary)" }}
+      style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
     >
       {value}
     </span>

@@ -83,7 +83,7 @@ function BandProfile() {
           </div>
         </div>
 
-        <p className="mt-3 text-[13px] text-text2">{band.tagline}</p>
+        <p className="mt-3 text-[13px] text-muted-foreground">{band.tagline}</p>
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {owner ? (
@@ -99,7 +99,7 @@ function BandProfile() {
               <Link
                 to="/bands/$id/invite"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-text2"
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
               >
                 <UserPlus size={14} aria-hidden />
                 Invite
@@ -110,7 +110,7 @@ function BandProfile() {
               <Btn className="col-span-1 min-w-0 gap-1 px-2 text-xs">Follow</Btn>
               <Link
                 to="/messages"
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-text2"
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
               >
                 <MessageSquare size={14} aria-hidden />
                 Message
@@ -126,7 +126,7 @@ function BandProfile() {
           </Link>
           <Link
             to="/identity/card"
-            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-text2"
+            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
           >
             <Share2 size={14} aria-hidden />
             Share
@@ -142,7 +142,7 @@ function BandProfile() {
             <>
               <Card>
                 <h2 className="text-[15px]">About</h2>
-                <p className="mt-2 text-[13px] text-text2">{band.bio}</p>
+                <p className="mt-2 text-[13px] text-muted-foreground">{band.bio}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <StatusPill
                     label={band.availability}
@@ -238,7 +238,7 @@ function BandProfile() {
                     />
                   </div>
                   {e.ticketNote ? (
-                    <p className="mt-3 text-[12px] text-text2">{e.ticketNote}</p>
+                    <p className="mt-3 text-[12px] text-muted-foreground">{e.ticketNote}</p>
                   ) : null}
                 </Card>
               ))

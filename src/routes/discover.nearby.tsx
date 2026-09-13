@@ -99,7 +99,12 @@ function Nearby() {
           <p className="mb-2 text-sm font-semibold">People around you</p>
           <div className="space-y-3">
             {talents.slice(0, 5).map((t) => (
-              <Link key={t.id} to="/talent/$id" params={{ id: t.id }} className="block">
+              <Link
+                key={t.id}
+                to="/profile/$username"
+                params={{ username: t.id }}
+                className="block"
+              >
                 <Card>
                   <div className="flex items-center gap-3">
                     <img

@@ -48,7 +48,7 @@ function SkipLater() {
           <p className="text-sm font-semibold">Still missing</p>
           <ul className="mt-2 space-y-1.5">
             {missing.map((m) => (
-              <li key={m.key} className="text-xs text-text2">
+              <li key={m.key} className="text-xs text-muted-foreground">
                 · {m.label} — {m.hint}
               </li>
             ))}

@@ -47,7 +47,7 @@ function BookingEntry() {
       <main className="px-5 pt-4">
         <h2 className="sr-only">About this space</h2>
         <EntityMetaRow b={b} />
-        <p className="mt-3 text-sm leading-relaxed text-text2">{b.about}</p>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.about}</p>
 
         <div className="mt-4 flex gap-2">
           <Link to="/messages" className="flex-1">
@@ -95,7 +95,10 @@ function BookingEntry() {
           <h3 className="text-[17px]">Facilities</h3>
           <div className="mt-3 flex flex-wrap gap-2">
             {b.facilities.map((f) => (
-              <span key={f} className="rounded-full bg-subtle px-3 py-1.5 text-xs text-text2">
+              <span
+                key={f}
+                className="rounded-full bg-subtle px-3 py-1.5 text-xs text-muted-foreground"
+              >
                 {f}
               </span>
             ))}
@@ -108,7 +111,7 @@ function BookingEntry() {
             {[...new Set(b.resources.flatMap((r) => r.equipment))].map((e) => (
               <span
                 key={e}
-                className="rounded-full border border-border px-3 py-1.5 text-xs text-text2"
+                className="rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground"
               >
                 {e}
               </span>

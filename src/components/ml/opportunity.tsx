@@ -173,7 +173,7 @@ export function ApplicationCard({ a, o }: { a: Application; o?: Opportunity }) {
         <p className="truncate text-1 text-muted-foreground">
           {o?.poster.name ?? "—"} · applied {a.submittedAt}
         </p>
-        <p className="line-clamp-2 text-1 text-text2">{a.message}</p>
+        <p className="line-clamp-2 text-1 text-muted-foreground">{a.message}</p>
       </Card>
     </Link>
   );

@@ -145,7 +145,7 @@ function WelcomeScreen() {
             Create.
           </h1>
 
-          <p className="mt-5 text-2 leading-relaxed text-text2">
+          <p className="mt-5 text-2 leading-relaxed text-muted-foreground">
             Build your profile, discover opportunities, connect with the music industry.
           </p>
 
@@ -153,7 +153,7 @@ function WelcomeScreen() {
             {audience.map((a) => (
               <li key={a} className="flex items-center gap-3">
                 <Plus size={14} className="shrink-0 text-muted-foreground" aria-hidden />
-                <span className="min-w-0 text-2 text-text2">{a}</span>
+                <span className="min-w-0 text-2 text-muted-foreground">{a}</span>
               </li>
             ))}
           </ul>

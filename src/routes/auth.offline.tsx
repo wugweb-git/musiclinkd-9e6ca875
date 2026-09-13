@@ -25,7 +25,7 @@ function OfflineScreen() {
   return (
     <AuthScreen>
       <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-3xl bg-subtle">
-        <WifiOff size={22} className="text-text2" />
+        <WifiOff size={22} className="text-muted-foreground" />
       </div>
       <AuthHeading
         title="No connection"
@@ -40,7 +40,7 @@ function OfflineScreen() {
         </Btn>
       </div>
       <TrustNote>Drafts you started are stored on this device until you're back online.</TrustNote>
-      <p className="mt-6 text-center text-1 text-text2">
+      <p className="mt-6 text-center text-1 text-muted-foreground">
         <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
           Back to sign in
         </Link>

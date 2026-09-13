@@ -190,7 +190,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
                 ))}
               </div>
             ) : (
-              <p className="rounded-2xl bg-subtle px-4 py-2.5 text-[11px] text-text2">
+              <p className="rounded-2xl bg-subtle px-4 py-2.5 text-[11px] text-muted-foreground">
                 Open all day
               </p>
             )}

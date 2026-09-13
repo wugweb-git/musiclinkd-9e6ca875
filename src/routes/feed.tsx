@@ -172,7 +172,7 @@ function Body({ data }: { data: DashboardData }) {
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
             {user.available ? "Open to collaborations" : "Not taking work"}
           </span>
-          <span className="max-w-full truncate rounded-full bg-subtle px-3 py-1.5 text-[11px] font-semibold text-text2">
+          <span className="max-w-full truncate rounded-full bg-subtle px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
             {user.role}
           </span>
         </div>
