@@ -60,8 +60,7 @@
         profile spread `...rahul`, so Discover talent pages show his tracks, projects and reviews.
         A real profile with no seed does the same through `ownerProfile`. Needs content per profile,
         or an empty-state design for sections a profile doesn't have.
-  - [ ] Record `20260913090949` in `supabase_migrations.schema_migrations`; the write was not
-        permitted from Claude Code. The seed is idempotent, so a re-run changes nothing.
+  - [x] `20260913090949` recorded in `supabase_migrations.schema_migrations` (13 Sep).
 - FLOW 03 — Add Portfolio
   - [x] `src/data/portfolio.ts`, `src/components/ml/portfolio.tsx`
   - [x] portfolio routes (overview, add, work detail, edit, reorder, settings, select)
