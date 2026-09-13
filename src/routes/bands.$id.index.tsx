@@ -109,7 +109,8 @@ function BandProfile() {
             <>
               <Btn className="col-span-1 min-w-0 gap-1 px-2 text-xs">Follow</Btn>
               <Link
-                to="/messages"
+                to="/bands/$id/contact"
+                params={{ id: band.id }}
                 className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
               >
                 <MessageSquare size={14} aria-hidden />
@@ -174,7 +175,8 @@ function BandProfile() {
                     ? `${band.portfolioItemIds.length} shared work items`
                     : "No shared work yet"
                 }
-                to="/portfolio"
+                to="/bands/$id/portfolio"
+                params={{ id: band.id }}
               />
             </>
           ) : null}
@@ -211,6 +213,15 @@ function BandProfile() {
                 </Link>
               ))
             : null}
+
+          {tab === "Shows" ? (
+            <Row
+              title="Shows and opportunities"
+              subtitle="Every date, plus gigs looking for a band"
+              to="/bands/$id/events"
+              params={{ id: band.id }}
+            />
+          ) : null}
 
           {tab === "Shows" ? (
             band.events.length ? (
@@ -272,7 +283,12 @@ function BandProfile() {
               </div>
             ) : (
               <EmptyState title="No releases yet" body="Add band work from your portfolio.">
-                <BtnLink to="/portfolio" variant="outline" className="w-full">
+                <BtnLink
+                  to="/bands/$id/portfolio"
+                  params={{ id: band.id }}
+                  variant="outline"
+                  className="w-full"
+                >
                   Open portfolio
                 </BtnLink>
               </EmptyState>

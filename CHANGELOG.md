@@ -34,6 +34,23 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   Every chip, pill and badge in `src/components/ml/` already renders `rounded-full`, and the M3
   change kept chips as pills. The old line would have had new screens build 8px chips.
 
+### Fixed — navigation hubs (route audit §7.1)
+
+- **Settings has an entry point.** Profile's owner panel has a Settings row. Before this, nothing linked to
+  `/settings`, the only way to Business, Services and Sign out.
+- **Profile owner panel targets.** "Manage portfolio" now opens `/portfolio`, "Manage services" opens `/services`,
+  and "Availability" opens `/services/availability`. All three used to open profile edit.
+- **Business owners reach their dashboard.** Manage has a Dashboard row, which leads to leads, analytics,
+  services, availability, portfolio, reviews and verification. Business verification opens
+  `/business/$id/verification`, not the generic chooser. The Back buttons on Manage and Team go to the
+  business itself: they linked to the literal path `/business/$id`.
+- **Service detail.** "Preview booking" opens the service's own enquiry. It opened the studio booking flow
+  with a service id, which always showed "This space is unavailable".
+- **Bands.** Message opens the band's contact page, and "Band portfolio" and the empty Music tab open the
+  band's own portfolio, not your personal one. The Shows tab links to the band's full shows and
+  opportunities page.
+- **Booking conflicts.** Services availability links to `/services/conflicts`.
+
 ### Changed — app start
 
 - **The app opens on a session check, not Discover.** `/` shows the brand mark while the browser

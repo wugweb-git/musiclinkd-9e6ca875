@@ -150,7 +150,7 @@ function ServiceDetail() {
           <BtnLink to="/services/availability" variant="outline" className="w-full">
             Availability
           </BtnLink>
-          <BtnLink to="/booking/$id" params={{ id: s.id }} className="w-full">
+          <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
             Preview booking
           </BtnLink>
         </div>

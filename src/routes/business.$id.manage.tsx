@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Users, Image, CalendarClock, ShieldCheck, Trash2, Pencil } from "lucide-react";
+import {
+  CalendarClock,
+  Image,
+  LayoutDashboard,
+  Pencil,
+  ShieldCheck,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, EmptyState, Dialog, StatusPill } from "@/components/ml/kit";
 import { getBusiness, businessTypeLabel } from "@/data/business";
@@ -41,7 +49,7 @@ function ManageBusiness() {
 
   return (
     <Screen>
-      <TopBar title="Manage" subtitle={b.name} back="/business/$id" />
+      <TopBar title="Manage" subtitle={b.name} back={`/business/${id}`} />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="flex items-center gap-3">
           <img src={b.logo} alt="" className="h-12 w-12 rounded-md object-cover" loading="lazy" />
@@ -58,6 +66,13 @@ function ManageBusiness() {
         </Card>
 
         <div className="space-y-2">
+          <Row
+            icon={<LayoutDashboard size={16} />}
+            title="Dashboard"
+            subtitle="Leads, analytics, services, reviews"
+            to="/business/$id/dashboard"
+            params={{ id }}
+          />
           <Row
             icon={<Pencil size={16} />}
             title="Details"
@@ -88,7 +103,8 @@ function ManageBusiness() {
             icon={<ShieldCheck size={16} />}
             title="Business verification"
             subtitle={b.verified ? "Verified — renews yearly" : "Get the verified badge"}
-            to="/verification/choose"
+            to="/business/$id/verification"
+            params={{ id }}
           />
         </div>
 
