@@ -1,4 +1,5 @@
 import { talents, studios, trending } from "./discover";
+import { categoryLabel, myApplications, opportunities } from "./opportunities";
 
 export type Stat = {
   key: string;
@@ -174,7 +175,9 @@ export type DashLink =
   | "/studio"
   | "/bookings"
   | "/portfolio/new"
-  | "/profile/edit";
+  | "/profile/edit"
+  | "/opportunities"
+  | "/opportunities/applications";
 
 export type HeadlineUpdate = {
   id: string;
@@ -300,4 +303,32 @@ export function forYouTiles(d: DashboardData): ForYouTile[] {
       to: "/studio",
     });
   return tiles;
+}
+
+/** Home's opportunity counts, derived the way /opportunities derives them. */
+export function opportunityTiles(): ForYouTile[] {
+  const open = opportunities
+    .filter((o) => o.status === "open")
+    .sort((a, b) => b.matchScore - a.matchScore);
+  const active = myApplications.filter((a) => a.status !== "rejected" && a.status !== "withdrawn");
+  const shortlisted = myApplications.filter((a) => a.status === "shortlisted").length;
+  return [
+    {
+      id: "matching",
+      value: `${open.length}`,
+      label: "Matching you",
+      hint: open
+        .slice(0, 3)
+        .map((o) => categoryLabel(o.categoryKey))
+        .join(", "),
+      to: "/opportunities",
+    },
+    {
+      id: "applications",
+      value: `${active.length}`,
+      label: "Your applications",
+      hint: `${shortlisted} shortlisted`,
+      to: "/opportunities/applications",
+    },
+  ];
 }
