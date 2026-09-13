@@ -52,7 +52,7 @@ function BusinessHome() {
                     <img
                       src={b.logo}
                       alt=""
-                      className="h-11 w-11 shrink-0 rounded-2xl object-cover"
+                      className="h-11 w-11 shrink-0 rounded-md object-cover"
                       loading="lazy"
                     />
                     <div className="min-w-0 flex-1">

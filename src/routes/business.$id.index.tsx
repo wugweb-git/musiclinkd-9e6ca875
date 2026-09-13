@@ -68,7 +68,7 @@ function BusinessProfileScreen() {
           <img
             src={b.logo}
             alt=""
-            className="h-16 w-16 rounded-3xl border-4 border-background object-cover"
+            className="h-16 w-16 rounded-lg border-4 border-background object-cover"
             loading="lazy"
           />
           <div className="min-w-0 flex-1 pb-1">
@@ -98,7 +98,7 @@ function BusinessProfileScreen() {
           </Btn>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 rounded-3xl border border-border bg-card p-3 text-center">
+        <div className="grid grid-cols-4 gap-2 rounded-lg border border-border bg-card p-3 text-center">
           {[
             ["Followers", b.stats.followers],
             ["Bookings", String(b.stats.bookings)],

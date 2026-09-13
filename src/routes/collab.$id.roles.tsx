@@ -57,7 +57,7 @@ function Roles() {
           </p>
         </Card>
       ) : (
-        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
           {project.participants.map((p) => (
             <div key={p.id} className="flex items-start gap-3 py-4">
               <img src={p.photo} alt="" className="h-10 w-10 rounded-full object-cover" />

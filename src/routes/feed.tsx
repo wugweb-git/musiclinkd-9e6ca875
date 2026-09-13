@@ -183,7 +183,7 @@ function Body({ data }: { data: DashboardData }) {
         <section className="px-5 pt-4">
           <Link
             to={headline.to}
-            className="flex min-w-0 items-center gap-3 rounded-3xl border border-border p-4"
+            className="flex min-w-0 items-center gap-3 rounded-lg border border-border p-4"
             style={{ background: "var(--pink-container)" }}
           >
             <div className="min-w-0 flex-1">
@@ -216,17 +216,14 @@ function Body({ data }: { data: DashboardData }) {
       <section className="pt-6">
         <SectionHeader title="Opportunities" action={<Link to="/opportunities">See all</Link>} />
         <div className="grid grid-cols-2 gap-3 px-5">
-          <Link
-            to="/opportunities"
-            className="min-w-0 rounded-3xl border border-border bg-card p-4"
-          >
+          <Link to="/opportunities" className="min-w-0 rounded-lg border border-border bg-card p-4">
             <p className="text-[24px] font-bold leading-none">5</p>
             <p className="mt-2 truncate text-[12px] font-semibold">Matching you</p>
             <p className="truncate text-[11px] text-muted-foreground">Singers, mixers, gigs</p>
           </Link>
           <Link
             to="/opportunities/applications"
-            className="min-w-0 rounded-3xl border border-border bg-card p-4"
+            className="min-w-0 rounded-lg border border-border bg-card p-4"
           >
             <p className="text-[24px] font-bold leading-none">2</p>
             <p className="mt-2 truncate text-[12px] font-semibold">Your applications</p>
@@ -246,7 +243,7 @@ function Body({ data }: { data: DashboardData }) {
                 <Link
                   key={t.id}
                   to={t.to}
-                  className="min-w-0 rounded-3xl border border-border bg-card p-4"
+                  className="min-w-0 rounded-lg border border-border bg-card p-4"
                 >
                   <p className="text-[24px] font-bold leading-none">{t.value}</p>
                   <p className="mt-2 truncate text-[12px] font-semibold">{t.label}</p>
@@ -292,7 +289,7 @@ function Body({ data }: { data: DashboardData }) {
             ))}
           </ul>
         ) : (
-          <div className="mx-5 rounded-3xl border border-border bg-card p-5 text-center">
+          <div className="mx-5 rounded-lg border border-border bg-card p-5 text-center">
             <p className="text-[14px] font-semibold">No activity yet</p>
             <p className="mt-1 text-[12px] text-muted-foreground">
               Connect with artists and studios to see updates here.
@@ -313,7 +310,7 @@ function Body({ data }: { data: DashboardData }) {
         <div className="px-5">
           <Link
             to="/profile/edit"
-            className="flex min-w-0 items-center gap-3 rounded-3xl border border-border bg-card p-4"
+            className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-4"
           >
             <div className="min-w-0 flex-1">
               <p className="truncate text-[13px] font-semibold">
@@ -364,7 +361,7 @@ function ContinueBlock({ c }: { c: ContinueCard }) {
       </span>
     </>
   );
-  const cls = "block min-w-0 rounded-3xl border border-border bg-card p-4";
+  const cls = "block min-w-0 rounded-lg border border-border bg-card p-4";
   if (c.ref) {
     return (
       <Link to="/bookings/$ref" params={{ ref: c.ref }} className={cls}>
@@ -424,8 +421,8 @@ function StateBlock({
 }) {
   return (
     <div className="px-5 py-16">
-      <div className="rounded-3xl border border-border bg-card p-6 text-center">
-        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-subtle">
+      <div className="rounded-lg border border-border bg-card p-6 text-center">
+        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-subtle">
           {icon}
         </span>
         <h2 className="text-[17px]">{title}</h2>
@@ -443,15 +440,15 @@ function SkeletonBody() {
     <div className="animate-pulse space-y-4 px-5 pt-6">
       <div className="h-8 w-2/3 rounded-full bg-subtle" />
       <div className="h-4 w-1/2 rounded-full bg-subtle" />
-      <div className="h-24 rounded-3xl bg-subtle" />
-      <div className="h-28 rounded-3xl bg-subtle" />
+      <div className="h-24 rounded-lg bg-subtle" />
+      <div className="h-28 rounded-lg bg-subtle" />
       <div className="grid grid-cols-2 gap-3">
-        <div className="h-24 rounded-3xl bg-subtle" />
-        <div className="h-24 rounded-3xl bg-subtle" />
+        <div className="h-24 rounded-lg bg-subtle" />
+        <div className="h-24 rounded-lg bg-subtle" />
       </div>
       <div className="space-y-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="h-10 rounded-2xl bg-subtle" />
+          <div key={i} className="h-10 rounded-md bg-subtle" />
         ))}
       </div>
     </div>

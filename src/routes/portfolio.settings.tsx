@@ -40,7 +40,7 @@ function PortfolioSettings() {
               type="button"
               aria-pressed={visibility === v.value}
               onClick={() => setVisibility(v.value)}
-              className={`w-full rounded-2xl border p-4 text-left ${
+              className={`w-full rounded-lg border p-4 text-left ${
                 visibility === v.value ? "border-primary bg-card" : "border-border bg-card"
               }`}
             >
@@ -68,7 +68,7 @@ function PortfolioSettings() {
               type="button"
               aria-pressed={ordering === o.key}
               onClick={() => setOrdering(o.key)}
-              className={`w-full rounded-2xl border p-4 text-left ${
+              className={`w-full rounded-lg border p-4 text-left ${
                 ordering === o.key ? "border-primary bg-card" : "border-border bg-card"
               }`}
             >
@@ -81,7 +81,7 @@ function PortfolioSettings() {
         <h2 className="mt-7 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
           Media
         </h2>
-        <div className="mt-2 flex items-center justify-between rounded-2xl border border-border bg-card p-4">
+        <div className="mt-2 flex items-center justify-between rounded-lg border border-border bg-card p-4">
           <div className="pr-4">
             <p className="text-sm font-semibold">Preview audio automatically</p>
             <p className="text-xs text-muted-foreground">Off by default to save mobile data.</p>

@@ -4,7 +4,7 @@ import { AvailabilityBadge, Btn, VerifiedBadge } from "./ui";
 
 export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent) => void }) {
   return (
-    <article className="rounded-3xl border border-border bg-card p-4">
+    <article className="rounded-lg border border-border bg-card p-4">
       <button
         type="button"
         onClick={() => onPreview?.(t)}
@@ -14,7 +14,7 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
           src={t.photo}
           alt={`${t.name}, ${t.role}`}
           loading="lazy"
-          className="h-16 w-16 rounded-2xl object-cover"
+          className="h-16 w-16 rounded-lg object-cover"
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
@@ -72,7 +72,7 @@ export function TalentCard({ t }: { t: Talent }) {
     <Link
       to="/profile/$username"
       params={{ username: t.id }}
-      className="block w-[172px] shrink-0 overflow-hidden rounded-3xl border border-border bg-card"
+      className="block w-[172px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
     >
       <div className="relative h-[150px]">
         <img
@@ -105,7 +105,7 @@ export function TalentGridCard({ t }: { t: Talent }) {
     <Link
       to="/profile/$username"
       params={{ username: t.id }}
-      className="overflow-hidden rounded-3xl border border-border bg-card"
+      className="overflow-hidden rounded-lg border border-border bg-card"
     >
       <img
         src={t.photo}

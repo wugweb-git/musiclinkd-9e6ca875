@@ -78,7 +78,7 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
 export function EquipmentCard({ e }: { e: Equipment }) {
   const [saved, setSaved] = useState(false);
   return (
-    <article className="overflow-hidden rounded-3xl border border-border bg-card">
+    <article className="overflow-hidden rounded-lg border border-border bg-card">
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
@@ -129,7 +129,7 @@ export function EquipmentTile({ e }: { e: Equipment }) {
     <Link
       to="/marketplace/rent/e/$id"
       params={{ id: e.id }}
-      className="block w-[176px] shrink-0 overflow-hidden rounded-3xl border border-border bg-card"
+      className="block w-[176px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
     >
       <img
         src={e.photos[0]}
@@ -152,13 +152,13 @@ export function EquipmentTile({ e }: { e: Equipment }) {
 export function EquipmentRow({ e, action }: { e: Equipment; action?: ReactNode }) {
   const [saved, setSaved] = useState(false);
   return (
-    <article className="flex gap-3 rounded-3xl border border-border bg-card p-3">
+    <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="shrink-0">
         <img
           src={e.photos[0]}
           alt={e.name}
           loading="lazy"
-          className="h-24 w-24 rounded-2xl object-cover"
+          className="h-24 w-24 rounded-lg object-cover"
         />
       </Link>
       <div className="min-w-0 flex-1">
@@ -196,7 +196,7 @@ function providerName(e: Equipment) {
 export function ProviderSummary({ p, compact }: { p: Provider; compact?: boolean }) {
   return (
     <div className="flex items-center gap-3">
-      <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-2xl object-cover" />
+      <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-md object-cover" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate text-2 font-semibold">{p.name}</p>
@@ -221,7 +221,7 @@ export function ProviderCard({ p }: { p: Provider }) {
     <Link
       to="/marketplace/rent/provider/$id"
       params={{ id: p.id }}
-      className="block rounded-3xl border border-border bg-card p-4"
+      className="block rounded-lg border border-border bg-card p-4"
     >
       <ProviderSummary p={p} />
       <div className="mt-3 flex flex-wrap gap-2">
@@ -268,7 +268,7 @@ export function RentalCalendar({
   );
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <p className="text-2 font-semibold">
           {month.toLocaleString("en-IN", { month: "long", year: "numeric" })}
@@ -295,7 +295,7 @@ export function RentalCalendar({
               type="button"
               disabled={isBlocked}
               onClick={() => onSelect(day)}
-              className={`flex h-9 items-center justify-center rounded-2xl text-1 font-semibold transition-colors ${
+              className={`flex h-9 items-center justify-center rounded-md text-1 font-semibold transition-colors ${
                 isBlocked ? "text-muted-foreground line-through opacity-50" : ""
               }`}
               style={
@@ -351,7 +351,7 @@ export function PriceBreakdown({
   ];
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="space-y-2.5">
         {rows.map((r) => (
           <div key={r.k} className="flex items-start justify-between gap-3">
@@ -365,7 +365,7 @@ export function PriceBreakdown({
         <span className="text-xl font-bold">{inr(total)}</span>
       </div>
       <div
-        className="mt-3 flex items-start justify-between gap-3 rounded-2xl p-3"
+        className="mt-3 flex items-start justify-between gap-3 rounded-lg p-3"
         style={{ background: "var(--warn-container)" }}
       >
         <div className="min-w-0">
@@ -420,14 +420,14 @@ export function FulfilmentPicker({
 
   if (!options.length) {
     return (
-      <div className="rounded-3xl border border-dashed border-border p-4 text-1 text-muted-foreground">
+      <div className="rounded-lg border border-dashed border-border p-4 text-1 text-muted-foreground">
         Pickup only — arrange collection with the provider in your conversation.
       </div>
     );
   }
 
   return (
-    <div className="divide-y divide-border overflow-hidden rounded-3xl border border-border bg-card">
+    <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
       {options.map((o) => {
         const Icon = o.icon;
         const active = value === o.id;
@@ -439,7 +439,7 @@ export function FulfilmentPicker({
             className="flex w-full items-center gap-3 px-4 py-4 text-left"
           >
             <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
               style={{ background: active ? "var(--pink-container)" : "var(--surface-subtle)" }}
             >
               <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
@@ -471,13 +471,13 @@ export function BookingCard({
   action?: ReactNode;
 }) {
   return (
-    <article className="rounded-3xl border border-border bg-card p-3">
+    <article className="rounded-lg border border-border bg-card p-3">
       <div className="flex gap-3">
         <img
           src={e.photos[0]}
           alt={e.name}
           loading="lazy"
-          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+          className="h-20 w-20 shrink-0 rounded-lg object-cover"
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
@@ -512,12 +512,12 @@ export function RentalRequestCard({
   price: string;
 }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start gap-3">
         <img
           src={e.photos[0]}
           alt={e.name}
-          className="h-14 w-14 shrink-0 rounded-2xl object-cover"
+          className="h-14 w-14 shrink-0 rounded-md object-cover"
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-1 font-semibold">{e.name}</p>
@@ -536,7 +536,7 @@ export function RentalRequestCard({
 
 export function RentalSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-border bg-card">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <div className="h-44 w-full animate-pulse bg-subtle" />
       <div className="space-y-2 p-4">
         <div className="h-4 w-28 animate-pulse rounded-full bg-subtle" />
@@ -626,7 +626,7 @@ export function RentalFilterSheet({
         </button>
       ) : null}
 
-      <div className="mb-6 divide-y divide-border rounded-3xl border border-border">
+      <div className="mb-6 divide-y divide-border rounded-lg border border-border">
         <RentalSwitch
           label="Available on my dates"
           value={switches.available}
@@ -705,7 +705,7 @@ export function RentalReportSheet({ open, onClose }: { open: boolean; onClose: (
   ];
   return (
     <Sheet open={open} onClose={onClose} title="Report or block">
-      <div className="divide-y divide-border rounded-3xl border border-border">
+      <div className="divide-y divide-border rounded-lg border border-border">
         {reasons.map((r) => (
           <button
             key={r}

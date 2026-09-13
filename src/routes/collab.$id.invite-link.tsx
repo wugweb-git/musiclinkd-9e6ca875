@@ -55,7 +55,7 @@ function InviteLink() {
         <Card className="mb-5">
           <Label>Invite link</Label>
           <p
-            className={`mb-3 break-all rounded-2xl border border-border px-3 py-2 text-[12px] ${
+            className={`mb-3 break-all rounded-lg border border-border px-3 py-2 text-[12px] ${
               active ? "text-muted-foreground" : "text-muted-foreground line-through"
             }`}
           >
@@ -78,7 +78,7 @@ function InviteLink() {
           ))}
         </div>
 
-        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card">
           <SwitchRow label="Link is active" value={active} onChange={setActive} />
           <SwitchRow label="Owner approves each join" value={approve} onChange={setApprove} />
         </div>

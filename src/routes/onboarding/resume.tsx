@@ -55,7 +55,7 @@ function Resume() {
           <span className="font-semibold text-foreground">{def?.title ?? "the next step"}</span>.
         </p>
 
-        <div className="mt-6 rounded-3xl border border-border bg-card p-5">
+        <div className="mt-6 rounded-lg border border-border bg-card p-5">
           <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
             Next up
           </p>

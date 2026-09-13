@@ -39,7 +39,7 @@ function RecSettings() {
               onClick={() =>
                 setPrefs((list) => list.map((x) => (x.key === p.key ? { ...x, on: !x.on } : x)))
               }
-              className="flex w-full items-center gap-3 rounded-2xl border border-border bg-background px-4 py-3 text-left"
+              className="flex w-full items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-left"
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13px] font-semibold">{p.label}</span>

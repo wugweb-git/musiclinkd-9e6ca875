@@ -52,7 +52,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
         </div>
       ))}
 
-      <div className="mb-5 divide-y divide-border rounded-3xl border border-border">
+      <div className="mb-5 divide-y divide-border rounded-lg border border-border">
         <Toggle label="Verified professionals only" value={verified} onChange={setVerified} />
         <Toggle label="Remote / online available" value={remote} onChange={setRemote} />
         <Toggle label="Session musician available" value={session} onChange={setSession} />

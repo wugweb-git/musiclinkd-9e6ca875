@@ -73,7 +73,7 @@ function Settings() {
         </p>
 
         <Label>Notifications</Label>
-        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card">
           <SwitchRow label="New files" value={notifyFiles} onChange={setNotifyFiles} />
           <SwitchRow
             label="Milestone updates"
@@ -88,7 +88,7 @@ function Settings() {
         </div>
 
         <Label>Credits</Label>
-        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card">
           <SwitchRow
             label="Show credits on my profile"
             value={showCredits}
@@ -98,7 +98,7 @@ function Settings() {
         </div>
 
         <Label>Project</Label>
-        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card">
           <RowLink
             title="Roles"
             subtitle="Who holds which role and what they own"
@@ -161,7 +161,7 @@ function Settings() {
         ) : null}
 
         <Label>Lifecycle</Label>
-        <div className="mb-8 divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="mb-8 divide-y divide-border rounded-lg border border-border bg-card">
           <RowLink
             title="Put project on hold"
             subtitle="Pause without losing anything"

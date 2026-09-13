@@ -44,7 +44,7 @@ function SkipLater() {
           gets fewer enquiries.
         </p>
 
-        <div className="mt-6 rounded-3xl border border-border bg-card p-5">
+        <div className="mt-6 rounded-lg border border-border bg-card p-5">
           <p className="text-sm font-semibold">Still missing</p>
           <ul className="mt-2 space-y-1.5">
             {missing.map((m) => (

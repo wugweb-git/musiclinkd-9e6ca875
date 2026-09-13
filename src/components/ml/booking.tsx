@@ -108,7 +108,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
         );
       })}
       {terminal ? (
-        <li className="mt-1 rounded-2xl bg-subtle px-3 py-2 text-xs text-muted-foreground">
+        <li className="mt-1 rounded-lg bg-subtle px-3 py-2 text-xs text-muted-foreground">
           This booking ended as <span className="font-semibold">{statusMeta[status].label}</span>.
         </li>
       ) : null}
@@ -165,7 +165,7 @@ export function BookableEntityCard({ b }: { b: Bookable }) {
     <Link
       to="/booking/$id"
       params={{ id: b.id }}
-      className="block overflow-hidden rounded-3xl border border-border bg-card"
+      className="block overflow-hidden rounded-lg border border-border bg-card"
     >
       <img src={b.hero} alt={b.name} className="h-36 w-full object-cover" loading="lazy" />
       <div className="p-4">
@@ -193,7 +193,7 @@ export function ResourceCard({
   const from = Math.min(...r.tiers.map((t) => t.price));
   return (
     <div
-      className={`overflow-hidden rounded-3xl border bg-card ${
+      className={`overflow-hidden rounded-lg border bg-card ${
         selected ? "border-primary" : "border-border"
       }`}
     >
@@ -201,7 +201,7 @@ export function ResourceCard({
         <img
           src={r.photo}
           alt=""
-          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+          className="h-20 w-20 shrink-0 rounded-lg object-cover"
           loading="lazy"
         />
         <div className="min-w-0 flex-1">
@@ -272,7 +272,7 @@ export function AvailabilityCalendar({
   });
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -318,7 +318,7 @@ export function AvailabilityCalendar({
               onClick={() => onSelect(iso)}
               aria-label={`${formatDate(iso)} — ${a.state}`}
               aria-pressed={isSel}
-              className={`flex h-12 flex-col items-center justify-center rounded-2xl text-sm ${
+              className={`flex h-12 flex-col items-center justify-center rounded-md text-sm ${
                 isSel
                   ? "bg-primary text-primary-foreground"
                   : disabled
@@ -392,7 +392,7 @@ export function SlotPicker({
               onClick={() => onChange(s.start)}
               aria-pressed={active}
               aria-label={`${formatTime(s.start)} to ${formatTime(s.end)} — ${open ? "available" : s.state}`}
-              className={`min-h-12 rounded-2xl border px-2 text-xs font-semibold ${
+              className={`min-h-12 rounded-lg border px-2 text-xs font-semibold ${
                 active
                   ? "border-transparent bg-primary text-primary-foreground"
                   : open
@@ -447,7 +447,7 @@ export function DurationPicker({
         })}
       </div>
       {isCustom && onCustomHours ? (
-        <label className="mt-3 flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+        <label className="mt-3 flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
           <span className="text-xs font-semibold">Custom hours</span>
           <input
             type="number"
@@ -455,7 +455,7 @@ export function DurationPicker({
             max={12}
             value={customHours ?? value}
             onChange={(e) => onCustomHours(Math.max(1, Math.min(12, Number(e.target.value) || 1)))}
-            className="w-16 rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            className="w-16 rounded-md border border-border bg-background px-3 py-2 text-sm"
           />
         </label>
       ) : null}
@@ -478,7 +478,7 @@ export function AddOnCard({
 }) {
   return (
     <div
-      className={`rounded-3xl border bg-card p-4 ${selected ? "border-primary" : "border-border"}`}
+      className={`rounded-lg border bg-card p-4 ${selected ? "border-primary" : "border-border"}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -515,7 +515,7 @@ export function AddOnCard({
 
 export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: boolean }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <Row label={p.baseLabel} value={inr(p.base)} />
       {p.addOns.map((a) => (
         <Row key={a.name} label={a.name} value={inr(a.price)} muted />
@@ -575,7 +575,7 @@ export function PolicyCard({
   critical?: boolean | undefined;
 }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
         {critical ? (
           <AlertTriangle size={14} className="text-primary" />
@@ -599,7 +599,7 @@ export function AcknowledgeRow({
   label: string;
 }) {
   return (
-    <label className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4">
+    <label className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
       <input
         type="checkbox"
         checked={checked}
@@ -631,12 +631,12 @@ export function BookingSummaryCard({
   people: number;
 }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex gap-3">
         <img
           src={r.photo}
           alt=""
-          className="h-16 w-16 shrink-0 rounded-2xl object-cover"
+          className="h-16 w-16 shrink-0 rounded-lg object-cover"
           loading="lazy"
         />
         <div className="min-w-0">
@@ -681,7 +681,7 @@ export function BookingListCard({
     <Link
       to={provider ? "/provider/bookings/$ref" : "/bookings/$ref"}
       params={{ ref: booking.ref }}
-      className="block rounded-3xl border border-border bg-card p-4"
+      className="block rounded-lg border border-border bg-card p-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -719,7 +719,7 @@ export function ProviderRequestCard({
   entityResource: string;
 }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start gap-3">
         <img
           src={booking.customerAvatar}
@@ -732,7 +732,7 @@ export function ProviderRequestCard({
         </div>
         <BookingStatusPill status={booking.status} />
       </div>
-      <div className="mt-3 rounded-2xl bg-subtle px-3 py-2 text-xs text-muted-foreground">
+      <div className="mt-3 rounded-lg bg-subtle px-3 py-2 text-xs text-muted-foreground">
         <p className="font-semibold text-foreground">{entityResource}</p>
         <p className="mt-0.5">
           {formatDate(booking.date)} · {formatTime(booking.start)} – {formatTime(booking.end)} ·{" "}
@@ -758,7 +758,7 @@ export function ProviderRequestCard({
 
 export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Payment</p>
       <Row label="Total booking value" value={inr(p.total)} />
       <Row
@@ -783,7 +783,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
     <div
       role="status"
-      className="mb-4 flex items-start gap-3 rounded-2xl border border-border bg-card p-4"
+      className="mb-4 flex items-start gap-3 rounded-lg border border-border bg-card p-4"
     >
       <WifiOff size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
@@ -815,7 +815,7 @@ export function ErrorState({
   onRetry: () => void;
 }) {
   return (
-    <div role="alert" className="rounded-3xl border border-destructive/40 bg-card p-5 text-center">
+    <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5 text-center">
       <AlertTriangle size={22} className="mx-auto text-destructive" />
       <p className="mt-2 font-semibold">{title}</p>
       <p className="mt-1 text-xs text-muted-foreground">{message}</p>
@@ -836,7 +836,7 @@ export function EmptyState({
   action?: ReactNode | undefined;
 }) {
   return (
-    <div className="rounded-3xl border border-dashed border-border bg-card p-6 text-center">
+    <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center">
       <Calendar size={22} className="mx-auto text-muted-foreground" />
       <p className="mt-2 font-semibold">{title}</p>
       <p className="mt-1 text-xs text-muted-foreground">{body}</p>
@@ -849,7 +849,7 @@ export function BookingSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-3" aria-hidden>
       {Array.from({ length: rows }, (_, i) => (
-        <div key={i} className="h-28 animate-pulse rounded-3xl bg-subtle" />
+        <div key={i} className="h-28 animate-pulse rounded-lg bg-subtle" />
       ))}
     </div>
   );
@@ -857,11 +857,11 @@ export function BookingSkeleton({ rows = 3 }: { rows?: number }) {
 
 export function CalendarSkeleton() {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4" aria-hidden>
+    <div className="rounded-lg border border-border bg-card p-4" aria-hidden>
       <div className="h-5 w-32 animate-pulse rounded-full bg-subtle" />
       <div className="mt-4 grid grid-cols-7 gap-1">
         {Array.from({ length: 28 }, (_, i) => (
-          <div key={i} className="h-12 animate-pulse rounded-2xl bg-subtle" />
+          <div key={i} className="h-12 animate-pulse rounded-md bg-subtle" />
         ))}
       </div>
     </div>

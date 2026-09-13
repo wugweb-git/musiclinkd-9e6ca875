@@ -25,7 +25,7 @@ function AuthSuccess() {
   return (
     <AuthScreen>
       <div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-3xl"
+        className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
         style={{ background: "var(--pink-container)" }}
       >
         <PartyPopper size={24} className="text-primary" />
@@ -35,7 +35,7 @@ function AuthSuccess() {
         sub="Next: tell us what you do so the right people, gigs and studios can find you. Takes about 3 minutes."
       />
 
-      <div className="mb-7 rounded-3xl border border-border bg-card p-4">
+      <div className="mb-7 rounded-lg border border-border bg-card p-4">
         <p className="text-[13px] font-semibold">What happens next</p>
         <ol className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
           <li>1. Choose your roles and city</li>

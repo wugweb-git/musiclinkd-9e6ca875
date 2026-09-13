@@ -44,7 +44,7 @@ function ManageBusiness() {
       <TopBar title="Manage" subtitle={b.name} back="/business/$id" />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="flex items-center gap-3">
-          <img src={b.logo} alt="" className="h-12 w-12 rounded-2xl object-cover" loading="lazy" />
+          <img src={b.logo} alt="" className="h-12 w-12 rounded-md object-cover" loading="lazy" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-[14px] font-semibold">{b.name}</p>
             <p className="truncate text-[12px] text-muted-foreground">

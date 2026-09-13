@@ -77,7 +77,7 @@ function ProviderBookingDetail() {
           <PaymentPill status={bk.payment} />
         </div>
 
-        <div className="mt-4 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-4 rounded-lg border border-border bg-card p-4">
           <div className="flex items-center gap-3">
             <img
               src={bk.customerAvatar}
@@ -109,7 +109,7 @@ function ProviderBookingDetail() {
         </div>
 
         <h2 className="mt-6 text-[17px]">Progress</h2>
-        <div className="mt-3 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-3 rounded-lg border border-border bg-card p-4">
           <BookingTimeline status={bk.status} />
         </div>
 

@@ -55,11 +55,11 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
                 key={o.label}
                 type="button"
                 onClick={() => setChoice(o.label)}
-                className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left ${
+                className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left ${
                   choice === o.label ? "border-primary bg-card" : "border-border bg-card"
                 }`}
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-subtle">
+                <span className="flex h-10 w-10 items-center justify-center rounded-md bg-subtle">
                   {o.emoji}
                 </span>
                 <span className="flex-1">
@@ -92,7 +92,7 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
                 id="message"
                 rows={4}
                 defaultValue="Hi Ananya — we're cutting a Hindi-Sufi title track in Mumbai and would love your vocals on the hook."
-                className="w-full rounded-2xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
               />
             </div>
           </div>
@@ -114,7 +114,7 @@ function Field({ label, placeholder }: { label: string; placeholder: string }) {
       </label>
       <input
         placeholder={placeholder}
-        className="h-12 w-full rounded-2xl border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+        className="h-12 w-full rounded-md border border-border bg-card px-4 text-sm outline-none focus:border-primary"
       />
     </div>
   );

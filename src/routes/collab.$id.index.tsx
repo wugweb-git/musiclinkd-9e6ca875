@@ -58,27 +58,27 @@ function Overview() {
     <WorkspaceShell project={project} tab="overview">
       {project.status === "onHold" && project.holdReason ? (
         <div
-          className="mb-4 rounded-2xl px-4 py-3 text-[12px] font-semibold"
+          className="mb-4 rounded-lg px-4 py-3 text-[12px] font-semibold"
           style={{ background: "var(--warn-container)", color: "var(--warn)" }}
         >
           On hold — {project.holdReason}
         </div>
       ) : null}
       {project.status === "cancelled" && project.cancelledReason ? (
-        <div className="mb-4 rounded-2xl border border-border px-4 py-3 text-[12px] text-muted-foreground">
+        <div className="mb-4 rounded-lg border border-border px-4 py-3 text-[12px] text-muted-foreground">
           Cancelled — {project.cancelledReason}
         </div>
       ) : null}
       {project.status === "completed" && project.completedOn ? (
         <div
-          className="mb-4 rounded-2xl px-4 py-3 text-[12px] font-semibold"
+          className="mb-4 rounded-lg px-4 py-3 text-[12px] font-semibold"
           style={{ background: "var(--success-container)", color: "var(--success)" }}
         >
           Completed on {project.completedOn}
         </div>
       ) : null}
 
-      <img src={project.artwork} alt="" className="mb-4 h-40 w-full rounded-3xl object-cover" />
+      <img src={project.artwork} alt="" className="mb-4 h-40 w-full rounded-lg object-cover" />
 
       <div className="mb-4 flex flex-wrap gap-2">
         <Tag>{project.type}</Tag>
@@ -128,21 +128,21 @@ function Overview() {
       </Link>
 
       <Label>Milestones</Label>
-      <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+      <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
         {project.milestones.slice(0, 3).map((m) => (
           <MilestoneRow key={m.id} m={m} projectId={project.id} />
         ))}
       </div>
 
       <Label>Recent files</Label>
-      <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+      <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
         {project.files.slice(0, 3).map((f) => (
           <FileRow key={f.id} file={f} projectId={project.id} />
         ))}
       </div>
 
       <Label>Latest activity</Label>
-      <div className="mb-6 rounded-3xl border border-border bg-card px-4 py-2">
+      <div className="mb-6 rounded-lg border border-border bg-card px-4 py-2">
         {project.activity.slice(0, 4).map((a) => (
           <ActivityItem key={a.id} a={a} />
         ))}

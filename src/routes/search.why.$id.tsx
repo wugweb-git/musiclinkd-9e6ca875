@@ -53,7 +53,7 @@ function WhyThisResult() {
         <Card className="space-y-3">
           <h2 className="text-2">What was used</h2>
           {why.signals.map((s) => (
-            <div key={s.label} className="rounded-md bg-subtle px-4 py-3">
+            <div key={s.label} className="rounded-lg bg-subtle px-4 py-3">
               <div className="flex items-start justify-between gap-2">
                 <p className="min-w-0 text-sm font-semibold">{s.label}</p>
                 <StatusPill label={weightLabel[s.weight]} tone={weightTone[s.weight]} />

@@ -45,7 +45,7 @@ function Review() {
         <StepDots step={5} total={5} />
 
         {!draft.date || !draft.start ? (
-          <div className="mt-4 rounded-3xl border border-border bg-card p-5 text-center">
+          <div className="mt-4 rounded-lg border border-border bg-card p-5 text-center">
             <p className="font-semibold">Pick a date and time first</p>
             <Btn
               className="mt-3 w-full"
@@ -67,7 +67,7 @@ function Review() {
               />
             </div>
 
-            <section className="mt-5 rounded-3xl border border-border bg-card p-4">
+            <section className="mt-5 rounded-lg border border-border bg-card p-4">
               <dl className="grid grid-cols-2 gap-3 text-xs">
                 <Detail label="Duration" value={`${draft.hours} hr${draft.hours > 1 ? "s" : ""}`} />
                 <Detail label="Purpose" value={draft.purpose || "Not specified"} />

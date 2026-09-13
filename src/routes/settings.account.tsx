@@ -72,7 +72,7 @@ function AccountScreen() {
             </span>
             <input
               defaultValue={field?.value ?? ""}
-              className="mt-1.5 min-h-12 w-full rounded-2xl border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
+              className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
             />
           </label>
           <p className="text-[12px] text-muted-foreground">

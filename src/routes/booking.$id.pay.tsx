@@ -108,7 +108,7 @@ function Pay() {
           />
         </div>
 
-        <p className="mt-4 flex items-start gap-2 rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
+        <p className="mt-4 flex items-start gap-2 rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
           <Lock size={14} className="mt-0.5 shrink-0" />
           You'll finish the payment in the provider's secure payment window. MusicLinkd never stores
           card details.
@@ -117,7 +117,7 @@ function Pay() {
         {phase === "processing" ? (
           <p
             role="status"
-            className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-xs"
+            className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-xs"
           >
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
             Processing payment…
@@ -165,7 +165,7 @@ function MethodRow({
       type="button"
       onClick={onSelect}
       aria-pressed={active}
-      className={`flex w-full items-center gap-3 rounded-3xl border bg-card p-4 text-left ${
+      className={`flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left ${
         active ? "border-primary" : "border-border"
       }`}
     >
@@ -205,7 +205,7 @@ function Result({
         )}
         <h1 className="mt-4 text-[28px] leading-tight">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{body}</p>
-        <dl className="mt-6 rounded-3xl border border-border bg-card p-4">
+        <dl className="mt-6 rounded-lg border border-border bg-card p-4">
           {rows.map(([k, v]) => (
             <div key={k} className="flex items-baseline justify-between gap-3 py-1.5">
               <dt className="text-xs text-muted-foreground">{k}</dt>

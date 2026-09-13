@@ -67,7 +67,7 @@ export function Tag({ children, tone = "off" }: { children: ReactNode; tone?: st
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-3xl border border-border bg-card p-4 ${className}`}>{children}</div>
+    <div className={`rounded-lg border border-border bg-card p-4 ${className}`}>{children}</div>
   );
 }
 
@@ -195,13 +195,13 @@ export function ProjectCard({ project }: { project: Project }) {
     <Link
       to="/collab/$id"
       params={{ id: project.id }}
-      className="mb-3 block overflow-hidden rounded-3xl border border-border bg-card"
+      className="mb-3 block overflow-hidden rounded-lg border border-border bg-card"
     >
       <div className="flex gap-3 p-3">
         <img
           src={project.artwork}
           alt=""
-          className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+          className="h-20 w-20 shrink-0 rounded-lg object-cover"
           loading="lazy"
         />
         <div className="min-w-0 flex-1">
@@ -245,10 +245,10 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
   const body = (
     <>
       {file.cover ? (
-        <img src={file.cover} alt="" className="h-12 w-12 shrink-0 rounded-xl object-cover" />
+        <img src={file.cover} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" />
       ) : (
         <span
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-base"
           style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
         >
           {meta.icon}
@@ -449,9 +449,9 @@ export function CollabSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-3 py-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="animate-pulse rounded-3xl border border-border bg-card p-3">
+        <div key={i} className="animate-pulse rounded-lg border border-border bg-card p-3">
           <div className="flex gap-3">
-            <div className="h-20 w-20 shrink-0 rounded-2xl bg-subtle" />
+            <div className="h-20 w-20 shrink-0 rounded-lg bg-subtle" />
             <div className="flex-1 space-y-2 py-1">
               <div className="h-3.5 w-2/3 rounded-full bg-subtle" />
               <div className="h-3 w-1/2 rounded-full bg-subtle" />
@@ -475,7 +475,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center rounded-3xl border border-dashed border-border bg-card px-6 py-12 text-center">
+    <div className="flex flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
       <span
         className="mb-4 flex h-14 w-14 items-center justify-center rounded-full text-xl"
         style={{ background: "var(--pink-container)", color: "var(--primary)" }}
@@ -499,7 +499,7 @@ export function ErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center rounded-3xl border border-border bg-card px-6 py-12 text-center">
+    <div className="flex flex-col items-center rounded-lg border border-border bg-card px-6 py-12 text-center">
       <AlertTriangle size={26} className="mb-3 text-destructive" />
       <h3 className="text-2">{title}</h3>
       <p className="mt-1 mb-5 text-1 text-muted-foreground">{body}</p>
@@ -515,7 +515,7 @@ export function ErrorState({
 export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
     <div
-      className="mb-3 flex items-center gap-3 rounded-2xl px-4 py-3"
+      className="mb-3 flex items-center gap-3 rounded-lg px-4 py-3"
       style={{ background: "var(--warn-container)", color: "var(--warn)" }}
     >
       <WifiOff size={16} className="shrink-0" />
@@ -543,7 +543,7 @@ export function PermissionState() {
 export function PinnedNote({ children }: { children: ReactNode }) {
   return (
     <div
-      className="mb-3 flex items-start gap-2 rounded-2xl px-4 py-3"
+      className="mb-3 flex items-start gap-2 rounded-lg px-4 py-3"
       style={{ background: "var(--pink-container)", color: "var(--primary)" }}
     >
       <Pin size={14} className="mt-0.5 shrink-0" />
@@ -572,7 +572,7 @@ export function UploadPanel({
       <button
         type="button"
         onClick={onStart}
-        className="flex w-full flex-col items-center rounded-3xl border border-dashed border-border bg-card px-6 py-8"
+        className="flex w-full flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-8"
       >
         <Upload size={20} className="mb-2 text-primary" />
         <span className="text-1 font-semibold">Select a file to upload</span>
@@ -665,7 +665,7 @@ export function TextInput({
   multiline?: boolean;
 }) {
   const cls =
-    "w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary";
+    "w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary";
   if (multiline) {
     return (
       <textarea

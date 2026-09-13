@@ -57,7 +57,7 @@ function RentalBooking() {
       <TopBar title="Rental" subtitle={b.ref} back="/marketplace/rent/mine" />
 
       <div className="px-5 py-4">
-        <div className="overflow-hidden rounded-3xl border border-border bg-card">
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
           <img src={e.photos[0]} alt={e.name} className="h-40 w-full object-cover" />
           <div className="p-4">
             <div className="flex items-start justify-between gap-2">
@@ -69,7 +69,7 @@ function RentalBooking() {
             </p>
             {b.timeRemaining && !isCompleted ? (
               <div
-                className="mt-3 rounded-2xl px-3 py-2 text-[12px] font-bold"
+                className="mt-3 rounded-lg px-3 py-2 text-[12px] font-bold"
                 style={{ background: "var(--success-container)", color: "var(--success)" }}
               >
                 {b.timeRemaining} · return by {b.returnBy}
@@ -78,7 +78,7 @@ function RentalBooking() {
           </div>
         </div>
 
-        <dl className="mt-4 divide-y divide-border rounded-3xl border border-border">
+        <dl className="mt-4 divide-y divide-border rounded-lg border border-border">
           {[
             { k: "Booking reference", v: b.ref },
             { k: "Fulfilment", v: b.fulfilment },
@@ -95,7 +95,7 @@ function RentalBooking() {
         </dl>
 
         <h2 className="mt-6 text-[16px]">Provider</h2>
-        <div className="mt-2 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-2 rounded-lg border border-border bg-card p-4">
           <ProviderSummary p={p} />
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Link to="/messages">
@@ -151,7 +151,7 @@ function RentalBooking() {
           Current end date {b.end}. Pick a new end date — the provider confirms availability.
         </p>
         <RentalCalendar e={e} start={18} end={newEnd} onSelect={(d) => setNewEnd(d)} />
-        <dl className="mt-4 divide-y divide-border rounded-3xl border border-border">
+        <dl className="mt-4 divide-y divide-border rounded-lg border border-border">
           <div className="flex items-center justify-between px-4 py-3">
             <dt className="text-xs text-muted-foreground">Additional days</dt>
             <dd className="text-xs font-semibold">{extraDays}</dd>
@@ -172,7 +172,7 @@ function RentalBooking() {
       </Sheet>
 
       <Sheet open={ret} onClose={() => setRet(false)} title="Return equipment">
-        <dl className="divide-y divide-border rounded-3xl border border-border">
+        <dl className="divide-y divide-border rounded-lg border border-border">
           {[
             { k: "Equipment", v: e.name },
             { k: "Return date", v: b.returnBy ?? b.end },
@@ -197,13 +197,13 @@ function RentalBooking() {
             </Chip>
           ))}
         </div>
-        <button className="mt-4 w-full rounded-3xl border border-dashed border-border py-6 text-[12px] font-semibold text-muted-foreground">
+        <button className="mt-4 w-full rounded-lg border border-dashed border-border py-6 text-[12px] font-semibold text-muted-foreground">
           + Add return photos (optional)
         </button>
         <textarea
           rows={3}
           placeholder="Notes for the provider"
-          className="mt-3 w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+          className="mt-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
         <p className="mt-3 text-[11px] text-muted-foreground">
           The deposit is released by the provider once they have checked the equipment.
@@ -221,8 +221,8 @@ function RentalBooking() {
       </Sheet>
 
       <Sheet open={review} onClose={() => setReview(false)} title="Rate this rental">
-        <div className="mb-4 flex items-center gap-3 rounded-3xl border border-border p-3">
-          <img src={e.photos[0]} alt="" className="h-12 w-12 rounded-2xl object-cover" />
+        <div className="mb-4 flex items-center gap-3 rounded-lg border border-border p-3">
+          <img src={e.photos[0]} alt="" className="h-12 w-12 rounded-md object-cover" />
           <div className="min-w-0">
             <p className="truncate text-[13px] font-semibold">{e.name}</p>
             <p className="truncate text-[11px] text-muted-foreground">{p.name}</p>
@@ -265,9 +265,9 @@ function RentalBooking() {
         <textarea
           rows={3}
           placeholder="Write a short review (optional)"
-          className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+          className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
-        <div className="mt-3 flex items-center justify-between rounded-3xl bg-subtle px-4 py-3">
+        <div className="mt-3 flex items-center justify-between rounded-lg bg-subtle px-4 py-3">
           <span className="text-[12px] font-semibold">Your rating</span>
           <Rating value={stars} />
         </div>

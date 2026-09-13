@@ -72,7 +72,7 @@ function ManagePlan() {
         <Card className="space-y-2">
           <h2 className="text-[15px]">Boosts</h2>
           {boosts.map((b) => (
-            <div key={b.id} className="flex items-center gap-3 rounded-2xl bg-subtle px-4 py-3">
+            <div key={b.id} className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-semibold">{b.target}</p>
                 <p className="truncate text-[12px] text-muted-foreground">{b.detail}</p>
@@ -134,7 +134,7 @@ function ManagePlan() {
                 setCancelOpen(false);
                 setCancelled(true);
               }}
-              className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
+              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
             >
               {r}
             </button>

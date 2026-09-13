@@ -73,12 +73,12 @@ function PortfolioSelect() {
                     p.includes(item.id) ? p.filter((x) => x !== item.id) : [...p, item.id],
                   )
                 }
-                className={`flex w-full items-center gap-3 rounded-3xl border p-4 text-left ${
+                className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left ${
                   on ? "border-primary" : "border-border"
                 } bg-card`}
               >
                 <span
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-xl"
                   style={{ background: "var(--surface-subtle)" }}
                   aria-hidden
                 >
@@ -98,7 +98,7 @@ function PortfolioSelect() {
         </div>
 
         {selected.length ? (
-          <section className="mt-6 rounded-3xl border border-border bg-card p-4">
+          <section className="mt-6 rounded-lg border border-border bg-card p-4">
             <h2 className="text-[15px]">Preview</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               {selected.map((s) => s.title).join(" · ")}

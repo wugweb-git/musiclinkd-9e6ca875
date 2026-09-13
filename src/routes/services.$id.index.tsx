@@ -63,7 +63,7 @@ function ServiceDetail() {
           <div className="flex items-start gap-3">
             <span
               aria-hidden
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-subtle text-[22px]"
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-subtle text-[22px]"
             >
               {s.emoji}
             </span>

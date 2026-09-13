@@ -79,7 +79,7 @@ function Files() {
       ) : (
         <>
           <Label>{list.length} files</Label>
-          <div className="mb-8 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+          <div className="mb-8 divide-y divide-border rounded-lg border border-border bg-card px-4">
             {list.map((f) => (
               <FileRow key={f.id} file={f} projectId={project.id} />
             ))}

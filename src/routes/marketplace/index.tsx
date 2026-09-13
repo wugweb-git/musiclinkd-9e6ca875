@@ -125,7 +125,7 @@ function MarketHome() {
       </SectionRow>
 
       <div className="px-5 pb-4">
-        <div className="rounded-3xl border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <h2 className="text-[16px]">Have gear sitting idle?</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             List it to 72,000+ verified music professionals. Free while Market is in Beta.

@@ -230,7 +230,7 @@ function StepBody({
       return (
         <div className="space-y-5">
           <PhotoPicker photo={d.photo} onChange={(v) => set({ photo: v })} />
-          <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
+          <p className="rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
             A clear photo of your face works better than a logo or a live shot from far away.
           </p>
         </div>
@@ -476,7 +476,7 @@ function StepBody({
             selected={d.businessIntent ? [d.businessIntent] : []}
             onToggle={(v) => set({ businessIntent: d.businessIntent === v ? null : v })}
           />
-          <p className="rounded-2xl bg-subtle px-4 py-3 text-xs text-muted-foreground">
+          <p className="rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
             Choosing one hands you over to Business setup after onboarding. Your personal profile
             stays yours.
           </p>

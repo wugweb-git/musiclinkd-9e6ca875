@@ -68,7 +68,7 @@ function RequestReview() {
       <Screen>
         <TopBar title="Request" back="/provider/bookings" />
         <main className="px-5 pt-6">
-          <div className="rounded-3xl border border-border bg-card p-5">
+          <div className="rounded-lg border border-border bg-card p-5">
             <p className="font-semibold">
               {decision === "accepted" ? "Request accepted" : "Request declined"}
             </p>
@@ -90,7 +90,7 @@ function RequestReview() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
       <TopBar title={`Request #${bk.ref}`} subtitle={r.name} back="/provider/bookings" />
       <main className="px-5 pt-4">
-        <div className="rounded-3xl border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center gap-3">
             <img
               src={bk.customerAvatar}
@@ -108,7 +108,7 @@ function RequestReview() {
           </p>
         </div>
 
-        <div className="mt-3 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-3 rounded-lg border border-border bg-card p-4">
           <dl className="grid grid-cols-2 gap-3 text-xs">
             <Detail label="Date" value={formatDate(bk.date)} />
             <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
@@ -140,7 +140,7 @@ function RequestReview() {
         </Btn>
 
         {decision === "declining" ? (
-          <div className="mt-3 rounded-3xl border border-border bg-card p-4">
+          <div className="mt-3 rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">Reason</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {declineReasons.map((x) => (

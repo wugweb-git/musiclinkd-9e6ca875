@@ -69,12 +69,12 @@ function BookingEntry() {
             {b.resources.map((r) => (
               <div
                 key={r.id}
-                className="flex items-center gap-3 rounded-3xl border border-border bg-card p-3"
+                className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
               >
                 <img
                   src={r.photo}
                   alt=""
-                  className="h-14 w-14 shrink-0 rounded-2xl object-cover"
+                  className="h-14 w-14 shrink-0 rounded-md object-cover"
                   loading="lazy"
                 />
                 <div className="min-w-0 flex-1">
@@ -148,7 +148,7 @@ function BookingEntry() {
                 key={g}
                 src={g}
                 alt={`${b.name} interior`}
-                className="h-32 w-48 shrink-0 rounded-2xl object-cover"
+                className="h-32 w-48 shrink-0 rounded-lg object-cover"
                 loading="lazy"
               />
             ))}

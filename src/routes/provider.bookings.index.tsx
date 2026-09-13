@@ -166,7 +166,7 @@ function List({ items, emptyTitle }: { items: Booking[]; emptyTitle: string }) {
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <span className="text-primary">{icon}</span>
       <p className="mt-2 text-lg font-semibold leading-none">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>

@@ -22,11 +22,11 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
     <Link
       to="/portfolio/$id"
       params={{ id: item.id }}
-      className="block rounded-3xl border border-border bg-card p-4"
+      className="block rounded-lg border border-border bg-card p-4"
     >
       <div className="flex gap-3">
         <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-2xl"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg text-2xl"
           style={{ background: "var(--surface-subtle)" }}
           aria-hidden
         >
@@ -79,7 +79,7 @@ export function PortfolioSkeleton() {
   return (
     <div className="space-y-3" aria-busy="true" aria-label="Loading portfolio">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="h-28 animate-pulse rounded-3xl border border-border bg-subtle" />
+        <div key={i} className="h-28 animate-pulse rounded-lg border border-border bg-subtle" />
       ))}
     </div>
   );
@@ -98,7 +98,7 @@ export function StateCard({
 }) {
   return (
     <div
-      className="rounded-3xl border border-border bg-card p-6 text-center"
+      className="rounded-lg border border-border bg-card p-6 text-center"
       style={tone === "error" ? { borderColor: "var(--danger, #DC2626)" } : undefined}
       role={tone === "error" ? "alert" : undefined}
     >
@@ -127,7 +127,7 @@ export function SignedOutCard({ what = "your portfolio" }: { what?: string }) {
 
 export function AudioPreview({ src, title }: { src: string; title: string }) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
         Audio preview
       </p>
@@ -195,7 +195,7 @@ export function PortfolioHeader({
     </div>
   );
   return (
-    <section className="rounded-3xl border border-border bg-card p-5">
+    <section className="rounded-lg border border-border bg-card p-5">
       <div className="grid grid-cols-4 gap-3">
         {stat(total, "Works")}
         {stat(published, "Published")}
@@ -271,7 +271,7 @@ export function MediaUploader({
   }
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
           {type} media
@@ -301,7 +301,7 @@ export function MediaUploader({
         }}
         placeholder="https:// link to the file, YouTube, Spotify…"
         aria-label={`${type} link`}
-        className="mt-3 w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm"
+        className="mt-3 w-full rounded-lg border border-border bg-background px-4 py-3 text-sm"
       />
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -340,24 +340,24 @@ export function AudioPlayer({
 }) {
   if (!src) {
     return (
-      <div className="rounded-3xl border border-border bg-card p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         <MediaStatePill state="not-uploaded" />
         <p className="mt-2 text-xs text-muted-foreground">{mediaStateCopy["not-uploaded"].hint}</p>
       </div>
     );
   }
   return (
-    <div className="rounded-3xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center gap-3">
         {artwork ? (
           <img
             src={artwork}
             alt={`Artwork for ${title}`}
-            className="h-14 w-14 rounded-2xl object-cover"
+            className="h-14 w-14 rounded-md object-cover"
           />
         ) : (
           <div
-            className="flex h-14 w-14 items-center justify-center rounded-2xl text-xl"
+            className="flex h-14 w-14 items-center justify-center rounded-md text-xl"
             style={{ background: "var(--surface-subtle)" }}
             aria-hidden
           >
@@ -383,7 +383,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
         href={src}
         target="_blank"
         rel="noreferrer"
-        className="block rounded-3xl border border-border bg-card p-4"
+        className="block rounded-lg border border-border bg-card p-4"
       >
         <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
@@ -396,7 +396,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
     <video
       controls
       src={src}
-      className="w-full rounded-3xl border border-border"
+      className="w-full rounded-lg border border-border"
       aria-label={title}
     />
   );
@@ -406,7 +406,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
 
 export function CreditRow({ name, role }: { name: string; role?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
       <span className="min-w-0 truncate text-sm font-semibold">{name}</span>
       {role ? <span className="shrink-0 text-xs text-muted-foreground">{role}</span> : null}
     </div>
@@ -435,7 +435,7 @@ export function ContributorPicker({
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search people and studios on MusicLinkd"
         aria-label="Search contributors"
-        className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm"
+        className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm"
       />
       {value.length ? (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -459,7 +459,7 @@ export function ContributorPicker({
               key={c.id}
               type="button"
               onClick={() => add(c.name)}
-              className="flex w-full items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-left"
+              className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left"
             >
               <span className="text-sm font-semibold">{c.name}</span>
               <span className="text-xs text-muted-foreground">{c.role}</span>
@@ -469,7 +469,7 @@ export function ContributorPicker({
             <button
               type="button"
               onClick={() => add(q.trim())}
-              className="w-full rounded-2xl border border-dashed border-border bg-card px-4 py-3 text-left"
+              className="w-full rounded-lg border border-dashed border-border bg-card px-4 py-3 text-left"
             >
               <span className="text-sm font-semibold">Add “{q.trim()}”</span>
               <span className="block text-xs text-muted-foreground">
@@ -523,7 +523,7 @@ export function ReorderList({
   return (
     <ol className="space-y-3">
       {items.map((item, i) => (
-        <li key={item.id} className="rounded-3xl border border-border bg-card p-4">
+        <li key={item.id} className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{item.title}</p>
@@ -581,7 +581,7 @@ export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {rows.map(([label, n]) => (
-        <div key={label} className="rounded-3xl border border-border bg-card p-4">
+        <div key={label} className="rounded-lg border border-border bg-card p-4">
           <p className="text-3 leading-none tabular-nums">{n.toLocaleString("en-IN")}</p>
           <p className="mt-1 text-xs text-muted-foreground">{label}</p>
         </div>

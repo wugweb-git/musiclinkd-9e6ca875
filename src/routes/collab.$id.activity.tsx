@@ -51,7 +51,7 @@ function Activity() {
       ) : (
         <>
           <Label>All activity</Label>
-          <div className="mb-8 rounded-3xl border border-border bg-card px-4 py-2">
+          <div className="mb-8 rounded-lg border border-border bg-card px-4 py-2">
             {project.activity.map((a) => (
               <ActivityItem key={a.id} a={a} />
             ))}

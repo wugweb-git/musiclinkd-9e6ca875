@@ -66,7 +66,7 @@ function Participants() {
           </Link>
         </Card>
       ) : (
-        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
           {active.map((p) => (
             <ParticipantRow
               key={p.id}
@@ -84,7 +84,7 @@ function Participants() {
       {pending.length ? (
         <>
           <Label>Invited · awaiting response</Label>
-          <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+          <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
             {pending.map((p) => (
               <ParticipantRow
                 key={p.id}
@@ -103,7 +103,7 @@ function Participants() {
       {past.length ? (
         <>
           <Label>Declined or left</Label>
-          <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+          <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
             {past.map((p) => (
               <ParticipantRow key={p.id} p={p} projectId={project.id} />
             ))}

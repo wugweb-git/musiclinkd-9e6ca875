@@ -52,7 +52,7 @@ export function useSavedOpportunities() {
 
 export function MatchBar({ score, reasons }: { score: number; reasons: string[] }) {
   return (
-    <div className="rounded-md bg-subtle p-3">
+    <div className="rounded-lg bg-subtle p-3">
       <div className="flex items-baseline justify-between">
         <span className="text-1 font-semibold">Fit for you</span>
         <span className="text-1 font-bold text-primary">{score}%</span>
@@ -76,7 +76,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
     <Link
       to="/profile/$username"
       params={{ username: o.poster.username }}
-      className="flex items-center gap-3 rounded-md border border-border bg-card p-3"
+      className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
     >
       <img src={o.poster.photo} alt="" className="h-11 w-11 rounded-full object-cover" />
       <span className="min-w-0 flex-1">

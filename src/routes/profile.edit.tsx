@@ -178,7 +178,7 @@ function EditProfile() {
       <Screen>
         <TopBar title="Edit profile" back="/me" />
         <main className="px-5 py-6">
-          <div className="rounded-3xl border border-border bg-card p-5">
+          <div className="rounded-lg border border-border bg-card p-5">
             <h1 className="text-[19px]">Sign in to edit your profile</h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
               Your profile lives on your account, so changes follow you to every device.
@@ -198,7 +198,7 @@ function EditProfile() {
         <TopBar title="Edit profile" back="/me" />
         <div className="space-y-2 px-5 py-6" aria-busy>
           {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-[72px] animate-pulse rounded-3xl bg-subtle" />
+            <div key={i} className="h-[72px] animate-pulse rounded-lg bg-subtle" />
           ))}
         </div>
       </Screen>
@@ -210,7 +210,7 @@ function EditProfile() {
       <Screen>
         <TopBar title="Edit profile" back="/me" />
         <main className="px-5 py-6">
-          <div role="alert" className="rounded-3xl border border-destructive/40 bg-card p-5">
+          <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5">
             <p className="text-sm font-semibold text-destructive">We couldn't load your profile</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Check your connection and try again.
@@ -373,7 +373,7 @@ function EditProfile() {
               key={o.value}
               type="button"
               onClick={() => update({ visibility: o.value })}
-              className={`flex min-h-[56px] w-full items-center gap-3 rounded-2xl border px-4 text-left ${form.visibility === o.value ? "border-primary bg-pink-container" : "border-border bg-card"}`}
+              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.value ? "border-primary bg-pink-container" : "border-border bg-card"}`}
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold">{o.label}</span>
@@ -394,7 +394,7 @@ function EditProfile() {
       <TopBar title="Edit profile" subtitle={`${gaps.percent}% complete`} back="/me" />
       <main className="px-5 pb-40 pt-5">
         {gaps.missing.length ? (
-          <div className="mb-4 rounded-2xl border border-border bg-card p-4">
+          <div className="mb-4 rounded-lg border border-border bg-card p-4">
             <p className="text-xs font-semibold">Finish your profile</p>
             <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
               Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
@@ -408,7 +408,7 @@ function EditProfile() {
             return (
               <section
                 key={section.id}
-                className="overflow-hidden rounded-3xl border border-border bg-card"
+                className="overflow-hidden rounded-lg border border-border bg-card"
               >
                 <button
                   type="button"
@@ -498,13 +498,13 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={4}
-          className="mt-1.5 w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
+          className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
         />
       ) : (
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="mt-1.5 min-h-12 w-full rounded-2xl border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+          className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary"
         />
       )}
       {hint ? <span className="mt-1 block text-[11px] text-muted-foreground">{hint}</span> : null}

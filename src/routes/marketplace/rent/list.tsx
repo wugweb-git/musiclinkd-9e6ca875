@@ -100,7 +100,7 @@ function ListForRent() {
                 <button
                   key={c.slug}
                   onClick={() => setCat(c.slug)}
-                  className="rounded-3xl border p-4 text-left"
+                  className="rounded-lg border p-4 text-left"
                   style={{
                     borderColor: cat === c.slug ? "var(--primary)" : "var(--border)",
                     background: cat === c.slug ? "var(--pink-container)" : "var(--card)",
@@ -128,7 +128,7 @@ function ListForRent() {
                   <img
                     src={src}
                     alt=""
-                    className="h-24 w-full rounded-2xl object-cover"
+                    className="h-24 w-full rounded-lg object-cover"
                     style={{ outline: cover === i ? "2px solid var(--primary)" : "none" }}
                   />
                   {cover === i ? (
@@ -138,11 +138,11 @@ function ListForRent() {
                   ) : null}
                 </button>
               ))}
-              <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-border text-[10px] font-semibold text-muted-foreground">
+              <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-[10px] font-semibold text-muted-foreground">
                 <Camera size={16} /> Add
               </button>
             </div>
-            <button className="mt-3 w-full rounded-3xl border border-dashed border-border py-5 text-[12px] font-semibold text-muted-foreground">
+            <button className="mt-3 w-full rounded-lg border border-dashed border-border py-5 text-[12px] font-semibold text-muted-foreground">
               + Add a short video (optional)
             </button>
           </>
@@ -211,7 +211,7 @@ function ListForRent() {
                   id="description-included-accessories"
                   rows={4}
                   placeholder="Serviced between rentals. Includes windscreen, yoke mount, XLR cable and padded case."
-                  className="w-full rounded-3xl border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                  className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
                 />
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -223,7 +223,7 @@ function ListForRent() {
                     <input
                       inputMode="numeric"
                       placeholder="0"
-                      className="w-full rounded-2xl border border-border bg-card px-3 py-3 text-sm outline-none focus:border-primary"
+                      className="w-full rounded-lg border border-border bg-card px-3 py-3 text-sm outline-none focus:border-primary"
                     />
                   </div>
                 ))}
@@ -313,7 +313,7 @@ function ListForRent() {
             <p className="mt-1 text-xs text-muted-foreground">
               This is exactly what renters will see.
             </p>
-            <article className="mt-4 overflow-hidden rounded-3xl border border-border bg-card">
+            <article className="mt-4 overflow-hidden rounded-lg border border-border bg-card">
               <img src={sample.photos[cover]} alt="" className="h-44 w-full object-cover" />
               <div className="p-4">
                 <p className="text-[15px] font-bold">

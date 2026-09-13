@@ -78,7 +78,7 @@ function ResetPassword() {
       <AuthScreen>
         <div className="h-4 w-28 animate-pulse rounded-full bg-subtle" />
         <div className="mt-4 h-9 w-56 animate-pulse rounded-full bg-subtle" />
-        <div className="mt-8 h-13 w-full animate-pulse rounded-2xl bg-subtle" />
+        <div className="mt-8 h-13 w-full animate-pulse rounded-md bg-subtle" />
       </AuthScreen>
     );
   }

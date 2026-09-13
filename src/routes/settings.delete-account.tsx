@@ -46,7 +46,7 @@ function DeleteAccount() {
           Hiding your profile keeps your work safe and you can come back any time.
         </AuthNotice>
 
-        <section className="rounded-3xl border border-border bg-card p-4">
+        <section className="rounded-lg border border-border bg-card p-4">
           <h2 className="text-[14px] font-semibold">Deleted permanently</h2>
           <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
             {removed.map((r) => (
@@ -55,7 +55,7 @@ function DeleteAccount() {
           </ul>
         </section>
 
-        <section className="mt-4 rounded-3xl border border-border bg-card p-4">
+        <section className="mt-4 rounded-lg border border-border bg-card p-4">
           <h2 className="text-[14px] font-semibold">Kept for legal reasons</h2>
           <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
             {kept.map((r) => (
@@ -72,7 +72,7 @@ function DeleteAccount() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="DELETE"
-            className="h-13 w-full rounded-2xl border border-border bg-card px-4 text-[15px] outline-none focus:border-primary"
+            className="h-13 w-full rounded-md border border-border bg-card px-4 text-[15px] outline-none focus:border-primary"
           />
         </label>
 

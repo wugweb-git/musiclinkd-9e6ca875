@@ -112,7 +112,7 @@ function BlockRow({ b }: { b: Booking }) {
     <Link
       to="/provider/bookings/$ref"
       params={{ ref: b.ref }}
-      className="flex min-w-0 items-start gap-3 rounded-3xl border border-border bg-card p-3"
+      className="flex min-w-0 items-start gap-3 rounded-lg border border-border bg-card p-3"
     >
       <span className="w-[62px] shrink-0 text-[12px] font-bold leading-tight">
         {formatTime(b.start)}
@@ -138,7 +138,7 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
     <div className="space-y-3">
       <DayNav date={date} onDate={onDate} />
       {items.length === 0 ? (
-        <div className="rounded-3xl border border-border bg-card p-5 text-center">
+        <div className="rounded-lg border border-border bg-card p-5 text-center">
           <p className="text-[14px] font-semibold">Nothing booked</p>
           <p className="mt-1 text-[12px] text-muted-foreground">
             This day is completely open. Block it off in Availability if you're not taking sessions.
@@ -190,7 +190,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
                 ))}
               </div>
             ) : (
-              <p className="rounded-2xl bg-subtle px-4 py-2.5 text-[11px] text-muted-foreground">
+              <p className="rounded-lg bg-subtle px-4 py-2.5 text-[11px] text-muted-foreground">
                 Open all day
               </p>
             )}
@@ -222,7 +222,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
               type="button"
               onClick={() => onPick(iso)}
               aria-label={`${formatDate(iso)}, ${count} session${count === 1 ? "" : "s"}`}
-              className={`flex aspect-square min-w-0 flex-col items-center justify-center rounded-2xl border border-border text-[12px] font-semibold ${
+              className={`flex aspect-square min-w-0 flex-col items-center justify-center rounded-lg border border-border text-[12px] font-semibold ${
                 inMonth ? "bg-card" : "bg-subtle text-muted-foreground"
               }`}
             >

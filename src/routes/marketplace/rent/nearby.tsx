@@ -40,7 +40,7 @@ function NearbyRentals() {
       />
 
       <div className="px-5 pt-4">
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-subtle">
+        <div className="relative overflow-hidden rounded-lg border border-border bg-subtle">
           <div className="flex h-36 items-center justify-center">
             <div className="text-center">
               <MapPin size={20} className="mx-auto text-primary" />
@@ -92,7 +92,7 @@ function NearbyRentals() {
       </section>
 
       <div className="px-5 pb-4 pt-6">
-        <div className="rounded-3xl border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <h2 className="text-[16px]">Have gear in your area?</h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Renters nearby are searching for backline and mics every week.

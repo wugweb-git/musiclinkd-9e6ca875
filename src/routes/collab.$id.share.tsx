@@ -51,7 +51,7 @@ function Share() {
       <main className="px-5 pt-5">
         <Card className="mb-5">
           <Label>Share link</Label>
-          <p className="mb-3 break-all rounded-2xl border border-border px-3 py-2 text-[12px] text-muted-foreground">
+          <p className="mb-3 break-all rounded-lg border border-border px-3 py-2 text-[12px] text-muted-foreground">
             musiclinkd.app/c/{project.id}
           </p>
           <div className="flex gap-2">
@@ -72,7 +72,7 @@ function Share() {
         </div>
 
         <Label>What they see</Label>
-        <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card">
           <SwitchRow label="Link is active" value={enabled} onChange={setEnabled} />
           <SwitchRow label="Show collaborators" value={showPeople} onChange={setShowPeople} />
           <SwitchRow label="Show files" value={showFiles} onChange={setShowFiles} />

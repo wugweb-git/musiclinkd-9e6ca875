@@ -103,12 +103,12 @@ function MyListings() {
           ? rentalRequests.map((r) => {
               const e = equipmentById(r.equipmentId)!;
               return (
-                <article key={r.id} className="rounded-3xl border border-border bg-card p-4">
+                <article key={r.id} className="rounded-lg border border-border bg-card p-4">
                   <div className="flex items-start gap-3">
                     <img
                       src={e.photos[0]}
                       alt=""
-                      className="h-14 w-14 shrink-0 rounded-2xl object-cover"
+                      className="h-14 w-14 shrink-0 rounded-md object-cover"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] font-semibold">{e.name}</p>
@@ -169,7 +169,7 @@ function MyListings() {
           ? rentalNotifications.map((n) => (
               <article
                 key={n.id}
-                className="flex items-start gap-3 rounded-3xl border border-border bg-card p-4"
+                className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
               >
                 <span
                   className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"

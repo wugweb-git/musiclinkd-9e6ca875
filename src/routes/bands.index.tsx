@@ -78,7 +78,7 @@ function BandsIndex() {
                         src={b.avatar}
                         alt=""
                         loading="lazy"
-                        className="-mt-10 h-14 w-14 shrink-0 rounded-2xl border-2 border-card object-cover"
+                        className="-mt-10 h-14 w-14 shrink-0 rounded-md border-2 border-card object-cover"
                       />
                       <div className="min-w-0 flex-1">
                         <h2 className="truncate text-[17px] leading-tight">{b.name}</h2>

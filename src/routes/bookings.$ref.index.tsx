@@ -77,7 +77,7 @@ function BookingDetail() {
       <main className="px-5 pt-4">
         {upcoming && today ? (
           <div
-            className="mb-4 rounded-3xl px-4 py-3 text-sm"
+            className="mb-4 rounded-lg px-4 py-3 text-sm"
             style={{ background: "var(--pink-container)" }}
           >
             <p className="font-semibold">Today at {formatTime(bk.start)}</p>
@@ -92,12 +92,12 @@ function BookingDetail() {
           <PaymentPill status={bk.payment} />
         </div>
 
-        <div className="mt-4 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-4 rounded-lg border border-border bg-card p-4">
           <div className="flex gap-3">
             <img
               src={r.photo}
               alt=""
-              className="h-16 w-16 shrink-0 rounded-2xl object-cover"
+              className="h-16 w-16 shrink-0 rounded-lg object-cover"
               loading="lazy"
             />
             <div className="min-w-0">
@@ -124,7 +124,7 @@ function BookingDetail() {
         </div>
 
         <h2 className="mt-6 text-[17px]">Progress</h2>
-        <div className="mt-3 rounded-3xl border border-border bg-card p-4">
+        <div className="mt-3 rounded-lg border border-border bg-card p-4">
           <BookingTimeline status={bk.status} />
         </div>
 

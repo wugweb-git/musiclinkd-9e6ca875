@@ -211,7 +211,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-2 h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+        className="mt-2 h-12 w-full rounded-md border border-border bg-background px-4 text-sm outline-none focus:border-primary"
       />
     </label>
   );

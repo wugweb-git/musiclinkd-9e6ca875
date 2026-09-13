@@ -43,7 +43,7 @@ function Done() {
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
-        <section className="rounded-3xl border border-border bg-card p-6 text-center">
+        <section className="rounded-lg border border-border bg-card p-6 text-center">
           <Sparkles size={28} className="mx-auto text-primary" />
           <h1 className="mt-3 text-[24px] leading-tight">Welcome aboard, {first}</h1>
           <p className="mx-auto mt-2 max-w-[300px] text-sm text-muted-foreground">
@@ -54,7 +54,7 @@ function Done() {
         {summary.length ? (
           <ul className="mt-4 space-y-2">
             {summary.map((line) => (
-              <li key={line} className="rounded-2xl border border-border bg-card px-4 py-3 text-sm">
+              <li key={line} className="rounded-lg border border-border bg-card px-4 py-3 text-sm">
                 {line}
               </li>
             ))}
@@ -63,19 +63,19 @@ function Done() {
 
         <h2 className="mt-7 text-[17px]">What next</h2>
         <div className="mt-3 space-y-3">
-          <Link to="/portfolio/new" className="block rounded-3xl border border-border bg-card p-4">
+          <Link to="/portfolio/new" className="block rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">Add portfolio work</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Tracks, videos and credits turn a profile view into an enquiry.
             </p>
           </Link>
-          <Link to="/" className="block rounded-3xl border border-border bg-card p-4">
+          <Link to="/" className="block rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">Discover talent</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Singers, producers, studios and bands near you.
             </p>
           </Link>
-          <Link to="/me" className="block rounded-3xl border border-border bg-card p-4">
+          <Link to="/me" className="block rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">View my profile</p>
             <p className="mt-1 text-xs text-muted-foreground">See exactly what others see.</p>
           </Link>

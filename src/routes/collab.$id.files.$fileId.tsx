@@ -51,7 +51,7 @@ function FileDetail() {
       <main className="px-5 pt-5">
         {!file.available ? (
           <div
-            className="mb-4 rounded-2xl px-4 py-3 text-[12px] font-semibold"
+            className="mb-4 rounded-lg px-4 py-3 text-[12px] font-semibold"
             style={{ background: "var(--warn-container)", color: "var(--warn)" }}
           >
             This file is unavailable — it was removed by the uploader.
@@ -59,7 +59,7 @@ function FileDetail() {
         ) : null}
 
         {file.cover ? (
-          <img src={file.cover} alt="" className="mb-4 h-44 w-full rounded-3xl object-cover" />
+          <img src={file.cover} alt="" className="mb-4 h-44 w-full rounded-lg object-cover" />
         ) : null}
 
         {file.kind === "audio" ? (
@@ -84,7 +84,7 @@ function FileDetail() {
         {file.versions?.length ? (
           <>
             <Label>Version history</Label>
-            <div className="mb-5 divide-y divide-border rounded-3xl border border-border bg-card px-4">
+            <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
               {file.versions.map((v, i) => (
                 <div key={v.id} className="py-4">
                   <div className="flex items-center justify-between">
@@ -109,7 +109,7 @@ function FileDetail() {
         ) : null}
 
         <Label>Actions</Label>
-        <div className="mb-8 divide-y divide-border rounded-3xl border border-border bg-card">
+        <div className="mb-8 divide-y divide-border rounded-lg border border-border bg-card">
           <RowLink title="Upload a new version" subtitle="Keeps the history intact" />
           <RowLink title="Change access" subtitle={file.access} />
           <RowLink title="Add to portfolio" subtitle="Hands off to your portfolio flow" />
