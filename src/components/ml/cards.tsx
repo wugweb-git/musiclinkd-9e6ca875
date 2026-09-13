@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import type { Talent } from "@/data/discover";
-import { AvailabilityBadge, Btn, VerifiedBadge } from "./ui";
+import { availabilityTone, type Talent } from "@/data/discover";
+import { StatusPill } from "./kit";
+import { Btn, VerifiedBadge } from "./ui";
 
 export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent) => void }) {
   return (
@@ -24,7 +25,7 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
           <p className="truncate text-xs text-muted-foreground">{t.role}</p>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">📍 {t.location}</p>
         </div>
-        <AvailabilityBadge status={t.availability} />
+        <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
       </button>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
@@ -82,7 +83,7 @@ export function TalentCard({ t }: { t: Talent }) {
           className="h-full w-full object-cover"
         />
         <div className="absolute left-2 top-2">
-          <AvailabilityBadge status={t.availability} />
+          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
         </div>
       </div>
       <div className="p-3">

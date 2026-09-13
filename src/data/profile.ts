@@ -1,3 +1,4 @@
+import type { LinkProps } from "@tanstack/react-router";
 import { singers, talents, type Talent } from "./discover";
 import { linkedProfileSeeds } from "./linked-profiles";
 
@@ -81,7 +82,7 @@ export type Collaborator = {
   name: string;
   kind: "Artist" | "Producer" | "Engineer" | "Studio" | "Label" | "Venue";
   photo: string;
-  link?: { to: string; params?: Record<string, string> };
+  link?: { to: NonNullable<LinkProps["to"]>; params?: LinkProps["params"] } | undefined;
 };
 
 export type ReviewItem = {
@@ -107,8 +108,8 @@ export type MarketEntry = {
   meta: string;
   image: string;
   kind: "sale" | "rental";
-  to: string;
-  params?: Record<string, string>;
+  to: NonNullable<LinkProps["to"]>;
+  params?: LinkProps["params"];
 };
 
 export type PersonProfile = {

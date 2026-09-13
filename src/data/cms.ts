@@ -2,12 +2,14 @@
  * FLOW 22 — CMS / CONTENT PAGES. Design-only.
  * Canonical names: content_page, content_category, content_block, content_status.
  */
+import type { LinkProps } from "@tanstack/react-router";
+
 export type ContentBlock =
   | { type: "para"; text: string }
   | { type: "heading"; text: string }
   | { type: "list"; items: string[] }
   | { type: "callout"; text: string }
-  | { type: "cta"; label: string; route: string };
+  | { type: "cta"; label: string; link: LinkProps };
 
 export type ContentPage = {
   /** content_page.slug — EXISTING */
@@ -60,7 +62,7 @@ export const contentPages: ContentPage[] = [
         type: "callout",
         text: "Profiles with two published portfolio items receive roughly three times more first messages.",
       },
-      { type: "cta", label: "Open my portfolio", route: "/portfolio" },
+      { type: "cta", label: "Open my portfolio", link: { to: "/portfolio" } },
     ],
     related: ["pricing-your-first-service", "how-verification-works"],
   },
@@ -88,7 +90,7 @@ export const contentPages: ContentPage[] = [
           "Cancellation window",
         ],
       },
-      { type: "cta", label: "Add a service", route: "/profile/edit" },
+      { type: "cta", label: "Add a service", link: { to: "/profile/edit" } },
     ],
     related: ["profile-that-gets-booked", "booking-policies-explained"],
   },
@@ -118,7 +120,7 @@ export const contentPages: ContentPage[] = [
         type: "callout",
         text: "Documents are only used for the review and are never shown on your public profile.",
       },
-      { type: "cta", label: "Start verification", route: "/verification" },
+      { type: "cta", label: "Start verification", link: { to: "/verification" } },
     ],
     related: ["review-policy", "profile-that-gets-booked"],
   },
@@ -144,7 +146,7 @@ export const contentPages: ContentPage[] = [
           "Buffer time between sessions",
         ],
       },
-      { type: "cta", label: "Open provider policies", route: "/provider/policies" },
+      { type: "cta", label: "Open provider policies", link: { to: "/provider/policies" } },
     ],
     related: ["review-policy", "how-verification-works"],
   },
@@ -170,7 +172,7 @@ export const contentPages: ContentPage[] = [
           "Flagged reviews are re-checked within 48 hours",
         ],
       },
-      { type: "cta", label: "Open my reviews", route: "/reviews" },
+      { type: "cta", label: "Open my reviews", link: { to: "/reviews" } },
     ],
     related: ["how-verification-works", "community-guidelines"],
   },
@@ -217,7 +219,7 @@ export const contentPages: ContentPage[] = [
           "Provider pricing and policy controls",
         ],
       },
-      { type: "cta", label: "Open my QR identity", route: "/identity/qr" },
+      { type: "cta", label: "Open my QR identity", link: { to: "/identity/qr" } },
     ],
     related: ["profile-that-gets-booked"],
   },

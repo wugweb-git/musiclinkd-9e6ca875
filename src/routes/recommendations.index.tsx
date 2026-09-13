@@ -136,8 +136,7 @@ function Recs() {
                         </div>
                       </div>
                       <div className="flex gap-2 border-t border-border p-3">
-                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        <Link to={r.route as any} className="flex-1">
+                        <Link {...r.link} className="flex-1">
                           <Btn className="w-full text-xs">Open</Btn>
                         </Link>
                         <Btn variant="outline" className="flex-1 text-xs">

@@ -93,8 +93,7 @@ function HelpPage() {
                 </Card>
               );
             return (
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              <Link key={i} to={b.route as any} className="block">
+              <Link key={i} {...b.link} className="block">
                 <Btn className="w-full">{b.label}</Btn>
               </Link>
             );

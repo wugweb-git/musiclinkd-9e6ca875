@@ -8,7 +8,16 @@ const options = [
   { label: "Hire for project", desc: "Formal engagement with contract", emoji: "🤝" },
 ];
 
-export function HireModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function HireModal({
+  open,
+  onClose,
+  subject,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** Who the request is for. Without one, the sheet names no one. */
+  subject?: { name: string; detail?: string | undefined } | undefined;
+}) {
   const [choice, setChoice] = useState("Hire for project");
   const [sent, setSent] = useState(false);
 
@@ -29,9 +38,6 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
             <span className="text-2xl">✓</span>
           </div>
           <h2 className="text-xl">Request sent</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Ananya usually responds within 6 hours.
-          </p>
           <Btn
             className="mt-6 w-full"
             onClick={() => {
@@ -46,7 +52,7 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
         <>
           <h2 className="text-xl">Contact professional</h2>
           <p className="mb-4 text-xs text-muted-foreground">
-            Ananya Sharma · Playback Vocalist · Mumbai
+            {subject ? [subject.name, subject.detail].filter(Boolean).join(" · ") : null}
           </p>
 
           <div className="mb-5 space-y-2">
@@ -91,7 +97,6 @@ export function HireModal({ open, onClose }: { open: boolean; onClose: () => voi
               <textarea
                 id="message"
                 rows={4}
-                defaultValue="Hi Ananya — we're cutting a Hindi-Sufi title track in Mumbai and would love your vocals on the hook."
                 className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
               />
             </div>

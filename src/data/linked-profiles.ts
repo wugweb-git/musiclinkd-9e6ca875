@@ -63,7 +63,7 @@ const shots = [
 ];
 
 const profileLink = (username: string) => ({
-  to: "/profile/$username",
+  to: "/profile/$username" as const,
   params: { username },
 });
 

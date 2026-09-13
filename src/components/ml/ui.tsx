@@ -159,24 +159,6 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
   );
 }
 
-export function AvailabilityBadge({ status }: { status: string }) {
-  const map: Record<string, { bg: string; fg: string }> = {
-    Available: { bg: "var(--success-container)", fg: "var(--success)" },
-    Selective: { bg: "var(--warn-container)", fg: "var(--warn)" },
-    Booked: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
-  };
-  const c = map[status] ?? map["Booked"]!;
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: c.bg, color: c.fg }}
-    >
-      <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.fg }} />
-      {status}
-    </span>
-  );
-}
-
 export function Btn({
   children,
   variant = "primary",

@@ -498,42 +498,6 @@ export function BookingCard({
   );
 }
 
-export function RentalRequestCard({
-  e,
-  dates,
-  quantity,
-  status,
-  price,
-}: {
-  e: Equipment;
-  dates: string;
-  quantity: number;
-  status: RentalStatus;
-  price: string;
-}) {
-  return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-start gap-3">
-        <img
-          src={e.photos[0]}
-          alt={e.name}
-          className="h-14 w-14 shrink-0 rounded-md object-cover"
-        />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-1 font-semibold">{e.name}</p>
-          <p className="truncate text-1 text-muted-foreground">
-            {dates} · {quantity} unit{quantity > 1 ? "s" : ""} · {price}
-          </p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <RentalStatusPill status={status} />
-            <LocationRow text={e.location} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function RentalSkeleton() {
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-card">
@@ -721,13 +685,5 @@ export function RentalReportSheet({ open, onClose }: { open: boolean; onClose: (
         Reports go to MusicLinkd moderation. Nobody is told who reported a listing.
       </p>
     </Sheet>
-  );
-}
-
-export function RentalLocationRow({ text }: { text: string }) {
-  return (
-    <span className="inline-flex items-center gap-1 text-1 font-semibold text-muted-foreground">
-      <MapPin size={12} /> {text}
-    </span>
   );
 }

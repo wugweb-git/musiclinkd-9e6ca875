@@ -3,7 +3,7 @@
  * Reusable Gestalt-native pieces. No new tokens, no separate design system.
  */
 
-import { Link } from "@tanstack/react-router";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import QRCode from "qrcode";
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
@@ -295,7 +295,7 @@ export function ActionRow({
   label: string;
   hint?: string;
   onClick?: () => void;
-  to?: string;
+  to?: LinkProps["to"];
 }) {
   const inner = (
     <>
@@ -312,8 +312,7 @@ export function ActionRow({
     "flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left";
   if (to) {
     return (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      <Link to={to as any} className={cls}>
+      <Link to={to} className={cls}>
         {inner}
       </Link>
     );
@@ -432,20 +431,19 @@ export function DownloadNote() {
   );
 }
 
+/** A button action: a typed route or a handler. */
+type PairAction = { label: string; onClick?: () => void; to?: LinkProps["to"] };
+
 export function PrimaryPair({
   primary,
   secondary,
 }: {
-  primary: { label: string; onClick?: () => void; to?: string };
-  secondary?: { label: string; onClick?: () => void; to?: string };
+  primary: PairAction;
+  secondary?: PairAction;
 }) {
-  const wrap = (
-    a: { label: string; onClick?: () => void; to?: string },
-    variant: "primary" | "outline",
-  ) =>
+  const wrap = (a: PairAction, variant: "primary" | "outline") =>
     a.to ? (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      <Link to={a.to as any} className="flex-1">
+      <Link to={a.to} className="flex-1">
         <Btn variant={variant} className="w-full">
           {a.label}
         </Btn>

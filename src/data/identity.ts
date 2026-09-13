@@ -80,7 +80,7 @@ export const destinations: QrDestination[] = [
     code: myIdentity.code,
     type: "profile",
     entityId: myIdentity.entityId,
-    publicRoute: `/profile/${myIdentity.username}`,
+    publicRoute: `/profile/${myIdentity.entityId}`,
     status: "active",
   },
   {
@@ -108,7 +108,7 @@ export const destinations: QrDestination[] = [
     code: "strat-62",
     type: "listing",
     entityId: listings[0]!.id,
-    publicRoute: `/marketplace/${listings[0]!.id}`,
+    publicRoute: `/marketplace/l/${listings[0]!.id}`,
     status: "active",
   },
   {

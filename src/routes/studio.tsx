@@ -160,7 +160,11 @@ function Studio() {
         </Btn>
       </div>
 
-      <HireModal open={hire} onClose={() => setHire(false)} />
+      <HireModal
+        open={hire}
+        onClose={() => setHire(false)}
+        subject={{ name: "Yash Raj Sound Studios", detail: "Andheri West, Mumbai" }}
+      />
     </Screen>
   );
 }

@@ -3,6 +3,7 @@
  * Canonical names: recommendation, recommendation_reason, recommendation_feedback, recommendation_preference.
  * Every recommendation carries an explainable reason and a feedback control.
  */
+import type { LinkProps } from "@tanstack/react-router";
 import { talents, studios } from "./discover";
 
 export type RecKind = "talent" | "studio" | "listing" | "opportunity" | "collaboration" | "content";
@@ -17,8 +18,8 @@ export type Recommendation = {
   meta: string;
   /** recommendation_reason.text — always shown, never a black box. */
   reason: string;
-  /** Route the card opens — canonical entity route, never a duplicate screen. */
-  route: string;
+  /** Where the card opens — canonical entity route, never a duplicate screen. */
+  link: LinkProps;
   verified?: boolean;
 };
 
@@ -34,7 +35,7 @@ export const recommendations: Recommendation[] = [
     image: talents[0]!.photo,
     meta: talents[0]!.location,
     reason: "Works in your genres and is available the week of your next session",
-    route: `/profile/${talents[0]!.id}`,
+    link: { to: "/profile/$username", params: { username: talents[0]!.id } },
     verified: talents[0]!.verified,
   },
   {
@@ -45,7 +46,7 @@ export const recommendations: Recommendation[] = [
     image: studios[0]!.photo,
     meta: studios[0]!.location,
     reason: "Similar to the studio you booked in August, 12% lower rate",
-    route: "/booking",
+    link: { to: "/studio" },
   },
   {
     id: "rec-3",
@@ -55,7 +56,7 @@ export const recommendations: Recommendation[] = [
     image: u("photo-1520523839897-bd0b52f945a0"),
     meta: "Mumbai · Seller verified",
     reason: "You saved two keys listings this month",
-    route: "/marketplace",
+    link: { to: "/marketplace" },
   },
   {
     id: "rec-4",
@@ -65,7 +66,7 @@ export const recommendations: Recommendation[] = [
     image: u("photo-1516280440614-37939bbacd81"),
     meta: "Closes in 5 days",
     reason: "Matches your role, city and stated rate range",
-    route: "/",
+    link: { to: "/opportunities" },
   },
   {
     id: "rec-5",
@@ -75,7 +76,7 @@ export const recommendations: Recommendation[] = [
     image: u("photo-1470229722913-7c0e2dbbafd3"),
     meta: "Brass and keys wanted",
     reason: "Two of your collaborators are already on this project",
-    route: "/collab",
+    link: { to: "/collab" },
   },
   {
     id: "rec-6",
@@ -85,7 +86,7 @@ export const recommendations: Recommendation[] = [
     image: u("photo-1487180144351-b8472da7d491"),
     meta: "MusicLinkd Guides",
     reason: "You added a service last week without a rate",
-    route: "/help/pricing-your-first-service",
+    link: { to: "/help/$slug", params: { slug: "pricing-your-first-service" } },
   },
 ];
 

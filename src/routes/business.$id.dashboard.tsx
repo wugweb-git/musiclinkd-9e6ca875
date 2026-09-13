@@ -82,43 +82,50 @@ function BusinessDashboard() {
             icon={<Inbox size={16} />}
             title="Leads"
             subtitle={`${newLeads} waiting on a reply`}
-            to={`/business/${b.id}/leads`}
+            to="/business/$id/leads"
+            params={{ id: b.id }}
           />
           <Row
             icon={<BarChart3 size={16} />}
             title="Analytics"
             subtitle="Views, sources, room demand"
-            to={`/business/${b.id}/analytics`}
+            to="/business/$id/analytics"
+            params={{ id: b.id }}
           />
           <Row
             icon={<Wrench size={16} />}
             title="Services"
             subtitle="Rooms, sessions and pricing"
-            to={`/business/${b.id}/services`}
+            to="/business/$id/services"
+            params={{ id: b.id }}
           />
           <Row
             icon={<CalendarClock size={16} />}
             title="Availability"
             subtitle="Hours, notice and blackout dates"
-            to={`/business/${b.id}/availability`}
+            to="/business/$id/availability"
+            params={{ id: b.id }}
           />
           <Row
             icon={<Images size={16} />}
             title="Portfolio"
             subtitle="Credits and gallery"
-            to={`/business/${b.id}/portfolio`}
+            to="/business/$id/portfolio"
+            params={{ id: b.id }}
           />
           <Row
             icon={<Star size={16} />}
             title="Reviews"
             subtitle={`${b.stats.rating} from ${b.stats.reviews} reviews`}
-            to={`/business/${b.id}/reviews`}
+            to="/business/$id/reviews"
+            params={{ id: b.id }}
           />
           <Row
             icon={<ShieldCheck size={16} />}
             title="Verification"
             subtitle={b.verified ? "Verified business" : "Not verified yet"}
-            to={`/business/${b.id}/verification`}
+            to="/business/$id/verification"
+            params={{ id: b.id }}
           />
         </div>
       </div>

@@ -375,57 +375,6 @@ export function AudioTrackCard({
   );
 }
 
-export function MiniPlayer({
-  track,
-  playing,
-  onToggle,
-  onClose,
-}: {
-  track: AudioTrack;
-  playing: boolean;
-  onToggle: () => void;
-  onClose: () => void;
-}) {
-  return (
-    <div className="fixed inset-x-0 bottom-16 z-40 mx-auto w-full max-w-app px-3 pb-2">
-      <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-2.5">
-        <img src={track.artwork} alt="" aria-hidden className="h-11 w-11 rounded-md object-cover" />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-1 font-semibold">{track.title}</p>
-          <div className="mt-1.5 flex h-5 items-end gap-[2px]" aria-hidden>
-            {Array.from({ length: 34 }).map((_, i) => (
-              <span
-                key={i}
-                className="flex-1 rounded-full"
-                style={{
-                  height: `${25 + Math.abs(Math.sin(i * 0.8)) * 75}%`,
-                  background: i < 12 ? "var(--primary)" : "var(--border)",
-                }}
-              />
-            ))}
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-label={playing ? "Pause" : "Play"}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
-        >
-          {playing ? <Pause size={15} aria-hidden /> : <Play size={15} aria-hidden />}
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close player"
-          className="flex h-10 w-9 items-center justify-center rounded-full text-muted-foreground"
-        >
-          ✕
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export function VideoCard({ v }: { v: VideoItem }) {
   return (
     <article className="w-[220px] shrink-0 overflow-hidden rounded-lg border border-border bg-card">
@@ -546,7 +495,7 @@ export function CollaboratorCard({ c }: { c: Collaborator }) {
   return (
     <Link
       to={c.link.to}
-      params={c.link.params as never}
+      {...(c.link.params ? { params: c.link.params } : {})}
       className="flex shrink-0 flex-col items-center"
     >
       {inner}
@@ -609,7 +558,7 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
   return (
     <Link
       to={m.to}
-      params={m.params as never}
+      {...(m.params ? { params: m.params } : {})}
       className="flex w-[210px] shrink-0 items-center gap-3 rounded-lg border border-border bg-card p-3"
     >
       <img
