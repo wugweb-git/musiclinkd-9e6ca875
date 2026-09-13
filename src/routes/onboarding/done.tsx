@@ -69,7 +69,7 @@ function Done() {
               Tracks, videos and credits turn a profile view into an enquiry.
             </p>
           </Link>
-          <Link to="/" className="block rounded-lg border border-border bg-card p-4">
+          <Link to="/discover" className="block rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">Discover talent</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Singers, producers, studios and bands near you.

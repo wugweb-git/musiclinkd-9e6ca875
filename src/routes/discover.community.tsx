@@ -25,7 +25,7 @@ export const Route = createFileRoute("/discover/community")({
 function DiscoverCommunity() {
   return (
     <Screen>
-      <TopBar title="Community" subtitle="Bands, studios and labels" back="/" />
+      <TopBar title="Community" subtitle="Bands, studios and labels" back="/discover" />
 
       <div className="space-y-5 px-5 pt-4 pb-8">
         <section>

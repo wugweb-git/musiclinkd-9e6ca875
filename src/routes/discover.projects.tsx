@@ -26,7 +26,7 @@ function DiscoverProjects() {
 
   return (
     <Screen>
-      <TopBar title="Projects" subtitle="Work in progress you can join" back="/" />
+      <TopBar title="Projects" subtitle="Work in progress you can join" back="/discover" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         {projects.length ? (

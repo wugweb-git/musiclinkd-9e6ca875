@@ -24,7 +24,7 @@ export const Route = createFileRoute("/categories")({
 function Categories() {
   return (
     <Screen>
-      <TopBar title="Browse categories" subtitle="72,963 verified professionals" back="/" />
+      <TopBar title="Browse categories" subtitle="72,963 verified professionals" back="/discover" />
       <div className="grid grid-cols-2 gap-3 px-5 py-5">
         {categories.map((c) => (
           <Link

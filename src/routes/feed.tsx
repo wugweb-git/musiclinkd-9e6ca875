@@ -289,7 +289,7 @@ function Body({ data }: { data: DashboardData }) {
               Connect with artists and studios to see updates here.
             </p>
             <Link
-              to="/"
+              to="/discover"
               className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-xs font-semibold text-background"
             >
               Discover talent

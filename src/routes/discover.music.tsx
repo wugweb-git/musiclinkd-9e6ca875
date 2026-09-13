@@ -27,7 +27,7 @@ function DiscoverMusic() {
 
   return (
     <Screen>
-      <TopBar title="Music" subtitle="New work from the community" back="/" />
+      <TopBar title="Music" subtitle="New work from the community" back="/discover" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>

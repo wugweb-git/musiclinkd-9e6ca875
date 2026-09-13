@@ -37,7 +37,7 @@ function SearchResults() {
       <div className="sticky top-0 z-30 border-b border-border bg-background/95 px-5 py-4 backdrop-blur">
         <div className="mb-3 flex items-center gap-3">
           <Link
-            to="/"
+            to="/discover"
             className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
           >
             ←

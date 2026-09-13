@@ -114,11 +114,7 @@ export function SignedOutCard({ what = "your portfolio" }: { what?: string }) {
     <StateCard
       title="Sign in to manage your work"
       body={`Create a free MusicLinkd account to publish and edit ${what}. You're seeing demo work below.`}
-      action={
-        <BtnLink to="/auth" search={{ mode: "signin" }}>
-          Sign in or sign up
-        </BtnLink>
-      }
+      action={<BtnLink to="/welcome">Sign in or sign up</BtnLink>}
     />
   );
 }

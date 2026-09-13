@@ -31,7 +31,7 @@ function Nearby() {
   if (!allowed) {
     return (
       <Screen>
-        <TopBar title="Nearby" back="/" />
+        <TopBar title="Nearby" back="/discover" />
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-subtle text-primary">
@@ -56,7 +56,7 @@ function Nearby() {
 
   return (
     <Screen>
-      <TopBar title="Nearby" subtitle="Sorted by distance" back="/" />
+      <TopBar title="Nearby" subtitle="Sorted by distance" back="/discover" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <div className="rail no-scrollbar flex gap-2 overflow-x-auto">

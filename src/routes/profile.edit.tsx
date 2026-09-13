@@ -183,7 +183,7 @@ function EditProfile() {
             <p className="mt-1.5 text-sm text-muted-foreground">
               Your profile lives on your account, so changes follow you to every device.
             </p>
-            <BtnLink to="/auth" search={{ mode: "signin" }} className="mt-4 w-full">
+            <BtnLink to="/welcome" className="mt-4 w-full">
               Sign in
             </BtnLink>
           </div>

@@ -36,7 +36,7 @@ function Studio() {
         <img src={photos[0]} alt="Studio control room" className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink to-transparent" />
         <Link
-          to="/"
+          to="/discover"
           className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
         >
           ←

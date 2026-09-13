@@ -171,7 +171,7 @@ import { bookings, getBookable, getResource, formatDate, formatTime } from "./bo
 
 /** Routes the dashboard is allowed to link to (all already exist). */
 export type DashLink =
-  | "/"
+  | "/discover"
   | "/messages"
   | "/me"
   | "/recommendations/swipe"
@@ -297,7 +297,7 @@ export function forYouTiles(d: DashboardData): ForYouTile[] {
       value: `${d.forYou.length}`,
       label: "artists to meet",
       hint: "Matched to your genres",
-      to: "/",
+      to: "/discover",
     });
   if (d.studios.length)
     tiles.push({
