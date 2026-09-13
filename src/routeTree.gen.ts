@@ -100,6 +100,8 @@ import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
 import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
+import { Route as SearchHistoryRouteImport } from './routes/search.history'
+import { Route as SearchSavedRouteImport } from './routes/search.saved'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
@@ -191,6 +193,7 @@ import { Route as ReviewsIdEditRouteImport } from './routes/reviews.$id.edit'
 import { Route as ReviewsIdReplyRouteImport } from './routes/reviews.$id.reply'
 import { Route as ReviewsIdReportRouteImport } from './routes/reviews.$id.report'
 import { Route as ReviewsWriteIdRouteImport } from './routes/reviews.write.$id'
+import { Route as SearchWhyIdRouteImport } from './routes/search.why.$id'
 import { Route as ServicesIdEnquiryRouteImport } from './routes/services.$id.enquiry'
 import { Route as ServicesIdManageRouteImport } from './routes/services.$id.manage'
 import { Route as CollabIdFilesIndexRouteImport } from './routes/collab.$id.files.index'
@@ -669,6 +672,16 @@ const ReviewsRequestRoute = ReviewsRequestRouteImport.update({
   path: '/request',
   getParentRoute: () => ReviewsRoute,
 } as any)
+const SearchHistoryRoute = SearchHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => SearchRoute,
+} as any)
+const SearchSavedRoute = SearchSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => SearchRoute,
+} as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
@@ -1128,6 +1141,11 @@ const ReviewsWriteIdRoute = ReviewsWriteIdRouteImport.update({
   path: '/write/$id',
   getParentRoute: () => ReviewsRoute,
 } as any)
+const SearchWhyIdRoute = SearchWhyIdRouteImport.update({
+  id: '/why/$id',
+  path: '/why/$id',
+  getParentRoute: () => SearchRoute,
+} as any)
 const ServicesIdEnquiryRoute = ServicesIdEnquiryRouteImport.update({
   id: '/enquiry',
   path: '/enquiry',
@@ -1264,7 +1282,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
-  '/search': typeof SearchRoute
+  '/search': typeof SearchRouteWithChildren
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1331,6 +1349,8 @@ export interface FileRoutesByFullPath {
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/reviews/request': typeof ReviewsRequestRoute
+  '/search/history': typeof SearchHistoryRoute
+  '/search/saved': typeof SearchSavedRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
@@ -1422,6 +1442,7 @@ export interface FileRoutesByFullPath {
   '/reviews/$id/reply': typeof ReviewsIdReplyRoute
   '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
+  '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/booking/$id/': typeof BookingIdIndexRoute
@@ -1470,7 +1491,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
-  '/search': typeof SearchRoute
+  '/search': typeof SearchRouteWithChildren
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1536,6 +1557,8 @@ export interface FileRoutesByTo {
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/reviews/request': typeof ReviewsRequestRoute
+  '/search/history': typeof SearchHistoryRoute
+  '/search/saved': typeof SearchSavedRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
@@ -1627,6 +1650,7 @@ export interface FileRoutesByTo {
   '/reviews/$id/reply': typeof ReviewsIdReplyRoute
   '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
+  '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/booking/$id': typeof BookingIdIndexRoute
@@ -1676,7 +1700,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
-  '/search': typeof SearchRoute
+  '/search': typeof SearchRouteWithChildren
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1743,6 +1767,8 @@ export interface FileRoutesById {
   '/provider/pricing': typeof ProviderPricingRoute
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/reviews/request': typeof ReviewsRequestRoute
+  '/search/history': typeof SearchHistoryRoute
+  '/search/saved': typeof SearchSavedRoute
   '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
@@ -1834,6 +1860,7 @@ export interface FileRoutesById {
   '/reviews/$id/reply': typeof ReviewsIdReplyRoute
   '/reviews/$id/report': typeof ReviewsIdReportRoute
   '/reviews/write/$id': typeof ReviewsWriteIdRoute
+  '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/booking/$id/': typeof BookingIdIndexRoute
@@ -1951,6 +1978,8 @@ export interface FileRouteTypes {
     | '/provider/pricing'
     | '/recommendations/settings'
     | '/reviews/request'
+    | '/search/history'
+    | '/search/saved'
     | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
@@ -2042,6 +2071,7 @@ export interface FileRouteTypes {
     | '/reviews/$id/reply'
     | '/reviews/$id/report'
     | '/reviews/write/$id'
+    | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
     | '/booking/$id/'
@@ -2156,6 +2186,8 @@ export interface FileRouteTypes {
     | '/provider/pricing'
     | '/recommendations/settings'
     | '/reviews/request'
+    | '/search/history'
+    | '/search/saved'
     | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
@@ -2247,6 +2279,7 @@ export interface FileRouteTypes {
     | '/reviews/$id/reply'
     | '/reviews/$id/report'
     | '/reviews/write/$id'
+    | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
     | '/booking/$id'
@@ -2362,6 +2395,8 @@ export interface FileRouteTypes {
     | '/provider/pricing'
     | '/recommendations/settings'
     | '/reviews/request'
+    | '/search/history'
+    | '/search/saved'
     | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
@@ -2453,6 +2488,7 @@ export interface FileRouteTypes {
     | '/reviews/$id/reply'
     | '/reviews/$id/report'
     | '/reviews/write/$id'
+    | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
     | '/booking/$id/'
@@ -2502,7 +2538,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
-  SearchRoute: typeof SearchRoute
+  SearchRoute: typeof SearchRouteWithChildren
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -3301,6 +3337,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewsRequestRouteImport
       parentRoute: typeof ReviewsRoute
     }
+    '/search/history': {
+      id: '/search/history'
+      path: '/history'
+      fullPath: '/search/history'
+      preLoaderRoute: typeof SearchHistoryRouteImport
+      parentRoute: typeof SearchRoute
+    }
+    '/search/saved': {
+      id: '/search/saved'
+      path: '/saved'
+      fullPath: '/search/saved'
+      preLoaderRoute: typeof SearchSavedRouteImport
+      parentRoute: typeof SearchRoute
+    }
     '/services/': {
       id: '/services/'
       path: '/services'
@@ -3938,6 +3988,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReviewsWriteIdRouteImport
       parentRoute: typeof ReviewsRoute
     }
+    '/search/why/$id': {
+      id: '/search/why/$id'
+      path: '/why/$id'
+      fullPath: '/search/why/$id'
+      preLoaderRoute: typeof SearchWhyIdRouteImport
+      parentRoute: typeof SearchRoute
+    }
     '/services/$id/enquiry': {
       id: '/services/$id/enquiry'
       path: '/enquiry'
@@ -4183,6 +4240,21 @@ const ReviewsRouteChildren: ReviewsRouteChildren = {
 const ReviewsRouteWithChildren =
   ReviewsRoute._addFileChildren(ReviewsRouteChildren)
 
+interface SearchRouteChildren {
+  SearchHistoryRoute: typeof SearchHistoryRoute
+  SearchSavedRoute: typeof SearchSavedRoute
+  SearchWhyIdRoute: typeof SearchWhyIdRoute
+}
+
+const SearchRouteChildren: SearchRouteChildren = {
+  SearchHistoryRoute: SearchHistoryRoute,
+  SearchSavedRoute: SearchSavedRoute,
+  SearchWhyIdRoute: SearchWhyIdRoute,
+}
+
+const SearchRouteWithChildren =
+  SearchRoute._addFileChildren(SearchRouteChildren)
+
 interface BookingIdRouteChildren {
   BookingIdAddonsRoute: typeof BookingIdAddonsRoute
   BookingIdDetailsRoute: typeof BookingIdDetailsRoute
@@ -4284,7 +4356,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
-  SearchRoute: SearchRoute,
+  SearchRoute: SearchRouteWithChildren,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   WelcomeRoute: WelcomeRoute,
