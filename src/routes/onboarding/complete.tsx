@@ -126,7 +126,7 @@ function Complete() {
               title={`Set up your ${d.businessIntent.toLowerCase()} profile`}
               body="Add your team, services and location so clients can book the business, not just you."
               action={
-                <BtnLink to="/categories" className="w-full">
+                <BtnLink to="/business/new" className="w-full">
                   Start business setup
                 </BtnLink>
               }
