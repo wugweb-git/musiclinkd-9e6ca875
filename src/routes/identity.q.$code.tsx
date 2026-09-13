@@ -130,7 +130,7 @@ function QrResult() {
             <BtnLink to="/identity/scan" className="w-full">
               {statusCopy[dest.status === "active" ? "invalid" : dest.status].cta}
             </BtnLink>
-            <BtnLink to="/" variant="outline" className="w-full">
+            <BtnLink to="/discover" variant="outline" className="w-full">
               <Share2 size={16} className="mr-2" /> Discover on MusicLinkd
             </BtnLink>
           </StateCard>

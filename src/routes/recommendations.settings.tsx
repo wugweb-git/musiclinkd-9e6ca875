@@ -68,8 +68,12 @@ function RecSettings() {
         </Card>
 
         <div className="space-y-2">
-          <Row title="Saved items" subtitle="Saved profiles, listings and spaces" to="/" />
-          <Row title="Discover" subtitle="Browse everything without personalisation" to="/" />
+          <Row title="Saved items" subtitle="Saved profiles, listings and spaces" to="/saved" />
+          <Row
+            title="Discover"
+            subtitle="Browse everything without personalisation"
+            to="/discover"
+          />
           <BtnLink
             to="/help/$slug"
             params={{ slug: "profile-that-gets-booked" }}

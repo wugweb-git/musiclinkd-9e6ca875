@@ -77,7 +77,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
 
   if (!signedIn) {
     return (
-      <Link to="/auth" search={{ mode: "signin" }} aria-label="Sign in">
+      <Link to="/welcome" aria-label="Sign in">
         <Avatar className={shape}>
           <AvatarFallback className="bg-card text-muted-foreground">
             <User size={18} aria-hidden />

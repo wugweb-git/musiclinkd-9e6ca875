@@ -132,7 +132,13 @@ export const destinations: QrDestination[] = [
     publicRoute: "/bands/the-kite-notes",
     status: "private",
   },
-  { code: "gone", type: "profile", entityId: "removed-user", publicRoute: "/", status: "deleted" },
+  {
+    code: "gone",
+    type: "profile",
+    entityId: "removed-user",
+    publicRoute: "/discover",
+    status: "deleted",
+  },
   {
     code: "paused",
     type: "business",
@@ -148,7 +154,7 @@ export function resolveCode(code: string): QrDestination {
       code,
       type: "profile",
       entityId: "",
-      publicRoute: "/",
+      publicRoute: "/discover",
       status: "invalid",
     }
   );

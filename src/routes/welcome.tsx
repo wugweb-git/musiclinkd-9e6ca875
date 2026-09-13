@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Mail, Plus, Smartphone } from "lucide-react";
 
@@ -173,6 +173,13 @@ function WelcomeScreen() {
             <Mail size={17} aria-hidden />
             Continue with Email &amp; Password
           </CtaRow>
+
+          <p className="mt-5 text-center text-[13.5px] text-muted-foreground">
+            Already have an account?{" "}
+            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
+              Sign in
+            </Link>
+          </p>
 
           <LegalNote />
         </div>

@@ -50,7 +50,7 @@ function Recommended() {
       <TopBar
         title="Recommended for you"
         subtitle="Genres · Languages · Location · Activity"
-        back="/"
+        back="/discover"
       />
 
       <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">

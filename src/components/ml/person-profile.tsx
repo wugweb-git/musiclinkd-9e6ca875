@@ -76,7 +76,7 @@ export function PersonProfileExperience({
       <ProfileHero
         p={p}
         owner={owner}
-        back={owner ? undefined : "/"}
+        back={owner ? undefined : "/discover"}
         onShare={() => setShareOpen(true)}
         onMore={owner ? undefined : () => setMoreOpen(true)}
       />

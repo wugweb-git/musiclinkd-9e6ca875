@@ -39,6 +39,7 @@ import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
+import { Route as DiscoverIndexRouteImport } from './routes/discover.index'
 import { Route as DiscoverCommunityRouteImport } from './routes/discover.community'
 import { Route as DiscoverMusicRouteImport } from './routes/discover.music'
 import { Route as DiscoverNearbyRouteImport } from './routes/discover.nearby'
@@ -366,6 +367,11 @@ const BusinessNewRoute = BusinessNewRouteImport.update({
 const CollabIndexRoute = CollabIndexRouteImport.update({
   id: '/collab/',
   path: '/collab/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverIndexRoute = DiscoverIndexRouteImport.update({
+  id: '/discover/',
+  path: '/discover/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiscoverCommunityRoute = DiscoverCommunityRouteImport.update({
@@ -1365,6 +1371,7 @@ export interface FileRoutesByFullPath {
   '/bookings/': typeof BookingsIndexRoute
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
+  '/discover/': typeof DiscoverIndexRoute
   '/help/': typeof HelpIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
@@ -1574,6 +1581,7 @@ export interface FileRoutesByTo {
   '/bookings': typeof BookingsIndexRoute
   '/business': typeof BusinessIndexRoute
   '/collab': typeof CollabIndexRoute
+  '/discover': typeof DiscoverIndexRoute
   '/help': typeof HelpIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/notifications': typeof NotificationsIndexRoute
@@ -1785,6 +1793,7 @@ export interface FileRoutesById {
   '/bookings/': typeof BookingsIndexRoute
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
+  '/discover/': typeof DiscoverIndexRoute
   '/help/': typeof HelpIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
@@ -1997,6 +2006,7 @@ export interface FileRouteTypes {
     | '/bookings/'
     | '/business/'
     | '/collab/'
+    | '/discover/'
     | '/help/'
     | '/marketplace/'
     | '/notifications/'
@@ -2206,6 +2216,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/business'
     | '/collab'
+    | '/discover'
     | '/help'
     | '/marketplace'
     | '/notifications'
@@ -2416,6 +2427,7 @@ export interface FileRouteTypes {
     | '/bookings/'
     | '/business/'
     | '/collab/'
+    | '/discover/'
     | '/help/'
     | '/marketplace/'
     | '/notifications/'
@@ -2627,6 +2639,7 @@ export interface RootRouteChildren {
   BookingsIndexRoute: typeof BookingsIndexRoute
   BusinessIndexRoute: typeof BusinessIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
+  DiscoverIndexRoute: typeof DiscoverIndexRoute
   HelpIndexRoute: typeof HelpIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
@@ -2948,6 +2961,13 @@ declare module '@tanstack/react-router' {
       path: '/collab'
       fullPath: '/collab/'
       preLoaderRoute: typeof CollabIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/': {
+      id: '/discover/'
+      path: '/discover'
+      fullPath: '/discover/'
+      preLoaderRoute: typeof DiscoverIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/discover/community': {
@@ -4316,6 +4336,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookingsIndexRoute: BookingsIndexRoute,
   BusinessIndexRoute: BusinessIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
+  DiscoverIndexRoute: DiscoverIndexRoute,
   HelpIndexRoute: HelpIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,

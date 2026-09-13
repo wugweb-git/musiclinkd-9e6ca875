@@ -83,7 +83,7 @@ function Recs() {
             <BtnLink to="/profile/edit" className="w-full">
               Complete my profile
             </BtnLink>
-            <BtnLink to="/" variant="outline" className="w-full">
+            <BtnLink to="/discover" variant="outline" className="w-full">
               Browse Discover instead
             </BtnLink>
           </EmptyState>

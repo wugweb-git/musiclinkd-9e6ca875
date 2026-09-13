@@ -27,7 +27,7 @@ function RecentlyViewed() {
 
   return (
     <Screen>
-      <TopBar title="Recently viewed" subtitle="Last 30 days" back="/" />
+      <TopBar title="Recently viewed" subtitle="Last 30 days" back="/discover" />
 
       <div className="space-y-5 px-5 pt-4 pb-8">
         {empty ? (
@@ -35,7 +35,7 @@ function RecentlyViewed() {
             title="Nothing here yet"
             body="Profiles and studios you open will be listed here for a month."
           >
-            <BtnLink to="/">Start discovering</BtnLink>
+            <BtnLink to="/discover">Start discovering</BtnLink>
           </EmptyState>
         ) : (
           <>

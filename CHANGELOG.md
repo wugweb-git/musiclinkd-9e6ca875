@@ -34,6 +34,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   Every chip, pill and badge in `src/components/ml/` already renders `rounded-full`, and the M3
   change kept chips as pills. The old line would have had new screens build 8px chips.
 
+### Changed — app start
+
+- **The app opens on a session check, not Discover.** `/` shows the brand mark while the browser
+  session loads, then replaces itself with `/feed` (saved sign-in) or `/welcome` (everyone else).
+- **Discover moved to `/discover`.** The bottom-nav tab, 21 links and back buttons, the feed tile and
+  the scanned-code fallbacks follow it. The 404 page's home link stays on `/`, so it routes by session.
+- **Welcome is the front door.** It gained "Already have an account? Sign in" for returning email
+  users, and the signed-out prompts (avatar, portfolio card, profile edit, saving a work) open
+  `/welcome` instead of the email form. The password-reset page still returns to email sign-in.
+- **"Saved items"** in recommendation settings opens `/saved`; it pointed at Discover.
+
 ### Fixed
 
 - **Link buttons are one element.** 241 `<Link><Btn/></Link>` pairs in 129 files (a `<button>`

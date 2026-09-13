@@ -35,7 +35,7 @@ function BookingEntry() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
       <div className="relative">
         <Link
-          to="/"
+          to="/discover"
           aria-label="Back"
           className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-lg backdrop-blur"
         >

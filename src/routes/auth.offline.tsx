@@ -35,7 +35,11 @@ function OfflineScreen() {
         <Btn className="w-full" onClick={() => window.location.reload()}>
           Try again
         </Btn>
-        <Btn variant="outline" className="w-full" onClick={() => void navigate({ to: "/" })}>
+        <Btn
+          variant="outline"
+          className="w-full"
+          onClick={() => void navigate({ to: "/discover" })}
+        >
           Browse cached Discover
         </Btn>
       </div>

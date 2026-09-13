@@ -229,7 +229,7 @@ function AuthPage() {
 
       <p className="mt-6 text-center text-[12px] text-muted-foreground">
         Browsing without an account?{" "}
-        <Link to="/" className="font-semibold text-primary">
+        <Link to="/discover" className="font-semibold text-primary">
           Explore Discover
         </Link>
       </p>

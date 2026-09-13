@@ -288,7 +288,7 @@ function EmptyForTab({ tab }: { tab: string }) {
         action={
           <div className="flex gap-3">
             <BtnLink to="/collab/new">Start a collaboration</BtnLink>
-            <BtnLink to="/" variant="outline">
+            <BtnLink to="/discover" variant="outline">
               Discover talent
             </BtnLink>
           </div>
@@ -314,7 +314,7 @@ function EmptyForTab({ tab }: { tab: string }) {
     <EmptyState
       title="No collaborations yet"
       body="Find musicians, producers, studios and businesses to work with."
-      action={<BtnLink to="/">Discover talent</BtnLink>}
+      action={<BtnLink to="/discover">Discover talent</BtnLink>}
     />
   );
 }
