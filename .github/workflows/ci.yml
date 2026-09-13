@@ -28,7 +28,16 @@ jobs:
       - name: Typecheck
         run: bunx tsc --noEmit
 
+      # Blocking: correctness rules only. Lovable's agent commits straight to main
+      # without running Prettier, so gating on formatting would fail every Lovable
+      # push and a permanently red check stops being read.
       - name: Lint
+        run: bunx eslint . --rule 'prettier/prettier: off'
+
+      # Non-blocking: formatting drift is reported, not enforced. Clear it with
+      # `bunx eslint --fix <files>` in a follow-up commit.
+      - name: Format check (non-blocking)
+        continue-on-error: true
         run: bun run lint
 
       - name: Build
