@@ -5,7 +5,7 @@ import { Screen, TopBar, SearchBar } from "@/components/ml/ui";
 import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
 import { contentCategories, contentPages, popularSlugs, getPage } from "@/data/cms";
 
-export const Route = createFileRoute("/help")({
+export const Route = createFileRoute("/help/")({
   head: () => ({
     meta: [
       { title: "Help & Guides | MusicLinkd" },

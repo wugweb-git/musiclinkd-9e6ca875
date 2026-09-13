@@ -11,20 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BandRouteImport } from './routes/band'
-import { Route as BandsRouteImport } from './routes/bands'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as FeedRouteImport } from './routes/feed'
-import { Route as HelpRouteImport } from './routes/help'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
-import { Route as PlansRouteImport } from './routes/plans'
 import { Route as RecentlyViewedRouteImport } from './routes/recently-viewed'
-import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as RecommendedRouteImport } from './routes/recommended'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as SavedRouteImport } from './routes/saved'
-import { Route as SearchRouteImport } from './routes/search'
 import { Route as SingersRouteImport } from './routes/singers'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as WelcomeRouteImport } from './routes/welcome'
@@ -38,23 +32,22 @@ import { Route as AuthPhoneRouteImport } from './routes/auth.phone'
 import { Route as AuthSignoutRouteImport } from './routes/auth.signout'
 import { Route as AuthSuccessRouteImport } from './routes/auth.success'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
-import { Route as BandsIdRouteImport } from './routes/bands.$id'
+import { Route as BandsIndexRouteImport } from './routes/bands.index'
 import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
-import { Route as CollabNewRouteImport } from './routes/collab.new'
 import { Route as DiscoverCommunityRouteImport } from './routes/discover.community'
 import { Route as DiscoverMusicRouteImport } from './routes/discover.music'
 import { Route as DiscoverNearbyRouteImport } from './routes/discover.nearby'
 import { Route as DiscoverProjectsRouteImport } from './routes/discover.projects'
+import { Route as HelpIndexRouteImport } from './routes/help.index'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
 import { Route as IdentityAnalyticsRouteImport } from './routes/identity.analytics'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
 import { Route as IdentityCardRouteImport } from './routes/identity.card'
-import { Route as IdentityContactRouteImport } from './routes/identity.contact'
 import { Route as IdentityCustomizeRouteImport } from './routes/identity.customize'
 import { Route as IdentityFullRouteImport } from './routes/identity.full'
 import { Route as IdentityHistoryRouteImport } from './routes/identity.history'
@@ -83,11 +76,11 @@ import { Route as OpportunitiesMineRouteImport } from './routes/opportunities.mi
 import { Route as OpportunitiesNewRouteImport } from './routes/opportunities.new'
 import { Route as OpportunitiesSavedRouteImport } from './routes/opportunities.saved'
 import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
+import { Route as PlansIndexRouteImport } from './routes/plans.index'
 import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
 import { Route as PlansEarningsRouteImport } from './routes/plans.earnings'
 import { Route as PlansManageRouteImport } from './routes/plans.manage'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
-import { Route as PortfolioIdRouteImport } from './routes/portfolio.$id'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
 import { Route as PortfolioReorderRouteImport } from './routes/portfolio.reorder'
 import { Route as PortfolioSelectRouteImport } from './routes/portfolio.select'
@@ -98,12 +91,14 @@ import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
 import { Route as ProviderAvailabilityRouteImport } from './routes/provider.availability'
 import { Route as ProviderPoliciesRouteImport } from './routes/provider.policies'
 import { Route as ProviderPricingRouteImport } from './routes/provider.pricing'
+import { Route as RecommendationsIndexRouteImport } from './routes/recommendations.index'
 import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as ReviewsIndexRouteImport } from './routes/reviews.index'
 import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
+import { Route as SearchIndexRouteImport } from './routes/search.index'
 import { Route as SearchHistoryRouteImport } from './routes/search.history'
 import { Route as SearchSavedRouteImport } from './routes/search.saved'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
-import { Route as ServicesIdRouteImport } from './routes/services.$id'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
 import { Route as ServicesConflictsRouteImport } from './routes/services.conflicts'
 import { Route as ServicesNewRouteImport } from './routes/services.new'
@@ -118,6 +113,7 @@ import { Route as VerificationTypeRouteImport } from './routes/verification.$typ
 import { Route as VerificationBadgeRouteImport } from './routes/verification.badge'
 import { Route as VerificationChooseRouteImport } from './routes/verification.choose'
 import { Route as VerificationPrivacyRouteImport } from './routes/verification.privacy'
+import { Route as BandsIdIndexRouteImport } from './routes/bands.$id.index'
 import { Route as BandsIdContactRouteImport } from './routes/bands.$id.contact'
 import { Route as BandsIdEventsRouteImport } from './routes/bands.$id.events'
 import { Route as BandsIdInviteRouteImport } from './routes/bands.$id.invite'
@@ -160,10 +156,11 @@ import { Route as CollabIdShareRouteImport } from './routes/collab.$id.share'
 import { Route as CollabIdTimelineRouteImport } from './routes/collab.$id.timeline'
 import { Route as CollabIdTransferRouteImport } from './routes/collab.$id.transfer'
 import { Route as CollabInvitesIdRouteImport } from './routes/collab.invites.$id'
+import { Route as CollabNewIndexRouteImport } from './routes/collab.new.index'
 import { Route as CollabNewCollaboratorsRouteImport } from './routes/collab.new.collaborators'
-import { Route as CollabProposalsIdRouteImport } from './routes/collab.proposals.$id'
 import { Route as CollabProposalsNewRouteImport } from './routes/collab.proposals.new'
 import { Route as HelpCategoryKeyRouteImport } from './routes/help.category.$key'
+import { Route as IdentityContactIndexRouteImport } from './routes/identity.contact.index'
 import { Route as IdentityContactSaveRouteImport } from './routes/identity.contact.save'
 import { Route as IdentityQCodeRouteImport } from './routes/identity.q.$code'
 import { Route as MarketplaceCSlugRouteImport } from './routes/marketplace/c.$slug'
@@ -183,6 +180,7 @@ import { Route as OpportunitiesIdApplyRouteImport } from './routes/opportunities
 import { Route as OpportunitiesIdManageRouteImport } from './routes/opportunities.$id.manage'
 import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opportunities.applications.index'
 import { Route as OpportunitiesApplicationsAidRouteImport } from './routes/opportunities.applications.$aid'
+import { Route as PortfolioIdIndexRouteImport } from './routes/portfolio.$id.index'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
 import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
@@ -194,6 +192,7 @@ import { Route as ReviewsIdReplyRouteImport } from './routes/reviews.$id.reply'
 import { Route as ReviewsIdReportRouteImport } from './routes/reviews.$id.report'
 import { Route as ReviewsWriteIdRouteImport } from './routes/reviews.write.$id'
 import { Route as SearchWhyIdRouteImport } from './routes/search.why.$id'
+import { Route as ServicesIdIndexRouteImport } from './routes/services.$id.index'
 import { Route as ServicesIdEnquiryRouteImport } from './routes/services.$id.enquiry'
 import { Route as ServicesIdManageRouteImport } from './routes/services.$id.manage'
 import { Route as CollabIdFilesIndexRouteImport } from './routes/collab.$id.files.index'
@@ -204,6 +203,7 @@ import { Route as CollabIdMilestonesNewRouteImport } from './routes/collab.$id.m
 import { Route as CollabIdRemovePidRouteImport } from './routes/collab.$id.remove.$pid'
 import { Route as CollabInvitesAcceptedIdRouteImport } from './routes/collab.invites.accepted.$id'
 import { Route as CollabInvitesDeclinedIdRouteImport } from './routes/collab.invites.declined.$id'
+import { Route as CollabProposalsIdIndexRouteImport } from './routes/collab.proposals.$id.index'
 import { Route as CollabProposalsIdCounterRouteImport } from './routes/collab.proposals.$id.counter'
 import { Route as CollabProposalsAcceptedIdRouteImport } from './routes/collab.proposals.accepted.$id'
 import { Route as CollabProposalsDeclinedIdRouteImport } from './routes/collab.proposals.declined.$id'
@@ -227,11 +227,6 @@ const BandRoute = BandRouteImport.update({
   path: '/band',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BandsRoute = BandsRouteImport.update({
-  id: '/bands',
-  path: '/bands',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CategoriesRoute = CategoriesRouteImport.update({
   id: '/categories',
   path: '/categories',
@@ -240,11 +235,6 @@ const CategoriesRoute = CategoriesRouteImport.update({
 const FeedRoute = FeedRouteImport.update({
   id: '/feed',
   path: '/feed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeRoute = MeRouteImport.update({
@@ -257,19 +247,9 @@ const MessagesRoute = MessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlansRoute = PlansRouteImport.update({
-  id: '/plans',
-  path: '/plans',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RecentlyViewedRoute = RecentlyViewedRouteImport.update({
   id: '/recently-viewed',
   path: '/recently-viewed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecommendationsRoute = RecommendationsRouteImport.update({
-  id: '/recommendations',
-  path: '/recommendations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RecommendedRoute = RecommendedRouteImport.update({
@@ -282,19 +262,9 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReviewsRoute = ReviewsRouteImport.update({
-  id: '/reviews',
-  path: '/reviews',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SingersRoute = SingersRouteImport.update({
@@ -362,15 +332,15 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   path: '/auth/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BandsIdRoute = BandsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => BandsRoute,
+const BandsIndexRoute = BandsIndexRouteImport.update({
+  id: '/bands/',
+  path: '/bands/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BandsNewRoute = BandsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => BandsRoute,
+  id: '/bands/new',
+  path: '/bands/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BookingIdRoute = BookingIdRouteImport.update({
   id: '/booking/$id',
@@ -397,11 +367,6 @@ const CollabIndexRoute = CollabIndexRouteImport.update({
   path: '/collab/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CollabNewRoute = CollabNewRouteImport.update({
-  id: '/collab/new',
-  path: '/collab/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DiscoverCommunityRoute = DiscoverCommunityRouteImport.update({
   id: '/discover/community',
   path: '/discover/community',
@@ -422,10 +387,15 @@ const DiscoverProjectsRoute = DiscoverProjectsRouteImport.update({
   path: '/discover/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpIndexRoute = HelpIndexRouteImport.update({
+  id: '/help/',
+  path: '/help/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HelpSlugRoute = HelpSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => HelpRoute,
+  id: '/help/$slug',
+  path: '/help/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IdentityAnalyticsRoute = IdentityAnalyticsRouteImport.update({
   id: '/identity/analytics',
@@ -440,11 +410,6 @@ const IdentityBusinessRoute = IdentityBusinessRouteImport.update({
 const IdentityCardRoute = IdentityCardRouteImport.update({
   id: '/identity/card',
   path: '/identity/card',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentityContactRoute = IdentityContactRouteImport.update({
-  id: '/identity/contact',
-  path: '/identity/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IdentityCustomizeRoute = IdentityCustomizeRouteImport.update({
@@ -587,29 +552,29 @@ const OpportunitiesSearchRoute = OpportunitiesSearchRouteImport.update({
   path: '/opportunities/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlansIndexRoute = PlansIndexRouteImport.update({
+  id: '/plans/',
+  path: '/plans/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => PlansRoute,
+  id: '/plans/checkout',
+  path: '/plans/checkout',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PlansEarningsRoute = PlansEarningsRouteImport.update({
-  id: '/earnings',
-  path: '/earnings',
-  getParentRoute: () => PlansRoute,
+  id: '/plans/earnings',
+  path: '/plans/earnings',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PlansManageRoute = PlansManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
-  getParentRoute: () => PlansRoute,
+  id: '/plans/manage',
+  path: '/plans/manage',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
   path: '/portfolio/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioIdRoute = PortfolioIdRouteImport.update({
-  id: '/portfolio/$id',
-  path: '/portfolio/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioAnalyticsRoute = PortfolioAnalyticsRouteImport.update({
@@ -662,34 +627,44 @@ const ProviderPricingRoute = ProviderPricingRouteImport.update({
   path: '/provider/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecommendationsIndexRoute = RecommendationsIndexRouteImport.update({
+  id: '/recommendations/',
+  path: '/recommendations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => RecommendationsRoute,
+  id: '/recommendations/settings',
+  path: '/recommendations/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReviewsIndexRoute = ReviewsIndexRouteImport.update({
+  id: '/reviews/',
+  path: '/reviews/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsRequestRoute = ReviewsRequestRouteImport.update({
-  id: '/request',
-  path: '/request',
-  getParentRoute: () => ReviewsRoute,
+  id: '/reviews/request',
+  path: '/reviews/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SearchHistoryRoute = SearchHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => SearchRoute,
+  id: '/search/history',
+  path: '/search/history',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SearchSavedRoute = SearchSavedRouteImport.update({
-  id: '/saved',
-  path: '/saved',
-  getParentRoute: () => SearchRoute,
+  id: '/search/saved',
+  path: '/search/saved',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicesIdRoute = ServicesIdRouteImport.update({
-  id: '/services/$id',
-  path: '/services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesAvailabilityRoute = ServicesAvailabilityRouteImport.update({
@@ -762,30 +737,35 @@ const VerificationPrivacyRoute = VerificationPrivacyRouteImport.update({
   path: '/verification/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BandsIdIndexRoute = BandsIdIndexRouteImport.update({
+  id: '/bands/$id/',
+  path: '/bands/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BandsIdContactRoute = BandsIdContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => BandsIdRoute,
+  id: '/bands/$id/contact',
+  path: '/bands/$id/contact',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdEventsRoute = BandsIdEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => BandsIdRoute,
+  id: '/bands/$id/events',
+  path: '/bands/$id/events',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdInviteRoute = BandsIdInviteRouteImport.update({
-  id: '/invite',
-  path: '/invite',
-  getParentRoute: () => BandsIdRoute,
+  id: '/bands/$id/invite',
+  path: '/bands/$id/invite',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdManageRoute = BandsIdManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
-  getParentRoute: () => BandsIdRoute,
+  id: '/bands/$id/manage',
+  path: '/bands/$id/manage',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BandsIdPortfolioRoute = BandsIdPortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
-  getParentRoute: () => BandsIdRoute,
+  id: '/bands/$id/portfolio',
+  path: '/bands/$id/portfolio',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BookingIdIndexRoute = BookingIdIndexRouteImport.update({
   id: '/',
@@ -972,14 +952,14 @@ const CollabInvitesIdRoute = CollabInvitesIdRouteImport.update({
   path: '/collab/invites/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CollabNewCollaboratorsRoute = CollabNewCollaboratorsRouteImport.update({
-  id: '/collaborators',
-  path: '/collaborators',
-  getParentRoute: () => CollabNewRoute,
+const CollabNewIndexRoute = CollabNewIndexRouteImport.update({
+  id: '/collab/new/',
+  path: '/collab/new/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const CollabProposalsIdRoute = CollabProposalsIdRouteImport.update({
-  id: '/collab/proposals/$id',
-  path: '/collab/proposals/$id',
+const CollabNewCollaboratorsRoute = CollabNewCollaboratorsRouteImport.update({
+  id: '/collab/new/collaborators',
+  path: '/collab/new/collaborators',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollabProposalsNewRoute = CollabProposalsNewRouteImport.update({
@@ -988,14 +968,19 @@ const CollabProposalsNewRoute = CollabProposalsNewRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpCategoryKeyRoute = HelpCategoryKeyRouteImport.update({
-  id: '/category/$key',
-  path: '/category/$key',
-  getParentRoute: () => HelpRoute,
+  id: '/help/category/$key',
+  path: '/help/category/$key',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentityContactIndexRoute = IdentityContactIndexRouteImport.update({
+  id: '/identity/contact/',
+  path: '/identity/contact/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IdentityContactSaveRoute = IdentityContactSaveRouteImport.update({
-  id: '/save',
-  path: '/save',
-  getParentRoute: () => IdentityContactRoute,
+  id: '/identity/contact/save',
+  path: '/identity/contact/save',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IdentityQCodeRoute = IdentityQCodeRouteImport.update({
   id: '/identity/q/$code',
@@ -1090,10 +1075,15 @@ const OpportunitiesApplicationsAidRoute =
     path: '/opportunities/applications/$aid',
     getParentRoute: () => rootRouteImport,
   } as any)
+const PortfolioIdIndexRoute = PortfolioIdIndexRouteImport.update({
+  id: '/portfolio/$id/',
+  path: '/portfolio/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => PortfolioIdRoute,
+  id: '/portfolio/$id/edit',
+  path: '/portfolio/$id/edit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioNewIndexRoute = PortfolioNewIndexRouteImport.update({
   id: '/portfolio/new/',
@@ -1122,39 +1112,44 @@ const ProviderBookingsCalendarRoute =
     getParentRoute: () => rootRouteImport,
   } as any)
 const ReviewsIdEditRoute = ReviewsIdEditRouteImport.update({
-  id: '/$id/edit',
-  path: '/$id/edit',
-  getParentRoute: () => ReviewsRoute,
+  id: '/reviews/$id/edit',
+  path: '/reviews/$id/edit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsIdReplyRoute = ReviewsIdReplyRouteImport.update({
-  id: '/$id/reply',
-  path: '/$id/reply',
-  getParentRoute: () => ReviewsRoute,
+  id: '/reviews/$id/reply',
+  path: '/reviews/$id/reply',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsIdReportRoute = ReviewsIdReportRouteImport.update({
-  id: '/$id/report',
-  path: '/$id/report',
-  getParentRoute: () => ReviewsRoute,
+  id: '/reviews/$id/report',
+  path: '/reviews/$id/report',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsWriteIdRoute = ReviewsWriteIdRouteImport.update({
-  id: '/write/$id',
-  path: '/write/$id',
-  getParentRoute: () => ReviewsRoute,
+  id: '/reviews/write/$id',
+  path: '/reviews/write/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SearchWhyIdRoute = SearchWhyIdRouteImport.update({
-  id: '/why/$id',
-  path: '/why/$id',
-  getParentRoute: () => SearchRoute,
+  id: '/search/why/$id',
+  path: '/search/why/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIdIndexRoute = ServicesIdIndexRouteImport.update({
+  id: '/services/$id/',
+  path: '/services/$id/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIdEnquiryRoute = ServicesIdEnquiryRouteImport.update({
-  id: '/enquiry',
-  path: '/enquiry',
-  getParentRoute: () => ServicesIdRoute,
+  id: '/services/$id/enquiry',
+  path: '/services/$id/enquiry',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIdManageRoute = ServicesIdManageRouteImport.update({
-  id: '/manage',
-  path: '/manage',
-  getParentRoute: () => ServicesIdRoute,
+  id: '/services/$id/manage',
+  path: '/services/$id/manage',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CollabIdFilesIndexRoute = CollabIdFilesIndexRouteImport.update({
   id: '/collab/$id/files/',
@@ -1196,11 +1191,16 @@ const CollabInvitesDeclinedIdRoute = CollabInvitesDeclinedIdRouteImport.update({
   path: '/collab/invites/declined/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabProposalsIdIndexRoute = CollabProposalsIdIndexRouteImport.update({
+  id: '/collab/proposals/$id/',
+  path: '/collab/proposals/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollabProposalsIdCounterRoute =
   CollabProposalsIdCounterRouteImport.update({
-    id: '/counter',
-    path: '/counter',
-    getParentRoute: () => CollabProposalsIdRoute,
+    id: '/collab/proposals/$id/counter',
+    path: '/collab/proposals/$id/counter',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const CollabProposalsAcceptedIdRoute =
   CollabProposalsAcceptedIdRouteImport.update({
@@ -1269,20 +1269,14 @@ const ProviderBookingsRequestsRefRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
-  '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRouteWithChildren
   '/recently-viewed': typeof RecentlyViewedRoute
-  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
-  '/search': typeof SearchRouteWithChildren
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1295,11 +1289,9 @@ export interface FileRoutesByFullPath {
   '/auth/signout': typeof AuthSignoutRoute
   '/auth/success': typeof AuthSuccessRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
-  '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
-  '/collab/new': typeof CollabNewRouteWithChildren
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
   '/discover/nearby': typeof DiscoverNearbyRoute
@@ -1308,7 +1300,6 @@ export interface FileRoutesByFullPath {
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
-  '/identity/contact': typeof IdentityContactRouteWithChildren
   '/identity/customize': typeof IdentityCustomizeRoute
   '/identity/full': typeof IdentityFullRoute
   '/identity/history': typeof IdentityHistoryRoute
@@ -1336,7 +1327,6 @@ export interface FileRoutesByFullPath {
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
-  '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/select': typeof PortfolioSelectRoute
@@ -1351,7 +1341,6 @@ export interface FileRoutesByFullPath {
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/search/saved': typeof SearchSavedRoute
-  '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
@@ -1365,14 +1354,20 @@ export interface FileRoutesByFullPath {
   '/verification/choose': typeof VerificationChooseRoute
   '/verification/privacy': typeof VerificationPrivacyRoute
   '/auth/': typeof AuthIndexRoute
+  '/bands/': typeof BandsIndexRoute
   '/bookings/': typeof BookingsIndexRoute
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
+  '/help/': typeof HelpIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
+  '/plans/': typeof PlansIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/recommendations/': typeof RecommendationsIndexRoute
+  '/reviews/': typeof ReviewsIndexRoute
+  '/search/': typeof SearchIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
@@ -1415,7 +1410,6 @@ export interface FileRoutesByFullPath {
   '/collab/$id/transfer': typeof CollabIdTransferRoute
   '/collab/invites/$id': typeof CollabInvitesIdRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
-  '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
   '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
@@ -1445,15 +1439,20 @@ export interface FileRoutesByFullPath {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
+  '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
+  '/collab/new/': typeof CollabNewIndexRoute
+  '/identity/contact/': typeof IdentityContactIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
+  '/portfolio/$id/': typeof PortfolioIdIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
+  '/services/$id/': typeof ServicesIdIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
   '/collab/$id/lifecycle/$action': typeof CollabIdLifecycleActionRoute
   '/collab/$id/milestones/$mid': typeof CollabIdMilestonesMidRoute
@@ -1472,26 +1471,21 @@ export interface FileRoutesByFullPath {
   '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
+  '/collab/proposals/$id/': typeof CollabProposalsIdIndexRoute
   '/opportunities/$id/applicants/': typeof OpportunitiesIdApplicantsIndexRoute
   '/provider/bookings/requests/': typeof ProviderBookingsRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
-  '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRouteWithChildren
   '/recently-viewed': typeof RecentlyViewedRoute
-  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
-  '/search': typeof SearchRouteWithChildren
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1504,10 +1498,8 @@ export interface FileRoutesByTo {
   '/auth/signout': typeof AuthSignoutRoute
   '/auth/success': typeof AuthSuccessRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
-  '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/business/new': typeof BusinessNewRoute
-  '/collab/new': typeof CollabNewRouteWithChildren
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
   '/discover/nearby': typeof DiscoverNearbyRoute
@@ -1516,7 +1508,6 @@ export interface FileRoutesByTo {
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
-  '/identity/contact': typeof IdentityContactRouteWithChildren
   '/identity/customize': typeof IdentityCustomizeRoute
   '/identity/full': typeof IdentityFullRoute
   '/identity/history': typeof IdentityHistoryRoute
@@ -1544,7 +1535,6 @@ export interface FileRoutesByTo {
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
-  '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/select': typeof PortfolioSelectRoute
@@ -1559,7 +1549,6 @@ export interface FileRoutesByTo {
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/search/saved': typeof SearchSavedRoute
-  '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
@@ -1573,14 +1562,20 @@ export interface FileRoutesByTo {
   '/verification/choose': typeof VerificationChooseRoute
   '/verification/privacy': typeof VerificationPrivacyRoute
   '/auth': typeof AuthIndexRoute
+  '/bands': typeof BandsIndexRoute
   '/bookings': typeof BookingsIndexRoute
   '/business': typeof BusinessIndexRoute
   '/collab': typeof CollabIndexRoute
+  '/help': typeof HelpIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/notifications': typeof NotificationsIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
+  '/plans': typeof PlansIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/recommendations': typeof RecommendationsIndexRoute
+  '/reviews': typeof ReviewsIndexRoute
+  '/search': typeof SearchIndexRoute
   '/services': typeof ServicesIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/verification': typeof VerificationIndexRoute
@@ -1623,7 +1618,6 @@ export interface FileRoutesByTo {
   '/collab/$id/transfer': typeof CollabIdTransferRoute
   '/collab/invites/$id': typeof CollabInvitesIdRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
-  '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
   '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
@@ -1653,15 +1647,20 @@ export interface FileRoutesByTo {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
+  '/bands/$id': typeof BandsIdIndexRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
   '/business/$id': typeof BusinessIdIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
+  '/collab/new': typeof CollabNewIndexRoute
+  '/identity/contact': typeof IdentityContactIndexRoute
   '/marketplace/rent': typeof MarketplaceRentIndexRoute
   '/opportunities/$id': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications': typeof OpportunitiesApplicationsIndexRoute
+  '/portfolio/$id': typeof PortfolioIdIndexRoute
   '/portfolio/new': typeof PortfolioNewIndexRoute
   '/provider/bookings': typeof ProviderBookingsIndexRoute
+  '/services/$id': typeof ServicesIdIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
   '/collab/$id/lifecycle/$action': typeof CollabIdLifecycleActionRoute
   '/collab/$id/milestones/$mid': typeof CollabIdMilestonesMidRoute
@@ -1680,6 +1679,7 @@ export interface FileRoutesByTo {
   '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files': typeof CollabIdFilesIndexRoute
+  '/collab/proposals/$id': typeof CollabProposalsIdIndexRoute
   '/opportunities/$id/applicants': typeof OpportunitiesIdApplicantsIndexRoute
   '/provider/bookings/requests': typeof ProviderBookingsRequestsIndexRoute
 }
@@ -1687,20 +1687,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/band': typeof BandRoute
-  '/bands': typeof BandsRouteWithChildren
   '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
-  '/help': typeof HelpRouteWithChildren
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/plans': typeof PlansRouteWithChildren
   '/recently-viewed': typeof RecentlyViewedRoute
-  '/recommendations': typeof RecommendationsRouteWithChildren
   '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/reviews': typeof ReviewsRouteWithChildren
   '/saved': typeof SavedRoute
-  '/search': typeof SearchRouteWithChildren
   '/singers': typeof SingersRoute
   '/studio': typeof StudioRoute
   '/welcome': typeof WelcomeRoute
@@ -1713,11 +1707,9 @@ export interface FileRoutesById {
   '/auth/signout': typeof AuthSignoutRoute
   '/auth/success': typeof AuthSuccessRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
-  '/bands/$id': typeof BandsIdRouteWithChildren
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
-  '/collab/new': typeof CollabNewRouteWithChildren
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
   '/discover/nearby': typeof DiscoverNearbyRoute
@@ -1726,7 +1718,6 @@ export interface FileRoutesById {
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/card': typeof IdentityCardRoute
-  '/identity/contact': typeof IdentityContactRouteWithChildren
   '/identity/customize': typeof IdentityCustomizeRoute
   '/identity/full': typeof IdentityFullRoute
   '/identity/history': typeof IdentityHistoryRoute
@@ -1754,7 +1745,6 @@ export interface FileRoutesById {
   '/plans/checkout': typeof PlansCheckoutRoute
   '/plans/earnings': typeof PlansEarningsRoute
   '/plans/manage': typeof PlansManageRoute
-  '/portfolio/$id': typeof PortfolioIdRouteWithChildren
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/select': typeof PortfolioSelectRoute
@@ -1769,7 +1759,6 @@ export interface FileRoutesById {
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/search/saved': typeof SearchSavedRoute
-  '/services/$id': typeof ServicesIdRouteWithChildren
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
@@ -1783,14 +1772,20 @@ export interface FileRoutesById {
   '/verification/choose': typeof VerificationChooseRoute
   '/verification/privacy': typeof VerificationPrivacyRoute
   '/auth/': typeof AuthIndexRoute
+  '/bands/': typeof BandsIndexRoute
   '/bookings/': typeof BookingsIndexRoute
   '/business/': typeof BusinessIndexRoute
   '/collab/': typeof CollabIndexRoute
+  '/help/': typeof HelpIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
+  '/plans/': typeof PlansIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/recommendations/': typeof RecommendationsIndexRoute
+  '/reviews/': typeof ReviewsIndexRoute
+  '/search/': typeof SearchIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
@@ -1833,7 +1828,6 @@ export interface FileRoutesById {
   '/collab/$id/transfer': typeof CollabIdTransferRoute
   '/collab/invites/$id': typeof CollabInvitesIdRoute
   '/collab/new/collaborators': typeof CollabNewCollaboratorsRoute
-  '/collab/proposals/$id': typeof CollabProposalsIdRouteWithChildren
   '/collab/proposals/new': typeof CollabProposalsNewRoute
   '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
@@ -1863,15 +1857,20 @@ export interface FileRoutesById {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
+  '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
+  '/collab/new/': typeof CollabNewIndexRoute
+  '/identity/contact/': typeof IdentityContactIndexRoute
   '/marketplace/rent/': typeof MarketplaceRentIndexRoute
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
+  '/portfolio/$id/': typeof PortfolioIdIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/provider/bookings/': typeof ProviderBookingsIndexRoute
+  '/services/$id/': typeof ServicesIdIndexRoute
   '/collab/$id/files/$fileId': typeof CollabIdFilesFileIdRoute
   '/collab/$id/lifecycle/$action': typeof CollabIdLifecycleActionRoute
   '/collab/$id/milestones/$mid': typeof CollabIdMilestonesMidRoute
@@ -1890,6 +1889,7 @@ export interface FileRoutesById {
   '/opportunities/$id/applicants/$aid': typeof OpportunitiesIdApplicantsAidRoute
   '/provider/bookings/requests/$ref': typeof ProviderBookingsRequestsRefRoute
   '/collab/$id/files/': typeof CollabIdFilesIndexRoute
+  '/collab/proposals/$id/': typeof CollabProposalsIdIndexRoute
   '/opportunities/$id/applicants/': typeof OpportunitiesIdApplicantsIndexRoute
   '/provider/bookings/requests/': typeof ProviderBookingsRequestsIndexRoute
 }
@@ -1898,20 +1898,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/band'
-    | '/bands'
     | '/categories'
     | '/feed'
-    | '/help'
     | '/me'
     | '/messages'
-    | '/plans'
     | '/recently-viewed'
-    | '/recommendations'
     | '/recommended'
     | '/reset-password'
-    | '/reviews'
     | '/saved'
-    | '/search'
     | '/singers'
     | '/studio'
     | '/welcome'
@@ -1924,11 +1918,9 @@ export interface FileRouteTypes {
     | '/auth/signout'
     | '/auth/success'
     | '/auth/verify-email'
-    | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
     | '/business/new'
-    | '/collab/new'
     | '/discover/community'
     | '/discover/music'
     | '/discover/nearby'
@@ -1937,7 +1929,6 @@ export interface FileRouteTypes {
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
-    | '/identity/contact'
     | '/identity/customize'
     | '/identity/full'
     | '/identity/history'
@@ -1965,7 +1956,6 @@ export interface FileRouteTypes {
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
-    | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/select'
@@ -1980,7 +1970,6 @@ export interface FileRouteTypes {
     | '/reviews/request'
     | '/search/history'
     | '/search/saved'
-    | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
@@ -1994,14 +1983,20 @@ export interface FileRouteTypes {
     | '/verification/choose'
     | '/verification/privacy'
     | '/auth/'
+    | '/bands/'
     | '/bookings/'
     | '/business/'
     | '/collab/'
+    | '/help/'
     | '/marketplace/'
     | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
+    | '/plans/'
     | '/portfolio/'
+    | '/recommendations/'
+    | '/reviews/'
+    | '/search/'
     | '/services/'
     | '/settings/'
     | '/verification/'
@@ -2044,7 +2039,6 @@ export interface FileRouteTypes {
     | '/collab/$id/transfer'
     | '/collab/invites/$id'
     | '/collab/new/collaborators'
-    | '/collab/proposals/$id'
     | '/collab/proposals/new'
     | '/help/category/$key'
     | '/identity/contact/save'
@@ -2074,15 +2068,20 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
+    | '/bands/$id/'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/business/$id/'
     | '/collab/$id/'
+    | '/collab/new/'
+    | '/identity/contact/'
     | '/marketplace/rent/'
     | '/opportunities/$id/'
     | '/opportunities/applications/'
+    | '/portfolio/$id/'
     | '/portfolio/new/'
     | '/provider/bookings/'
+    | '/services/$id/'
     | '/collab/$id/files/$fileId'
     | '/collab/$id/lifecycle/$action'
     | '/collab/$id/milestones/$mid'
@@ -2101,26 +2100,21 @@ export interface FileRouteTypes {
     | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
+    | '/collab/proposals/$id/'
     | '/opportunities/$id/applicants/'
     | '/provider/bookings/requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/band'
-    | '/bands'
     | '/categories'
     | '/feed'
-    | '/help'
     | '/me'
     | '/messages'
-    | '/plans'
     | '/recently-viewed'
-    | '/recommendations'
     | '/recommended'
     | '/reset-password'
-    | '/reviews'
     | '/saved'
-    | '/search'
     | '/singers'
     | '/studio'
     | '/welcome'
@@ -2133,10 +2127,8 @@ export interface FileRouteTypes {
     | '/auth/signout'
     | '/auth/success'
     | '/auth/verify-email'
-    | '/bands/$id'
     | '/bands/new'
     | '/business/new'
-    | '/collab/new'
     | '/discover/community'
     | '/discover/music'
     | '/discover/nearby'
@@ -2145,7 +2137,6 @@ export interface FileRouteTypes {
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
-    | '/identity/contact'
     | '/identity/customize'
     | '/identity/full'
     | '/identity/history'
@@ -2173,7 +2164,6 @@ export interface FileRouteTypes {
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
-    | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/select'
@@ -2188,7 +2178,6 @@ export interface FileRouteTypes {
     | '/reviews/request'
     | '/search/history'
     | '/search/saved'
-    | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
@@ -2202,14 +2191,20 @@ export interface FileRouteTypes {
     | '/verification/choose'
     | '/verification/privacy'
     | '/auth'
+    | '/bands'
     | '/bookings'
     | '/business'
     | '/collab'
+    | '/help'
     | '/marketplace'
     | '/notifications'
     | '/onboarding'
     | '/opportunities'
+    | '/plans'
     | '/portfolio'
+    | '/recommendations'
+    | '/reviews'
+    | '/search'
     | '/services'
     | '/settings'
     | '/verification'
@@ -2252,7 +2247,6 @@ export interface FileRouteTypes {
     | '/collab/$id/transfer'
     | '/collab/invites/$id'
     | '/collab/new/collaborators'
-    | '/collab/proposals/$id'
     | '/collab/proposals/new'
     | '/help/category/$key'
     | '/identity/contact/save'
@@ -2282,15 +2276,20 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
+    | '/bands/$id'
     | '/booking/$id'
     | '/bookings/$ref'
     | '/business/$id'
     | '/collab/$id'
+    | '/collab/new'
+    | '/identity/contact'
     | '/marketplace/rent'
     | '/opportunities/$id'
     | '/opportunities/applications'
+    | '/portfolio/$id'
     | '/portfolio/new'
     | '/provider/bookings'
+    | '/services/$id'
     | '/collab/$id/files/$fileId'
     | '/collab/$id/lifecycle/$action'
     | '/collab/$id/milestones/$mid'
@@ -2309,26 +2308,21 @@ export interface FileRouteTypes {
     | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files'
+    | '/collab/proposals/$id'
     | '/opportunities/$id/applicants'
     | '/provider/bookings/requests'
   id:
     | '__root__'
     | '/'
     | '/band'
-    | '/bands'
     | '/categories'
     | '/feed'
-    | '/help'
     | '/me'
     | '/messages'
-    | '/plans'
     | '/recently-viewed'
-    | '/recommendations'
     | '/recommended'
     | '/reset-password'
-    | '/reviews'
     | '/saved'
-    | '/search'
     | '/singers'
     | '/studio'
     | '/welcome'
@@ -2341,11 +2335,9 @@ export interface FileRouteTypes {
     | '/auth/signout'
     | '/auth/success'
     | '/auth/verify-email'
-    | '/bands/$id'
     | '/bands/new'
     | '/booking/$id'
     | '/business/new'
-    | '/collab/new'
     | '/discover/community'
     | '/discover/music'
     | '/discover/nearby'
@@ -2354,7 +2346,6 @@ export interface FileRouteTypes {
     | '/identity/analytics'
     | '/identity/business'
     | '/identity/card'
-    | '/identity/contact'
     | '/identity/customize'
     | '/identity/full'
     | '/identity/history'
@@ -2382,7 +2373,6 @@ export interface FileRouteTypes {
     | '/plans/checkout'
     | '/plans/earnings'
     | '/plans/manage'
-    | '/portfolio/$id'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/select'
@@ -2397,7 +2387,6 @@ export interface FileRouteTypes {
     | '/reviews/request'
     | '/search/history'
     | '/search/saved'
-    | '/services/$id'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
@@ -2411,14 +2400,20 @@ export interface FileRouteTypes {
     | '/verification/choose'
     | '/verification/privacy'
     | '/auth/'
+    | '/bands/'
     | '/bookings/'
     | '/business/'
     | '/collab/'
+    | '/help/'
     | '/marketplace/'
     | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
+    | '/plans/'
     | '/portfolio/'
+    | '/recommendations/'
+    | '/reviews/'
+    | '/search/'
     | '/services/'
     | '/settings/'
     | '/verification/'
@@ -2461,7 +2456,6 @@ export interface FileRouteTypes {
     | '/collab/$id/transfer'
     | '/collab/invites/$id'
     | '/collab/new/collaborators'
-    | '/collab/proposals/$id'
     | '/collab/proposals/new'
     | '/help/category/$key'
     | '/identity/contact/save'
@@ -2491,15 +2485,20 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
+    | '/bands/$id/'
     | '/booking/$id/'
     | '/bookings/$ref/'
     | '/business/$id/'
     | '/collab/$id/'
+    | '/collab/new/'
+    | '/identity/contact/'
     | '/marketplace/rent/'
     | '/opportunities/$id/'
     | '/opportunities/applications/'
+    | '/portfolio/$id/'
     | '/portfolio/new/'
     | '/provider/bookings/'
+    | '/services/$id/'
     | '/collab/$id/files/$fileId'
     | '/collab/$id/lifecycle/$action'
     | '/collab/$id/milestones/$mid'
@@ -2518,6 +2517,7 @@ export interface FileRouteTypes {
     | '/opportunities/$id/applicants/$aid'
     | '/provider/bookings/requests/$ref'
     | '/collab/$id/files/'
+    | '/collab/proposals/$id/'
     | '/opportunities/$id/applicants/'
     | '/provider/bookings/requests/'
   fileRoutesById: FileRoutesById
@@ -2525,20 +2525,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BandRoute: typeof BandRoute
-  BandsRoute: typeof BandsRouteWithChildren
   CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
-  HelpRoute: typeof HelpRouteWithChildren
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
-  PlansRoute: typeof PlansRouteWithChildren
   RecentlyViewedRoute: typeof RecentlyViewedRoute
-  RecommendationsRoute: typeof RecommendationsRouteWithChildren
   RecommendedRoute: typeof RecommendedRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ReviewsRoute: typeof ReviewsRouteWithChildren
   SavedRoute: typeof SavedRoute
-  SearchRoute: typeof SearchRouteWithChildren
   SingersRoute: typeof SingersRoute
   StudioRoute: typeof StudioRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -2551,17 +2545,17 @@ export interface RootRouteChildren {
   AuthSignoutRoute: typeof AuthSignoutRoute
   AuthSuccessRoute: typeof AuthSuccessRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
+  BandsNewRoute: typeof BandsNewRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   BusinessNewRoute: typeof BusinessNewRoute
-  CollabNewRoute: typeof CollabNewRouteWithChildren
   DiscoverCommunityRoute: typeof DiscoverCommunityRoute
   DiscoverMusicRoute: typeof DiscoverMusicRoute
   DiscoverNearbyRoute: typeof DiscoverNearbyRoute
   DiscoverProjectsRoute: typeof DiscoverProjectsRoute
+  HelpSlugRoute: typeof HelpSlugRoute
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
   IdentityBusinessRoute: typeof IdentityBusinessRoute
   IdentityCardRoute: typeof IdentityCardRoute
-  IdentityContactRoute: typeof IdentityContactRouteWithChildren
   IdentityCustomizeRoute: typeof IdentityCustomizeRoute
   IdentityFullRoute: typeof IdentityFullRoute
   IdentityHistoryRoute: typeof IdentityHistoryRoute
@@ -2586,7 +2580,9 @@ export interface RootRouteChildren {
   OpportunitiesNewRoute: typeof OpportunitiesNewRoute
   OpportunitiesSavedRoute: typeof OpportunitiesSavedRoute
   OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
-  PortfolioIdRoute: typeof PortfolioIdRouteWithChildren
+  PlansCheckoutRoute: typeof PlansCheckoutRoute
+  PlansEarningsRoute: typeof PlansEarningsRoute
+  PlansManageRoute: typeof PlansManageRoute
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   PortfolioReorderRoute: typeof PortfolioReorderRoute
   PortfolioSelectRoute: typeof PortfolioSelectRoute
@@ -2597,7 +2593,10 @@ export interface RootRouteChildren {
   ProviderAvailabilityRoute: typeof ProviderAvailabilityRoute
   ProviderPoliciesRoute: typeof ProviderPoliciesRoute
   ProviderPricingRoute: typeof ProviderPricingRoute
-  ServicesIdRoute: typeof ServicesIdRouteWithChildren
+  RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
+  ReviewsRequestRoute: typeof ReviewsRequestRoute
+  SearchHistoryRoute: typeof SearchHistoryRoute
+  SearchSavedRoute: typeof SearchSavedRoute
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesConflictsRoute: typeof ServicesConflictsRoute
   ServicesNewRoute: typeof ServicesNewRoute
@@ -2611,17 +2610,28 @@ export interface RootRouteChildren {
   VerificationChooseRoute: typeof VerificationChooseRoute
   VerificationPrivacyRoute: typeof VerificationPrivacyRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  BandsIndexRoute: typeof BandsIndexRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
   BusinessIndexRoute: typeof BusinessIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
+  HelpIndexRoute: typeof HelpIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
+  PlansIndexRoute: typeof PlansIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
+  RecommendationsIndexRoute: typeof RecommendationsIndexRoute
+  ReviewsIndexRoute: typeof ReviewsIndexRoute
+  SearchIndexRoute: typeof SearchIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   VerificationIndexRoute: typeof VerificationIndexRoute
+  BandsIdContactRoute: typeof BandsIdContactRoute
+  BandsIdEventsRoute: typeof BandsIdEventsRoute
+  BandsIdInviteRoute: typeof BandsIdInviteRoute
+  BandsIdManageRoute: typeof BandsIdManageRoute
+  BandsIdPortfolioRoute: typeof BandsIdPortfolioRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BookingsRefCancelRoute: typeof BookingsRefCancelRoute
   BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
@@ -2649,8 +2659,10 @@ export interface RootRouteChildren {
   CollabIdTimelineRoute: typeof CollabIdTimelineRoute
   CollabIdTransferRoute: typeof CollabIdTransferRoute
   CollabInvitesIdRoute: typeof CollabInvitesIdRoute
-  CollabProposalsIdRoute: typeof CollabProposalsIdRouteWithChildren
+  CollabNewCollaboratorsRoute: typeof CollabNewCollaboratorsRoute
   CollabProposalsNewRoute: typeof CollabProposalsNewRoute
+  HelpCategoryKeyRoute: typeof HelpCategoryKeyRoute
+  IdentityContactSaveRoute: typeof IdentityContactSaveRoute
   IdentityQCodeRoute: typeof IdentityQCodeRoute
   MarketplaceCSlugRoute: typeof MarketplaceCSlugRoute
   MarketplaceLIdRoute: typeof MarketplaceLIdRoute
@@ -2666,17 +2678,30 @@ export interface RootRouteChildren {
   OpportunitiesIdApplyRoute: typeof OpportunitiesIdApplyRoute
   OpportunitiesIdManageRoute: typeof OpportunitiesIdManageRoute
   OpportunitiesApplicationsAidRoute: typeof OpportunitiesApplicationsAidRoute
+  PortfolioIdEditRoute: typeof PortfolioIdEditRoute
   PortfolioNewKindRoute: typeof PortfolioNewKindRoute
   ProviderBookingsRefRoute: typeof ProviderBookingsRefRoute
   ProviderBookingsCalendarRoute: typeof ProviderBookingsCalendarRoute
+  ReviewsIdEditRoute: typeof ReviewsIdEditRoute
+  ReviewsIdReplyRoute: typeof ReviewsIdReplyRoute
+  ReviewsIdReportRoute: typeof ReviewsIdReportRoute
+  ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
+  SearchWhyIdRoute: typeof SearchWhyIdRoute
+  ServicesIdEnquiryRoute: typeof ServicesIdEnquiryRoute
+  ServicesIdManageRoute: typeof ServicesIdManageRoute
+  BandsIdIndexRoute: typeof BandsIdIndexRoute
   BookingsRefIndexRoute: typeof BookingsRefIndexRoute
   BusinessIdIndexRoute: typeof BusinessIdIndexRoute
   CollabIdIndexRoute: typeof CollabIdIndexRoute
+  CollabNewIndexRoute: typeof CollabNewIndexRoute
+  IdentityContactIndexRoute: typeof IdentityContactIndexRoute
   MarketplaceRentIndexRoute: typeof MarketplaceRentIndexRoute
   OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
   OpportunitiesApplicationsIndexRoute: typeof OpportunitiesApplicationsIndexRoute
+  PortfolioIdIndexRoute: typeof PortfolioIdIndexRoute
   PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ProviderBookingsIndexRoute: typeof ProviderBookingsIndexRoute
+  ServicesIdIndexRoute: typeof ServicesIdIndexRoute
   CollabIdFilesFileIdRoute: typeof CollabIdFilesFileIdRoute
   CollabIdLifecycleActionRoute: typeof CollabIdLifecycleActionRoute
   CollabIdMilestonesMidRoute: typeof CollabIdMilestonesMidRoute
@@ -2684,6 +2709,7 @@ export interface RootRouteChildren {
   CollabIdRemovePidRoute: typeof CollabIdRemovePidRoute
   CollabInvitesAcceptedIdRoute: typeof CollabInvitesAcceptedIdRoute
   CollabInvitesDeclinedIdRoute: typeof CollabInvitesDeclinedIdRoute
+  CollabProposalsIdCounterRoute: typeof CollabProposalsIdCounterRoute
   CollabProposalsAcceptedIdRoute: typeof CollabProposalsAcceptedIdRoute
   CollabProposalsDeclinedIdRoute: typeof CollabProposalsDeclinedIdRoute
   MarketplaceRentActiveIdRoute: typeof MarketplaceRentActiveIdRoute
@@ -2694,6 +2720,7 @@ export interface RootRouteChildren {
   OpportunitiesIdApplicantsAidRoute: typeof OpportunitiesIdApplicantsAidRoute
   ProviderBookingsRequestsRefRoute: typeof ProviderBookingsRequestsRefRoute
   CollabIdFilesIndexRoute: typeof CollabIdFilesIndexRoute
+  CollabProposalsIdIndexRoute: typeof CollabProposalsIdIndexRoute
   OpportunitiesIdApplicantsIndexRoute: typeof OpportunitiesIdApplicantsIndexRoute
   ProviderBookingsRequestsIndexRoute: typeof ProviderBookingsRequestsIndexRoute
 }
@@ -2714,13 +2741,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BandRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bands': {
-      id: '/bands'
-      path: '/bands'
-      fullPath: '/bands'
-      preLoaderRoute: typeof BandsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/categories': {
       id: '/categories'
       path: '/categories'
@@ -2733,13 +2753,6 @@ declare module '@tanstack/react-router' {
       path: '/feed'
       fullPath: '/feed'
       preLoaderRoute: typeof FeedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me': {
@@ -2756,25 +2769,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plans': {
-      id: '/plans'
-      path: '/plans'
-      fullPath: '/plans'
-      preLoaderRoute: typeof PlansRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/recently-viewed': {
       id: '/recently-viewed'
       path: '/recently-viewed'
       fullPath: '/recently-viewed'
       preLoaderRoute: typeof RecentlyViewedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recommendations': {
-      id: '/recommendations'
-      path: '/recommendations'
-      fullPath: '/recommendations'
-      preLoaderRoute: typeof RecommendationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recommended': {
@@ -2791,25 +2790,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reviews': {
-      id: '/reviews'
-      path: '/reviews'
-      fullPath: '/reviews'
-      preLoaderRoute: typeof ReviewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/saved': {
       id: '/saved'
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/singers': {
@@ -2903,19 +2888,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bands/$id': {
-      id: '/bands/$id'
-      path: '/$id'
-      fullPath: '/bands/$id'
-      preLoaderRoute: typeof BandsIdRouteImport
-      parentRoute: typeof BandsRoute
+    '/bands/': {
+      id: '/bands/'
+      path: '/bands'
+      fullPath: '/bands/'
+      preLoaderRoute: typeof BandsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/bands/new': {
       id: '/bands/new'
-      path: '/new'
+      path: '/bands/new'
       fullPath: '/bands/new'
       preLoaderRoute: typeof BandsNewRouteImport
-      parentRoute: typeof BandsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/booking/$id': {
       id: '/booking/$id'
@@ -2952,13 +2937,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collab/new': {
-      id: '/collab/new'
-      path: '/collab/new'
-      fullPath: '/collab/new'
-      preLoaderRoute: typeof CollabNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/discover/community': {
       id: '/discover/community'
       path: '/discover/community'
@@ -2987,12 +2965,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DiscoverProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help/': {
+      id: '/help/'
+      path: '/help'
+      fullPath: '/help/'
+      preLoaderRoute: typeof HelpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/help/$slug': {
       id: '/help/$slug'
-      path: '/$slug'
+      path: '/help/$slug'
       fullPath: '/help/$slug'
       preLoaderRoute: typeof HelpSlugRouteImport
-      parentRoute: typeof HelpRoute
+      parentRoute: typeof rootRouteImport
     }
     '/identity/analytics': {
       id: '/identity/analytics'
@@ -3013,13 +2998,6 @@ declare module '@tanstack/react-router' {
       path: '/identity/card'
       fullPath: '/identity/card'
       preLoaderRoute: typeof IdentityCardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity/contact': {
-      id: '/identity/contact'
-      path: '/identity/contact'
-      fullPath: '/identity/contact'
-      preLoaderRoute: typeof IdentityContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/identity/customize': {
@@ -3218,39 +3196,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plans/': {
+      id: '/plans/'
+      path: '/plans'
+      fullPath: '/plans/'
+      preLoaderRoute: typeof PlansIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/plans/checkout': {
       id: '/plans/checkout'
-      path: '/checkout'
+      path: '/plans/checkout'
       fullPath: '/plans/checkout'
       preLoaderRoute: typeof PlansCheckoutRouteImport
-      parentRoute: typeof PlansRoute
+      parentRoute: typeof rootRouteImport
     }
     '/plans/earnings': {
       id: '/plans/earnings'
-      path: '/earnings'
+      path: '/plans/earnings'
       fullPath: '/plans/earnings'
       preLoaderRoute: typeof PlansEarningsRouteImport
-      parentRoute: typeof PlansRoute
+      parentRoute: typeof rootRouteImport
     }
     '/plans/manage': {
       id: '/plans/manage'
-      path: '/manage'
+      path: '/plans/manage'
       fullPath: '/plans/manage'
       preLoaderRoute: typeof PlansManageRouteImport
-      parentRoute: typeof PlansRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/': {
       id: '/portfolio/'
       path: '/portfolio'
       fullPath: '/portfolio/'
       preLoaderRoute: typeof PortfolioIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/$id': {
-      id: '/portfolio/$id'
-      path: '/portfolio/$id'
-      fullPath: '/portfolio/$id'
-      preLoaderRoute: typeof PortfolioIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio/analytics': {
@@ -3323,46 +3301,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProviderPricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recommendations/': {
+      id: '/recommendations/'
+      path: '/recommendations'
+      fullPath: '/recommendations/'
+      preLoaderRoute: typeof RecommendationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recommendations/settings': {
       id: '/recommendations/settings'
-      path: '/settings'
+      path: '/recommendations/settings'
       fullPath: '/recommendations/settings'
       preLoaderRoute: typeof RecommendationsSettingsRouteImport
-      parentRoute: typeof RecommendationsRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/reviews/': {
+      id: '/reviews/'
+      path: '/reviews'
+      fullPath: '/reviews/'
+      preLoaderRoute: typeof ReviewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/reviews/request': {
       id: '/reviews/request'
-      path: '/request'
+      path: '/reviews/request'
       fullPath: '/reviews/request'
       preLoaderRoute: typeof ReviewsRequestRouteImport
-      parentRoute: typeof ReviewsRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof SearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/search/history': {
       id: '/search/history'
-      path: '/history'
+      path: '/search/history'
       fullPath: '/search/history'
       preLoaderRoute: typeof SearchHistoryRouteImport
-      parentRoute: typeof SearchRoute
+      parentRoute: typeof rootRouteImport
     }
     '/search/saved': {
       id: '/search/saved'
-      path: '/saved'
+      path: '/search/saved'
       fullPath: '/search/saved'
       preLoaderRoute: typeof SearchSavedRouteImport
-      parentRoute: typeof SearchRoute
+      parentRoute: typeof rootRouteImport
     }
     '/services/': {
       id: '/services/'
       path: '/services'
       fullPath: '/services/'
       preLoaderRoute: typeof ServicesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/services/$id': {
-      id: '/services/$id'
-      path: '/services/$id'
-      fullPath: '/services/$id'
-      preLoaderRoute: typeof ServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/availability': {
@@ -3463,40 +3455,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bands/$id/': {
+      id: '/bands/$id/'
+      path: '/bands/$id'
+      fullPath: '/bands/$id/'
+      preLoaderRoute: typeof BandsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bands/$id/contact': {
       id: '/bands/$id/contact'
-      path: '/contact'
+      path: '/bands/$id/contact'
       fullPath: '/bands/$id/contact'
       preLoaderRoute: typeof BandsIdContactRouteImport
-      parentRoute: typeof BandsIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/bands/$id/events': {
       id: '/bands/$id/events'
-      path: '/events'
+      path: '/bands/$id/events'
       fullPath: '/bands/$id/events'
       preLoaderRoute: typeof BandsIdEventsRouteImport
-      parentRoute: typeof BandsIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/bands/$id/invite': {
       id: '/bands/$id/invite'
-      path: '/invite'
+      path: '/bands/$id/invite'
       fullPath: '/bands/$id/invite'
       preLoaderRoute: typeof BandsIdInviteRouteImport
-      parentRoute: typeof BandsIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/bands/$id/manage': {
       id: '/bands/$id/manage'
-      path: '/manage'
+      path: '/bands/$id/manage'
       fullPath: '/bands/$id/manage'
       preLoaderRoute: typeof BandsIdManageRouteImport
-      parentRoute: typeof BandsIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/bands/$id/portfolio': {
       id: '/bands/$id/portfolio'
-      path: '/portfolio'
+      path: '/bands/$id/portfolio'
       fullPath: '/bands/$id/portfolio'
       preLoaderRoute: typeof BandsIdPortfolioRouteImport
-      parentRoute: typeof BandsIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/booking/$id/': {
       id: '/booking/$id/'
@@ -3757,18 +3756,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabInvitesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/new/': {
+      id: '/collab/new/'
+      path: '/collab/new'
+      fullPath: '/collab/new/'
+      preLoaderRoute: typeof CollabNewIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collab/new/collaborators': {
       id: '/collab/new/collaborators'
-      path: '/collaborators'
+      path: '/collab/new/collaborators'
       fullPath: '/collab/new/collaborators'
       preLoaderRoute: typeof CollabNewCollaboratorsRouteImport
-      parentRoute: typeof CollabNewRoute
-    }
-    '/collab/proposals/$id': {
-      id: '/collab/proposals/$id'
-      path: '/collab/proposals/$id'
-      fullPath: '/collab/proposals/$id'
-      preLoaderRoute: typeof CollabProposalsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collab/proposals/new': {
@@ -3780,17 +3779,24 @@ declare module '@tanstack/react-router' {
     }
     '/help/category/$key': {
       id: '/help/category/$key'
-      path: '/category/$key'
+      path: '/help/category/$key'
       fullPath: '/help/category/$key'
       preLoaderRoute: typeof HelpCategoryKeyRouteImport
-      parentRoute: typeof HelpRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/identity/contact/': {
+      id: '/identity/contact/'
+      path: '/identity/contact'
+      fullPath: '/identity/contact/'
+      preLoaderRoute: typeof IdentityContactIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/identity/contact/save': {
       id: '/identity/contact/save'
-      path: '/save'
+      path: '/identity/contact/save'
       fullPath: '/identity/contact/save'
       preLoaderRoute: typeof IdentityContactSaveRouteImport
-      parentRoute: typeof IdentityContactRoute
+      parentRoute: typeof rootRouteImport
     }
     '/identity/q/$code': {
       id: '/identity/q/$code'
@@ -3918,12 +3924,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesApplicationsAidRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/$id/': {
+      id: '/portfolio/$id/'
+      path: '/portfolio/$id'
+      fullPath: '/portfolio/$id/'
+      preLoaderRoute: typeof PortfolioIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio/$id/edit': {
       id: '/portfolio/$id/edit'
-      path: '/edit'
+      path: '/portfolio/$id/edit'
       fullPath: '/portfolio/$id/edit'
       preLoaderRoute: typeof PortfolioIdEditRouteImport
-      parentRoute: typeof PortfolioIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/new/': {
       id: '/portfolio/new/'
@@ -3962,52 +3975,59 @@ declare module '@tanstack/react-router' {
     }
     '/reviews/$id/edit': {
       id: '/reviews/$id/edit'
-      path: '/$id/edit'
+      path: '/reviews/$id/edit'
       fullPath: '/reviews/$id/edit'
       preLoaderRoute: typeof ReviewsIdEditRouteImport
-      parentRoute: typeof ReviewsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/reviews/$id/reply': {
       id: '/reviews/$id/reply'
-      path: '/$id/reply'
+      path: '/reviews/$id/reply'
       fullPath: '/reviews/$id/reply'
       preLoaderRoute: typeof ReviewsIdReplyRouteImport
-      parentRoute: typeof ReviewsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/reviews/$id/report': {
       id: '/reviews/$id/report'
-      path: '/$id/report'
+      path: '/reviews/$id/report'
       fullPath: '/reviews/$id/report'
       preLoaderRoute: typeof ReviewsIdReportRouteImport
-      parentRoute: typeof ReviewsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/reviews/write/$id': {
       id: '/reviews/write/$id'
-      path: '/write/$id'
+      path: '/reviews/write/$id'
       fullPath: '/reviews/write/$id'
       preLoaderRoute: typeof ReviewsWriteIdRouteImport
-      parentRoute: typeof ReviewsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/search/why/$id': {
       id: '/search/why/$id'
-      path: '/why/$id'
+      path: '/search/why/$id'
       fullPath: '/search/why/$id'
       preLoaderRoute: typeof SearchWhyIdRouteImport
-      parentRoute: typeof SearchRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$id/': {
+      id: '/services/$id/'
+      path: '/services/$id'
+      fullPath: '/services/$id/'
+      preLoaderRoute: typeof ServicesIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/services/$id/enquiry': {
       id: '/services/$id/enquiry'
-      path: '/enquiry'
+      path: '/services/$id/enquiry'
       fullPath: '/services/$id/enquiry'
       preLoaderRoute: typeof ServicesIdEnquiryRouteImport
-      parentRoute: typeof ServicesIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/services/$id/manage': {
       id: '/services/$id/manage'
-      path: '/manage'
+      path: '/services/$id/manage'
       fullPath: '/services/$id/manage'
       preLoaderRoute: typeof ServicesIdManageRouteImport
-      parentRoute: typeof ServicesIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/collab/$id/files/': {
       id: '/collab/$id/files/'
@@ -4065,12 +4085,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabInvitesDeclinedIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/proposals/$id/': {
+      id: '/collab/proposals/$id/'
+      path: '/collab/proposals/$id'
+      fullPath: '/collab/proposals/$id/'
+      preLoaderRoute: typeof CollabProposalsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collab/proposals/$id/counter': {
       id: '/collab/proposals/$id/counter'
-      path: '/counter'
+      path: '/collab/proposals/$id/counter'
       fullPath: '/collab/proposals/$id/counter'
       preLoaderRoute: typeof CollabProposalsIdCounterRouteImport
-      parentRoute: typeof CollabProposalsIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/collab/proposals/accepted/$id': {
       id: '/collab/proposals/accepted/$id'
@@ -4152,109 +4179,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface BandsIdRouteChildren {
-  BandsIdContactRoute: typeof BandsIdContactRoute
-  BandsIdEventsRoute: typeof BandsIdEventsRoute
-  BandsIdInviteRoute: typeof BandsIdInviteRoute
-  BandsIdManageRoute: typeof BandsIdManageRoute
-  BandsIdPortfolioRoute: typeof BandsIdPortfolioRoute
-}
-
-const BandsIdRouteChildren: BandsIdRouteChildren = {
-  BandsIdContactRoute: BandsIdContactRoute,
-  BandsIdEventsRoute: BandsIdEventsRoute,
-  BandsIdInviteRoute: BandsIdInviteRoute,
-  BandsIdManageRoute: BandsIdManageRoute,
-  BandsIdPortfolioRoute: BandsIdPortfolioRoute,
-}
-
-const BandsIdRouteWithChildren =
-  BandsIdRoute._addFileChildren(BandsIdRouteChildren)
-
-interface BandsRouteChildren {
-  BandsIdRoute: typeof BandsIdRouteWithChildren
-  BandsNewRoute: typeof BandsNewRoute
-}
-
-const BandsRouteChildren: BandsRouteChildren = {
-  BandsIdRoute: BandsIdRouteWithChildren,
-  BandsNewRoute: BandsNewRoute,
-}
-
-const BandsRouteWithChildren = BandsRoute._addFileChildren(BandsRouteChildren)
-
-interface HelpRouteChildren {
-  HelpSlugRoute: typeof HelpSlugRoute
-  HelpCategoryKeyRoute: typeof HelpCategoryKeyRoute
-}
-
-const HelpRouteChildren: HelpRouteChildren = {
-  HelpSlugRoute: HelpSlugRoute,
-  HelpCategoryKeyRoute: HelpCategoryKeyRoute,
-}
-
-const HelpRouteWithChildren = HelpRoute._addFileChildren(HelpRouteChildren)
-
-interface PlansRouteChildren {
-  PlansCheckoutRoute: typeof PlansCheckoutRoute
-  PlansEarningsRoute: typeof PlansEarningsRoute
-  PlansManageRoute: typeof PlansManageRoute
-}
-
-const PlansRouteChildren: PlansRouteChildren = {
-  PlansCheckoutRoute: PlansCheckoutRoute,
-  PlansEarningsRoute: PlansEarningsRoute,
-  PlansManageRoute: PlansManageRoute,
-}
-
-const PlansRouteWithChildren = PlansRoute._addFileChildren(PlansRouteChildren)
-
-interface RecommendationsRouteChildren {
-  RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
-}
-
-const RecommendationsRouteChildren: RecommendationsRouteChildren = {
-  RecommendationsSettingsRoute: RecommendationsSettingsRoute,
-}
-
-const RecommendationsRouteWithChildren = RecommendationsRoute._addFileChildren(
-  RecommendationsRouteChildren,
-)
-
-interface ReviewsRouteChildren {
-  ReviewsRequestRoute: typeof ReviewsRequestRoute
-  ReviewsIdEditRoute: typeof ReviewsIdEditRoute
-  ReviewsIdReplyRoute: typeof ReviewsIdReplyRoute
-  ReviewsIdReportRoute: typeof ReviewsIdReportRoute
-  ReviewsWriteIdRoute: typeof ReviewsWriteIdRoute
-}
-
-const ReviewsRouteChildren: ReviewsRouteChildren = {
-  ReviewsRequestRoute: ReviewsRequestRoute,
-  ReviewsIdEditRoute: ReviewsIdEditRoute,
-  ReviewsIdReplyRoute: ReviewsIdReplyRoute,
-  ReviewsIdReportRoute: ReviewsIdReportRoute,
-  ReviewsWriteIdRoute: ReviewsWriteIdRoute,
-}
-
-const ReviewsRouteWithChildren =
-  ReviewsRoute._addFileChildren(ReviewsRouteChildren)
-
-interface SearchRouteChildren {
-  SearchHistoryRoute: typeof SearchHistoryRoute
-  SearchSavedRoute: typeof SearchSavedRoute
-  SearchWhyIdRoute: typeof SearchWhyIdRoute
-}
-
-const SearchRouteChildren: SearchRouteChildren = {
-  SearchHistoryRoute: SearchHistoryRoute,
-  SearchSavedRoute: SearchSavedRoute,
-  SearchWhyIdRoute: SearchWhyIdRoute,
-}
-
-const SearchRouteWithChildren =
-  SearchRoute._addFileChildren(SearchRouteChildren)
-
 interface BookingIdRouteChildren {
   BookingIdAddonsRoute: typeof BookingIdAddonsRoute
   BookingIdDetailsRoute: typeof BookingIdDetailsRoute
@@ -4279,84 +4203,17 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
   BookingIdRouteChildren,
 )
 
-interface CollabNewRouteChildren {
-  CollabNewCollaboratorsRoute: typeof CollabNewCollaboratorsRoute
-}
-
-const CollabNewRouteChildren: CollabNewRouteChildren = {
-  CollabNewCollaboratorsRoute: CollabNewCollaboratorsRoute,
-}
-
-const CollabNewRouteWithChildren = CollabNewRoute._addFileChildren(
-  CollabNewRouteChildren,
-)
-
-interface IdentityContactRouteChildren {
-  IdentityContactSaveRoute: typeof IdentityContactSaveRoute
-}
-
-const IdentityContactRouteChildren: IdentityContactRouteChildren = {
-  IdentityContactSaveRoute: IdentityContactSaveRoute,
-}
-
-const IdentityContactRouteWithChildren = IdentityContactRoute._addFileChildren(
-  IdentityContactRouteChildren,
-)
-
-interface PortfolioIdRouteChildren {
-  PortfolioIdEditRoute: typeof PortfolioIdEditRoute
-}
-
-const PortfolioIdRouteChildren: PortfolioIdRouteChildren = {
-  PortfolioIdEditRoute: PortfolioIdEditRoute,
-}
-
-const PortfolioIdRouteWithChildren = PortfolioIdRoute._addFileChildren(
-  PortfolioIdRouteChildren,
-)
-
-interface ServicesIdRouteChildren {
-  ServicesIdEnquiryRoute: typeof ServicesIdEnquiryRoute
-  ServicesIdManageRoute: typeof ServicesIdManageRoute
-}
-
-const ServicesIdRouteChildren: ServicesIdRouteChildren = {
-  ServicesIdEnquiryRoute: ServicesIdEnquiryRoute,
-  ServicesIdManageRoute: ServicesIdManageRoute,
-}
-
-const ServicesIdRouteWithChildren = ServicesIdRoute._addFileChildren(
-  ServicesIdRouteChildren,
-)
-
-interface CollabProposalsIdRouteChildren {
-  CollabProposalsIdCounterRoute: typeof CollabProposalsIdCounterRoute
-}
-
-const CollabProposalsIdRouteChildren: CollabProposalsIdRouteChildren = {
-  CollabProposalsIdCounterRoute: CollabProposalsIdCounterRoute,
-}
-
-const CollabProposalsIdRouteWithChildren =
-  CollabProposalsIdRoute._addFileChildren(CollabProposalsIdRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
-  BandsRoute: BandsRouteWithChildren,
   CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
-  HelpRoute: HelpRouteWithChildren,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
-  PlansRoute: PlansRouteWithChildren,
   RecentlyViewedRoute: RecentlyViewedRoute,
-  RecommendationsRoute: RecommendationsRouteWithChildren,
   RecommendedRoute: RecommendedRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ReviewsRoute: ReviewsRouteWithChildren,
   SavedRoute: SavedRoute,
-  SearchRoute: SearchRouteWithChildren,
   SingersRoute: SingersRoute,
   StudioRoute: StudioRoute,
   WelcomeRoute: WelcomeRoute,
@@ -4369,17 +4226,17 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignoutRoute: AuthSignoutRoute,
   AuthSuccessRoute: AuthSuccessRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
+  BandsNewRoute: BandsNewRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   BusinessNewRoute: BusinessNewRoute,
-  CollabNewRoute: CollabNewRouteWithChildren,
   DiscoverCommunityRoute: DiscoverCommunityRoute,
   DiscoverMusicRoute: DiscoverMusicRoute,
   DiscoverNearbyRoute: DiscoverNearbyRoute,
   DiscoverProjectsRoute: DiscoverProjectsRoute,
+  HelpSlugRoute: HelpSlugRoute,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
   IdentityBusinessRoute: IdentityBusinessRoute,
   IdentityCardRoute: IdentityCardRoute,
-  IdentityContactRoute: IdentityContactRouteWithChildren,
   IdentityCustomizeRoute: IdentityCustomizeRoute,
   IdentityFullRoute: IdentityFullRoute,
   IdentityHistoryRoute: IdentityHistoryRoute,
@@ -4404,7 +4261,9 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesNewRoute: OpportunitiesNewRoute,
   OpportunitiesSavedRoute: OpportunitiesSavedRoute,
   OpportunitiesSearchRoute: OpportunitiesSearchRoute,
-  PortfolioIdRoute: PortfolioIdRouteWithChildren,
+  PlansCheckoutRoute: PlansCheckoutRoute,
+  PlansEarningsRoute: PlansEarningsRoute,
+  PlansManageRoute: PlansManageRoute,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   PortfolioReorderRoute: PortfolioReorderRoute,
   PortfolioSelectRoute: PortfolioSelectRoute,
@@ -4415,7 +4274,10 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderAvailabilityRoute: ProviderAvailabilityRoute,
   ProviderPoliciesRoute: ProviderPoliciesRoute,
   ProviderPricingRoute: ProviderPricingRoute,
-  ServicesIdRoute: ServicesIdRouteWithChildren,
+  RecommendationsSettingsRoute: RecommendationsSettingsRoute,
+  ReviewsRequestRoute: ReviewsRequestRoute,
+  SearchHistoryRoute: SearchHistoryRoute,
+  SearchSavedRoute: SearchSavedRoute,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesConflictsRoute: ServicesConflictsRoute,
   ServicesNewRoute: ServicesNewRoute,
@@ -4429,17 +4291,28 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationChooseRoute: VerificationChooseRoute,
   VerificationPrivacyRoute: VerificationPrivacyRoute,
   AuthIndexRoute: AuthIndexRoute,
+  BandsIndexRoute: BandsIndexRoute,
   BookingsIndexRoute: BookingsIndexRoute,
   BusinessIndexRoute: BusinessIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
+  HelpIndexRoute: HelpIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   NotificationsIndexRoute: NotificationsIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
+  PlansIndexRoute: PlansIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
+  RecommendationsIndexRoute: RecommendationsIndexRoute,
+  ReviewsIndexRoute: ReviewsIndexRoute,
+  SearchIndexRoute: SearchIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   VerificationIndexRoute: VerificationIndexRoute,
+  BandsIdContactRoute: BandsIdContactRoute,
+  BandsIdEventsRoute: BandsIdEventsRoute,
+  BandsIdInviteRoute: BandsIdInviteRoute,
+  BandsIdManageRoute: BandsIdManageRoute,
+  BandsIdPortfolioRoute: BandsIdPortfolioRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BookingsRefCancelRoute: BookingsRefCancelRoute,
   BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
@@ -4467,8 +4340,10 @@ const rootRouteChildren: RootRouteChildren = {
   CollabIdTimelineRoute: CollabIdTimelineRoute,
   CollabIdTransferRoute: CollabIdTransferRoute,
   CollabInvitesIdRoute: CollabInvitesIdRoute,
-  CollabProposalsIdRoute: CollabProposalsIdRouteWithChildren,
+  CollabNewCollaboratorsRoute: CollabNewCollaboratorsRoute,
   CollabProposalsNewRoute: CollabProposalsNewRoute,
+  HelpCategoryKeyRoute: HelpCategoryKeyRoute,
+  IdentityContactSaveRoute: IdentityContactSaveRoute,
   IdentityQCodeRoute: IdentityQCodeRoute,
   MarketplaceCSlugRoute: MarketplaceCSlugRoute,
   MarketplaceLIdRoute: MarketplaceLIdRoute,
@@ -4484,17 +4359,30 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesIdApplyRoute: OpportunitiesIdApplyRoute,
   OpportunitiesIdManageRoute: OpportunitiesIdManageRoute,
   OpportunitiesApplicationsAidRoute: OpportunitiesApplicationsAidRoute,
+  PortfolioIdEditRoute: PortfolioIdEditRoute,
   PortfolioNewKindRoute: PortfolioNewKindRoute,
   ProviderBookingsRefRoute: ProviderBookingsRefRoute,
   ProviderBookingsCalendarRoute: ProviderBookingsCalendarRoute,
+  ReviewsIdEditRoute: ReviewsIdEditRoute,
+  ReviewsIdReplyRoute: ReviewsIdReplyRoute,
+  ReviewsIdReportRoute: ReviewsIdReportRoute,
+  ReviewsWriteIdRoute: ReviewsWriteIdRoute,
+  SearchWhyIdRoute: SearchWhyIdRoute,
+  ServicesIdEnquiryRoute: ServicesIdEnquiryRoute,
+  ServicesIdManageRoute: ServicesIdManageRoute,
+  BandsIdIndexRoute: BandsIdIndexRoute,
   BookingsRefIndexRoute: BookingsRefIndexRoute,
   BusinessIdIndexRoute: BusinessIdIndexRoute,
   CollabIdIndexRoute: CollabIdIndexRoute,
+  CollabNewIndexRoute: CollabNewIndexRoute,
+  IdentityContactIndexRoute: IdentityContactIndexRoute,
   MarketplaceRentIndexRoute: MarketplaceRentIndexRoute,
   OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,
   OpportunitiesApplicationsIndexRoute: OpportunitiesApplicationsIndexRoute,
+  PortfolioIdIndexRoute: PortfolioIdIndexRoute,
   PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ProviderBookingsIndexRoute: ProviderBookingsIndexRoute,
+  ServicesIdIndexRoute: ServicesIdIndexRoute,
   CollabIdFilesFileIdRoute: CollabIdFilesFileIdRoute,
   CollabIdLifecycleActionRoute: CollabIdLifecycleActionRoute,
   CollabIdMilestonesMidRoute: CollabIdMilestonesMidRoute,
@@ -4502,6 +4390,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollabIdRemovePidRoute: CollabIdRemovePidRoute,
   CollabInvitesAcceptedIdRoute: CollabInvitesAcceptedIdRoute,
   CollabInvitesDeclinedIdRoute: CollabInvitesDeclinedIdRoute,
+  CollabProposalsIdCounterRoute: CollabProposalsIdCounterRoute,
   CollabProposalsAcceptedIdRoute: CollabProposalsAcceptedIdRoute,
   CollabProposalsDeclinedIdRoute: CollabProposalsDeclinedIdRoute,
   MarketplaceRentActiveIdRoute: MarketplaceRentActiveIdRoute,
@@ -4512,6 +4401,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesIdApplicantsAidRoute: OpportunitiesIdApplicantsAidRoute,
   ProviderBookingsRequestsRefRoute: ProviderBookingsRequestsRefRoute,
   CollabIdFilesIndexRoute: CollabIdFilesIndexRoute,
+  CollabProposalsIdIndexRoute: CollabProposalsIdIndexRoute,
   OpportunitiesIdApplicantsIndexRoute: OpportunitiesIdApplicantsIndexRoute,
   ProviderBookingsRequestsIndexRoute: ProviderBookingsRequestsIndexRoute,
 }

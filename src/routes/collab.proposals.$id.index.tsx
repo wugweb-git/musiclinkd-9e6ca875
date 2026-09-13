@@ -3,7 +3,7 @@ import { Btn, Screen, TopBar } from "@/components/ml/ui";
 import { Card, PermissionState, ProposalSummary, StickyBar } from "@/components/ml/collab";
 import { getProposal } from "@/data/collab";
 
-export const Route = createFileRoute("/collab/proposals/$id")({
+export const Route = createFileRoute("/collab/proposals/$id/")({
   head: ({ params }) => {
     const p = getProposal(params.id);
     const title = p ? `Proposal — ${p.projectName}` : "Collaboration proposal";

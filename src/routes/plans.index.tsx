@@ -5,7 +5,7 @@ import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, Row } from "@/components/ml/kit";
 import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
 
-export const Route = createFileRoute("/plans")({
+export const Route = createFileRoute("/plans/")({
   head: () => ({
     meta: [
       { title: "Plans & Pricing | MusicLinkd" },

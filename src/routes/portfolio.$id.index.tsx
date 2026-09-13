@@ -17,7 +17,7 @@ import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { deletePortfolioItem, getMyPortfolioItem } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
 
-export const Route = createFileRoute("/portfolio/$id")({
+export const Route = createFileRoute("/portfolio/$id/")({
   head: () => ({
     meta: [
       { title: "Work detail — MusicLinkd portfolio" },

@@ -5,7 +5,7 @@ import { Screen, TopBar, Btn, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Row } from "@/components/ml/kit";
 import { getBand, myBandId, bandRoleCopy } from "@/data/band";
 
-export const Route = createFileRoute("/bands/$id")({
+export const Route = createFileRoute("/bands/$id/")({
   head: ({ params }) => ({
     meta: [
       { title: `Band profile | MusicLinkd` },
