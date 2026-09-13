@@ -68,6 +68,11 @@
         no `.dark` palette exists, so the 10 `dark:` utilities never apply. Either build it or
         delete them.
   - [x] `20260913090949` recorded in `supabase_migrations.schema_migrations` (13 Sep).
+  - [x] Owner decision (13 Sep): the 11 authored profiles in `src/data/linked-profiles.ts`, live in
+        the database and published, stay unmarked as a deliberate pre-launch choice. They are invented
+        people and businesses, indistinguishable from real profiles. The options not taken were to
+        mark them visibly as samples, or to remove them (their 11 links would then 404). No further
+        profile content is authored; missing data renders as empty states.
 - FLOW 03 — Add Portfolio
   - [x] `src/data/portfolio.ts`, `src/components/ml/portfolio.tsx`
   - [x] portfolio routes (overview, add, work detail, edit, reorder, settings, select)
