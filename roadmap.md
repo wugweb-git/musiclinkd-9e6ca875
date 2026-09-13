@@ -45,6 +45,31 @@
 - [x] Pending-screens plan (7 Sep) audited against the code: 24 done · 9 partial · 4 not done. See
       `docs/pending-screens-audit-2026-09-13.md` and the section below.
 
+## 13 Sep 2026 — app start, link buttons, route audit (published build `a6dc3d0`)
+- [x] The app opens on a session check at `/`: a saved sign-in goes to `/feed` and everyone else to
+      `/welcome`. Discover moved to `/discover`. This is the owner's decision: the app must not start
+      on Discover.
+- [x] Welcome is the front door. It has "Already have an account? Sign in", and signed-out prompts
+      open it.
+- [x] 241 `<Link><Btn/></Link>` pairs became `<BtnLink>` (one element, one tab stop).
+- [x] Link targets: "Saved items" now opens `/saved` (was Discover), and onboarding's "Start
+      business setup" opens `/business/new` (was `/categories`).
+- [x] Route, journey and screen audit. It lives in the guide repo at
+      `Claude outputs/audits/route-audit-2026-09-13.md`, with a per-route inventory of 209 routes.
+- [ ] From the audit, the link and logic fixes Claude Code can make (§7.1–7.2):
+  - 18 wrong link targets. Worst: every **Book** button opens `/booking/svc-1`, which shows
+    "This space is unavailable".
+  - No link reaches `/settings`, which holds Business, Services and Sign out.
+  - The business dashboard and its 7 sub-pages can only be reached by typing the URL.
+  - New users signing up with Google or an email link skip onboarding, and the splash doesn't
+    check `onboarding_complete`.
+  - 22 of 24 unknown-id URLs return 200 instead of 404.
+  - 9 demo controls show in the live UI.
+- [ ] Owner decisions (§8): where account type is chosen (registration or onboarding step 1);
+      onboarding, Home and nav per type; whether signed-out visitors can open public pages
+      (handoff 11a); where Settings is entered from; whether demo controls are removed or kept
+      behind a flag.
+
 ## Next
 - Profile follow-ups (from user)
   - [x] `src/routes/profile.insights.tsx` — owner analytics
@@ -93,7 +118,8 @@ Code.**
       Recently viewed is a static slice; no FAQ or announcements listing; no invoice receipt
       detail; no onboarding offline state
 - [ ] Not done — archive a work · save-conflict screen · verification/services prompt at the end of
-      onboarding · splash/session check
+      onboarding
+- [x] Splash/session check at `/` (13 Sep, `c17c96d`). It reuses the auth brand mark, and a designed splash is still Lovable's job.
 - [ ] No screen has a real loading skeleton or offline banner; the kit has neither primitive
 
 ## FLOW 23 — QR / Digital Identity & Sharing (requested Sep 2, design-only)
