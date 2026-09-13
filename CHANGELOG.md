@@ -44,8 +44,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   Both tile grids share one `StatTile`.
 - **The `/feed` Bell opens `/notifications`**, not `/messages`, and its dot follows the unread count.
 - **`ui/skeleton` is neutral** (`bg-subtle`) instead of a pink tint.
+- **An unknown `/profile/$username` is a 404**, not Rahul Iyer's profile. The route loads the real
+  row first, and a username with neither a row nor a seed profile throws `notFound()`.
+  `/profile/me` redirects to `/me`.
 
 ### Added
+
+- **Profiles for the 11 people and businesses the app links to**: opportunity posters, applicants
+  and collab participants. Their content is in `src/data/linked-profiles.ts`, and each is a public
+  row in the live `profiles` table (migration `20260913090949_seed_linked_profiles`, generated from
+  that module). Their auth users have no email or password, so nobody can sign in as them.
 
 - `docs/pending-screens-audit-2026-09-13.md`: the 7 Sep pending-screens plan checked item by item
   against the code. Result: 24 done · 9 partial · 4 not done, plus ~20 finished screens that no
