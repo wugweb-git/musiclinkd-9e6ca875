@@ -149,7 +149,7 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 `README.md` is stale — ignore its palette and type values.
 
-**Radius is the Material 3 shape scale** (13 Sep): `sm` 8 chips/small controls · `md` 12 small tiles, thumbnails, inputs · `lg` 16 **cards** and list containers · `xl` 20 large tiles · `2xl` 28 sheets and dialogs · `3xl` 32 hero only · `full` buttons and pills. Pick by role, not by look; no arbitrary `rounded-[…]`.
+**Radius is the Material 3 shape scale** (13 Sep): `sm` 8 small controls · `md` 12 small tiles, thumbnails, inputs · `lg` 16 **cards** and list containers · `xl` 20 large tiles · `2xl` 28 sheets and dialogs · `3xl` 32 hero only · `full` buttons, chips, pills and badges. Pick by role, not by look; no arbitrary `rounded-[…]`.
 
 Type is five fluid `clamp()` tokens (`--type-1..5`; `--type-5` is hero-only), never arbitrary sizes. **Spacing is Tailwind's numeric scale only** (`p-1` 4px … `p-8` 32px); the named `--spacing-xs/sm/md/lg` were removed. Secondary text is `text-muted-foreground` (`text-text2` is gone).
 

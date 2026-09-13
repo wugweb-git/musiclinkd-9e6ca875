@@ -30,6 +30,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - **`AGENTS.md`:** records the M3 radius roles, ink, numeric-only spacing and
   `text-muted-foreground`. The "never Unsplash" line is removed; no such rule exists, and the
   team library in the guide repo is noted instead.
+- **`AGENTS.md` chip radius:** chips move from `sm` (8px) to `full`, with buttons, pills and badges.
+  Every chip, pill and badge in `src/components/ml/` already renders `rounded-full`, and the M3
+  change kept chips as pills. The old line would have had new screens build 8px chips.
 
 ### Added
 
