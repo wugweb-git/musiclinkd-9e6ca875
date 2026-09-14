@@ -1,10 +1,21 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { MailCheck } from "lucide-react";
+import { Pencil, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import { Btn } from "@/components/ml/ui";
-import { AuthHeading, AuthNotice, AuthScreen, TrustNote } from "@/components/ml/auth";
+import {
+  AuthHeading,
+  AuthLink,
+  AuthNotice,
+  AuthScreen,
+  AuthTextButton,
+  CodeInput,
+  TrustNote,
+  classifyAuthError,
+  useCountdown,
+} from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/haptics";
 
 type Search = { email: string };
 
@@ -14,13 +25,13 @@ export const Route = createFileRoute("/auth/verify-email")({
   }),
   head: () => ({
     meta: [
-      { title: "Confirm your email — MusicLinkd" },
+      { title: "Enter your email code — MusicLinkd" },
       {
         name: "description",
-        content: "Confirm your email address to activate your MusicLinkd account.",
+        content: "Enter the 6-digit code we emailed you to activate your MusicLinkd account.",
       },
-      { property: "og:title", content: "Confirm your email — MusicLinkd" },
-      { property: "og:description", content: "One tap and your MusicLinkd account is ready." },
+      { property: "og:title", content: "Enter your email code — MusicLinkd" },
+      { property: "og:description", content: "One code and your MusicLinkd account is ready." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -31,73 +42,105 @@ export const Route = createFileRoute("/auth/verify-email")({
 function VerifyEmail() {
   const { email } = Route.useSearch();
   const navigate = useNavigate();
-  const [sent, setSent] = useState(false);
+  const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<{ title: string; body: string } | null>(null);
+  const [misses, setMisses] = useState(0);
+  const countdown = useCountdown(30);
+
+  async function verify(token: string) {
+    if (!email || busy) return;
+    setError(null);
+    setBusy(true);
+    const { error: err } = await supabase.auth.verifyOtp({ email, token, type: "signup" });
+    setBusy(false);
+    if (err) {
+      haptic("error");
+      setMisses((n) => n + 1);
+      setCode("");
+      const m = err.message.toLowerCase();
+      setError(
+        m.includes("expired") || m.includes("invalid")
+          ? {
+              title: "That code did not match",
+              body: "Check the latest email, or send a new code.",
+            }
+          : classifyAuthError(err.message),
+      );
+      return;
+    }
+    haptic("confirm");
+    // Verified and signed in: the splash takes a new account into onboarding.
+    void navigate({ to: "/", replace: true });
+  }
 
   async function resend() {
     if (!email) {
       void navigate({ to: "/auth", search: { mode: "signup" } });
       return;
     }
-    setBusy(true);
-    const { error } = await supabase.auth.resend({ type: "signup", email });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
+    setError(null);
+    const { error: err } = await supabase.auth.resend({ type: "signup", email });
+    if (err) {
+      setError(classifyAuthError(err.message));
       return;
     }
-    setSent(true);
+    countdown.restart();
+    toast.success("New code sent");
   }
 
   return (
     <AuthScreen back={{ to: "/auth", search: { mode: "signup" } }}>
-      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-subtle">
-        <MailCheck size={24} className="text-primary" />
-      </div>
       <AuthHeading
         title="Check your email"
         sub={
           email
-            ? `We sent a confirmation link to ${email}. Open it to activate your account.`
-            : "We sent you a confirmation link. Open it to activate your account."
+            ? `Enter the 6-digit code we sent to ${email}.`
+            : "Enter the 6-digit code we emailed you."
         }
       />
 
-      {sent ? (
-        <AuthNotice tone="success" title="Link sent again">
-          Give it a minute to arrive.
-        </AuthNotice>
-      ) : null}
+      {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-      <div className="rounded-lg border border-border bg-card p-4">
-        <p className="text-1 font-semibold">Not arrived?</p>
-        <ul className="mt-2 list-disc space-y-1.5 pl-4 text-1 leading-relaxed text-muted-foreground">
-          <li>Check spam and promotions folders.</li>
-          <li>Make sure the address above is spelled correctly.</li>
-          <li>Links expire after 24 hours — resend a fresh one.</li>
-        </ul>
-      </div>
+      <CodeInput
+        value={code}
+        onChange={(v) => {
+          setError(null);
+          setCode(v);
+        }}
+        onComplete={(v) => void verify(v)}
+        invalid={Boolean(error)}
+        shakeKey={misses}
+        label="Email code"
+      />
 
-      <div className="mt-6 space-y-3">
-        <Btn className="w-full" onClick={() => void resend()} loading={busy}>
-          Resend confirmation link
-        </Btn>
-        <Btn
-          variant="outline"
-          className="w-full"
-          onClick={() => void navigate({ to: "/auth", search: { mode: "signup" } })}
-        >
+      <Btn
+        className="w-full"
+        loading={busy}
+        disabled={code.length !== 6 || !email}
+        onClick={() => void verify(code)}
+      >
+        Verify and continue
+      </Btn>
+
+      <p className="mt-5 flex justify-center text-1 text-muted-foreground">
+        {countdown.seconds > 0 ? (
+          <span aria-live="polite">
+            Resend code in 0:{String(countdown.seconds).padStart(2, "0")}
+          </span>
+        ) : (
+          <AuthTextButton icon={<RotateCw size={15} />} onClick={() => void resend()}>
+            Resend code
+          </AuthTextButton>
+        )}
+      </p>
+
+      <TrustNote>Not there? Check spam and promotions.</TrustNote>
+
+      <p className="mt-6 flex justify-center text-1">
+        <AuthLink to="/auth" search={{ mode: "signup" }} icon={<Pencil size={15} />}>
           Use a different email
-        </Btn>
-      </div>
-
-      <TrustNote>We only email you about your account and things you asked for.</TrustNote>
-
-      <p className="mt-6 text-center text-1 text-muted-foreground">
-        Already confirmed?{" "}
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
-          Sign in
-        </Link>
+        </AuthLink>
       </p>
     </AuthScreen>
   );

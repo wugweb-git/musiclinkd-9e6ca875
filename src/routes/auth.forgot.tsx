@@ -1,11 +1,14 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Btn } from "@/components/ml/ui";
 import {
   AuthHeading,
   AuthNotice,
   AuthScreen,
+  AuthLink,
+  EMAIL_PATTERN,
   LabeledInput,
+  useFieldErrors,
   TrustNote,
   classifyAuthError,
 } from "@/components/ml/auth";
@@ -37,17 +40,17 @@ function ForgotPassword() {
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
+  const fields = useFieldErrors<"email">();
+  const emailProblem = !email.trim()
+    ? "Enter your email address."
+    : !EMAIL_PATTERN.test(email.trim())
+      ? "Enter an email like name@example.com."
+      : null;
 
   async function send() {
     setError(null);
-    if (!email.includes("@")) {
-      setError({
-        kind: "unknown",
-        title: "Enter a valid email",
-        body: "We send the reset link to this address.",
-      });
-      return;
-    }
+    fields.submitted();
+    if (emailProblem) return;
     setBusy(true);
     const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -99,19 +102,22 @@ function ForgotPassword() {
             type="email"
             inputMode="email"
             autoComplete="email"
-            placeholder="you@example.com"
+            enterKeyHint="go"
+            placeholder="name@example.com"
+            onBlur={() => fields.touch("email")}
+            error={fields.errorFor("email", emailProblem)}
           />
-          <Btn className="w-full" onClick={() => void send()} disabled={busy}>
-            {busy ? "Sending…" : "Send reset link"}
+          <Btn className="mt-2 w-full" onClick={() => void send()} loading={busy}>
+            Send reset link
           </Btn>
           <TrustNote>
             For your safety we show the same message whether or not an account exists.
           </TrustNote>
           <p className="mt-6 text-center text-1 text-muted-foreground">
             Remembered it?{" "}
-            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
+            <AuthLink to="/auth" search={{ mode: "signin" }}>
               Sign in
-            </Link>
+            </AuthLink>
           </p>
         </>
       )}

@@ -5,6 +5,30 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: sign-in fields, validation, messages; email sign-up by code
+
+- **Fields.** Labels are quiet sentence case above the field (were bold uppercase). `TextField` has
+  states: hover on pointer devices, focus (ink border and ring), filled, invalid (red border and an
+  animated message with an icon, announced and linked by `aria-describedby`), and disabled.
+- **Validation.** Email, password, mobile number and reset email check when you leave the field and when
+  you submit, then stay live while you fix them (`useFieldErrors`). Messages say what to do ("Enter an
+  email like name@example.com"). A blocked submit vibrates.
+- **Password strength fits above the keyboard.** A thin four-segment bar, the rating and the next thing
+  to add, shown only once typing starts. The 180px checklist card is gone.
+- **Phone.** One field with the India flag and +91 inside, formatted as 98765 43210, checked as a
+  10-digit mobile number.
+- **Links move.** `AuthLink` / `AuthTextButton`: underline on hover, dim on press, 48dp, optional icon
+  ("Use email instead" has a mail icon; "Change number", "Resend code" and "Use a different email"
+  have icons).
+- **Top bar.** Back sits alone in its own row; the logo stays on the splash and Welcome.
+- **Messages.** Form-level notices are compact: icon, one bold line, a sentence, an optional action, and
+  they slide in. Toasts are Material 3 snackbars: ink surface, white text, bottom, four seconds.
+- **Email sign-up uses a 6-digit code.** "Check your email" is now a code screen
+  (`verifyOtp({ type: "signup" })`) with auto-verify, resend after 30 seconds and a shake on a wrong
+  code, sharing `CodeInput` with the phone code screen. The confirmation link had been the flow since
+  Lovable's first auth build (6b4728a, 2 Sep). The sign-up email template must include the code
+  (`{{ .Token }}`) for people to receive it.
+
 ### Added — button states and motion
 
 - **Every button has the same states.** Enabled; hovered on pointer devices and pressed, shown by a
