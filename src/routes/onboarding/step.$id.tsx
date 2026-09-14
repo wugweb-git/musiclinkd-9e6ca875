@@ -106,7 +106,16 @@ function withSelected(
   return [...shown.map((o) => ({ value: o.slug, label: o.label })), ...extra];
 }
 
+/**
+ * `q=2` is a two-question screen's second question (role: anything else; instruments: how long).
+ * It is a real history entry, so the Android back gesture returns to the first question and the
+ * page motion slides between them like it does between screens.
+ */
+type StepSearch = { q?: 2 };
+
 export const Route = createFileRoute("/onboarding/step/$id")({
+  validateSearch: (search: Record<string, unknown>): StepSearch =>
+    Number(search["q"]) === 2 ? { q: 2 } : {},
   head: () => ({
     meta: [
       { title: "Build your profile — MusicLinkd onboarding" },
@@ -134,11 +143,13 @@ export const Route = createFileRoute("/onboarding/step/$id")({
 type Banner = "none" | "error" | "claim";
 type RoleStage = "primary" | "secondary";
 
-/** The step Back is heading to, so a two-question screen reopens on its second question. */
-let backInto: string | null = null;
+/** Steps with a second question, and whether it applies yet. */
+const secondQuestionReady = (id: string, d: OnboardingDraft) =>
+  id === "role" ? Boolean(d.primaryRole) : id === "instruments" && d.instruments.length > 0;
 
 function StepRoute() {
   const { id } = Route.useParams();
+  const { q } = Route.useSearch();
   const {
     draft,
     set,
@@ -165,21 +176,8 @@ function StepRoute() {
   const [claimError, setClaimError] = useState<string | null>(null);
   useEffect(() => setClaimError(null), [draft.username]);
   // Role and instruments ask twice on one screen: the choice, then a follow-up (extra roles; how
-  // long each instrument has been played).
-  const [roleStage, setRoleStage] = useState<RoleStage>("primary");
-  const stageReady =
-    id === "role"
-      ? Boolean(draft.primaryRole)
-      : id === "instruments" && draft.instruments.length > 0;
-  // One wizard: arriving forward opens a screen's first question; Back from the next screen
-  // returns to its last one.
-  useEffect(() => {
-    if ((id === "role" || id === "instruments") && hydrated)
-      setRoleStage(stageReady && backInto === id ? "secondary" : "primary");
-    backInto = null;
-    // Only on arrival; picking a role moves the stage itself.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, hydrated]);
+  // long each instrument has been played). The second question is `?q=2`.
+  const stageReady = secondQuestionReady(id, draft);
 
   const list = visibleSteps(draft, bucket);
   const def = steps.find((s) => s.id === id);
@@ -261,14 +259,20 @@ function StepRoute() {
 
   const back = () => {
     const prev = list[index - 1];
-    backInto = prev?.id ?? null;
     if (!prev) {
       flowBack("/onboarding", () => void navigate({ to: "/onboarding", replace: true }));
       return;
     }
+    // One wizard: Back reopens the previous screen's last question.
     flowBack(
       `/onboarding/step/${prev.id}`,
-      () => void navigate({ to: "/onboarding/step/$id", params: { id: prev.id }, replace: true }),
+      () =>
+        void navigate({
+          to: "/onboarding/step/$id",
+          params: { id: prev.id },
+          search: secondQuestionReady(prev.id, draft) ? { q: 2 } : {},
+          replace: true,
+        }),
     );
   };
 
@@ -295,7 +299,7 @@ function StepRoute() {
   };
 
   // Second stage: same screen, new question, optional.
-  const secondStage = stageReady && roleStage === "secondary";
+  const secondStage = stageReady && q === 2;
   const copy = !secondStage
     ? def
     : def.id === "role"
@@ -312,16 +316,22 @@ function StepRoute() {
           optional: true,
         };
   const toFirstStage = () => {
-    haptic("select");
-    setRoleStage("primary");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    flowBack(
+      `/onboarding/step/${def.id}`,
+      () =>
+        void navigate({
+          to: "/onboarding/step/$id",
+          params: { id: def.id },
+          search: {},
+          replace: true,
+        }),
+    );
   };
   const submit =
     stageReady && !secondStage
       ? () => {
           haptic("select");
-          setRoleStage("secondary");
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          void navigate({ to: "/onboarding/step/$id", params: { id: def.id }, search: { q: 2 } });
         }
       : def.id === "identity" && valid
         ? () => void claimAndAdvance()

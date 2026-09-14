@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: onboarding motion and Android behaviour
+
+- **Each question is a history entry.** A two-question screen's second question is `?q=2`, so the Android
+  back gesture steps back one question, and the question change slides with the same shared-axis motion
+  as a screen change (`flow-motion.ts` orders `?q=2` just after its screen). In-app Back from the next
+  screen reopens it on its second question.
+- **Keyboard Next on onboarding fields** moves to the next field instead of submitting a half-filled step;
+  the last field or Go submits.
+- **Chips at their limit** look disabled as before, but a tap now shakes the chip and vibrates instead of
+  doing nothing (`Chip` `atLimit`).
+- **Step header** is flat at rest; its divider fades in once content scrolls under it (Material top app bar).
+
 ### Fixed — auth bugs (no visual change)
 
 - **Error messages.** "Confirm your email first" says a 6-digit code was emailed (it described a link).

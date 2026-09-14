@@ -25,6 +25,13 @@ const SIDE = new Set(["/", "/onboarding/skip", "/onboarding/resume", "/auth/forg
 
 const clean = (p: string) => (p.length > 1 ? p.replace(/\/$/, "") : p);
 
+/** A two-question screen's second question (`?q=2`) sits just after its first. */
+const position = (loc: ParsedLocation) => {
+  const i = ORDER.indexOf(clean(loc.pathname));
+  const q = Number((loc.search as { q?: unknown }).q);
+  return i < 0 ? -1 : q === 2 ? i + 0.5 : i;
+};
+
 export function flowTransitionTypes({
   fromLocation,
   toLocation,
@@ -34,13 +41,15 @@ export function flowTransitionTypes({
   toLocation: ParsedLocation;
   pathChanged: boolean;
 }): string[] | false {
-  if (!fromLocation || !pathChanged) return false;
+  if (!fromLocation) return false;
   // A hidden document (app in the background, a prerender) rejects startViewTransition.
   if (typeof document !== "undefined" && document.visibilityState !== "visible") return false;
   const from = clean(fromLocation.pathname);
   const to = clean(toLocation.pathname);
-  const a = ORDER.indexOf(from);
-  const b = ORDER.indexOf(to);
+  const a = position(fromLocation);
+  const b = position(toLocation);
+  // Same screen, other question: slide like a screen change. Any other same-path change: none.
+  if (!pathChanged) return a >= 0 && b >= 0 && a !== b ? [b > a ? "forward" : "back"] : false;
   if (a >= 0 && b >= 0) return [b > a ? "forward" : "back"];
   const inFlow = (p: string) => ORDER.includes(p) || SIDE.has(p);
   // Home to Home-adjacent screens is everyday navigation, not the flow: no transition.
