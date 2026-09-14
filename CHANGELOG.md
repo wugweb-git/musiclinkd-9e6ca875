@@ -29,6 +29,8 @@ Owner decisions, 14 Sep. Migration `20260914200000_username_rules.sql` (applied 
 - **Instruments:** "What do you play?" allows up to two, with no primary instrument. Continue (with one or
   both picked) switches the same screen to "How long have you played?", one dropdown per instrument.
   Removing an instrument removes its answer.
+- **Role waits for Continue too.** Picking a main role no longer jumps to "Anything else you do?";
+  Continue does.
 - **Next and Back move through questions, not only screens.** Arriving forward opens a screen's first
   question; Back from the next screen reopens its last one (Languages → How long have you played? → What
   do you play? → Anything else you do?).

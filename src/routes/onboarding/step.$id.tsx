@@ -381,10 +381,6 @@ function StepRoute() {
         claimedUsername={claimedUsername}
         claimError={claimError}
         roleStage={secondStage ? "secondary" : "primary"}
-        setRoleStage={(stage) => {
-          setRoleStage(stage);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
       />
     </StepShell>
   );
@@ -426,7 +422,6 @@ function StepBody({
   claimedUsername,
   claimError,
   roleStage,
-  setRoleStage,
 }: {
   id: string;
   draft: OnboardingDraft;
@@ -436,7 +431,6 @@ function StepBody({
   claimedUsername: string | null;
   claimError: string | null;
   roleStage: RoleStage;
-  setRoleStage: (stage: RoleStage) => void;
 }) {
   const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
@@ -561,8 +555,6 @@ function StepBody({
                 primaryRole: slug,
                 secondaryRoles: d.secondaryRoles.filter((s) => s !== slug),
               });
-              // Same screen: the heading and the options switch to "anything else you do".
-              setRoleStage("secondary");
             }}
           />
         );
