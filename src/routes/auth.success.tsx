@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PartyPopper } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
-import { AuthHeading, AuthScreen, TrustNote } from "@/components/ml/auth";
+import { AuthHeading, AuthScreen, AuthTextButton, TrustNote } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/auth/success")({
   head: () => ({
@@ -34,10 +34,10 @@ function AuthSuccess() {
 
       <div className="mb-7 rounded-lg border border-border bg-card p-4">
         <p className="text-1 font-semibold">What happens next</p>
-        <ol className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
-          <li>1. Choose your roles and city</li>
-          <li>2. Add a photo, headline and skills</li>
-          <li>3. Upload one piece of work — that's what gets you hired</li>
+        <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-1 leading-relaxed text-muted-foreground">
+          <li>Choose your roles and city</li>
+          <li>Add a photo, headline and skills</li>
+          <li>Upload one piece of work — that's what gets you hired</li>
         </ol>
       </div>
 
@@ -45,9 +45,14 @@ function AuthSuccess() {
         <Btn className="w-full" onClick={() => void navigate({ to: "/onboarding" })}>
           Set up my profile
         </Btn>
-        <Btn variant="outline" className="w-full" onClick={() => void navigate({ to: "/feed" })}>
-          Skip for now
-        </Btn>
+        <p className="flex justify-center pt-1 text-sm">
+          <AuthTextButton
+            className="text-muted-foreground"
+            onClick={() => void navigate({ to: "/feed" })}
+          >
+            Skip for now
+          </AuthTextButton>
+        </p>
       </div>
 
       <TrustNote>You can change every answer later from your profile.</TrustNote>

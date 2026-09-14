@@ -228,7 +228,7 @@ function Dashboard() {
 function Header() {
   return (
     <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
-      <p className="flex min-w-0 items-center gap-2 text-1 font-semibold uppercase tracking-widest text-muted-foreground">
+      <p className="flex min-w-0 items-center gap-2 text-2 font-semibold text-foreground">
         <span aria-hidden className="shrink-0 text-brand">
           <LogoMark className="w-6" />
         </span>
@@ -437,9 +437,7 @@ function Body({ home }: { home: Home }) {
 function ContinueBlock({ c }: { c: ContinueCard }) {
   const inner = (
     <>
-      <p className="text-1 font-semibold uppercase tracking-widest text-muted-foreground">
-        {c.eyebrow}
-      </p>
+      <p className="text-1 text-muted-foreground">{c.eyebrow}</p>
       <p className="mt-1 line-clamp-2 text-2 font-bold leading-snug">{c.title}</p>
       <p className="mt-0.5 truncate text-1 text-muted-foreground">{c.meta}</p>
       {c.detail ? <p className="mt-1 truncate text-1 font-semibold">{c.detail}</p> : null}

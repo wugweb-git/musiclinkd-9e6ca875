@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
+import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
 import {
   labelFor,
   talentGroups,
@@ -30,7 +31,6 @@ import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
 import {
   ChipPicker,
   PersonTypePicker,
-  ErrorBanner,
   InlineField,
   LocationHint,
   OnboardingProvider,
@@ -40,6 +40,7 @@ import {
   StepShell,
   StepSkeleton,
   SyncBanner,
+  SyncStatus,
   useOnboarding,
 } from "@/components/ml/onboarding";
 import {
@@ -239,15 +240,13 @@ function StepRoute() {
       subtitle={def.subtitle}
       why={def.why}
       optional={def.optional}
+      status={<SyncStatus state={sync} />}
       onBack={back}
       onSubmit={valid ? () => advance(true) : blocked}
       {...(def.optional ? { onSkip: () => advance(false) } : {})}
       banner={
         banner === "error" ? (
-          <ErrorBanner
-            message="Add the required details above before continuing."
-            onRetry={() => setBanner("none")}
-          />
+          <AuthNotice title="Add the required details to continue" />
         ) : (
           <SyncBanner state={sync} onRetry={retry} />
         )
@@ -261,13 +260,12 @@ function StepRoute() {
           >
             {index === list.length - 1 ? "Review profile" : "Continue"}
           </Btn>
-          <button
-            type="button"
+          <AuthTextButton
             onClick={() => navigate({ to: "/onboarding/skip" })}
-            className="min-h-11 w-full text-1 font-semibold text-muted-foreground"
+            className="flex w-full justify-center text-1 text-muted-foreground"
           >
             Finish later
-          </button>
+          </AuthTextButton>
         </div>
       }
     >
@@ -324,15 +322,22 @@ function StepBody({
   const needsBucket = id === "instruments" || id === "genres";
   if (needsTaxonomy && taxonomy.state === "error") {
     return (
-      <ErrorBanner
-        message="We couldn't load the choices for this question."
-        onRetry={taxonomy.retry}
-      />
+      <AuthNotice
+        title="We couldn't load the choices"
+        action={<AuthTextButton onClick={taxonomy.retry}>Try again</AuthTextButton>}
+      >
+        Check your connection, then try again.
+      </AuthNotice>
     );
   }
   if (needsBucket && bucketState === "error") {
     return (
-      <ErrorBanner message="We couldn't load the choices for your roles." onRetry={retryBucket} />
+      <AuthNotice
+        title="We couldn't load the choices for your roles"
+        action={<AuthTextButton onClick={retryBucket}>Try again</AuthTextButton>}
+      >
+        Check your connection, then try again.
+      </AuthNotice>
     );
   }
   if ((needsTaxonomy && !taxonomy.options) || (needsBucket && !bucket)) return <StepSkeleton />;
@@ -420,9 +425,7 @@ function StepBody({
           />
           {d.instruments.length > 1 ? (
             <div>
-              <p className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-                Primary instrument
-              </p>
+              <p className="mb-2 text-sm font-medium">Primary instrument</p>
               <ChipPicker
                 options={d.instruments.map((slug) => ({
                   value: slug,
@@ -444,9 +447,7 @@ function StepBody({
         <div className="space-y-6">
           {spec.groups.map((g) => (
             <div key={g.label}>
-              <p className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-                {g.label}
-              </p>
+              <p className="mb-2 text-sm font-medium">{g.label}</p>
               <ChipPicker
                 options={g.options}
                 selected={d.specialisation[g.label] ?? []}
