@@ -361,6 +361,18 @@ export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | nul
 /* Shell                                                               */
 /* ------------------------------------------------------------------ */
 
+/** True once the page has scrolled past its top. */
+function useScrolled() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const update = () => setScrolled(window.scrollY > 4);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+  return scrolled;
+}
+
 export function StepShell({
   step,
   total,
@@ -396,6 +408,7 @@ export function StepShell({
   status?: ReactNode;
 }) {
   const pct = Math.round((step / total) * 100);
+  const scrolled = useScrolled();
   return (
     <form
       noValidate
@@ -405,7 +418,12 @@ export function StepShell({
       }}
       className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background"
     >
-      <header className="vt-flow-header sticky top-0 z-30 border-b border-border bg-background/95 px-5 pb-3 pt-4 backdrop-blur">
+      {/* Material top app bar: flat at rest, the divider appears once content scrolls under it. */}
+      <header
+        className={`vt-flow-header sticky top-0 z-30 border-b bg-background/95 px-5 pb-3 pt-4 backdrop-blur transition-colors duration-200 ease-standard ${
+          scrolled ? "border-border" : "border-transparent"
+        }`}
+      >
         <div className="flex items-center gap-3">
           {onBack ? (
             <IconBtn label="Back" variant="plain" className="-ml-2" onClick={onBack}>
@@ -507,7 +525,7 @@ export function ChipPicker({
             key={o.value}
             active={on}
             media={o.media}
-            disabled={full && !on}
+            atLimit={full && !on}
             onClick={() => {
               haptic("select");
               onToggle(o.value);
@@ -681,10 +699,25 @@ export function InlineField({
             aria-invalid={Boolean(error) || undefined}
             aria-describedby={messageId}
             onKeyDown={(e) => {
-              // Some Android keyboards do not trigger implicit form submission; do it once here.
+              // Some Android keyboards do not submit forms on their own. Next moves to the next
+              // field (so the step isn't submitted half filled); the last field or Go submits.
               if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+              const form = e.currentTarget.form;
+              if (!form) return;
               e.preventDefault();
-              e.currentTarget.form?.requestSubmit();
+              if (enterKeyHint === "next") {
+                const fields = [
+                  ...form.querySelectorAll<HTMLElement>(
+                    "main input:not([disabled]):not([readonly]):not([type=file]):not(.sr-only), main select:not([disabled]), main textarea",
+                  ),
+                ];
+                const next = fields[fields.indexOf(e.currentTarget) + 1];
+                if (next) {
+                  next.focus();
+                  return;
+                }
+              }
+              form.requestSubmit();
             }}
             autoCapitalize={inputMode === "url" ? "none" : undefined}
             spellCheck={inputMode === "url" ? false : undefined}

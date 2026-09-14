@@ -1,4 +1,5 @@
 import { Link, createLink, useRouterState } from "@tanstack/react-router";
+import { haptic } from "@/lib/haptics";
 import {
   useState,
   type AnchorHTMLAttributes,
@@ -155,6 +156,7 @@ export function Chip({
   onClick,
   media,
   disabled = false,
+  atLimit = false,
 }: {
   children: ReactNode;
   active?: boolean;
@@ -162,16 +164,28 @@ export function Chip({
   /** A leading circle: an icon element, an image URL, or nothing. */
   media?: ReactNode;
   disabled?: boolean;
+  /** A picker is full: looks disabled, and a tap shakes the chip and vibrates instead of selecting. */
+  atLimit?: boolean;
 }) {
+  const [refused, setRefused] = useState(false);
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => {
+        if (atLimit) {
+          haptic("error");
+          setRefused(true);
+          return;
+        }
+        onClick?.();
+      }}
+      onAnimationEnd={() => setRefused(false)}
       disabled={disabled}
+      aria-disabled={atLimit || undefined}
       aria-pressed={active === undefined ? undefined : active}
-      className={`state-layer hit-area inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
-        media ? "py-1 pl-1 pr-4" : "px-4"
-      } ${
+      className={`state-layer hit-area inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
+        atLimit ? "opacity-50" : ""
+      } ${refused ? "animate-shake" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
           ? "border-transparent bg-selected-bg text-selected-text"
           : "border-border bg-card text-foreground"
