@@ -33,7 +33,7 @@ function Mine() {
         subtitle="4 active · 2 pending review"
         back="/marketplace"
         right={
-          <Link to="/marketplace/sell" className="text-xs font-semibold text-primary">
+          <Link to="/marketplace/sell" className="text-xs font-semibold text-pink-strong">
             New
           </Link>
         }

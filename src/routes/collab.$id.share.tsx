@@ -86,7 +86,7 @@ function Share() {
         <Link
           to="/collab/$id"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-primary"
+          className="mb-8 block text-center text-[12px] font-semibold text-pink-strong"
         >
           Back to workspace
         </Link>

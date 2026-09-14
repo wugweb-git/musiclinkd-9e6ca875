@@ -48,7 +48,7 @@ function SearchHistory() {
             <button
               type="button"
               onClick={() => setConfirm(true)}
-              className="shrink-0 text-1 font-semibold text-primary"
+              className="shrink-0 text-1 font-semibold text-pink-strong"
             >
               Clear all
             </button>

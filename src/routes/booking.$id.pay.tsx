@@ -169,7 +169,7 @@ function MethodRow({
         active ? "border-primary" : "border-border"
       }`}
     >
-      <span className="text-primary">{icon}</span>
+      <span className="text-pink-strong">{icon}</span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold">{title}</span>
         <span className="block text-xs text-muted-foreground">{body}</span>

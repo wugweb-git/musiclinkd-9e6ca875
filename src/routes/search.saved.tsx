@@ -78,7 +78,7 @@ function SavedSearches() {
                 <button
                   type="button"
                   onClick={() => setAlerts((a) => ({ ...a, [s.id]: !a[s.id] }))}
-                  className="shrink-0 text-1 font-semibold text-primary"
+                  className="shrink-0 text-1 font-semibold text-pink-strong"
                 >
                   {alerts[s.id] ? "Turn off" : "Turn on"}
                 </button>

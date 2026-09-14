@@ -49,7 +49,7 @@ function NearbyRentals() {
             </div>
           </div>
         </div>
-        <button className="mt-2 w-full text-center text-[11px] font-semibold text-primary">
+        <button className="mt-2 w-full text-center text-[11px] font-semibold text-pink-strong">
           Use my current location
         </button>
       </div>

@@ -35,7 +35,7 @@ function MyRentals() {
         right={
           <Link
             to="/marketplace/rent/listings"
-            className="shrink-0 text-xs font-semibold text-primary"
+            className="shrink-0 text-xs font-semibold text-pink-strong"
           >
             Listings
           </Link>

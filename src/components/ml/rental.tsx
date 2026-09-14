@@ -109,7 +109,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
           <Link
             to="/marketplace/rent/provider/$id"
             params={{ id: e.providerId }}
-            className="shrink-0 truncate text-1 font-semibold text-primary"
+            className="shrink-0 truncate text-1 font-semibold text-pink-strong"
           >
             View provider
           </Link>
@@ -556,7 +556,7 @@ export function RentalFilterSheet({
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl">Filters</h2>
-        <button onClick={() => setSelected([])} className="text-xs font-semibold text-primary">
+        <button onClick={() => setSelected([])} className="text-xs font-semibold text-pink-strong">
           Clear all
         </button>
       </div>
@@ -588,7 +588,10 @@ export function RentalFilterSheet({
       ))}
 
       {!more ? (
-        <button onClick={() => setMore(true)} className="mb-5 text-xs font-semibold text-primary">
+        <button
+          onClick={() => setMore(true)}
+          className="mb-5 text-xs font-semibold text-pink-strong"
+        >
           More filters
         </button>
       ) : null}

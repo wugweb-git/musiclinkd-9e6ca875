@@ -61,7 +61,7 @@ function InvitationAccepted() {
           {project ? (
             <div className="flex items-center justify-between">
               <ParticipantStack people={project.participants} />
-              <span className="text-[11px] font-semibold text-primary">
+              <span className="text-[11px] font-semibold text-pink-strong">
                 {project.participants.length} collaborators
               </span>
             </div>

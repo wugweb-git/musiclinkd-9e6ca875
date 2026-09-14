@@ -78,7 +78,7 @@ function InviteDetail() {
               </div>
               <p className="truncate text-[11px] text-muted-foreground">{inv.inviterRole}</p>
             </div>
-            <Link to="/messages" className="text-[11px] font-semibold text-primary">
+            <Link to="/messages" className="text-[11px] font-semibold text-pink-strong">
               Message
             </Link>
           </div>

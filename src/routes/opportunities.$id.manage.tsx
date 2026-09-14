@@ -95,7 +95,7 @@ function ManageOpportunity() {
             }
             onClick={() => setPaused((p) => !p)}
             right={
-              <span className="text-[12px] font-semibold text-primary">
+              <span className="text-[12px] font-semibold text-pink-strong">
                 {paused ? "Resume" : "Pause"}
               </span>
             }
@@ -105,7 +105,7 @@ function ManageOpportunity() {
             title="Close opportunity"
             subtitle="Tell applicants the outcome"
             onClick={() => setClose(true)}
-            right={<span className="text-[12px] font-semibold text-primary">Close</span>}
+            right={<span className="text-[12px] font-semibold text-pink-strong">Close</span>}
           />
         </div>
 

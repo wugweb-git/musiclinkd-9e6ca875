@@ -417,7 +417,7 @@ function EditProfile() {
                   className="flex min-h-[72px] w-full items-center gap-3 px-4 text-left"
                 >
                   <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-pink-container text-primary"}`}
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-pink-container text-pink-strong"}`}
                   >
                     {section.done ? (
                       <Check size={16} aria-hidden />
@@ -538,7 +538,7 @@ function Chips({
               key={o}
               type="button"
               onClick={() => onToggle(o)}
-              className={`min-h-9 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary bg-pink-container text-primary" : "border-border bg-card text-muted-foreground"}`}
+              className={`min-h-9 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary bg-pink-container text-pink-strong" : "border-border bg-card text-muted-foreground"}`}
             >
               {labels?.[o] ?? o}
             </button>

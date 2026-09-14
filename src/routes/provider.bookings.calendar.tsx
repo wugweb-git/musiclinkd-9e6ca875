@@ -92,7 +92,7 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
       <button
         type="button"
         onClick={() => shift(-1)}
-        className="min-h-11 px-2 text-sm font-semibold text-primary"
+        className="min-h-11 px-2 text-sm font-semibold text-pink-strong"
       >
         ← Prev
       </button>
@@ -100,7 +100,7 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
       <button
         type="button"
         onClick={() => shift(1)}
-        className="min-h-11 px-2 text-sm font-semibold text-primary"
+        className="min-h-11 px-2 text-sm font-semibold text-pink-strong"
       >
         Next →
       </button>

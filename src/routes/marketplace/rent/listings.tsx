@@ -49,7 +49,10 @@ function MyListings() {
         subtitle={`${equipment.length} items · 3 requests`}
         back="/marketplace/rent"
         right={
-          <Link to="/marketplace/rent/list" className="shrink-0 text-xs font-semibold text-primary">
+          <Link
+            to="/marketplace/rent/list"
+            className="shrink-0 text-xs font-semibold text-pink-strong"
+          >
             New
           </Link>
         }

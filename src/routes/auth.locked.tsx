@@ -60,7 +60,7 @@ function LockedScreen() {
       <TrustNote>Your account is not suspended and nothing has been deleted.</TrustNote>
 
       <p className="mt-6 text-center text-1 text-muted-foreground">
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
+        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
           Back to sign in
         </Link>
       </p>

@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — pink text contrast
+
+- **Pink text is `pink-strong` everywhere.** `text-primary` (#EA4C89) on text measured 3.03:1 on the page
+  ground and 3.56:1 on a card, under the 4.5:1 AA floor. 126 text sites across 77 files, including the
+  shadcn link button, now use `text-pink-strong` (#C7295F): 4.56:1 and 5.37:1. The 52 lucide icons
+  keep brand pink, which clears the 3:1 icon minimum. Sorted by syntax tree: a class on a lucide or
+  `svg` element is an icon; anything else is text. `text-primary-foreground` (white on pink) is untouched.
+
 ### Changed — 14px type step
 
 - **`text-sm` is a token.** The scale gains a 14-15px step (`--type-sm`, Material bodyMedium 14sp),

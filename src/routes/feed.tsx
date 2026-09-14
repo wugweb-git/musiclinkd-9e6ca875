@@ -197,7 +197,7 @@ function Body({ data }: { data: DashboardData }) {
             <div className="min-w-0 flex-1">
               <p className="truncate text-2 font-bold leading-snug">{headline.title}</p>
               <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{headline.body}</p>
-              <span className="mt-2 inline-flex items-center gap-1 text-1 font-semibold text-primary">
+              <span className="mt-2 inline-flex items-center gap-1 text-1 font-semibold text-pink-strong">
                 {headline.cta} <ArrowRight size={13} />
               </span>
             </div>
@@ -343,7 +343,7 @@ function ContinueBlock({ c }: { c: ContinueCard }) {
           <div className="h-full rounded-full bg-primary" style={{ width: `${c.progress}%` }} />
         </div>
       ) : null}
-      <span className="mt-3 inline-flex items-center gap-1 text-1 font-semibold text-primary">
+      <span className="mt-3 inline-flex items-center gap-1 text-1 font-semibold text-pink-strong">
         {c.cta} <ArrowRight size={13} />
       </span>
     </>
@@ -388,7 +388,7 @@ function QuietAction({
       to={to}
       className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5"
     >
-      <span className="shrink-0 text-primary">{icon}</span>
+      <span className="shrink-0 text-pink-strong">{icon}</span>
       <span className="whitespace-nowrap text-1 font-semibold">{label}</span>
     </Link>
   );
