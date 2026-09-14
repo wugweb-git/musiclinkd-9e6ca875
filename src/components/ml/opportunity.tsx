@@ -3,7 +3,7 @@
  * Built on the existing Gestalt kit — no second design system.
  */
 import { Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
 import { Bookmark, MapPin, Clock, Users, Wallet, Star } from "lucide-react";
 import { Card, StatusPill, ReasonChip, type Tone } from "@/components/ml/kit";
 import { VerifiedBadge } from "@/components/ml/ui";
@@ -72,24 +72,44 @@ export function MatchBar({ score, reasons }: { score: number; reasons: string[] 
 }
 
 export function PosterRow({ o }: { o: Opportunity }) {
-  return (
-    <Link
-      to="/profile/$username"
-      params={{ username: o.poster.username }}
-      className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
-    >
-      <img src={o.poster.photo} alt="" className="h-11 w-11 rounded-full object-cover" />
+  // Stored opportunities have no poster kind, rating or hires; only what exists is shown.
+  const meta: ReactNode[] = [];
+  if (o.poster.kindLabel) meta.push(o.poster.kindLabel);
+  if (o.poster.rating)
+    meta.push(
+      <>
+        <Star size={10} fill="currentColor" className="inline" aria-hidden /> {o.poster.rating}
+      </>,
+    );
+  if (o.poster.hires) meta.push(`${o.poster.hires} hires`);
+  const className = "flex items-center gap-3 rounded-lg border border-border bg-card p-3";
+  const body = (
+    <>
+      {o.poster.photo ? (
+        <img src={o.poster.photo} alt="" className="h-11 w-11 rounded-full object-cover" />
+      ) : null}
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
           <span className="truncate text-sm font-semibold">{o.poster.name}</span>
           {o.poster.verified ? <VerifiedBadge size={14} /> : null}
         </span>
-        <span className="block truncate text-1 text-muted-foreground">
-          {o.poster.kindLabel} ·{" "}
-          <Star size={10} fill="currentColor" className="inline" aria-hidden /> {o.poster.rating} ·{" "}
-          {o.poster.hires} hires
-        </span>
+        {meta.length ? (
+          <span className="block truncate text-1 text-muted-foreground">
+            {meta.map((m, i) => (
+              <Fragment key={i}>
+                {i ? " · " : null}
+                {m}
+              </Fragment>
+            ))}
+          </span>
+        ) : null}
       </span>
+    </>
+  );
+  if (!o.poster.username) return <div className={className}>{body}</div>;
+  return (
+    <Link to="/profile/$username" params={{ username: o.poster.username }} className={className}>
+      {body}
     </Link>
   );
 }
@@ -103,6 +123,7 @@ export function OpportunityCard({
   saved?: boolean;
   onSave?: () => void;
 }) {
+  const pay = payLabel(o);
   return (
     <article className="relative rounded-lg border border-border bg-card p-4">
       {onSave ? (
@@ -122,31 +143,43 @@ export function OpportunityCard({
       <Link to="/opportunities/$id" params={{ id: o.id }} className="block pr-10">
         <div className="flex flex-wrap items-center gap-2">
           <StatusPill label={categoryLabel(o.categoryKey)} tone="brand" />
-          <StatusPill label={o.workMode} />
+          {o.workMode ? <StatusPill label={o.workMode} /> : null}
           {o.featured ? <StatusPill label="Featured" tone="warn" /> : null}
         </div>
         <h3 className="mt-2 text-2 leading-snug">{o.title}</h3>
-        <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{o.summary}</p>
+        {o.summary ? (
+          <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{o.summary}</p>
+        ) : null}
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Wallet size={13} /> {payLabel(o)}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <MapPin size={13} /> {o.city}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <Clock size={13} /> {o.postedAt}
-          </span>
+          {pay ? (
+            <span className="inline-flex items-center gap-1">
+              <Wallet size={13} /> {pay}
+            </span>
+          ) : null}
+          {o.city ? (
+            <span className="inline-flex items-center gap-1">
+              <MapPin size={13} /> {o.city}
+            </span>
+          ) : null}
+          {o.postedAt ? (
+            <span className="inline-flex items-center gap-1">
+              <Clock size={13} /> {o.postedAt}
+            </span>
+          ) : null}
           <span className="inline-flex items-center gap-1">
             <Users size={13} /> {o.applicants} applied
           </span>
         </div>
         <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
-          <img src={o.poster.photo} alt="" className="h-7 w-7 rounded-full object-cover" />
+          {o.poster.photo ? (
+            <img src={o.poster.photo} alt="" className="h-7 w-7 rounded-full object-cover" />
+          ) : null}
           <span className="min-w-0 flex-1 truncate text-1 text-muted-foreground">
             {o.poster.name}
           </span>
-          <span className="shrink-0 text-1 font-bold text-foreground">{o.matchScore}% fit</span>
+          {o.matchScore ? (
+            <span className="shrink-0 text-1 font-bold text-foreground">{o.matchScore}% fit</span>
+          ) : null}
         </div>
       </Link>
     </article>

@@ -106,7 +106,8 @@ export type Bookable = {
   /** businessProfile.id — EXISTING */
   id: string;
   name: string;
-  kind: BookableKind;
+  /** Empty for database studios, which have no kind. */
+  kind: BookableKind | "";
   verified: boolean;
   rating: number;
   reviews: number;
@@ -125,6 +126,10 @@ export type Bookable = {
   taxPct: number;
   /** COMPUTED */
   responseTime: string;
+  /** Studio-wide house gear not tied to one room (database studios). */
+  equipment?: string[];
+  /** false when there is no availability calendar (database studios): no date, time or later steps. */
+  hasCalendar?: boolean;
 };
 
 export type Booking = {

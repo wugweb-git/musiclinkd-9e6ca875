@@ -125,7 +125,10 @@ export function CategoryTile({
 function typeMeta(l: Listing) {
   switch (l.type) {
     case "service":
-      return { tag: "Service", line: l.delivery ? `Delivery ${l.delivery}` : "Remote" };
+      return {
+        tag: "Service",
+        line: l.delivery ? `Delivery ${l.delivery}` : l.remote ? "Remote" : "",
+      };
     case "rental":
       return { tag: "Rental", line: l.availability ?? "Check availability" };
     case "space":
@@ -147,6 +150,7 @@ export function ListingCard({
   const [localSaved, setLocalSaved] = useState(false);
   const isSaved = saved ?? localSaved;
   const meta = typeMeta(l);
+  const where = [l.location, l.distance].filter(Boolean).join(" · ");
   return (
     <Link
       to="/marketplace/l/$id"
@@ -154,7 +158,16 @@ export function ListingCard({
       className="block overflow-hidden rounded-lg border border-border bg-card"
     >
       <div className="relative">
-        <img src={l.photos[0]} alt={l.title} loading="lazy" className="h-40 w-full object-cover" />
+        {l.photos[0] ? (
+          <img
+            src={l.photos[0]}
+            alt={l.title}
+            loading="lazy"
+            className="h-40 w-full object-cover"
+          />
+        ) : (
+          <div className="h-40 w-full bg-subtle" />
+        )}
         <div className="absolute right-2 top-2">
           <SaveButton
             saved={isSaved}
@@ -175,11 +188,15 @@ export function ListingCard({
           )}
         </div>
         <h3 className="mt-1.5 line-clamp-2 text-2 leading-snug">{l.title}</h3>
-        <p className="mt-0.5 line-clamp-1 text-1 text-muted-foreground">{l.subtitle}</p>
-        <div className="mt-2.5 flex items-center justify-between">
-          <LocationRow text={`${l.location} · ${l.distance}`} />
-          <span className="text-1 text-muted-foreground">{meta.line}</span>
-        </div>
+        {l.subtitle ? (
+          <p className="mt-0.5 line-clamp-1 text-1 text-muted-foreground">{l.subtitle}</p>
+        ) : null}
+        {where || meta.line ? (
+          <div className="mt-2.5 flex items-center justify-between">
+            {where ? <LocationRow text={where} /> : <span />}
+            {meta.line ? <span className="text-1 text-muted-foreground">{meta.line}</span> : null}
+          </div>
+        ) : null}
       </div>
     </Link>
   );
@@ -194,12 +211,16 @@ export function ListingTile({ l }: { l: Listing }) {
       className="block w-[168px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
     >
       <div className="relative h-[124px]">
-        <img
-          src={l.photos[0]}
-          alt={l.title}
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
+        {l.photos[0] ? (
+          <img
+            src={l.photos[0]}
+            alt={l.title}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-subtle" />
+        )}
         <div className="absolute right-1.5 top-1.5">
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={30} />
         </div>
@@ -207,7 +228,9 @@ export function ListingTile({ l }: { l: Listing }) {
       <div className="p-3">
         <PriceBlock price={l.price} note={l.priceNote} />
         <h3 className="mt-1 line-clamp-2 text-1 leading-snug">{l.title}</h3>
-        <p className="mt-1 truncate text-1 text-muted-foreground">{l.distance}</p>
+        {l.distance ? (
+          <p className="mt-1 truncate text-1 text-muted-foreground">{l.distance}</p>
+        ) : null}
       </div>
     </Link>
   );
@@ -218,12 +241,16 @@ export function ListingRow({ l }: { l: Listing }) {
   return (
     <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
       <Link to="/marketplace/l/$id" params={{ id: l.id }} className="shrink-0">
-        <img
-          src={l.photos[0]}
-          alt={l.title}
-          loading="lazy"
-          className="h-24 w-24 rounded-lg object-cover"
-        />
+        {l.photos[0] ? (
+          <img
+            src={l.photos[0]}
+            alt={l.title}
+            loading="lazy"
+            className="h-24 w-24 rounded-lg object-cover"
+          />
+        ) : (
+          <div className="h-24 w-24 rounded-lg bg-subtle" />
+        )}
       </Link>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
@@ -236,7 +263,7 @@ export function ListingRow({ l }: { l: Listing }) {
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
           {l.condition ? <ConditionBadge value={l.condition} /> : null}
           <Rating value={l.rating} count={l.reviews} />
-          <LocationRow text={l.distance} />
+          {l.distance ? <LocationRow text={l.distance} /> : null}
         </div>
         {l.reason ? (
           <p className="mt-1.5 truncate text-1 font-semibold text-foreground">{l.reason}</p>
@@ -251,31 +278,37 @@ export function SellerSummary({
   compact = false,
 }: {
   seller: {
-    id: string;
+    id?: string;
     name: string;
-    role: string;
-    location: string;
+    role?: string;
+    location?: string;
     verified: boolean;
-    rating: number;
-    reviews: number;
-    responseTime: string;
-    photo: string;
+    rating?: number;
+    reviews?: number;
+    responseTime?: string;
+    photo?: string;
   };
   compact?: boolean;
 }) {
   return (
     <div className="flex items-center gap-3">
-      <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-md object-cover" />
+      {seller.photo ? (
+        <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-md object-cover" />
+      ) : null}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate text-2 font-semibold">{seller.name}</p>
           {seller.verified ? <VerifiedBadge size={14} /> : null}
         </div>
-        <p className="truncate text-1 text-muted-foreground">{seller.role}</p>
-        {compact ? null : (
+        {seller.role ? (
+          <p className="truncate text-1 text-muted-foreground">{seller.role}</p>
+        ) : null}
+        {compact || !(seller.rating || seller.responseTime) ? null : (
           <div className="mt-1 flex items-center gap-2">
             <Rating value={seller.rating} count={seller.reviews} />
-            <span className="text-1 text-muted-foreground">Replies {seller.responseTime}</span>
+            {seller.responseTime ? (
+              <span className="text-1 text-muted-foreground">Replies {seller.responseTime}</span>
+            ) : null}
           </div>
         )}
       </div>
@@ -484,7 +517,9 @@ export function OfferSheet({
         <>
           <h2 className="mb-4 text-xl">Make an offer</h2>
           <div className="mb-5 flex items-center gap-3 rounded-lg border border-border p-3">
-            <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-md object-cover" />
+            {listing.photos[0] ? (
+              <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-md object-cover" />
+            ) : null}
             <div className="min-w-0 flex-1">
               <p className="truncate text-1 font-semibold">{listing.title}</p>
               <p className="text-1 text-muted-foreground">Asking {listing.price}</p>

@@ -64,16 +64,20 @@ export type Opportunity = {
     hires: number;
   };
   city: string;
-  workMode: "On-site" | "Remote" | "Hybrid";
+  /** Empty for stored opportunities, which do not record a work mode. */
+  workMode: "On-site" | "Remote" | "Hybrid" | "";
   postedAt: string;
   closesAt: string;
   /** opportunity_compensation */
   compensation: {
-    type: "Paid" | "Revenue share" | "Unpaid / credit";
+    /** Unset when a stored collaboration type has no unambiguous match. */
+    type?: "Paid" | "Revenue share" | "Unpaid / credit";
     min?: number;
     max?: number;
     unit: string;
     negotiable: boolean;
+    /** Stored price text that is not an amount ("Royalties Split", "Under Discussion"). */
+    note?: string;
   };
   summary: string;
   brief: string[];
@@ -320,10 +324,13 @@ export function categoryLabel(key: string) {
 
 export function payLabel(o: Opportunity) {
   const c = o.compensation;
-  if (c.type !== "Paid") return c.type;
+  // Stored opportunities without an amount show their price text as stored.
+  if (c.min == null && c.note) return c.note;
+  if (c.type !== "Paid") return c.type ?? "";
+  if (c.min == null) return "";
   const fmt = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-  const range = c.max ? `${fmt(c.min ?? 0)}–${fmt(c.max)}` : fmt(c.min ?? 0);
-  return `${range} ${c.unit}`;
+  const range = c.max ? `${fmt(c.min)}–${fmt(c.max)}` : fmt(c.min);
+  return [range, c.unit, c.note].filter(Boolean).join(" ");
 }
 
 /* -------------------------------------------------- applications */

@@ -10,7 +10,7 @@ import {
   StepDots,
   StickyBar,
 } from "@/components/ml/booking";
-import { useBookingDraft } from "@/components/ml/booking-context";
+import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
 
 export const Route = createFileRoute("/booking/$id/review")({
@@ -28,8 +28,16 @@ export const Route = createFileRoute("/booking/$id/review")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Review,
+  component: ReviewStep,
 });
+
+function ReviewStep() {
+  return (
+    <CalendarGate>
+      <Review />
+    </CalendarGate>
+  );
+}
 
 function Review() {
   const { bookable: b, resource: r, draft, price, endTime } = useBookingDraft();

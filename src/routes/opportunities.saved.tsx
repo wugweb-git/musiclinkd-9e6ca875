@@ -3,8 +3,11 @@ import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities } from "@/data/opportunities";
+import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/opportunities/saved")({
+  // Stored opportunities follow the static ones; none when the database is unreachable.
+  loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
       { title: "Saved opportunities | MusicLinkd" },
@@ -20,7 +23,10 @@ export const Route = createFileRoute("/opportunities/saved")({
 
 function SavedOpportunities() {
   const { ids, has, toggle } = useSavedOpportunities();
-  const list = opportunities.filter((o) => ids.includes(o.id) || (o.saved && !ids.length));
+  const { dbOpportunities } = Route.useLoaderData();
+  const list = [...opportunities, ...dbOpportunities].filter(
+    (o) => ids.includes(o.id) || (o.saved && !ids.length),
+  );
 
   return (
     <Screen>

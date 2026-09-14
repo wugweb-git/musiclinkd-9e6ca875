@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { Navigate } from "@tanstack/react-router";
 import { getBookable, getResource, priceFor, type Bookable, type Resource } from "@/data/booking";
 
 export type BookingDraft = {
@@ -32,8 +33,26 @@ export function useBookingDraft() {
   return ctx;
 }
 
-export function BookingDraftProvider({ id, children }: { id: string; children: ReactNode }) {
-  const bookable = getBookable(id);
+/** Date, time and the steps after them need an availability calendar; without one, stay on rooms. */
+export function CalendarGate({ children }: { children: ReactNode }) {
+  const { bookable } = useBookingDraft();
+  if (bookable.hasCalendar === false) {
+    return <Navigate to="/booking/$id/service" params={{ id: bookable.id }} replace />;
+  }
+  return <>{children}</>;
+}
+
+export function BookingDraftProvider({
+  id,
+  fallback,
+  children,
+}: {
+  id: string;
+  /** Database studio for ids the seeded lookup does not know. */
+  fallback?: Bookable | null;
+  children: ReactNode;
+}) {
+  const bookable = getBookable(id) ?? fallback ?? undefined;
   const [draft, setDraft] = useState<BookingDraft>(() => ({
     resourceId: bookable?.resources[0]?.id ?? "",
     hours: 2,
@@ -69,7 +88,6 @@ export function BookingDraftProvider({ id, children }: { id: string; children: R
       price: priceFor(bookable, resource, draft.hours, draft.addOnIds),
       endTime: `${String(endHour).padStart(2, "0")}:00`,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookable, resource, draft]);
 
   if (!value) {

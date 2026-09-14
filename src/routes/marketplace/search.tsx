@@ -3,8 +3,11 @@ import { useState } from "react";
 import { Screen, SearchBar, TopBar, Chip, Btn } from "@/components/ml/ui";
 import { EmptyState, ListingRow, MarketFilterSheet, SortSheet } from "@/components/ml/market";
 import { listings, popularSearches, recentSearches } from "@/data/market";
+import { loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/search")({
+  // Database listings are searched after the static ones.
+  loader: () => loadCatalogListings(),
   head: () => ({
     meta: [
       { title: "Search the Market | MusicLinkd" },
@@ -36,9 +39,10 @@ function MarketSearch() {
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState(sorts[0]!);
+  const catalog = Route.useLoaderData();
 
   const results = q.trim()
-    ? listings.filter((l) =>
+    ? [...listings, ...catalog].filter((l) =>
         `${l.title} ${l.subtitle} ${l.subcategory} ${l.brand ?? ""} ${l.location}`
           .toLowerCase()
           .includes(q.toLowerCase().split(" ")[0] ?? ""),

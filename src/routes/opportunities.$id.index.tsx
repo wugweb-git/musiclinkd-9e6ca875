@@ -25,12 +25,17 @@ import {
   reportReasons,
   myApplications,
 } from "@/data/opportunities";
+import { loadDbOpportunity } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/opportunities/$id/")({
-  head: ({ params }) => {
-    const o = getOpportunity(params.id);
+  // Static opportunities first; any other id is looked up as a stored opportunity slug.
+  loader: async ({ params }) => ({
+    db: getOpportunity(params.id) ? null : await loadDbOpportunity(params.id),
+  }),
+  head: ({ params, loaderData }) => {
+    const o = getOpportunity(params.id) ?? loaderData?.db ?? undefined;
     const title = o ? `${o.title} | MusicLinkd Opportunities` : "Opportunity | MusicLinkd";
-    const desc = o?.summary ?? "This opportunity is no longer available.";
+    const desc = o?.summary || (o ? o.title : "This opportunity is no longer available.");
     return {
       meta: [
         { title },
@@ -47,7 +52,8 @@ export const Route = createFileRoute("/opportunities/$id/")({
 
 function OpportunityDetail() {
   const { id } = Route.useParams();
-  const o = getOpportunity(id);
+  const { db } = Route.useLoaderData();
+  const o = getOpportunity(id) ?? db ?? undefined;
   const { has, toggle } = useSavedOpportunities();
   const [report, setReport] = useState(false);
   const [reported, setReported] = useState(false);
@@ -73,6 +79,7 @@ function OpportunityDetail() {
 
   const existing = myApplications.find((a) => a.opportunityId === o.id);
   const saved = has(o.id) || o.saved;
+  const tags = [...o.genres, ...o.languages];
 
   return (
     <Screen>
@@ -96,67 +103,79 @@ function OpportunityDetail() {
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill label={o.status} tone={statusTone(o.status)} />
-            <StatusPill label={o.workMode} />
+            {o.workMode ? <StatusPill label={o.workMode} /> : null}
             <StatusPill label={`${o.applicants} applied`} />
           </div>
           <h1 className="mt-2 text-[24px] leading-tight">{o.title}</h1>
-          <p className="mt-2 text-[14px] text-muted-foreground">{o.summary}</p>
+          {o.summary ? <p className="mt-2 text-[14px] text-muted-foreground">{o.summary}</p> : null}
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           {[
             { icon: <Wallet size={14} />, label: "Pay", value: payLabel(o) },
-            { icon: <MapPin size={14} />, label: "Where", value: `${o.city} · ${o.workMode}` },
+            {
+              icon: <MapPin size={14} />,
+              label: "Where",
+              value: [o.city, o.workMode].filter(Boolean).join(" · "),
+            },
             { icon: <CalendarDays size={14} />, label: "When", value: o.dates },
-          ].map((s) => (
-            <div key={s.label} className="rounded-[20px] bg-subtle p-3">
-              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                {s.icon} {s.label}
-              </span>
-              <p className="mt-1 text-[13px] font-semibold leading-snug">{s.value}</p>
-            </div>
-          ))}
+          ]
+            .filter((s) => s.value)
+            .map((s) => (
+              <div key={s.label} className="rounded-[20px] bg-subtle p-3">
+                <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                  {s.icon} {s.label}
+                </span>
+                <p className="mt-1 text-[13px] font-semibold leading-snug">{s.value}</p>
+              </div>
+            ))}
         </div>
 
-        <MatchBar score={o.matchScore} reasons={o.matchReasons} />
+        {o.matchScore ? <MatchBar score={o.matchScore} reasons={o.matchReasons} /> : null}
 
-        <Card className="space-y-2">
-          <h2 className="text-[15px]">The brief</h2>
-          {o.brief.map((b) => (
-            <p key={b} className="text-[13px] leading-relaxed text-muted-foreground">
-              {b}
-            </p>
-          ))}
-        </Card>
-
-        <Card className="space-y-2">
-          <h2 className="text-[15px]">Requirements</h2>
-          {o.requirements.map((r) => (
-            <div key={r.label} className="flex items-start gap-2">
-              {r.must ? (
-                <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-primary" />
-              ) : (
-                <Circle size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
-              )}
-              <p className="text-[13px]">
-                {r.label}
-                <span className="ml-1 text-[11px] uppercase tracking-wide text-muted-foreground">
-                  {r.must ? "must have" : "nice to have"}
-                </span>
+        {o.brief.length ? (
+          <Card className="space-y-2">
+            <h2 className="text-[15px]">The brief</h2>
+            {o.brief.map((b) => (
+              <p key={b} className="text-[13px] leading-relaxed text-muted-foreground">
+                {b}
               </p>
-            </div>
-          ))}
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {[...o.genres, ...o.languages].map((g) => (
-              <span
-                key={g}
-                className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold"
-              >
-                {g}
-              </span>
             ))}
-          </div>
-        </Card>
+          </Card>
+        ) : null}
+
+        {o.requirements.length || tags.length ? (
+          <Card className="space-y-2">
+            <h2 className="text-[15px]">Requirements</h2>
+            {o.requirements.map((r) => (
+              <div key={r.label} className="flex items-start gap-2">
+                {r.must ? (
+                  <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-primary" />
+                ) : (
+                  <Circle size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+                )}
+                <p className="text-[13px]">
+                  {r.label}
+                  <span className="ml-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                    {r.must ? "must have" : "nice to have"}
+                  </span>
+                </p>
+              </div>
+            ))}
+            {tags.length ? (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {tags.map((g) => (
+                  <span
+                    key={g}
+                    className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold"
+                  >
+                    {g}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </Card>
+        ) : null}
 
         <div>
           <h2 className="mb-2 text-[15px]">Posted by</h2>

@@ -5,6 +5,7 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 import { getOpportunity, payLabel } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
+import { loadDbOpportunity } from "@/lib/opportunity-view";
 
 type Step = "portfolio" | "message" | "review" | "done";
 const order: Step[] = ["portfolio", "message", "review", "done"];
@@ -13,8 +14,12 @@ export const Route = createFileRoute("/opportunities/$id/apply")({
   validateSearch: (s: Record<string, unknown>): { step: Step } => ({
     step: (order as string[]).includes(String(s["step"])) ? (s["step"] as Step) : "portfolio",
   }),
-  head: ({ params }) => {
-    const o = getOpportunity(params.id);
+  // Static opportunities first; any other id is looked up as a stored opportunity slug.
+  loader: async ({ params }) => ({
+    db: getOpportunity(params.id) ? null : await loadDbOpportunity(params.id),
+  }),
+  head: ({ params, loaderData }) => {
+    const o = getOpportunity(params.id) ?? loaderData?.db ?? undefined;
     const title = `Apply · ${o?.title ?? "Opportunity"} | MusicLinkd`;
     return {
       meta: [
@@ -40,7 +45,8 @@ function ApplyFlow() {
   const { id } = Route.useParams();
   const { step } = Route.useSearch();
   const nav = useNavigate();
-  const o = getOpportunity(id);
+  const { db } = Route.useLoaderData();
+  const o = getOpportunity(id) ?? db ?? undefined;
   const [picked, setPicked] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [rate, setRate] = useState("");
@@ -163,7 +169,9 @@ function ApplyFlow() {
             <p className="text-right text-[11px] text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">
               <p className="text-[13px] font-semibold">Your rate (optional)</p>
-              <p className="text-[12px] text-muted-foreground">Budget listed: {payLabel(o)}</p>
+              {payLabel(o) ? (
+                <p className="text-[12px] text-muted-foreground">Budget listed: {payLabel(o)}</p>
+              ) : null}
               <input
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
