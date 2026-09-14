@@ -5,6 +5,32 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — usernames: database rules, claimed once, then locked
+
+Owner decisions, 14 Sep. Migration `20260914200000_username_rules.sql` (applied to the live database):
+
+- **Format:** lowercase a–z, 0–9, dots and underscores, 3–30 characters, enforced by a CHECK. The existing
+  hyphen usernames became dots (`aarav-mehta` → `aarav.mehta`), so their `/profile/` links changed.
+  Static data in `src/data` was updated to match (username fields and profile links only; demo ids and
+  studio, listing and opportunity slugs are unchanged).
+- **Reserved names** live in `public.reserved_usernames` (brand, staff, system and top-level route names).
+  The database refuses them, and `username_available()` reports them as taken.
+- **Locked once set.** Signed-in users can't change or clear a username; the service role (MusicLinkd
+  admins, dashboard) still can.
+- **Onboarding claims on Continue.** Autosave no longer sends the username. Continue on About you claims it
+  (`claimMyUsername`), with a loading button. A taken, reserved or invalid name keeps the person on the
+  screen with the reason under the field; a network failure shows a notice. Once claimed, the field is
+  read-only.
+- **Profile edit** shows a set username read-only and no longer sends it. An unset one can be saved once,
+  with taken, reserved and format errors named.
+
+### Changed — new user: instruments and experience on one screen
+
+- "What do you play?" now asks how long each picked instrument has been played, under the instruments.
+  Removing an instrument removes its answer.
+- The separate experience screen only appears when no instruments are picked (roles without instruments,
+  or players who skip them), and asks once for the main role.
+
 ### Changed — new user: onboarding goes from 19 questions to 10 screens
 
 Grouped as the owner set out on 14 Sep. Each screen reuses the components the old steps used; nothing new

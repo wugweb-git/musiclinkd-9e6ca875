@@ -301,7 +301,7 @@ export const me = {
 const ananya: Participant = {
   id: "ananya-sharma",
   name: "Ananya Sharma",
-  username: "ananya-sharma",
+  username: "ananya.sharma",
   role: "Singer",
   responsibility: "Lead & harmony vocals",
   verified: true,
@@ -313,7 +313,7 @@ const ananya: Participant = {
 const rahul: Participant = {
   id: "rahul-iyer",
   name: "Rahul Iyer",
-  username: "rahul-iyer",
+  username: "rahul.iyer",
   role: "Producer",
   responsibility: "Production & mix",
   verified: true,
@@ -325,7 +325,7 @@ const rahul: Participant = {
 const meher: Participant = {
   id: "meher-kaur",
   name: "Meher Kaur",
-  username: "meher-kaur",
+  username: "meher.kaur",
   role: "Musician",
   responsibility: "Guitars",
   verified: false,
@@ -337,7 +337,7 @@ const meher: Participant = {
 const kabir: Participant = {
   id: "kabir-nair",
   name: "Kabir Nair",
-  username: "kabir-nair",
+  username: "kabir.nair",
   role: "Engineer",
   responsibility: "Mix & master",
   verified: true,
@@ -349,7 +349,7 @@ const kabir: Participant = {
 const octave: Participant = {
   id: "octave-sound-labs",
   name: "Octave Sound Labs",
-  username: "octave-sound-labs",
+  username: "octave.sound.labs",
   role: "Studio",
   responsibility: "Tracking room & engineer",
   verified: true,
@@ -781,7 +781,7 @@ export const projects: Project[] = [
       {
         id: "sanya-rao",
         name: "Sanya Rao",
-        username: "sanya-rao",
+        username: "sanya.rao",
         role: "Manager",
         responsibility: "Production liaison",
         verified: true,
