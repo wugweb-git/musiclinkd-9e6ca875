@@ -11,12 +11,6 @@ LANGUAGES = [  # (slug, native label) — app onboarding order
 ]
 INDIAN = [s for s, _ in LANGUAGES if s != "en"]
 
-BUSINESS_TYPES = [
-    ("studio", "Studio"), ("label", "Label"), ("agency", "Agency"), ("venue", "Venue"),
-    ("dealer", "Dealer"), ("rental_provider", "Rental Provider"), ("music_school", "Music School"),
-    ("production_house", "Production House"), ("other", "Other"),
-]
-
 FAMILIES = [("guitar", "Guitar"), ("keys", "Keys"), ("percussion", "Percussion"),
             ("indian_string", "Indian String"), ("bowed", "Bowed"), ("wind", "Wind"),
             ("electronic", "Electronic")]
@@ -97,12 +91,20 @@ PERSON_TYPES = [
     ("rj", "RJ", "media", "app", [], "app: not asked"),
     ("podcaster", "Podcaster", "media", "app", [], "app: not asked"),
     ("music_teacher", "Music Teacher", "education", "app", ALL, "app: asked"),
-    ("artist_manager", "Artist Manager", "business", "firestore", [], "business"),
-    ("a_and_r", "A&R", "business", "added", [], "business"),
-    ("music_label", "Music Label", "business", "firestore", [], "business"),
-    ("music_publisher", "Music Publisher", "business", "firestore", [], "business"),
-    ("studio", "Recording Studio", "business", "firestore", [], "business"),
-    ("event_organizer", "Event Organizer", "business", "firestore", [], "business"),
+    # Business group = business types. Selecting any of these leads into the business flow
+    # (metadata.flow = "business"). Source: app businessTypes, Firestore BusinessType / person_types.
+    ("studio", "Recording Studio", "business", "both", [], "business flow"),
+    ("music_label", "Music Label", "business", "both", [], "business flow"),
+    ("venue", "Venue", "business", "both", [], "business flow"),
+    ("event_organizer", "Event Organizer", "business", "firestore", [], "business flow"),
+    ("booking_agency", "Booking Agency", "business", "both", [], "business flow"),
+    ("artist_manager", "Artist Manager", "business", "firestore", [], "business flow"),
+    ("production_house", "Production House", "business", "both", [], "business flow"),
+    ("music_school", "Music School", "business", "both", [], "business flow"),
+    ("dealer", "Dealer", "business", "both", [], "business flow"),
+    ("rental_provider", "Rental Provider", "business", "both", [], "business flow"),
+    ("music_publisher", "Music Publisher", "business", "firestore", [], "business flow"),
+    ("a_and_r", "A&R", "business", "added", [], "business flow"),
     ("other", "Other", "other", "app", [], "app: not asked"),
 ]
 
@@ -178,7 +180,6 @@ assert sorted(INSTRUMENT_RANK) == sorted(ALL), "INSTRUMENT_RANK must list every 
 assert sorted(GENRE_RANK) == sorted(g[0] for g in GENRES), "GENRE_RANK must list every genre once"
 # Flat pickers and every person-type group must fit one screen.
 assert len(LANGUAGES) <= SCREEN_LIMIT, "languages exceed a screen"
-assert len(BUSINESS_TYPES) <= SCREEN_LIMIT, "business types exceed a screen"
 assert len(GROUPS) <= SCREEN_LIMIT, "person-type groups exceed a screen"
 for gk, _ in GROUPS:
     assert sum(p[2] == gk for p in PERSON_TYPES) <= SCREEN_LIMIT, f"group {gk} exceeds a screen"
@@ -214,8 +215,14 @@ def sql():
 -- display string.
 --
 -- Categories: languages (12, native-script labels, ISO 639-1 slugs; Bhojpuri ISO 639-3 `bho`),
--- business_types (9), person_types (33), instruments (34, metadata.family), genres (32,
--- metadata.scope universal | regional).
+-- person_types (39, metadata.group; metadata.flow = business for the 12 business types, talent
+-- otherwise), instruments (34, metadata.family), genres (32, metadata.scope universal | regional).
+--
+-- Publish / unpublish: is_published on categories and options. Clients only ever see published
+-- rows (RLS); an unpublished category hides all its options; persona_bucket skips unpublished
+-- options and rejects unpublished person types. Toggle with service_role, e.g.
+--   UPDATE public.taxonomy_options SET is_published = false
+--   WHERE category_key = 'instruments' AND slug = 'harmonica';
 --
 -- Rules: person_type_instruments (which instruments a person type can hold) and genre_languages
 -- (which languages unlock a regional genre). Both reference taxonomy_options by foreign key.
@@ -226,18 +233,19 @@ def sql():
 -- Each category is capped at limit (default 12) so no picker screen exceeds it.
 -- sort_order on instruments and genres is popularity, which decides what survives the cap.
 --
--- Does not touch profiles. Reference data: public SELECT, no client write.
+-- Does not touch profiles. Reference data: public SELECT of published rows, no client write.
 --
 -- Rollback:
 --   DROP FUNCTION public.persona_bucket(text, text[], text[], int);
 --   DROP TABLE public.genre_languages, public.person_type_instruments,
 --              public.taxonomy_options, public.taxonomy_categories;
+--   DROP FUNCTION public.taxonomy_touch_updated_at();
 
 CREATE TABLE public.taxonomy_categories (
   key         text PRIMARY KEY,
   label       text NOT NULL,
   description text NOT NULL DEFAULT '',
-  is_active   boolean NOT NULL DEFAULT true,
+  is_published boolean NOT NULL DEFAULT true,
   created_at  timestamptz NOT NULL DEFAULT now(),
   updated_at  timestamptz NOT NULL DEFAULT now()
 );
@@ -247,15 +255,33 @@ CREATE TABLE public.taxonomy_options (
   slug         text NOT NULL,
   label        text NOT NULL,
   sort_order   int  NOT NULL DEFAULT 0,
-  is_active    boolean NOT NULL DEFAULT true,
+  is_published boolean NOT NULL DEFAULT true,
   metadata     jsonb,
   created_at   timestamptz NOT NULL DEFAULT now(),
   updated_at   timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (category_key, slug)
 );
 
-CREATE INDEX taxonomy_options_active_sort_idx
-  ON public.taxonomy_options (category_key, sort_order) WHERE is_active;
+CREATE INDEX taxonomy_options_published_sort_idx
+  ON public.taxonomy_options (category_key, sort_order) WHERE is_published;
+
+CREATE FUNCTION public.taxonomy_touch_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public
+AS $fn$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END
+$fn$;
+
+CREATE TRIGGER taxonomy_categories_touch_updated_at
+  BEFORE UPDATE ON public.taxonomy_categories
+  FOR EACH ROW EXECUTE FUNCTION public.taxonomy_touch_updated_at();
+CREATE TRIGGER taxonomy_options_touch_updated_at
+  BEFORE UPDATE ON public.taxonomy_options
+  FOR EACH ROW EXECUTE FUNCTION public.taxonomy_touch_updated_at();
 
 CREATE TABLE public.person_type_instruments (
   person_type_category text NOT NULL DEFAULT 'person_types' CHECK (person_type_category = 'person_types'),
@@ -293,10 +319,14 @@ ALTER TABLE public.taxonomy_options        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.person_type_instruments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.genre_languages         ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Taxonomy categories are readable by everyone"
-  ON public.taxonomy_categories FOR SELECT USING (true);
-CREATE POLICY "Taxonomy options are readable by everyone"
-  ON public.taxonomy_options FOR SELECT USING (true);
+CREATE POLICY "Published taxonomy categories are readable by everyone"
+  ON public.taxonomy_categories FOR SELECT USING (is_published);
+CREATE POLICY "Published taxonomy options are readable by everyone"
+  ON public.taxonomy_options FOR SELECT USING (
+    is_published
+    AND EXISTS (SELECT 1 FROM public.taxonomy_categories c
+                WHERE c.key = taxonomy_options.category_key AND c.is_published)
+  );
 CREATE POLICY "Person type instruments are readable by everyone"
   ON public.person_type_instruments FOR SELECT USING (true);
 CREATE POLICY "Genre languages are readable by everyone"
@@ -305,8 +335,7 @@ CREATE POLICY "Genre languages are readable by everyone"
     w("INSERT INTO public.taxonomy_categories (key, label, description) VALUES")
     cats = [
         ("languages", "Languages", "Languages a person performs or writes in."),
-        ("business_types", "Business Types", "Kind of business a business profile represents."),
-        ("person_types", "Person Types", "Primary and secondary roles a person selects."),
+        ("person_types", "Person Types", "Primary and secondary roles a person selects; the business group leads into the business flow."),
         ("instruments", "Instruments", "Instruments a person plays."),
         ("genres", "Genres", "Genres a person works in."),
     ]
@@ -317,8 +346,8 @@ CREATE POLICY "Genre languages are readable by everyone"
         w(",\n".join(f"  ({q(cat)}, {q(s)}, {q(l)}, {i}, {m})" for i, (s, l, m) in enumerate(rows, 1)) + ";\n")
 
     options("languages", [(s, l, "NULL") for s, l in LANGUAGES])
-    options("business_types", [(s, l, "NULL") for s, l in BUSINESS_TYPES])
-    options("person_types", [(p[0], p[1], meta({"group": p[2]})) for p in PERSON_TYPES])
+    options("person_types", [(p[0], p[1], meta({"group": p[2], "flow": "business" if p[2] == "business" else "talent"}))
+                             for p in PERSON_TYPES])
     by_ins = {s: (s, l, f) for s, l, f, _ in INSTRUMENTS}
     options("instruments", [(s, l, meta({"family": f})) for s, l, f in (by_ins[x] for x in INSTRUMENT_RANK)])
     by_gen = {g[0]: g for g in GENRES}
@@ -362,9 +391,10 @@ BEGIN
   IF EXISTS (
     SELECT 1 FROM unnest(v_roles) r
     WHERE NOT EXISTS (SELECT 1 FROM taxonomy_options o
-                      WHERE o.category_key = 'person_types' AND o.slug = r AND o.is_active)
+                      JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+                      WHERE o.category_key = 'person_types' AND o.slug = r AND o.is_published)
   ) THEN
-    RAISE EXCEPTION 'persona_bucket: unknown person type in %', v_roles;
+    RAISE EXCEPTION 'persona_bucket: unknown or unpublished person type in %', v_roles;
   END IF;
 
   -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
@@ -376,17 +406,20 @@ BEGIN
                              WHERE p0.instrument_slug = o.slug AND p0.person_type_slug = p_primary)
                 THEN 0 ELSE 1 END AS tier
     FROM taxonomy_options o
-    WHERE o.category_key = 'instruments' AND o.is_active
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'instruments' AND o.is_published
       AND EXISTS (SELECT 1 FROM person_type_instruments pti
                   WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
     UNION ALL
     SELECT o.category_key, o.slug, o.label, o.sort_order,
            CASE WHEN o.metadata->>'scope' = 'regional' THEN 0 ELSE 1 END
     FROM taxonomy_options o
-    WHERE o.category_key = 'genres' AND o.is_active
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'genres' AND o.is_published
       AND (o.metadata->>'scope' = 'universal'
            OR EXISTS (SELECT 1 FROM genre_languages gl
-                      WHERE gl.genre_slug = o.slug
+                      JOIN taxonomy_options lo ON lo.category_key = 'languages' AND lo.slug = gl.language_slug
+                      WHERE gl.genre_slug = o.slug AND lo.is_published
                         AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
   ),
   ranked AS (
@@ -410,7 +443,7 @@ def doc():
     lab = {s: l for s, l, *_ in INSTRUMENTS}
     w("""---
 doc: PERSONA-BUCKET
-version: 0.2
+version: 0.3
 status: DRAFT — for Vedanshu's review
 updated: 2026-09-14
 verified_against: musiclinkd-9e6ca875 supabase/migrations/20260914120000_taxonomy_persona_bucket.sql (generated from the same data)
@@ -432,20 +465,34 @@ originally: new
 | Screen | How it stays within 12 |
 |---|---|
 | Languages | 12 options |
-| Business types | 9 options |
-| Primary / secondary person type | pick a group (8), then a type (largest group: 8) |
+| Primary / secondary person type | pick a group (8), then a type (largest group: Business, 12) |
 | Instruments | `persona_bucket` caps at 12 — primary's instruments first, then secondaries', each by popularity |
 | Genres | `persona_bucket` caps at 12 — regional genres for the selected languages first, then universal, each by popularity |
 
 The generator refuses to build if any flat list or person-type group exceeds 12.
+
+## Business flow
+
+The **Business** person-type group *is* the business type list (12). Every row in it carries
+`metadata.flow = "business"`; picking one leads into the business flow. All other person types carry
+`flow = "talent"`. Whether a business type may be a *secondary* person type is not decided here.
+
+## Publish / unpublish
+
+`is_published` on `taxonomy_categories` and `taxonomy_options`, default `true`.
+
+- Clients (anon, signed-in) see only published rows — enforced by RLS, not by the app.
+- Unpublishing a category hides every option in it.
+- `persona_bucket` skips unpublished instruments, genres and languages, and rejects an unpublished
+  person type.
+- Toggling is service-role only (no client write): `UPDATE public.taxonomy_options SET is_published = false WHERE category_key = 'instruments' AND slug = 'harmonica';`
+- `updated_at` moves on every update (trigger).
 
 Call: `select * from persona_bucket('singer', array['lyricist','composer'], array['hi','en']);`
 — returns `category_key, slug, label, display_order`; `display_order` is the on-screen order, 1–12.
 """)
     w("## Languages (12)\n\n| Slug | Name |\n|---|---|")
     for s, l in LANGUAGES: w(f"| `{s}` | {l} |")
-    w("\n## Business types (9)\n\n| Slug | Label |\n|---|---|")
-    for s, l in BUSINESS_TYPES: w(f"| `{s}` | {l} |")
     w(f"\n## Instruments ({len(INSTRUMENTS)})\n\n| Family | Instruments |\n|---|---|")
     popularity = " · ".join(f"{i}. {lab[s]}" for i, s in enumerate(INSTRUMENT_RANK, 1))
     for f, fl in FAMILIES:

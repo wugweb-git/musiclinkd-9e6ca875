@@ -6,8 +6,14 @@
 -- display string.
 --
 -- Categories: languages (12, native-script labels, ISO 639-1 slugs; Bhojpuri ISO 639-3 `bho`),
--- business_types (9), person_types (33), instruments (34, metadata.family), genres (32,
--- metadata.scope universal | regional).
+-- person_types (39, metadata.group; metadata.flow = business for the 12 business types, talent
+-- otherwise), instruments (34, metadata.family), genres (32, metadata.scope universal | regional).
+--
+-- Publish / unpublish: is_published on categories and options. Clients only ever see published
+-- rows (RLS); an unpublished category hides all its options; persona_bucket skips unpublished
+-- options and rejects unpublished person types. Toggle with service_role, e.g.
+--   UPDATE public.taxonomy_options SET is_published = false
+--   WHERE category_key = 'instruments' AND slug = 'harmonica';
 --
 -- Rules: person_type_instruments (which instruments a person type can hold) and genre_languages
 -- (which languages unlock a regional genre). Both reference taxonomy_options by foreign key.
@@ -18,18 +24,19 @@
 -- Each category is capped at limit (default 12) so no picker screen exceeds it.
 -- sort_order on instruments and genres is popularity, which decides what survives the cap.
 --
--- Does not touch profiles. Reference data: public SELECT, no client write.
+-- Does not touch profiles. Reference data: public SELECT of published rows, no client write.
 --
 -- Rollback:
 --   DROP FUNCTION public.persona_bucket(text, text[], text[], int);
 --   DROP TABLE public.genre_languages, public.person_type_instruments,
 --              public.taxonomy_options, public.taxonomy_categories;
+--   DROP FUNCTION public.taxonomy_touch_updated_at();
 
 CREATE TABLE public.taxonomy_categories (
   key         text PRIMARY KEY,
   label       text NOT NULL,
   description text NOT NULL DEFAULT '',
-  is_active   boolean NOT NULL DEFAULT true,
+  is_published boolean NOT NULL DEFAULT true,
   created_at  timestamptz NOT NULL DEFAULT now(),
   updated_at  timestamptz NOT NULL DEFAULT now()
 );
@@ -39,15 +46,33 @@ CREATE TABLE public.taxonomy_options (
   slug         text NOT NULL,
   label        text NOT NULL,
   sort_order   int  NOT NULL DEFAULT 0,
-  is_active    boolean NOT NULL DEFAULT true,
+  is_published boolean NOT NULL DEFAULT true,
   metadata     jsonb,
   created_at   timestamptz NOT NULL DEFAULT now(),
   updated_at   timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (category_key, slug)
 );
 
-CREATE INDEX taxonomy_options_active_sort_idx
-  ON public.taxonomy_options (category_key, sort_order) WHERE is_active;
+CREATE INDEX taxonomy_options_published_sort_idx
+  ON public.taxonomy_options (category_key, sort_order) WHERE is_published;
+
+CREATE FUNCTION public.taxonomy_touch_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public
+AS $fn$
+BEGIN
+  NEW.updated_at := now();
+  RETURN NEW;
+END
+$fn$;
+
+CREATE TRIGGER taxonomy_categories_touch_updated_at
+  BEFORE UPDATE ON public.taxonomy_categories
+  FOR EACH ROW EXECUTE FUNCTION public.taxonomy_touch_updated_at();
+CREATE TRIGGER taxonomy_options_touch_updated_at
+  BEFORE UPDATE ON public.taxonomy_options
+  FOR EACH ROW EXECUTE FUNCTION public.taxonomy_touch_updated_at();
 
 CREATE TABLE public.person_type_instruments (
   person_type_category text NOT NULL DEFAULT 'person_types' CHECK (person_type_category = 'person_types'),
@@ -85,10 +110,14 @@ ALTER TABLE public.taxonomy_options        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.person_type_instruments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.genre_languages         ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Taxonomy categories are readable by everyone"
-  ON public.taxonomy_categories FOR SELECT USING (true);
-CREATE POLICY "Taxonomy options are readable by everyone"
-  ON public.taxonomy_options FOR SELECT USING (true);
+CREATE POLICY "Published taxonomy categories are readable by everyone"
+  ON public.taxonomy_categories FOR SELECT USING (is_published);
+CREATE POLICY "Published taxonomy options are readable by everyone"
+  ON public.taxonomy_options FOR SELECT USING (
+    is_published
+    AND EXISTS (SELECT 1 FROM public.taxonomy_categories c
+                WHERE c.key = taxonomy_options.category_key AND c.is_published)
+  );
 CREATE POLICY "Person type instruments are readable by everyone"
   ON public.person_type_instruments FOR SELECT USING (true);
 CREATE POLICY "Genre languages are readable by everyone"
@@ -96,8 +125,7 @@ CREATE POLICY "Genre languages are readable by everyone"
 
 INSERT INTO public.taxonomy_categories (key, label, description) VALUES
   ('languages', 'Languages', 'Languages a person performs or writes in.'),
-  ('business_types', 'Business Types', 'Kind of business a business profile represents.'),
-  ('person_types', 'Person Types', 'Primary and secondary roles a person selects.'),
+  ('person_types', 'Person Types', 'Primary and secondary roles a person selects; the business group leads into the business flow.'),
   ('instruments', 'Instruments', 'Instruments a person plays.'),
   ('genres', 'Genres', 'Genres a person works in.');
 
@@ -116,50 +144,45 @@ INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, meta
   ('languages', 'en', 'English', 12, NULL);
 
 INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, metadata) VALUES
-  ('business_types', 'studio', 'Studio', 1, NULL),
-  ('business_types', 'label', 'Label', 2, NULL),
-  ('business_types', 'agency', 'Agency', 3, NULL),
-  ('business_types', 'venue', 'Venue', 4, NULL),
-  ('business_types', 'dealer', 'Dealer', 5, NULL),
-  ('business_types', 'rental_provider', 'Rental Provider', 6, NULL),
-  ('business_types', 'music_school', 'Music School', 7, NULL),
-  ('business_types', 'production_house', 'Production House', 8, NULL),
-  ('business_types', 'other', 'Other', 9, NULL);
-
-INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, metadata) VALUES
-  ('person_types', 'singer', 'Singer / Vocalist', 1, '{"group": "vocal"}'::jsonb),
-  ('person_types', 'rapper', 'Rapper / MC', 2, '{"group": "vocal"}'::jsonb),
-  ('person_types', 'folk_vocalist', 'Folk Vocalist', 3, '{"group": "vocal"}'::jsonb),
-  ('person_types', 'voice_artist', 'Voice Artist', 4, '{"group": "vocal"}'::jsonb),
-  ('person_types', 'musician', 'Musician', 5, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'guitarist', 'Guitarist', 6, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'bassist', 'Bassist', 7, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'keyboardist', 'Keyboardist / Pianist', 8, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'drummer', 'Drummer / Percussionist', 9, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'sitarist', 'Sitarist / Flutist', 10, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'violinist', 'Violinist / String Player', 11, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'wind_player', 'Flautist / Wind Player', 12, '{"group": "instrumentalist"}'::jsonb),
-  ('person_types', 'composer', 'Composer', 13, '{"group": "creator"}'::jsonb),
-  ('person_types', 'lyricist', 'Lyricist', 14, '{"group": "creator"}'::jsonb),
-  ('person_types', 'arranger', 'Vocal Arranger', 15, '{"group": "creator"}'::jsonb),
-  ('person_types', 'music_director', 'Music Director', 16, '{"group": "creator"}'::jsonb),
-  ('person_types', 'producer', 'Music Producer', 17, '{"group": "creator"}'::jsonb),
-  ('person_types', 'beatmaker', 'Beatmaker', 18, '{"group": "creator"}'::jsonb),
-  ('person_types', 'sound_engineer', 'Sound Engineer', 19, '{"group": "technical"}'::jsonb),
-  ('person_types', 'mixing_engineer', 'Mixing Engineer', 20, '{"group": "technical"}'::jsonb),
-  ('person_types', 'mastering_engineer', 'Mastering Engineer', 21, '{"group": "technical"}'::jsonb),
-  ('person_types', 'sound_designer', 'Sound Designer', 22, '{"group": "technical"}'::jsonb),
-  ('person_types', 'dj', 'DJ', 23, '{"group": "media"}'::jsonb),
-  ('person_types', 'rj', 'RJ', 24, '{"group": "media"}'::jsonb),
-  ('person_types', 'podcaster', 'Podcaster', 25, '{"group": "media"}'::jsonb),
-  ('person_types', 'music_teacher', 'Music Teacher', 26, '{"group": "education"}'::jsonb),
-  ('person_types', 'artist_manager', 'Artist Manager', 27, '{"group": "business"}'::jsonb),
-  ('person_types', 'a_and_r', 'A&R', 28, '{"group": "business"}'::jsonb),
-  ('person_types', 'music_label', 'Music Label', 29, '{"group": "business"}'::jsonb),
-  ('person_types', 'music_publisher', 'Music Publisher', 30, '{"group": "business"}'::jsonb),
-  ('person_types', 'studio', 'Recording Studio', 31, '{"group": "business"}'::jsonb),
-  ('person_types', 'event_organizer', 'Event Organizer', 32, '{"group": "business"}'::jsonb),
-  ('person_types', 'other', 'Other', 33, '{"group": "other"}'::jsonb);
+  ('person_types', 'singer', 'Singer / Vocalist', 1, '{"group": "vocal", "flow": "talent"}'::jsonb),
+  ('person_types', 'rapper', 'Rapper / MC', 2, '{"group": "vocal", "flow": "talent"}'::jsonb),
+  ('person_types', 'folk_vocalist', 'Folk Vocalist', 3, '{"group": "vocal", "flow": "talent"}'::jsonb),
+  ('person_types', 'voice_artist', 'Voice Artist', 4, '{"group": "vocal", "flow": "talent"}'::jsonb),
+  ('person_types', 'musician', 'Musician', 5, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'guitarist', 'Guitarist', 6, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'bassist', 'Bassist', 7, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'keyboardist', 'Keyboardist / Pianist', 8, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'drummer', 'Drummer / Percussionist', 9, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'sitarist', 'Sitarist / Flutist', 10, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'violinist', 'Violinist / String Player', 11, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'wind_player', 'Flautist / Wind Player', 12, '{"group": "instrumentalist", "flow": "talent"}'::jsonb),
+  ('person_types', 'composer', 'Composer', 13, '{"group": "creator", "flow": "talent"}'::jsonb),
+  ('person_types', 'lyricist', 'Lyricist', 14, '{"group": "creator", "flow": "talent"}'::jsonb),
+  ('person_types', 'arranger', 'Vocal Arranger', 15, '{"group": "creator", "flow": "talent"}'::jsonb),
+  ('person_types', 'music_director', 'Music Director', 16, '{"group": "creator", "flow": "talent"}'::jsonb),
+  ('person_types', 'producer', 'Music Producer', 17, '{"group": "creator", "flow": "talent"}'::jsonb),
+  ('person_types', 'beatmaker', 'Beatmaker', 18, '{"group": "creator", "flow": "talent"}'::jsonb),
+  ('person_types', 'sound_engineer', 'Sound Engineer', 19, '{"group": "technical", "flow": "talent"}'::jsonb),
+  ('person_types', 'mixing_engineer', 'Mixing Engineer', 20, '{"group": "technical", "flow": "talent"}'::jsonb),
+  ('person_types', 'mastering_engineer', 'Mastering Engineer', 21, '{"group": "technical", "flow": "talent"}'::jsonb),
+  ('person_types', 'sound_designer', 'Sound Designer', 22, '{"group": "technical", "flow": "talent"}'::jsonb),
+  ('person_types', 'dj', 'DJ', 23, '{"group": "media", "flow": "talent"}'::jsonb),
+  ('person_types', 'rj', 'RJ', 24, '{"group": "media", "flow": "talent"}'::jsonb),
+  ('person_types', 'podcaster', 'Podcaster', 25, '{"group": "media", "flow": "talent"}'::jsonb),
+  ('person_types', 'music_teacher', 'Music Teacher', 26, '{"group": "education", "flow": "talent"}'::jsonb),
+  ('person_types', 'studio', 'Recording Studio', 27, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'music_label', 'Music Label', 28, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'venue', 'Venue', 29, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'event_organizer', 'Event Organizer', 30, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'booking_agency', 'Booking Agency', 31, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'artist_manager', 'Artist Manager', 32, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'production_house', 'Production House', 33, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'music_school', 'Music School', 34, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'dealer', 'Dealer', 35, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'rental_provider', 'Rental Provider', 36, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'music_publisher', 'Music Publisher', 37, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'a_and_r', 'A&R', 38, '{"group": "business", "flow": "business"}'::jsonb),
+  ('person_types', 'other', 'Other', 39, '{"group": "other", "flow": "talent"}'::jsonb);
 
 INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, metadata) VALUES
   ('instruments', 'acoustic_guitar', 'Acoustic Guitar', 1, '{"family": "guitar"}'::jsonb),
@@ -501,9 +524,10 @@ BEGIN
   IF EXISTS (
     SELECT 1 FROM unnest(v_roles) r
     WHERE NOT EXISTS (SELECT 1 FROM taxonomy_options o
-                      WHERE o.category_key = 'person_types' AND o.slug = r AND o.is_active)
+                      JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+                      WHERE o.category_key = 'person_types' AND o.slug = r AND o.is_published)
   ) THEN
-    RAISE EXCEPTION 'persona_bucket: unknown person type in %', v_roles;
+    RAISE EXCEPTION 'persona_bucket: unknown or unpublished person type in %', v_roles;
   END IF;
 
   -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
@@ -515,17 +539,20 @@ BEGIN
                              WHERE p0.instrument_slug = o.slug AND p0.person_type_slug = p_primary)
                 THEN 0 ELSE 1 END AS tier
     FROM taxonomy_options o
-    WHERE o.category_key = 'instruments' AND o.is_active
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'instruments' AND o.is_published
       AND EXISTS (SELECT 1 FROM person_type_instruments pti
                   WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
     UNION ALL
     SELECT o.category_key, o.slug, o.label, o.sort_order,
            CASE WHEN o.metadata->>'scope' = 'regional' THEN 0 ELSE 1 END
     FROM taxonomy_options o
-    WHERE o.category_key = 'genres' AND o.is_active
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'genres' AND o.is_published
       AND (o.metadata->>'scope' = 'universal'
            OR EXISTS (SELECT 1 FROM genre_languages gl
-                      WHERE gl.genre_slug = o.slug
+                      JOIN taxonomy_options lo ON lo.category_key = 'languages' AND lo.slug = gl.language_slug
+                      WHERE gl.genre_slug = o.slug AND lo.is_published
                         AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
   ),
   ranked AS (
