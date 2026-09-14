@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — 14px type step
+
+- **`text-sm` is a token.** The scale gains a 14-15px step (`--type-sm`, Material bodyMedium 14sp),
+  exposed as `text-sm` so its 302 call sites, the `Btn` label among them, stop resolving to Tailwind's
+  default. No call site changed; at 412px the size moves from 14px to 14.05px. `AGENTS.md` lists the
+  six steps. The generated `ml-tokens.css` in the guide repo still needs the step.
+
 ### Fixed — new accounts reach onboarding
 
 - **Every sign-in returns through the splash**, which reads the profile: `onboarding_complete` goes to

@@ -56,12 +56,18 @@
    * --type-4; if a second call site for --type-5 appears, question it before
    * adding, because one hero per product is the point of the step.
    *
-   * Ranges are fluid and continuous: 12-13 / 16-18 / 22-28 / 32-44 / 40-56.
+   * Ranges are fluid and continuous: 12-13 / 14-15 / 16-18 / 22-28 / 32-44 / 40-56.
+   *
+   * text-sm is the 14px step (Material bodyMedium, 14sp), added 14 Sep. It keeps Tailwind's name
+   * because 302 call sites use it, including the Btn label: the utility now resolves to a token
+   * instead of Tailwind's default, with no call-site edits and no renumbering of text-1..5.
    * Every other foundation group (space, radius, size, opacity, weight,
    * elevation, zIndex, icon, avatar) is still exactly four.
    */
   --text-1: var(--type-1);
   --text-1--line-height: 1.45;
+  --text-sm: var(--type-sm);
+  --text-sm--line-height: 1.43;
   --text-2: var(--type-2);
   --text-2--line-height: 1.5;
   --text-3: var(--type-3);
@@ -219,6 +225,8 @@
 
   /* Type ramps, verbatim from the generated ml-tokens.css. */
   --type-1: clamp(12px, calc(12px + 1 * (100vw - 360px) / 1080), 13px);
+  /* 14px step. Not in the generated ml-tokens.css yet; add it there too. */
+  --type-sm: clamp(14px, calc(14px + 1 * (100vw - 360px) / 1080), 15px);
   --type-2: clamp(16px, calc(16px + 2 * (100vw - 360px) / 1080), 18px);
   --type-3: clamp(22px, calc(22px + 6 * (100vw - 360px) / 1080), 28px);
   --type-4: clamp(32px, calc(32px + 12 * (100vw - 360px) / 1080), 44px);
