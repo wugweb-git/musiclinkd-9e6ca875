@@ -16,6 +16,7 @@ import {
   collabTypes,
   invitations,
   projects,
+  proposals,
   sortOptions,
   sortProjects,
   tabFilter,
@@ -185,14 +186,26 @@ function CollabHome() {
               ))
             )}
             <Label>Proposals</Label>
-            <Link to="/collab/proposals/$id" params={{ id: "prop-mix" }} className="mb-3 block">
-              <Card>
-                <p className="text-[14px] font-semibold">Kabir Nair — mixing proposal</p>
-                <p className="text-[11px] text-muted-foreground">
-                  Raat Ki Rani · ₹55,000 · received yesterday
-                </p>
-              </Card>
-            </Link>
+            {proposals.map((p) => (
+              <Link
+                key={p.id}
+                to="/collab/proposals/$id"
+                params={{ id: p.id }}
+                className="mb-3 block"
+              >
+                <Card>
+                  <p className="text-[14px] font-semibold">
+                    {p.status === "sent"
+                      ? `You — ${p.role} proposal`
+                      : `${p.from} — ${p.role} proposal`}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {p.projectName} · {p.compensation} · {p.status === "sent" ? "sent" : "received"}{" "}
+                    {p.sentAt.toLowerCase()}
+                  </p>
+                </Card>
+              </Link>
+            ))}
             <BtnLink to="/collab/proposals/new" variant="outline" className="w-full">
               Send a proposal
             </BtnLink>

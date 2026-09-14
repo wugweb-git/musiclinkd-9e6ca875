@@ -53,7 +53,7 @@ function Discover() {
         {quickCategories.map((c) => (
           <Link
             key={c.label}
-            to="/categories"
+            to={c.to}
             className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3"
           >
             <span
@@ -77,7 +77,10 @@ function Discover() {
       </section>
 
       <section className="pb-6">
-        <SectionHeader title="Trending this week" action={<Link to="/search">See all</Link>} />
+        <SectionHeader
+          title="Trending this week"
+          action={<Link to="/discover/music">See all</Link>}
+        />
         <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {trending.map((t) => (
             <article
@@ -143,7 +146,10 @@ function Discover() {
       </section>
 
       <section className="pb-8">
-        <SectionHeader title="Nearby professionals" action="Mumbai" />
+        <SectionHeader
+          title="Nearby professionals"
+          action={<Link to="/discover/nearby">Mumbai</Link>}
+        />
         <div className="space-y-3 px-5">
           {talents.slice(0, 2).map((t) => (
             <Link

@@ -36,6 +36,7 @@ export const Route = createFileRoute("/provider/bookings/calendar")({
 const views = ["Day", "Week", "Month"] as const;
 
 const all: Booking[] = [...providerToday, ...providerRequests, ...bookings];
+const requestRefs = new Set(providerRequests.map((r) => r.ref));
 
 function label(b: Booking) {
   const entity = getBookable(b.bookableId);
@@ -110,8 +111,10 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
 function BlockRow({ b }: { b: Booking }) {
   return (
     <Link
-      to="/provider/bookings/$ref"
-      params={{ ref: b.ref }}
+      // Requests live on their own detail page; the session page only knows confirmed bookings.
+      {...(requestRefs.has(b.ref)
+        ? { to: "/provider/bookings/requests/$ref" as const, params: { ref: b.ref } }
+        : { to: "/provider/bookings/$ref" as const, params: { ref: b.ref } })}
       className="flex min-w-0 items-start gap-3 rounded-lg border border-border bg-card p-3"
     >
       <span className="w-[62px] shrink-0 text-[12px] font-bold leading-tight">

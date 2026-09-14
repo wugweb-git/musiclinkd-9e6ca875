@@ -183,17 +183,20 @@ export const singers: Talent[] = [
   },
 ];
 
-export const quickCategories = [
-  { label: "Talent", emoji: "🎤" },
-  { label: "Bands", emoji: "🥁" },
-  { label: "Studios", emoji: "🏢" },
-  { label: "Events", emoji: "🎪" },
-  { label: "Marketplace", emoji: "🛒" },
-  { label: "Rentals", emoji: "🎛" },
-  { label: "Labels", emoji: "🏷" },
-  { label: "Venues", emoji: "🏟" },
-  { label: "Communities", emoji: "👥" },
+export const quickCategories: { label: string; emoji: string; to: QuickCategoryTo }[] = [
+  { label: "Talent", emoji: "🎤", to: "/categories" },
+  { label: "Bands", emoji: "🥁", to: "/bands" },
+  { label: "Studios", emoji: "🏢", to: "/discover/community" },
+  { label: "Events", emoji: "🎪", to: "/categories" },
+  { label: "Marketplace", emoji: "🛒", to: "/marketplace" },
+  { label: "Rentals", emoji: "🎛", to: "/marketplace/rent" },
+  { label: "Labels", emoji: "🏷", to: "/discover/community" },
+  { label: "Venues", emoji: "🏟", to: "/discover/community" },
+  { label: "Communities", emoji: "👥", to: "/discover/community" },
 ];
+
+type QuickCategoryTo =
+  "/categories" | "/bands" | "/discover/community" | "/marketplace" | "/marketplace/rent";
 
 export const categories = [
   { label: "Singers", emoji: "🎤", count: "18,420", slug: "singers" },
