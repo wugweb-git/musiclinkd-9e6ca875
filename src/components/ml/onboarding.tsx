@@ -25,6 +25,7 @@ import { Btn, Sheet } from "@/components/ml/ui";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { haptic } from "@/lib/haptics";
+import { deleteProfileImage, PROFILE_IMAGE_ACCEPT, uploadProfileImage } from "@/lib/profile-images";
 import { draftToProfile, profileToDraft } from "@/lib/profile-map";
 import { emptyDraft, visibleSteps, type OnboardingDraft } from "@/data/onboarding";
 import {
@@ -721,18 +722,50 @@ export function PhotoPicker({
 }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const camera = useRef<HTMLInputElement>(null);
+  const gallery = useRef<HTMLInputElement>(null);
 
-  const pick = (src: string) => {
+  // Uploads to the avatars bucket under the signed-in user's folder; the draft stores the public URL.
+  const upload = async (file: File | undefined) => {
     setOpen(false);
+    if (!file) return;
+    setError(null);
     setUploading(true);
-    window.setTimeout(() => {
+    const previous = photo;
+    try {
+      const url = await uploadProfileImage("avatar", file);
+      onChange(url);
+      haptic("confirm");
+      void deleteProfileImage("avatar", previous);
+    } catch (err) {
+      haptic("error");
+      setError(err instanceof Error ? err.message : "The photo did not upload. Try again.");
+    } finally {
       setUploading(false);
-      onChange(src);
-    }, 700);
+    }
   };
+
+  const fileInput = (ref: typeof camera, capture: boolean) => (
+    <input
+      ref={ref}
+      type="file"
+      accept={PROFILE_IMAGE_ACCEPT}
+      {...(capture ? { capture: "user" as const } : {})}
+      className="sr-only"
+      tabIndex={-1}
+      aria-hidden
+      onChange={(e) => {
+        void upload(e.target.files?.[0]);
+        e.target.value = "";
+      }}
+    />
+  );
 
   return (
     <div>
+      {fileInput(camera, true)}
+      {fileInput(gallery, false)}
       <div className="flex items-center gap-4">
         <div
           className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-subtle"
@@ -747,13 +780,22 @@ export function PhotoPicker({
           )}
         </div>
         <div className="flex-1 space-y-2">
-          <Btn variant="outline" className="w-full" onClick={() => setOpen(true)}>
+          <Btn
+            variant="outline"
+            className="w-full"
+            disabled={uploading}
+            onClick={() => setOpen(true)}
+          >
             {photo ? "Replace photo" : "Add photo"}
           </Btn>
-          {photo ? (
+          {photo && !uploading ? (
             <button
               type="button"
-              onClick={() => onChange(null)}
+              onClick={() => {
+                const previous = photo;
+                onChange(null);
+                void deleteProfileImage("avatar", previous);
+              }}
               className="flex min-h-11 w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground"
             >
               <Trash2 size={14} /> Remove
@@ -761,30 +803,22 @@ export function PhotoPicker({
           ) : null}
         </div>
       </div>
+      {error ? (
+        <p role="alert" className="mt-3 text-1 text-destructive">
+          {error}
+        </p>
+      ) : null}
 
       <Sheet open={open} onClose={() => setOpen(false)} title={label}>
         <ul className="space-y-2">
           {[
-            {
-              icon: <Camera size={18} />,
-              label: "Take photo",
-              src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-            },
-            {
-              icon: <ImageIcon size={18} />,
-              label: "Choose from gallery",
-              src: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
-            },
-            {
-              icon: <ImageIcon size={18} />,
-              label: "Use existing photo",
-              src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400",
-            },
+            { icon: <Camera size={18} />, label: "Take photo", input: camera },
+            { icon: <ImageIcon size={18} />, label: "Choose from gallery", input: gallery },
           ].map((o) => (
             <li key={o.label}>
               <button
                 type="button"
-                onClick={() => pick(o.src)}
+                onClick={() => o.input.current?.click()}
                 className="flex min-h-14 w-full items-center gap-3 rounded-lg border border-border bg-card px-4 text-sm font-semibold"
               >
                 {o.icon}
@@ -793,9 +827,7 @@ export function PhotoPicker({
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-1 text-muted-foreground">
-          You can crop and reposition after choosing. No professional headshot needed.
-        </p>
+        <p className="mt-4 text-1 text-muted-foreground">JPEG, PNG or WebP, up to 5 MB.</p>
       </Sheet>
     </div>
   );
