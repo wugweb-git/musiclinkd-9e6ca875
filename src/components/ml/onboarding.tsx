@@ -293,7 +293,7 @@ export function StepShell({
         {banner}
         <h1 className="text-3 leading-tight">{title}</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
-        <p className="mt-3 rounded-lg px-4 py-3 text-1 leading-relaxed text-muted-foreground bg-pink-container">
+        <p className="mt-3 rounded-lg px-4 py-3 text-1 leading-relaxed text-muted-foreground bg-subtle">
           {why}
         </p>
         <div className="mt-6">{children}</div>
@@ -372,10 +372,10 @@ export function ChoiceGrid({
               onSelect(o.key);
             }}
             className={`flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
-              on ? "border-primary bg-pink-container" : "border-border bg-card"
+              on ? "border-primary bg-card ring-1 ring-primary" : "border-border bg-card"
             }`}
           >
-            <span className={on ? "text-pink-strong" : "text-muted-foreground"}>{o.icon}</span>
+            <span className={on ? "text-foreground" : "text-muted-foreground"}>{o.icon}</span>
             <span>
               <span className="block text-sm font-semibold">{o.label}</span>
               <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
@@ -696,7 +696,7 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
       <button
         type="button"
         onClick={onRetry}
-        className="mt-3 min-h-11 text-1 font-bold text-pink-strong"
+        className="mt-3 min-h-11 text-1 font-bold text-foreground"
       >
         Try again
       </button>

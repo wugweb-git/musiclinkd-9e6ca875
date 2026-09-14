@@ -81,7 +81,7 @@ function NotificationsScreen() {
         <button
           type="button"
           onClick={() => setItems((all) => all.map((n) => ({ ...n, read: true })))}
-          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-pink-strong"
+          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-foreground"
         >
           <CheckCheck size={14} /> Mark all as read
         </button>
@@ -96,9 +96,7 @@ function NotificationsScreen() {
               onClick={() => open(n.id, n.to)}
               className="block w-full text-left"
             >
-              <Card
-                className={`flex gap-3 ${n.read ? "" : "border-primary/40 bg-pink-container/30"}`}
-              >
+              <Card className={`flex gap-3 ${n.read ? "" : "border-primary/40 bg-subtle"}`}>
                 {n.actor ? (
                   <img
                     src={n.actor.photo}
@@ -125,13 +123,13 @@ function NotificationsScreen() {
                     {n.body}
                   </span>
                   {n.cta ? (
-                    <span className="mt-1.5 block text-[12px] font-semibold text-pink-strong">
+                    <span className="mt-1.5 block text-[12px] font-semibold text-foreground">
                       {n.cta} →
                     </span>
                   ) : null}
                 </span>
                 {!n.read ? (
-                  <span aria-hidden className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                  <span aria-hidden className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand" />
                 ) : null}
               </Card>
             </button>

@@ -156,7 +156,7 @@ function NewService() {
             </div>
             <Link
               to="/services/availability"
-              className="block text-[12px] font-semibold text-pink-strong"
+              className="block text-[12px] font-semibold text-foreground"
             >
               Set your weekly availability →
             </Link>

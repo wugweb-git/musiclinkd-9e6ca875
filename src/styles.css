@@ -9,7 +9,8 @@
 
 /*
  * MusicLinkd — Gestalt Design System tokens (v9, reconciled 31 Aug 2026).
- * Brand pink #EA4C89, ground --background #ECECF1, hairline --border #D5D5DE.
+ * Primary is ink #0D0D0D on greys and white; brand pink #EA4C89 is a rare accent (about 10% of a
+ * screen: the logo, unread dots, the Welcome tagline). Ground --background #ECECF1, hairline #D5D5DE.
  * (Corrected 10 Sep: this line read "paper #FCFCFD, hairline #ECECF1" and was stale on both
  * counts — #ECECF1 is the ground, not the hairline, and #FCFCFD was replaced as the ground for
  * the contrast reason spelled out at --background below.) Navy is retired: as in
@@ -107,6 +108,7 @@
   --color-ring: var(--ring);
 
   --color-ink: var(--ink);
+  --color-brand: var(--brand);
   --color-purple: var(--purple);
   --color-success: var(--success);
   --color-warn: var(--warn);
@@ -195,7 +197,8 @@
   --card-foreground: oklch(0.1591 0 89.88);
   --popover: oklch(1 0 89.88);
   --popover-foreground: oklch(0.1591 0 89.88);
-  --primary: oklch(0.6515 0.1995 0.71);
+  /* Primary is ink (owner, 14 Sep): buttons, selection, progress, focus. Pink is --brand. */
+  --primary: #0d0d0d;
   --primary-foreground: oklch(1 0 89.88);
   --secondary: #f8f8fb;
   --secondary-foreground: oklch(0.1713 0.0539 282.44);
@@ -223,9 +226,11 @@
    */
   --border: #d5d5de;
   --input: #d5d5de;
-  --ring: oklch(0.6515 0.1995 0.71);
+  --ring: #0d0d0d;
 
   --ink: #0d0d0d; /* tokens.json color.ink */
+  /* Brand pink. An accent, not an action colour: never buttons, links, selection or body text. */
+  --brand: #ea4c89;
   --purple: oklch(0.6056 0.2189 292.72);
   --success: oklch(0.7227 0.192 149.58);
   --warn: oklch(0.7686 0.1647 70.08);
@@ -238,21 +243,17 @@
   --warn-container: color-mix(in oklab, var(--warn) 14%, transparent);
   --danger: oklch(0.5771 0.2152 27.33);
   --danger-container: color-mix(in oklab, var(--danger) 12%, transparent);
-  --pink-strong: #c7295f; /* system: --color-pink-pressed. The ONLY pink permitted for text. */
-  --gradient-brand: linear-gradient(135deg, var(--primary), var(--purple));
+  --pink-strong: #c7295f; /* system: --color-pink-pressed. The only pink permitted for text, and rarely. */
+  --gradient-brand: linear-gradient(135deg, var(--brand), var(--purple));
   --gradient-ink: linear-gradient(150deg, #0d0d0d, #2b2b2b); /* ink -> inkPressed */
 
   /* Category badge pair. Text is darkened to clear 4.5:1 on its own tint. */
   --status-category-bg: color-mix(in srgb, var(--purple) 12%, #ffffff);
   --status-category-text: color-mix(in srgb, var(--purple) 72%, black);
 
-  /*
-   * Selected pair. Uses --pink-strong rather than --primary: --primary at L=0.65 on
-   * its own 10% tint is roughly 3:1, which passes for an icon but fails 4.5:1 for the
-   * chip label. This mirrors the `brand` tone already in kit.tsx.
-   */
-  --selected-bg: var(--pink-container);
-  --selected-text: var(--pink-strong);
+  /* Selected pair: ink with white, the same as a primary button. */
+  --selected-bg: #0d0d0d;
+  --selected-text: #ffffff;
 
   /* Elevation, verbatim from the generated ml-tokens.css. */
   --elevation-1: 0 1px 3px rgba(13, 11, 38, 0.08);

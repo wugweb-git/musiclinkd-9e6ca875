@@ -137,7 +137,7 @@ function OtpScreen() {
           <button
             type="button"
             onClick={() => void resend()}
-            className="font-semibold text-pink-strong"
+            className="font-semibold text-foreground"
           >
             Resend code
           </button>
@@ -148,12 +148,12 @@ function OtpScreen() {
         <button
           type="button"
           onClick={() => void navigate({ to: "/auth/phone" })}
-          className="font-semibold text-pink-strong"
+          className="font-semibold text-foreground"
         >
           Change number
         </button>
         <span className="mx-2 text-border">|</span>
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
+        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
           Use email
         </Link>
       </p>

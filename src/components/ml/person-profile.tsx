@@ -237,7 +237,7 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
               <div key={item.label} className="rounded-lg bg-subtle p-3">
                 <p className="text-1 text-muted-foreground">{item.label}</p>
                 <p className="mt-1 text-lg font-bold">{item.value}</p>
-                <p className="text-1 font-semibold text-pink-strong">{item.delta}</p>
+                <p className="text-1 font-semibold text-foreground">{item.delta}</p>
               </div>
             ))}
           </div>
@@ -300,7 +300,7 @@ function Overview({
             <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
             <button
               type="button"
-              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-pink-strong"
+              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-foreground"
               onClick={() => onTab("About")}
             >
               Read full profile <ChevronRight size={14} aria-hidden />
@@ -483,7 +483,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
                   <p className="mt-1 truncate text-1 text-muted-foreground">
                     {release.kind} · {release.year}
                   </p>
-                  <p className="mt-1 truncate text-1 font-semibold text-pink-strong">
+                  <p className="mt-1 truncate text-1 font-semibold text-foreground">
                     {release.label}
                   </p>
                 </div>
@@ -627,7 +627,7 @@ function About({ p }: { p: PersonProfile }) {
 function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-lg border border-border bg-card p-3">
-      <span className="flex h-8 w-8 items-center justify-center rounded-md bg-subtle text-pink-strong">
+      <span className="flex h-8 w-8 items-center justify-center rounded-md bg-subtle text-foreground">
         {icon}
       </span>
       <p className="mt-3 text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
@@ -672,7 +672,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
             to={p.studio.to}
             className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-pink-strong">
+            <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-foreground">
               <Mic2 size={20} aria-hidden />
             </span>
             <span className="min-w-0 flex-1">

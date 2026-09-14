@@ -197,7 +197,7 @@ function Settings() {
         <Link
           to="/collab/$id"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-pink-strong"
+          className="mb-8 block text-center text-[12px] font-semibold text-foreground"
         >
           Back to workspace
         </Link>

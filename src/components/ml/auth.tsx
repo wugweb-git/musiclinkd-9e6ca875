@@ -36,7 +36,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "mb-5 flex items-center gap-2" : "mb-7 flex items-center gap-2"}>
       <span className="flex h-9 w-9 items-center justify-center rounded-md bg-pink-container">
-        <LogoMark className="w-6 text-primary" />
+        <LogoMark className="w-6 text-brand" />
       </span>
       <span className="text-2 font-semibold">MusicLinkd</span>
     </div>
@@ -69,7 +69,7 @@ export type NoticeTone = "error" | "info" | "success" | "warn";
 const noticeStyles: Record<NoticeTone, { bg: string; fg: string }> = {
   error: { bg: "bg-danger-container", fg: "text-destructive" },
   warn: { bg: "bg-warn-container", fg: "text-foreground" },
-  info: { bg: "bg-pink-container", fg: "text-foreground" },
+  info: { bg: "bg-subtle", fg: "text-foreground" },
   success: { bg: "bg-success-container", fg: "text-foreground" },
 };
 
@@ -219,7 +219,7 @@ export function PasswordRequirements({ value }: { value: string }) {
         {checks.map((c) => (
           <li key={c.label} className="flex items-center gap-2 text-1 text-muted-foreground">
             <span
-              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-pink-container" : "bg-border"}`}
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-subtle" : "bg-border"}`}
             >
               {c.ok ? (
                 <Check size={11} className="text-primary" />
@@ -241,11 +241,17 @@ export function LegalNote() {
   return (
     <p className="mt-6 text-center text-1 leading-relaxed text-muted-foreground">
       By continuing you agree to our{" "}
-      <Link to="/legal/terms" className="font-semibold text-pink-strong">
+      <Link
+        to="/legal/terms"
+        className="hit-area font-semibold text-foreground underline underline-offset-2"
+      >
         Terms
       </Link>{" "}
       and{" "}
-      <Link to="/legal/privacy" className="font-semibold text-pink-strong">
+      <Link
+        to="/legal/privacy"
+        className="hit-area font-semibold text-foreground underline underline-offset-2"
+      >
         Privacy Policy
       </Link>
       .

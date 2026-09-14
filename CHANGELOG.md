@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — ink is primary; pink is a rare brand accent
+
+- **Primary is ink `#0D0D0D`.** Owner direction: the palette is black, greys and white, and pink is the
+  brand colour used rarely (about 10%). `--primary`, `--ring` and the selected pair now resolve to ink, so
+  every primary button, selected chip, progress bar, checkbox and focus ring is black. Selected chips are
+  ink with white text; selected choice cards get an ink ring.
+- **Pink is `--brand` (`text-brand`, `bg-brand`)** and appears on the logo mark, the notification and
+  unread dots (Home, Notifications, Messages) and the Welcome tagline. `--gradient-brand` starts from
+  brand pink instead of primary.
+- **Pink links and tints are gone.** 125 `text-pink-strong` text sites became `text-foreground` (legal
+  links on the auth screens are underlined), and 43 `pink-container` tints became `subtle` surfaces; the
+  bottom nav active pill is the page grey. The `brand` StatusPill tone is an ink pill. This supersedes
+  the `pink-strong` sweep below, and dark text on these grounds clears AA with margin.
+
 ### Fixed — logo mark on Welcome and Home
 
 - **Welcome and Home show the MusicLinkd mark.** Welcome, the first screen a new user sees, had a

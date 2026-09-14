@@ -219,7 +219,7 @@ function BusinessProfileScreen() {
             <Link
               to="/business/$id/team"
               params={{ id }}
-              className="block text-[12px] font-semibold text-pink-strong"
+              className="block text-[12px] font-semibold text-foreground"
             >
               Manage team →
             </Link>

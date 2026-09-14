@@ -147,14 +147,14 @@ function AuthPage() {
                 Sign in instead
               </Btn>
             ) : error.kind === "invalid_credentials" ? (
-              <Link to="/auth/forgot" className="text-1 font-semibold text-pink-strong">
+              <Link to="/auth/forgot" className="text-1 font-semibold text-foreground">
                 Reset password
               </Link>
             ) : error.kind === "unconfirmed" ? (
               <Link
                 to="/auth/verify-email"
                 search={{ email }}
-                className="text-1 font-semibold text-pink-strong"
+                className="text-1 font-semibold text-foreground"
               >
                 Resend confirmation
               </Link>
@@ -199,7 +199,7 @@ function AuthPage() {
 
       {!signup ? (
         <div className="mb-5 -mt-1 text-right">
-          <Link to="/auth/forgot" className="text-1 font-semibold text-pink-strong">
+          <Link to="/auth/forgot" className="text-1 font-semibold text-foreground">
             Forgot password?
           </Link>
         </div>
@@ -216,12 +216,12 @@ function AuthPage() {
       >
         {signup ? (
           <>
-            Already have an account? <span className="font-semibold text-pink-strong">Sign in</span>
+            Already have an account? <span className="font-semibold text-foreground">Sign in</span>
           </>
         ) : (
           <>
             New to MusicLinkd?{" "}
-            <span className="font-semibold text-pink-strong">Create an account</span>
+            <span className="font-semibold text-foreground">Create an account</span>
           </>
         )}
       </button>
@@ -230,7 +230,7 @@ function AuthPage() {
 
       <p className="mt-6 text-center text-1 text-muted-foreground">
         Browsing without an account?{" "}
-        <Link to="/discover" className="font-semibold text-pink-strong">
+        <Link to="/discover" className="font-semibold text-foreground">
           Explore Discover
         </Link>
       </p>

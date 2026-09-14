@@ -45,7 +45,7 @@ function OfflineScreen() {
       </div>
       <TrustNote>Drafts you started are stored on this device until you're back online.</TrustNote>
       <p className="mt-6 text-center text-1 text-muted-foreground">
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
+        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
           Back to sign in
         </Link>
       </p>

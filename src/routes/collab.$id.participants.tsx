@@ -120,14 +120,14 @@ function Participants() {
         <button
           type="button"
           onClick={() => setRoleSheet(true)}
-          className="mt-2 text-[11px] font-semibold text-pink-strong"
+          className="mt-2 text-[11px] font-semibold text-foreground"
         >
           See the role taxonomy
         </button>
         <Link
           to="/collab/$id/roles"
           params={{ id: project.id }}
-          className="mt-2 block text-[11px] font-semibold text-pink-strong"
+          className="mt-2 block text-[11px] font-semibold text-foreground"
         >
           Open project roles
         </Link>
@@ -136,7 +136,7 @@ function Participants() {
       <Link
         to="/collab/$id/invite-link"
         params={{ id: project.id }}
-        className="mb-5 block text-center text-[12px] font-semibold text-pink-strong"
+        className="mb-5 block text-center text-[12px] font-semibold text-foreground"
       >
         Invite with a link instead
       </Link>

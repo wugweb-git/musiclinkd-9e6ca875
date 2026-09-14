@@ -49,7 +49,7 @@ export function BottomNav() {
                 <span
                   className={
                     active
-                      ? "flex h-7 w-12 items-center justify-center rounded-full bg-pink-container"
+                      ? "flex h-7 w-12 items-center justify-center rounded-full bg-background"
                       : "flex h-7 w-12 items-center justify-center"
                   }
                 >
@@ -60,7 +60,7 @@ export function BottomNav() {
                   />
                 </span>
                 <span
-                  className={`text-1 font-semibold ${active ? "text-pink-strong" : "text-muted-foreground"}`}
+                  className={`text-1 font-semibold ${active ? "text-foreground" : "text-muted-foreground"}`}
                 >
                   {item.label}
                 </span>
@@ -260,7 +260,7 @@ export function SectionHeader({ title, action }: { title: string; action?: React
     <div className="mb-3 flex items-baseline justify-between gap-3 px-5">
       <h2 className="min-w-0 truncate text-2">{title}</h2>
       {action ? (
-        <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-pink-strong">
+        <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-foreground">
           {action}
         </span>
       ) : null}

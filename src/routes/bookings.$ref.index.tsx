@@ -74,7 +74,7 @@ function BookingDetail() {
         {upcoming && today ? (
           <div
             className="mb-4 rounded-lg px-4 py-3 text-sm"
-            style={{ background: "var(--pink-container)" }}
+            style={{ background: "var(--surface-subtle)" }}
           >
             <p className="font-semibold">Today at {formatTime(bk.start)}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">

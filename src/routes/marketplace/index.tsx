@@ -135,7 +135,7 @@ function MarketHome() {
           </BtnLink>
           <Link
             to="/marketplace/mine"
-            className="mt-2 block text-center text-xs font-semibold text-pink-strong"
+            className="mt-2 block text-center text-xs font-semibold text-foreground"
           >
             My Marketplace
           </Link>

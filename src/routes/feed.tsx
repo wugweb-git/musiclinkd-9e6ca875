@@ -126,7 +126,7 @@ function Header() {
   return (
     <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
       <p className="flex min-w-0 items-center gap-2 text-1 font-semibold uppercase tracking-widest text-muted-foreground">
-        <span aria-hidden className="shrink-0 text-primary">
+        <span aria-hidden className="shrink-0 text-brand">
           <LogoMark className="w-6" />
         </span>
         <span className="truncate">MusicLinkd</span>
@@ -139,7 +139,7 @@ function Header() {
         >
           <Bell size={18} />
           {unreadCount() > 0 ? (
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand" />
           ) : null}
         </Link>
         <ViewerAvatar className="h-10 w-10" />
@@ -196,12 +196,12 @@ function Body({ data }: { data: DashboardData }) {
         <section className="px-5 pt-4">
           <Link
             to={headline.to}
-            className="flex min-w-0 items-center gap-3 rounded-lg border border-border p-4 bg-pink-container"
+            className="flex min-w-0 items-center gap-3 rounded-lg border border-border p-4 bg-subtle"
           >
             <div className="min-w-0 flex-1">
               <p className="truncate text-2 font-bold leading-snug">{headline.title}</p>
               <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{headline.body}</p>
-              <span className="mt-2 inline-flex items-center gap-1 text-1 font-semibold text-pink-strong">
+              <span className="mt-2 inline-flex items-center gap-1 text-1 font-semibold text-foreground">
                 {headline.cta} <ArrowRight size={13} />
               </span>
             </div>
@@ -347,7 +347,7 @@ function ContinueBlock({ c }: { c: ContinueCard }) {
           <div className="h-full rounded-full bg-primary" style={{ width: `${c.progress}%` }} />
         </div>
       ) : null}
-      <span className="mt-3 inline-flex items-center gap-1 text-1 font-semibold text-pink-strong">
+      <span className="mt-3 inline-flex items-center gap-1 text-1 font-semibold text-foreground">
         {c.cta} <ArrowRight size={13} />
       </span>
     </>
@@ -392,7 +392,7 @@ function QuietAction({
       to={to}
       className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5"
     >
-      <span className="shrink-0 text-pink-strong">{icon}</span>
+      <span className="shrink-0 text-foreground">{icon}</span>
       <span className="whitespace-nowrap text-1 font-semibold">{label}</span>
     </Link>
   );

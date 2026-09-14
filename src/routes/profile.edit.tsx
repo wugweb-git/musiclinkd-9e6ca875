@@ -373,7 +373,7 @@ function EditProfile() {
               key={o.value}
               type="button"
               onClick={() => update({ visibility: o.value })}
-              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.value ? "border-primary bg-pink-container" : "border-border bg-card"}`}
+              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.value ? "border-primary bg-subtle" : "border-border bg-card"}`}
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold">{o.label}</span>
@@ -417,7 +417,7 @@ function EditProfile() {
                   className="flex min-h-[72px] w-full items-center gap-3 px-4 text-left"
                 >
                   <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-pink-container text-pink-strong"}`}
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-subtle text-foreground"}`}
                   >
                     {section.done ? (
                       <Check size={16} aria-hidden />
@@ -538,7 +538,7 @@ function Chips({
               key={o}
               type="button"
               onClick={() => onToggle(o)}
-              className={`min-h-9 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary bg-pink-container text-pink-strong" : "border-border bg-card text-muted-foreground"}`}
+              className={`min-h-9 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary bg-subtle text-foreground" : "border-border bg-card text-muted-foreground"}`}
             >
               {labels?.[o] ?? o}
             </button>

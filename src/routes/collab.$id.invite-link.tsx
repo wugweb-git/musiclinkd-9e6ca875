@@ -95,7 +95,7 @@ function InviteLink() {
         <Link
           to="/collab/$id/participants"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-pink-strong"
+          className="mb-8 block text-center text-[12px] font-semibold text-foreground"
         >
           Invite someone from MusicLinkd instead
         </Link>

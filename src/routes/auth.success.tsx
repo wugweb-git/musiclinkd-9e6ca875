@@ -24,7 +24,7 @@ function AuthSuccess() {
   const navigate = useNavigate();
   return (
     <AuthScreen>
-      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-pink-container">
+      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-subtle">
         <PartyPopper size={24} className="text-primary" />
       </div>
       <AuthHeading

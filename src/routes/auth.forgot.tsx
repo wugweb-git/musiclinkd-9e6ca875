@@ -109,7 +109,7 @@ function ForgotPassword() {
           </TrustNote>
           <p className="mt-6 text-center text-1 text-muted-foreground">
             Remembered it?{" "}
-            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
+            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
               Sign in
             </Link>
           </p>

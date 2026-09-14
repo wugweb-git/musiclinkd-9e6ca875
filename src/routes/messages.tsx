@@ -26,7 +26,7 @@ function Messages() {
         right={
           <Link
             to="/collab"
-            className="text-[11px] font-bold uppercase tracking-wide text-pink-strong"
+            className="text-[11px] font-bold uppercase tracking-wide text-foreground"
           >
             Collabs
           </Link>
@@ -71,7 +71,7 @@ function Messages() {
               </p>
             </div>
             {i < 3 ? (
-              <span className="h-2.5 w-2.5 rounded-full bg-primary" />
+              <span className="h-2.5 w-2.5 rounded-full bg-brand" />
             ) : (
               <span className="text-[10px] text-muted-foreground">2d</span>
             )}

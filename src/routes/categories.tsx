@@ -34,7 +34,7 @@ function Categories() {
           >
             <span
               className="flex h-12 w-12 items-center justify-center rounded-md text-xl"
-              style={{ background: "var(--pink-container)" }}
+              style={{ background: "var(--surface-subtle)" }}
             >
               {c.emoji}
             </span>

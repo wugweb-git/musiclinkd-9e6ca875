@@ -101,7 +101,7 @@ function ListForRent() {
                   className="rounded-lg border p-4 text-left"
                   style={{
                     borderColor: cat === c.slug ? "var(--primary)" : "var(--border)",
-                    background: cat === c.slug ? "var(--pink-container)" : "var(--card)",
+                    background: cat === c.slug ? "var(--surface-subtle)" : "var(--card)",
                   }}
                 >
                   <span className="text-xl">{c.emoji}</span>

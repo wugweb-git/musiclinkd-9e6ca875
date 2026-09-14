@@ -95,7 +95,7 @@ function Discussion() {
               {d.pinned ? (
                 <span
                   className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
-                  style={{ background: "var(--pink-container)", color: "var(--primary)" }}
+                  style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
                 >
                   Pinned
                 </span>

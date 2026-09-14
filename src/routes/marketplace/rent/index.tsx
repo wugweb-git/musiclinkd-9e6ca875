@@ -55,7 +55,7 @@ function RentHome() {
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               Professional music equipment when you need it.
             </p>
-            <button className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-pink-strong">
+            <button className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-foreground">
               <MapPin size={12} /> Mumbai, Maharashtra · change
             </button>
           </div>
@@ -101,7 +101,7 @@ function RentHome() {
             >
               <span
                 className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
-                style={{ background: "var(--pink-container)" }}
+                style={{ background: "var(--surface-subtle)" }}
               >
                 {c.emoji}
               </span>
@@ -166,7 +166,7 @@ function RentHome() {
           <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">
             Rent out equipment
           </BtnLink>
-          <div className="mt-2 flex justify-center gap-4 text-xs font-semibold text-pink-strong">
+          <div className="mt-2 flex justify-center gap-4 text-xs font-semibold text-foreground">
             <Link to="/marketplace/rent/mine">My rentals</Link>
             <Link to="/marketplace/rent/listings">My listings</Link>
           </div>
