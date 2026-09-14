@@ -158,7 +158,7 @@ export const saveMyProfile = createServerFn({ method: "POST" })
   });
 
 /** Anon-key client with no session, for public reads that RLS already scopes. */
-async function anonClient() {
+export async function anonClient() {
   const { createClient } = await import("@supabase/supabase-js");
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
   const url = process.env["SUPABASE_URL"]!;
@@ -198,15 +198,14 @@ export const getPublicProfile = createServerFn({ method: "GET" })
 export type TaxonomyLabels = Record<string, Record<string, string>>;
 
 /**
- * Published labels for the categories profiles store. Unpublished slugs are absent, so callers fall
+ * Published labels for every taxonomy category. Unpublished slugs are absent, so callers fall
  * back to the slug rather than rendering blank.
  */
 export const getTaxonomyLabels = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
   const { data, error } = await client
     .from("taxonomy_options" as never)
-    .select("category_key, slug, label")
-    .in("category_key", ["person_types", "instruments", "genres", "languages"]);
+    .select("category_key, slug, label");
   if (error) throw new Error(error.message);
 
   const labels: TaxonomyLabels = {};
