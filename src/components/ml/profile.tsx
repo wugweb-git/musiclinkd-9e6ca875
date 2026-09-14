@@ -25,6 +25,7 @@ import type {
   VideoItem,
 } from "@/data/profile";
 import { Btn, Sheet } from "./ui";
+import { joinParts } from "@/lib/utils";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -357,19 +358,25 @@ export function AudioTrackCard({
 }) {
   return (
     <article className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
-      <img
-        src={track.artwork}
-        alt=""
-        aria-hidden
-        loading="lazy"
-        className="h-14 w-14 rounded-md object-cover"
-      />
+      {track.artwork ? (
+        <img
+          src={track.artwork}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          className="h-14 w-14 rounded-md object-cover"
+        />
+      ) : (
+        <div aria-hidden className="h-14 w-14 shrink-0 rounded-md bg-subtle" />
+      )}
       <div className="min-w-0 flex-1">
         <h3 className="truncate text-2">{track.title}</h3>
         <p className="truncate text-1 text-muted-foreground">
-          {track.role} · {track.project}
+          {joinParts(track.role, track.project)}
         </p>
-        <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
+        {track.duration ? (
+          <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
+        ) : null}
       </div>
       <button
         type="button"
@@ -387,15 +394,21 @@ export function VideoCard({ v }: { v: VideoItem }) {
   return (
     <article className="w-[220px] shrink-0 overflow-hidden rounded-lg border border-border bg-card">
       <div className="relative h-32">
-        <img src={v.thumb} alt={v.title} loading="lazy" className="h-full w-full object-cover" />
+        {v.thumb ? (
+          <img src={v.thumb} alt={v.title} loading="lazy" className="h-full w-full object-cover" />
+        ) : (
+          <div aria-hidden className="h-full w-full bg-subtle" />
+        )}
         <span className="absolute inset-0 flex items-center justify-center">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-card/90">
             <Play size={16} aria-hidden />
           </span>
         </span>
-        <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-1 font-semibold text-background">
-          {v.duration}
-        </span>
+        {v.duration ? (
+          <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-1 font-semibold text-background">
+            {v.duration}
+          </span>
+        ) : null}
       </div>
       <div className="p-3">
         <h3 className="truncate text-1">{v.title}</h3>
@@ -424,23 +437,27 @@ export function GalleryGrid({ images }: { images: string[] }) {
 export function ProjectCard({ p }: { p: ProjectItem }) {
   return (
     <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
-      <img
-        src={p.cover}
-        alt=""
-        aria-hidden
-        loading="lazy"
-        className="h-20 w-20 rounded-lg object-cover"
-      />
+      {p.cover ? (
+        <img
+          src={p.cover}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          className="h-20 w-20 rounded-lg object-cover"
+        />
+      ) : (
+        <div aria-hidden className="h-20 w-20 shrink-0 rounded-lg bg-subtle" />
+      )}
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="min-w-0 flex-1 truncate text-2">{p.name}</h3>
           <TagChip tone={p.status === "Released" ? "subtle" : "pink"}>{p.status}</TagChip>
         </div>
         <p className="truncate text-1 text-muted-foreground">{p.role}</p>
-        <p className="truncate text-1 text-muted-foreground">with {p.collaborators}</p>
-        <p className="mt-1 text-1 font-semibold text-foreground">
-          {p.genre} · {p.year}
-        </p>
+        {p.collaborators ? (
+          <p className="truncate text-1 text-muted-foreground">with {p.collaborators}</p>
+        ) : null}
+        <p className="mt-1 text-1 font-semibold text-foreground">{joinParts(p.genre, p.year)}</p>
       </div>
     </article>
   );
@@ -457,12 +474,16 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
           <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
       </div>
-      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{s.description}</p>
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        <TagChip>{s.mode}</TagChip>
-        <TagChip>{s.turnaround}</TagChip>
-        <TagChip tone="pink">{s.availability}</TagChip>
-      </div>
+      {s.description ? (
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{s.description}</p>
+      ) : null}
+      {s.mode || s.turnaround || s.availability ? (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {s.mode ? <TagChip>{s.mode}</TagChip> : null}
+          {s.turnaround ? <TagChip>{s.turnaround}</TagChip> : null}
+          {s.availability ? <TagChip tone="pink">{s.availability}</TagChip> : null}
+        </div>
+      ) : null}
       <Btn variant="outline" className="mt-3 w-full min-h-11 text-xs" onClick={onEnquire}>
         Enquire
       </Btn>
@@ -476,9 +497,7 @@ export function ExperienceCard({ e }: { e: ExperienceItem }) {
       <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
       <div className="min-w-0">
         <h3 className="text-2">{e.title}</h3>
-        <p className="text-1 font-semibold text-muted-foreground">
-          {e.org} · {e.period}
-        </p>
+        <p className="text-1 font-semibold text-muted-foreground">{joinParts(e.org, e.period)}</p>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{e.detail}</p>
       </div>
     </div>
@@ -521,12 +540,14 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
         </div>
         <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-warn">
           <Star size={12} fill="currentColor" aria-hidden />
-          {r.stars}.0
+          {r.stars.toFixed(1)}
         </span>
       </div>
-      <p className="mt-1.5 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        {r.context}
-      </p>
+      {r.context ? (
+        <p className="mt-1.5 text-1 font-bold uppercase tracking-wide text-muted-foreground">
+          {r.context}
+        </p>
+      ) : null}
       <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{r.text}</p>
       {r.response ? (
         <div className="mt-3 rounded-lg bg-subtle p-3">

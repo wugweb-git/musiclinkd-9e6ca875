@@ -63,10 +63,10 @@ export type ServiceItem = {
   id: string;
   name: string;
   description: string;
-  from?: string;
-  turnaround: string;
-  mode: "Remote" | "In person" | "Remote · In person";
-  availability: string;
+  from?: string | undefined;
+  turnaround?: string | undefined;
+  mode?: "Remote" | "In person" | "Remote · In person" | undefined;
+  availability?: string | undefined;
 };
 
 export type ExperienceItem = {

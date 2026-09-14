@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type PortfolioKind = "track" | "ep" | "album" | "video" | "credit" | "live";
@@ -184,7 +185,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     const { data: row } = await client
       .from("profiles")
       .select(
-        "username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, experience_level, availability, avatar_url, cover_url, links, visibility",
+        "id, username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, experience_level, availability, avatar_url, cover_url, links, visibility",
       )
       .eq("username", data.username)
       .maybeSingle();
@@ -214,3 +215,112 @@ export const getTaxonomyLabels = createServerFn({ method: "GET" }).handler(async
   }
   return labels;
 });
+
+/** A profile's sections as stored, before they are shaped for the profile screen. */
+export type ProfileSections = {
+  services: {
+    id: string;
+    name: string;
+    description: string | null;
+    price_paise: number | null;
+    price_unit: string | null;
+    price_note: string | null;
+    turnaround: string | null;
+    mode: string | null;
+    availability: string | null;
+  }[];
+  experience: {
+    id: string;
+    title: string;
+    org: string | null;
+    start_year: number | null;
+    end_year: number | null;
+    detail: string | null;
+  }[];
+  gallery: { id: string; image_url: string }[];
+  reviews: {
+    id: string;
+    author_name: string;
+    author_org: string | null;
+    context: string | null;
+    rating: number;
+    body: string;
+    response: string | null;
+  }[];
+  portfolio: {
+    id: string;
+    title: string;
+    kind: string;
+    description: string | null;
+    role: string | null;
+    collaborators: string[];
+    cover_url: string | null;
+    release_year: number | null;
+  }[];
+  trust_badges: string[];
+  is_verified: boolean;
+};
+
+/** Every section for one profile. RLS decides what the client may see. */
+async function loadSections(client: SupabaseClient, profileId: string): Promise<ProfileSections> {
+  const [services, experience, gallery, reviews, portfolio, profile] = await Promise.all([
+    client
+      .from("profile_services")
+      .select(
+        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability",
+      )
+      .eq("profile_id", profileId)
+      .order("sort_order"),
+    client
+      .from("profile_experience")
+      .select("id, title, org, start_year, end_year, detail")
+      .eq("profile_id", profileId)
+      .order("sort_order"),
+    client
+      .from("profile_gallery")
+      .select("id, image_url")
+      .eq("profile_id", profileId)
+      .order("sort_order"),
+    client
+      .from("reviews")
+      .select("id, author_name, author_org, context, rating, body, response")
+      .eq("target_profile_id", profileId)
+      .order("created_at", { ascending: false }),
+    client
+      .from("portfolio_items")
+      .select("id, title, kind, description, role, collaborators, cover_url, release_year")
+      .eq("user_id", profileId)
+      .eq("published", true)
+      .order("sort_order")
+      .order("created_at", { ascending: false }),
+    client.from("profiles").select("trust_badges, is_verified").eq("id", profileId).maybeSingle(),
+  ]);
+  const failed = [services, experience, gallery, reviews, portfolio, profile].find((r) => r.error);
+  if (failed?.error) throw new Error(failed.error.message);
+
+  const flags = profile.data as { trust_badges?: string[]; is_verified?: boolean } | null;
+  return {
+    services: (services.data ?? []) as ProfileSections["services"],
+    experience: (experience.data ?? []) as ProfileSections["experience"],
+    gallery: (gallery.data ?? []) as ProfileSections["gallery"],
+    reviews: ((reviews.data ?? []) as ProfileSections["reviews"]).map((r) => ({
+      ...r,
+      rating: Number(r.rating),
+    })),
+    portfolio: (portfolio.data ?? []) as ProfileSections["portfolio"],
+    trust_badges: flags?.trust_badges ?? [],
+    is_verified: flags?.is_verified ?? false,
+  };
+}
+
+/** Sections of a public profile, read with the anon key. */
+export const getPublicProfileSections = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => loadSections(await anonClient(), data.profileId));
+
+/** The signed-in user's own sections. */
+export const getMyProfileSections = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) =>
+    loadSections(context.supabase as unknown as SupabaseClient, context.userId),
+  );

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import type { PersonProfile } from "@/data/profile";
 import { profileInsights, profileCompletion } from "@/data/profile";
+import { joinParts } from "@/lib/utils";
 import { Btn, BtnLink, Chip, Screen } from "./ui";
 import {
   AudioTrackCard,
@@ -472,16 +473,20 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
                 key={release.id}
                 className="overflow-hidden rounded-lg border border-border bg-card"
               >
-                <img
-                  src={release.cover}
-                  alt={release.title}
-                  loading="lazy"
-                  className="aspect-square w-full object-cover"
-                />
+                {release.cover ? (
+                  <img
+                    src={release.cover}
+                    alt={release.title}
+                    loading="lazy"
+                    className="aspect-square w-full object-cover"
+                  />
+                ) : (
+                  <div aria-hidden className="aspect-square w-full bg-subtle" />
+                )}
                 <div className="p-3">
                   <h3 className="truncate text-1">{release.title}</h3>
                   <p className="mt-1 truncate text-1 text-muted-foreground">
-                    {release.kind} · {release.year}
+                    {joinParts(release.kind, release.year)}
                   </p>
                   <p className="mt-1 truncate text-1 font-semibold text-foreground">
                     {release.label}
