@@ -5,6 +5,22 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — logo mark on Welcome and Home
+
+- **Welcome and Home show the MusicLinkd mark.** Welcome, the first screen a new user sees, had a
+  text-only wordmark and now uses `Brand`, the waveform lockup on every auth screen and the splash.
+  Home's header label gains the same mark. The Google "G" hex fills on Welcome carry a comment: they
+  are Google's required brand colours, not token misses.
+
+### Fixed — icons, not glyphs, in shared components
+
+- **Lucide icons replace emoji and text glyphs** in the primitives, so every screen using them changes:
+  the TopBar and profile Back arrow, the search bar (search and mic glyphs), talent cards (pin, heart,
+  star), profile location and menu chevrons, the portfolio placeholder, the Featured toggle, tag remove
+  and reorder arrows, opportunity rating, market selection and success ticks, the hire sheet options and
+  collab activity icons. Inline background styles at those sites became token classes. Route-level emoji
+  (for example Discover's quick categories) are not in this change.
+
 ### Fixed — pink text contrast
 
 - **Pink text is `pink-strong` everywhere.** `text-primary` (#EA4C89) on text measured 3.03:1 on the page

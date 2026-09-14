@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Mail, Plus, Smartphone } from "lucide-react";
 
-import { AuthScreen, LegalNote } from "@/components/ml/auth";
+import { AuthScreen, Brand, LegalNote } from "@/components/ml/auth";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -45,6 +45,7 @@ const audience = [
   "Labels, agencies and venues",
 ];
 
+// Google's "G" mark. The four fills are Google's required brand colours, not token misses.
 function GoogleIcon() {
   return (
     <svg viewBox="0 0 48 48" className="h-[18px] w-[18px]" aria-hidden focusable="false">
@@ -133,10 +134,8 @@ function WelcomeScreen() {
     <AuthScreen brand={false} className="bg-card">
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
         <div className="flex-1 pt-4">
-          <h2 className="text-3 font-bold">MusicLinkd</h2>
-          <p className="mt-1 text-2 font-semibold text-pink-strong">
-            Professional Network For Music
-          </p>
+          <Brand compact />
+          <p className="text-2 font-semibold text-pink-strong">Professional Network For Music</p>
 
           <h1 className="mt-7 text-5 font-bold">
             Connect.
