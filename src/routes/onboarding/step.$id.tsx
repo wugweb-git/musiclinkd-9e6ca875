@@ -90,6 +90,12 @@ function typeIcon(o: TaxonomyOption) {
 }
 
 /** The options to show: the bucket's, plus anything already selected that the bucket left out. */
+/** The profile's single experience level: the highest across instruments. */
+function topExperience(map: Record<string, string>): string | null {
+  const rank = (key: string) => experienceLevels.findIndex((e) => e.key === key);
+  return Object.values(map).sort((x, y) => rank(y) - rank(x))[0] ?? null;
+}
+
 function withSelected(
   shown: TaxonomyOption[],
   selected: string[],
@@ -156,11 +162,16 @@ function StepRoute() {
   const [claiming, setClaiming] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
   useEffect(() => setClaimError(null), [draft.username]);
-  // The role step asks twice on one screen: the main role, then anything else.
+  // Role and instruments ask twice on one screen: the choice, then a follow-up (extra roles; how
+  // long each instrument has been played).
   const [roleStage, setRoleStage] = useState<RoleStage>("primary");
-  const hasRole = Boolean(draft.primaryRole);
+  const stageReady =
+    id === "role"
+      ? Boolean(draft.primaryRole)
+      : id === "instruments" && draft.instruments.length > 0;
   useEffect(() => {
-    if (id === "role" && hydrated) setRoleStage(hasRole ? "secondary" : "primary");
+    if ((id === "role" || id === "instruments") && hydrated)
+      setRoleStage(stageReady ? "secondary" : "primary");
     // Only on arrival; picking a role moves the stage itself.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, hydrated]);
@@ -277,23 +288,30 @@ function StepRoute() {
     }
   };
 
-  // Second stage of the role step: same screen, new question, optional.
-  const secondStage = def.id === "role" && roleStage === "secondary" && hasRole;
-  const copy = secondStage
-    ? {
-        title: "Anything else you do?",
-        subtitle: "Pick up to two.",
-        why: "Extra roles widen the work you show up for, without diluting your main one.",
-        optional: true,
-      }
-    : def;
+  // Second stage: same screen, new question, optional.
+  const secondStage = stageReady && roleStage === "secondary";
+  const copy = !secondStage
+    ? def
+    : def.id === "role"
+      ? {
+          title: "Anything else you do?",
+          subtitle: "Pick up to two.",
+          why: "Extra roles widen the work you show up for, without diluting your main one.",
+          optional: true,
+        }
+      : {
+          title: "How long have you played?",
+          subtitle: "Not a ranking — just context.",
+          why: "Helps match you to the right briefs. Never shown as a score.",
+          optional: true,
+        };
   const toFirstStage = () => {
     haptic("select");
     setRoleStage("primary");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const submit =
-    def.id === "role" && !secondStage && hasRole
+    stageReady && !secondStage
       ? () => {
           haptic("select");
           setRoleStage("secondary");
@@ -559,70 +577,55 @@ function StepBody({
     }
 
     case "instruments": {
-      // Instruments and how long each has been played, on one screen. The profile's single
-      // experience level is the highest of them.
-      const rank = (key: string | undefined) => experienceLevels.findIndex((e) => e.key === key);
-      const topLevel = (map: Record<string, string>) =>
-        Object.values(map).sort((x, y) => rank(y) - rank(x))[0] ?? null;
-      const toggleInstrument = (slug: string) => {
-        if (!d.instruments.includes(slug)) {
-          set({ instruments: [...d.instruments, slug] });
-          return;
-        }
-        const map = { ...d.instrumentExperience };
-        delete map[slug];
-        set({
-          instruments: d.instruments.filter((x) => x !== slug),
-          primaryInstrument: d.primaryInstrument === slug ? null : d.primaryInstrument,
-          instrumentExperience: map,
-          experience: topLevel(map),
-        });
-      };
-      return (
-        <div className="space-y-6">
+      if (roleStage === "primary" || !d.instruments.length) {
+        return (
           <ChipPicker
             options={withSelected(bucket?.instruments ?? [], d.instruments, tx?.instruments)}
             selected={d.instruments}
-            onToggle={toggleInstrument}
+            max={2}
+            onToggle={(slug) => {
+              if (d.instruments.includes(slug)) {
+                const map = { ...d.instrumentExperience };
+                delete map[slug];
+                set({
+                  instruments: d.instruments.filter((x) => x !== slug),
+                  primaryInstrument: null,
+                  instrumentExperience: map,
+                  experience: topExperience(map),
+                });
+                return;
+              }
+              const next = [...d.instruments, slug];
+              set({ instruments: next, primaryInstrument: null });
+              // Both picked: the heading and the options switch to experience.
+              if (next.length === 2) setRoleStage("secondary");
+            }}
           />
-          {d.instruments.length > 1 ? (
-            <div>
-              <p className="mb-2 text-sm font-medium">Primary instrument</p>
-              <ChipPicker
-                options={d.instruments.map((slug) => ({
-                  value: slug,
-                  label: labelFor(tx?.instruments, slug),
-                }))}
-                selected={d.primaryInstrument ? [d.primaryInstrument] : []}
-                onToggle={(v) => set({ primaryInstrument: d.primaryInstrument === v ? null : v })}
+        );
+      }
+      // Back returns to the instruments.
+      return (
+        <div key="secondary" className="space-y-4">
+          {d.instruments.map((slug) => {
+            const key = d.instrumentExperience[slug];
+            return (
+              <SelectField
+                key={slug}
+                selectId={`experience-${slug}`}
+                label={labelFor(tx?.instruments, slug)}
+                value={experienceLevels.find((e) => e.key === key)?.label ?? ""}
+                options={experienceLevels.map((e) => e.label)}
+                placeholder="Choose"
+                onChange={(label) => {
+                  const nextKey = experienceLevels.find((e) => e.label === label)?.key;
+                  const map = { ...d.instrumentExperience };
+                  if (nextKey) map[slug] = nextKey;
+                  else delete map[slug];
+                  set({ instrumentExperience: map, experience: topExperience(map) });
+                }}
               />
-            </div>
-          ) : null}
-          {d.instruments.length ? (
-            <div className="space-y-4">
-              <p className="text-sm font-medium">How long have you played?</p>
-              {d.instruments.map((slug) => {
-                const key = d.instrumentExperience[slug];
-                return (
-                  <SelectField
-                    key={slug}
-                    selectId={`experience-${slug}`}
-                    label={labelFor(tx?.instruments, slug)}
-                    value={experienceLevels.find((e) => e.key === key)?.label ?? ""}
-                    options={experienceLevels.map((e) => e.label)}
-                    placeholder="Choose"
-                    onChange={(label) => {
-                      const nextKey = experienceLevels.find((e) => e.label === label)?.key;
-                      const map = { ...d.instrumentExperience };
-                      if (nextKey) map[slug] = nextKey;
-                      else delete map[slug];
-                      set({ instrumentExperience: map, experience: topLevel(map) });
-                    }}
-                  />
-                );
-              })}
-            </div>
-          ) : null}
+            );
+          })}
         </div>
       );
     }

@@ -26,8 +26,10 @@ Owner decisions, 14 Sep. Migration `20260914200000_username_rules.sql` (applied 
 
 ### Changed — new user: instruments and experience on one screen
 
-- "What do you play?" now asks how long each picked instrument has been played, under the instruments.
-  Removing an instrument removes its answer.
+- "What do you play?" allows up to two instruments and no longer asks for a primary instrument.
+- It works like the role screen: picking the second instrument (or Continue with one) switches the same
+  screen to "How long have you played?", with one experience dropdown per instrument. Back returns to the
+  instruments. Removing an instrument removes its answer.
 - The separate experience screen only appears when no instruments are picked (roles without instruments,
   or players who skip them), and asks once for the main role.
 

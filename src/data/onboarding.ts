@@ -511,7 +511,7 @@ export const steps: StepDef[] = [
     id: "instruments",
     group: "Expertise",
     title: "What do you play?",
-    subtitle: "Pick your instruments and how long you've played each.",
+    subtitle: "Pick up to two.",
     why: "Instrument is one of the strongest filters people use to book players.",
     optional: true,
     // Skipped when the person's roles hold no instruments (persona_bucket returns none).
