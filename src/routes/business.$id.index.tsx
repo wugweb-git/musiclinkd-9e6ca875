@@ -88,7 +88,7 @@ function BusinessProfileScreen() {
           <BtnLink to="/messages" variant="ink" className="w-full px-2 text-xs">
             Message
           </BtnLink>
-          <BtnLink to="/booking/$id" params={{ id: "svc-1" }} className="w-full px-2 text-xs">
+          <BtnLink to="/business/$id/enquiry" params={{ id: b.id }} className="w-full px-2 text-xs">
             Book
           </BtnLink>
           <Btn variant="outline" className="w-full px-2 text-xs">

@@ -165,12 +165,18 @@ function ApplicantDetail() {
 
       <Sheet open={hire} onClose={() => setHire(false)} title="How do you want to work together?">
         <div className="space-y-2">
-          <BtnLink to="/booking/$id" params={{ id: "svc-1" }} className="w-full">
-            <span className="inline-flex items-center gap-2">
-              <CalendarDays size={16} /> Create a booking
-            </span>
-          </BtnLink>
-          <BtnLink to="/collab/new" variant="outline" className="w-full">
+          {a?.serviceId ? (
+            <BtnLink to="/services/$id/enquiry" params={{ id: a.serviceId }} className="w-full">
+              <span className="inline-flex items-center gap-2">
+                <CalendarDays size={16} /> Enquire about their service
+              </span>
+            </BtnLink>
+          ) : null}
+          <BtnLink
+            to="/collab/new"
+            variant={a?.serviceId ? "outline" : "primary"}
+            className="w-full"
+          >
             Start a collaboration
           </BtnLink>
           <BtnLink to="/messages" variant="ghost" className="w-full">

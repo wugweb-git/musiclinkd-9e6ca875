@@ -468,6 +468,8 @@ export type Applicant = {
   portfolio: { id: string; title: string; kind: string; cover: string }[];
   status: Exclude<ApplicationStatus, "draft">;
   appliedAt: string;
+  /** service.id this applicant offers. When set, hiring opens that service's enquiry. */
+  serviceId?: string;
 };
 
 export const applicants: Applicant[] = [
