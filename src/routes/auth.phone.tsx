@@ -1,15 +1,19 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Mail } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/haptics";
 import { usePhoneSignIn } from "@/lib/post-auth";
 import {
   AuthHeading,
+  AuthLink,
   AuthNotice,
   AuthScreen,
-  LabeledInput,
+  PhoneField,
   TrustNote,
   classifyAuthError,
+  useFieldErrors,
 } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/auth/phone")({
@@ -31,19 +35,31 @@ export const Route = createFileRoute("/auth/phone")({
 
 function PhoneAuth() {
   const navigate = useNavigate();
-  const [phone, setPhone] = useState("");
-  const digits = phone.replace(/\D/g, "");
-  const ok = digits.length === 10;
+  const [digits, setDigits] = useState("");
   const provider = usePhoneSignIn();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
+  const fields = useFieldErrors<"phone">();
+
+  // Indian mobile numbers are 10 digits and start with 6, 7, 8 or 9.
+  const phoneProblem = !digits
+    ? "Enter your mobile number."
+    : !/^[6-9]\d{9}$/.test(digits)
+      ? "Enter a 10-digit mobile number."
+      : null;
 
   async function send() {
     setError(null);
+    fields.submitted();
+    if (phoneProblem) {
+      haptic("error");
+      return;
+    }
     setBusy(true);
     const { error: err } = await supabase.auth.signInWithOtp({ phone: `+91${digits}` });
     setBusy(false);
     if (err) {
+      haptic("error");
       setError(classifyAuthError(err.message));
       return;
     }
@@ -56,31 +72,13 @@ function PhoneAuth() {
         noValidate
         onSubmit={(e) => {
           e.preventDefault();
-          if (ok && !busy && provider !== "off") void send();
+          if (!busy && provider !== "off") void send();
         }}
       >
         <AuthHeading
           title="Continue with phone"
           sub="We'll text you a 6-digit code. No password to remember."
         />
-
-        <div className="mb-4 flex gap-2">
-          <span className="flex h-13 w-20 shrink-0 items-center justify-center rounded-md border border-border bg-card text-2 font-semibold">
-            +91
-          </span>
-          <div className="min-w-0 flex-1">
-            <LabeledInput
-              label="Mobile number"
-              value={phone}
-              onChange={setPhone}
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel-national"
-              enterKeyHint="go"
-              placeholder="98765 43210"
-            />
-          </div>
-        </div>
 
         {provider === "off" ? (
           <AuthNotice tone="info" title="Phone sign-in is not available yet">
@@ -89,21 +87,24 @@ function PhoneAuth() {
         ) : null}
         {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-        <Btn type="submit" className="w-full" loading={busy} disabled={!ok || provider === "off"}>
+        <PhoneField
+          value={digits}
+          onChange={setDigits}
+          onBlur={() => fields.touch("phone")}
+          error={fields.errorFor("phone", phoneProblem)}
+        />
+
+        <Btn type="submit" className="mt-2 w-full" loading={busy} disabled={provider === "off"}>
           Send code
         </Btn>
       </form>
 
       <TrustNote>Your number is never shown on your public profile.</TrustNote>
 
-      <p className="mt-6 text-center text-1 text-muted-foreground">
-        <Link
-          to="/auth"
-          search={{ mode: "signin" }}
-          className="hit-area font-semibold text-foreground"
-        >
+      <p className="mt-6 flex justify-center text-1">
+        <AuthLink to="/auth" search={{ mode: "signin" }} icon={<Mail size={16} />}>
           Use email instead
-        </Link>
+        </AuthLink>
       </p>
     </AuthScreen>
   );

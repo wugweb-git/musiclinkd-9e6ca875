@@ -1,6 +1,24 @@
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
-import { ArrowLeft, Check, Eye, EyeOff, ShieldCheck, X, type LucideIcon } from "lucide-react";
+import { Link, createLink, useNavigate, useRouter } from "@tanstack/react-router";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type AnchorHTMLAttributes,
+  type ReactNode,
+  type Ref,
+} from "react";
+import {
+  ArrowLeft,
+  CircleAlert,
+  CircleCheck,
+  Eye,
+  EyeOff,
+  Info,
+  ShieldCheck,
+  TriangleAlert,
+  type LucideIcon,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { LogoMark } from "./logo";
@@ -17,7 +35,7 @@ export type AuthBack =
 
 export function AuthScreen({
   children,
-  brand = true,
+  brand = false,
   back,
   className = "",
 }: {
@@ -37,9 +55,8 @@ export function AuthScreen({
     >
       <div className="flex-1 px-5 pb-10 pt-[max(1.5rem,env(safe-area-inset-top))]">
         {back ? (
-          <div className="mb-7 flex items-center gap-3">
+          <div className="-ml-2 mb-3 flex h-12 items-center">
             <AuthBackButton back={back} />
-            {brand ? <Brand className="mb-0" /> : null}
           </div>
         ) : brand ? (
           <Brand />
@@ -56,7 +73,7 @@ function AuthBackButton({ back }: { back: AuthBack }) {
   return (
     <IconBtn
       label="Back"
-      variant="outline"
+      variant="plain"
       onClick={() => {
         if (router.history.canGoBack()) router.history.back();
         else void navigate({ ...(back as { to: "/welcome" }), replace: true });
@@ -126,7 +143,7 @@ export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
 
 export function Divider({ label }: { label: string }) {
   return (
-    <div className="my-6 flex items-center gap-3 text-1 font-semibold uppercase tracking-wide text-muted-foreground">
+    <div className="my-6 flex items-center gap-3 text-1 text-muted-foreground">
       <span className="h-px flex-1 bg-border" />
       {label}
       <span className="h-px flex-1 bg-border" />
@@ -138,13 +155,17 @@ export function Divider({ label }: { label: string }) {
 
 export type NoticeTone = "error" | "info" | "success" | "warn";
 
-const noticeStyles: Record<NoticeTone, { bg: string; fg: string }> = {
-  error: { bg: "bg-danger-container", fg: "text-destructive" },
-  warn: { bg: "bg-warn-container", fg: "text-foreground" },
-  info: { bg: "bg-subtle", fg: "text-foreground" },
-  success: { bg: "bg-success-container", fg: "text-foreground" },
+const noticeStyles: Record<NoticeTone, { box: string; icon: string; Icon: LucideIcon }> = {
+  error: { box: "bg-danger-container", icon: "text-destructive", Icon: CircleAlert },
+  warn: { box: "bg-warn-container", icon: "text-foreground", Icon: TriangleAlert },
+  info: { box: "bg-subtle", icon: "text-muted-foreground", Icon: Info },
+  success: { box: "bg-success-container", icon: "text-success", Icon: CircleCheck },
 };
 
+/**
+ * A message about the whole form (a failed sign-in, a sent code). Field problems belong under the
+ * field instead. Icon, one bold line, an optional sentence and an optional action; it slides in.
+ */
 export function AuthNotice({
   tone = "error",
   title,
@@ -160,112 +181,243 @@ export function AuthNotice({
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className={`mb-5 rounded-lg px-4 py-3.5 ${s.bg}`}
+      className={cn("mb-5 flex animate-message gap-3 rounded-md px-3.5 py-3", s.box)}
     >
-      <p className={`text-1 font-semibold ${s.fg}`}>{title}</p>
-      {children ? (
-        <div className="mt-1 text-1 leading-relaxed text-muted-foreground">{children}</div>
-      ) : null}
-      {action ? <div className="mt-3">{action}</div> : null}
+      <s.Icon size={18} className={cn("mt-px shrink-0", s.icon)} aria-hidden />
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold leading-snug">{title}</p>
+        {children ? (
+          <div className="mt-0.5 text-1 leading-relaxed text-muted-foreground">{children}</div>
+        ) : null}
+        {action ? <div className="mt-2">{action}</div> : null}
+      </div>
     </div>
   );
 }
 
-/* -------------------------------------------------------------- inputs */
+/* --------------------------------------------------------------- links */
 
-export function LabeledInput({
+function AuthLinkAnchor({
+  icon,
+  children,
+  className,
+  ...props
+}: AnchorHTMLAttributes<HTMLAnchorElement> & { icon?: ReactNode; ref?: Ref<HTMLAnchorElement> }) {
+  return (
+    <a
+      {...props}
+      className={cn(
+        "link-action hit-area inline-flex items-center gap-1.5 font-semibold text-foreground",
+        className,
+      )}
+    >
+      {icon ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {icon}
+        </span>
+      ) : null}
+      {children}
+    </a>
+  );
+}
+
+/** Inline text link: underline on hover, dims while pressed, 48dp touch area, optional icon. */
+export const AuthLink = createLink(AuthLinkAnchor);
+
+/** The same treatment for an action that is not navigation. */
+export function AuthTextButton({
+  icon,
+  children,
+  onClick,
+  disabled = false,
+  className,
+}: {
+  icon?: ReactNode;
+  children: ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "link-action hit-area inline-flex items-center gap-1.5 font-semibold text-foreground disabled:pointer-events-none disabled:text-muted-foreground",
+        className,
+      )}
+    >
+      {icon ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {icon}
+        </span>
+      ) : null}
+      {children}
+    </button>
+  );
+}
+
+/* -------------------------------------------------------------- fields */
+
+/**
+ * Text field states: enabled, hovered (pointer devices), focused (ink border + ring), filled,
+ * invalid (red border, message with icon under the field, announced), disabled. The label is quiet
+ * sentence case; the message slides in so the change is noticed without a jump.
+ */
+export function TextField({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
   type = "text",
   hint,
+  error,
   autoComplete,
   inputMode,
   enterKeyHint,
+  leading,
+  trailing,
+  maxLength,
+  disabled = false,
+  className,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
-  type?: "text" | "email" | "tel";
-  enterKeyHint?: "next" | "go" | "done" | "send";
+  type?: "text" | "email" | "tel" | "password";
   hint?: string;
+  /** Shown under the field, in place of the hint, and marks the field invalid. */
+  error?: string | null;
   autoComplete?: string;
   inputMode?: "text" | "email" | "tel" | "numeric";
+  enterKeyHint?: "next" | "go" | "done" | "send";
+  leading?: ReactNode;
+  trailing?: ReactNode;
+  maxLength?: number;
+  disabled?: boolean;
+  className?: string;
 }) {
+  const id = useId();
+  const messageId = `${id}-message`;
+  const invalid = Boolean(error);
   return (
-    <label className="mb-4 block">
-      <span className="mb-2 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
+    <div className={cn("mb-4", className)}>
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-foreground">
         {label}
-      </span>
-      <input
-        type={type}
-        value={value}
-        inputMode={inputMode}
-        autoComplete={autoComplete}
-        enterKeyHint={enterKeyHint}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="h-13 w-full rounded-md border border-border bg-card px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground focus:border-primary"
-      />
-      {hint ? <span className="mt-1.5 block text-1 text-muted-foreground">{hint}</span> : null}
-    </label>
+      </label>
+      <div
+        className={cn(
+          "flex h-12 items-center gap-2 rounded-md border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
+          invalid
+            ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
+            : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
+          disabled && "bg-subtle opacity-60",
+        )}
+      >
+        {leading}
+        <input
+          id={id}
+          type={type}
+          value={value}
+          inputMode={inputMode}
+          autoComplete={autoComplete}
+          enterKeyHint={enterKeyHint}
+          maxLength={maxLength}
+          disabled={disabled}
+          aria-invalid={invalid || undefined}
+          aria-describedby={error || hint ? messageId : undefined}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          className="h-full min-w-0 flex-1 bg-transparent text-2 outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none"
+        />
+        {trailing}
+      </div>
+      {error ? (
+        <p
+          id={messageId}
+          role="alert"
+          className="mt-1.5 flex animate-message items-start gap-1.5 text-1 text-destructive"
+        >
+          <CircleAlert size={14} className="mt-px shrink-0" aria-hidden />
+          {error}
+        </p>
+      ) : hint ? (
+        <p id={messageId} className="mt-1.5 text-1 text-muted-foreground">
+          {hint}
+        </p>
+      ) : null}
+    </div>
   );
 }
+
+/** Kept for existing call sites; it is a TextField. */
+export const LabeledInput = TextField;
 
 export function PasswordInput({
   label = "Password",
   value,
   onChange,
-  placeholder = "••••••••",
+  onBlur,
+  error,
+  placeholder = "Your password",
   autoComplete = "current-password",
+  below,
 }: {
   label?: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
+  error?: string | null;
   placeholder?: string;
   autoComplete?: string;
+  /** Rendered between the field and its error, e.g. the strength meter. */
+  below?: ReactNode;
 }) {
   const [show, setShow] = useState(false);
   return (
-    <label className="mb-4 block">
-      <span className="mb-2 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
-      <span className="flex items-center rounded-lg border border-border bg-card pr-2 focus-within:border-primary">
-        <input
-          type={show ? "text" : "password"}
-          value={value}
-          autoComplete={autoComplete}
-          enterKeyHint="go"
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="h-13 min-w-0 flex-1 bg-transparent px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground"
-        />
-        <button
-          type="button"
-          onClick={() => setShow((s) => !s)}
-          aria-label={show ? "Hide password" : "Show password"}
-          className="hit-area flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground"
-        >
-          {show ? <EyeOff size={17} /> : <Eye size={17} />}
-        </button>
-      </span>
-    </label>
+    <div className="mb-4">
+      <TextField
+        className="mb-0"
+        label={label}
+        value={value}
+        onChange={onChange}
+        {...(onBlur ? { onBlur } : {})}
+        {...(error ? { error } : {})}
+        type={show ? "text" : "password"}
+        autoComplete={autoComplete}
+        enterKeyHint="go"
+        placeholder={placeholder}
+        trailing={
+          <IconBtn
+            label={show ? "Hide password" : "Show password"}
+            variant="plain"
+            className="-mr-2 text-muted-foreground"
+            onClick={() => setShow((s) => !s)}
+          >
+            {show ? <EyeOff size={18} aria-hidden /> : <Eye size={18} aria-hidden />}
+          </IconBtn>
+        }
+      />
+      {below}
+    </div>
   );
 }
 
 /* ---------------------------------------------------- password strength */
 
-export type PasswordCheck = { label: string; ok: boolean };
+export type PasswordCheck = { label: string; hint: string; ok: boolean };
 
 export function passwordChecks(pw: string): PasswordCheck[] {
   return [
-    { label: "At least 8 characters", ok: pw.length >= 8 },
-    { label: "One uppercase letter", ok: /[A-Z]/.test(pw) },
-    { label: "One number", ok: /[0-9]/.test(pw) },
-    { label: "Not only letters and numbers", ok: /[^A-Za-z0-9]/.test(pw) },
+    { label: "At least 8 characters", hint: "Use at least 8 characters", ok: pw.length >= 8 },
+    { label: "One uppercase letter", hint: "Add an uppercase letter", ok: /[A-Z]/.test(pw) },
+    { label: "One number", hint: "Add a number", ok: /[0-9]/.test(pw) },
+    { label: "A symbol", hint: "Add a symbol, like ! or #", ok: /[^A-Za-z0-9]/.test(pw) },
   ];
 }
 
@@ -273,42 +425,218 @@ export function passwordScore(pw: string) {
   return passwordChecks(pw).filter((c) => c.ok).length;
 }
 
+/**
+ * Strength in one line, sized for a screen with the keyboard open: four thin segments, the rating,
+ * and only the next thing to fix. Nothing shows until the person starts typing.
+ */
 export function PasswordRequirements({ value }: { value: string }) {
+  if (!value) return null;
   const checks = passwordChecks(value);
   const score = checks.filter((c) => c.ok).length;
   const label = score <= 1 ? "Weak" : score === 2 ? "Fair" : score === 3 ? "Good" : "Strong";
+  const next = checks.find((c) => !c.ok);
   return (
-    <div className="mb-5 rounded-lg border border-border bg-card p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-1 font-semibold">Password strength</span>
-        <span className="text-1 text-muted-foreground">{value ? label : "—"}</span>
-      </div>
-      <div className="mb-3 flex gap-1.5">
+    <div className="mt-2 animate-message" aria-live="polite">
+      <div className="flex gap-1" aria-hidden>
         {[0, 1, 2, 3].map((i) => (
           <span
             key={i}
-            className={`h-1.5 flex-1 rounded-full ${i < score ? "bg-primary" : "bg-border"}`}
+            className={cn(
+              "h-1 flex-1 rounded-full transition-colors duration-200 ease-standard",
+              i < score ? (score <= 1 ? "bg-destructive" : "bg-foreground") : "bg-border",
+            )}
           />
         ))}
       </div>
-      <ul className="space-y-1.5">
-        {checks.map((c) => (
-          <li key={c.label} className="flex items-center gap-2 text-1 text-muted-foreground">
-            <span
-              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-subtle" : "bg-border"}`}
-            >
-              {c.ok ? (
-                <Check size={11} className="text-primary" />
-              ) : (
-                <X size={11} className="text-muted-foreground" />
-              )}
-            </span>
-            <span className={c.ok ? "text-foreground" : undefined}>{c.label}</span>
-          </li>
-        ))}
-      </ul>
+      <p className="mt-1.5 text-1 text-muted-foreground">
+        <span className="font-semibold text-foreground">{label}</span>
+        {next ? ` · ${next.hint}` : null}
+      </p>
     </div>
   );
+}
+
+/* --------------------------------------------------------------- phone */
+
+/** India's flag, drawn: emoji flags do not render on every Android build. */
+export function IndiaFlag({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 16" className={cn("h-4 w-6 shrink-0 rounded-xs", className)} aria-hidden>
+      <rect width="24" height="16" fill="#fff" />
+      <rect width="24" height="5.33" fill="#FF9933" />
+      <rect y="10.67" width="24" height="5.33" fill="#138808" />
+      <circle cx="12" cy="8" r="2.1" fill="none" stroke="#000080" strokeWidth="0.6" />
+      <circle cx="12" cy="8" r="0.4" fill="#000080" />
+    </svg>
+  );
+}
+
+/** "9876543210" → "98765 43210". */
+export function formatIndianMobile(digits: string) {
+  const d = digits.replace(/\D/g, "").slice(0, 10);
+  return d.length > 5 ? `${d.slice(0, 5)} ${d.slice(5)}` : d;
+}
+
+export function PhoneField({
+  value,
+  onChange,
+  onBlur,
+  error,
+}: {
+  /** Digits only. */
+  value: string;
+  onChange: (digits: string) => void;
+  onBlur?: () => void;
+  error?: string | null;
+}) {
+  return (
+    <TextField
+      label="Mobile number"
+      value={formatIndianMobile(value)}
+      onChange={(v) => onChange(v.replace(/\D/g, "").slice(0, 10))}
+      {...(onBlur ? { onBlur } : {})}
+      {...(error ? { error } : {})}
+      type="tel"
+      inputMode="tel"
+      autoComplete="tel-national"
+      enterKeyHint="go"
+      placeholder="98765 43210"
+      leading={
+        <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border pr-3 text-2 font-medium">
+          <IndiaFlag />
+          +91
+        </span>
+      }
+    />
+  );
+}
+
+/* ---------------------------------------------------------------- code */
+
+/**
+ * Six boxes over one real input (so SMS and email autofill work). The active box shows a caret,
+ * digits pop in, a rejected code shakes the row. `onComplete` fires once per complete code.
+ */
+export function CodeInput({
+  value,
+  onChange,
+  onComplete,
+  invalid = false,
+  shakeKey = 0,
+  length = 6,
+  label = "Verification code",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onComplete?: (code: string) => void;
+  invalid?: boolean;
+  shakeKey?: number;
+  length?: number;
+  label?: string;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = useState(false);
+  const tried = useRef("");
+
+  useEffect(() => {
+    ref.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (value.length !== length || tried.current === value) return;
+    tried.current = value;
+    onComplete?.(value);
+    // onComplete is read at the moment the code completes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, length]);
+
+  return (
+    <>
+      <button
+        type="button"
+        key={shakeKey}
+        onClick={() => ref.current?.focus()}
+        className={cn("mb-6 flex w-full justify-between gap-2", shakeKey ? "animate-shake" : "")}
+        aria-label={label}
+      >
+        {Array.from({ length }, (_, i) => {
+          const active = i === value.length && focused;
+          return (
+            <span
+              key={i}
+              className={cn(
+                "flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard",
+                invalid
+                  ? "border-destructive"
+                  : active
+                    ? "border-foreground ring-1 ring-foreground"
+                    : value[i]
+                      ? "border-muted-foreground"
+                      : "border-border",
+              )}
+            >
+              {value[i] ? (
+                <span key={value[i]} className="animate-pop">
+                  {value[i]}
+                </span>
+              ) : active ? (
+                <span aria-hidden className="h-6 w-px animate-caret bg-foreground" />
+              ) : null}
+            </span>
+          );
+        })}
+      </button>
+      <input
+        ref={ref}
+        value={value}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        inputMode="numeric"
+        autoComplete="one-time-code"
+        maxLength={length}
+        onChange={(e) => {
+          const next = e.target.value.replace(/\D/g, "").slice(0, length);
+          if (next.length < length) tried.current = "";
+          onChange(next);
+        }}
+        className="sr-only"
+        aria-label={label}
+      />
+    </>
+  );
+}
+
+/** Seconds until "Resend code" is allowed again. */
+export function useCountdown(start: number) {
+  const [seconds, setSeconds] = useState(start);
+  useEffect(() => {
+    if (seconds <= 0) return;
+    const t = window.setTimeout(() => setSeconds((s) => s - 1), 1000);
+    return () => window.clearTimeout(t);
+  }, [seconds]);
+  return { seconds, restart: () => setSeconds(start) };
+}
+
+/* ---------------------------------------------------------- validation */
+
+export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/**
+ * Show a field's error after the person leaves it or submits, then keep it live while they fix it.
+ * `touch(name)` on blur; `submitted()` before sending; `errorFor(name, message)` returns what to show.
+ */
+export function useFieldErrors<N extends string>() {
+  const [touched, setTouched] = useState<Partial<Record<N, true>>>({});
+  const [tried, setTried] = useState(false);
+  return {
+    touch: (name: N) => setTouched((t) => ({ ...t, [name]: true })),
+    submitted: () => setTried(true),
+    reset: () => {
+      setTouched({});
+      setTried(false);
+    },
+    errorFor: (name: N, message: string | null) => (tried || touched[name] ? message : null),
+  };
 }
 
 /* ------------------------------------------------------------- legal */

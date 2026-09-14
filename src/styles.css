@@ -144,6 +144,7 @@
   --animate-caret: caret 1s steps(1) infinite;
   --animate-sound-check: sound-check 500ms var(--easing-enter) both;
   --animate-fill: fill 500ms var(--easing-enter) both;
+  --animate-message: message 200ms var(--easing-enter) both;
 
   @keyframes shake {
     20%,
@@ -159,6 +160,12 @@
     from {
       transform: scale(0.6);
       opacity: 0;
+    }
+  }
+  @keyframes message {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
     }
   }
   @keyframes fill {
@@ -534,4 +541,26 @@ html:active-view-transition-type(fade)::view-transition-new(root) {
 @utility ripple {
   transform: scale(0);
   animation: ripple 550ms var(--easing-standard) forwards;
+}
+
+/* Inline text links and text buttons: underline appears on hover (pointer devices), the text dims
+ * while pressed. Colour stays the text colour; links are not pink. */
+@utility link-action {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: transparent;
+  transition:
+    text-decoration-color var(--duration-1) var(--easing-standard),
+    opacity var(--duration-1) var(--easing-standard);
+
+  @media (hover: hover) {
+    &:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  &:active {
+    opacity: 0.6;
+  }
 }

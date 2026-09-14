@@ -1,21 +1,24 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { Smartphone } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import { haptic } from "@/lib/haptics";
 import {
   AuthHeading,
-  GoogleIcon,
+  AuthLink,
   AuthNotice,
   AuthScreen,
+  AuthTextButton,
   Divider,
-  LabeledInput,
+  EMAIL_PATTERN,
+  GoogleIcon,
   LegalNote,
   PasswordInput,
   PasswordRequirements,
+  TextField,
   classifyAuthError,
   passwordScore,
+  useFieldErrors,
 } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -57,53 +60,63 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
+  const fields = useFieldErrors<"email" | "password">();
 
   useEffect(() => {
     if (!loading && signedIn) void navigate({ to: "/", replace: true });
   }, [loading, signedIn, navigate]);
 
+  const emailProblem = !email.trim()
+    ? "Enter your email address."
+    : !EMAIL_PATTERN.test(email.trim())
+      ? "Enter an email like name@example.com."
+      : null;
+  const passwordProblem = !password
+    ? signup
+      ? "Choose a password."
+      : "Enter your password."
+    : signup && (password.length < 8 || passwordScore(password) < 2)
+      ? "Use at least 8 characters, with a number or symbol."
+      : null;
+  const emailError = fields.errorFor("email", emailProblem);
+  const passwordError = fields.errorFor("password", passwordProblem);
+
   function switchMode(next: Search["mode"]) {
     setError(null);
-    void navigate({ to: "/auth", search: { mode: next } });
+    fields.reset();
+    void navigate({ to: "/auth", search: { mode: next }, replace: true });
   }
 
   async function submit() {
     setError(null);
-    if (!email.includes("@")) {
-      setError({
-        kind: "unknown",
-        title: "Enter a valid email",
-        body: "We use your email to secure your account.",
-      });
-      return;
-    }
-    if (signup && passwordScore(password) < 2) {
-      setError({
-        kind: "weak_password",
-        title: "Choose a stronger password",
-        body: "Use at least 8 characters with a number or symbol.",
-      });
+    fields.submitted();
+    if (emailProblem || passwordProblem) {
+      haptic("error");
       return;
     }
     setBusy(true);
     try {
       if (signup) {
         const { data, error: err } = await supabase.auth.signUp({
-          email,
+          email: email.trim(),
           password,
           options: { emailRedirectTo: window.location.origin },
         });
         if (err) throw err;
         if (!data.session) {
-          void navigate({ to: "/auth/verify-email", search: { email } });
+          // Email confirmation is on: the person types the 6-digit code from the email next.
+          void navigate({ to: "/auth/verify-email", search: { email: email.trim() } });
           return;
         }
         void navigate({ to: "/auth/success" });
         return;
       }
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
       if (err) throw err;
-      toast.success("Welcome back");
+      haptic("confirm");
       void navigate({ to: "/", replace: true });
     } catch (err) {
       haptic("error");
@@ -121,8 +134,8 @@ function AuthPage() {
     if (result.error) {
       setError({
         kind: "unknown",
-        title: "Google sign-in did not complete",
-        body: "You can try again, or continue with your email address.",
+        title: "Google sign-in did not finish",
+        body: "Try again, or continue with your email address.",
       });
       return;
     }
@@ -147,21 +160,13 @@ function AuthPage() {
           title={error.title}
           action={
             error.kind === "account_exists" ? (
-              <Btn variant="outline" onClick={() => switchMode("signin")}>
-                Sign in instead
-              </Btn>
+              <AuthTextButton onClick={() => switchMode("signin")}>Sign in instead</AuthTextButton>
             ) : error.kind === "invalid_credentials" ? (
-              <Link to="/auth/forgot" className="text-1 font-semibold text-foreground">
-                Reset password
-              </Link>
+              <AuthLink to="/auth/forgot">Reset password</AuthLink>
             ) : error.kind === "unconfirmed" ? (
-              <Link
-                to="/auth/verify-email"
-                search={{ email }}
-                className="text-1 font-semibold text-foreground"
-              >
-                Resend confirmation
-              </Link>
+              <AuthLink to="/auth/verify-email" search={{ email: email.trim() }}>
+                Enter your code
+              </AuthLink>
             ) : null
           }
         >
@@ -169,10 +174,15 @@ function AuthPage() {
         </AuthNotice>
       ) : null}
 
-      <Btn variant="outline" className="w-full" icon={<GoogleIcon />} onClick={() => void google()}>
-        Continue with Google
-      </Btn>
-      <div className="mt-3">
+      <div className="space-y-3">
+        <Btn
+          variant="outline"
+          className="w-full"
+          icon={<GoogleIcon />}
+          onClick={() => void google()}
+        >
+          Continue with Google
+        </Btn>
         <Btn
           variant="outline"
           className="w-full"
@@ -183,7 +193,7 @@ function AuthPage() {
         </Btn>
       </div>
 
-      <Divider label="or use email" />
+      <Divider label="or" />
 
       <form
         noValidate
@@ -192,62 +202,47 @@ function AuthPage() {
           if (!busy) void submit();
         }}
       >
-        <LabeledInput
+        <TextField
           label="Email"
           value={email}
           onChange={setEmail}
+          onBlur={() => fields.touch("email")}
+          error={emailError}
           type="email"
           inputMode="email"
           autoComplete="email"
           enterKeyHint="next"
-          placeholder="you@example.com"
+          placeholder="name@example.com"
         />
         <PasswordInput
           value={password}
           onChange={setPassword}
+          onBlur={() => fields.touch("password")}
+          error={passwordError}
+          placeholder={signup ? "At least 8 characters" : "Your password"}
           autoComplete={signup ? "new-password" : "current-password"}
+          below={signup ? <PasswordRequirements value={password} /> : null}
         />
 
-        {signup ? <PasswordRequirements value={password} /> : null}
-
         {!signup ? (
-          <div className="mb-5 -mt-1 text-right">
-            <Link to="/auth/forgot" className="hit-area text-1 font-semibold text-foreground">
-              Forgot password?
-            </Link>
+          <div className="-mt-1 mb-5 flex justify-end text-1">
+            <AuthLink to="/auth/forgot">Forgot password?</AuthLink>
           </div>
         ) : null}
 
-        <Btn type="submit" className="w-full" loading={busy}>
+        <Btn type="submit" className="mt-2 w-full" loading={busy}>
           {signup ? "Create account" : "Sign in"}
         </Btn>
       </form>
 
-      <button
-        type="button"
-        onClick={() => switchMode(signup ? "signin" : "signup")}
-        className="mt-2 min-h-12 w-full text-center text-1 text-muted-foreground"
-      >
-        {signup ? (
-          <>
-            Already have an account? <span className="font-semibold text-foreground">Sign in</span>
-          </>
-        ) : (
-          <>
-            New to MusicLinkd?{" "}
-            <span className="font-semibold text-foreground">Create an account</span>
-          </>
-        )}
-      </button>
+      <p className="mt-5 text-center text-1 text-muted-foreground">
+        {signup ? "Already have an account? " : "New to MusicLinkd? "}
+        <AuthTextButton onClick={() => switchMode(signup ? "signin" : "signup")}>
+          {signup ? "Sign in" : "Create an account"}
+        </AuthTextButton>
+      </p>
 
       <LegalNote />
-
-      <p className="mt-6 text-center text-1 text-muted-foreground">
-        Browsing without an account?{" "}
-        <Link to="/discover" className="hit-area font-semibold text-foreground">
-          Explore Discover
-        </Link>
-      </p>
     </AuthScreen>
   );
 }

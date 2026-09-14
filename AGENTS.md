@@ -137,6 +137,8 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 `src/components/ui/` holds 46 installed shadcn primitives (most Radix; `drawer` wraps vaul, `calendar` wraps react-day-picker) — `dialog`, `sheet`, `drawer`, `alert-dialog`, `skeleton`. Only `avatar` and `sonner` are imported today. Use them. Hand-rolled modals in this repo have no focus trap, no Escape handler and no scroll lock.
 
+**Form fields:** `TextField` (sentence-case label above, never uppercase or bold), `PasswordInput`, `PhoneField`, `CodeInput`. Errors go under the field they belong to, shown on blur or submit via `useFieldErrors`; `AuthNotice` is only for problems with the whole form. Text links are `AuthLink` / `AuthTextButton` (underline on hover, dim on press). Toasts are snackbars (ink, bottom).
+
 **Buttons have three shapes:** text (`<Btn>`), icon + text (`<Btn icon={…}>`, icon leads and is decorative), and icon only (`<IconBtn label="…">`, the label is the accessible name). Use icon only for universally read actions (back, message, share, edit, save, close). Link versions: `BtnLink`, `IconBtnLink`. All of them share states: hover and pressed state layer (`state-layer`), focus ring, disabled (50%), and `loading` (spinner, `aria-busy`, inert) — use `loading` instead of changing the label to "Please wait…". Touch gives a ripple and a small press scale; reduced motion removes both.
 
 **Never ship a control that does nothing.** A `<Btn>` or link with no handler and no destination is a bug. If the action is not built, disable it and label why.
