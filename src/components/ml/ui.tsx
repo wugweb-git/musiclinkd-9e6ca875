@@ -231,7 +231,8 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
  *   BtnLink and IconBtnLink are the same shapes as router links.
  *
  * States (Material 3): enabled; hovered (pointer devices only) and pressed, shown by a state layer of
- * the content colour at 8% / 12%; focused, the global :focus-visible ring; disabled, 50% and inert;
+ * the content colour at 8% / 12%; focused, the global :focus-visible ring; disabled, inert (filled:
+ * a 10% ink container, outline and ghost: 50%);
  * loading, a spinner in place of the icon, aria-busy, and inert while it lasts.
  * Motion: a ripple from the touch point, a 2% press scale, and the state layer fading in. All of it
  * stops under prefers-reduced-motion. Styles: `state-layer`, `ripple` in styles.css.
@@ -239,15 +240,24 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
 
 type BtnVariant = "primary" | "ink" | "ghost" | "outline";
 
+/*
+ * Filled buttons go disabled the Material way: a faint ink container with faint ink text, so a
+ * Continue that is not ready yet does not read as a grey button you can press. When it becomes
+ * ready, the container fills to ink over --duration-2.
+ */
+const filledDisabled =
+  "disabled:bg-foreground/10 disabled:text-foreground/40 aria-disabled:bg-foreground/10 aria-disabled:text-foreground/40 data-pending:bg-foreground/10 data-pending:text-foreground/40";
+const dimDisabled = "disabled:opacity-50 aria-disabled:opacity-50 data-pending:opacity-50";
+
 const btnVariants: Record<BtnVariant, string> = {
-  primary: "bg-primary text-primary-foreground",
-  ink: "bg-ink text-background",
-  outline: "border border-border bg-card text-foreground",
-  ghost: "bg-subtle text-muted-foreground",
+  primary: `bg-primary text-primary-foreground ${filledDisabled}`,
+  ink: `bg-ink text-background ${filledDisabled}`,
+  outline: `border border-border bg-card text-foreground ${dimDisabled}`,
+  ghost: `bg-subtle text-muted-foreground ${dimDisabled}`,
 };
 
 const btnBase =
-  "state-layer relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-transform duration-125 ease-standard active:scale-98 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50";
+  "state-layer relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-[transform,background-color,color] duration-200 ease-standard active:scale-98 disabled:pointer-events-none aria-disabled:pointer-events-none";
 
 function btnClass(variant: BtnVariant, className: string) {
   return `${btnBase} ${btnVariants[variant]} ${className}`;
@@ -313,6 +323,7 @@ export function Btn({
   onClick,
   type = "button",
   disabled = false,
+  pending = false,
   loading = false,
 }: {
   children: ReactNode;
@@ -323,6 +334,8 @@ export function Btn({
   onClick?: () => void;
   type?: "button" | "submit";
   disabled?: boolean;
+  /** Not ready yet: looks disabled but still takes the tap, so the form can say what is missing. */
+  pending?: boolean;
   /** Work in progress: shows a spinner, keeps the label and width, and ignores taps. */
   loading?: boolean;
 }) {
@@ -334,6 +347,7 @@ export function Btn({
       onPointerDown={ripple.onPointerDown}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
+      data-pending={pending || undefined}
       className={btnClass(variant, className)}
     >
       {ripple.layer}

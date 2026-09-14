@@ -369,7 +369,8 @@ function StepRoute() {
             key={nudge}
             type="submit"
             loading={claiming}
-            className={`w-full ${valid ? "" : "opacity-50"} ${nudge ? "animate-shake" : ""}`}
+            pending={!valid}
+            className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
             {index === list.length - 1 ? "Review profile" : "Continue"}
           </Btn>
