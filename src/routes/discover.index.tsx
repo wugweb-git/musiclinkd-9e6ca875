@@ -3,6 +3,9 @@ import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
+import { listStudios } from "@/lib/catalog.functions";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { discoverStudioFromRow } from "@/lib/studio-view";
 
 export const Route = createFileRoute("/discover/")({
   head: () => ({
@@ -21,10 +24,19 @@ export const Route = createFileRoute("/discover/")({
       },
     ],
   }),
+  // Database studios follow the seeded ones; without them the lists show seed data only.
+  loader: async () => {
+    const [rows, labels] = await Promise.all([
+      listStudios().catch(() => []),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+    ]);
+    return { dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)) };
+  },
   component: Discover,
 });
 
 function Discover() {
+  const { dbStudios } = Route.useLoaderData();
   return (
     <Screen>
       <header className="px-5 pb-4 pt-6">
@@ -183,6 +195,29 @@ function Discover() {
                 </p>
               </div>
               <span className="text-[11px] font-semibold text-foreground">{s.rate}</span>
+            </Link>
+          ))}
+          {dbStudios.map((s) => (
+            <Link
+              key={s.slug}
+              to="/booking/$id"
+              params={{ id: s.slug }}
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+            >
+              {s.photo ? (
+                <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
+              ) : null}
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-[14px]">{s.name}</h3>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  {[s.location, s.rating == null ? "" : `${s.rating} ★`]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </div>
+              {s.rate ? (
+                <span className="text-[11px] font-semibold text-foreground">{s.rate}</span>
+              ) : null}
             </Link>
           ))}
         </div>

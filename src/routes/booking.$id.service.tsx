@@ -49,7 +49,9 @@ function SelectService() {
       </main>
 
       <StickyBar
-        hint="Availability is checked per room"
+        // Database studios have no availability calendar yet, so dates cannot be checked.
+        hint={b.hasCalendar === false ? undefined : "Availability is checked per room"}
+        disabled={b.hasCalendar === false}
         primaryLabel="Check dates"
         onPrimary={() => navigate({ to: "/booking/$id/schedule", params: { id: b.id } })}
       />

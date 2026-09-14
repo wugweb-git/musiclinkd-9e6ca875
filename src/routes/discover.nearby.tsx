@@ -4,6 +4,9 @@ import { MapPin } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
 import { studios, talents } from "@/data/discover";
+import { listStudios } from "@/lib/catalog.functions";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { discoverStudioFromRow } from "@/lib/studio-view";
 
 export const Route = createFileRoute("/discover/nearby")({
   head: () => ({
@@ -19,12 +22,21 @@ export const Route = createFileRoute("/discover/nearby")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  // Database studios follow the seeded ones; without them the lists show seed data only.
+  loader: async () => {
+    const [rows, labels] = await Promise.all([
+      listStudios().catch(() => []),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+    ]);
+    return { dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)) };
+  },
   component: Nearby,
 });
 
 const radii = ["2 km", "5 km", "10 km", "City"];
 
 function Nearby() {
+  const { dbStudios } = Route.useLoaderData();
   const [radius, setRadius] = useState(radii[1]!);
   const [allowed, setAllowed] = useState(false);
 
@@ -69,7 +81,7 @@ function Nearby() {
 
         <section>
           <p className="mb-2 text-sm font-semibold">Studios around you</p>
-          {studios.length ? (
+          {studios.length || dbStudios.length ? (
             <div className="space-y-3">
               {studios.slice(0, 4).map((s) => (
                 <Card key={s.name}>
@@ -86,6 +98,28 @@ function Nearby() {
                     </div>
                   </div>
                 </Card>
+              ))}
+              {dbStudios.map((s) => (
+                <Link key={s.slug} to="/booking/$id" params={{ id: s.slug }} className="block">
+                  <Card>
+                    <div className="flex items-center gap-3">
+                      {s.photo ? (
+                        <img
+                          src={s.photo}
+                          alt=""
+                          className="h-12 w-12 rounded-[14px] object-cover"
+                          loading="lazy"
+                        />
+                      ) : null}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{s.name}</p>
+                        {s.location ? (
+                          <p className="truncate text-[12px] text-muted-foreground">{s.location}</p>
+                        ) : null}
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
               ))}
             </div>
           ) : (

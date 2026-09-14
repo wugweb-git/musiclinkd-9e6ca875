@@ -12,7 +12,7 @@ import {
   StepDots,
   StickyBar,
 } from "@/components/ml/booking";
-import { useBookingDraft } from "@/components/ml/booking-context";
+import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import {
   availabilityFor,
   durationOptions,
@@ -41,10 +41,18 @@ export const Route = createFileRoute("/booking/$id/schedule")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Schedule,
+  component: ScheduleStep,
 });
 
 type Sim = "ok" | "loading" | "error" | "offline";
+
+function ScheduleStep() {
+  return (
+    <CalendarGate>
+      <Schedule />
+    </CalendarGate>
+  );
+}
 
 function Schedule() {
   const { bookable: b, resource: r, draft, set, price, endTime } = useBookingDraft();
