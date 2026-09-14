@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed — new user: the "You're in" screen
+
+- Creating an account goes straight to onboarding (through the splash). `/auth/success`, a stop Lovable
+  added on 2 Sep with "Set up my profile" / "Skip for now", now redirects to `/` so any old link still
+  lands correctly.
+
 ### Changed — new user: onboarding and Home follow the sign-in design
 
 - **Step header.** Back is a plain arrow; "Profession · 3 of 17" is normal case; the progress bar is
