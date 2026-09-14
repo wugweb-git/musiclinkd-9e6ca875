@@ -5,6 +5,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — optional steps say so (plan C2, new user)
+
+- **Optional onboarding steps are labelled.** 15 of the 19 steps are optional in the step data; only
+  identity, role, location and visibility are required. `StepShell` now shows "Optional" beside the
+  question on those steps, next to the existing Skip, so "Step 9 of 19" no longer reads as nine more
+  required answers.
+
 ### Changed — no inline colour styles in the kit (plan B5)
 
 - **`components/ml` inline `style` went from 53 to 13**, and the 13 left are runtime values: seven

@@ -197,6 +197,7 @@ function StepRoute() {
       title={def.title}
       subtitle={def.subtitle}
       why={def.why}
+      optional={def.optional}
       onBack={back}
       onSubmit={valid ? () => advance(true) : blocked}
       {...(def.optional ? { onSkip: () => advance(false) } : {})}

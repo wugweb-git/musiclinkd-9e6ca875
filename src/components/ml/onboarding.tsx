@@ -236,6 +236,7 @@ export function StepShell({
   footer,
   banner,
   onSubmit,
+  optional = false,
 }: {
   step: number;
   total: number;
@@ -250,6 +251,8 @@ export function StepShell({
   banner?: ReactNode;
   /** Continue, from the footer button or the keyboard's Next/Go key. */
   onSubmit?: () => void;
+  /** Optional steps say so beside the question, so nobody abandons a step they could skip. */
+  optional?: boolean;
 }) {
   const pct = Math.round((step / total) * 100);
   return (
@@ -309,7 +312,14 @@ export function StepShell({
 
       <main className="flex-1 px-5 pb-40 pt-5">
         {banner}
-        <h1 className="text-3 leading-tight">{title}</h1>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-3 leading-tight">{title}</h1>
+          {optional ? (
+            <span className="mt-1.5 shrink-0 rounded-full bg-card px-2.5 py-1 text-1 font-semibold text-muted-foreground">
+              Optional
+            </span>
+          ) : null}
+        </div>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
         <p className="mt-3 rounded-lg px-4 py-3 text-1 leading-relaxed text-muted-foreground bg-subtle">
           {why}
