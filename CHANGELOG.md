@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — onboarding is account-only
+
+- **Answers save to the account, not the device.** Onboarding reads and writes
+  `profiles.onboarding_draft` in the Lovable Cloud database. A signed-out visitor on any onboarding
+  URL goes to Welcome, and the "Saved on this device. Sign in to keep your answers on your account."
+  note is removed.
+- **No answers carried between accounts.** The browser draft used to be one shared key
+  (`ml.onboarding.draft`), so a second sign-up on the same phone started from the first person's answers.
+  The browser copy is now per account and only backs up a failed or offline save. The old shared key
+  is deleted on first load.
+
 ### Fixed — Book buttons (plan A1)
 
 - **No Book button opens a dead booking.** Three links sent `/booking/svc-1`, a service id the booking
