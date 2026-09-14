@@ -129,7 +129,14 @@ function Recs() {
                             </button>
                           </div>
                           <div className="mt-2">
-                            <ReasonChip>{r.reason}</ReasonChip>
+                            <Link
+                              to="/search/why/$id"
+                              params={{ id: r.id }}
+                              aria-label={`Why am I seeing this? ${r.reason}`}
+                              className="-my-3 inline-block max-w-full py-3"
+                            >
+                              <ReasonChip>{r.reason}</ReasonChip>
+                            </Link>
                           </div>
                         </div>
                       </div>

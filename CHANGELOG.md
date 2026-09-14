@@ -34,6 +34,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   Every chip, pill and badge in `src/components/ml/` already renders `rounded-full`, and the M3
   change kept chips as pills. The old line would have had new screens build 8px chips.
 
+### Fixed — discovery entry points (route audit §7.1)
+
+- **Discover.** Quick categories open the nearest real section: Talent and Events open `/categories`,
+  Bands opens `/bands`, Marketplace and Rentals open the market, and Studios, Labels, Venues and
+  Communities open `/discover/community`. Trending "See all" opens `/discover/music`, and
+  the Nearby location opens `/discover/nearby`.
+- **Recommendations.** Each reason chip opens "Why am I seeing this?" (`/search/why/$id`).
+- **Search.** A history button in the header opens `/search/history`.
+- **Profile owner.** Public opens your public profile at `/profile/$username`, or profile edit if you have no
+  username yet. Stats has a "Full insights" link to `/profile/insights`.
+- **Reviews.** Cards link to the reply, report and edit pages instead of an in-page sheet. The page links to
+  "Ask for a review" (`/reviews/request`).
+- **Collab.** Pending proposals come from the proposals data and open `/collab/proposals/$id`. Before this,
+  one hard-coded card was shown.
+- **Marketplace.** "Recently viewed" opens `/recently-viewed`.
+- **Provider calendar.** Blocks for pending requests open the request (`/provider/bookings/requests/$ref`),
+  not the booking detail.
+- **Opportunities.** Links "Projects you can join" (`/discover/projects`).
+
 ### Fixed — navigation hubs (route audit §7.1)
 
 - **Settings has an entry point.** Profile's owner panel has a Settings row. Before this, nothing linked to

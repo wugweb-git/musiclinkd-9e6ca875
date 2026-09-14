@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { History } from "lucide-react";
 import { Btn, Chip, Screen, SearchBar, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { TalentRow } from "@/components/ml/cards";
 import { StatusPill } from "@/components/ml/kit";
@@ -43,6 +44,13 @@ function SearchResults() {
             ←
           </Link>
           <h1 className="text-[20px]">Search results</h1>
+          <Link
+            to="/search/history"
+            aria-label="Search history"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+          >
+            <History size={18} aria-hidden />
+          </Link>
         </div>
         <SearchBar value={q} onChange={setQ} />
         <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">

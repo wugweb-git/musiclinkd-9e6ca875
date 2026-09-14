@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Flag, ShieldCheck } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { Flag, Pencil, ShieldCheck } from "lucide-react";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, Segmented, Stars, StatusPill, EmptyState, Meter, Row } from "@/components/ml/kit";
 import {
   receivedReviews,
@@ -9,7 +9,6 @@ import {
   pendingReviews,
   ratingSummary,
   reviewPolicy,
-  flagReasons,
   type Review,
 } from "@/data/reviews";
 
@@ -34,7 +33,6 @@ const tabs = ["Received", "To review", "Given"] as const;
 
 function ReviewsHub() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Received");
-  const [flagging, setFlagging] = useState<string | null>(null);
 
   return (
     <Screen>
@@ -75,14 +73,7 @@ function ReviewsHub() {
 
         {tab === "Received" ? (
           receivedReviews.length ? (
-            receivedReviews.map((r) => (
-              <ReviewCard
-                key={r.id}
-                r={r}
-                onFlag={() => setFlagging(r.id)}
-                canRespond={!r.response}
-              />
-            ))
+            receivedReviews.map((r) => <ReviewCard key={r.id} r={r} mine={false} />)
           ) : (
             <EmptyState
               title="No reviews yet"
@@ -127,9 +118,7 @@ function ReviewsHub() {
 
         {tab === "Given" ? (
           givenReviews.length ? (
-            givenReviews.map((r) => (
-              <ReviewCard key={r.id} r={r} onFlag={() => setFlagging(r.id)} canRespond={false} />
-            ))
+            givenReviews.map((r) => <ReviewCard key={r.id} r={r} mine />)
           ) : (
             <EmptyState
               title="You have not reviewed anyone yet"
@@ -153,6 +142,11 @@ function ReviewsHub() {
             </ul>
           </Card>
           <Row
+            title="Ask for a review"
+            subtitle="From clients you have completed work with"
+            to="/reviews/request"
+          />
+          <Row
             title="Full review policy"
             subtitle="Trust & safety"
             to="/help/$slug"
@@ -160,38 +154,11 @@ function ReviewsHub() {
           />
         </section>
       </div>
-
-      <Sheet open={!!flagging} onClose={() => setFlagging(null)} title="Report this review">
-        <div className="space-y-2">
-          {flagReasons.map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setFlagging(null)}
-              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
-            >
-              {r}
-            </button>
-          ))}
-          <p className="pt-1 text-[12px] text-muted-foreground">
-            Reported reviews are re-checked within 48 hours.
-          </p>
-        </div>
-      </Sheet>
     </Screen>
   );
 }
 
-function ReviewCard({
-  r,
-  onFlag,
-  canRespond,
-}: {
-  r: Review;
-  onFlag: () => void;
-  canRespond: boolean;
-}) {
-  const [responding, setResponding] = useState(false);
+function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
   return (
     <Card className="space-y-3">
       <div className="flex items-center gap-3">
@@ -229,35 +196,41 @@ function ReviewCard({
           <p className="mt-1 text-[13px] text-muted-foreground">{r.response.body}</p>
         </div>
       ) : null}
-      {responding ? (
-        <div className="space-y-2">
-          <textarea
-            rows={3}
-            placeholder="Reply once, publicly."
-            className="w-full rounded-lg border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
-          />
-          <div className="flex gap-2">
-            <Btn className="flex-1 text-xs" onClick={() => setResponding(false)}>
-              Publish response
-            </Btn>
-            <Btn variant="outline" className="flex-1 text-xs" onClick={() => setResponding(false)}>
-              Cancel
-            </Btn>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          {canRespond ? (
-            <Btn variant="outline" className="flex-1 text-xs" onClick={() => setResponding(true)}>
-              Respond
-            </Btn>
-          ) : null}
-          <Btn variant="ghost" className="flex-1 gap-1 text-xs" onClick={onFlag}>
-            <Flag size={13} aria-hidden />
-            Report
-          </Btn>
-        </div>
-      )}
+      <div className="flex items-center gap-2">
+        {mine ? (
+          <BtnLink
+            to="/reviews/$id/edit"
+            params={{ id: r.id }}
+            variant="outline"
+            className="flex-1 gap-1 text-xs"
+          >
+            <Pencil size={13} aria-hidden />
+            Edit
+          </BtnLink>
+        ) : (
+          <>
+            {!r.response ? (
+              <BtnLink
+                to="/reviews/$id/reply"
+                params={{ id: r.id }}
+                variant="outline"
+                className="flex-1 text-xs"
+              >
+                Respond
+              </BtnLink>
+            ) : null}
+            <BtnLink
+              to="/reviews/$id/report"
+              params={{ id: r.id }}
+              variant="ghost"
+              className="flex-1 gap-1 text-xs"
+            >
+              <Flag size={13} aria-hidden />
+              Report
+            </BtnLink>
+          </>
+        )}
+      </div>
     </Card>
   );
 }

@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import type { PersonProfile } from "@/data/profile";
 import { profileInsights, profileCompletion } from "@/data/profile";
-import { Btn, Chip, Screen } from "./ui";
+import { Btn, BtnLink, Chip, Screen } from "./ui";
 import {
   AudioTrackCard,
   CollaboratorCard,
@@ -85,6 +85,7 @@ export function PersonProfileExperience({
       <div className="px-5 pt-4">
         {owner ? (
           <OwnerActions
+            username={p.username}
             onShare={() => setShareOpen(true)}
             onInsights={() => setInsightsOpen((open) => !open)}
           />
@@ -161,7 +162,15 @@ function ViewerActions({ onHire }: { onHire: () => void }) {
   );
 }
 
-function OwnerActions({ onShare, onInsights }: { onShare: () => void; onInsights: () => void }) {
+function OwnerActions({
+  username,
+  onShare,
+  onInsights,
+}: {
+  username: string;
+  onShare: () => void;
+  onInsights: () => void;
+}) {
   return (
     <div className="grid grid-cols-4 gap-2">
       <Link
@@ -179,9 +188,11 @@ function OwnerActions({ onShare, onInsights }: { onShare: () => void; onInsights
         <BarChart3 size={14} aria-hidden />
         Stats
       </Btn>
+      {/* The public page needs a username; without one, set it in profile edit. */}
       <Link
-        to="/profile/$username"
-        params={{ username: "rahul-iyer" }}
+        {...(username
+          ? { to: "/profile/$username" as const, params: { username } }
+          : { to: "/profile/edit" as const })}
         className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
       >
         <ExternalLink size={14} aria-hidden />
@@ -230,6 +241,9 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
               </div>
             ))}
           </div>
+          <BtnLink to="/profile/insights" variant="ghost" className="mt-3 w-full">
+            Full insights
+          </BtnLink>
         </div>
       ) : null}
     </section>

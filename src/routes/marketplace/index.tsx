@@ -116,7 +116,7 @@ function MarketHome() {
         </div>
       </SectionRow>
 
-      <SectionRow title="Recently viewed" to="/marketplace/saved">
+      <SectionRow title="Recently viewed" to="/recently-viewed">
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {listings.slice(2, 6).map((l) => (
             <ListingTile key={l.id} l={l} />

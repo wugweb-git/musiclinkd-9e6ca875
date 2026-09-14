@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus, Search, Bookmark, Briefcase } from "lucide-react";
+import { Plus, Search, Bookmark, Briefcase, Users } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
@@ -86,6 +86,12 @@ function OpportunitiesHome() {
             to="/opportunities/saved"
           />
         </div>
+        <Row
+          icon={<Users size={16} />}
+          title="Projects you can join"
+          subtitle="Work in progress looking for collaborators"
+          to="/discover/projects"
+        />
 
         <section>
           <h2 className="mb-2 text-[15px]">Browse by need</h2>
