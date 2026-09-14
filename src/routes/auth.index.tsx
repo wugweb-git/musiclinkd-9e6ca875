@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Smartphone } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import { haptic } from "@/lib/haptics";
 import {
   AuthHeading,
+  GoogleIcon,
   AuthNotice,
   AuthScreen,
   Divider,
@@ -129,7 +131,7 @@ function AuthPage() {
   }
 
   return (
-    <AuthScreen>
+    <AuthScreen back={{ to: "/welcome" }}>
       <AuthHeading
         title={signup ? "Create your account" : "Welcome back"}
         sub={
@@ -167,13 +169,14 @@ function AuthPage() {
         </AuthNotice>
       ) : null}
 
-      <Btn variant="outline" className="w-full" onClick={() => void google()}>
+      <Btn variant="outline" className="w-full" icon={<GoogleIcon />} onClick={() => void google()}>
         Continue with Google
       </Btn>
       <div className="mt-3">
         <Btn
           variant="outline"
           className="w-full"
+          icon={<Smartphone size={18} />}
           onClick={() => void navigate({ to: "/auth/phone" })}
         >
           Continue with phone

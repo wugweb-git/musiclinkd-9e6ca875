@@ -137,6 +137,8 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 `src/components/ui/` holds 46 installed shadcn primitives (most Radix; `drawer` wraps vaul, `calendar` wraps react-day-picker) — `dialog`, `sheet`, `drawer`, `alert-dialog`, `skeleton`. Only `avatar` and `sonner` are imported today. Use them. Hand-rolled modals in this repo have no focus trap, no Escape handler and no scroll lock.
 
+**Buttons have three shapes:** text (`<Btn>`), icon + text (`<Btn icon={…}>`, icon leads and is decorative), and icon only (`<IconBtn label="…">`, the label is the accessible name). Use icon only for universally read actions (back, message, share, edit, save, close). Link versions: `BtnLink`, `IconBtnLink`.
+
 **Never ship a control that does nothing.** A `<Btn>` or link with no handler and no destination is a bug. If the action is not built, disable it and label why.
 
 **Never key styling off display copy.** `map[status]` where `status` is user-visible text breaks when the wording changes. Key off a union type; keep the label separate.

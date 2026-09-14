@@ -24,6 +24,7 @@ function OfflineScreen() {
   const navigate = useNavigate();
   return (
     <AuthStatus
+      back={{ to: "/auth", search: { mode: "signin" } }}
       icon={WifiOff}
       title="No connection"
       body="We couldn't reach MusicLinkd. Nothing you typed was lost — reconnect and try again."

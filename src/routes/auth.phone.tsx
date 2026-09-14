@@ -51,7 +51,7 @@ function PhoneAuth() {
   }
 
   return (
-    <AuthScreen>
+    <AuthScreen back={{ to: "/welcome" }}>
       <form
         noValidate
         onSubmit={(e) => {
