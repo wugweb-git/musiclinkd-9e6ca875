@@ -5,6 +5,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — new user: names, not IDs
+
+- Welcome to MusicLinkd (`/onboarding/done`) shows the role and genres by name. It printed slugs such
+  as "Role: music_director". The email-check tips use a real list instead of typed bullets.
+
 ### Changed — new user: business types come from the database
 
 - "Do you represent a business?" lists the 12 business person types from the taxonomy (Recording Studio,
