@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CreditCard, Lock, Smartphone, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { PaymentSummaryCard, StickyBar } from "@/components/ml/booking";
-import { useBookingDraft } from "@/components/ml/booking-context";
+import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
 import { showDemoControls } from "@/lib/dev";
 
@@ -22,10 +22,18 @@ export const Route = createFileRoute("/booking/$id/pay")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Pay,
+  component: PayStep,
 });
 
 type Phase = "form" | "processing" | "success" | "failed";
+
+function PayStep() {
+  return (
+    <CalendarGate>
+      <Pay />
+    </CalendarGate>
+  );
+}
 
 function Pay() {
   const { bookable: b, price } = useBookingDraft();

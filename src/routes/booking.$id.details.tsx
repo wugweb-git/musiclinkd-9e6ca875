@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
-import { useBookingDraft } from "@/components/ml/booking-context";
+import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
 
 export const Route = createFileRoute("/booking/$id/details")({
@@ -22,8 +22,16 @@ export const Route = createFileRoute("/booking/$id/details")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Details,
+  component: DetailsStep,
 });
+
+function DetailsStep() {
+  return (
+    <CalendarGate>
+      <Details />
+    </CalendarGate>
+  );
+}
 
 function Details() {
   const { bookable: b, resource: r, draft, set, price } = useBookingDraft();

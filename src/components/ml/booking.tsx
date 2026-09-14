@@ -121,15 +121,17 @@ export function BookableHero({ b }: { b: Bookable }) {
     <div className="relative">
       <img
         src={b.hero}
-        alt={`${b.name} — ${b.kind}`}
+        alt={b.kind ? `${b.name} — ${b.kind}` : b.name}
         className="h-56 w-full object-cover"
         loading="lazy"
       />
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/80 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
-        <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-          {b.kind}
-        </span>
+        {b.kind ? (
+          <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
+            {b.kind}
+          </span>
+        ) : null}
         <h1 className="mt-2 flex items-center gap-2 text-3 leading-tight text-background">
           <span className="truncate">{b.name}</span>
           {b.verified ? <VerifiedBadge size={16} /> : null}
@@ -140,17 +142,26 @@ export function BookableHero({ b }: { b: Bookable }) {
 }
 
 export function EntityMetaRow({ b }: { b: Bookable }) {
+  // Database studios have no distance or response time; skip what is empty.
+  const place = [b.area, b.city].filter(Boolean).join(", ");
+  const where = [place, b.distanceKm ? `${b.distanceKm} km` : ""].filter(Boolean).join(" · ");
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
-      <span className="inline-flex items-center gap-1">
-        <Star size={13} className="text-primary" /> {b.rating} ({b.reviews})
-      </span>
-      <span className="inline-flex items-center gap-1">
-        <MapPin size={13} /> {b.area}, {b.city} · {b.distanceKm} km
-      </span>
-      <span className="inline-flex items-center gap-1">
-        <Clock size={13} /> {b.responseTime}
-      </span>
+      {b.rating ? (
+        <span className="inline-flex items-center gap-1">
+          <Star size={13} className="text-primary" /> {b.rating} ({b.reviews})
+        </span>
+      ) : null}
+      {where ? (
+        <span className="inline-flex items-center gap-1">
+          <MapPin size={13} /> {where}
+        </span>
+      ) : null}
+      {b.responseTime ? (
+        <span className="inline-flex items-center gap-1">
+          <Clock size={13} /> {b.responseTime}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -172,32 +183,45 @@ export function ResourceCard({
       }`}
     >
       <div className="flex gap-3 p-3">
-        <img
-          src={r.photo}
-          alt=""
-          className="h-20 w-20 shrink-0 rounded-lg object-cover"
-          loading="lazy"
-        />
+        {r.photo ? (
+          <img
+            src={r.photo}
+            alt=""
+            className="h-20 w-20 shrink-0 rounded-lg object-cover"
+            loading="lazy"
+          />
+        ) : null}
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{r.name}</p>
-          <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>
+          {r.description ? (
+            <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>
+          ) : null}
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-1 text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
-              <Users size={12} /> Up to {r.capacity}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Calendar size={12} /> {r.availabilityNote}
-            </span>
+            {r.capacity ? (
+              <span className="inline-flex items-center gap-1">
+                <Users size={12} /> Up to {r.capacity}
+              </span>
+            ) : null}
+            {r.availabilityNote ? (
+              <span className="inline-flex items-center gap-1">
+                <Calendar size={12} /> {r.availabilityNote}
+              </span>
+            ) : null}
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap gap-1.5 px-3 pb-3">
-        {r.equipment.slice(0, 3).map((e) => (
-          <span key={e} className="rounded-full bg-subtle px-2.5 py-1 text-1 text-muted-foreground">
-            {e}
-          </span>
-        ))}
-      </div>
+      {r.equipment.length ? (
+        <div className="flex flex-wrap gap-1.5 px-3 pb-3">
+          {r.equipment.slice(0, 3).map((e) => (
+            <span
+              key={e}
+              className="rounded-full bg-subtle px-2.5 py-1 text-1 text-muted-foreground"
+            >
+              {e}
+            </span>
+          ))}
+        </div>
+      ) : null}
       <div className="flex items-center justify-between border-t border-border px-4 py-3">
         <div className="min-w-0">
           <p className="text-sm font-semibold">{inr(from)}</p>
@@ -495,7 +519,7 @@ export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: bo
       ))}
       <div className="my-2 h-px bg-border" />
       <Row label="Subtotal" value={inr(p.subtotal)} />
-      <Row label={`Taxes (${p.taxPct}%)`} value={inr(p.tax)} muted />
+      {p.taxPct ? <Row label={`Taxes (${p.taxPct}%)`} value={inr(p.tax)} muted /> : null}
       <div className="my-2 h-px bg-border" />
       <Row label="Total" value={inr(p.total)} strong />
       {p.deposit > 0 ? (

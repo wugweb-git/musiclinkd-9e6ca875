@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/ml/ui";
 import { AddOnCard, PriceBreakdownCard, StepDots, StickyBar } from "@/components/ml/booking";
-import { useBookingDraft } from "@/components/ml/booking-context";
+import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
 
 export const Route = createFileRoute("/booking/$id/addons")({
@@ -19,8 +19,16 @@ export const Route = createFileRoute("/booking/$id/addons")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: AddOns,
+  component: AddOnsStep,
 });
+
+function AddOnsStep() {
+  return (
+    <CalendarGate>
+      <AddOns />
+    </CalendarGate>
+  );
+}
 
 function AddOns() {
   const { bookable: b, draft, toggleAddOn, price } = useBookingDraft();
