@@ -39,11 +39,11 @@ import {
 /* Status + payment                                                    */
 /* ------------------------------------------------------------------ */
 
-const toneStyle: Record<string, { bg: string; fg: string }> = {
-  ok: { bg: "var(--success-container)", fg: "var(--success)" },
-  warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-  info: { bg: "var(--surface-subtle)", fg: "var(--primary)" },
-  off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
+const toneStyle: Record<string, { pill: string; dot: string }> = {
+  ok: { pill: "bg-success-container text-success", dot: "bg-success" },
+  warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+  info: { pill: "bg-subtle text-foreground", dot: "bg-foreground" },
+  off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
 };
 
 export function BookingStatusPill({ status }: { status: BookingStatus }) {
@@ -51,10 +51,9 @@ export function BookingStatusPill({ status }: { status: BookingStatus }) {
   const c = toneStyle[meta.tone]!;
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: c.bg, color: c.fg }}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
     >
-      <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.fg }} aria-hidden />
+      <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} aria-hidden />
       {meta.label}
     </span>
   );
@@ -90,10 +89,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
                 {done ? <Check size={11} strokeWidth={3} /> : "·"}
               </span>
               {i < bookingTimeline.length - 1 ? (
-                <span
-                  className={`w-px flex-1 ${done ? "bg-primary" : "bg-border"}`}
-                  style={{ minHeight: 18 }}
-                />
+                <span className={`min-h-4.5 w-px flex-1 ${done ? "bg-primary" : "bg-border"}`} />
               ) : null}
             </div>
             <p
@@ -306,17 +302,16 @@ export function AvailabilityCalendar({
             >
               <span className={isSel ? "font-bold" : ""}>{d.getDate()}</span>
               <span
-                className="mt-0.5 h-1 w-1 rounded-full"
-                aria-hidden
-                style={{
-                  background: isSel
-                    ? "var(--primary-foreground)"
+                className={`mt-0.5 h-1 w-1 rounded-full ${
+                  isSel
+                    ? "bg-primary-foreground"
                     : a.state === "available"
-                      ? "var(--success)"
+                      ? "bg-success"
                       : a.state === "limited"
-                        ? "var(--warn)"
-                        : "transparent",
-                }}
+                        ? "bg-warn"
+                        : ""
+                }`}
+                aria-hidden
               />
             </button>
           );
@@ -324,19 +319,19 @@ export function AvailabilityCalendar({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-muted-foreground">
-        <Legend color="var(--success)" label="Available" />
-        <Legend color="var(--warn)" label="Limited" />
-        <Legend color="var(--border)" label="Unavailable / closed" />
+        <Legend dot="bg-success" label="Available" />
+        <Legend dot="bg-warn" label="Limited" />
+        <Legend dot="bg-border" label="Unavailable / closed" />
       </div>
       <p className="mt-2 text-1 text-muted-foreground">All times shown in {timezone}.</p>
     </div>
   );
 }
 
-function Legend({ color, label }: { color: string; label: string }) {
+function Legend({ dot, label }: { dot: string; label: string }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      <span className="h-2 w-2 rounded-full" style={{ background: color }} aria-hidden />
+      <span className={`h-2 w-2 rounded-full ${dot}`} aria-hidden />
       {label}
     </span>
   );

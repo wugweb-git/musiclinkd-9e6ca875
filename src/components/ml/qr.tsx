@@ -105,9 +105,7 @@ export function QrIdentityCard({
       className="overflow-hidden rounded-lg border border-border p-5 text-center"
       style={{ background: s.light, color: s.dark }}
     >
-      <p className="text-1 font-bold uppercase tracking-[0.18em]" style={{ opacity: 0.6 }}>
-        MusicLinkd
-      </p>
+      <p className="text-1 font-bold uppercase tracking-widest opacity-60">MusicLinkd</p>
 
       <div className="mt-4 flex flex-col items-center gap-2">
         <img
@@ -122,14 +120,8 @@ export function QrIdentityCard({
           </h2>
           {verified ? <VerifiedBadge size={15} /> : null}
         </div>
-        <p className="text-1" style={{ opacity: 0.72 }}>
-          {role}
-        </p>
-        {tagline && !compact ? (
-          <p className="max-w-[240px] text-1" style={{ opacity: 0.6 }}>
-            {tagline}
-          </p>
-        ) : null}
+        <p className="text-1 opacity-70">{role}</p>
+        {tagline && !compact ? <p className="max-w-[240px] text-1 opacity-60">{tagline}</p> : null}
       </div>
 
       <div className="mt-5 flex justify-center">
@@ -141,12 +133,10 @@ export function QrIdentityCard({
         />
       </div>
 
-      <p className="mt-4 text-1 font-semibold" style={{ opacity: onInk ? 0.85 : 0.7 }}>
+      <p className={`mt-4 text-1 font-semibold ${onInk ? "opacity-85" : "opacity-70"}`}>
         musiclinkd.app/q/{code}
       </p>
-      <p className="text-1" style={{ opacity: 0.5 }}>
-        @{handle}
-      </p>
+      <p className="text-1 opacity-50">@{handle}</p>
     </article>
   );
 }

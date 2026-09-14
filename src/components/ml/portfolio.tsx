@@ -28,8 +28,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
     >
       <div className="flex gap-3">
         <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg text-2xl"
-          style={{ background: "var(--surface-subtle)" }}
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-subtle text-2xl"
           aria-hidden
         >
           {t.emoji}
@@ -63,12 +62,9 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
 export function StatusPill({ published }: { published: boolean }) {
   return (
     <span
-      className="shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={
-        published
-          ? { background: "var(--success-container)", color: "var(--success)" }
-          : { background: "var(--warn-container)", color: "var(--warn)" }
-      }
+      className={`shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${
+        published ? "bg-success-container text-success" : "bg-warn-container text-warn"
+      }`}
     >
       {published ? "Published" : "Draft"}
     </span>
@@ -100,8 +96,7 @@ export function StateCard({
 }) {
   return (
     <div
-      className="rounded-lg border border-border bg-card p-6 text-center"
-      style={tone === "error" ? { borderColor: "var(--danger, #DC2626)" } : undefined}
+      className={`rounded-lg border bg-card p-6 text-center ${tone === "error" ? "border-destructive" : "border-border"}`}
       role={tone === "error" ? "alert" : undefined}
     >
       <h3 className="text-2">{title}</h3>
@@ -211,23 +206,19 @@ export function PortfolioHeader({
 
 export function MediaStatePill({ state }: { state: MediaState }) {
   const c = mediaStateCopy[state];
-  const style: Record<string, string> =
+  const tone =
     c.tone === "good"
-      ? { background: "var(--success-container)", color: "var(--success)" }
+      ? "bg-success-container text-success"
       : c.tone === "warn"
-        ? { background: "var(--warn-container)", color: "var(--warn)" }
+        ? "bg-warn-container text-warn"
         : c.tone === "bad"
-          ? {
-              background: "var(--danger-container, var(--warn-container))",
-              color: "var(--danger, #DC2626)",
-            }
-          : { background: "var(--surface-subtle)", color: "var(--muted-foreground)" };
+          ? "bg-danger-container text-destructive"
+          : "bg-subtle text-muted-foreground";
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={style}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${tone}`}
     >
-      <span aria-hidden>●</span>
+      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
       {c.label}
     </span>
   );

@@ -38,10 +38,7 @@ export function SaveButton({
 
 export function ConditionBadge({ value }: { value: string }) {
   return (
-    <span
-      className="rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
-    >
+    <span className="rounded-full bg-subtle px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
       {value}
     </span>
   );
@@ -92,10 +89,7 @@ export function PriceBlock({
 
 export function TrustPill({ label }: { label: string }) {
   return (
-    <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-semibold"
-      style={{ background: "var(--status-category-bg)", color: "var(--status-category-text)" }}
-    >
+    <span className="inline-flex items-center gap-1 rounded-full bg-status-category-bg px-2.5 py-1 text-1 font-semibold text-status-category-text">
       <ShieldCheck size={11} strokeWidth={2.2} />
       {label}
     </span>
@@ -119,10 +113,7 @@ export function CategoryTile({
       params={{ slug }}
       className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg border border-border bg-card p-3"
     >
-      <span
-        className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
-        style={{ background: "var(--surface-subtle)" }}
-      >
+      <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-lg">
         {emoji}
       </span>
       <span className="text-1 font-semibold leading-tight">{label}</span>
@@ -305,10 +296,7 @@ export function EmptyState({
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
-      <div
-        className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-md text-2xl"
-        style={{ background: "var(--surface-subtle)" }}
-      >
+      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-md bg-subtle text-2xl">
         {emoji}
       </div>
       <h3 className="text-2">{title}</h3>

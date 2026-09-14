@@ -141,7 +141,7 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 **Never key styling off display copy.** `map[status]` where `status` is user-visible text breaks when the wording changes. Key off a union type; keep the label separate.
 
-**One styling mechanism** — Tailwind classes with semantic tokens. Not inline `style={{ background: "var(--…)" }}`; it cannot be overridden by class or linted for tokens.
+**One styling mechanism** — Tailwind classes with semantic tokens. Not inline `style={{ background: "var(--…)" }}`; it cannot be overridden by class or linted for tokens. Inline `style` is kept only for runtime values a class cannot express: computed widths and heights (progress bars, waveform bars), numeric `size` props (avatars, save button), the QR code's scheme colours, safe-area padding, and Google's "G" fills. Everything else, including tone maps, uses class strings.
 
 **Icons: never emoji.** Not `⌕ 🎙 ← ✓ 📍 ♡ ★` as glyphs, and not as fields in data modules. They render as empty boxes on real devices. `lucide-react` is installed and already used.
 
@@ -164,7 +164,7 @@ Photography: Unsplash is fine. The team's own image library lives in the guide r
 Flat, dot-named files under `src/routes/` (`booking.$id.pay.tsx` → `/booking/:id/pay`). Dynamic segments use bare `$`. `__root.tsx` is the only shell. **`routeTree.gen.ts` is generated — never hand-edit.** No `src/pages/`, no `app/layout.tsx`. Every route defines its own `head()`. Wizards keep state in a `?step=` search param. Every route reachable from a real entry point.
 
 **A route file with children must render `<Outlet />`, or be an index leaf.** In flat routing,
-`bands.new.tsx` is a *child* of `bands.tsx` and renders inside the parent's `<Outlet />`. If the
+`bands.new.tsx` is a _child_ of `bands.tsx` and renders inside the parent's `<Outlet />`. If the
 parent has none, the child URL silently shows the parent's screen, with the child's `<title>`.
 Twenty-six routes shipped this way until 13 Sep. When a screen has sub-pages, name the screen
 `bands.index.tsx` with `createFileRoute("/bands/")` (the `opportunities.index.tsx` pattern), or
