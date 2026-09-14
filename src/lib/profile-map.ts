@@ -77,6 +77,7 @@ export function draftToProfile(d: OnboardingDraft, step?: string) {
     discovery_prefs: {
       topics: d.discovery,
       businessIntent: d.businessIntent,
+      instrumentExperience: d.instrumentExperience,
     },
     onboarding_draft: d as unknown as Record<string, unknown>,
     ...(step ? { onboarding_step: step } : {}),
@@ -103,6 +104,7 @@ export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDr
   const prefs = (row.discovery_prefs ?? {}) as {
     topics?: string[];
     businessIntent?: string | null;
+    instrumentExperience?: Record<string, string>;
   };
   const instruments = row.instruments ?? [];
   return {
@@ -130,6 +132,7 @@ export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDr
     discovery: prefs.topics ?? [],
     visibility: row.visibility ?? "public",
     businessIntent: prefs.businessIntent ?? null,
+    instrumentExperience: prefs.instrumentExperience ?? {},
     completedSteps: emptyDraft.completedSteps,
   };
 }

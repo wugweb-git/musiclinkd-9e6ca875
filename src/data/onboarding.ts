@@ -254,6 +254,7 @@ export const contactChannels = [
   { key: "messages", label: "MusicLinkd messages", hint: "Always on. Nothing private is shared." },
   { key: "email", label: "Email", hint: "Shared only when you accept an enquiry." },
   { key: "phone", label: "Phone", hint: "Kept private until you choose to share." },
+  { key: "whatsapp", label: "WhatsApp", hint: "Shared only when you accept an enquiry." },
   { key: "business", label: "Business contact", hint: "For a studio, label or agency line." },
 ];
 
@@ -408,7 +409,8 @@ export type OnboardingDraft = {
   workModes: string[]; // PROPOSED professionalProfiles.workModes
   availability: string[]; // EXISTING availability.openFor
   intents: string[]; // PROPOSED preferences.intents
-  experience: string | null; // EXISTING professionalProfiles.experienceLevel
+  experience: string | null; // EXISTING professionalProfiles.experienceLevel (highest per-instrument level when instruments are set)
+  instrumentExperience: Record<string, string>; // PROPOSED instrument slug → experienceLevels key
   bio: string; // EXISTING
   links: Record<string, string>; // EXISTING profileLinks
   contact: string[]; // EXISTING preferences.contactChannels
@@ -438,6 +440,7 @@ export const emptyDraft: OnboardingDraft = {
   availability: [],
   intents: [],
   experience: null,
+  instrumentExperience: {},
   bio: "",
   links: {},
   contact: ["messages"],
@@ -453,25 +456,15 @@ export const emptyDraft: OnboardingDraft = {
 
 export type StepId =
   | "identity"
-  | "photo"
   | "role"
-  | "secondary-roles"
   | "instruments"
-  | "specialisation"
-  | "genres"
-  | "languages"
-  | "location"
-  | "work-mode"
-  | "availability"
-  | "intent"
   | "experience"
-  | "bio"
-  | "links"
-  | "contact"
-  | "discovery"
-  | "visibility"
-  | "business"
-  | "handoffs";
+  | "specialisation"
+  | "languages"
+  | "genres"
+  | "work-mode"
+  | "intent"
+  | "contact";
 
 export type StepDef = {
   id: StepId;
@@ -491,57 +484,28 @@ export type StepDef = {
 export const steps: StepDef[] = [
   {
     id: "identity",
-    group: "Identity",
-    title: "What should we call you?",
-    subtitle: "This is how people find and credit you.",
+    group: "About you",
+    title: "Tell people who you are",
+    subtitle: "Your photo, name, where you're based and a short bio.",
     why: "Your name and username appear on every credit, message and search result.",
     optional: false,
     contract: contract(
       "ONB-02",
-      "Identity Basics",
+      "About You",
       "/onboarding/step/identity",
       ["users"],
-      ["user"],
+      ["user", "location"],
     ),
   },
   {
-    id: "photo",
-    group: "Identity",
-    title: "Add a photo",
-    subtitle: "A face helps people trust an enquiry.",
-    why: "Profiles with a photo get noticeably more replies. No headshot needed.",
-    optional: true,
-    contract: contract("ONB-03", "Profile Photo", "/onboarding/step/photo", ["users"], ["user"]),
-  },
-  {
+    // Two stages on one screen: the main role, then up to two more (see step route).
     id: "role",
     group: "Profession",
     title: "What do you do?",
     subtitle: "Pick the one that describes you best.",
     why: "Your primary role shapes the rest of this setup and how you're discovered.",
     optional: false,
-    contract: contract(
-      "ONB-04",
-      "Primary Role",
-      "/onboarding/step/role",
-      ["masterData"],
-      ["role", "professionalProfile"],
-    ),
-  },
-  {
-    id: "secondary-roles",
-    group: "Profession",
-    title: "Anything else you do?",
-    subtitle: "Optional. Pick up to two.",
-    why: "Extra roles widen the work you show up for, without diluting your main one.",
-    optional: true,
-    contract: contract(
-      "ONB-05",
-      "Secondary Roles",
-      "/onboarding/step/secondary-roles",
-      ["masterData"],
-      ["role"],
-    ),
+    contract: contract("ONB-04", "Roles", "/onboarding/step/role", ["taxonomy_options"], ["role"]),
   },
   {
     id: "instruments",
@@ -557,8 +521,24 @@ export const steps: StepDef[] = [
       "ONB-06",
       "Instruments",
       "/onboarding/step/instruments",
-      ["masterData"],
+      ["persona_bucket"],
       ["instrument"],
+    ),
+  },
+  {
+    // Per instrument when instruments were picked; otherwise one answer for the main role.
+    id: "experience",
+    group: "Expertise",
+    title: "How experienced are you?",
+    subtitle: "Not a ranking — just context.",
+    why: "Helps match you to the right briefs. Never shown as a score.",
+    optional: true,
+    contract: contract(
+      "ONB-13",
+      "Experience",
+      "/onboarding/step/experience",
+      ["masterData"],
+      ["professionalProfile"],
     ),
   },
   {
@@ -579,7 +559,7 @@ export const steps: StepDef[] = [
   },
   {
     id: "languages",
-    group: "Expertise",
+    group: "Music",
     title: "Which languages do you work in?",
     subtitle: "Choose all that apply.",
     why: "Language decides a lot of casting in Indian music work.",
@@ -588,182 +568,68 @@ export const steps: StepDef[] = [
       "ONB-09",
       "Languages",
       "/onboarding/step/languages",
-      ["masterData"],
+      ["taxonomy_options"],
       ["language"],
     ),
   },
   {
     id: "genres",
-    group: "Expertise",
+    group: "Music",
     title: "What music do you work with?",
     subtitle: "Choose all that apply.",
     why: "Genres drive your recommendations and who gets matched with you.",
     optional: true,
-    contract: contract("ONB-08", "Genres", "/onboarding/step/genres", ["masterData"], ["genre"]),
-  },
-  {
-    id: "location",
-    group: "Context",
-    title: "Where are you based?",
-    subtitle: "City level is enough.",
-    why: "Most work starts local. We never show your exact address.",
-    optional: false,
     contract: contract(
-      "ONB-10",
-      "Location",
-      "/onboarding/step/location",
-      ["masterData"],
-      ["location"],
+      "ONB-08",
+      "Genres",
+      "/onboarding/step/genres",
+      ["persona_bucket"],
+      ["genre"],
     ),
   },
   {
     id: "work-mode",
-    group: "Context",
+    group: "Work",
     title: "How do you work?",
-    subtitle: "Pick everything that applies.",
+    subtitle: "Where you work and what you're available for.",
     why: "Remote-friendly profiles get enquiries from outside their city.",
     optional: true,
     contract: contract(
       "ONB-11",
-      "Work Mode",
+      "Work Mode & Availability",
       "/onboarding/step/work-mode",
       ["masterData"],
-      ["professionalProfile"],
-    ),
-  },
-  {
-    id: "availability",
-    group: "Intent",
-    title: "What are you available for?",
-    subtitle: "You can fine-tune this later in Services.",
-    why: "This is a high-level signal. Detailed pricing lives in Services & Availability.",
-    optional: true,
-    contract: contract(
-      "ONB-12",
-      "Availability",
-      "/onboarding/step/availability",
-      ["masterData"],
-      ["availability"],
+      ["professionalProfile", "availability"],
     ),
   },
   {
     id: "intent",
-    group: "Intent",
+    group: "Goals",
     title: "What brings you to MusicLinkd?",
-    subtitle: "Pick as many as you like.",
+    subtitle: "And what you'd like to discover.",
     why: "We'll shape your home feed and recommendations around this.",
     optional: true,
     contract: contract(
-      "ONB-13",
-      "Professional Intent",
+      "ONB-12",
+      "Intent & Discovery",
       "/onboarding/step/intent",
       ["masterData"],
       ["preferences"],
     ),
   },
   {
-    id: "experience",
-    group: "Intent",
-    title: "How experienced are you?",
-    subtitle: "Not a ranking — just context.",
-    why: "Helps match you to the right briefs. Never shown as a score.",
-    optional: true,
-    contract: contract(
-      "ONB-14",
-      "Experience",
-      "/onboarding/step/experience",
-      ["masterData"],
-      ["professionalProfile"],
-    ),
-  },
-  {
-    id: "bio",
-    group: "Profile",
-    title: "Tell people about yourself",
-    subtitle: "Two lines is plenty.",
-    why: "Your bio is the first thing read after your name and role.",
-    optional: true,
-    contract: contract(
-      "ONB-15",
-      "Bio",
-      "/onboarding/step/bio",
-      ["professionalProfiles"],
-      ["professionalProfile"],
-    ),
-  },
-  {
-    id: "links",
-    group: "Profile",
-    title: "Where else can people hear you?",
-    subtitle: "Optional. Add only what you use.",
-    why: "External links carry proof of work until your portfolio is up.",
-    optional: true,
-    contract: contract(
-      "ONB-16",
-      "Profile Links",
-      "/onboarding/step/links",
-      ["profileLinks"],
-      ["profileLink"],
-    ),
-  },
-  {
     id: "contact",
-    group: "Profile",
-    title: "How can people reach you?",
-    subtitle: "Private by default.",
+    group: "Reach",
+    title: "How people find and reach you",
+    subtitle: "Links, contact options and who can see your profile.",
     why: "Nothing private is published. You choose what to share per enquiry.",
-    optional: true,
-    contract: contract(
-      "ONB-17",
-      "Contact Preferences",
-      "/onboarding/step/contact",
-      ["preferences"],
-      ["preferences"],
-    ),
-  },
-  {
-    id: "discovery",
-    group: "Personalisation",
-    title: "What would you like to discover?",
-    subtitle: "We'll tune your feed to this.",
-    why: "Feeds Discover and Recommendations. You can change it anytime.",
-    optional: true,
-    contract: contract(
-      "ONB-18",
-      "Discovery Preferences",
-      "/onboarding/step/discovery",
-      ["preferences"],
-      ["preferences"],
-    ),
-  },
-  {
-    id: "visibility",
-    group: "Personalisation",
-    title: "Who can see your profile?",
-    subtitle: "You can change this whenever you want.",
-    why: "Public profiles are found by clients outside MusicLinkd too.",
     optional: false,
     contract: contract(
-      "ONB-19",
-      "Profile Visibility",
-      "/onboarding/step/visibility",
+      "ONB-15",
+      "Links, Contact & Visibility",
+      "/onboarding/step/contact",
       ["users"],
-      ["user"],
-    ),
-  },
-  {
-    id: "business",
-    group: "Personalisation",
-    title: "Do you represent a business?",
-    subtitle: "Studio, label, agency, school and more.",
-    why: "Businesses get their own profile with team, services and verification.",
-    optional: true,
-    contract: contract(
-      "ONB-26",
-      "Business Intent",
-      "/onboarding/step/business",
-      ["businesses"],
-      ["business"],
+      ["profileLinks", "preferences", "profile"],
     ),
   },
 ];

@@ -32,7 +32,6 @@ import {
   ChipPicker,
   PersonTypePicker,
   InlineField,
-  LocationHint,
   OnboardingProvider,
   OptionList,
   PhotoPicker,
@@ -127,6 +126,7 @@ export const Route = createFileRoute("/onboarding/step/$id")({
 });
 
 type Banner = "none" | "error";
+type RoleStage = "primary" | "secondary";
 
 function StepRoute() {
   const { id } = Route.useParams();
@@ -140,6 +140,14 @@ function StepRoute() {
     draft.username,
     validateUsername(draft.username).ok,
   );
+  // The role step asks twice on one screen: the main role, then anything else.
+  const [roleStage, setRoleStage] = useState<RoleStage>("primary");
+  const hasRole = Boolean(draft.primaryRole);
+  useEffect(() => {
+    if (id === "role" && hydrated) setRoleStage(hasRole ? "secondary" : "primary");
+    // Only on arrival; picking a role moves the stage itself.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, hydrated]);
 
   const list = visibleSteps(draft, bucket);
   const def = steps.find((s) => s.id === id);
@@ -231,19 +239,45 @@ function StepRoute() {
     );
   };
 
+  // Second stage of the role step: same screen, new question, optional.
+  const secondStage = def.id === "role" && roleStage === "secondary" && hasRole;
+  const copy = secondStage
+    ? {
+        title: "Anything else you do?",
+        subtitle: "Pick up to two.",
+        why: "Extra roles widen the work you show up for, without diluting your main one.",
+        optional: true,
+      }
+    : def;
+  const toFirstStage = () => {
+    haptic("select");
+    setRoleStage("primary");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const submit =
+    def.id === "role" && !secondStage && hasRole
+      ? () => {
+          haptic("select");
+          setRoleStage("secondary");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      : valid
+        ? () => advance(true)
+        : blocked;
+
   return (
     <StepShell
       step={index + 1}
       total={list.length}
       group={def.group}
-      title={def.title}
-      subtitle={def.subtitle}
-      why={def.why}
-      optional={def.optional}
+      title={copy.title}
+      subtitle={copy.subtitle}
+      why={copy.why}
+      optional={copy.optional}
       status={<SyncStatus state={sync} />}
-      onBack={back}
-      onSubmit={valid ? () => advance(true) : blocked}
-      {...(def.optional ? { onSkip: () => advance(false) } : {})}
+      onBack={secondStage ? toFirstStage : back}
+      onSubmit={submit}
+      {...(copy.optional ? { onSkip: () => advance(secondStage) } : {})}
       banner={
         banner === "error" ? (
           <AuthNotice title="Add the required details to continue" />
@@ -275,6 +309,11 @@ function StepRoute() {
         set={set}
         toggle={toggle}
         usernameStatus={usernameStatus}
+        roleStage={secondStage ? "secondary" : "primary"}
+        setRoleStage={(stage) => {
+          setRoleStage(stage);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
       />
     </StepShell>
   );
@@ -288,14 +327,13 @@ function isValid(id: string, d: OnboardingDraft, usernameStatus: UsernameStatus)
         Boolean(d.displayName.trim()) &&
         validateUsername(d.username).ok &&
         usernameStatus !== "taken" &&
-        usernameStatus !== "checking"
+        usernameStatus !== "checking" &&
+        Boolean(d.state && d.city)
       );
     case "role":
       return Boolean(d.primaryRole);
-    case "location":
-      return Boolean(d.state && d.city);
-    case "visibility":
-      return Boolean(d.visibility);
+    case "contact":
+      return Boolean(d.visibility) && Object.values(d.links).every((v) => !v || validateUrl(v));
     default:
       return true;
   }
@@ -307,18 +345,20 @@ function StepBody({
   set,
   toggle,
   usernameStatus,
+  roleStage,
+  setRoleStage,
 }: {
   id: string;
   draft: OnboardingDraft;
   set: (p: Partial<OnboardingDraft>) => void;
   toggle: (field: keyof OnboardingDraft, value: string) => void;
   usernameStatus: UsernameStatus;
+  roleStage: RoleStage;
+  setRoleStage: (stage: RoleStage) => void;
 }) {
   const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
-  const needsTaxonomy = ["role", "secondary-roles", "instruments", "genres", "languages"].includes(
-    id,
-  );
+  const needsTaxonomy = ["role", "instruments", "experience", "genres", "languages"].includes(id);
   const needsBucket = id === "instruments" || id === "genres";
   if (needsTaxonomy && taxonomy.state === "error") {
     return (
@@ -348,6 +388,7 @@ function StepBody({
       const check = validateUsername(d.username);
       return (
         <div className="space-y-5">
+          <PhotoPicker photo={d.photo} onChange={(v) => set({ photo: v })} />
           <InlineField
             inputId="displayName"
             label="Display name"
@@ -365,55 +406,94 @@ function StepBody({
             onChange={(v) => set({ username: v.toLowerCase().replace(/\s/g, "") })}
             placeholder="yourname"
             autoComplete="username"
-            {...(!check.ok
-              ? { error: check.message }
-              : usernameStatus === "taken"
-                ? { error: "That one's taken. Try another." }
-                : usernameStatus === "available"
-                  ? { ok: `${check.message} is available` }
-                  : usernameStatus === "checking"
-                    ? { hint: "Checking…" }
-                    : { hint: check.message })}
+            {...(!d.username
+              ? { hint: "Your profile link: lowercase letters, numbers, dots and underscores." }
+              : !check.ok
+                ? { error: check.message }
+                : usernameStatus === "taken"
+                  ? { error: "That one's taken. Try another." }
+                  : usernameStatus === "available"
+                    ? { ok: `${check.message} is available` }
+                    : usernameStatus === "checking"
+                      ? { hint: "Checking…" }
+                      : { hint: check.message })}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <SelectField
+              selectId="state"
+              label="State"
+              value={d.state}
+              options={statesByCountry[d.country] ?? []}
+              placeholder="Choose"
+              onChange={(v) => set({ state: v, city: "" })}
+            />
+            <SelectField
+              selectId="city"
+              label="City"
+              value={d.city}
+              options={citiesByState[d.state] ?? []}
+              placeholder={d.state ? "Choose" : "State first"}
+              disabled={!d.state}
+              onChange={(v) => set({ city: v })}
+            />
+          </div>
+          <InlineField
+            inputId="locality"
+            label="Area (optional)"
+            value={d.locality}
+            onChange={(v) => set({ locality: v })}
+            placeholder="Andheri West, Indiranagar…"
+            autoComplete="address-level3"
+            hint="Only the area is shown, never a full address."
+          />
+          <InlineField
+            inputId="bio"
+            label="Short bio (optional)"
+            value={d.bio}
+            onChange={(v) => set({ bio: v })}
+            placeholder="What you do, who you've worked with, what you're looking for."
+            multiline
+            maxLength={BIO_LIMIT}
+            hint="Two lines is plenty. You can rewrite it any time."
           />
         </div>
       );
     }
 
-    case "photo":
-      return (
-        <div className="space-y-5">
-          <PhotoPicker photo={d.photo} onChange={(v) => set({ photo: v })} />
-          <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
-            A clear photo of your face works better than a logo or a live shot from far away.
-          </p>
-        </div>
-      );
-
-    case "role":
-      return (
-        <PersonTypePicker
-          groups={talentGroups}
-          options={talentTypes(tx?.person_types ?? [])}
-          selected={d.primaryRole ? [d.primaryRole] : []}
-          icon={typeIcon}
-          onToggle={(slug) =>
-            set({ primaryRole: slug, secondaryRoles: d.secondaryRoles.filter((s) => s !== slug) })
-          }
-        />
-      );
-
-    case "secondary-roles":
+    case "role": {
+      const types = talentTypes(tx?.person_types ?? []);
+      if (roleStage === "primary" || !d.primaryRole) {
+        return (
+          <PersonTypePicker
+            groups={talentGroups}
+            options={types}
+            selected={d.primaryRole ? [d.primaryRole] : []}
+            icon={typeIcon}
+            onToggle={(slug) => {
+              set({
+                primaryRole: slug,
+                secondaryRoles: d.secondaryRoles.filter((s) => s !== slug),
+              });
+              // Same screen: the heading and the options switch to "anything else you do".
+              setRoleStage("secondary");
+            }}
+          />
+        );
+      }
+      // Back returns to the main-role question.
       return (
         <PersonTypePicker
+          key="secondary"
           groups={talentGroups}
-          options={talentTypes(tx?.person_types ?? [])}
+          options={types}
           selected={d.secondaryRoles}
-          exclude={d.primaryRole ? [d.primaryRole] : []}
+          exclude={[d.primaryRole]}
           multi
           max={2}
           onToggle={(slug) => toggle("secondaryRoles", slug)}
         />
       );
+    }
 
     case "instruments":
       return (
@@ -439,6 +519,56 @@ function StepBody({
         </div>
       );
 
+    case "experience": {
+      if (d.instruments.length) {
+        // One answer per instrument; the profile's single level is the highest of them.
+        const rank = (key: string | undefined) => experienceLevels.findIndex((e) => e.key === key);
+        return (
+          <div className="space-y-4">
+            {d.instruments.map((slug) => {
+              const key = d.instrumentExperience[slug];
+              return (
+                <SelectField
+                  key={slug}
+                  selectId={`experience-${slug}`}
+                  label={labelFor(tx?.instruments, slug)}
+                  value={experienceLevels.find((e) => e.key === key)?.label ?? ""}
+                  options={experienceLevels.map((e) => e.label)}
+                  placeholder="How long have you played?"
+                  onChange={(label) => {
+                    const nextKey = experienceLevels.find((e) => e.label === label)?.key;
+                    const map = { ...d.instrumentExperience };
+                    if (nextKey) map[slug] = nextKey;
+                    else delete map[slug];
+                    const top = Object.values(map).sort((a, b) => rank(b) - rank(a))[0] ?? null;
+                    set({ instrumentExperience: map, experience: top });
+                  }}
+                />
+              );
+            })}
+          </div>
+        );
+      }
+      return (
+        <div className="space-y-3">
+          {d.primaryRole ? (
+            <p className="text-sm text-muted-foreground">
+              As a{" "}
+              <span className="font-medium text-foreground">
+                {labelFor(tx?.person_types, d.primaryRole)}
+              </span>
+            </p>
+          ) : null}
+          <OptionList
+            options={experienceLevels}
+            selected={d.experience ? [d.experience] : []}
+            onToggle={(k) => set({ experience: d.experience === k ? null : k })}
+            multi={false}
+          />
+        </div>
+      );
+    }
+
     case "specialisation": {
       const spec = d.primaryRole ? specialisationByRole[d.primaryRole] : undefined;
       if (!spec)
@@ -463,15 +593,6 @@ function StepBody({
       );
     }
 
-    case "genres":
-      return (
-        <ChipPicker
-          options={withSelected(bucket?.genres ?? [], d.genres, tx?.genres)}
-          selected={d.genres}
-          onToggle={(v) => toggle("genres", v)}
-        />
-      );
-
     case "languages":
       return (
         <ChipPicker
@@ -481,177 +602,98 @@ function StepBody({
         />
       );
 
-    case "location":
+    case "genres":
       return (
-        <div className="space-y-4">
-          <SelectField
-            selectId="state"
-            label="State"
-            value={d.state}
-            options={statesByCountry[d.country] ?? []}
-            placeholder="Choose a state"
-            onChange={(v) => set({ state: v, city: "" })}
-          />
-          <SelectField
-            selectId="city"
-            label="City"
-            value={d.city}
-            options={citiesByState[d.state] ?? []}
-            placeholder={d.state ? "Choose a city" : "Pick a state first"}
-            disabled={!d.state}
-            onChange={(v) => set({ city: v })}
-          />
-          <InlineField
-            inputId="locality"
-            label="Locality (optional)"
-            value={d.locality}
-            onChange={(v) => set({ locality: v })}
-            placeholder="Andheri West, Indiranagar…"
-            autoComplete="address-level3"
-            hint="Only shown as an area — never a full address."
-          />
-          <LocationHint />
-        </div>
+        <ChipPicker
+          options={withSelected(bucket?.genres ?? [], d.genres, tx?.genres)}
+          selected={d.genres}
+          onToggle={(v) => toggle("genres", v)}
+        />
       );
 
     case "work-mode":
       return (
-        <OptionList
-          options={workModes}
-          selected={d.workModes}
-          onToggle={(k) => toggle("workModes", k)}
-        />
-      );
-
-    case "availability":
-      return (
-        <ChipPicker
-          options={availabilityFor}
-          selected={d.availability}
-          onToggle={(v) => toggle("availability", v)}
-        />
+        <div className="space-y-6">
+          <div>
+            <p className="mb-2 text-sm font-medium">Where you work</p>
+            <OptionList
+              options={workModes}
+              selected={d.workModes}
+              onToggle={(k) => toggle("workModes", k)}
+            />
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">Available for</p>
+            <ChipPicker
+              options={availabilityFor}
+              selected={d.availability}
+              onToggle={(v) => toggle("availability", v)}
+            />
+          </div>
+        </div>
       );
 
     case "intent":
       return (
-        <ChipPicker
-          options={intents}
-          selected={d.intents}
-          onToggle={(v) => toggle("intents", v)}
-          columns
-        />
-      );
-
-    case "experience":
-      return (
-        <OptionList
-          options={experienceLevels}
-          selected={d.experience ? [d.experience] : []}
-          onToggle={(k) => set({ experience: d.experience === k ? null : k })}
-          multi={false}
-        />
-      );
-
-    case "bio":
-      return (
-        <div className="space-y-4">
-          <InlineField
-            inputId="bio"
-            label="Short bio"
-            value={d.bio}
-            onChange={(v) => set({ bio: v })}
-            placeholder="What you do, who you've worked with, what you're looking for."
-            multiline
-            maxLength={BIO_LIMIT}
-            hint="Two lines is plenty. You can rewrite this any time."
-          />
-          <button
-            type="button"
-            onClick={() =>
-              set({
-                bio: `${d.primaryRole ? labelFor(tx?.person_types, d.primaryRole) : "Music professional"} based in ${
-                  d.city || "India"
-                }, working across ${
-                  d.genres
-                    .slice(0, 2)
-                    .map((g) => labelFor(tx?.genres, g))
-                    .join(" and ") || "multiple genres"
-                }. Open to ${d.availability[0]?.toLowerCase() ?? "collaborations"}.`,
-              })
-            }
-            className="min-h-11 w-full rounded-full border border-border text-1 font-semibold"
-          >
-            Suggest a starting point
-          </button>
-        </div>
-      );
-
-    case "links":
-      return (
-        <div className="space-y-4">
-          {linkPlatforms.map((p) => {
-            const val = d.links[p.key] ?? "";
-            const bad = val.length > 0 && !validateUrl(val);
-            return (
-              <InlineField
-                key={p.key}
-                inputId={`link-${p.key}`}
-                label={p.label}
-                value={val}
-                onChange={(v) => set({ links: { ...d.links, [p.key]: v } })}
-                placeholder={p.placeholder}
-                inputMode="url"
-                autoComplete="url"
-                {...(bad ? { error: "That doesn't look like a full URL." } : {})}
-              />
-            );
-          })}
+        <div className="space-y-6">
+          <div>
+            <p className="mb-2 text-sm font-medium">You're here to</p>
+            <ChipPicker
+              options={intents}
+              selected={d.intents}
+              onToggle={(v) => toggle("intents", v)}
+            />
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">Show me more</p>
+            <ChipPicker
+              options={discoveryPrefs}
+              selected={d.discovery}
+              onToggle={(v) => toggle("discovery", v)}
+            />
+          </div>
         </div>
       );
 
     case "contact":
       return (
-        <OptionList
-          options={contactChannels}
-          selected={d.contact}
-          onToggle={(k) => toggle("contact", k)}
-        />
-      );
-
-    case "discovery":
-      return (
-        <ChipPicker
-          options={discoveryPrefs}
-          selected={d.discovery}
-          onToggle={(v) => toggle("discovery", v)}
-          columns
-        />
-      );
-
-    case "visibility":
-      return (
-        <OptionList
-          options={visibilityOptions}
-          selected={[d.visibility]}
-          onToggle={(k) => set({ visibility: k })}
-          multi={false}
-        />
-      );
-
-    case "business":
-      return (
-        <div className="space-y-4">
-          <ChipPicker
-            options={(tx?.person_types ?? [])
-              .filter((o) => o.metadata?.flow === "business")
-              .map((o) => ({ value: o.slug, label: o.label }))}
-            selected={d.businessIntent ? [d.businessIntent] : []}
-            onToggle={(v) => set({ businessIntent: d.businessIntent === v ? null : v })}
-          />
-          <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
-            Choosing one hands you over to Business setup after onboarding. Your personal profile
-            stays yours.
-          </p>
+        <div className="space-y-6">
+          <div className="space-y-4">
+            {linkPlatforms.map((p) => {
+              const val = d.links[p.key] ?? "";
+              const bad = val.length > 0 && !validateUrl(val);
+              return (
+                <InlineField
+                  key={p.key}
+                  inputId={`link-${p.key}`}
+                  label={p.label}
+                  value={val}
+                  onChange={(v) => set({ links: { ...d.links, [p.key]: v } })}
+                  placeholder={p.placeholder}
+                  inputMode="url"
+                  autoComplete="url"
+                  {...(bad ? { error: "That doesn't look like a full URL." } : {})}
+                />
+              );
+            })}
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">How people can reach you</p>
+            <OptionList
+              options={contactChannels.filter((c) => c.key !== "business")}
+              selected={d.contact}
+              onToggle={(k) => toggle("contact", k)}
+            />
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">Who can see your profile</p>
+            <OptionList
+              options={visibilityOptions}
+              selected={[d.visibility]}
+              onToggle={(k) => set({ visibility: k })}
+              multi={false}
+            />
+          </div>
         </div>
       );
 
