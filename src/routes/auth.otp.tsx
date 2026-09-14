@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Btn } from "@/components/ml/ui";
-import { AuthHeading, AuthNotice, AuthScreen } from "@/components/ml/auth";
+import { AuthHeading, AuthNotice, AuthScreen, classifyAuthError } from "@/components/ml/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 type Search = { phone: string };
 
@@ -30,7 +31,40 @@ function OtpScreen() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [seconds, setSeconds] = useState(30);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ title: string; body: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function verify() {
+    setError(null);
+    setBusy(true);
+    const { error: err } = await supabase.auth.verifyOtp({
+      phone: `+91${phone}`,
+      token: code,
+      type: "sms",
+    });
+    setBusy(false);
+    if (err) {
+      const m = err.message.toLowerCase();
+      setError(
+        m.includes("expired") || m.includes("invalid")
+          ? { title: "That code did not match", body: "Check the code, or send a new one." }
+          : classifyAuthError(err.message),
+      );
+      return;
+    }
+    // The splash sends a new account to onboarding and a finished one to Home.
+    void navigate({ to: "/", replace: true });
+  }
+
+  async function resend() {
+    setError(null);
+    const { error: err } = await supabase.auth.signInWithOtp({ phone: `+91${phone}` });
+    if (err) {
+      setError(classifyAuthError(err.message));
+      return;
+    }
+    setSeconds(30);
+  }
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -56,7 +90,7 @@ function OtpScreen() {
         }
       />
 
-      {error ? <AuthNotice title="That code did not match">{error}</AuthNotice> : null}
+      {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
       <button
         type="button"
@@ -90,10 +124,8 @@ function OtpScreen() {
 
       <Btn
         className="w-full"
-        disabled={code.length !== 6}
-        onClick={() =>
-          setError("Phone sign-in is not enabled on this build. Continue with email or Google.")
-        }
+        disabled={code.length !== 6 || busy || !phone}
+        onClick={() => void verify()}
       >
         Verify and continue
       </Btn>
@@ -104,7 +136,7 @@ function OtpScreen() {
         ) : (
           <button
             type="button"
-            onClick={() => setSeconds(30)}
+            onClick={() => void resend()}
             className="font-semibold text-primary"
           >
             Resend code

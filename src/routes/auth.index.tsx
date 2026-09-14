@@ -56,7 +56,7 @@ function AuthPage() {
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
 
   useEffect(() => {
-    if (!loading && signedIn) void navigate({ to: "/feed" });
+    if (!loading && signedIn) void navigate({ to: "/", replace: true });
   }, [loading, signedIn, navigate]);
 
   function switchMode(next: Search["mode"]) {
@@ -101,7 +101,7 @@ function AuthPage() {
       const { error: err } = await supabase.auth.signInWithPassword({ email, password });
       if (err) throw err;
       toast.success("Welcome back");
-      void navigate({ to: "/feed" });
+      void navigate({ to: "/", replace: true });
     } catch (err) {
       setError(classifyAuthError(err instanceof Error ? err.message : "Something went wrong"));
     } finally {
@@ -123,7 +123,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    void navigate({ to: "/feed" });
+    void navigate({ to: "/", replace: true });
   }
 
   return (
