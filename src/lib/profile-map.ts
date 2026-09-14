@@ -24,6 +24,7 @@ export type ProfileRow = {
   visibility?: string | null;
   availability?: string | null;
   avatar_url?: string | null;
+  cover_url?: string | null;
   links?: unknown;
   discovery_prefs?: unknown;
   onboarding_step?: string | null;

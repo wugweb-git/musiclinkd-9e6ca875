@@ -88,6 +88,7 @@ export function mergeProfileRow(
     username: row.username || base.username,
     name: row.display_name || base.name,
     ...(row.avatar_url ? { photo: row.avatar_url } : {}),
+    ...(row.cover_url ? { cover: row.cover_url } : {}),
     headline: row.headline
       ? (roleLabel(row.headline, labels) ?? row.headline)
       : (primary ?? base.headline),
