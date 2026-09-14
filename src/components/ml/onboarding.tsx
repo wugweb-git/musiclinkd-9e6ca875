@@ -19,6 +19,7 @@ import {
   WifiOff,
   MapPin,
 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Btn, Sheet } from "@/components/ml/ui";
 import { useAuth } from "@/hooks/use-auth";
@@ -28,12 +29,19 @@ import { draftToProfile, profileToDraft } from "@/lib/profile-map";
 import { emptyDraft, visibleSteps, type OnboardingDraft } from "@/data/onboarding";
 
 /* ------------------------------------------------------------------ */
-/* Draft store — local-first, synced to the account when signed in     */
+/* Draft store — the account is the source of truth                    */
 /* ------------------------------------------------------------------ */
 
-const KEY = "ml.onboarding.draft";
+/*
+ * Answers are saved to the signed-in account (profiles.onboarding_draft in the Lovable Cloud
+ * database) as the user goes. Onboarding is account-only: a signed-out visitor is sent to Welcome.
+ * A per-account copy in this browser is a cache for a failed or offline save and is never read for
+ * another account, so a shared device cannot carry one person's answers into the next sign-up.
+ */
+const LEGACY_KEY = "ml.onboarding.draft";
+const cacheKey = (userId: string) => `ml.onboarding.draft:${userId}`;
 
-export type SyncState = "idle" | "loading" | "saving" | "saved" | "offline" | "error" | "local";
+export type SyncState = "idle" | "loading" | "saving" | "saved" | "offline" | "error";
 
 type Store = {
   draft: OnboardingDraft;
@@ -48,35 +56,41 @@ type Store = {
 
 const Ctx = createContext<Store | null>(null);
 
+function readCache(userId: string): OnboardingDraft | null {
+  try {
+    const raw = window.localStorage.getItem(cacheKey(userId));
+    return raw
+      ? ({ ...emptyDraft, ...(JSON.parse(raw) as OnboardingDraft) } as OnboardingDraft)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [draft, setDraft] = useState<OnboardingDraft>(emptyDraft);
   const [hydrated, setHydrated] = useState(false);
-  const [sync, setSync] = useState<SyncState>("idle");
-  const { signedIn, loading: authLoading } = useAuth();
+  const [sync, setSync] = useState<SyncState>("loading");
+  const { user, signedIn, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const loadProfile = useServerFn(getMyProfile);
   const persist = useServerFn(saveMyProfile);
   const timer = useRef<number | null>(null);
   const pending = useRef<OnboardingDraft | null>(null);
-  const mergedFromServer = useRef(false);
+  const loadedFor = useRef<string | null>(null);
+  const userId = user?.id ?? null;
 
-  // 1. Local draft first — instant and works offline.
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      if (raw) setDraft({ ...emptyDraft, ...(JSON.parse(raw) as OnboardingDraft) });
-    } catch {
-      /* ignore corrupt drafts */
-    }
-    setHydrated(true);
-  }, []);
-
-  const writeLocal = useCallback((next: OnboardingDraft) => {
-    try {
-      window.localStorage.setItem(KEY, JSON.stringify(next));
-    } catch {
-      /* storage may be unavailable */
-    }
-  }, []);
+  const writeCache = useCallback(
+    (next: OnboardingDraft) => {
+      if (!userId) return;
+      try {
+        window.localStorage.setItem(cacheKey(userId), JSON.stringify(next));
+      } catch {
+        /* storage may be unavailable */
+      }
+    },
+    [userId],
+  );
 
   const push = useCallback(
     async (next: OnboardingDraft) => {
@@ -96,48 +110,52 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     [persist],
   );
 
-  // 2. Merge the account copy once we know the user is signed in.
+  // Load this account's answers. Signed out: onboarding is not available, go to Welcome.
   useEffect(() => {
-    if (!hydrated || authLoading || mergedFromServer.current) return;
-    if (!signedIn) {
-      setSync("local");
+    if (authLoading) return;
+    try {
+      // The old unscoped draft was shared by every account on this browser. It is never read now.
+      window.localStorage.removeItem(LEGACY_KEY);
+    } catch {
+      /* ignore */
+    }
+    if (!signedIn || !userId) {
+      void navigate({ to: "/welcome", replace: true });
       return;
     }
-    mergedFromServer.current = true;
+    if (loadedFor.current === userId) return;
+    loadedFor.current = userId;
+    const cached = readCache(userId);
     setSync("loading");
     loadProfile()
       .then((row) => {
-        const remote = profileToDraft(row as never);
-        if (remote) {
-          setDraft((local) => {
-            // Whichever copy is further along wins; the other fills the blanks.
-            const localAhead = local.completedSteps.length >= remote.completedSteps.length;
-            const base = localAhead
-              ? { ...remote, ...prune(local) }
-              : { ...local, ...prune(remote) };
-            const merged = {
-              ...base,
-              completedSteps: Array.from(
-                new Set([...local.completedSteps, ...remote.completedSteps]),
-              ),
-            } as OnboardingDraft;
-            writeLocal(merged);
-            return merged;
-          });
-        }
+        const remote = profileToDraft(row as never) ?? emptyDraft;
+        // A cached copy is only ahead when a save failed; whichever is further along wins.
+        const next =
+          cached && cached.completedSteps.length > remote.completedSteps.length
+            ? ({
+                ...remote,
+                ...prune(cached),
+                completedSteps: Array.from(
+                  new Set([...remote.completedSteps, ...cached.completedSteps]),
+                ),
+              } as OnboardingDraft)
+            : remote;
+        setDraft(next);
+        writeCache(next);
         setSync("saved");
       })
-      .catch(() => setSync("error"));
-  }, [hydrated, authLoading, signedIn, loadProfile, writeLocal]);
+      .catch(() => {
+        if (cached) setDraft(cached);
+        setSync(navigator.onLine ? "error" : "offline");
+      })
+      .finally(() => setHydrated(true));
+  }, [authLoading, signedIn, userId, navigate, loadProfile, writeCache]);
 
   const persistDraft = useCallback(
     (next: OnboardingDraft) => {
       setDraft(next);
-      writeLocal(next);
-      if (!signedIn) {
-        setSync("local");
-        return;
-      }
+      writeCache(next);
       pending.current = next;
       if (timer.current) window.clearTimeout(timer.current);
       timer.current = window.setTimeout(() => {
@@ -146,7 +164,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         if (payload) void push(payload);
       }, 700);
     },
-    [signedIn, push, writeLocal],
+    [push, writeCache],
   );
 
   const value = useMemo<Store>(
@@ -717,15 +735,7 @@ export function SavingBanner({ label = "Saving your answers…" }: { label?: str
 }
 
 /** Renders the real sync state of the draft (local, saving, offline, error). */
-export function SyncBanner({
-  state,
-  onRetry,
-  localNote = "Saved on this device. Sign in to keep your answers on your account.",
-}: {
-  state: SyncState;
-  onRetry: () => void;
-  localNote?: string;
-}) {
+export function SyncBanner({ state, onRetry }: { state: SyncState; onRetry: () => void }) {
   if (state === "saving" || state === "loading") {
     return (
       <SavingBanner
@@ -740,13 +750,6 @@ export function SyncBanner({
         message="Your answers are safe on this device. We'll try again, or you can retry now."
         onRetry={onRetry}
       />
-    );
-  }
-  if (state === "local") {
-    return (
-      <div role="status" className="mb-4 rounded-lg border border-border bg-card p-4">
-        <p className="text-1 leading-relaxed text-muted-foreground">{localNote}</p>
-      </div>
     );
   }
   return null;
