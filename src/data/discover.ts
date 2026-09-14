@@ -235,7 +235,7 @@ export const trending = [
 
 export const studios = [
   {
-    name: "Yash Raj Sound Studios",
+    name: "Wugweb Studios",
     location: "Andheri West, Mumbai",
     rating: 4.9,
     rate: "₹1,800/hr",
