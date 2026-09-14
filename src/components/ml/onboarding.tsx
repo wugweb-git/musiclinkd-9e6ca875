@@ -362,15 +362,28 @@ export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | nul
 /* ------------------------------------------------------------------ */
 
 /** True once the page has scrolled past its top. */
-function useScrolled() {
-  const [scrolled, setScrolled] = useState(false);
+/** Whether content sits under the top bar, and whether more of it waits under the bottom bar. */
+function useScrollEdges() {
+  const [edges, setEdges] = useState({ top: false, bottom: false });
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 4);
+    const update = () => {
+      const el = document.documentElement;
+      const top = window.scrollY > 4;
+      const bottom = window.scrollY + window.innerHeight < el.scrollHeight - 4;
+      setEdges((e) => (e.top === top && e.bottom === bottom ? e : { top, bottom }));
+    };
     update();
+    const resize = new ResizeObserver(update);
+    resize.observe(document.body);
     window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
+    window.addEventListener("resize", update);
+    return () => {
+      resize.disconnect();
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, []);
-  return scrolled;
+  return edges;
 }
 
 export function StepShell({
@@ -408,7 +421,7 @@ export function StepShell({
   status?: ReactNode;
 }) {
   const pct = Math.round((step / total) * 100);
-  const scrolled = useScrolled();
+  const edges = useScrollEdges();
   return (
     <form
       noValidate
@@ -421,7 +434,7 @@ export function StepShell({
       {/* Material top app bar: flat at rest, the divider appears once content scrolls under it. */}
       <header
         className={`vt-flow-header sticky top-0 z-30 border-b bg-background/95 px-5 pb-3 pt-4 backdrop-blur transition-colors duration-200 ease-standard ${
-          scrolled ? "border-border" : "border-transparent"
+          edges.top ? "border-border" : "border-transparent"
         }`}
       >
         <div className="flex items-center gap-3">
@@ -453,13 +466,14 @@ export function StepShell({
               />
             </div>
           </div>
-          {onSkip ? (
-            <AuthTextButton onClick={onSkip} className="shrink-0 text-1">
-              Skip
-            </AuthTextButton>
-          ) : (
-            <span className="w-8" />
-          )}
+          {/* Same width with or without Skip, so the progress bar never changes length between steps. */}
+          <span className="flex w-10 shrink-0 justify-end">
+            {onSkip ? (
+              <AuthTextButton onClick={onSkip} className="text-1">
+                Skip
+              </AuthTextButton>
+            ) : null}
+          </span>
         </div>
       </header>
 
@@ -481,7 +495,12 @@ export function StepShell({
         <div className="mt-6">{children}</div>
       </main>
 
-      <div className="vt-flow-footer fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      {/* Bottom bar on the page ground like the top bar; its divider shows only while content continues under it. */}
+      <div
+        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard ${
+          edges.bottom ? "border-border" : "border-transparent"
+        }`}
+      >
         {footer}
       </div>
     </form>

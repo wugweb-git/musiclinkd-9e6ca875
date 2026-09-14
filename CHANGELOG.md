@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: auth and onboarding states
+
+- **Disabled filled buttons** use a faint ink container with faint ink text (Material 3) instead of a
+  50% ink slab that read as a grey button, and fill to ink over 200ms when they become ready. Outline and
+  ghost buttons keep 50%. `Btn` gains `pending`: looks disabled but still takes the tap, so onboarding
+  Continue can still say what is missing.
+- **Field labels** are grey at rest, ink while the field has focus, red when it is invalid.
+- **Code boxes** ring all six in ink once the code is complete, while it is checked.
+- **Show/hide password** icon pops when it swaps.
+- **Onboarding bars:** the header's right slot keeps one width with or without Skip, so the progress bar
+  no longer changes length between steps; the bottom bar sits on the page ground and its divider shows
+  only while content continues under it.
+
 ### Changed — new user: onboarding motion and Android behaviour
 
 - **Each question is a history entry.** A two-question screen's second question is `?q=2`, so the Android

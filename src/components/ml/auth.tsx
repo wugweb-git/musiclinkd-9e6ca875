@@ -263,7 +263,8 @@ export function AuthTextButton({
 /**
  * Text field states: enabled, hovered (pointer devices), focused (ink border + ring), filled,
  * invalid (red border, message with icon under the field, announced), disabled. The label is quiet
- * sentence case; the message slides in so the change is noticed without a jump.
+ * grey sentence case, turns ink while the field has focus and red when it is invalid; the message
+ * slides in so the change is noticed without a jump.
  */
 export function TextField({
   label,
@@ -305,8 +306,14 @@ export function TextField({
   const messageId = `${id}-message`;
   const invalid = Boolean(error);
   return (
-    <div className={cn("mb-4", className)}>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-foreground">
+    <div className={cn("group mb-4", className)}>
+      <label
+        htmlFor={id}
+        className={cn(
+          "mb-1.5 block text-sm font-medium transition-colors duration-125 ease-standard",
+          invalid ? "text-destructive" : "text-muted-foreground group-focus-within:text-foreground",
+        )}
+      >
         {label}
       </label>
       <div
@@ -416,7 +423,9 @@ export function PasswordInput({
             className="-mr-2 text-muted-foreground"
             onClick={() => setShow((s) => !s)}
           >
-            {show ? <EyeOff size={18} aria-hidden /> : <Eye size={18} aria-hidden />}
+            <span key={String(show)} className="inline-flex animate-pop">
+              {show ? <EyeOff size={18} aria-hidden /> : <Eye size={18} aria-hidden />}
+            </span>
           </IconBtn>
         }
       />
@@ -532,7 +541,8 @@ export function PhoneField({
 
 /**
  * Six boxes over one real input (so SMS and email autofill work). The active box shows a caret,
- * digits pop in, a rejected code shakes the row. `onComplete` fires once per complete code.
+ * digits pop in, a complete code rings all six in ink while it is checked, a rejected code shakes
+ * the row. `onComplete` fires once per complete code.
  */
 export function CodeInput({
   value,
@@ -585,7 +595,7 @@ export function CodeInput({
                 "flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard",
                 invalid
                   ? "border-destructive"
-                  : active
+                  : active || value.length === length
                     ? "border-foreground ring-1 ring-foreground"
                     : value[i]
                       ? "border-muted-foreground"
