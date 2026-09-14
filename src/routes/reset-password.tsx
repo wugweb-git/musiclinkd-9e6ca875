@@ -9,8 +9,10 @@ import {
   PasswordRequirements,
   classifyAuthError,
   passwordScore,
+  useFieldErrors,
 } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/haptics";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
@@ -35,6 +37,18 @@ function ResetPassword() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
+  const fields = useFieldErrors<"password" | "confirm">();
+
+  const passwordProblem = !password
+    ? "Choose a new password."
+    : password.length < 8 || passwordScore(password) < 2
+      ? "Use at least 8 characters, with a number or symbol."
+      : null;
+  const confirmProblem = !confirm
+    ? "Enter the same password again."
+    : confirm !== password
+      ? "These passwords don't match."
+      : null;
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -47,29 +61,20 @@ function ResetPassword() {
 
   async function save() {
     setError(null);
-    if (passwordScore(password) < 2) {
-      setError({
-        kind: "weak_password",
-        title: "Choose a stronger password",
-        body: "Use at least 8 characters with a number or symbol.",
-      });
-      return;
-    }
-    if (password !== confirm) {
-      setError({
-        kind: "unknown",
-        title: "Passwords do not match",
-        body: "Re-enter the same password twice.",
-      });
+    fields.submitted();
+    if (passwordProblem || confirmProblem) {
+      haptic("error");
       return;
     }
     setBusy(true);
     const { error: err } = await supabase.auth.updateUser({ password });
     setBusy(false);
     if (err) {
+      haptic("error");
       setError(classifyAuthError(err.message));
       return;
     }
+    haptic("confirm");
     setDone(true);
   }
 
@@ -87,7 +92,8 @@ function ResetPassword() {
     return (
       <AuthScreen>
         <AuthHeading title="Password updated" sub="You can now sign in with your new password." />
-        <Btn className="w-full" onClick={() => void navigate({ to: "/feed" })}>
+        {/* The splash sends a finished profile to Home and an unfinished one to onboarding. */}
+        <Btn className="w-full" onClick={() => void navigate({ to: "/", replace: true })}>
           Continue to MusicLinkd
         </Btn>
       </AuthScreen>
@@ -120,22 +126,36 @@ function ResetPassword() {
         sub="Choose something you have not used on MusicLinkd before."
       />
       {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-      <PasswordInput
-        label="New password"
-        value={password}
-        onChange={setPassword}
-        autoComplete="new-password"
-      />
-      <PasswordInput
-        label="Confirm password"
-        value={confirm}
-        onChange={setConfirm}
-        autoComplete="new-password"
-      />
-      <PasswordRequirements value={password} />
-      <Btn className="w-full" onClick={() => void save()} disabled={busy}>
-        {busy ? "Saving…" : "Save new password"}
-      </Btn>
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!busy) void save();
+        }}
+      >
+        <PasswordInput
+          label="New password"
+          value={password}
+          onChange={setPassword}
+          onBlur={() => fields.touch("password")}
+          error={fields.errorFor("password", passwordProblem)}
+          placeholder="At least 8 characters"
+          autoComplete="new-password"
+          below={<PasswordRequirements value={password} />}
+        />
+        <PasswordInput
+          label="Confirm password"
+          value={confirm}
+          onChange={setConfirm}
+          onBlur={() => fields.touch("confirm")}
+          error={fields.errorFor("confirm", confirmProblem)}
+          placeholder="Same password again"
+          autoComplete="new-password"
+        />
+        <Btn type="submit" className="mt-2 w-full" loading={busy}>
+          Save new password
+        </Btn>
+      </form>
     </AuthScreen>
   );
 }
