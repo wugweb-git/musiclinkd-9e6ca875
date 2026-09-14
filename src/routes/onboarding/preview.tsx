@@ -47,7 +47,7 @@ function Preview() {
       <TopBar
         title="Profile preview"
         subtitle="This is what others see"
-        back={`/onboarding/step/${list[list.length - 1]?.id ?? "visibility"}`}
+        back={`/onboarding/step/${list[list.length - 1]?.id ?? "contact"}`}
       />
 
       <main className="px-5 pt-4">
@@ -101,16 +101,16 @@ function Preview() {
           items={labels(tx?.languages, d.languages)}
           onEdit={() => edit("languages")}
         />
-        <Row title="Available for" items={d.availability} onEdit={() => edit("availability")} />
+        <Row title="Available for" items={d.availability} onEdit={() => edit("work-mode")} />
         <Row title="Work mode" items={d.workModes} onEdit={() => edit("work-mode")} />
         <Row
           title="Links"
           items={Object.entries(d.links)
             .filter(([, v]) => v)
             .map(([k]) => k)}
-          onEdit={() => edit("links")}
+          onEdit={() => edit("contact")}
         />
-        <Row title="Visibility" items={[d.visibility]} onEdit={() => edit("visibility")} />
+        <Row title="Visibility" items={[d.visibility]} onEdit={() => edit("contact")} />
 
         <p className="mt-6 flex items-start gap-1.5 text-1 text-muted-foreground">
           <Info size={14} className="mt-0.5 shrink-0" aria-hidden />

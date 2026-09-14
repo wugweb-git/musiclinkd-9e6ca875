@@ -5,6 +5,27 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: onboarding goes from 19 questions to 10 screens
+
+Grouped as the owner set out on 14 Sep. Each screen reuses the components the old steps used; nothing new
+was drawn.
+
+- **About you** (`identity`) holds photo, display name, username, state, city, area and the short bio
+  (was identity, photo, location and bio). City is required here now. An empty username shows a hint
+  instead of an error.
+- **What do you do?** (`role`) asks for the main role, then, on the same screen, "Anything else you do?"
+  (up to two, optional). Back returns to the main role. Replaces role and secondary-roles.
+- **How experienced are you?** asks once per instrument picked, stored in
+  `discovery_prefs.instrumentExperience`. The profile's single `experience` is the highest of them. With no
+  instruments it asks once, as before.
+- **How do you work?** (`work-mode`) adds "Available for" (was its own step).
+- **What brings you to MusicLinkd?** (`intent`) adds "Show me more" (was discovery).
+- **How people find and reach you** (`contact`) holds links, contact options (WhatsApp added) and
+  visibility. It is the last step. Continue stays blocked while a link is malformed.
+- **Business** is no longer asked in personal onboarding; it belongs to the business account flow.
+- Instruments, specialisation, languages and genres keep their own screens.
+- Preview's Edit buttons for availability, links and visibility open the combined screens.
+
 ### Removed — new user: the "You're in" screen
 
 - Creating an account goes straight to onboarding (through the splash). `/auth/success`, a stop Lovable

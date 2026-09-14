@@ -320,7 +320,7 @@ export function useOnboarding(): Store {
 export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | null = null): string {
   const list = visibleSteps(draft, bucket);
   const next = list.find((s) => !draft.completedSteps.includes(s.id));
-  return next ? next.id : "visibility";
+  return next ? next.id : "contact";
 }
 
 /* ------------------------------------------------------------------ */
