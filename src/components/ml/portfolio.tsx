@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowDown, ArrowUp, Headphones, Star, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import {
@@ -353,11 +354,10 @@ export function AudioPlayer({
           />
         ) : (
           <div
-            className="flex h-14 w-14 items-center justify-center rounded-md text-xl"
-            style={{ background: "var(--surface-subtle)" }}
+            className="flex h-14 w-14 items-center justify-center rounded-md bg-subtle text-muted-foreground"
             aria-hidden
           >
-            🎧
+            <Headphones size={22} />
           </div>
         )}
         <div className="min-w-0">
@@ -440,10 +440,10 @@ export function ContributorPicker({
               key={n}
               type="button"
               onClick={() => onChange(value.filter((v) => v !== n))}
-              className="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+              className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-1 font-semibold text-primary-foreground"
               aria-label={`Remove ${n}`}
             >
-              {n} ✕
+              {n} <X size={12} aria-hidden />
             </button>
           ))}
         </div>
@@ -500,7 +500,10 @@ export function FeaturedToggle({
         on ? "border-transparent bg-primary text-primary-foreground" : "border-border bg-card"
       } ${disabled && !on ? "opacity-50" : ""}`}
     >
-      {on ? "★ Featured" : "☆ Feature this"}
+      <span className="inline-flex items-center gap-1">
+        <Star size={13} fill={on ? "currentColor" : "none"} aria-hidden />
+        {on ? "Featured" : "Feature this"}
+      </span>
     </button>
   );
 }
@@ -533,18 +536,18 @@ export function ReorderList({
                 onClick={() => onMove(i, -1)}
                 disabled={i === 0}
                 aria-label={`Move ${item.title} up`}
-                className="h-10 w-10 rounded-full border border-border disabled:opacity-40"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
               >
-                ↑
+                <ArrowUp size={16} aria-hidden />
               </button>
               <button
                 type="button"
                 onClick={() => onMove(i, 1)}
                 disabled={i === items.length - 1}
                 aria-label={`Move ${item.title} down`}
-                className="h-10 w-10 rounded-full border border-border disabled:opacity-40"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
               >
-                ↓
+                <ArrowDown size={16} aria-hidden />
               </button>
             </div>
           </div>

@@ -1,6 +1,16 @@
 import { Link, createLink, useRouterState } from "@tanstack/react-router";
 import type { AnchorHTMLAttributes, ReactNode, Ref } from "react";
-import { Check, Home, Compass, Store, MessageCircle, User } from "lucide-react";
+import {
+  Check,
+  Home,
+  Compass,
+  Store,
+  MessageCircle,
+  User,
+  ArrowLeft,
+  Mic,
+  Search,
+} from "lucide-react";
 
 export function Screen({
   children,
@@ -79,10 +89,10 @@ export function TopBar({
       {back ? (
         <Link
           to={back}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-lg"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card"
           aria-label="Back"
         >
-          ←
+          <ArrowLeft size={18} aria-hidden />
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
@@ -107,7 +117,7 @@ export function SearchBar({
 }) {
   return (
     <div className="flex h-14 items-center gap-3 rounded-full border border-border bg-card px-5">
-      <span className="text-muted-foreground">⌕</span>
+      <Search size={18} className="shrink-0 text-muted-foreground" aria-hidden />
       <input
         value={value}
         onFocus={onFocus}
@@ -117,7 +127,7 @@ export function SearchBar({
         className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
       />
       <span className="h-6 w-px bg-border" />
-      <span className="text-sm">🎙</span>
+      <Mic size={18} className="shrink-0 text-muted-foreground" aria-hidden />
     </div>
   );
 }

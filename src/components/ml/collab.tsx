@@ -12,6 +12,13 @@ import {
   Upload,
   WifiOff,
   X,
+  FileText,
+  Flag,
+  MessageSquare,
+  Music,
+  PenLine,
+  Plus,
+  type LucideIcon,
 } from "lucide-react";
 import { Btn, VerifiedBadge } from "@/components/ml/ui";
 import {
@@ -378,23 +385,25 @@ export function MilestoneRow({
   );
 }
 
-const activityIcon: Record<ActivityEntry["kind"], string> = {
-  joined: "＋",
-  file: "▤",
-  milestone: "✓",
-  proposal: "✎",
-  comment: "💬",
-  status: "⚑",
+const activityIcon: Record<ActivityEntry["kind"], LucideIcon> = {
+  joined: Plus,
+  file: FileText,
+  milestone: Check,
+  proposal: PenLine,
+  comment: MessageSquare,
+  status: Flag,
 };
+
+function ActivityGlyph({ kind }: { kind: ActivityEntry["kind"] }) {
+  const Icon = activityIcon[kind];
+  return <Icon size={14} aria-hidden />;
+}
 
 export function ActivityItem({ a }: { a: ActivityEntry }) {
   return (
     <li className="flex gap-3 py-3">
-      <span
-        className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-1"
-        style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
-      >
-        {activityIcon[a.kind]}
+      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-subtle text-muted-foreground">
+        <ActivityGlyph kind={a.kind} />
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-1">
@@ -476,11 +485,8 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
-      <span
-        className="mb-4 flex h-14 w-14 items-center justify-center rounded-full text-xl"
-        style={{ background: "var(--pink-container)", color: "var(--primary)" }}
-      >
-        ♫
+      <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pink-container text-primary">
+        <Music size={24} aria-hidden />
       </span>
       <h3 className="text-2">{title}</h3>
       <p className="mt-1 mb-5 max-w-[260px] text-1 text-muted-foreground">{body}</p>

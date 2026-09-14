@@ -1,6 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { BadgeCheck, Pause, Play, Share2, ShieldCheck, Star, User } from "lucide-react";
+import {
+  BadgeCheck,
+  Pause,
+  Play,
+  Share2,
+  ShieldCheck,
+  Star,
+  User,
+  ArrowLeft,
+  ChevronRight,
+  MapPin,
+} from "lucide-react";
 import type {
   AudioTrack,
   Collaborator,
@@ -221,9 +232,9 @@ export function ProfileHero({
           <Link
             to={back}
             aria-label="Back"
-            className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90 text-lg"
+            className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
           >
-            ←
+            <ArrowLeft size={18} aria-hidden />
           </Link>
         ) : null}
         <div className="absolute right-5 top-5 flex gap-2">
@@ -282,7 +293,10 @@ export function ProfileHero({
           </p>
         ) : null}
         {p.location ? (
-          <p className="mt-0.5 text-xs text-muted-foreground">📍 {p.location}</p>
+          <p className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
+            <MapPin size={12} className="shrink-0" aria-hidden />
+            {p.location}
+          </p>
         ) : null}
         {p.availability ? (
           <div className="mt-2.5">
@@ -726,7 +740,7 @@ export function MoreSheet({
               }`}
             >
               {i}
-              <span className="text-xs text-muted-foreground">→</span>
+              <ChevronRight size={16} className="text-muted-foreground" aria-hidden />
             </button>
           );
         })}
