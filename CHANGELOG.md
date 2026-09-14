@@ -24,14 +24,17 @@ Owner decisions, 14 Sep. Migration `20260914200000_username_rules.sql` (applied 
 - **Profile edit** shows a set username read-only and no longer sends it. An unset one can be saved once,
   with taken, reserved and format errors named.
 
-### Changed — new user: instruments and experience on one screen
+### Changed — new user: onboarding is one wizard, 8 screens
 
-- "What do you play?" allows up to two instruments and no longer asks for a primary instrument.
-- It works like the role screen: picking the second instrument (or Continue with one) switches the same
-  screen to "How long have you played?", with one experience dropdown per instrument. Back returns to the
-  instruments. Removing an instrument removes its answer.
-- The separate experience screen only appears when no instruments are picked (roles without instruments,
-  or players who skip them), and asks once for the main role.
+- **Instruments:** "What do you play?" allows up to two, with no primary instrument. Continue (with one or
+  both picked) switches the same screen to "How long have you played?", one dropdown per instrument.
+  Removing an instrument removes its answer.
+- **Next and Back move through questions, not only screens.** Arriving forward opens a screen's first
+  question; Back from the next screen reopens its last one (Languages → How long have you played? → What
+  do you play? → Anything else you do?).
+- **Removed screens:** experience (no instruments means no experience question) and specialisation.
+- Order now: About you, What do you do?, instruments, languages, genres, How do you work?, What brings you
+  to MusicLinkd?, How people find and reach you.
 
 ### Changed — new user: onboarding goes from 19 questions to 10 screens
 

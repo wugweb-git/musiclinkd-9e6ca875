@@ -52,7 +52,6 @@ import {
   experienceLevels,
   intents,
   linkPlatforms,
-  specialisationByRole,
   statesByCountry,
   steps,
   validateUrl,
@@ -135,6 +134,9 @@ export const Route = createFileRoute("/onboarding/step/$id")({
 type Banner = "none" | "error" | "claim";
 type RoleStage = "primary" | "secondary";
 
+/** The step Back is heading to, so a two-question screen reopens on its second question. */
+let backInto: string | null = null;
+
 function StepRoute() {
   const { id } = Route.useParams();
   const {
@@ -169,9 +171,12 @@ function StepRoute() {
     id === "role"
       ? Boolean(draft.primaryRole)
       : id === "instruments" && draft.instruments.length > 0;
+  // One wizard: arriving forward opens a screen's first question; Back from the next screen
+  // returns to its last one.
   useEffect(() => {
     if ((id === "role" || id === "instruments") && hydrated)
-      setRoleStage(stageReady ? "secondary" : "primary");
+      setRoleStage(stageReady && backInto === id ? "secondary" : "primary");
+    backInto = null;
     // Only on arrival; picking a role moves the stage itself.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, hydrated]);
@@ -256,6 +261,7 @@ function StepRoute() {
 
   const back = () => {
     const prev = list[index - 1];
+    backInto = prev?.id ?? null;
     if (!prev) {
       flowBack("/onboarding", () => void navigate({ to: "/onboarding", replace: true }));
       return;
@@ -434,7 +440,7 @@ function StepBody({
 }) {
   const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
-  const needsTaxonomy = ["role", "instruments", "experience", "genres", "languages"].includes(id);
+  const needsTaxonomy = ["role", "instruments", "genres", "languages"].includes(id);
   const needsBucket = id === "instruments" || id === "genres";
   if (needsTaxonomy && taxonomy.state === "error") {
     return (
@@ -595,10 +601,7 @@ function StepBody({
                 });
                 return;
               }
-              const next = [...d.instruments, slug];
-              set({ instruments: next, primaryInstrument: null });
-              // Both picked: the heading and the options switch to experience.
-              if (next.length === 2) setRoleStage("secondary");
+              set({ instruments: [...d.instruments, slug], primaryInstrument: null });
             }}
           />
         );
@@ -626,51 +629,6 @@ function StepBody({
               />
             );
           })}
-        </div>
-      );
-    }
-
-    case "experience":
-      // Asked here only when no instruments were picked; otherwise it is on the instruments screen.
-      return (
-        <div className="space-y-3">
-          {d.primaryRole ? (
-            <p className="text-sm text-muted-foreground">
-              As a{" "}
-              <span className="font-medium text-foreground">
-                {labelFor(tx?.person_types, d.primaryRole)}
-              </span>
-            </p>
-          ) : null}
-          <OptionList
-            options={experienceLevels}
-            selected={d.experience ? [d.experience] : []}
-            onToggle={(k) => set({ experience: d.experience === k ? null : k })}
-            multi={false}
-          />
-        </div>
-      );
-
-    case "specialisation": {
-      const spec = d.primaryRole ? specialisationByRole[d.primaryRole] : undefined;
-      if (!spec)
-        return <p className="text-sm text-muted-foreground">Nothing extra needed for your role.</p>;
-      return (
-        <div className="space-y-6">
-          {spec.groups.map((g) => (
-            <div key={g.label}>
-              <p className="mb-2 text-sm font-medium">{g.label}</p>
-              <ChipPicker
-                options={g.options}
-                selected={d.specialisation[g.label] ?? []}
-                onToggle={(v) => {
-                  const cur = d.specialisation[g.label] ?? [];
-                  const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
-                  set({ specialisation: { ...d.specialisation, [g.label]: next } });
-                }}
-              />
-            </div>
-          ))}
         </div>
       );
     }
