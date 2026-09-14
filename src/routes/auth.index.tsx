@@ -16,6 +16,7 @@ import {
   PasswordInput,
   PasswordRequirements,
   TextField,
+  carryEmail,
   classifyAuthError,
   passwordScore,
   useFieldErrors,
@@ -59,6 +60,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
   const fields = useFieldErrors<"email" | "password">();
 
@@ -128,10 +130,13 @@ function AuthPage() {
   }
 
   async function google() {
+    if (googleBusy) return;
     setError(null);
+    setGoogleBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
+    if (!result.redirected) setGoogleBusy(false);
     if (result.error) {
       setError({
         kind: "unknown",
@@ -180,6 +185,7 @@ function AuthPage() {
           variant="outline"
           className="w-full"
           icon={<GoogleIcon />}
+          loading={googleBusy}
           onClick={() => void google()}
         >
           Continue with Google
@@ -206,7 +212,10 @@ function AuthPage() {
         <TextField
           label="Email"
           value={email}
-          onChange={setEmail}
+          onChange={(v) => {
+            setEmail(v);
+            carryEmail(v);
+          }}
           onBlur={() => fields.touch("email")}
           error={emailError}
           type="email"

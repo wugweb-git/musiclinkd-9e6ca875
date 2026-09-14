@@ -330,6 +330,23 @@ export function TextField({
           disabled={disabled}
           aria-invalid={invalid || undefined}
           aria-describedby={error || hint ? messageId : undefined}
+          onKeyDown={(e) => {
+            // Some Android keyboards do not submit forms on their own. Next moves to the next
+            // field; Go submits.
+            if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+            const form = e.currentTarget.form;
+            if (!form) return;
+            e.preventDefault();
+            if (enterKeyHint === "next") {
+              const fields = [...form.querySelectorAll<HTMLInputElement>("input:not([disabled])")];
+              const next = fields[fields.indexOf(e.currentTarget) + 1];
+              if (next) {
+                next.focus();
+                return;
+              }
+            }
+            form.requestSubmit();
+          }}
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           placeholder={placeholder}
@@ -619,6 +636,26 @@ export function useCountdown(start: number) {
 
 /* ---------------------------------------------------------- validation */
 
+/**
+ * The email typed on Sign in, so Forgot password opens with it filled. Kept for the tab only and
+ * never in the URL.
+ */
+const EMAIL_CARRY = "ml.auth.email";
+export function carryEmail(email: string) {
+  try {
+    window.sessionStorage.setItem(EMAIL_CARRY, email.trim());
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+export function carriedEmail(): string {
+  try {
+    return typeof window === "undefined" ? "" : (window.sessionStorage.getItem(EMAIL_CARRY) ?? "");
+  } catch {
+    return "";
+  }
+}
+
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
@@ -769,7 +806,7 @@ export function classifyAuthError(message: string): {
     return {
       kind: "unconfirmed",
       title: "Confirm your email first",
-      body: "We sent you a confirmation link. Open it, then come back and sign in.",
+      body: "We emailed you a 6-digit code. Enter it to finish creating your account.",
     };
   if (m.includes("rate limit") || m.includes("too many"))
     return {
@@ -777,13 +814,29 @@ export function classifyAuthError(message: string): {
       title: "Too many attempts",
       body: "For your security we paused sign-in for a few minutes. Try again shortly.",
     };
+  if (m.includes("password") && (m.includes("different") || m.includes("same")))
+    return {
+      kind: "weak_password",
+      title: "Choose a new password",
+      body: "It has to be different from your current password.",
+    };
   if (m.includes("password"))
-    return { kind: "weak_password", title: "Password not accepted", body: message };
+    return {
+      kind: "weak_password",
+      title: "Password not accepted",
+      body: "Use at least 8 characters, with a number or symbol.",
+    };
   if (m.includes("fetch") || m.includes("network"))
     return {
       kind: "network",
       title: "You appear to be offline",
       body: "We could not reach MusicLinkd. Check your connection and try again.",
     };
-  return { kind: "unknown", title: "Something went wrong", body: message };
+  // Raw server text is not shown; it stays in the console for debugging.
+  console.warn("[auth]", message);
+  return {
+    kind: "unknown",
+    title: "Something went wrong",
+    body: "Try again. If it keeps happening, use another way to sign in.",
+  };
 }

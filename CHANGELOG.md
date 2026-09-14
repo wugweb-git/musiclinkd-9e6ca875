@@ -5,6 +5,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — auth bugs (no visual change)
+
+- **Error messages.** "Confirm your email first" says a 6-digit code was emailed (it described a link).
+  Password errors no longer show raw server text; reusing the current password gets its own message.
+  Unknown errors show a plain next step, and the raw text goes to the console.
+- **Keyboard.** Auth fields handle the Android keyboard's action key: Next moves to the next field, Go
+  submits. Forgot password and Set a new password are now real forms, so Go works there too.
+- **Forgot password** opens with the email typed on Sign in (kept for the tab, not in the URL), trims it
+  before sending, and vibrates on error and on send.
+- **Set a new password** checks both fields inline (strength, "These passwords don't match"), shows the
+  button's loading state, and finishes through the splash (`/`), not `/feed`.
+- **Continue with Google** on the email screen shows loading and ignores a second tap.
+
 ### Changed — one pill chip everywhere
 
 - **`Chip` (`ui.tsx`) is the only pill chip.** It can lead with a circle holding an icon or an image

@@ -10,9 +10,11 @@ import {
   LabeledInput,
   useFieldErrors,
   TrustNote,
+  carriedEmail,
   classifyAuthError,
 } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/haptics";
 
 export const Route = createFileRoute("/auth/forgot")({
   head: () => ({
@@ -36,7 +38,8 @@ export const Route = createFileRoute("/auth/forgot")({
 
 function ForgotPassword() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  // Opens with the email typed on Sign in, if any.
+  const [email, setEmail] = useState(carriedEmail);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
@@ -50,16 +53,21 @@ function ForgotPassword() {
   async function send() {
     setError(null);
     fields.submitted();
-    if (emailProblem) return;
+    if (emailProblem) {
+      haptic("error");
+      return;
+    }
     setBusy(true);
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     setBusy(false);
     if (err) {
+      haptic("error");
       setError(classifyAuthError(err.message));
       return;
     }
+    haptic("confirm");
     setSent(true);
   }
 
@@ -69,7 +77,7 @@ function ForgotPassword() {
         title={sent ? "Reset link sent" : "Forgot your password?"}
         sub={
           sent
-            ? `If an account exists for ${email}, a reset link is on its way.`
+            ? `If an account exists for ${email.trim()}, a reset link is on its way.`
             : "Enter the email you signed up with and we'll send a secure reset link."
         }
       />
@@ -94,7 +102,13 @@ function ForgotPassword() {
           </div>
         </>
       ) : (
-        <>
+        <form
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!busy) void send();
+          }}
+        >
           <LabeledInput
             label="Email"
             value={email}
@@ -107,7 +121,7 @@ function ForgotPassword() {
             onBlur={() => fields.touch("email")}
             error={fields.errorFor("email", emailProblem)}
           />
-          <Btn className="mt-2 w-full" onClick={() => void send()} loading={busy}>
+          <Btn type="submit" className="mt-2 w-full" loading={busy}>
             Send reset link
           </Btn>
           <TrustNote>
@@ -119,7 +133,7 @@ function ForgotPassword() {
               Sign in
             </AuthLink>
           </p>
-        </>
+        </form>
       )}
     </AuthScreen>
   );
