@@ -113,7 +113,7 @@ function Schedule() {
               <button
                 type="button"
                 onClick={() => set({ date: undefined, start: undefined })}
-                className="text-xs font-semibold text-primary"
+                className="text-xs font-semibold text-pink-strong"
               >
                 Clear date
               </button>

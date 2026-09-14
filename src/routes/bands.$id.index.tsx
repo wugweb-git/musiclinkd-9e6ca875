@@ -233,7 +233,7 @@ function BandProfile() {
                       <p className="mt-1 truncate text-[12px] text-muted-foreground">
                         {e.venue} · {e.city}
                       </p>
-                      <p className="mt-1 text-[12px] font-semibold text-primary">{e.date}</p>
+                      <p className="mt-1 text-[12px] font-semibold text-pink-strong">{e.date}</p>
                     </div>
                     <StatusPill
                       label={

@@ -38,7 +38,7 @@ function Welcome() {
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
       <div>
-        <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-1 font-bold uppercase tracking-wide text-primary bg-pink-container">
+        <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-1 font-bold uppercase tracking-wide text-pink-strong bg-pink-container">
           <Sparkles size={13} /> Step 1 of {total + 2}
         </span>
         <h1 className="mt-5 text-4">Let's build your MusicLinkd profile.</h1>
@@ -69,7 +69,7 @@ function Welcome() {
               key={f.title}
               className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
             >
-              <span className="mt-0.5 text-primary">{f.icon}</span>
+              <span className="mt-0.5 text-pink-strong">{f.icon}</span>
               <span>
                 <span className="block text-sm font-semibold">{f.title}</span>
                 <span className="mt-0.5 block text-1 text-muted-foreground">{f.body}</span>

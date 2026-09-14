@@ -47,7 +47,7 @@ function AccountScreen() {
               <button
                 type="button"
                 onClick={() => setEditing(f.key)}
-                className="shrink-0 text-[12px] font-semibold text-primary"
+                className="shrink-0 text-[12px] font-semibold text-pink-strong"
               >
                 {f.action}
               </button>

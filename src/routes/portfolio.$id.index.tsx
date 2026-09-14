@@ -112,7 +112,7 @@ function WorkDetail() {
                 {item.release_year ? ` · ${item.release_year}` : ""}
               </p>
               {item.role ? (
-                <p className="mt-2 text-sm font-semibold text-primary">{item.role}</p>
+                <p className="mt-2 text-sm font-semibold text-pink-strong">{item.role}</p>
               ) : null}
               {item.description ? (
                 <p className="mt-3 text-sm text-muted-foreground">{item.description}</p>
@@ -136,7 +136,7 @@ function WorkDetail() {
                 href={item.media_url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 block rounded-lg border border-border bg-card p-4 text-sm font-semibold text-primary"
+                className="mt-4 block rounded-lg border border-border bg-card p-4 text-sm font-semibold text-pink-strong"
               >
                 Open media link ↗
               </a>
@@ -180,7 +180,7 @@ function WorkDetail() {
               <button
                 type="button"
                 onClick={onDelete}
-                className="mt-6 w-full text-center text-sm font-semibold text-primary"
+                className="mt-6 w-full text-center text-sm font-semibold text-pink-strong"
               >
                 Delete this work
               </button>

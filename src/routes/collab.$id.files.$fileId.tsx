@@ -98,7 +98,10 @@ function FileDetail() {
                   </p>
                   <p className="mt-1 text-[12px]">{v.notes}</p>
                   {i !== 0 ? (
-                    <button type="button" className="mt-2 text-[11px] font-semibold text-primary">
+                    <button
+                      type="button"
+                      className="mt-2 text-[11px] font-semibold text-pink-strong"
+                    >
                       Compare with latest
                     </button>
                   ) : null}

@@ -57,7 +57,7 @@ function ProviderBookings() {
         right={
           <Link
             to="/provider/availability"
-            className="text-[11px] font-bold uppercase tracking-wide text-primary"
+            className="text-[11px] font-bold uppercase tracking-wide text-pink-strong"
           >
             Availability
           </Link>
@@ -167,7 +167,7 @@ function List({ items, emptyTitle }: { items: Booking[]; emptyTitle: string }) {
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <span className="text-primary">{icon}</span>
+      <span className="text-pink-strong">{icon}</span>
       <p className="mt-2 text-lg font-semibold leading-none">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>
     </div>

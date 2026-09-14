@@ -83,7 +83,7 @@ function Plans() {
                   </span>
                 </p>
                 {cycle === "Yearly" && p.key !== "free" ? (
-                  <p className="mt-1 text-[12px] font-semibold text-primary">2 months free</p>
+                  <p className="mt-1 text-[12px] font-semibold text-pink-strong">2 months free</p>
                 ) : null}
                 <ul className="mt-3 space-y-2">
                   {p.features.map((f) => (

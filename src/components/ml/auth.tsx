@@ -241,11 +241,11 @@ export function LegalNote() {
   return (
     <p className="mt-6 text-center text-1 leading-relaxed text-muted-foreground">
       By continuing you agree to our{" "}
-      <Link to="/legal/terms" className="font-semibold text-primary">
+      <Link to="/legal/terms" className="font-semibold text-pink-strong">
         Terms
       </Link>{" "}
       and{" "}
-      <Link to="/legal/privacy" className="font-semibold text-primary">
+      <Link to="/legal/privacy" className="font-semibold text-pink-strong">
         Privacy Policy
       </Link>
       .

@@ -51,7 +51,7 @@ function ServiceDetail() {
           <button
             type="button"
             onClick={() => setManage(true)}
-            className="text-[12px] font-semibold text-primary"
+            className="text-[12px] font-semibold text-pink-strong"
           >
             Manage
           </button>

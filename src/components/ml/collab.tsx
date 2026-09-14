@@ -163,11 +163,11 @@ export function ParticipantRow({
           <Link
             to="/profile/$username"
             params={{ username: p.username }}
-            className="text-1 font-semibold text-primary"
+            className="text-1 font-semibold text-pink-strong"
           >
             View profile
           </Link>
-          <Link to="/messages" className="text-1 font-semibold text-primary">
+          <Link to="/messages" className="text-1 font-semibold text-pink-strong">
             Message
           </Link>
           {canManage && p.status !== "owner" ? (
@@ -369,7 +369,7 @@ export function MilestoneRow({
         <Link
           to="/collab/$id/milestones/$mid"
           params={{ id: projectId, mid: m.id }}
-          className="mt-2 inline-block text-1 font-semibold text-primary"
+          className="mt-2 inline-block text-1 font-semibold text-pink-strong"
         >
           Open milestone
         </Link>

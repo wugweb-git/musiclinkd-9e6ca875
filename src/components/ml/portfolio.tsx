@@ -42,7 +42,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
             {item.release_year ? ` · ${item.release_year}` : ""}
           </p>
           {item.role ? (
-            <p className="mt-1 truncate text-xs font-semibold text-primary">{item.role}</p>
+            <p className="mt-1 truncate text-xs font-semibold text-pink-strong">{item.role}</p>
           ) : null}
           {item.description ? (
             <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
@@ -383,7 +383,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
       >
         <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
-        <p className="mt-1 truncate text-xs text-primary">{src}</p>
+        <p className="mt-1 truncate text-xs text-pink-strong">{src}</p>
       </a>
     );
   }

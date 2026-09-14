@@ -96,7 +96,7 @@ function MilestoneDetail() {
         <Link
           to="/collab/$id/timeline"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-primary"
+          className="mb-8 block text-center text-[12px] font-semibold text-pink-strong"
         >
           Back to timeline
         </Link>

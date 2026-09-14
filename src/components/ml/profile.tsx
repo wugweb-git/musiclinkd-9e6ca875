@@ -33,7 +33,11 @@ export function ProfileSection({
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <h2 className="text-2">{title}</h2>
         {action ? (
-          <button type="button" onClick={onAction} className="text-xs font-semibold text-primary">
+          <button
+            type="button"
+            onClick={onAction}
+            className="text-xs font-semibold text-pink-strong"
+          >
             {action}
           </button>
         ) : null}
@@ -430,7 +434,7 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
         </div>
         <p className="truncate text-1 text-muted-foreground">{p.role}</p>
         <p className="truncate text-1 text-muted-foreground">with {p.collaborators}</p>
-        <p className="mt-1 text-1 font-semibold text-primary">
+        <p className="mt-1 text-1 font-semibold text-pink-strong">
           {p.genre} · {p.year}
         </p>
       </div>
@@ -444,7 +448,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-2">{s.name}</h3>
         {s.from ? (
-          <span className="shrink-0 text-1 font-bold text-primary">{s.from}</span>
+          <span className="shrink-0 text-1 font-bold text-pink-strong">{s.from}</span>
         ) : (
           <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
@@ -751,7 +755,7 @@ export function CompletionCard({
     >
       <div className="flex items-baseline justify-between">
         <h3 className="text-2">Your profile is {percent}% complete</h3>
-        <span className="text-1 font-semibold text-primary">{missing.length} left</span>
+        <span className="text-1 font-semibold text-pink-strong">{missing.length} left</span>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-card">
         <div

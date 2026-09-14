@@ -132,7 +132,7 @@ function BookingEntry() {
           <Link
             to="/booking/$id/review"
             params={{ id: b.id }}
-            className="mt-2 inline-block text-xs font-bold text-primary"
+            className="mt-2 inline-block text-xs font-bold text-pink-strong"
           >
             See all terms at review
           </Link>

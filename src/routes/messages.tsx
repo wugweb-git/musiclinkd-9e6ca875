@@ -24,7 +24,10 @@ function Messages() {
         title="Messages"
         subtitle="3 unread"
         right={
-          <Link to="/collab" className="text-[11px] font-bold uppercase tracking-wide text-primary">
+          <Link
+            to="/collab"
+            className="text-[11px] font-bold uppercase tracking-wide text-pink-strong"
+          >
             Collabs
           </Link>
         }

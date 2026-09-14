@@ -134,7 +134,9 @@ function WelcomeScreen() {
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
         <div className="flex-1 pt-4">
           <h2 className="text-3 font-bold">MusicLinkd</h2>
-          <p className="mt-1 text-2 font-semibold text-primary">Professional Network For Music</p>
+          <p className="mt-1 text-2 font-semibold text-pink-strong">
+            Professional Network For Music
+          </p>
 
           <h1 className="mt-7 text-5 font-bold">
             Connect.
@@ -176,7 +178,7 @@ function WelcomeScreen() {
 
           <p className="mt-5 text-center text-1 text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
+            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
               Sign in
             </Link>
           </p>

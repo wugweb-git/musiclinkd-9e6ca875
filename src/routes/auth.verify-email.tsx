@@ -95,7 +95,7 @@ function VerifyEmail() {
 
       <p className="mt-6 text-center text-1 text-muted-foreground">
         Already confirmed?{" "}
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
+        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
           Sign in
         </Link>
       </p>

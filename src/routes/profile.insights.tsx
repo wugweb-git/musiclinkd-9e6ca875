@@ -42,7 +42,7 @@ function Insights() {
                 <p className="mt-1 text-2xl tabular-nums">{m.value}</p>
                 <p
                   className={`mt-1 inline-flex items-center gap-1 text-[11px] font-bold ${
-                    up ? "text-primary" : "text-muted-foreground"
+                    up ? "text-pink-strong" : "text-muted-foreground"
                   }`}
                 >
                   {up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}

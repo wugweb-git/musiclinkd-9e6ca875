@@ -97,7 +97,7 @@ export function Row({
   const inner = (
     <>
       {icon ? (
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-primary">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-pink-strong">
           {icon}
         </span>
       ) : null}

@@ -166,7 +166,7 @@ function Discover() {
                 </div>
                 <p className="truncate text-[11px] text-muted-foreground">{t.role} · 2.4 km away</p>
               </div>
-              <span className="text-[11px] font-semibold text-primary">{t.rate}</span>
+              <span className="text-[11px] font-semibold text-pink-strong">{t.rate}</span>
             </Link>
           ))}
           {studios.slice(0, 1).map((s) => (
@@ -182,7 +182,7 @@ function Discover() {
                   {s.location} · {s.rating} ★
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-primary">{s.rate}</span>
+              <span className="text-[11px] font-semibold text-pink-strong">{s.rate}</span>
             </Link>
           ))}
         </div>

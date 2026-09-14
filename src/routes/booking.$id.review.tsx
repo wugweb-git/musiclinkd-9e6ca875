@@ -85,7 +85,7 @@ function Review() {
               <button
                 type="button"
                 onClick={() => navigate({ to: "/booking/$id/details", params: { id: b.id } })}
-                className="mt-3 min-h-11 text-xs font-bold text-primary"
+                className="mt-3 min-h-11 text-xs font-bold text-pink-strong"
               >
                 Edit details
               </button>

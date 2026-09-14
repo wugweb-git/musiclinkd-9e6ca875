@@ -656,7 +656,7 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
       <button
         type="button"
         onClick={onRetry}
-        className="mt-3 min-h-11 text-1 font-bold text-primary"
+        className="mt-3 min-h-11 text-1 font-bold text-pink-strong"
       >
         Try again
       </button>

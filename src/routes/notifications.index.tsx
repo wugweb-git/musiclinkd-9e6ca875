@@ -81,7 +81,7 @@ function NotificationsScreen() {
         <button
           type="button"
           onClick={() => setItems((all) => all.map((n) => ({ ...n, read: true })))}
-          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary"
+          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-pink-strong"
         >
           <CheckCheck size={14} /> Mark all as read
         </button>
@@ -125,7 +125,7 @@ function NotificationsScreen() {
                     {n.body}
                   </span>
                   {n.cta ? (
-                    <span className="mt-1.5 block text-[12px] font-semibold text-primary">
+                    <span className="mt-1.5 block text-[12px] font-semibold text-pink-strong">
                       {n.cta} →
                     </span>
                   ) : null}
