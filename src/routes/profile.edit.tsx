@@ -102,7 +102,9 @@ function EditProfile() {
   const [form, setForm] = useState<Form>(empty);
   const [row, setRow] = useState<ProfileRow | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "error" | "signed-out">("loading");
-  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error" | "offline">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "saving" | "saved" | "error" | "offline" | "taken" | "reserved" | "invalid"
+  >("idle");
 
   const fetchProfile = useCallback(() => {
     setState("loading");
@@ -150,7 +152,8 @@ function EditProfile() {
       const saved = await persist({
         data: {
           display_name: form.display_name || null,
-          username: form.username || null,
+          // Set once, then locked by the database; only an unset username is sent.
+          ...(row?.username ? {} : { username: form.username || null }),
           headline: form.headline || null,
           bio: form.bio || null,
           city: form.city || null,
@@ -168,8 +171,12 @@ function EditProfile() {
       });
       setRow(saved as ProfileRow);
       setStatus("saved");
-    } catch {
-      setStatus("error");
+    } catch (e) {
+      // saveMyProfile reports username rule failures by name.
+      const reason = e instanceof Error ? e.message : "";
+      setStatus(
+        reason === "taken" || reason === "reserved" || reason === "invalid" ? reason : "error",
+      );
     }
   };
 
@@ -247,7 +254,12 @@ function EditProfile() {
             label="Username"
             value={form.username}
             onChange={(v) => update({ username: v.toLowerCase().replace(/\s+/g, ".") })}
-            hint="3–30 characters, used in your public link"
+            readOnly={Boolean(row?.username)}
+            hint={
+              row?.username
+                ? "Your public link. Usernames can't be changed."
+                : "3–30 characters: lowercase letters, numbers, dots and underscores. Can't be changed later."
+            }
           />
           <Field label="Headline" value={form.headline} onChange={(v) => update({ headline: v })} />
           <Field label="Bio" value={form.bio} onChange={(v) => update({ bio: v })} multiline />
@@ -453,7 +465,15 @@ function EditProfile() {
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        {status === "error" ? (
+        {status === "taken" || status === "reserved" || status === "invalid" ? (
+          <p role="alert" className="text-[11px] text-destructive">
+            {status === "taken"
+              ? "That username is taken. Try another."
+              : status === "reserved"
+                ? "That username is reserved. Try another."
+                : "Usernames use lowercase letters, numbers, dots and underscores (3–30)."}
+          </p>
+        ) : status === "error" ? (
           <p role="alert" className="text-[11px] text-destructive">
             Couldn't save. Your edits are still here — try again.
           </p>
@@ -481,12 +501,14 @@ function Field({
   onChange,
   hint,
   multiline = false,
+  readOnly = false,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   hint?: string;
   multiline?: boolean;
+  readOnly?: boolean;
 }) {
   return (
     <label className="block">
@@ -503,8 +525,9 @@ function Field({
       ) : (
         <input
           value={value}
+          readOnly={readOnly}
           onChange={(e) => onChange(e.target.value)}
-          className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+          className={`mt-1.5 min-h-12 w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-subtle text-muted-foreground" : "bg-card"}`}
         />
       )}
       {hint ? <span className="mt-1 block text-[11px] text-muted-foreground">{hint}</span> : null}

@@ -30,7 +30,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { Btn, IconBtn, Sheet } from "@/components/ml/ui";
 import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
 import { useAuth } from "@/hooks/use-auth";
-import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
+import {
+  claimMyUsername,
+  getMyProfile,
+  saveMyProfile,
+  type UsernameClaim,
+} from "@/lib/portfolio.functions";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import { deleteProfileImage, PROFILE_IMAGE_ACCEPT, uploadProfileImage } from "@/lib/profile-images";
@@ -90,6 +95,10 @@ type Store = {
   bucket: PersonaBucket | null;
   bucketState: LoadState;
   retryBucket: () => void;
+  /** The username stored on the profile. Once set it cannot change. Null until claimed. */
+  claimedUsername: string | null;
+  /** Claim draft.username for this account. In dev preview it always succeeds and nothing is stored. */
+  claimUsername: () => Promise<UsernameClaim>;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -113,6 +122,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const loadProfile = useServerFn(getMyProfile);
   const persist = useServerFn(saveMyProfile);
+  const claim = useServerFn(claimMyUsername);
+  const [claimedUsername, setClaimedUsername] = useState<string | null>(null);
   const timer = useRef<number | null>(null);
   const pending = useRef<OnboardingDraft | null>(null);
   const loadedFor = useRef<string | null>(null);
@@ -191,7 +202,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     setSync("loading");
     loadProfile()
       .then((row) => {
-        const remote = profileToDraft(row as never) ?? emptyDraft;
+        const stored = (row as { username?: string | null } | null)?.username ?? null;
+        setClaimedUsername(stored);
+        const draftFromRow = profileToDraft(row as never) ?? emptyDraft;
+        // A claimed username is fixed; an unclaimed one typed earlier stays in the draft.
+        const remote = stored ? { ...draftFromRow, username: stored } : draftFromRow;
         // A cached copy is only ahead when a save failed; whichever is further along wins.
         const next =
           cached && cached.completedSteps.length > remote.completedSteps.length
@@ -203,8 +218,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
                 ),
               } as OnboardingDraft)
             : remote;
-        setDraft(next);
-        writeCache(next);
+        const merged = stored ? { ...next, username: stored } : next;
+        setDraft(merged);
+        writeCache(merged);
         setSync("saved");
       })
       .catch(() => {
@@ -290,9 +306,27 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             ? draft.completedSteps
             : [...draft.completedSteps, id],
         }),
-      reset: () => persistDraft(emptyDraft),
+      reset: () => persistDraft({ ...emptyDraft, username: claimedUsername ?? "" }),
+      claimedUsername,
+      claimUsername: async () => {
+        if (devPreview || claimedUsername === draft.username) return "claimed";
+        const { status } = await claim({ data: { username: draft.username } });
+        if (status === "claimed") setClaimedUsername(draft.username);
+        return status;
+      },
     }),
-    [draft, hydrated, sync, persistDraft, push, bucket, bucketState],
+    [
+      draft,
+      hydrated,
+      sync,
+      persistDraft,
+      push,
+      bucket,
+      bucketState,
+      claimedUsername,
+      claim,
+      devPreview,
+    ],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -680,6 +714,7 @@ export function InlineField({
   autoComplete,
   inputMode,
   enterKeyHint = "next",
+  readOnly = false,
 }: {
   label: string;
   value: string;
@@ -696,6 +731,8 @@ export function InlineField({
   inputMode?: "text" | "url" | "email";
   /** The label on the Android keyboard's action key. Next submits the step. */
   enterKeyHint?: "next" | "done" | "go";
+  /** Shown but not editable, e.g. a username that is already set. */
+  readOnly?: boolean;
 }) {
   const messageId = `${inputId}-message`;
   const shared =
@@ -709,6 +746,7 @@ export function InlineField({
         className={cn(
           "flex items-center gap-1 rounded-md border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
           multiline ? "py-3" : "h-12",
+          readOnly && "bg-subtle",
           error
             ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
             : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
@@ -735,6 +773,7 @@ export function InlineField({
             autoComplete={autoComplete}
             inputMode={inputMode}
             enterKeyHint={enterKeyHint}
+            readOnly={readOnly}
             aria-invalid={Boolean(error) || undefined}
             aria-describedby={messageId}
             onKeyDown={(e) => {

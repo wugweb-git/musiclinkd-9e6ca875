@@ -511,7 +511,7 @@ export const steps: StepDef[] = [
     id: "instruments",
     group: "Expertise",
     title: "What do you play?",
-    subtitle: "Mark one as your primary instrument.",
+    subtitle: "Pick up to two.",
     why: "Instrument is one of the strongest filters people use to book players.",
     optional: true,
     // Skipped when the person's roles hold no instruments (persona_bucket returns none).
@@ -526,13 +526,15 @@ export const steps: StepDef[] = [
     ),
   },
   {
-    // Per instrument when instruments were picked; otherwise one answer for the main role.
+    // Instrument players answer this on the instruments screen, per instrument. Everyone else,
+    // and players who picked no instruments, answer once here for their main role.
     id: "experience",
     group: "Expertise",
     title: "How experienced are you?",
     subtitle: "Not a ranking — just context.",
     why: "Helps match you to the right briefs. Never shown as a score.",
     optional: true,
+    visible: (d) => d.instruments.length === 0,
     contract: contract(
       "ONB-13",
       "Experience",
@@ -740,15 +742,13 @@ export const screenContracts = {
 
 /** Reserved usernames used for the inline availability check (design-time). */
 /** Names nobody can take. Availability against real accounts is checked in lib/username.ts. */
-export const reservedUsernames = ["admin", "musiclinkd", "support", "help"];
-
+// Reserved names live in the database (public.reserved_usernames); username_available() checks them.
 export function validateUsername(v: string): { ok: boolean; message: string } {
   if (!v) return { ok: false, message: "Pick a username so people can find you." };
   if (v.length < 3) return { ok: false, message: "At least 3 characters." };
+  if (v.length > 30) return { ok: false, message: "30 characters at most." };
   if (!/^[a-z0-9._]+$/.test(v))
     return { ok: false, message: "Lowercase letters, numbers, dots and underscores only." };
-  if (reservedUsernames.includes(v))
-    return { ok: false, message: "That one's taken. Try another." };
   return { ok: true, message: `musiclinkd.com/${v}` };
 }
 

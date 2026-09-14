@@ -107,7 +107,7 @@ function CreateBand() {
               label="Invite by name or MusicLinkd handle"
               value={inviteInput}
               onChange={setInviteInput}
-              placeholder="@meher-kaur"
+              placeholder="@meher.kaur"
             />
             <Btn
               variant="outline"

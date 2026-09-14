@@ -114,7 +114,11 @@ export const getMyProfile = createServerFn({ method: "GET" })
 const strList = (max: number, len = 40) => z.array(z.string().max(len)).max(max).optional();
 
 const profilePatchSchema = z.object({
-  username: z.string().min(3).max(30).optional().nullable(),
+  username: z
+    .string()
+    .regex(/^[a-z0-9._]{3,30}$/)
+    .optional()
+    .nullable(),
   display_name: z.string().max(80).optional().nullable(),
   headline: z.string().max(160).optional().nullable(),
   bio: z.string().max(1200).optional().nullable(),
@@ -154,8 +158,40 @@ export const saveMyProfile = createServerFn({ method: "POST" })
       .upsert({ id: context.userId, ...patch } as never, { onConflict: "id" })
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(usernameError(error) ?? error.message);
     return row;
+  });
+
+export type UsernameClaim = "claimed" | "taken" | "reserved" | "locked" | "invalid";
+
+/** Database username rules (20260914200000_username_rules.sql) as a short reason, or null. */
+function usernameError(error: {
+  code?: string;
+  message?: string;
+}): Exclude<UsernameClaim, "claimed"> | null {
+  const message = error.message ?? "";
+  if (error.code === "23505" && message.includes("profiles_username_key")) return "taken";
+  if (error.code === "23514" && message.includes("profiles_username_format")) return "invalid";
+  if (message.includes("username_reserved")) return "reserved";
+  if (message.includes("username_locked")) return "locked";
+  return null;
+}
+
+/**
+ * Claim a username for the signed-in profile. Onboarding calls this on Continue from About you;
+ * autosave never sends the username. Once set, the database refuses changes ("locked").
+ */
+export const claimMyUsername = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ username: z.string().min(1).max(30) }).parse(d))
+  .handler(async ({ context, data }): Promise<{ status: UsernameClaim }> => {
+    const { error } = await context.supabase
+      .from("profiles")
+      .upsert({ id: context.userId, username: data.username } as never, { onConflict: "id" });
+    if (!error) return { status: "claimed" };
+    const reason = usernameError(error);
+    if (!reason) throw new Error(error.message);
+    return { status: reason };
   });
 
 /** Anon-key client with no session, for public reads that RLS already scopes. */

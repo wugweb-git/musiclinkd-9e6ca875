@@ -51,8 +51,8 @@ export function expandSpecialisations(list: string[]): Record<string, string[]> 
 
 export function draftToProfile(d: OnboardingDraft, step?: string) {
   return {
+    // No username: it is claimed once, on Continue from About you (claimMyUsername), then locked.
     display_name: d.displayName || null,
-    username: d.username || null,
     headline: d.primaryRole ?? null,
     bio: d.bio || null,
     city: d.city || null,

@@ -251,7 +251,7 @@ const sunsetRecords: LinkedProfileSeed = {
         name: "Kabir Nair",
         kind: "Engineer",
         photo: u(photo.kabirNair, 200),
-        link: profileLink("kabir-nair"),
+        link: profileLink("kabir.nair"),
       },
     ],
     reviews: [
@@ -458,7 +458,7 @@ const kabirMenon: LinkedProfileSeed = {
         name: "Rahul Iyer",
         kind: "Producer",
         photo: u(photo.rahul, 200),
-        link: profileLink("rahul-iyer"),
+        link: profileLink("rahul.iyer"),
       },
       {
         id: "c2",
@@ -1027,7 +1027,7 @@ const northlightFilms: LinkedProfileSeed = {
         name: "Kabir Nair",
         kind: "Engineer",
         photo: u(photo.kabirNair, 200),
-        link: profileLink("kabir-nair"),
+        link: profileLink("kabir.nair"),
       },
     ],
     reviews: [
@@ -1657,7 +1657,7 @@ const kabirNair: LinkedProfileSeed = {
     availability: "Freelance Work",
   },
   profile: {
-    username: "kabir-nair",
+    username: "kabir.nair",
     name: "Kabir Nair",
     photo: u(photo.kabirNair, 400),
     cover: shots[1]!,
@@ -1798,21 +1798,21 @@ const kabirNair: LinkedProfileSeed = {
         name: "Rahul Iyer",
         kind: "Producer",
         photo: u(photo.rahul, 200),
-        link: profileLink("rahul-iyer"),
+        link: profileLink("rahul.iyer"),
       },
       {
         id: "c2",
         name: "Ananya Sharma",
         kind: "Artist",
         photo: u(photo.ananya, 200),
-        link: profileLink("ananya-sharma"),
+        link: profileLink("ananya.sharma"),
       },
       {
         id: "c3",
         name: "Octave Sound Labs",
         kind: "Studio",
         photo: u(photo.octave, 200),
-        link: profileLink("octave-sound-labs"),
+        link: profileLink("octave.sound.labs"),
       },
     ],
     reviews: [
@@ -1863,7 +1863,7 @@ const octaveSoundLabs: LinkedProfileSeed = {
     availability: "Recording",
   },
   profile: {
-    username: "octave-sound-labs",
+    username: "octave.sound.labs",
     name: "Octave Sound Labs",
     photo: u(photo.octave, 400),
     cover: shots[2]!,
@@ -1968,21 +1968,21 @@ const octaveSoundLabs: LinkedProfileSeed = {
         name: "Rahul Iyer",
         kind: "Producer",
         photo: u(photo.rahul, 200),
-        link: profileLink("rahul-iyer"),
+        link: profileLink("rahul.iyer"),
       },
       {
         id: "c2",
         name: "Kabir Nair",
         kind: "Engineer",
         photo: u(photo.kabirNair, 200),
-        link: profileLink("kabir-nair"),
+        link: profileLink("kabir.nair"),
       },
       {
         id: "c3",
         name: "Ananya Sharma",
         kind: "Artist",
         photo: u(photo.ananya, 200),
-        link: profileLink("ananya-sharma"),
+        link: profileLink("ananya.sharma"),
       },
     ],
     reviews: [
@@ -2033,7 +2033,7 @@ const sanyaRao: LinkedProfileSeed = {
     availability: "Projects",
   },
   profile: {
-    username: "sanya-rao",
+    username: "sanya.rao",
     name: "Sanya Rao",
     photo: u(photo.sanya, 400),
     cover: shots[4]!,
@@ -2115,7 +2115,7 @@ const sanyaRao: LinkedProfileSeed = {
         name: "Kabir Nair",
         kind: "Engineer",
         photo: u(photo.kabirNair, 200),
-        link: profileLink("kabir-nair"),
+        link: profileLink("kabir.nair"),
       },
       {
         id: "c2",

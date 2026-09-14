@@ -220,7 +220,7 @@ export function emptySections(): Omit<
 }
 
 const rahul: PersonProfile = {
-  username: "rahul-iyer",
+  username: "rahul.iyer",
   name: "Rahul Iyer",
   photo: u("photo-1507003211169-0a1dd7228f2d", 400),
   cover: u("photo-1598488035139-bdbb2231ce04", 900),
@@ -437,14 +437,14 @@ const rahul: PersonProfile = {
       name: "Ananya Sharma",
       kind: "Artist",
       photo: u("photo-1534528741775-53994a69daeb", 200),
-      link: { to: "/profile/$username", params: { username: "ananya-sharma" } },
+      link: { to: "/profile/$username", params: { username: "ananya.sharma" } },
     },
     {
       id: "c2",
       name: "Meher Kaur",
       kind: "Artist",
       photo: u("photo-1529626455594-4ff0802cfb7e", 200),
-      link: { to: "/profile/$username", params: { username: "meher-kaur" } },
+      link: { to: "/profile/$username", params: { username: "meher.kaur" } },
     },
     {
       id: "c3",
@@ -530,7 +530,7 @@ const rahul: PersonProfile = {
 
 const ananya: PersonProfile = {
   ...emptySections(),
-  username: "ananya-sharma",
+  username: "ananya.sharma",
   name: "Ananya Sharma",
   photo: u("photo-1534528741775-53994a69daeb", 400),
   cover: u("photo-1514320291840-2e0a9bf2a9ae", 900),

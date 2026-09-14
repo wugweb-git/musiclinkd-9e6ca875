@@ -28,6 +28,7 @@ import {
 import { haptic } from "@/lib/haptics";
 import { useFlowBack } from "@/lib/flow-back";
 import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
+import type { UsernameClaim } from "@/lib/portfolio.functions";
 import {
   ChipPicker,
   PersonTypePicker,
@@ -89,6 +90,12 @@ function typeIcon(o: TaxonomyOption) {
 }
 
 /** The options to show: the bucket's, plus anything already selected that the bucket left out. */
+/** The profile's single experience level: the highest across instruments. */
+function topExperience(map: Record<string, string>): string | null {
+  const rank = (key: string) => experienceLevels.findIndex((e) => e.key === key);
+  return Object.values(map).sort((x, y) => rank(y) - rank(x))[0] ?? null;
+}
+
 function withSelected(
   shown: TaxonomyOption[],
   selected: string[],
@@ -125,12 +132,23 @@ export const Route = createFileRoute("/onboarding/step/$id")({
   ),
 });
 
-type Banner = "none" | "error";
+type Banner = "none" | "error" | "claim";
 type RoleStage = "primary" | "secondary";
 
 function StepRoute() {
   const { id } = Route.useParams();
-  const { draft, set, toggle, markComplete, hydrated, sync, retry, bucket } = useOnboarding();
+  const {
+    draft,
+    set,
+    toggle,
+    markComplete,
+    hydrated,
+    sync,
+    retry,
+    bucket,
+    claimedUsername,
+    claimUsername,
+  } = useOnboarding();
   const navigate = useNavigate();
   const [banner, setBanner] = useState<Banner>("none");
   // Bumped on each blocked Continue so the button re-mounts and the shake replays.
@@ -140,11 +158,20 @@ function StepRoute() {
     draft.username,
     validateUsername(draft.username).ok,
   );
-  // The role step asks twice on one screen: the main role, then anything else.
+  // The username is claimed on Continue from About you; the database is the final word.
+  const [claiming, setClaiming] = useState(false);
+  const [claimError, setClaimError] = useState<string | null>(null);
+  useEffect(() => setClaimError(null), [draft.username]);
+  // Role and instruments ask twice on one screen: the choice, then a follow-up (extra roles; how
+  // long each instrument has been played).
   const [roleStage, setRoleStage] = useState<RoleStage>("primary");
-  const hasRole = Boolean(draft.primaryRole);
+  const stageReady =
+    id === "role"
+      ? Boolean(draft.primaryRole)
+      : id === "instruments" && draft.instruments.length > 0;
   useEffect(() => {
-    if (id === "role" && hydrated) setRoleStage(hasRole ? "secondary" : "primary");
+    if ((id === "role" || id === "instruments") && hydrated)
+      setRoleStage(stageReady ? "secondary" : "primary");
     // Only on arrival; picking a role moves the stage itself.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, hydrated]);
@@ -239,31 +266,62 @@ function StepRoute() {
     );
   };
 
-  // Second stage of the role step: same screen, new question, optional.
-  const secondStage = def.id === "role" && roleStage === "secondary" && hasRole;
-  const copy = secondStage
-    ? {
-        title: "Anything else you do?",
-        subtitle: "Pick up to two.",
-        why: "Extra roles widen the work you show up for, without diluting your main one.",
-        optional: true,
+  const claimAndAdvance = async () => {
+    if (claiming) return;
+    setClaiming(true);
+    setBanner("none");
+    try {
+      const status = await claimUsername();
+      if (status === "claimed") {
+        advance(true);
+        return;
       }
-    : def;
+      setClaimError(claimMessages[status]);
+      haptic("error");
+      setNudge((n) => n + 1);
+    } catch {
+      setBanner("claim");
+      haptic("error");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } finally {
+      setClaiming(false);
+    }
+  };
+
+  // Second stage: same screen, new question, optional.
+  const secondStage = stageReady && roleStage === "secondary";
+  const copy = !secondStage
+    ? def
+    : def.id === "role"
+      ? {
+          title: "Anything else you do?",
+          subtitle: "Pick up to two.",
+          why: "Extra roles widen the work you show up for, without diluting your main one.",
+          optional: true,
+        }
+      : {
+          title: "How long have you played?",
+          subtitle: "Not a ranking — just context.",
+          why: "Helps match you to the right briefs. Never shown as a score.",
+          optional: true,
+        };
   const toFirstStage = () => {
     haptic("select");
     setRoleStage("primary");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const submit =
-    def.id === "role" && !secondStage && hasRole
+    stageReady && !secondStage
       ? () => {
           haptic("select");
           setRoleStage("secondary");
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
-      : valid
-        ? () => advance(true)
-        : blocked;
+      : def.id === "identity" && valid
+        ? () => void claimAndAdvance()
+        : valid
+          ? () => advance(true)
+          : blocked;
 
   return (
     <StepShell
@@ -281,6 +339,10 @@ function StepRoute() {
       banner={
         banner === "error" ? (
           <AuthNotice title="Add the required details to continue" />
+        ) : banner === "claim" ? (
+          <AuthNotice title="We couldn't save your username">
+            Check your connection, then tap Continue again.
+          </AuthNotice>
         ) : (
           <SyncBanner state={sync} onRetry={retry} />
         )
@@ -290,6 +352,7 @@ function StepRoute() {
           <Btn
             key={nudge}
             type="submit"
+            loading={claiming}
             className={`w-full ${valid ? "" : "opacity-50"} ${nudge ? "animate-shake" : ""}`}
           >
             {index === list.length - 1 ? "Review profile" : "Continue"}
@@ -309,6 +372,8 @@ function StepRoute() {
         set={set}
         toggle={toggle}
         usernameStatus={usernameStatus}
+        claimedUsername={claimedUsername}
+        claimError={claimError}
         roleStage={secondStage ? "secondary" : "primary"}
         setRoleStage={(stage) => {
           setRoleStage(stage);
@@ -318,6 +383,13 @@ function StepRoute() {
     </StepShell>
   );
 }
+
+const claimMessages: Record<Exclude<UsernameClaim, "claimed">, string> = {
+  taken: "That one's taken. Try another.",
+  reserved: "That username is reserved. Try another.",
+  invalid: "Lowercase letters, numbers, dots and underscores only.",
+  locked: "Your username is already set and can't be changed.",
+};
 
 function isValid(id: string, d: OnboardingDraft, usernameStatus: UsernameStatus): boolean {
   switch (id) {
@@ -345,6 +417,8 @@ function StepBody({
   set,
   toggle,
   usernameStatus,
+  claimedUsername,
+  claimError,
   roleStage,
   setRoleStage,
 }: {
@@ -353,6 +427,8 @@ function StepBody({
   set: (p: Partial<OnboardingDraft>) => void;
   toggle: (field: keyof OnboardingDraft, value: string) => void;
   usernameStatus: UsernameStatus;
+  claimedUsername: string | null;
+  claimError: string | null;
   roleStage: RoleStage;
   setRoleStage: (stage: RoleStage) => void;
 }) {
@@ -406,17 +482,22 @@ function StepBody({
             onChange={(v) => set({ username: v.toLowerCase().replace(/\s/g, "") })}
             placeholder="yourname"
             autoComplete="username"
-            {...(!d.username
-              ? { hint: "Your profile link: lowercase letters, numbers, dots and underscores." }
-              : !check.ok
-                ? { error: check.message }
-                : usernameStatus === "taken"
-                  ? { error: "That one's taken. Try another." }
-                  : usernameStatus === "available"
-                    ? { ok: `${check.message} is available` }
-                    : usernameStatus === "checking"
-                      ? { hint: "Checking…" }
-                      : { hint: check.message })}
+            readOnly={Boolean(claimedUsername)}
+            {...(claimedUsername
+              ? { hint: "This is your profile link. Usernames can't be changed." }
+              : claimError
+                ? { error: claimError }
+                : !d.username
+                  ? { hint: "Your profile link: lowercase letters, numbers, dots and underscores." }
+                  : !check.ok
+                    ? { error: check.message }
+                    : usernameStatus === "taken"
+                      ? { error: "That one's taken. Try another." }
+                      : usernameStatus === "available"
+                        ? { ok: `${check.message} is available` }
+                        : usernameStatus === "checking"
+                          ? { hint: "Checking…" }
+                          : { hint: check.message })}
           />
           <div className="grid grid-cols-2 gap-3">
             <SelectField
@@ -495,60 +576,62 @@ function StepBody({
       );
     }
 
-    case "instruments":
-      return (
-        <div className="space-y-5">
+    case "instruments": {
+      if (roleStage === "primary" || !d.instruments.length) {
+        return (
           <ChipPicker
             options={withSelected(bucket?.instruments ?? [], d.instruments, tx?.instruments)}
             selected={d.instruments}
-            onToggle={(v) => toggle("instruments", v)}
+            max={2}
+            onToggle={(slug) => {
+              if (d.instruments.includes(slug)) {
+                const map = { ...d.instrumentExperience };
+                delete map[slug];
+                set({
+                  instruments: d.instruments.filter((x) => x !== slug),
+                  primaryInstrument: null,
+                  instrumentExperience: map,
+                  experience: topExperience(map),
+                });
+                return;
+              }
+              const next = [...d.instruments, slug];
+              set({ instruments: next, primaryInstrument: null });
+              // Both picked: the heading and the options switch to experience.
+              if (next.length === 2) setRoleStage("secondary");
+            }}
           />
-          {d.instruments.length > 1 ? (
-            <div>
-              <p className="mb-2 text-sm font-medium">Primary instrument</p>
-              <ChipPicker
-                options={d.instruments.map((slug) => ({
-                  value: slug,
-                  label: labelFor(tx?.instruments, slug),
-                }))}
-                selected={d.primaryInstrument ? [d.primaryInstrument] : []}
-                onToggle={(v) => set({ primaryInstrument: d.primaryInstrument === v ? null : v })}
-              />
-            </div>
-          ) : null}
-        </div>
-      );
-
-    case "experience": {
-      if (d.instruments.length) {
-        // One answer per instrument; the profile's single level is the highest of them.
-        const rank = (key: string | undefined) => experienceLevels.findIndex((e) => e.key === key);
-        return (
-          <div className="space-y-4">
-            {d.instruments.map((slug) => {
-              const key = d.instrumentExperience[slug];
-              return (
-                <SelectField
-                  key={slug}
-                  selectId={`experience-${slug}`}
-                  label={labelFor(tx?.instruments, slug)}
-                  value={experienceLevels.find((e) => e.key === key)?.label ?? ""}
-                  options={experienceLevels.map((e) => e.label)}
-                  placeholder="How long have you played?"
-                  onChange={(label) => {
-                    const nextKey = experienceLevels.find((e) => e.label === label)?.key;
-                    const map = { ...d.instrumentExperience };
-                    if (nextKey) map[slug] = nextKey;
-                    else delete map[slug];
-                    const top = Object.values(map).sort((a, b) => rank(b) - rank(a))[0] ?? null;
-                    set({ instrumentExperience: map, experience: top });
-                  }}
-                />
-              );
-            })}
-          </div>
         );
       }
+      // Back returns to the instruments.
+      return (
+        <div key="secondary" className="space-y-4">
+          {d.instruments.map((slug) => {
+            const key = d.instrumentExperience[slug];
+            return (
+              <SelectField
+                key={slug}
+                selectId={`experience-${slug}`}
+                label={labelFor(tx?.instruments, slug)}
+                value={experienceLevels.find((e) => e.key === key)?.label ?? ""}
+                options={experienceLevels.map((e) => e.label)}
+                placeholder="Choose"
+                onChange={(label) => {
+                  const nextKey = experienceLevels.find((e) => e.label === label)?.key;
+                  const map = { ...d.instrumentExperience };
+                  if (nextKey) map[slug] = nextKey;
+                  else delete map[slug];
+                  set({ instrumentExperience: map, experience: topExperience(map) });
+                }}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+
+    case "experience":
+      // Asked here only when no instruments were picked; otherwise it is on the instruments screen.
       return (
         <div className="space-y-3">
           {d.primaryRole ? (
@@ -567,7 +650,6 @@ function StepBody({
           />
         </div>
       );
-    }
 
     case "specialisation": {
       const spec = d.primaryRole ? specialisationByRole[d.primaryRole] : undefined;
