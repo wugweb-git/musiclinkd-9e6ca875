@@ -2,9 +2,14 @@
 // Only stored fields are filled; everything the table does not hold stays empty and the screens
 // skip it.
 
-import { opportunityCategories, type Opportunity } from "@/data/opportunities";
+import {
+  opportunityCategories,
+  type Opportunity,
+  type PostedOpportunity,
+} from "@/data/opportunities";
 import {
   getOpportunityRow,
+  listMyOpportunities,
   listOpportunities,
   taxonomyLabel,
   type OpportunityRow,
@@ -69,7 +74,7 @@ export function opportunityFromRow(
     id: row.slug,
     title: row.title,
     ...categoryFromRole(row.role_required),
-    status: "open",
+    status: row.status,
     poster: {
       id: creator?.username ?? "",
       name: creator?.display_name ?? creator?.username ?? "",
@@ -121,4 +126,17 @@ export async function loadDbOpportunity(slug: string): Promise<Opportunity | nul
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
   return row ? opportunityFromRow(row, labels) : null;
+}
+
+/**
+ * The signed-in user's stored opportunities, every status, newest first. They carry no
+ * applicantSummary: there is no application tracking behind them. Empty when unreachable.
+ */
+export async function loadMyDbOpportunities(): Promise<PostedOpportunity[]> {
+  const [rows, labels] = await Promise.all([
+    listMyOpportunities().catch((): OpportunityRow[] => []),
+    getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+  ]);
+  const now = Date.now();
+  return rows.map((r) => opportunityFromRow(r, labels, now));
 }

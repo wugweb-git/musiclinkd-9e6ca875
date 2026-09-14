@@ -4,8 +4,11 @@ import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented, StatusPill } from "@/components/ml/kit";
 import { getBand } from "@/data/band";
 import { opportunities } from "@/data/opportunities";
+import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/bands/$id/events")({
+  // Stored opportunities follow the static ones; none when the database is unreachable.
+  loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
       { title: "Band shows and opportunities | MusicLinkd" },
@@ -27,6 +30,7 @@ const tabs = ["Shows", "Opportunities"] as const;
 function BandEvents() {
   const { id } = Route.useParams();
   const band = getBand(id);
+  const { dbOpportunities } = Route.useLoaderData();
   const [tab, setTab] = useState<(typeof tabs)[number]>("Shows");
 
   if (!band) {
@@ -43,7 +47,7 @@ function BandEvents() {
     );
   }
 
-  const gigs = opportunities.filter((o) => o.kind === "Gig").slice(0, 4);
+  const gigs = [...opportunities, ...dbOpportunities].filter((o) => o.kind === "Gig").slice(0, 4);
 
   return (
     <Screen>
@@ -91,7 +95,7 @@ function BandEvents() {
                 <Card>
                   <p className="text-sm font-semibold">{o.title}</p>
                   <p className="mt-1 text-[13px] text-muted-foreground">
-                    {o.city} · {o.workMode}
+                    {[o.city, o.workMode].filter(Boolean).join(" · ")}
                   </p>
                   <p className="mt-2 text-[12px] text-muted-foreground">Apply as {band.name}</p>
                 </Card>

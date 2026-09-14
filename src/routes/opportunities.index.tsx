@@ -48,6 +48,10 @@ function OpportunitiesHome() {
         : // Stored locations carry a state ("Mumbai, MH").
           all.filter((o) => o.city.split(",")[0] === "Mumbai");
 
+  // Counted from the opportunities on this screen, static and stored.
+  const openCount = (key: string) =>
+    all.filter((o) => o.status === "open" && o.categoryKey === key).length;
+
   const active = myApplications.filter(
     (a) => a.status !== "rejected" && a.status !== "withdrawn",
   ).length;
@@ -111,7 +115,7 @@ function OpportunitiesHome() {
               >
                 <span className="text-lg">{c.emoji}</span>
                 <p className="mt-1 truncate text-[13px] font-semibold">{c.label}</p>
-                <p className="text-[11px] text-muted-foreground">{c.count} open</p>
+                <p className="text-[11px] text-muted-foreground">{openCount(c.key)} open</p>
               </Link>
             ))}
           </div>
