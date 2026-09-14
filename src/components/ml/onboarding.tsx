@@ -23,6 +23,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Btn, Sheet } from "@/components/ml/ui";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
+import { haptic } from "@/lib/haptics";
 import { draftToProfile, profileToDraft } from "@/lib/profile-map";
 import { emptyDraft, visibleSteps, type OnboardingDraft } from "@/data/onboarding";
 
@@ -216,6 +217,7 @@ export function StepShell({
   children,
   footer,
   banner,
+  onSubmit,
 }: {
   step: number;
   total: number;
@@ -228,18 +230,27 @@ export function StepShell({
   children: ReactNode;
   footer: ReactNode;
   banner?: ReactNode;
+  /** Continue, from the footer button or the keyboard's Next/Go key. */
+  onSubmit?: () => void;
 }) {
   const pct = Math.round((step / total) * 100);
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/95 px-5 pb-3 pt-4 backdrop-blur">
+    <form
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit?.();
+      }}
+      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background"
+    >
+      <header className="vt-flow-header sticky top-0 z-30 border-b border-border bg-background/95 px-5 pb-3 pt-4 backdrop-blur">
         <div className="flex items-center gap-3">
           {onBack ? (
             <button
               type="button"
               onClick={onBack}
               aria-label="Go back"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card"
+              className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-95"
             >
               <ChevronLeft size={18} />
             </button>
@@ -259,7 +270,7 @@ export function StepShell({
               aria-label="Onboarding progress"
             >
               <div
-                className="h-full rounded-full bg-primary transition-all"
+                className="vt-flow-progress h-full rounded-full bg-primary"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -268,7 +279,7 @@ export function StepShell({
             <button
               type="button"
               onClick={onSkip}
-              className="shrink-0 text-1 font-semibold text-muted-foreground"
+              className="hit-area shrink-0 text-1 font-semibold text-muted-foreground"
             >
               Skip
             </button>
@@ -288,10 +299,10 @@ export function StepShell({
         <div className="mt-6">{children}</div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="vt-flow-footer fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         {footer}
       </div>
-    </div>
+    </form>
   );
 }
 
@@ -319,14 +330,17 @@ export function ChipPicker({
             key={o}
             type="button"
             aria-pressed={on}
-            onClick={() => onToggle(o)}
-            className={`flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors ${
+            onClick={() => {
+              haptic("select");
+              onToggle(o);
+            }}
+            className={`flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
               on
                 ? "border-transparent bg-selected-bg text-selected-text"
                 : "border-border bg-card text-foreground"
             }`}
           >
-            {on ? <Check size={14} /> : null}
+            {on ? <Check size={14} className="animate-pop" aria-hidden /> : null}
             {o}
           </button>
         );
@@ -353,8 +367,11 @@ export function ChoiceGrid({
             key={o.key}
             type="button"
             aria-pressed={on}
-            onClick={() => onSelect(o.key)}
-            className={`flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-colors ${
+            onClick={() => {
+              haptic("select");
+              onSelect(o.key);
+            }}
+            className={`flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
               on ? "border-primary bg-pink-container" : "border-border bg-card"
             }`}
           >
@@ -392,8 +409,11 @@ export function OptionList({
             <button
               type="button"
               aria-pressed={on}
-              onClick={() => onToggle(o.key)}
-              className={`flex w-full items-start gap-3 rounded-lg border p-4 text-left ${
+              onClick={() => {
+                haptic("select");
+                onToggle(o.key);
+              }}
+              className={`flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
                 on ? "border-primary" : "border-border"
               } bg-card`}
             >
@@ -402,7 +422,9 @@ export function OptionList({
                   multi ? "rounded-lg" : "rounded-full"
                 } ${on ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
               >
-                {on ? <Check size={12} strokeWidth={3} /> : null}
+                {on ? (
+                  <Check size={12} strokeWidth={3} className="animate-pop" aria-hidden />
+                ) : null}
               </span>
               <span className="min-w-0">
                 <span className="block text-sm font-semibold">{o.label}</span>
@@ -430,6 +452,9 @@ export function InlineField({
   multiline = false,
   maxLength,
   inputId,
+  autoComplete,
+  inputMode,
+  enterKeyHint = "next",
 }: {
   label: string;
   value: string;
@@ -442,6 +467,10 @@ export function InlineField({
   multiline?: boolean;
   maxLength?: number;
   inputId: string;
+  autoComplete?: string;
+  inputMode?: "text" | "url" | "email";
+  /** The label on the Android keyboard's action key. Next submits the step. */
+  enterKeyHint?: "next" | "done" | "go";
 }) {
   const shared = "w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground";
   return (
@@ -473,6 +502,17 @@ export function InlineField({
             id={inputId}
             value={value}
             maxLength={maxLength}
+            autoComplete={autoComplete}
+            inputMode={inputMode}
+            enterKeyHint={enterKeyHint}
+            onKeyDown={(e) => {
+              // Some Android keyboards do not trigger implicit form submission; do it once here.
+              if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+              e.preventDefault();
+              e.currentTarget.form?.requestSubmit();
+            }}
+            autoCapitalize={inputMode === "url" ? "none" : undefined}
+            spellCheck={inputMode === "url" ? false : undefined}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             className={shared}

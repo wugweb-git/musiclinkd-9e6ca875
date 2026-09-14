@@ -135,6 +135,43 @@
   --ease-standard: var(--easing-standard);
   --ease-enter: var(--easing-enter);
   --ease-spring: var(--easing-spring);
+
+  /* Motion for the registration flow. Durations match --duration-3 (320ms) and --duration-4 (500ms). */
+  --animate-shake: shake 320ms var(--easing-standard);
+  --animate-pop: pop 320ms var(--easing-spring) both;
+  --animate-caret: caret 1s steps(1) infinite;
+  --animate-sound-check: sound-check 500ms var(--easing-enter) both;
+
+  @keyframes shake {
+    20%,
+    60% {
+      transform: translateX(-6px);
+    }
+    40%,
+    80% {
+      transform: translateX(6px);
+    }
+  }
+  @keyframes pop {
+    from {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+  }
+  @keyframes caret {
+    50% {
+      opacity: 0;
+    }
+  }
+  /* A playhead crossing a clip: the waveform is revealed left to right. */
+  @keyframes sound-check {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
 }
 
 :root {
@@ -325,4 +362,113 @@
 
 @utility brand-gradient {
   background-image: var(--gradient-brand);
+}
+
+/*
+ * 48dp touch floor without growing the control (AGENTS.md). The pseudo-element extends the hit
+ * area to at least 48x48 around the element's centre; the visible size is unchanged.
+ */
+@utility hit-area {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 48px);
+    height: max(100%, 48px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ------------------------------------------------------------------ page motion
+ * Material 3 shared axis X for the registration flow, driven by the View Transitions API through
+ * the router (src/lib/flow-motion.ts). Forward enters from the right, back from the left; the exit
+ * runs at ~60% of the enter. Navigations outside the flow get no transition at all.
+ * The step header and footer carry view-transition names, so they hold still while the question
+ * slides, and the progress fill grows from its old width to its new one.
+ */
+@keyframes axis-in-forward {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+}
+@keyframes axis-out-forward {
+  to {
+    transform: translateX(-32px);
+    opacity: 0;
+  }
+}
+@keyframes axis-in-back {
+  from {
+    transform: translateX(-32px);
+    opacity: 0;
+  }
+}
+@keyframes axis-out-back {
+  to {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+}
+@keyframes flow-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes flow-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+html:active-view-transition-type(forward)::view-transition-old(root) {
+  animation: 200ms var(--easing-standard) both axis-out-forward;
+}
+html:active-view-transition-type(forward)::view-transition-new(root) {
+  animation: 320ms var(--easing-enter) 60ms both axis-in-forward;
+}
+html:active-view-transition-type(back)::view-transition-old(root) {
+  animation: 200ms var(--easing-standard) both axis-out-back;
+}
+html:active-view-transition-type(back)::view-transition-new(root) {
+  animation: 320ms var(--easing-enter) 60ms both axis-in-back;
+}
+html:active-view-transition-type(fade)::view-transition-old(root) {
+  animation: 200ms var(--easing-standard) both flow-fade-out;
+}
+html:active-view-transition-type(fade)::view-transition-new(root) {
+  animation: 320ms var(--easing-enter) both flow-fade-in;
+}
+
+.vt-flow-header {
+  view-transition-name: flow-header;
+}
+.vt-flow-footer {
+  view-transition-name: flow-footer;
+}
+.vt-flow-progress {
+  view-transition-name: flow-progress;
+}
+::view-transition-group(flow-progress) {
+  animation-duration: 320ms;
+  animation-timing-function: var(--easing-enter);
+}
+::view-transition-old(flow-progress) {
+  display: none;
+}
+::view-transition-new(flow-progress) {
+  width: 100%;
+  height: 100%;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
