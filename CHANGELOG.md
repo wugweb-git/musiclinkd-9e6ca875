@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — new user: usernames are checked against real accounts
+
+- **"Available" is now true.** The identity step compared usernames with a hard-coded list of five
+  names, while `profiles.username` is unique across 97 profiles. A new person could pick "wugweb" or any
+  imported name, see "is available", and then fail to save. The field now asks the database
+  (`username_available`, a SECURITY DEFINER function for signed-in users that also sees non-public
+  profiles) after a 400ms pause. It shows "Checking…", "is available" or "That one's taken", and
+  Continue waits while a name is taken or still being checked. If the check can't run, the field makes no
+  claim and the save decides.
+- Seed first names (ananya, arijit, rahul) are no longer blocked; admin, musiclinkd, support and help
+  are reserved.
+
 ### Fixed — new user: names, not IDs
 
 - Welcome to MusicLinkd (`/onboarding/done`) shows the role and genres by name. It printed slugs such
