@@ -81,7 +81,7 @@ function MyProfile() {
 
   // Signed in: your own record, with empty states for what it doesn't hold. Signed out: the demo owner.
   const view = signedIn
-    ? mergeSections(mergeProfileRow(profileFromRow(row ?? {}), row, labels), sections)
+    ? mergeSections(mergeProfileRow(profileFromRow(row ?? {}), row, labels), sections, labels)
     : ownerProfile;
   return <PersonProfileExperience p={view} owner />;
 }

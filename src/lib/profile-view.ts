@@ -5,6 +5,8 @@ import {
   emptySections,
   type AudioTrack,
   type AvailabilityState,
+  type MarketEntry,
+  type OpportunityItem,
   type PersonProfile,
   type ProfileRole,
   type ProjectItem,
@@ -14,7 +16,14 @@ import {
 } from "@/data/profile";
 import { experienceLevels, roles as roleDefs } from "@/data/onboarding";
 import { asLinkMap, type ProfileRow } from "@/lib/profile-map";
-import type { ProfileSections, TaxonomyLabels } from "@/lib/portfolio.functions";
+import { formatPaise } from "@/lib/catalog.functions";
+import { listingFromRow } from "@/lib/market-view";
+import {
+  CATEGORY_LABELS,
+  type ProfileSections,
+  type TaxonomyLabels,
+} from "@/lib/portfolio.functions";
+import { joinParts } from "@/lib/utils";
 
 /** Profiles store taxonomy slugs; show the published label, or the slug if it has none. */
 function labelled(labels: TaxonomyLabels | undefined, category: string, slugs: string[]): string[] {
@@ -186,6 +195,124 @@ function portfolioSections(items: ProfileSections["portfolio"]) {
   return { audio, video, discography, projects };
 }
 
+/** availability_status slugs with a matching profile status. booked_soon has none. */
+const availabilityFromStatus: Record<string, AvailabilityState> = {
+  available_now: "Available",
+  open_for_gigs: "Available for Shows",
+  on_tour: "Touring",
+  unavailable: "Busy",
+};
+
+/** Role detail key → the taxonomy category its slugs belong to. Keys not listed are not shown. */
+function detailCategory(role: string, key: string): string | undefined {
+  if (key === "specializations") {
+    return role === "lyricist"
+      ? "lyricist_specializations"
+      : role === "music_director"
+        ? "director_specializations"
+        : undefined;
+  }
+  return (
+    {
+      daw_tools: "daw_tools",
+      vocal_range: "vocal_range",
+      singing_styles: "singing_styles",
+      composition_styles: "composition_styles",
+      dj_type: "dj_types",
+      specialty: "engineer_specialties",
+    } as Record<string, string>
+  )[key];
+}
+
+const slugList = (value: unknown): string[] =>
+  (Array.isArray(value) ? value : [value]).filter(
+    (v): v is string => typeof v === "string" && v !== "",
+  );
+
+/**
+ * Role details, budget tier, rate and persona badges as "Professional details" rows. A row is only
+ * made when its taxonomy category has a label; values are published labels, never raw slugs.
+ */
+function professionalRows(sections: ProfileSections, labels: TaxonomyLabels | undefined) {
+  const names = labels?.[CATEGORY_LABELS] ?? {};
+  const rows = new Map<string, string[]>();
+  const add = (category: string, slugs: string[]) => {
+    const label = names[category];
+    const values = slugs.map((s) => labels?.[category]?.[s]).filter((v): v is string => !!v);
+    if (!label || !values.length) return;
+    const current = rows.get(label) ?? [];
+    rows.set(label, [...current, ...values.filter((v) => !current.includes(v))]);
+  };
+
+  for (const { role_slug, details } of sections.role_details) {
+    for (const [key, value] of Object.entries(details)) {
+      const category = detailCategory(role_slug, key);
+      if (category) add(category, slugList(value));
+    }
+  }
+  if (sections.budget_tier) add("budget_type", [sections.budget_tier]);
+  const out = [...rows].map(([label, values]) => ({ label, value: values.join(" · ") }));
+  if (sections.hourly_rate_paise != null) {
+    out.push({ label: "Hourly rate", value: formatPaise(sections.hourly_rate_paise, "hr") });
+  }
+  const persona = names["persona_badges"];
+  const badges = sections.persona_badges
+    .map((s) => labels?.["persona_badges"]?.[s])
+    .filter((v): v is string => !!v);
+  if (persona && badges.length) out.push({ label: persona, value: badges.join(" · ") });
+  return out;
+}
+
+/** The first role whose availability_status has a matching profile status. */
+function storedAvailability(sections: ProfileSections): AvailabilityState | undefined {
+  for (const { details } of sections.role_details) {
+    const status = details["availability_status"];
+    if (typeof status === "string" && availabilityFromStatus[status]) {
+      return availabilityFromStatus[status];
+    }
+  }
+  return undefined;
+}
+
+function storedOpportunities(sections: ProfileSections): OpportunityItem[] {
+  return sections.opportunities.map((o) => ({
+    id: o.id,
+    title: o.title,
+    detail: joinParts(
+      o.role_required,
+      formatPaise(o.budget_paise, o.budget_unit, o.budget_note),
+      o.location,
+    ),
+    tone: "seeking",
+  }));
+}
+
+function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefined) {
+  const now = Date.now();
+  return sections.listings.map((row): MarketEntry => {
+    const listing = listingFromRow(row, labels ?? {}, now);
+    return {
+      id: row.id,
+      title: listing.title,
+      meta: joinParts(listing.condition, listing.price),
+      image: listing.photos[0] ?? "",
+      kind: listing.type === "rental" ? "rental" : "sale",
+      to: "/marketplace/l/$id",
+      params: { id: row.slug },
+    };
+  });
+}
+
+function storedStudio(sections: ProfileSections): PersonProfile["studio"] {
+  const studio = sections.studios[0];
+  if (!studio) return undefined;
+  return {
+    name: studio.name,
+    meta: joinParts(studio.location, formatPaise(studio.hourly_rate_paise, "hr")),
+    to: `/booking/${studio.slug}`,
+  };
+}
+
 /**
  * Stored sections onto the profile. A section the base already has is kept, so seed profiles show
  * exactly what they showed before; stored rows fill the sections that are empty.
@@ -193,6 +320,7 @@ function portfolioSections(items: ProfileSections["portfolio"]) {
 export function mergeSections(
   base: PersonProfile,
   sections: ProfileSections | null | undefined,
+  labels?: TaxonomyLabels,
 ): PersonProfile {
   if (!sections) return base;
   const fromPortfolio = portfolioSections(sections.portfolio);
@@ -242,6 +370,11 @@ export function mergeSections(
     video: pick(base.video, fromPortfolio.video),
     discography: pick(base.discography, fromPortfolio.discography),
     projects: pick(base.projects, fromPortfolio.projects),
+    professional: pick(base.professional, professionalRows(sections, labels)),
+    opportunities: pick(base.opportunities, storedOpportunities(sections)),
+    market: pick(base.market, storedMarket(sections, labels)),
+    studio: base.studio ?? storedStudio(sections),
+    availability: base.availability ?? storedAvailability(sections),
     verification:
       base.verification !== "Basic"
         ? base.verification

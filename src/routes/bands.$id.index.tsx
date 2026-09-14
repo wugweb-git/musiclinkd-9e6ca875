@@ -3,9 +3,21 @@ import { useState } from "react";
 import { CalendarDays, MessageSquare, QrCode, Settings2, Share2, UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Row } from "@/components/ml/kit";
-import { getBand, myBandId, bandRoleCopy } from "@/data/band";
+import { getBand, bandRoleCopy } from "@/data/band";
+import { bandViewFromRecord, bandViewFromStatic } from "@/lib/band-view";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { getPublicBand } from "@/lib/profile-groups.functions";
 
 export const Route = createFileRoute("/bands/$id/")({
+  // The demo band wins; otherwise the id is the username of a stored profile with a line-up or shows.
+  loader: async ({ params }) => {
+    if (getBand(params.id)) return { record: null, labels: {} as TaxonomyLabels };
+    const [record, labels] = await Promise.all([
+      getPublicBand({ data: { username: params.id } }).catch(() => null),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+    ]);
+    return { record, labels };
+  },
   head: ({ params }) => ({
     meta: [
       { title: `Band profile | MusicLinkd` },
@@ -26,7 +38,13 @@ const tabs = ["Overview", "Members", "Shows", "Music"] as const;
 
 function BandProfile() {
   const { id } = Route.useParams();
-  const band = getBand(id);
+  const { record, labels } = Route.useLoaderData();
+  const demo = getBand(id);
+  const band = demo
+    ? bandViewFromStatic(demo)
+    : record
+      ? bandViewFromRecord(record, labels)
+      : undefined;
   const [tab, setTab] = useState<(typeof tabs)[number]>("Overview");
 
   if (!band) {
@@ -47,7 +65,7 @@ function BandProfile() {
     );
   }
 
-  const owner = band.id === myBandId;
+  const owner = band.owner;
 
   return (
     <Screen>
@@ -64,26 +82,39 @@ function BandProfile() {
           </Link>
         }
       />
-      <img src={band.cover} alt="" className="h-40 w-full object-cover" />
+      {band.cover ? (
+        <img src={band.cover} alt="" className="h-40 w-full object-cover" />
+      ) : (
+        <div aria-hidden className="h-40 w-full bg-subtle" />
+      )}
       <div className="px-5">
         <div className="-mt-10 flex items-end gap-3">
-          <img
-            src={band.avatar}
-            alt=""
-            className="h-20 w-20 shrink-0 rounded-lg border-4 border-background object-cover"
-          />
+          {band.avatar ? (
+            <img
+              src={band.avatar}
+              alt=""
+              className="h-20 w-20 shrink-0 rounded-lg border-4 border-background object-cover"
+            />
+          ) : (
+            <div
+              aria-hidden
+              className="h-20 w-20 shrink-0 rounded-lg border-4 border-background bg-subtle"
+            />
+          )}
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex items-center gap-1.5">
               <h1 className="truncate text-[22px] leading-tight">{band.name}</h1>
               {band.verified ? <VerifiedBadge /> : null}
             </div>
-            <p className="truncate text-[12px] text-muted-foreground">
-              {band.genres.join(" · ")} · {band.city} · since {band.formed}
-            </p>
+            {band.subtitle ? (
+              <p className="truncate text-[12px] text-muted-foreground">{band.subtitle}</p>
+            ) : null}
           </div>
         </div>
 
-        <p className="mt-3 text-[13px] text-muted-foreground">{band.tagline}</p>
+        {band.tagline ? (
+          <p className="mt-3 text-[13px] text-muted-foreground">{band.tagline}</p>
+        ) : null}
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {owner ? (
@@ -141,17 +172,25 @@ function BandProfile() {
         <div className="mt-4 space-y-3 pb-4">
           {tab === "Overview" ? (
             <>
-              <Card>
-                <h2 className="text-[15px]">About</h2>
-                <p className="mt-2 text-[13px] text-muted-foreground">{band.bio}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <StatusPill
-                    label={band.availability}
-                    tone={band.availability === "Available" ? "good" : "warn"}
-                  />
-                  <StatusPill label={band.rate} tone="brand" />
-                </div>
-              </Card>
+              {band.bio || band.availability || band.rate ? (
+                <Card>
+                  <h2 className="text-[15px]">About</h2>
+                  {band.bio ? (
+                    <p className="mt-2 text-[13px] text-muted-foreground">{band.bio}</p>
+                  ) : null}
+                  {band.availability || band.rate ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {band.availability ? (
+                        <StatusPill
+                          label={band.availability}
+                          tone={band.availability === "Available" ? "good" : "warn"}
+                        />
+                      ) : null}
+                      {band.rate ? <StatusPill label={band.rate} tone="brand" /> : null}
+                    </div>
+                  ) : null}
+                </Card>
+              ) : null}
               {band.lookingFor.length ? (
                 <Card>
                   <h2 className="text-[15px]">Open seats</h2>
@@ -165,14 +204,14 @@ function BandProfile() {
               <Row
                 icon={<CalendarDays size={16} />}
                 title="Next show"
-                subtitle={`${band.events[0]?.title ?? "No shows scheduled"} · ${band.events[0]?.date ?? ""}`}
+                subtitle={band.nextShow}
                 onClick={() => setTab("Shows")}
               />
               <Row
                 title="Band portfolio"
                 subtitle={
-                  band.portfolioItemIds.length
-                    ? `${band.portfolioItemIds.length} shared work items`
+                  band.portfolioCount
+                    ? `${band.portfolioCount} shared work items`
                     : "No shared work yet"
                 }
                 to="/bands/$id/portfolio"
@@ -182,36 +221,50 @@ function BandProfile() {
           ) : null}
 
           {tab === "Members"
-            ? band.members.map((m) => (
-                <Link
-                  key={m.userId}
-                  to="/profile/$username"
-                  params={{ username: m.userId }}
-                  className="block"
-                >
+            ? band.members.map((m) => {
+                const card = (
                   <Card className="flex items-center gap-3 py-3">
-                    <img
-                      src={m.photo}
-                      alt=""
-                      loading="lazy"
-                      className="h-12 w-12 shrink-0 rounded-full object-cover"
-                    />
+                    {m.photo ? (
+                      <img
+                        src={m.photo}
+                        alt=""
+                        loading="lazy"
+                        className="h-12 w-12 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-subtle" />
+                    )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <p className="truncate text-sm font-semibold">{m.name}</p>
                         {m.verified ? <VerifiedBadge size={13} /> : null}
                       </div>
-                      <p className="truncate text-[12px] text-muted-foreground">
-                        {m.instrument} · since {m.since}
-                      </p>
+                      {m.detail ? (
+                        <p className="truncate text-[12px] text-muted-foreground">{m.detail}</p>
+                      ) : null}
                     </div>
-                    <StatusPill
-                      label={bandRoleCopy[m.role].label}
-                      tone={m.role === "owner" ? "brand" : "neutral"}
-                    />
+                    {m.role ? (
+                      <StatusPill
+                        label={bandRoleCopy[m.role].label}
+                        tone={m.role === "owner" ? "brand" : "neutral"}
+                      />
+                    ) : null}
                   </Card>
-                </Link>
-              ))
+                );
+                // A stored line-up member has no MusicLinkd profile to open.
+                return m.username ? (
+                  <Link
+                    key={m.key}
+                    to="/profile/$username"
+                    params={{ username: m.username }}
+                    className="block"
+                  >
+                    {card}
+                  </Link>
+                ) : (
+                  <div key={m.key}>{card}</div>
+                );
+              })
             : null}
 
           {tab === "Shows" ? (
@@ -230,23 +283,31 @@ function BandProfile() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h3 className="truncate text-[15px]">{e.title}</h3>
-                      <p className="mt-1 truncate text-[12px] text-muted-foreground">
-                        {e.venue} · {e.city}
-                      </p>
-                      <p className="mt-1 text-[12px] font-semibold text-foreground">{e.date}</p>
+                      {e.place ? (
+                        <p className="mt-1 truncate text-[12px] text-muted-foreground">{e.place}</p>
+                      ) : null}
+                      {e.date ? (
+                        <p className="mt-1 text-[12px] font-semibold text-foreground">{e.date}</p>
+                      ) : null}
                     </div>
-                    <StatusPill
-                      label={
-                        e.status === "confirmed"
-                          ? "Confirmed"
-                          : e.status === "hold"
-                            ? "On hold"
-                            : "Past"
-                      }
-                      tone={
-                        e.status === "confirmed" ? "good" : e.status === "hold" ? "warn" : "neutral"
-                      }
-                    />
+                    {e.status ? (
+                      <StatusPill
+                        label={
+                          e.status === "confirmed"
+                            ? "Confirmed"
+                            : e.status === "hold"
+                              ? "On hold"
+                              : "Past"
+                        }
+                        tone={
+                          e.status === "confirmed"
+                            ? "good"
+                            : e.status === "hold"
+                              ? "warn"
+                              : "neutral"
+                        }
+                      />
+                    ) : null}
                   </div>
                   {e.ticketNote ? (
                     <p className="mt-3 text-[12px] text-muted-foreground">{e.ticketNote}</p>
