@@ -11,11 +11,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   (`media`), or nothing. States: selected (ink), pressed (state layer, small scale), focus ring, disabled,
   `aria-pressed` for toggles, 48dp touch area. Its 110 existing uses (filters, tabs, tags) pick up the
   style.
-- **Pickers reuse it.** Onboarding's `ChipPicker` renders `Chip`s, optionally under group headings,
-  left aligned. `SelectableChips` (portfolio) and profile edit's chips use `Chip` instead of their own
+- **Pickers reuse it.** Onboarding's `ChipPicker` renders `Chip`s, left aligned. `SelectableChips` (portfolio) and profile edit's chips use `Chip` instead of their own
   buttons.
-- **Roles:** "What do you do?" lists every group under its heading (Vocal, Instrumentalist, Creator…) as
-  chips with the role's icon, replacing the group tabs and the card grid. `ChoiceGrid` is gone.
+- **Roles:** "What do you do?" is one list of chips with the role's icon, ordered by group, with no group
+  labels. It replaces the group tabs and the card grid; `ChoiceGrid` is gone.
 
 ### Changed — usernames: database rules, claimed once, then locked
 

@@ -481,29 +481,25 @@ export type PickerOption =
       label: string;
       /** Icon element or image URL for the chip's circle. */
       media?: ReactNode;
-      /** Group key; with `groups`, options render under their group's heading. */
-      group?: string;
     };
 
-/** Chips from the global `Chip`, optionally under group headings. Selection is the caller's. */
+/** Chips from the global `Chip`. Selection is the caller's. */
 export function ChipPicker({
   options,
   selected,
   onToggle,
   max,
-  groups,
 }: {
   options: PickerOption[];
   selected: string[];
   onToggle: (v: string) => void;
   /** When this many are selected, unselected chips are disabled. */
   max?: number;
-  groups?: readonly { key: string; label: string }[];
 }) {
   const full = max !== undefined && selected.length >= max;
-  const chips = (list: PickerOption[]) => (
+  return (
     <div className="flex flex-wrap gap-2">
-      {list.map((opt) => {
+      {options.map((opt) => {
         const o = typeof opt === "string" ? { value: opt, label: opt } : opt;
         const on = selected.includes(o.value);
         return (
@@ -523,25 +519,9 @@ export function ChipPicker({
       })}
     </div>
   );
-  if (!groups) return chips(options);
-  const groupOf = (opt: PickerOption) => (typeof opt === "string" ? undefined : opt.group);
-  return (
-    <div className="space-y-6">
-      {groups.map((g) => {
-        const list = options.filter((opt) => groupOf(opt) === g.key);
-        if (!list.length) return null;
-        return (
-          <section key={g.key}>
-            <h2 className="mb-2 text-sm font-medium">{g.label}</h2>
-            {chips(list)}
-          </section>
-        );
-      })}
-    </div>
-  );
 }
 
-/** Person types from the taxonomy, every group under its heading (vocal, instrumentalist, …). */
+/** Person types from the taxonomy as one list of chips, ordered by group (vocal, instrumentalist, …). */
 export function PersonTypePicker({
   groups,
   options,
@@ -561,15 +541,10 @@ export function PersonTypePicker({
 }) {
   return (
     <ChipPicker
-      groups={groups}
-      options={options
+      options={groups
+        .flatMap((g) => options.filter((o) => (o.metadata?.group ?? "other") === g.key))
         .filter((o) => !exclude.includes(o.slug))
-        .map((o) => ({
-          value: o.slug,
-          label: o.label,
-          media: icon?.(o),
-          group: o.metadata?.group ?? "other",
-        }))}
+        .map((o) => ({ value: o.slug, label: o.label, media: icon?.(o) }))}
       selected={selected}
       onToggle={onToggle}
       {...(max !== undefined ? { max } : {})}
