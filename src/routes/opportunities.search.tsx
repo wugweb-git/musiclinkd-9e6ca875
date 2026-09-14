@@ -5,6 +5,7 @@ import { Screen, TopBar, SearchBar, Btn, BtnLink, Sheet, Chip } from "@/componen
 import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities, opportunityCategories } from "@/data/opportunities";
+import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 type Search = { q?: string };
 
@@ -12,6 +13,8 @@ export const Route = createFileRoute("/opportunities/search")({
   validateSearch: (s: Record<string, unknown>): Search => ({
     q: typeof s["q"] === "string" ? s["q"] : "",
   }),
+  // Stored opportunities follow the static ones; none when the database is unreachable.
+  loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
       { title: "Search opportunities | MusicLinkd" },
@@ -44,9 +47,10 @@ function OpportunitySearch() {
   const [pay, setPay] = useState<string>("Any");
   const [cats, setCats] = useState<string[]>([]);
   const { has, toggle } = useSavedOpportunities();
+  const { dbOpportunities } = Route.useLoaderData();
 
   const t = term.trim().toLowerCase();
-  let list = opportunities.filter((o) => {
+  let list = [...opportunities, ...dbOpportunities].filter((o) => {
     if (t && !`${o.title} ${o.summary} ${o.city} ${o.genres.join(" ")}`.toLowerCase().includes(t))
       return false;
     if (mode && o.workMode !== mode) return false;

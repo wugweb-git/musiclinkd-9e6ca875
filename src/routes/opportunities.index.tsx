@@ -5,8 +5,11 @@ import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities, opportunityCategories, myApplications } from "@/data/opportunities";
+import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/opportunities/")({
+  // Stored opportunities follow the static ones; none when the database is unreachable.
+  loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
       { title: "Opportunities for music professionals | MusicLinkd" },
@@ -34,13 +37,16 @@ function OpportunitiesHome() {
   const [state] = useState<"ready" | "loading" | "empty">("ready");
   const [sheet, setSheet] = useState(false);
   const { has, toggle } = useSavedOpportunities();
+  const { dbOpportunities } = Route.useLoaderData();
+  const all = [...opportunities, ...dbOpportunities];
 
   const list =
     tab === "For you"
-      ? [...opportunities].sort((a, b) => b.matchScore - a.matchScore)
+      ? [...all].sort((a, b) => b.matchScore - a.matchScore)
       : tab === "Recent"
-        ? opportunities
-        : opportunities.filter((o) => o.city === "Mumbai");
+        ? all
+        : // Stored locations carry a state ("Mumbai, MH").
+          all.filter((o) => o.city.split(",")[0] === "Mumbai");
 
   const active = myApplications.filter(
     (a) => a.status !== "rejected" && a.status !== "withdrawn",
