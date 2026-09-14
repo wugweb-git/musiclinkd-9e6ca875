@@ -1,11 +1,19 @@
 import { useState } from "react";
+import {
+  Check,
+  Handshake,
+  CalendarDays,
+  MessageCircle,
+  ReceiptText,
+  type LucideIcon,
+} from "lucide-react";
 import { Btn, Sheet } from "./ui";
 
-const options = [
-  { label: "Send message", desc: "Start a direct conversation", emoji: "💬" },
-  { label: "Request quote", desc: "Ask for pricing on a brief", emoji: "🧾" },
-  { label: "Book session", desc: "Reserve studio or live dates", emoji: "🗓" },
-  { label: "Hire for project", desc: "Formal engagement with contract", emoji: "🤝" },
+const options: { label: string; desc: string; Icon: LucideIcon }[] = [
+  { label: "Send message", desc: "Start a direct conversation", Icon: MessageCircle },
+  { label: "Request quote", desc: "Ask for pricing on a brief", Icon: ReceiptText },
+  { label: "Book session", desc: "Reserve studio or live dates", Icon: CalendarDays },
+  { label: "Hire for project", desc: "Formal engagement with contract", Icon: Handshake },
 ];
 
 export function HireModal({
@@ -31,11 +39,8 @@ export function HireModal({
     >
       {sent ? (
         <div className="py-10 text-center">
-          <div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-            style={{ background: "var(--success-container)" }}
-          >
-            <span className="text-2xl">✓</span>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success">
+            <Check size={28} aria-hidden />
           </div>
           <h2 className="text-xl">Request sent</h2>
           <Btn
@@ -66,7 +71,7 @@ export function HireModal({
                 }`}
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-md bg-subtle">
-                  {o.emoji}
+                  <o.Icon size={18} aria-hidden />
                 </span>
                 <span className="flex-1">
                   <span className="block text-sm font-semibold">{o.label}</span>

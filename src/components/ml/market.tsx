@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Heart, MapPin, Star, ShieldCheck } from "lucide-react";
+import { Heart, MapPin, Star, ShieldCheck, Check } from "lucide-react";
 import type { Listing } from "@/data/market";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
 
@@ -449,7 +449,9 @@ export function SortSheet({
             className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium"
           >
             {o}
-            {value === o ? <span className="text-pink-strong">✓</span> : null}
+            {value === o ? (
+              <Check size={18} className="text-primary" aria-label="Selected" />
+            ) : null}
           </button>
         ))}
       </div>
@@ -479,11 +481,8 @@ export function OfferSheet({
     <Sheet open={open} onClose={close}>
       {sent ? (
         <div className="py-10 text-center">
-          <div
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
-            style={{ background: "var(--success-container)" }}
-          >
-            ✓
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success">
+            <Check size={28} aria-hidden />
           </div>
           <h2 className="text-xl">Offer sent</h2>
           <p className="mx-auto mt-2 max-w-[260px] text-sm text-muted-foreground">
@@ -566,7 +565,9 @@ export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => v
             className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium"
           >
             {r}
-            {reason === r ? <span className="text-pink-strong">✓</span> : null}
+            {reason === r ? (
+              <Check size={18} className="text-primary" aria-label="Selected" />
+            ) : null}
           </button>
         ))}
       </div>

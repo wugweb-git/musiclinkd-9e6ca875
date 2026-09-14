@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Heart, MapPin, Star } from "lucide-react";
 import { availabilityTone, type Talent } from "@/data/discover";
 import { StatusPill } from "./kit";
 import { Btn, VerifiedBadge } from "./ui";
@@ -23,7 +24,10 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
             {t.verified ? <VerifiedBadge /> : null}
           </div>
           <p className="truncate text-xs text-muted-foreground">{t.role}</p>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">📍 {t.location}</p>
+          <p className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
+            <MapPin size={12} className="shrink-0" aria-hidden />
+            <span className="truncate">{t.location}</span>
+          </p>
         </div>
         <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
       </button>
@@ -56,9 +60,9 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
         <button
           type="button"
           aria-label="Save"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-sm"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card"
         >
-          ♡
+          <Heart size={18} aria-hidden />
         </button>
       </div>
     </article>
@@ -90,7 +94,9 @@ export function TalentCard({ t }: { t: Talent }) {
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.role}</p>
         <div className="mt-2 flex items-center justify-between text-1">
-          <span className="font-semibold text-warn">{t.rating} ★</span>
+          <span className="inline-flex items-center gap-0.5 font-semibold text-warn">
+            {t.rating} <Star size={11} fill="currentColor" aria-hidden />
+          </span>
           <span className="text-muted-foreground">{t.followers}</span>
         </div>
       </div>

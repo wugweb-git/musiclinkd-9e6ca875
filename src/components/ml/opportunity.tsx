@@ -4,7 +4,7 @@
  */
 import { Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { Bookmark, MapPin, Clock, Users, Wallet } from "lucide-react";
+import { Bookmark, MapPin, Clock, Users, Wallet, Star } from "lucide-react";
 import { Card, StatusPill, ReasonChip, type Tone } from "@/components/ml/kit";
 import { VerifiedBadge } from "@/components/ml/ui";
 import {
@@ -85,7 +85,9 @@ export function PosterRow({ o }: { o: Opportunity }) {
           {o.poster.verified ? <VerifiedBadge size={14} /> : null}
         </span>
         <span className="block truncate text-1 text-muted-foreground">
-          {o.poster.kindLabel} · ★ {o.poster.rating} · {o.poster.hires} hires
+          {o.poster.kindLabel} ·{" "}
+          <Star size={10} fill="currentColor" className="inline" aria-hidden /> {o.poster.rating} ·{" "}
+          {o.poster.hires} hires
         </span>
       </span>
     </Link>
