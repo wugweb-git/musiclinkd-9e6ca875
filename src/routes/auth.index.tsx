@@ -108,7 +108,8 @@ function AuthPage() {
           void navigate({ to: "/auth/verify-email", search: { email: email.trim() } });
           return;
         }
-        void navigate({ to: "/auth/success" });
+        // Signed in straight away: the splash takes a new account into onboarding.
+        void navigate({ to: "/", replace: true });
         return;
       }
       const { error: err } = await supabase.auth.signInWithPassword({

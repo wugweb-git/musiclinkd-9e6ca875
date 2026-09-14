@@ -13,7 +13,6 @@ const ORDER = [
   "/auth/phone",
   "/auth/otp",
   "/auth/verify-email",
-  "/auth/success",
   "/onboarding",
   ...steps.map((s) => `/onboarding/step/${s.id}`),
   "/onboarding/preview",
