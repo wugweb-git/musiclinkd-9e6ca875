@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
 import { ownerProfile } from "@/data/profile";
-import { getMyProfile } from "@/lib/portfolio.functions";
+import { getMyProfile, getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { mergeProfileRow, profileFromRow } from "@/lib/profile-view";
 import type { ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
@@ -33,19 +33,23 @@ export const Route = createFileRoute("/me")({
 function MyProfile() {
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);
+  const loadLabels = useServerFn(getTaxonomyLabels);
   const [row, setRow] = useState<ProfileRow | null>(null);
+  const [labels, setLabels] = useState<TaxonomyLabels>({});
   const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle");
 
   useEffect(() => {
     if (loading || !signedIn) return;
     setState("loading");
-    load()
-      .then((r) => {
+    // Without labels the chips fall back to slugs; the profile still renders.
+    Promise.all([load(), loadLabels().catch((): TaxonomyLabels => ({}))])
+      .then(([r, l]) => {
         setRow((r ?? null) as ProfileRow | null);
+        setLabels(l);
         setState("ready");
       })
       .catch(() => setState("error"));
-  }, [loading, signedIn, load]);
+  }, [loading, signedIn, load, loadLabels]);
 
   if (loading || (signedIn && (state === "idle" || state === "loading"))) {
     return (
@@ -62,6 +66,6 @@ function MyProfile() {
   }
 
   // Signed in: your own record, with empty states for what it doesn't hold. Signed out: the demo owner.
-  const view = signedIn ? mergeProfileRow(profileFromRow(row ?? {}), row) : ownerProfile;
+  const view = signedIn ? mergeProfileRow(profileFromRow(row ?? {}), row, labels) : ownerProfile;
   return <PersonProfileExperience p={view} owner />;
 }

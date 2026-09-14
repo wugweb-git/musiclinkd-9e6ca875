@@ -155,25 +155,30 @@ export const saveMyProfile = createServerFn({ method: "POST" })
     return row;
   });
 
+/** Anon-key client with no session, for public reads that RLS already scopes. */
+async function anonClient() {
+  const { createClient } = await import("@supabase/supabase-js");
+  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+  const url = process.env["SUPABASE_URL"]!;
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input: RequestInfo | URL, init?: RequestInit) => {
+        const h = new Headers(init?.headers);
+        if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`)
+          h.delete("Authorization");
+        h.set("apikey", key);
+        return fetch(input, { ...init, headers: h });
+      },
+    },
+  });
+}
+
 /** Public profile read — anon key, safe columns only, no session. */
 export const getPublicProfile = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ username: z.string().min(1).max(60) }).parse(d))
   .handler(async ({ data }) => {
-    const { createClient } = await import("@supabase/supabase-js");
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-    const url = process.env["SUPABASE_URL"]!;
-    const client = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-      global: {
-        fetch: (input: RequestInfo | URL, init?: RequestInit) => {
-          const h = new Headers(init?.headers);
-          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`)
-            h.delete("Authorization");
-          h.set("apikey", key);
-          return fetch(input, { ...init, headers: h });
-        },
-      },
-    });
+    const client = await anonClient();
 
     const { data: row } = await client
       .from("profiles")
@@ -186,3 +191,25 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     if (!row || (row as { visibility?: string }).visibility === "private") return null;
     return row;
   });
+
+/** slug → label per taxonomy category. Profiles store slugs; screens show these labels. */
+export type TaxonomyLabels = Record<string, Record<string, string>>;
+
+/**
+ * Published labels for the categories profiles store. Unpublished slugs are absent, so callers fall
+ * back to the slug rather than rendering blank.
+ */
+export const getTaxonomyLabels = createServerFn({ method: "GET" }).handler(async () => {
+  const client = await anonClient();
+  const { data, error } = await client
+    .from("taxonomy_options" as never)
+    .select("category_key, slug, label")
+    .in("category_key", ["person_types", "instruments", "genres", "languages"]);
+  if (error) throw new Error(error.message);
+
+  const labels: TaxonomyLabels = {};
+  for (const r of (data ?? []) as { category_key: string; slug: string; label: string }[]) {
+    (labels[r.category_key] ??= {})[r.slug] = r.label;
+  }
+  return labels;
+});
