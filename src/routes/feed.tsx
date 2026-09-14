@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import type { ReactNode } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Bell,
   ChevronRight,
@@ -22,16 +23,19 @@ import { LogoMark } from "@/components/ml/logo";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import {
-  dashboardData,
-  continueCards,
+  emptyDashboard,
   forYouTiles,
   headlineUpdate,
-  opportunityTiles,
+  openOpportunities,
   type ContinueCard,
   type DashboardData,
   type ForYouTile,
 } from "@/data/dashboard";
-import { unreadCount } from "@/data/notifications";
+import { categoryLabel } from "@/data/opportunities";
+import { useAuth } from "@/hooks/use-auth";
+import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
+import { profileGaps, type ProfileRow } from "@/lib/profile-map";
+import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/feed")({
   head: () => ({
@@ -56,28 +60,127 @@ export const Route = createFileRoute("/feed")({
 
 type Status = "loading" | "ready" | "error" | "offline";
 
-function useDashboard() {
-  // The dashboard is seed data, so it is ready on the first render, the server's included.
-  // The loading and error branches are for when a real query replaces it.
-  const [status, setStatus] = useState<Status>("ready");
-  const data: DashboardData = dashboardData;
+type Home = { data: DashboardData; cont: ContinueCard[]; opportunityStats: ForYouTile[] };
 
-  const load = useCallback(() => {
-    setStatus(typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "ready");
-  }, []);
+/*
+ * Home is the signed-in person's own: their profile row, their portfolio and the open opportunities.
+ * There are no tables yet for connection requests, messages, profile views, activity or
+ * recommendations, so those start empty rather than showing the seed account's numbers.
+ */
+function useDashboard() {
+  const { signedIn, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const loadProfile = useServerFn(getMyProfile);
+  const loadPortfolio = useServerFn(listMyPortfolio);
+  const [status, setStatus] = useState<Status>("loading");
+  const [home, setHome] = useState<Home | null>(null);
+
+  const load = useCallback(async () => {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setStatus("offline");
+      return;
+    }
+    setStatus("loading");
+    try {
+      const [row, items, tx] = await Promise.all([
+        loadProfile() as Promise<ProfileRow | null>,
+        loadPortfolio(),
+        loadTaxonomy().catch(() => null),
+      ]);
+      setHome(buildHome(row, items.length, tx?.person_types));
+      setStatus("ready");
+    } catch {
+      setStatus("error");
+    }
+  }, [loadProfile, loadPortfolio]);
 
   useEffect(() => {
-    load();
+    if (authLoading) return;
+    if (!signedIn) {
+      void navigate({ to: "/welcome", replace: true });
+      return;
+    }
+    void load();
     const onOffline = () => setStatus("offline");
+    const onOnline = () => void load();
     window.addEventListener("offline", onOffline);
-    window.addEventListener("online", load);
+    window.addEventListener("online", onOnline);
     return () => {
       window.removeEventListener("offline", onOffline);
-      window.removeEventListener("online", load);
+      window.removeEventListener("online", onOnline);
     };
-  }, [load]);
+  }, [authLoading, signedIn, navigate, load]);
 
-  return { status, data, retry: load };
+  return { status, home, retry: () => void load() };
+}
+
+function buildHome(
+  row: ProfileRow | null,
+  portfolioCount: number,
+  personTypes: Parameters<typeof labelFor>[0],
+): Home {
+  const gaps = profileGaps(row);
+  const roles = (row?.roles ?? []).slice(0, 2).map((slug) => labelFor(personTypes, slug));
+  const data: DashboardData = {
+    ...emptyDashboard,
+    studios: [],
+    user: {
+      ...emptyDashboard.user,
+      firstName: "",
+      role: roles.join(" · "),
+      photo: row?.avatar_url ?? "",
+      profileCompletion: gaps.percent,
+      available: Boolean(row?.availability),
+    },
+  };
+
+  const cont: ContinueCard[] = [];
+  if (!row?.onboarding_complete) {
+    cont.push({
+      id: "setup",
+      eyebrow: "Pick up where you left off",
+      title: "Finish your profile",
+      meta: `${gaps.missing.length} left`,
+      detail: `${gaps.percent}% done`,
+      cta: "Continue setup",
+      to: "/onboarding/resume",
+      progress: gaps.percent,
+    });
+  }
+  if (portfolioCount === 0) {
+    cont.push({
+      id: "portfolio",
+      eyebrow: "Next step",
+      title: "Add your portfolio",
+      meta: "Tracks, videos and credits are what turn a profile view into an enquiry.",
+      detail: "",
+      cta: "Add work",
+      to: "/portfolio/new",
+    });
+  }
+
+  const open = openOpportunities();
+  const opportunityStats: ForYouTile[] = [
+    {
+      id: "open",
+      value: `${open.length}`,
+      label: "Open opportunities",
+      hint: open
+        .slice(0, 3)
+        .map((o) => categoryLabel(o.categoryKey))
+        .join(", "),
+      to: "/opportunities",
+    },
+    {
+      id: "applications",
+      value: "0",
+      label: "Your applications",
+      hint: "Nothing yet",
+      to: "/opportunities/applications",
+    },
+  ];
+
+  return { data, cont, opportunityStats };
 }
 
 function greeting() {
@@ -95,7 +198,7 @@ function useGreeting() {
 }
 
 function Dashboard() {
-  const { status, data, retry } = useDashboard();
+  const { status, home, retry } = useDashboard();
 
   return (
     <Screen>
@@ -117,7 +220,7 @@ function Dashboard() {
           onRetry={retry}
         />
       ) : null}
-      {status === "ready" && data ? <Body data={data} /> : null}
+      {status === "ready" && home ? <Body home={home} /> : null}
     </Screen>
   );
 }
@@ -138,9 +241,6 @@ function Header() {
           className="hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
         >
           <Bell size={18} />
-          {unreadCount() > 0 ? (
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand" />
-          ) : null}
         </Link>
         <ViewerAvatar className="h-10 w-10" />
       </div>
@@ -158,15 +258,14 @@ function StatTile({ tile }: { tile: ForYouTile }) {
   );
 }
 
-function Body({ data }: { data: DashboardData }) {
+function Body({ home }: { home: Home }) {
+  const { data, cont, opportunityStats } = home;
   const { user } = data;
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
   const hello = useGreeting();
   const headline = headlineUpdate(data);
-  const cont = continueCards(data);
   const tiles = forYouTiles(data);
-  const opportunityStats = opportunityTiles();
   const isEmpty = !headline && cont.length === 0 && data.activity.length === 0;
 
   return (
@@ -185,9 +284,11 @@ function Body({ data }: { data: DashboardData }) {
             <span className="h-1.5 w-1.5 rounded-full bg-success" />
             {user.available ? "Open to collaborations" : "Not taking work"}
           </span>
-          <span className="max-w-full truncate rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold text-muted-foreground">
-            {user.role}
-          </span>
+          {user.role ? (
+            <span className="max-w-full truncate rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold text-muted-foreground">
+              {user.role}
+            </span>
+          ) : null}
         </div>
       </section>
 
@@ -341,7 +442,7 @@ function ContinueBlock({ c }: { c: ContinueCard }) {
       </p>
       <p className="mt-1 line-clamp-2 text-2 font-bold leading-snug">{c.title}</p>
       <p className="mt-0.5 truncate text-1 text-muted-foreground">{c.meta}</p>
-      <p className="mt-1 truncate text-1 font-semibold">{c.detail}</p>
+      {c.detail ? <p className="mt-1 truncate text-1 font-semibold">{c.detail}</p> : null}
       {typeof c.progress === "number" ? (
         <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-subtle">
           <div className="h-full rounded-full bg-primary" style={{ width: `${c.progress}%` }} />

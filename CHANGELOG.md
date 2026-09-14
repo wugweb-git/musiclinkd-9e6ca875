@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — new user: Home is yours, not the demo account's
+
+- **Home reads the signed-in profile.** It showed the seed account to everyone: "Music Producer · Mix
+  Engineer", 72% complete, 6 connection requests, 148 profile views, "Ananya Sharma wants to connect",
+  a "Monsoon Tapes" EP to finish and a studio session. Now the role chip shows your own roles (taxonomy
+  labels, hidden when none), availability comes from your profile, and completion uses `profileGaps`.
+- **Next steps are real.** "Finish your profile" (to `/onboarding/resume`) shows until onboarding is
+  complete, and "Add your portfolio" shows while your portfolio is empty.
+- **Nothing made up.** There are no tables yet for requests, messages, views, activity, recommendations
+  or applications, so those start empty or at zero, and the headline counter, the "For you" matches, the
+  seed booking and the unread dot are gone. Activity shows its existing empty state. Open opportunities
+  still counts the listed opportunities, now labelled "Open opportunities" instead of "Matching you".
+- A signed-out visit goes to Welcome.
+
 ### Fixed — new user: the photo step uploads a real photo
 
 - **No stock photo as your avatar.** "Take photo", "Choose from gallery" and "Use existing photo" each set

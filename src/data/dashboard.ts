@@ -10,7 +10,7 @@ export type Stat = {
 };
 
 /** Open opportunities: the one list both the headline update and the Opportunities tiles count. */
-function openOpportunities() {
+export function openOpportunities() {
   return opportunities.filter((o) => o.status === "open");
 }
 
@@ -182,7 +182,8 @@ export type DashLink =
   | "/portfolio/new"
   | "/profile/edit"
   | "/opportunities"
-  | "/opportunities/applications";
+  | "/opportunities/applications"
+  | "/onboarding/resume";
 
 export type HeadlineUpdate = {
   id: string;
