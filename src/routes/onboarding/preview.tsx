@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, Pencil } from "lucide-react";
+import { Info, MapPin, Pencil } from "lucide-react";
 import { BtnLink, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
 import { visibleSteps } from "@/data/onboarding";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
+import { AuthLink, AuthTextButton } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/onboarding/preview")({
   head: () => ({
@@ -111,7 +112,8 @@ function Preview() {
         />
         <Row title="Visibility" items={[d.visibility]} onEdit={() => edit("visibility")} />
 
-        <p className="mt-6 rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
+        <p className="mt-6 flex items-start gap-1.5 text-1 text-muted-foreground">
+          <Info size={14} className="mt-0.5 shrink-0" aria-hidden />
           Anything empty simply doesn't show on your profile. You can fill it in later from your
           profile settings.
         </p>
@@ -121,9 +123,11 @@ function Preview() {
         <BtnLink to="/onboarding/complete" className="w-full">
           Publish my profile
         </BtnLink>
-        <BtnLink to="/onboarding/skip" variant="ghost" className="w-full">
-          Finish later
-        </BtnLink>
+        <p className="flex justify-center text-1">
+          <AuthLink to="/onboarding/skip" className="text-muted-foreground">
+            Finish later
+          </AuthLink>
+        </p>
       </div>
     </div>
   );
@@ -134,13 +138,9 @@ function Row({ title, items, onEdit }: { title: string; items: string[]; onEdit:
     <section className="mt-3 rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold">{title}</h2>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="hit-area inline-flex min-h-10 items-center gap-1 text-1 font-bold text-foreground"
-        >
-          <Pencil size={12} /> Edit
-        </button>
+        <AuthTextButton onClick={onEdit} icon={<Pencil size={14} />} className="text-1">
+          Edit
+        </AuthTextButton>
       </div>
       {items.length ? (
         <div className="mt-2 flex flex-wrap gap-1.5">

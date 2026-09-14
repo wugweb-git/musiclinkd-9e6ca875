@@ -3,6 +3,7 @@ import { PauseCircle } from "lucide-react";
 import { BtnLink } from "@/components/ml/ui";
 import { OnboardingProvider, resumeTarget, useOnboarding } from "@/components/ml/onboarding";
 import { readiness } from "@/data/onboarding";
+import { AuthLink } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/onboarding/skip")({
   head: () => ({
@@ -46,10 +47,10 @@ function SkipLater() {
 
         <div className="mt-6 rounded-lg border border-border bg-card p-5">
           <p className="text-sm font-semibold">Still missing</p>
-          <ul className="mt-2 space-y-1.5">
+          <ul className="mt-2 list-disc space-y-1.5 pl-4 text-1 text-muted-foreground">
             {missing.map((m) => (
-              <li key={m.key} className="text-1 text-muted-foreground">
-                · {m.label} — {m.hint}
+              <li key={m.key}>
+                <span className="font-medium text-foreground">{m.label}</span>. {m.hint}
               </li>
             ))}
           </ul>
@@ -63,9 +64,11 @@ function SkipLater() {
         <BtnLink to="/onboarding/step/$id" params={{ id: target }} className="w-full">
           Continue setup
         </BtnLink>
-        <BtnLink to="/feed" variant="ghost" className="w-full">
-          Explore MusicLinkd first
-        </BtnLink>
+        <p className="flex justify-center pt-2 text-sm">
+          <AuthLink to="/feed" className="text-muted-foreground">
+            Explore MusicLinkd first
+          </AuthLink>
+        </p>
       </div>
     </div>
   );

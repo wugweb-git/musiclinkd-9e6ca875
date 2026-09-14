@@ -3,6 +3,7 @@ import { Sparkles, Compass, ShieldCheck } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding, resumeTarget } from "@/components/ml/onboarding";
 import { visibleSteps } from "@/data/onboarding";
+import { AuthLink } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
@@ -38,16 +39,14 @@ function Welcome() {
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
       <div>
-        <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-1 font-bold uppercase tracking-wide text-foreground bg-subtle">
-          <Sparkles size={13} /> Step 1 of {total + 2}
-        </span>
-        <h1 className="mt-5 text-4">Let's build your MusicLinkd profile.</h1>
+        <p className="text-1 text-muted-foreground">About two minutes · {total} short questions</p>
+        <h1 className="mt-2 text-4">Let's build your MusicLinkd profile.</h1>
         <p className="mt-3 text-2 leading-relaxed text-muted-foreground">
           Tell us a little about what you do in music. It takes about two minutes, and you can skip
           anything that doesn't apply.
         </p>
 
-        <ul className="mt-8 space-y-3">
+        <ul className="mt-8 space-y-5">
           {[
             {
               icon: <Compass size={18} />,
@@ -65,11 +64,10 @@ function Welcome() {
               body: "Contact details stay hidden until you share them.",
             },
           ].map((f) => (
-            <li
-              key={f.title}
-              className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
-            >
-              <span className="mt-0.5 text-foreground">{f.icon}</span>
+            <li key={f.title} className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card text-foreground">
+                {f.icon}
+              </span>
               <span>
                 <span className="block text-sm font-semibold">{f.title}</span>
                 <span className="mt-0.5 block text-1 text-muted-foreground">{f.body}</span>
@@ -94,9 +92,11 @@ function Welcome() {
             Let's start
           </Btn>
         )}
-        <BtnLink to="/onboarding/skip" variant="ghost" className="w-full">
-          Skip for now
-        </BtnLink>
+        <p className="flex justify-center pt-2 text-sm">
+          <AuthLink to="/onboarding/skip" className="text-muted-foreground">
+            Skip for now
+          </AuthLink>
+        </p>
       </div>
     </div>
   );

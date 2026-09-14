@@ -11,8 +11,14 @@ import {
   type ReactNode,
 } from "react";
 import {
+  ArrowLeft,
   Check,
+  ChevronDown,
   ChevronLeft,
+  CircleAlert,
+  CircleCheck,
+  Info,
+  LoaderCircle,
   Camera,
   Image as ImageIcon,
   Trash2,
@@ -21,10 +27,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, Sheet } from "@/components/ml/ui";
+import { Btn, IconBtn, Sheet } from "@/components/ml/ui";
+import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { haptic } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 import { deleteProfileImage, PROFILE_IMAGE_ACCEPT, uploadProfileImage } from "@/lib/profile-images";
 import { draftToProfile, profileToDraft } from "@/lib/profile-map";
 import { emptyDraft, visibleSteps, type OnboardingDraft } from "@/data/onboarding";
@@ -290,6 +298,7 @@ export function StepShell({
   banner,
   onSubmit,
   optional = false,
+  status,
 }: {
   step: number;
   total: number;
@@ -306,6 +315,8 @@ export function StepShell({
   onSubmit?: () => void;
   /** Optional steps say so beside the question, so nobody abandons a step they could skip. */
   optional?: boolean;
+  /** Quiet save state for the header ("Saving…", "Saved"); never a banner that moves the page. */
+  status?: ReactNode;
 }) {
   const pct = Math.round((step / total) * 100);
   return (
@@ -320,23 +331,21 @@ export function StepShell({
       <header className="vt-flow-header sticky top-0 z-30 border-b border-border bg-background/95 px-5 pb-3 pt-4 backdrop-blur">
         <div className="flex items-center gap-3">
           {onBack ? (
-            <button
-              type="button"
-              onClick={onBack}
-              aria-label="Go back"
-              className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-95"
-            >
-              <ChevronLeft size={18} />
-            </button>
+            <IconBtn label="Back" variant="plain" className="-ml-2" onClick={onBack}>
+              <ArrowLeft size={18} aria-hidden />
+            </IconBtn>
           ) : (
-            <span className="h-10 w-10" />
+            <span className="h-10 w-8" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
-              {group} · Step {step} of {total}
-            </p>
+            <div className="flex items-center justify-between gap-2 text-1 text-muted-foreground">
+              <p className="truncate">
+                {group} · {step} of {total}
+              </p>
+              {status}
+            </div>
             <div
-              className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-subtle"
+              className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-subtle"
               role="progressbar"
               aria-valuenow={pct}
               aria-valuemin={0}
@@ -350,13 +359,9 @@ export function StepShell({
             </div>
           </div>
           {onSkip ? (
-            <button
-              type="button"
-              onClick={onSkip}
-              className="hit-area shrink-0 text-1 font-semibold text-muted-foreground"
-            >
+            <AuthTextButton onClick={onSkip} className="shrink-0 text-1">
               Skip
-            </button>
+            </AuthTextButton>
           ) : (
             <span className="w-8" />
           )}
@@ -374,7 +379,8 @@ export function StepShell({
           ) : null}
         </div>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
-        <p className="mt-3 rounded-lg px-4 py-3 text-1 leading-relaxed text-muted-foreground bg-subtle">
+        <p className="mt-2 flex items-start gap-1.5 text-1 leading-relaxed text-muted-foreground">
+          <Info size={14} className="mt-0.5 shrink-0" aria-hidden />
           {why}
         </p>
         <div className="mt-6">{children}</div>
@@ -648,30 +654,35 @@ export function InlineField({
   /** The label on the Android keyboard's action key. Next submits the step. */
   enterKeyHint?: "next" | "done" | "go";
 }) {
-  const shared = "w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground";
+  const messageId = `${inputId}-message`;
+  const shared =
+    "w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
   return (
     <div>
-      <label
-        htmlFor={inputId}
-        className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
-      >
+      <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-foreground">
         {label}
       </label>
       <div
-        className={`flex min-h-14 items-center gap-1 rounded-lg border px-4 py-3 ${
-          error ? "border-destructive" : "border-border"
-        } bg-card`}
+        className={cn(
+          "flex items-center gap-1 rounded-md border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
+          multiline ? "py-3" : "h-12",
+          error
+            ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
+            : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
+        )}
       >
-        {prefix ? <span className="text-sm text-muted-foreground">{prefix}</span> : null}
+        {prefix ? <span className="shrink-0 text-2 text-muted-foreground">{prefix}</span> : null}
         {multiline ? (
           <textarea
             id={inputId}
             value={value}
             rows={4}
             maxLength={maxLength}
+            aria-invalid={Boolean(error) || undefined}
+            aria-describedby={messageId}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className={`${shared} resize-none`}
+            className={cn(shared, "resize-none leading-relaxed")}
           />
         ) : (
           <input
@@ -681,6 +692,8 @@ export function InlineField({
             autoComplete={autoComplete}
             inputMode={inputMode}
             enterKeyHint={enterKeyHint}
+            aria-invalid={Boolean(error) || undefined}
+            aria-describedby={messageId}
             onKeyDown={(e) => {
               // Some Android keyboards do not trigger implicit form submission; do it once here.
               if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
@@ -691,18 +704,37 @@ export function InlineField({
             spellCheck={inputMode === "url" ? false : undefined}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className={shared}
+            className={cn(shared, "h-full")}
           />
         )}
       </div>
       <div className="mt-1.5 flex items-start justify-between gap-3">
-        <p
-          className={`text-1 ${error ? "text-destructive" : ok ? "text-success" : "text-muted-foreground"}`}
-        >
-          {error ?? ok ?? hint ?? ""}
-        </p>
+        {error ? (
+          <p
+            key="error"
+            id={messageId}
+            role="alert"
+            className="flex animate-message items-start gap-1.5 text-1 text-destructive"
+          >
+            <CircleAlert size={14} className="mt-px shrink-0" aria-hidden />
+            {error}
+          </p>
+        ) : ok ? (
+          <p
+            key="ok"
+            id={messageId}
+            className="flex animate-message items-start gap-1.5 text-1 text-success"
+          >
+            <CircleCheck size={14} className="mt-px shrink-0" aria-hidden />
+            {ok}
+          </p>
+        ) : (
+          <p id={messageId} className="text-1 text-muted-foreground">
+            {hint ?? ""}
+          </p>
+        )}
         {maxLength ? (
-          <p className="shrink-0 text-1 tabular-nums text-muted-foreground">
+          <p className="shrink-0 text-1 tabular-nums text-muted-foreground" aria-hidden>
             {value.length}/{maxLength}
           </p>
         ) : null}
@@ -852,26 +884,34 @@ export function SelectField({
 }) {
   return (
     <div>
-      <label
-        htmlFor={selectId}
-        className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
-      >
+      <label htmlFor={selectId} className="mb-1.5 block text-sm font-medium text-foreground">
         {label}
       </label>
-      <select
-        id={selectId}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
-        className="min-h-14 w-full rounded-lg border border-border bg-card px-4 text-sm outline-none disabled:opacity-50"
-      >
-        <option value="">{placeholder}</option>
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
+      {/* The native select opens Android's own picker, which suits a long list on a phone. */}
+      <div className="relative">
+        <select
+          id={selectId}
+          value={value}
+          disabled={disabled}
+          onChange={(e) => onChange(e.target.value)}
+          className={cn(
+            "h-12 w-full appearance-none rounded-md border border-border bg-card pl-3.5 pr-10 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground disabled:bg-subtle disabled:opacity-60 [@media(hover:hover)]:hover:border-muted-foreground",
+            value ? "text-foreground" : "text-muted-foreground",
+          )}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          size={18}
+          className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+          aria-hidden
+        />
+      </div>
     </div>
   );
 }
@@ -882,63 +922,64 @@ export function SelectField({
 
 export function OfflineBanner() {
   return (
-    <div
-      role="status"
-      className="mb-4 flex items-start gap-3 rounded-lg border border-border bg-card p-4"
-    >
-      <WifiOff size={16} className="mt-0.5 shrink-0 text-warn" />
-      <p className="text-1 leading-relaxed text-muted-foreground">
-        You're offline. Your answers are kept on this device and will sync when you're back online —
-        nothing has been saved to your profile yet.
-      </p>
-    </div>
+    <AuthNotice tone="warn" title="You're offline">
+      Your answers are kept on this phone and saved to your account when you're back online.
+    </AuthNotice>
   );
 }
 
 export function ErrorBanner({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div role="alert" className="mb-4 rounded-lg border border-destructive/40 bg-card p-4">
-      <p className="text-sm font-semibold text-destructive">We couldn't save that</p>
-      <p className="mt-1 text-1 text-muted-foreground">{message}</p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-3 min-h-11 text-1 font-bold text-foreground"
-      >
-        Try again
-      </button>
-    </div>
+    <AuthNotice
+      tone="error"
+      title="That didn't save"
+      action={<AuthTextButton onClick={onRetry}>Try again</AuthTextButton>}
+    >
+      {message}
+    </AuthNotice>
   );
 }
 
 export function SavingBanner({ label = "Saving your answers…" }: { label?: string }) {
   return (
-    <div
-      role="status"
-      className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-    >
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
-      <p className="text-1 text-muted-foreground">{label}</p>
-    </div>
+    <p role="status" className="mb-4 flex items-center gap-2 text-1 text-muted-foreground">
+      <LoaderCircle size={14} className="animate-spin" aria-hidden />
+      {label}
+    </p>
   );
 }
 
-/** Renders the real sync state of the draft (local, saving, offline, error). */
+/** Offline and failed saves need attention; saving itself is shown quietly by SyncStatus. */
 export function SyncBanner({ state, onRetry }: { state: SyncState; onRetry: () => void }) {
-  if (state === "saving" || state === "loading") {
-    return (
-      <SavingBanner
-        label={state === "loading" ? "Loading your saved answers…" : "Saving to your account…"}
-      />
-    );
-  }
+  if (state === "loading") return <SavingBanner label="Loading your saved answers…" />;
   if (state === "offline") return <OfflineBanner />;
   if (state === "error") {
     return (
       <ErrorBanner
-        message="Your answers are safe on this device. We'll try again, or you can retry now."
+        message="Your answers are safe on this phone. Try again, or carry on and we'll retry."
         onRetry={onRetry}
       />
+    );
+  }
+  return null;
+}
+
+/** Save state for a header: "Saving…" with a spinner, then "Saved" with a check. */
+export function SyncStatus({ state }: { state: SyncState }) {
+  if (state === "saving") {
+    return (
+      <span role="status" className="flex shrink-0 items-center gap-1">
+        <LoaderCircle size={12} className="animate-spin" aria-hidden />
+        Saving…
+      </span>
+    );
+  }
+  if (state === "saved") {
+    return (
+      <span role="status" className="flex shrink-0 animate-message items-center gap-1">
+        <CircleCheck size={12} aria-hidden />
+        Saved
+      </span>
     );
   }
   return null;
@@ -992,10 +1033,8 @@ export function ReadinessCard({
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">
-          {label}{" "}
-          <span className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
-            {done ? "Done" : "To do"}
-          </span>
+          {label}
+          <span className="sr-only">{done ? ", done" : ", to do"}</span>
         </p>
         <p className="mt-0.5 text-1 text-muted-foreground">{hint}</p>
         {!done && action ? <div className="mt-2">{action}</div> : null}
@@ -1022,13 +1061,9 @@ export function HandoffCard({
       <div className="mt-4 flex items-center gap-2">
         <div className="flex-1">{action}</div>
         {onLater ? (
-          <button
-            type="button"
-            onClick={onLater}
-            className="min-h-11 rounded-full border border-border px-5 text-sm font-semibold"
-          >
+          <AuthTextButton onClick={onLater} className="px-3 text-sm">
             Later
-          </button>
+          </AuthTextButton>
         ) : null}
       </div>
     </div>

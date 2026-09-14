@@ -9,6 +9,7 @@ import {
 } from "@/components/ml/onboarding";
 
 import { steps, visibleSteps } from "@/data/onboarding";
+import { AuthTextButton } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/onboarding/resume")({
   head: () => ({
@@ -52,13 +53,13 @@ function Resume() {
         </p>
 
         <div className="mt-6 rounded-lg border border-border bg-card p-5">
-          <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Next up</p>
+          <p className="text-1 text-muted-foreground">Next up</p>
           <p className="mt-1 text-2">{def?.title ?? "Review your profile"}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {def?.subtitle ?? "One last look before publishing."}
           </p>
           <div
-            className="mt-4 h-1.5 overflow-hidden rounded-full bg-subtle"
+            className="mt-4 h-1 overflow-hidden rounded-full bg-subtle"
             role="progressbar"
             aria-valuenow={done}
             aria-valuemin={0}
@@ -80,16 +81,17 @@ function Resume() {
         >
           Continue setup
         </Btn>
-        <Btn
-          variant="ghost"
-          className="w-full"
-          onClick={() => {
-            reset();
-            navigate({ to: "/onboarding" });
-          }}
-        >
-          Start over
-        </Btn>
+        <p className="flex justify-center pt-2 text-sm">
+          <AuthTextButton
+            className="text-muted-foreground"
+            onClick={() => {
+              reset();
+              navigate({ to: "/onboarding" });
+            }}
+          >
+            Start over
+          </AuthTextButton>
+        </p>
       </div>
     </div>
   );

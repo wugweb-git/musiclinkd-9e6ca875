@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: onboarding and Home follow the sign-in design
+
+- **Step header.** Back is a plain arrow; "Profession · 3 of 17" is normal case; the progress bar is
+  thinner; Skip is a text link. Save state is a quiet "Saving…" / "Saved" in the header, replacing the
+  "Saving to your account…" box that appeared after every answer and pushed the question down.
+  Offline and failed saves still show a notice.
+- **"Why we ask"** is a quiet line with an info icon, not a grey box.
+- **Fields and dropdowns** (`InlineField`, `SelectField`) match `TextField`: sentence-case labels,
+  hover, focus, invalid and success states, and animated messages with icons. The dropdown keeps Android's
+  native picker and gains a chevron.
+- **Notices.** A blocked Continue says "Add the required details to continue" (it used a "We couldn't save
+  that" error box). Failed choice loads offer Try again. All use `AuthNotice`.
+- **Secondary actions are text links:** Finish later, Skip for now, Start over, Explore MusicLinkd first,
+  Later, and preview's Edit (with a pencil).
+- **No capital-letter labels** on these screens or Home: step count, field labels, "Next up", the
+  readiness "To do"/"Done" (now read out to screen readers only), Home's wordmark and card eyebrows.
+  "You're in" and Skip use real lists instead of typed "1." and "·" marks.
+
 ### Changed — new user: sign-in fields, validation, messages; email sign-up by code
 
 - **Fields.** Labels are quiet sentence case above the field (were bold uppercase). `TextField` has
