@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — new user: the photo step uploads a real photo
+
+- **No stock photo as your avatar.** "Take photo", "Choose from gallery" and "Use existing photo" each set
+  an Unsplash picture after a fake 700ms wait, so a new person's profile could go live with a stranger's
+  face. Take photo opens the camera (`capture="user"`), and Choose from gallery opens the file picker.
+  Both upload to the `avatars` bucket in the user's own folder (`uploadProfileImage`) and save the
+  public URL. The replaced file is deleted. Type and size errors show under the picker.
+- **Remove clears the saved photo.** `avatar_url` is always sent, so removing the photo now empties it
+  on the profile. "Use existing photo" and the "crop and reposition" line are gone, because neither
+  existed.
+
 ### Changed — new user: roles, instruments, genres and languages come from the database
 
 - **Onboarding pickers read the taxonomy** (`taxonomy_options`, published rows; `lib/taxonomy.ts`) and

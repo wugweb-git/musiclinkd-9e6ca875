@@ -71,7 +71,8 @@ export function draftToProfile(d: OnboardingDraft, step?: string) {
     experience_level: d.experience ?? null,
     visibility: d.visibility || "public",
     availability: d.availability[0] ?? null,
-    ...(d.photo ? { avatar_url: d.photo } : {}),
+    // Always sent, so removing the photo clears it on the profile too.
+    avatar_url: d.photo,
     links: asLinkMap(d.links),
     discovery_prefs: {
       topics: d.discovery,
