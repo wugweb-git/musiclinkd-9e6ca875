@@ -69,7 +69,7 @@ function profileView(
   sections: ProfileSections | null,
 ) {
   const base = getProfile(username) ?? profileFromRow(row ?? { username });
-  return mergeSections(mergeProfileRow(base, row, labels), sections);
+  return mergeSections(mergeProfileRow(base, row, labels), sections, labels);
 }
 
 function PersonProfileRoute() {

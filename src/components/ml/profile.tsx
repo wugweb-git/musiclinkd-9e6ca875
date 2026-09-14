@@ -587,13 +587,17 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
       {...(m.params ? { params: m.params } : {})}
       className="flex w-[210px] shrink-0 items-center gap-3 rounded-lg border border-border bg-card p-3"
     >
-      <img
-        src={m.image}
-        alt=""
-        aria-hidden
-        loading="lazy"
-        className="h-12 w-12 rounded-md object-cover"
-      />
+      {m.image ? (
+        <img
+          src={m.image}
+          alt=""
+          aria-hidden
+          loading="lazy"
+          className="h-12 w-12 rounded-md object-cover"
+        />
+      ) : (
+        <div aria-hidden className="h-12 w-12 shrink-0 rounded-md bg-subtle" />
+      )}
       <div className="min-w-0">
         <h3 className="truncate text-1">{m.title}</h3>
         <p className="truncate text-1 text-muted-foreground">{m.meta}</p>

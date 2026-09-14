@@ -3,12 +3,27 @@ import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented, StatusPill } from "@/components/ml/kit";
 import { getBand } from "@/data/band";
+import { bandViewFromRecord, bandViewFromStatic } from "@/lib/band-view";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { getPublicBand } from "@/lib/profile-groups.functions";
 import { opportunities } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/bands/$id/events")({
+  // The demo band wins; otherwise the id is the username of a stored profile with a line-up or shows.
   // Stored opportunities follow the static ones; none when the database is unreachable.
-  loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
+  loader: async ({ params }) => {
+    const dbOpportunities = loadDbOpportunities();
+    if (getBand(params.id)) {
+      return { record: null, labels: {} as TaxonomyLabels, dbOpportunities: await dbOpportunities };
+    }
+    const [record, labels, opps] = await Promise.all([
+      getPublicBand({ data: { username: params.id } }).catch(() => null),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+      dbOpportunities,
+    ]);
+    return { record, labels, dbOpportunities: opps };
+  },
   head: () => ({
     meta: [
       { title: "Band shows and opportunities | MusicLinkd" },
@@ -29,8 +44,13 @@ const tabs = ["Shows", "Opportunities"] as const;
 
 function BandEvents() {
   const { id } = Route.useParams();
-  const band = getBand(id);
-  const { dbOpportunities } = Route.useLoaderData();
+  const { record, labels, dbOpportunities } = Route.useLoaderData();
+  const demo = getBand(id);
+  const band = demo
+    ? bandViewFromStatic(demo)
+    : record
+      ? bandViewFromRecord(record, labels)
+      : undefined;
   const [tab, setTab] = useState<(typeof tabs)[number]>("Shows");
 
   if (!band) {
@@ -64,15 +84,19 @@ function BandEvents() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{e.title}</p>
-                      <p className="mt-1 text-[13px] text-muted-foreground">
-                        {e.venue} · {e.city}
-                      </p>
-                      <p className="mt-1 text-[12px] text-muted-foreground">{e.date}</p>
+                      {e.place ? (
+                        <p className="mt-1 text-[13px] text-muted-foreground">{e.place}</p>
+                      ) : null}
+                      {e.date ? (
+                        <p className="mt-1 text-[12px] text-muted-foreground">{e.date}</p>
+                      ) : null}
                     </div>
-                    <StatusPill
-                      label={e.status}
-                      tone={e.status === "confirmed" ? "good" : "warn"}
-                    />
+                    {e.status ? (
+                      <StatusPill
+                        label={e.status}
+                        tone={e.status === "confirmed" ? "good" : "warn"}
+                      />
+                    ) : null}
                   </div>
                 </Card>
               ))}
