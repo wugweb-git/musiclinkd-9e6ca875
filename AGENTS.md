@@ -151,7 +151,7 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 **Radius is the Material 3 shape scale** (13 Sep): `sm` 8 small controls · `md` 12 small tiles, thumbnails, inputs · `lg` 16 **cards** and list containers · `xl` 20 large tiles · `2xl` 28 sheets and dialogs · `3xl` 32 hero only · `full` buttons, chips, pills and badges. Pick by role, not by look; no arbitrary `rounded-[…]`.
 
-Type is five fluid `clamp()` tokens (`--type-1..5`; `--type-5` is hero-only), never arbitrary sizes. **Spacing is Tailwind's numeric scale only** (`p-1` 4px … `p-8` 32px); the named `--spacing-xs/sm/md/lg` were removed. Secondary text is `text-muted-foreground` (`text-text2` is gone).
+Type is six fluid `clamp()` tokens, never arbitrary sizes: `text-1` 12-13, `text-sm` 14-15 (Material bodyMedium; the `Btn` label), `text-2` 16-18, `text-3` 22-28, `text-4` 32-44, `text-5` 40-56 hero-only. `text-sm` is a real token, not Tailwind's default. Do not use `text-xs`, `text-base`, `text-lg` or larger defaults. **Spacing is Tailwind's numeric scale only** (`p-1` 4px … `p-8` 32px); the named `--spacing-xs/sm/md/lg` were removed. Secondary text is `text-muted-foreground` (`text-text2` is gone).
 
 Brand pink `#EA4C89`; `#5B4BFF` is from a superseded brief and is always a bug. **Near-black is `ink` `#0D0D0D`** (`bg-ink`, `Btn variant="ink"`); navy is retired and removed. Purple is permitted only on the category badge.
 
