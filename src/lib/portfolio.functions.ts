@@ -131,6 +131,7 @@ const profilePatchSchema = z.object({
   visibility: z.string().max(24).optional(),
   availability: z.string().max(40).optional().nullable(),
   avatar_url: z.string().max(500).optional().nullable(),
+  cover_url: z.string().max(500).optional().nullable(),
   links: z.record(z.string(), z.string().max(300)).optional(),
   discovery_prefs: z.record(z.string(), z.unknown()).optional(),
   onboarding_step: z.string().max(40).optional().nullable(),
@@ -183,7 +184,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     const { data: row } = await client
       .from("profiles")
       .select(
-        "username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, experience_level, availability, avatar_url, links, visibility",
+        "username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, experience_level, availability, avatar_url, cover_url, links, visibility",
       )
       .eq("username", data.username)
       .maybeSingle();
