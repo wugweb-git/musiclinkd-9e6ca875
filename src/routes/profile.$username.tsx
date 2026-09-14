@@ -3,10 +3,12 @@ import { PersonProfileExperience } from "@/components/ml/person-profile";
 import { getProfile } from "@/data/profile";
 import {
   getPublicProfile,
+  getPublicProfileSections,
   getTaxonomyLabels,
+  type ProfileSections,
   type TaxonomyLabels,
 } from "@/lib/portfolio.functions";
-import { mergeProfileRow, profileFromRow } from "@/lib/profile-view";
+import { mergeProfileRow, mergeSections, profileFromRow } from "@/lib/profile-view";
 import type { ProfileRow } from "@/lib/profile-map";
 
 export const Route = createFileRoute("/profile/$username")({
@@ -22,11 +24,20 @@ export const Route = createFileRoute("/profile/$username")({
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
     ]);
     if (!row && !getProfile(params.username)) throw notFound();
-    return { row, labels };
+    // Without sections the profile shows its seed sections or empty states.
+    const sections: ProfileSections | null = row?.id
+      ? await getPublicProfileSections({ data: { profileId: row.id } }).catch(() => null)
+      : null;
+    return { row, labels, sections };
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) return { meta: [{ title: "Profile not found | MusicLinkd" }] };
-    const profile = profileView(params.username, loaderData.row, loaderData.labels);
+    const profile = profileView(
+      params.username,
+      loaderData.row,
+      loaderData.labels,
+      loaderData.sections,
+    );
     const title = profile.primaryRole
       ? `${profile.name} — ${profile.primaryRole} | MusicLinkd`
       : `${profile.name} | MusicLinkd`;
@@ -51,12 +62,18 @@ export const Route = createFileRoute("/profile/$username")({
  * The real row over the seed profile. A real profile with no seed gets only its own data; the
  * sections the profiles table does not store render their empty states.
  */
-function profileView(username: string, row: ProfileRow | null, labels: TaxonomyLabels) {
-  return mergeProfileRow(getProfile(username) ?? profileFromRow(row ?? { username }), row, labels);
+function profileView(
+  username: string,
+  row: ProfileRow | null,
+  labels: TaxonomyLabels,
+  sections: ProfileSections | null,
+) {
+  const base = getProfile(username) ?? profileFromRow(row ?? { username });
+  return mergeSections(mergeProfileRow(base, row, labels), sections);
 }
 
 function PersonProfileRoute() {
   const { username } = Route.useParams();
-  const { row, labels } = Route.useLoaderData();
-  return <PersonProfileExperience p={profileView(username, row, labels)} />;
+  const { row, labels, sections } = Route.useLoaderData();
+  return <PersonProfileExperience p={profileView(username, row, labels, sections)} />;
 }

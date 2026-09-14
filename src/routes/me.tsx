@@ -3,8 +3,14 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
 import { ownerProfile } from "@/data/profile";
-import { getMyProfile, getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { mergeProfileRow, profileFromRow } from "@/lib/profile-view";
+import {
+  getMyProfile,
+  getMyProfileSections,
+  getTaxonomyLabels,
+  type ProfileSections,
+  type TaxonomyLabels,
+} from "@/lib/portfolio.functions";
+import { mergeProfileRow, mergeSections, profileFromRow } from "@/lib/profile-view";
 import type { ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { Screen, TopBar } from "@/components/ml/ui";
@@ -34,22 +40,30 @@ function MyProfile() {
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);
   const loadLabels = useServerFn(getTaxonomyLabels);
+  const loadSections = useServerFn(getMyProfileSections);
   const [row, setRow] = useState<ProfileRow | null>(null);
   const [labels, setLabels] = useState<TaxonomyLabels>({});
+  const [sections, setSections] = useState<ProfileSections | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle");
 
   useEffect(() => {
     if (loading || !signedIn) return;
     setState("loading");
     // Without labels the chips fall back to slugs; the profile still renders.
-    Promise.all([load(), loadLabels().catch((): TaxonomyLabels => ({}))])
-      .then(([r, l]) => {
+    // Labels and sections are best-effort: without them the profile still renders.
+    Promise.all([
+      load(),
+      loadLabels().catch((): TaxonomyLabels => ({})),
+      loadSections().catch(() => null),
+    ])
+      .then(([r, l, sec]) => {
         setRow((r ?? null) as ProfileRow | null);
         setLabels(l);
+        setSections(sec);
         setState("ready");
       })
       .catch(() => setState("error"));
-  }, [loading, signedIn, load, loadLabels]);
+  }, [loading, signedIn, load, loadLabels, loadSections]);
 
   if (loading || (signedIn && (state === "idle" || state === "loading"))) {
     return (
@@ -66,6 +80,8 @@ function MyProfile() {
   }
 
   // Signed in: your own record, with empty states for what it doesn't hold. Signed out: the demo owner.
-  const view = signedIn ? mergeProfileRow(profileFromRow(row ?? {}), row, labels) : ownerProfile;
+  const view = signedIn
+    ? mergeSections(mergeProfileRow(profileFromRow(row ?? {}), row, labels), sections)
+    : ownerProfile;
   return <PersonProfileExperience p={view} owner />;
 }
