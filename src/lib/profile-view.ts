@@ -9,10 +9,17 @@ import {
 } from "@/data/profile";
 import { experienceLevels, roles as roleDefs } from "@/data/onboarding";
 import { asLinkMap, type ProfileRow } from "@/lib/profile-map";
+import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 
-function roleLabel(key: string | undefined | null): string | null {
+/** Profiles store taxonomy slugs; show the published label, or the slug if it has none. */
+function labelled(labels: TaxonomyLabels | undefined, category: string, slugs: string[]): string[] {
+  const map = labels?.[category];
+  return map ? slugs.map((s) => map[s] ?? s) : slugs;
+}
+
+function roleLabel(key: string | undefined | null, labels?: TaxonomyLabels): string | null {
   if (!key) return null;
-  return roleDefs.find((r) => r.key === key)?.label ?? key;
+  return labels?.["person_types"]?.[key] ?? roleDefs.find((r) => r.key === key)?.label ?? key;
 }
 
 const availabilityFromRow: Record<string, AvailabilityState> = {
@@ -24,11 +31,24 @@ const availabilityFromRow: Record<string, AvailabilityState> = {
 
 const roleTypeFromKey: Record<string, ProfileRole> = {
   singer: "Vocal Artist",
-  "voice-artist": "Vocal Artist",
+  rapper: "Vocal Artist",
+  folk_vocalist: "Vocal Artist",
+  voice_artist: "Vocal Artist",
   producer: "Producer",
+  beatmaker: "Producer",
   musician: "Musician",
+  guitarist: "Musician",
+  bassist: "Musician",
+  keyboardist: "Musician",
+  drummer: "Musician",
+  sitarist: "Musician",
+  violinist: "Musician",
+  wind_player: "Musician",
   composer: "Musician",
-  "sound-engineer": "Engineer",
+  sound_engineer: "Engineer",
+  mixing_engineer: "Engineer",
+  mastering_engineer: "Engineer",
+  sound_designer: "Engineer",
   dj: "DJ",
 };
 
@@ -54,9 +74,10 @@ export function profileFromRow(row: ProfileRow): PersonProfile {
 export function mergeProfileRow(
   base: PersonProfile,
   row: ProfileRow | null | undefined,
+  labels?: TaxonomyLabels,
 ): PersonProfile {
   if (!row) return base;
-  const primary = roleLabel(row.roles?.[0]);
+  const primary = roleLabel(row.roles?.[0], labels);
   const linkMap = asLinkMap(row.links);
   const links = Object.entries(linkMap)
     .filter(([, v]) => Boolean(v))
@@ -67,15 +88,21 @@ export function mergeProfileRow(
     username: row.username || base.username,
     name: row.display_name || base.name,
     ...(row.avatar_url ? { photo: row.avatar_url } : {}),
-    headline: row.headline ? (roleLabel(row.headline) ?? row.headline) : (primary ?? base.headline),
+    headline: row.headline
+      ? (roleLabel(row.headline, labels) ?? row.headline)
+      : (primary ?? base.headline),
     primaryRole: primary ?? base.primaryRole,
-    secondaryRoles: (row.roles ?? []).slice(1).map((r) => roleLabel(r) ?? r),
+    secondaryRoles: (row.roles ?? []).slice(1).map((r) => roleLabel(r, labels) ?? r),
     location: [row.city, row.state].filter(Boolean).join(", ") || base.location,
     shortBio: row.bio || base.shortBio,
     longBio: row.bio || base.longBio,
-    genres: row.genres?.length ? row.genres : base.genres,
-    instruments: row.instruments?.length ? row.instruments : base.instruments,
-    languages: row.languages?.length ? row.languages : base.languages,
+    genres: row.genres?.length ? labelled(labels, "genres", row.genres) : base.genres,
+    instruments: row.instruments?.length
+      ? labelled(labels, "instruments", row.instruments)
+      : base.instruments,
+    languages: row.languages?.length
+      ? labelled(labels, "languages", row.languages)
+      : base.languages,
     specialisations: row.specialisations?.length
       ? row.specialisations.map((s) => (s.includes(":") ? s.slice(s.indexOf(":") + 1) : s))
       : base.specialisations,
