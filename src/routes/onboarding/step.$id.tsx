@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   AudioLines,
@@ -17,11 +17,18 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
+import {
+  labelFor,
+  talentGroups,
+  talentTypes,
+  useTaxonomy,
+  type TaxonomyOption,
+} from "@/lib/taxonomy";
 import { haptic } from "@/lib/haptics";
 import { useFlowBack } from "@/lib/flow-back";
 import {
   ChipPicker,
-  ChoiceGrid,
+  PersonTypePicker,
   ErrorBanner,
   InlineField,
   LocationHint,
@@ -42,12 +49,8 @@ import {
   contactChannels,
   discoveryPrefs,
   experienceLevels,
-  genres,
-  instruments,
   intents,
-  languages,
   linkPlatforms,
-  roles,
   specialisationByRole,
   statesByCountry,
   steps,
@@ -57,25 +60,45 @@ import {
   visibleSteps,
   workModes,
   type OnboardingDraft,
-  type RoleKey,
   type StepDef,
 } from "@/data/onboarding";
 
-const roleIcons: Record<RoleKey, LucideIcon> = {
-  singer: Mic,
-  musician: Guitar,
+// Icons for person types: a few by slug, the rest by taxonomy group.
+const typeIcons: Record<string, LucideIcon> = {
   producer: SlidersHorizontal,
-  composer: Music,
+  beatmaker: SlidersHorizontal,
   lyricist: PenLine,
-  "music-director": Clapperboard,
-  "sound-engineer": AudioLines,
+  music_director: Clapperboard,
+  voice_artist: MicVocal,
   dj: Headphones,
   rj: Radio,
   podcaster: Podcast,
-  "voice-artist": MicVocal,
-  "music-teacher": GraduationCap,
+};
+const groupIcons: Record<string, LucideIcon> = {
+  vocal: Mic,
+  instrumentalist: Guitar,
+  creator: Music,
+  technical: AudioLines,
+  media: Radio,
+  education: GraduationCap,
   other: Sparkles,
 };
+function typeIcon(o: TaxonomyOption) {
+  const Icon = typeIcons[o.slug] ?? groupIcons[o.metadata?.group ?? ""] ?? Sparkles;
+  return <Icon size={24} aria-hidden />;
+}
+
+/** The options to show: the bucket's, plus anything already selected that the bucket left out. */
+function withSelected(
+  shown: TaxonomyOption[],
+  selected: string[],
+  catalogue: TaxonomyOption[] | undefined,
+) {
+  const extra = selected
+    .filter((slug) => !shown.some((o) => o.slug === slug))
+    .map((slug) => ({ value: slug, label: labelFor(catalogue, slug) }));
+  return [...shown.map((o) => ({ value: o.slug, label: o.label })), ...extra];
+}
 
 export const Route = createFileRoute("/onboarding/step/$id")({
   head: () => ({
@@ -106,16 +129,27 @@ type Banner = "none" | "error";
 
 function StepRoute() {
   const { id } = Route.useParams();
-  const { draft, set, toggle, markComplete, hydrated, sync, retry } = useOnboarding();
+  const { draft, set, toggle, markComplete, hydrated, sync, retry, bucket } = useOnboarding();
   const navigate = useNavigate();
   const [banner, setBanner] = useState<Banner>("none");
   // Bumped on each blocked Continue so the button re-mounts and the shake replays.
   const [nudge, setNudge] = useState(0);
   const flowBack = useFlowBack();
 
-  const list = visibleSteps(draft);
+  const list = visibleSteps(draft, bucket);
   const def = steps.find((s) => s.id === id);
   const index = list.findIndex((s) => s.id === id);
+
+  // A step that stopped applying (no instruments for these roles) moves on by itself.
+  const skipTo =
+    hydrated && def && index === -1
+      ? (list.find((s) => steps.indexOf(s) > steps.indexOf(def))?.id ?? "preview")
+      : null;
+  useEffect(() => {
+    if (!skipTo) return;
+    if (skipTo === "preview") void navigate({ to: "/onboarding/preview", replace: true });
+    else void navigate({ to: "/onboarding/step/$id", params: { id: skipTo }, replace: true });
+  }, [skipTo, navigate]);
 
   if (!hydrated) {
     return (
@@ -158,10 +192,13 @@ function StepRoute() {
   const advance = (complete: boolean) => {
     haptic(complete ? "confirm" : "select");
     if (complete) markComplete(def.id);
-    const after = visibleSteps({
-      ...draft,
-      completedSteps: complete ? [...draft.completedSteps, def.id] : draft.completedSteps,
-    });
+    const after = visibleSteps(
+      {
+        ...draft,
+        completedSteps: complete ? [...draft.completedSteps, def.id] : draft.completedSteps,
+      },
+      bucket,
+    );
     const pos = after.findIndex((s) => s.id === def.id);
     setBanner("none");
     goto(after[pos + 1]);
@@ -261,6 +298,28 @@ function StepBody({
   set: (p: Partial<OnboardingDraft>) => void;
   toggle: (field: keyof OnboardingDraft, value: string) => void;
 }) {
+  const { bucket, bucketState, retryBucket } = useOnboarding();
+  const taxonomy = useTaxonomy();
+  const needsTaxonomy = ["role", "secondary-roles", "instruments", "genres", "languages"].includes(
+    id,
+  );
+  const needsBucket = id === "instruments" || id === "genres";
+  if (needsTaxonomy && taxonomy.state === "error") {
+    return (
+      <ErrorBanner
+        message="We couldn't load the choices for this question."
+        onRetry={taxonomy.retry}
+      />
+    );
+  }
+  if (needsBucket && bucketState === "error") {
+    return (
+      <ErrorBanner message="We couldn't load the choices for your roles." onRetry={retryBucket} />
+    );
+  }
+  if ((needsTaxonomy && !taxonomy.options) || (needsBucket && !bucket)) return <StepSkeleton />;
+  const tx = taxonomy.options;
+
   switch (id) {
     case "identity": {
       const check = validateUsername(d.username);
@@ -301,27 +360,27 @@ function StepBody({
 
     case "role":
       return (
-        <ChoiceGrid
-          options={roles.map((r) => {
-            const Icon = roleIcons[r.key];
-            return {
-              key: r.key,
-              label: r.label,
-              hint: r.hint,
-              icon: <Icon size={24} aria-hidden />,
-            };
-          })}
-          value={d.primaryRole}
-          onSelect={(k) => set({ primaryRole: k as RoleKey })}
+        <PersonTypePicker
+          groups={talentGroups}
+          options={talentTypes(tx?.person_types ?? [])}
+          selected={d.primaryRole ? [d.primaryRole] : []}
+          icon={typeIcon}
+          onToggle={(slug) =>
+            set({ primaryRole: slug, secondaryRoles: d.secondaryRoles.filter((s) => s !== slug) })
+          }
         />
       );
 
     case "secondary-roles":
       return (
-        <ChipPicker
-          options={roles.filter((r) => r.key !== d.primaryRole).map((r) => r.label)}
+        <PersonTypePicker
+          groups={talentGroups}
+          options={talentTypes(tx?.person_types ?? [])}
           selected={d.secondaryRoles}
-          onToggle={(v) => toggle("secondaryRoles", v)}
+          exclude={d.primaryRole ? [d.primaryRole] : []}
+          multi
+          max={2}
+          onToggle={(slug) => toggle("secondaryRoles", slug)}
         />
       );
 
@@ -329,7 +388,7 @@ function StepBody({
       return (
         <div className="space-y-5">
           <ChipPicker
-            options={instruments}
+            options={withSelected(bucket?.instruments ?? [], d.instruments, tx?.instruments)}
             selected={d.instruments}
             onToggle={(v) => toggle("instruments", v)}
           />
@@ -339,7 +398,10 @@ function StepBody({
                 Primary instrument
               </p>
               <ChipPicker
-                options={d.instruments}
+                options={d.instruments.map((slug) => ({
+                  value: slug,
+                  label: labelFor(tx?.instruments, slug),
+                }))}
                 selected={d.primaryInstrument ? [d.primaryInstrument] : []}
                 onToggle={(v) => set({ primaryInstrument: d.primaryInstrument === v ? null : v })}
               />
@@ -376,13 +438,17 @@ function StepBody({
 
     case "genres":
       return (
-        <ChipPicker options={genres} selected={d.genres} onToggle={(v) => toggle("genres", v)} />
+        <ChipPicker
+          options={withSelected(bucket?.genres ?? [], d.genres, tx?.genres)}
+          selected={d.genres}
+          onToggle={(v) => toggle("genres", v)}
+        />
       );
 
     case "languages":
       return (
         <ChipPicker
-          options={languages}
+          options={(tx?.languages ?? []).map((o) => ({ value: o.slug, label: o.label }))}
           selected={d.languages}
           onToggle={(v) => toggle("languages", v)}
         />
@@ -476,11 +542,14 @@ function StepBody({
             type="button"
             onClick={() =>
               set({
-                bio: `${roles.find((r) => r.key === d.primaryRole)?.label ?? "Music professional"} based in ${
+                bio: `${d.primaryRole ? labelFor(tx?.person_types, d.primaryRole) : "Music professional"} based in ${
                   d.city || "India"
-                }, working across ${d.genres.slice(0, 2).join(" and ") || "multiple genres"}. Open to ${
-                  d.availability[0]?.toLowerCase() ?? "collaborations"
-                }.`,
+                }, working across ${
+                  d.genres
+                    .slice(0, 2)
+                    .map((g) => labelFor(tx?.genres, g))
+                    .join(" and ") || "multiple genres"
+                }. Open to ${d.availability[0]?.toLowerCase() ?? "collaborations"}.`,
               })
             }
             className="min-h-11 w-full rounded-full border border-border text-1 font-semibold"

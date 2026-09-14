@@ -30,9 +30,9 @@ export const Route = createFileRoute("/onboarding/")({
 });
 
 function Welcome() {
-  const { draft, hydrated } = useOnboarding();
+  const { draft, hydrated, bucket } = useOnboarding();
   const navigate = useNavigate();
-  const total = visibleSteps(draft).length;
+  const total = visibleSteps(draft, bucket).length;
   const started = draft.completedSteps.length > 0;
 
   return (
@@ -88,7 +88,7 @@ function Welcome() {
           <Btn
             className="w-full"
             onClick={() =>
-              navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft) } })
+              navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft, bucket) } })
             }
           >
             Let's start

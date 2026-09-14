@@ -30,9 +30,9 @@ export const Route = createFileRoute("/onboarding/skip")({
 });
 
 function SkipLater() {
-  const { draft } = useOnboarding();
+  const { draft, bucket } = useOnboarding();
   const missing = readiness(draft).filter((r) => !r.done);
-  const target = resumeTarget(draft);
+  const target = resumeTarget(draft, bucket);
 
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">

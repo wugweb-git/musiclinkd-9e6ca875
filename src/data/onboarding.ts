@@ -8,6 +8,8 @@
 //   PROPOSED  — needs a canonical field before production
 //   FUTURE    — out of scope for this release
 
+import type { PersonaBucket } from "@/lib/taxonomy";
+
 export type FieldSupport = "EXISTING" | "COMPUTED" | "PROPOSED" | "FUTURE";
 
 export type ScreenContract = {
@@ -49,20 +51,8 @@ function contract(
 /* Master data                                                         */
 /* ------------------------------------------------------------------ */
 
-export type RoleKey =
-  | "singer"
-  | "musician"
-  | "producer"
-  | "composer"
-  | "lyricist"
-  | "music-director"
-  | "sound-engineer"
-  | "dj"
-  | "rj"
-  | "podcaster"
-  | "voice-artist"
-  | "music-teacher"
-  | "other";
+/** A person_types slug from the taxonomy (e.g. "singer", "music_director"). */
+export type RoleKey = string;
 
 export type RoleDef = {
   key: RoleKey;
@@ -363,7 +353,7 @@ export const specialisationByRole: Record<
       },
     ],
   },
-  "sound-engineer": {
+  sound_engineer: {
     title: "What's your engineering focus?",
     groups: [
       {
@@ -386,7 +376,7 @@ export const specialisationByRole: Record<
       { label: "Setup", options: ["Own CDJs", "Own controller", "Own PA", "Venue gear only"] },
     ],
   },
-  "music-teacher": {
+  music_teacher: {
     title: "What do you teach?",
     groups: [
       { label: "Format", options: ["One to one", "Group classes", "Online", "At student's place"] },
@@ -491,8 +481,11 @@ export type StepDef = {
   why: string;
   optional: boolean;
   contract: ScreenContract;
-  /** Smart skip — a step is hidden when this returns false. */
-  visible?: (d: OnboardingDraft) => boolean;
+  /**
+   * Smart skip — a step is hidden when this returns false. `bucket` is the persona_bucket answer for
+   * the draft's roles and languages, or null while it is loading.
+   */
+  visible?: (d: OnboardingDraft, bucket: PersonaBucket | null) => boolean;
 };
 
 export const steps: StepDef[] = [
@@ -539,7 +532,7 @@ export const steps: StepDef[] = [
     id: "secondary-roles",
     group: "Profession",
     title: "Anything else you do?",
-    subtitle: "Optional. Add as many as fit.",
+    subtitle: "Optional. Pick up to two.",
     why: "Extra roles widen the work you show up for, without diluting your main one.",
     optional: true,
     contract: contract(
@@ -557,10 +550,9 @@ export const steps: StepDef[] = [
     subtitle: "Mark one as your primary instrument.",
     why: "Instrument is one of the strongest filters people use to book players.",
     optional: true,
-    visible: (d) => {
-      const all = [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[];
-      return roles.some((r) => all.includes(r.key) && r.instruments);
-    },
+    // Skipped when the person's roles hold no instruments (persona_bucket returns none).
+    visible: (d, bucket) =>
+      Boolean(d.primaryRole) && (bucket ? bucket.instruments.length > 0 : true),
     contract: contract(
       "ONB-06",
       "Instruments",
@@ -586,15 +578,6 @@ export const steps: StepDef[] = [
     ),
   },
   {
-    id: "genres",
-    group: "Expertise",
-    title: "What music do you work with?",
-    subtitle: "Choose all that apply.",
-    why: "Genres drive your recommendations and who gets matched with you.",
-    optional: true,
-    contract: contract("ONB-08", "Genres", "/onboarding/step/genres", ["masterData"], ["genre"]),
-  },
-  {
     id: "languages",
     group: "Expertise",
     title: "Which languages do you work in?",
@@ -608,6 +591,15 @@ export const steps: StepDef[] = [
       ["masterData"],
       ["language"],
     ),
+  },
+  {
+    id: "genres",
+    group: "Expertise",
+    title: "What music do you work with?",
+    subtitle: "Choose all that apply.",
+    why: "Genres drive your recommendations and who gets matched with you.",
+    optional: true,
+    contract: contract("ONB-08", "Genres", "/onboarding/step/genres", ["masterData"], ["genre"]),
   },
   {
     id: "location",
@@ -776,12 +768,19 @@ export const steps: StepDef[] = [
   },
 ];
 
-export function visibleSteps(draft: OnboardingDraft): StepDef[] {
-  return steps.filter((s) => (s.visible ? s.visible(draft) : true));
+export function visibleSteps(
+  draft: OnboardingDraft,
+  bucket: PersonaBucket | null = null,
+): StepDef[] {
+  return steps.filter((s) => (s.visible ? s.visible(draft, bucket) : true));
 }
 
-export function stepIndex(draft: OnboardingDraft, id: string): number {
-  return visibleSteps(draft).findIndex((s) => s.id === id);
+export function stepIndex(
+  draft: OnboardingDraft,
+  id: string,
+  bucket: PersonaBucket | null = null,
+): number {
+  return visibleSteps(draft, bucket).findIndex((s) => s.id === id);
 }
 
 /** COMPUTED — usefulness-based readiness, not an arbitrary percentage. */

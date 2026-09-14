@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MapPin, Pencil } from "lucide-react";
 import { BtnLink, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
-import { roles, visibleSteps } from "@/data/onboarding";
+import { visibleSteps } from "@/data/onboarding";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/onboarding/preview")({
   head: () => ({
@@ -30,10 +31,13 @@ export const Route = createFileRoute("/onboarding/preview")({
 });
 
 function Preview() {
-  const { draft: d } = useOnboarding();
+  const { draft: d, bucket } = useOnboarding();
   const navigate = useNavigate();
-  const role = roles.find((r) => r.key === d.primaryRole);
-  const list = visibleSteps(d);
+  const tx = useTaxonomy().options;
+  const roleLabel = d.primaryRole ? labelFor(tx?.person_types, d.primaryRole) : null;
+  const labels = (options: Parameters<typeof labelFor>[0], slugs: string[]) =>
+    slugs.map((s) => labelFor(options, s));
+  const list = visibleSteps(d, bucket);
 
   const edit = (id: string) => navigate({ to: "/onboarding/step/$id", params: { id } });
 
@@ -60,8 +64,8 @@ function Preview() {
             <div className="min-w-0">
               <h1 className="truncate text-3 leading-tight">{d.displayName || "Your name"}</h1>
               <p className="truncate text-sm text-muted-foreground">
-                {role?.label ?? "Add your role"}
-                {d.primaryInstrument ? ` · ${d.primaryInstrument}` : ""}
+                {roleLabel ?? "Add your role"}
+                {d.primaryInstrument ? ` · ${labelFor(tx?.instruments, d.primaryInstrument)}` : ""}
               </p>
               {d.city ? (
                 <p className="mt-1 inline-flex items-center gap-1 text-1 text-muted-foreground">
@@ -79,12 +83,23 @@ function Preview() {
 
         <Row
           title="Roles"
-          items={[role?.label, ...d.secondaryRoles].filter(Boolean) as string[]}
+          items={labels(
+            tx?.person_types,
+            [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[],
+          )}
           onEdit={() => edit("role")}
         />
-        <Row title="Instruments" items={d.instruments} onEdit={() => edit("instruments")} />
-        <Row title="Genres" items={d.genres} onEdit={() => edit("genres")} />
-        <Row title="Languages" items={d.languages} onEdit={() => edit("languages")} />
+        <Row
+          title="Instruments"
+          items={labels(tx?.instruments, d.instruments)}
+          onEdit={() => edit("instruments")}
+        />
+        <Row title="Genres" items={labels(tx?.genres, d.genres)} onEdit={() => edit("genres")} />
+        <Row
+          title="Languages"
+          items={labels(tx?.languages, d.languages)}
+          onEdit={() => edit("languages")}
+        />
         <Row title="Available for" items={d.availability} onEdit={() => edit("availability")} />
         <Row title="Work mode" items={d.workModes} onEdit={() => edit("work-mode")} />
         <Row

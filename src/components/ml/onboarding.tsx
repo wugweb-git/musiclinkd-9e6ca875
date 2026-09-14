@@ -27,6 +27,12 @@ import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { haptic } from "@/lib/haptics";
 import { draftToProfile, profileToDraft } from "@/lib/profile-map";
 import { emptyDraft, visibleSteps, type OnboardingDraft } from "@/data/onboarding";
+import {
+  loadPersonaBucket,
+  type LoadState,
+  type PersonaBucket,
+  type TaxonomyOption,
+} from "@/lib/taxonomy";
 
 /* ------------------------------------------------------------------ */
 /* Draft store — the account is the source of truth                    */
@@ -52,6 +58,10 @@ type Store = {
   hydrated: boolean;
   sync: SyncState;
   retry: () => void;
+  /** Instruments and genres for the draft's roles and languages (persona_bucket). */
+  bucket: PersonaBucket | null;
+  bucketState: LoadState;
+  retryBucket: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -100,7 +110,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       }
       setSync("saving");
       try {
-        const step = resumeTarget(next);
+        const step = resumeTarget(next, bucketRef.current);
         await persist({ data: draftToProfile(next, step) });
         setSync("saved");
       } catch {
@@ -152,6 +162,45 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       .finally(() => setHydrated(true));
   }, [authLoading, signedIn, userId, navigate, loadProfile, writeCache]);
 
+  // Refetch the persona bucket whenever the roles or languages change.
+  const [bucket, setBucket] = useState<PersonaBucket | null>(null);
+  const [bucketState, setBucketState] = useState<LoadState>("loading");
+  const [bucketAttempt, setBucketAttempt] = useState(0);
+  const bucketRef = useRef<PersonaBucket | null>(null);
+  const bucketKey = [
+    draft.primaryRole ?? "",
+    draft.secondaryRoles.join(","),
+    draft.languages.join(","),
+  ].join("|");
+  useEffect(() => {
+    if (!hydrated) return;
+    // A stale bucket from the previous roles would hide or show the wrong steps; clear it first.
+    bucketRef.current = null;
+    setBucket(null);
+    const primary = draft.primaryRole;
+    if (!primary) {
+      bucketRef.current = null;
+      setBucket(null);
+      setBucketState("ready");
+      return;
+    }
+    let active = true;
+    setBucketState("loading");
+    loadPersonaBucket(primary, draft.secondaryRoles, draft.languages)
+      .then((b) => {
+        if (!active) return;
+        bucketRef.current = b;
+        setBucket(b);
+        setBucketState("ready");
+      })
+      .catch(() => active && setBucketState("error"));
+    return () => {
+      active = false;
+    };
+    // bucketKey stands in for the three draft fields it is built from.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, bucketKey, bucketAttempt]);
+
   const persistDraft = useCallback(
     (next: OnboardingDraft) => {
       setDraft(next);
@@ -173,6 +222,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       hydrated,
       sync,
       retry: () => void push(draft),
+      bucket,
+      bucketState,
+      retryBucket: () => setBucketAttempt((n) => n + 1),
       set: (patch) => persistDraft({ ...draft, ...patch }),
       toggle: (field, val) => {
         const list = (draft[field] as unknown as string[]) ?? [];
@@ -188,7 +240,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         }),
       reset: () => persistDraft(emptyDraft),
     }),
-    [draft, hydrated, sync, persistDraft, push],
+    [draft, hydrated, sync, persistDraft, push, bucket, bucketState],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
@@ -213,8 +265,8 @@ export function useOnboarding(): Store {
   return ctx;
 }
 
-export function resumeTarget(draft: OnboardingDraft): string {
-  const list = visibleSteps(draft);
+export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | null = null): string {
+  const list = visibleSteps(draft, bucket);
   const next = list.find((s) => !draft.completedSteps.includes(s.id));
   return next ? next.id : "visibility";
 }
@@ -338,26 +390,35 @@ export function StepShell({
 /* Pickers                                                             */
 /* ------------------------------------------------------------------ */
 
+export type PickerOption = string | { value: string; label: string };
+
 export function ChipPicker({
   options,
   selected,
   onToggle,
   columns = false,
+  max,
 }: {
-  options: string[];
+  options: PickerOption[];
   selected: string[];
   onToggle: (v: string) => void;
   columns?: boolean;
+  /** When this many are selected, unselected chips are disabled. */
+  max?: number;
 }) {
+  const full = max !== undefined && selected.length >= max;
   return (
     <div className={columns ? "grid grid-cols-2 gap-2" : "flex flex-wrap gap-2"}>
-      {options.map((o) => {
+      {options.map((opt) => {
+        const o = typeof opt === "string" ? opt : opt.value;
+        const text = typeof opt === "string" ? opt : opt.label;
         const on = selected.includes(o);
         return (
           <button
             key={o}
             type="button"
             aria-pressed={on}
+            disabled={full && !on}
             onClick={() => {
               haptic("select");
               onToggle(o);
@@ -369,10 +430,94 @@ export function ChipPicker({
             }`}
           >
             {on ? <Check size={14} className="animate-pop" aria-hidden /> : null}
-            {o}
+            {text}
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * Person types come from the taxonomy, grouped (vocal, instrumentalist, …). Pick a group, then a
+ * type, so no screen shows more than 12 choices. The group opens on the one holding the selection.
+ */
+export function PersonTypePicker({
+  groups,
+  options,
+  selected,
+  onToggle,
+  multi = false,
+  max,
+  exclude = [],
+  icon,
+}: {
+  groups: readonly { key: string; label: string }[];
+  options: TaxonomyOption[];
+  selected: string[];
+  onToggle: (slug: string) => void;
+  multi?: boolean;
+  max?: number;
+  exclude?: string[];
+  icon?: (o: TaxonomyOption) => ReactNode;
+}) {
+  const shown = options.filter((o) => !exclude.includes(o.slug));
+  const available = groups.filter((g) => shown.some((o) => o.metadata?.group === g.key));
+  const initial =
+    shown.find((o) => selected.includes(o.slug))?.metadata?.group ?? available[0]?.key ?? "";
+  const [group, setGroup] = useState(initial);
+  const inGroup = shown.filter((o) => o.metadata?.group === group);
+  return (
+    <div>
+      <div className="rail -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar" role="tablist">
+        {available.map((g) => {
+          const on = g.key === group;
+          const count = shown.filter(
+            (o) => o.metadata?.group === g.key && selected.includes(o.slug),
+          ).length;
+          return (
+            <button
+              key={g.key}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              onClick={() => {
+                haptic("select");
+                setGroup(g.key);
+              }}
+              className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
+                on
+                  ? "border-transparent bg-selected-bg text-selected-text"
+                  : "border-border bg-card text-foreground"
+              }`}
+            >
+              {g.label}
+              {count ? <span className="text-1 tabular-nums opacity-70">{count}</span> : null}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-4" role="tabpanel">
+        {multi ? (
+          <ChipPicker
+            options={inGroup.map((o) => ({ value: o.slug, label: o.label }))}
+            selected={selected}
+            onToggle={onToggle}
+            {...(max !== undefined ? { max } : {})}
+          />
+        ) : (
+          <ChoiceGrid
+            options={inGroup.map((o) => ({
+              key: o.slug,
+              label: o.label,
+              hint: "",
+              icon: icon?.(o),
+            }))}
+            value={selected[0] ?? null}
+            onSelect={onToggle}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -406,9 +551,11 @@ export function ChoiceGrid({
             <span className={on ? "text-foreground" : "text-muted-foreground"}>{o.icon}</span>
             <span>
               <span className="block text-sm font-semibold">{o.label}</span>
-              <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
-                {o.hint}
-              </span>
+              {o.hint ? (
+                <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
+                  {o.hint}
+                </span>
+              ) : null}
             </span>
           </button>
         );
