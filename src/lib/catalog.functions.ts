@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient, type TaxonomyLabels } from "@/lib/portfolio.functions";
 
 /*
@@ -149,6 +151,20 @@ export const listOpportunities = createServerFn({ method: "GET" }).handler(async
   if (error) throw new Error(error.message);
   return (data ?? []) as unknown as OpportunityRow[];
 });
+
+/** Opportunities the signed-in user created, every status, newest first. */
+export const listMyOpportunities = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data, error } = await client
+      .from("opportunities")
+      .select(OPPORTUNITY)
+      .eq("creator_profile_id", context.userId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as unknown as OpportunityRow[];
+  });
 
 export const getOpportunityRow = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))

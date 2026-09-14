@@ -415,7 +415,11 @@ export function applicationTone(
 /* -------------------------------------------------- posted by me */
 
 export type PostedOpportunity = Opportunity & {
-  applicantSummary: { new: number; shortlisted: number; rejected: number };
+  /**
+   * Views and the applicant breakdown come from application tracking. Unset for stored
+   * opportunities, which record neither; screens then show only the stored applicant count.
+   */
+  applicantSummary?: { new: number; shortlisted: number; rejected: number };
 };
 
 export const myOpportunities: PostedOpportunity[] = [

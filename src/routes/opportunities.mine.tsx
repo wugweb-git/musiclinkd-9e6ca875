@@ -4,6 +4,7 @@ import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
 import { myOpportunities } from "@/data/opportunities";
+import { useMyDbOpportunities } from "@/hooks/use-my-opportunities";
 
 export const Route = createFileRoute("/opportunities/mine")({
   head: () => ({
@@ -23,6 +24,9 @@ export const Route = createFileRoute("/opportunities/mine")({
 });
 
 function MyOpportunities() {
+  // Signed in: the user's stored opportunities follow the static ones.
+  const { items } = useMyDbOpportunities();
+  const list = [...myOpportunities, ...items];
   return (
     <Screen>
       <TopBar
@@ -41,7 +45,7 @@ function MyOpportunities() {
         }
       />
       <div className="space-y-3 px-5 pt-4 pb-4">
-        {myOpportunities.length === 0 ? (
+        {list.length === 0 ? (
           <EmptyState
             title="You haven't posted yet"
             body="Post a requirement and receive applications with portfolios attached."
@@ -51,22 +55,26 @@ function MyOpportunities() {
             </BtnLink>
           </EmptyState>
         ) : (
-          myOpportunities.map((o) => (
+          list.map((o) => (
             <Card key={o.id} className="space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <h2 className="min-w-0 flex-1 text-[16px] leading-snug">{o.title}</h2>
                 <StatusPill label={o.status} tone={statusTone(o.status)} />
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <Eye size={13} /> {o.views} views
-                </span>
+                {o.applicantSummary ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Eye size={13} /> {o.views} views
+                  </span>
+                ) : null}
                 <span className="inline-flex items-center gap-1">
                   <Users size={13} /> {o.applicants} applicants
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <Bookmark size={13} /> {o.applicantSummary.shortlisted} shortlisted
-                </span>
+                {o.applicantSummary ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Bookmark size={13} /> {o.applicantSummary.shortlisted} shortlisted
+                  </span>
+                ) : null}
               </div>
               <div className="flex gap-2">
                 {o.status === "draft" ? (
@@ -83,7 +91,7 @@ function MyOpportunities() {
                     params={{ id: o.id }}
                     className="flex-1 w-full"
                   >
-                    Applicants{o.applicantSummary.new ? ` · ${o.applicantSummary.new} new` : ""}
+                    Applicants{o.applicantSummary?.new ? ` · ${o.applicantSummary.new} new` : ""}
                   </BtnLink>
                 )}
                 <BtnLink

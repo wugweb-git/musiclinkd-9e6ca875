@@ -7,7 +7,7 @@ import { applicants } from "@/data/opportunities";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/$aid")({
   head: ({ params }) => {
-    const a = applicants.find((x) => x.id === params.aid);
+    const a = applicants.find((x) => x.id === params.aid && x.opportunityId === params.id);
     const title = `${a?.name ?? "Applicant"} · application | MusicLinkd`;
     return {
       meta: [
@@ -28,7 +28,8 @@ export const Route = createFileRoute("/opportunities/$id/applicants/$aid")({
 
 function ApplicantDetail() {
   const { id, aid } = Route.useParams();
-  const a = applicants.find((x) => x.id === aid);
+  // An applicant only opens under the opportunity they applied to.
+  const a = applicants.find((x) => x.id === aid && x.opportunityId === id);
   const [decision, setDecision] = useState<"shortlist" | "reject" | null>(null);
   const [confirmed, setConfirmed] = useState<string | null>(null);
   const [hire, setHire] = useState(false);

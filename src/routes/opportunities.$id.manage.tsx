@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { BarChart3, Users, Pencil, PauseCircle, XCircle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, Row, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
+import { Card, Row, StatusPill, EmptyState, Dialog, Loading } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
 import { myOpportunities, closeReasons } from "@/data/opportunities";
+import { useMyDbOpportunities } from "@/hooks/use-my-opportunities";
 
 export const Route = createFileRoute("/opportunities/$id/manage")({
   head: () => ({
@@ -22,7 +23,9 @@ export const Route = createFileRoute("/opportunities/$id/manage")({
 
 function ManageOpportunity() {
   const { id } = Route.useParams();
-  const o = myOpportunities.find((x) => x.id === id);
+  // Signed in: the user's own stored opportunities resolve too.
+  const mine = useMyDbOpportunities();
+  const o = myOpportunities.find((x) => x.id === id) ?? mine.items.find((x) => x.id === id);
   const [close, setClose] = useState(false);
   const [closed, setClosed] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
@@ -32,7 +35,11 @@ function ManageOpportunity() {
       <Screen>
         <TopBar title="Manage" back="/opportunities/mine" />
         <div className="px-5 pt-6">
-          <EmptyState title="Opportunity not found" body="It may already be closed." />
+          {mine.pending ? (
+            <Loading rows={3} />
+          ) : (
+            <EmptyState title="Opportunity not found" body="It may already be closed." />
+          )}
         </div>
       </Screen>
     );
@@ -48,13 +55,18 @@ function ManageOpportunity() {
               label={paused ? "paused" : o.status}
               tone={paused ? "warn" : statusTone(o.status)}
             />
-            <span className="text-[12px] text-muted-foreground">{o.closesAt}</span>
+            {o.closesAt ? (
+              <span className="text-[12px] text-muted-foreground">{o.closesAt}</span>
+            ) : null}
           </div>
           <div className="grid grid-cols-3 gap-2 pt-1">
+            {/* Stored opportunities record no views or shortlist; only their applicant count shows. */}
             {[
-              { label: "Views", value: o.views },
+              ...(o.applicantSummary ? [{ label: "Views", value: o.views }] : []),
               { label: "Applicants", value: o.applicants },
-              { label: "Shortlisted", value: o.applicantSummary.shortlisted },
+              ...(o.applicantSummary
+                ? [{ label: "Shortlisted", value: o.applicantSummary.shortlisted }]
+                : []),
             ].map((s) => (
               <div key={s.label} className="rounded-lg bg-subtle p-3">
                 <p className="text-[11px] text-muted-foreground">{s.label}</p>
@@ -68,7 +80,7 @@ function ManageOpportunity() {
           <Row
             icon={<Users size={16} />}
             title="Applicants"
-            subtitle={`${o.applicantSummary.new} new`}
+            {...(o.applicantSummary ? { subtitle: `${o.applicantSummary.new} new` } : {})}
             to="/opportunities/$id/applicants"
             params={{ id }}
           />

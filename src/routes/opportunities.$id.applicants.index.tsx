@@ -3,9 +3,18 @@ import { useState } from "react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Segmented, EmptyState, Loading } from "@/components/ml/kit";
 import { ApplicantCard } from "@/components/ml/opportunity";
-import { applicants, myOpportunities } from "@/data/opportunities";
+import { applicants, myOpportunities, getOpportunity } from "@/data/opportunities";
+import { loadDbOpportunity } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/")({
+  // Ids that are not static opportunities are looked up as stored opportunity slugs. Stored
+  // opportunities have no application records, so their list is empty.
+  loader: async ({ params }) => ({
+    db:
+      myOpportunities.some((x) => x.id === params.id) || getOpportunity(params.id)
+        ? null
+        : await loadDbOpportunity(params.id),
+  }),
   head: () => ({
     meta: [
       { title: "Applicants | MusicLinkd Opportunities" },
@@ -31,7 +40,8 @@ function Applicants() {
   const { id } = Route.useParams();
   const [tab, setTab] = useState<(typeof tabs)[number]>("All");
   const [loading] = useState(false);
-  const o = myOpportunities.find((x) => x.id === id);
+  const { db } = Route.useLoaderData();
+  const o = myOpportunities.find((x) => x.id === id) ?? db ?? undefined;
   const all = applicants.filter((a) => a.opportunityId === id);
   const list = all.filter((a) =>
     tab === "All"
