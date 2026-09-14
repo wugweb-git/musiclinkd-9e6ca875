@@ -34,7 +34,7 @@ function PhoneAuth() {
       />
 
       <div className="mb-4 flex gap-2">
-        <span className="flex h-13 w-20 shrink-0 items-center justify-center rounded-md border border-border bg-card text-[15px] font-semibold">
+        <span className="flex h-13 w-20 shrink-0 items-center justify-center rounded-md border border-border bg-card text-2 font-semibold">
           +91
         </span>
         <div className="min-w-0 flex-1">

@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Check, Eye, EyeOff, Music2, ShieldCheck, X } from "lucide-react";
+import { Check, Eye, EyeOff, ShieldCheck, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { LogoMark } from "./logo";
 
 /* ---------------------------------------------------------------- shell */
 
@@ -34,11 +35,8 @@ export function AuthScreen({
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "mb-5 flex items-center gap-2" : "mb-7 flex items-center gap-2"}>
-      <span
-        className="flex h-9 w-9 items-center justify-center rounded-md"
-        style={{ background: "var(--pink-container)" }}
-      >
-        <Music2 size={18} className="text-primary" />
+      <span className="flex h-9 w-9 items-center justify-center rounded-md bg-pink-container">
+        <LogoMark className="w-6 text-primary" />
       </span>
       <span className="text-2 font-semibold">MusicLinkd</span>
     </div>
@@ -69,10 +67,10 @@ export function Divider({ label }: { label: string }) {
 export type NoticeTone = "error" | "info" | "success" | "warn";
 
 const noticeStyles: Record<NoticeTone, { bg: string; fg: string }> = {
-  error: { bg: "color-mix(in oklab, var(--destructive) 10%, transparent)", fg: "text-destructive" },
-  warn: { bg: "color-mix(in oklab, #F59E0B 16%, transparent)", fg: "text-foreground" },
-  info: { bg: "var(--pink-container)", fg: "text-foreground" },
-  success: { bg: "color-mix(in oklab, #16A34A 14%, transparent)", fg: "text-foreground" },
+  error: { bg: "bg-danger-container", fg: "text-destructive" },
+  warn: { bg: "bg-warn-container", fg: "text-foreground" },
+  info: { bg: "bg-pink-container", fg: "text-foreground" },
+  success: { bg: "bg-success-container", fg: "text-foreground" },
 };
 
 export function AuthNotice({
@@ -90,8 +88,7 @@ export function AuthNotice({
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className="mb-5 rounded-lg px-4 py-3.5"
-      style={{ background: s.bg }}
+      className={`mb-5 rounded-lg px-4 py-3.5 ${s.bg}`}
     >
       <p className={`text-1 font-semibold ${s.fg}`}>{title}</p>
       {children ? (
@@ -214,8 +211,7 @@ export function PasswordRequirements({ value }: { value: string }) {
         {[0, 1, 2, 3].map((i) => (
           <span
             key={i}
-            className="h-1.5 flex-1 rounded-full"
-            style={{ background: i < score ? "var(--primary)" : "var(--border)" }}
+            className={`h-1.5 flex-1 rounded-full ${i < score ? "bg-primary" : "bg-border"}`}
           />
         ))}
       </div>
@@ -223,8 +219,7 @@ export function PasswordRequirements({ value }: { value: string }) {
         {checks.map((c) => (
           <li key={c.label} className="flex items-center gap-2 text-1 text-muted-foreground">
             <span
-              className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full"
-              style={{ background: c.ok ? "var(--pink-container)" : "var(--border)" }}
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-pink-container" : "bg-border"}`}
             >
               {c.ok ? (
                 <Check size={11} className="text-primary" />

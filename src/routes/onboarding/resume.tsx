@@ -41,7 +41,7 @@ function Resume() {
   const done = draft.completedSteps.length;
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
       <div>
         <SyncBanner
           state={hydrated ? sync : "loading"}
@@ -49,17 +49,15 @@ function Resume() {
           localNote="Picking up from this device. Sign in to continue on any device."
         />
         <Clock size={40} className="text-primary" />
-        <h1 className="mt-4 text-[28px] leading-tight">Welcome back</h1>
+        <h1 className="mt-4 text-3 leading-tight">Welcome back</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           You finished {done} of {list.length} questions. Nothing was lost — carry on from{" "}
           <span className="font-semibold text-foreground">{def?.title ?? "the next step"}</span>.
         </p>
 
         <div className="mt-6 rounded-lg border border-border bg-card p-5">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-            Next up
-          </p>
-          <p className="mt-1 text-lg">{def?.title ?? "Review your profile"}</p>
+          <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Next up</p>
+          <p className="mt-1 text-2">{def?.title ?? "Review your profile"}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {def?.subtitle ?? "One last look before publishing."}
           </p>

@@ -34,6 +34,25 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   Every chip, pill and badge in `src/components/ml/` already renders `rounded-full`, and the M3
   change kept chips as pills. The old line would have had new screens build 8px chips.
 
+### Fixed — new-user journey: tokens, logo, onboarding
+
+- **Band is not an onboarding step.** A band is a profile type, a group of individuals, set up after
+  registration. The "Are you in a band or crew?" step, its `bandIntent` field and the "Create your band
+  profile" card on Profile published are removed. Onboarding is 17 steps.
+- **No prefilled person.** A new user's draft started as "Ananya Sharma" / `ananya.sharma`, so Identity
+  showed as done before anyone typed. Name and username start empty.
+- **Profile published.** Internal spec labels ("FLOW 03", "FLOW 16") no longer show on cards. The
+  readiness actions open Portfolio, Services and Verification (all opened `/me`), and "Start
+  verification" opens `/verification`. "Later" only shows when it does something.
+- **Correct logo.** The auth and splash brand mark is the MusicLinkd waveform (`LogoMark`), not a generic
+  music-note icon.
+- **Tokens, not hard-coded values**, on splash, welcome, auth, onboarding and Home: arbitrary `text-[Npx]`
+  and Tailwind `text-xs/lg/xl` use the `text-1..4` scale; `max-w-[430px]` is `max-w-app`; inline
+  `style={{ background: "var(--…)" }}` is a class. New theme colours: `pink-container`, `pink-strong`,
+  `success-container`, `warn-container`, `danger-container`. The auth notice's `#F59E0B` and `#16A34A`
+  are the warn and success tokens. `StatusPill` and the talent card's language chip use classes too.
+- **Icons, not emoji.** The role step ("What do you do?") and `VerifiedBadge` use lucide icons.
+
 ### Fixed — discovery entry points (route audit §7.1)
 
 - **Discover.** Quick categories open the nearest real section: Talent and Events open `/categories`,

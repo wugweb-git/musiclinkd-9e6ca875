@@ -24,10 +24,7 @@ function AuthSuccess() {
   const navigate = useNavigate();
   return (
     <AuthScreen>
-      <div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
-        style={{ background: "var(--pink-container)" }}
-      >
+      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-pink-container">
         <PartyPopper size={24} className="text-primary" />
       </div>
       <AuthHeading
@@ -36,7 +33,7 @@ function AuthSuccess() {
       />
 
       <div className="mb-7 rounded-lg border border-border bg-card p-4">
-        <p className="text-[13px] font-semibold">What happens next</p>
+        <p className="text-1 font-semibold">What happens next</p>
         <ol className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
           <li>1. Choose your roles and city</li>
           <li>2. Add a photo, headline and skills</li>

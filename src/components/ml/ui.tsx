@@ -1,6 +1,6 @@
 import { Link, createLink, useRouterState } from "@tanstack/react-router";
 import type { AnchorHTMLAttributes, ReactNode, Ref } from "react";
-import { Home, Compass, Store, MessageCircle, User } from "lucide-react";
+import { Check, Home, Compass, Store, MessageCircle, User } from "lucide-react";
 
 export function Screen({
   children,
@@ -39,10 +39,9 @@ export function BottomNav() {
                 <span
                   className={
                     active
-                      ? "flex h-7 w-12 items-center justify-center rounded-full"
+                      ? "flex h-7 w-12 items-center justify-center rounded-full bg-pink-container"
                       : "flex h-7 w-12 items-center justify-center"
                   }
-                  style={active ? { background: "var(--pink-container)" } : undefined}
                 >
                   <Icon
                     size={20}
@@ -154,7 +153,7 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
       style={{ width: size, height: size }}
       title="Verified"
     >
-      ✓
+      <Check size={Math.round(size * 0.65)} strokeWidth={3} aria-hidden />
     </span>
   );
 }

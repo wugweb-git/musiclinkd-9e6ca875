@@ -174,7 +174,7 @@ function WelcomeScreen() {
             Continue with Email &amp; Password
           </CtaRow>
 
-          <p className="mt-5 text-center text-[13.5px] text-muted-foreground">
+          <p className="mt-5 text-center text-1 text-muted-foreground">
             Already have an account?{" "}
             <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-primary">
               Sign in
