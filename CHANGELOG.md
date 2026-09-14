@@ -5,6 +5,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: business types come from the database
+
+- "Do you represent a business?" lists the 12 business person types from the taxonomy (Recording Studio,
+  Music Label, Venue, …) and saves the slug. It used a hard-coded list of 9. Profile published names the
+  chosen type by its label.
+
 ### Fixed — new user: Home is yours, not the demo account's
 
 - **Home reads the signed-in profile.** It showed the seed account to everyone: "Music Producer · Mix

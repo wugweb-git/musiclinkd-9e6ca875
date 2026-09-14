@@ -13,6 +13,7 @@ import {
   useOnboarding,
 } from "@/components/ml/onboarding";
 import { completionPercent, readiness } from "@/data/onboarding";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/onboarding/complete")({
   head: () => ({
@@ -42,6 +43,7 @@ function Complete() {
   const persist = useServerFn(saveMyProfile);
   const savedRef = useRef(false);
   const items = readiness(d);
+  const tx = useTaxonomy().options;
 
   // Persist the finished profile once for signed-in users; drafts stay local.
   useEffect(() => {
@@ -123,7 +125,7 @@ function Complete() {
           />
           {d.businessIntent ? (
             <HandoffCard
-              title={`Set up your ${d.businessIntent.toLowerCase()} profile`}
+              title={`Set up your ${labelFor(tx?.person_types, d.businessIntent).toLowerCase()} profile`}
               body="Add your team, services and location so clients can book the business, not just you."
               action={
                 <BtnLink to="/business/new" search={{ step: "type" }} className="w-full">
