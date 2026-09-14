@@ -98,6 +98,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const pending = useRef<OnboardingDraft | null>(null);
   const loadedFor = useRef<string | null>(null);
   const userId = user?.id ?? null;
+  // Development only: `?preview` opens onboarding screens without an account, for design review.
+  // Nothing is loaded or saved, and production builds drop it.
+  const devPreview =
+    import.meta.env.DEV &&
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).has("preview");
 
   const writeCache = useCallback(
     (next: OnboardingDraft) => {
@@ -113,6 +119,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
   const push = useCallback(
     async (next: OnboardingDraft) => {
+      if (devPreview) return;
       if (!navigator.onLine) {
         setSync("offline");
         return;
@@ -126,11 +133,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         setSync("error");
       }
     },
-    [persist],
+    [persist, devPreview],
   );
 
   // Load this account's answers. Signed out: onboarding is not available, go to Welcome.
   useEffect(() => {
+    if (devPreview) {
+      setHydrated(true);
+      setSync("idle");
+      return;
+    }
     if (authLoading) return;
     try {
       // The old unscoped draft was shared by every account on this browser. It is never read now.
@@ -169,7 +181,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         setSync(navigator.onLine ? "error" : "offline");
       })
       .finally(() => setHydrated(true));
-  }, [authLoading, signedIn, userId, navigate, loadProfile, writeCache]);
+  }, [authLoading, signedIn, userId, navigate, loadProfile, writeCache, devPreview]);
 
   // Refetch the persona bucket whenever the roles or languages change.
   const [bucket, setBucket] = useState<PersonaBucket | null>(null);
