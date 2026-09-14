@@ -32,7 +32,7 @@ LINKED_PROFILES = json.load(open(LINKED, encoding="utf-8"))
 # Usernames already in profiles (13 Sep seed). A Firebase user whose username clashes is imported
 # under the name below (owner's call, 14 Sep); any other clash stops the generator.
 EXISTING = {p["username"] for p in LINKED_PROFILES}
-RENAME_ON_CLASH = {"octave-sound-labs": ("wugweb", "Wugweb")}
+RENAME_ON_CLASH = {"octave.sound.labs": ("wugweb", "Wugweb")}
 
 LANGUAGE = {"English": "en", "Hindi (हिंदी)": "hi", "Punjabi (ਪੰਜਾਬੀ)": "pa", "Tamil (தமிழ்)": "ta",
             "Tamil": "ta", "Telugu (తెలుగు)": "te", "Marathi (मराठी)": "mr", "Gujarati (ગુજરાતી)": "gu",
@@ -79,7 +79,8 @@ def username(fid: str) -> str:
     s = re.sub(r"^mock-", "", fid)
     s = re.sub(r"^(talent|business|band|venue)-", "", s)
     s = re.sub(r"^filler-", "", s)
-    return re.sub(r"-mock$", "", re.sub(r"-\d+$", "", s))
+    s = re.sub(r"-mock$", "", re.sub(r"-\d+$", "", s))
+    return s.replace("-", ".")  # usernames are [a-z0-9._] (20260914200000_username_rules)
 
 
 def city_state(location: str) -> tuple[str, str | None]:
@@ -293,7 +294,7 @@ header = f"""-- Profile import: Firebase users and portfolio projects, and the l
 -- Firebase users: {created} new profiles, each with a sign-in-less auth.users row (no email, no
 -- password, as in 20260913090949_seed_linked_profiles.sql). {renamed} clashed with an existing username:
 -- mock-business-octave-sound-labs is imported as "Wugweb" (username wugweb); the existing
--- octave-sound-labs profile is unchanged. Email, GSTIN and phone are not imported.
+-- octave.sound.labs profile is unchanged. Email, GSTIN and phone are not imported.
 --
 -- Values are written in the shapes the app reads: taxonomy slugs; "<role slug>:<label>"
 -- specialisations; availability Shows / Touring (other Firebase statuses have no equivalent, so null);
