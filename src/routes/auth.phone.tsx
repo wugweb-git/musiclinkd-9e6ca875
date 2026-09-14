@@ -89,7 +89,7 @@ function PhoneAuth() {
         ) : null}
         {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-        <Btn type="submit" className="w-full" disabled={!ok || busy || provider === "off"}>
+        <Btn type="submit" className="w-full" loading={busy} disabled={!ok || provider === "off"}>
           Send code
         </Btn>
       </form>

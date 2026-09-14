@@ -483,3 +483,55 @@ html:active-view-transition-type(fade)::view-transition-new(root) {
 @utility ink-gradient {
   background-image: var(--gradient-ink);
 }
+
+/* ------------------------------------------------------------------ button states
+ * Material 3 state layer: a veil of the content colour (currentColor) over the container. 8% when
+ * hovered (pointer devices only), 12% while pressed, fading over --duration-1. It paints under the
+ * button's content, which sits in a relative span. Used by Btn, BtnLink, IconBtn, IconBtnLink.
+ */
+@utility state-layer {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-1) var(--easing-standard);
+  }
+
+  @media (hover: hover) {
+    &:hover::before {
+      opacity: var(--opacity-1);
+    }
+  }
+
+  &:active::before {
+    opacity: 0.12;
+  }
+}
+
+/* The ripple's clipping box; the button itself stays unclipped so hit-area can reach 48dp. */
+@utility ripple-clip {
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+@keyframes ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.16;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@utility ripple {
+  transform: scale(0);
+  animation: ripple 550ms var(--easing-standard) forwards;
+}

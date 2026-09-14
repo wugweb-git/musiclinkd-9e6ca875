@@ -79,8 +79,8 @@ function VerifyEmail() {
       </div>
 
       <div className="mt-6 space-y-3">
-        <Btn className="w-full" onClick={() => void resend()} disabled={busy}>
-          {busy ? "Sending…" : "Resend confirmation link"}
+        <Btn className="w-full" onClick={() => void resend()} loading={busy}>
+          Resend confirmation link
         </Btn>
         <Btn
           variant="outline"

@@ -218,8 +218,8 @@ function AuthPage() {
           </div>
         ) : null}
 
-        <Btn type="submit" className="w-full" disabled={busy}>
-          {busy ? "Please wait…" : signup ? "Create account" : "Sign in"}
+        <Btn type="submit" className="w-full" loading={busy}>
+          {signup ? "Create account" : "Sign in"}
         </Btn>
       </form>
 

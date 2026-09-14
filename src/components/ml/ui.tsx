@@ -1,7 +1,14 @@
 import { Link, createLink, useRouterState } from "@tanstack/react-router";
-import type { AnchorHTMLAttributes, ReactNode, Ref } from "react";
+import {
+  useState,
+  type AnchorHTMLAttributes,
+  type PointerEvent,
+  type ReactNode,
+  type Ref,
+} from "react";
 import {
   Check,
+  LoaderCircle,
   Home,
   Compass,
   Store,
@@ -169,46 +176,19 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
 }
 
 /*
- * Three button shapes, one vocabulary:
- *   <Btn>Continue</Btn>                                  text
- *   <Btn icon={<Mail size={18} />}>Continue with email</Btn>   icon + text (icon leads)
- *   <IconBtn label="Back"><ArrowLeft size={18} /></IconBtn>     icon only, 48dp, label is the name
- * BtnLink and IconBtnLink are the same shapes as router links.
+ * Buttons. Three shapes, one set of states.
+ *
+ *   <Btn>Continue</Btn>                                          text
+ *   <Btn icon={<Mail size={18} />}>Continue with email</Btn>      icon + text (icon leads)
+ *   <IconBtn label="Back"><ArrowLeft size={18} /></IconBtn>        icon only, 48dp, label is the name
+ *   BtnLink and IconBtnLink are the same shapes as router links.
+ *
+ * States (Material 3): enabled; hovered (pointer devices only) and pressed, shown by a state layer of
+ * the content colour at 8% / 12%; focused, the global :focus-visible ring; disabled, 50% and inert;
+ * loading, a spinner in place of the icon, aria-busy, and inert while it lasts.
+ * Motion: a ripple from the touch point, a 2% press scale, and the state layer fading in. All of it
+ * stops under prefers-reduced-motion. Styles: `state-layer`, `ripple` in styles.css.
  */
-export function Btn({
-  children,
-  icon,
-  variant = "primary",
-  className = "",
-  onClick,
-  type = "button",
-  disabled = false,
-}: {
-  children: ReactNode;
-  /** Leading icon. Decorative: the text is the button's name. */
-  icon?: ReactNode;
-  variant?: BtnVariant;
-  className?: string;
-  onClick?: () => void;
-  type?: "button" | "submit";
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={btnClass(variant, className)}
-    >
-      {icon ? (
-        <span aria-hidden className="inline-flex shrink-0">
-          {icon}
-        </span>
-      ) : null}
-      {children}
-    </button>
-  );
-}
 
 type BtnVariant = "primary" | "ink" | "ghost" | "outline";
 
@@ -219,8 +199,102 @@ const btnVariants: Record<BtnVariant, string> = {
   ghost: "bg-subtle text-muted-foreground",
 };
 
+const btnBase =
+  "state-layer relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-transform duration-125 ease-standard active:scale-98 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50";
+
 function btnClass(variant: BtnVariant, className: string) {
-  return `inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 ${btnVariants[variant]} ${className}`;
+  return `${btnBase} ${btnVariants[variant]} ${className}`;
+}
+
+type Ripple = { id: number; x: number; y: number; size: number };
+
+/** Touch ripple: a circle of the content colour grows from where the finger landed. */
+function useRipple() {
+  const [ripples, setRipples] = useState<Ripple[]>([]);
+  const onPointerDown = (e: PointerEvent<HTMLElement>) => {
+    if (e.button !== 0) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const size = Math.hypot(r.width, r.height) * 2;
+    const ripple = { id: e.timeStamp, x: e.clientX - r.left, y: e.clientY - r.top, size };
+    setRipples((list) => [...list.slice(-2), ripple]);
+    window.setTimeout(() => setRipples((list) => list.filter((x) => x.id !== ripple.id)), 550);
+  };
+  const layer = (
+    <span aria-hidden className="ripple-clip pointer-events-none absolute inset-0">
+      {ripples.map((r) => (
+        <span
+          key={r.id}
+          className="ripple absolute rounded-full bg-current"
+          // computed: where the touch landed and how far the circle must grow
+          style={{ left: r.x - r.size / 2, top: r.y - r.size / 2, width: r.size, height: r.size }}
+        />
+      ))}
+    </span>
+  );
+  return { onPointerDown, layer };
+}
+
+function BtnContent({
+  icon,
+  loading,
+  children,
+}: {
+  icon?: ReactNode;
+  loading?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <span className="relative inline-flex items-center justify-center gap-2">
+      {loading ? (
+        <LoaderCircle size={18} className="shrink-0 animate-spin" aria-hidden />
+      ) : icon ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {icon}
+        </span>
+      ) : null}
+      {children}
+    </span>
+  );
+}
+
+export function Btn({
+  children,
+  icon,
+  variant = "primary",
+  className = "",
+  onClick,
+  type = "button",
+  disabled = false,
+  loading = false,
+}: {
+  children: ReactNode;
+  /** Leading icon. Decorative: the text is the button's name. */
+  icon?: ReactNode;
+  variant?: BtnVariant;
+  className?: string;
+  onClick?: () => void;
+  type?: "button" | "submit";
+  disabled?: boolean;
+  /** Work in progress: shows a spinner, keeps the label and width, and ignores taps. */
+  loading?: boolean;
+}) {
+  const ripple = useRipple();
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      onPointerDown={ripple.onPointerDown}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={btnClass(variant, className)}
+    >
+      {ripple.layer}
+      <BtnContent icon={icon} loading={loading}>
+        {children}
+      </BtnContent>
+    </button>
+  );
 }
 
 function BtnAnchor({
@@ -228,20 +302,25 @@ function BtnAnchor({
   className = "",
   icon,
   children,
+  onPointerDown,
   ...props
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
   variant?: BtnVariant;
   icon?: ReactNode;
   ref?: Ref<HTMLAnchorElement>;
 }) {
+  const ripple = useRipple();
   return (
-    <a {...props} className={btnClass(variant, className)}>
-      {icon ? (
-        <span aria-hidden className="inline-flex shrink-0">
-          {icon}
-        </span>
-      ) : null}
-      {children}
+    <a
+      {...props}
+      onPointerDown={(e) => {
+        ripple.onPointerDown(e);
+        onPointerDown?.(e);
+      }}
+      className={btnClass(variant, className)}
+    >
+      {ripple.layer}
+      <BtnContent icon={icon}>{children}</BtnContent>
     </a>
   );
 }
@@ -257,7 +336,7 @@ const iconBtnVariants: Record<IconBtnVariant, string> = {
   plain: "text-foreground",
 };
 function iconBtnClass(variant: IconBtnVariant, className: string) {
-  return `hit-area inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform duration-200 ease-standard active:scale-95 disabled:pointer-events-none disabled:opacity-60 ${iconBtnVariants[variant]} ${className}`;
+  return `hit-area state-layer inline-flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full transition-transform duration-125 ease-standard active:scale-95 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 ${iconBtnVariants[variant]} ${className}`;
 }
 
 /** Icon-only button. 40px to look at, 48dp to touch; `label` is its accessible name. */
@@ -268,6 +347,7 @@ export function IconBtn({
   className = "",
   onClick,
   disabled = false,
+  loading = false,
 }: {
   label: string;
   children: ReactNode;
@@ -275,17 +355,24 @@ export function IconBtn({
   className?: string;
   onClick?: () => void;
   disabled?: boolean;
+  loading?: boolean;
 }) {
+  const ripple = useRipple();
   return (
     <button
       type="button"
       aria-label={label}
       title={label}
       onClick={onClick}
-      disabled={disabled}
+      onPointerDown={ripple.onPointerDown}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={iconBtnClass(variant, className)}
     >
-      {children}
+      {ripple.layer}
+      <span className="relative inline-flex">
+        {loading ? <LoaderCircle size={18} className="animate-spin" aria-hidden /> : children}
+      </span>
     </button>
   );
 }
@@ -295,15 +382,27 @@ function IconAnchor({
   variant = "outline",
   className = "",
   children,
+  onPointerDown,
   ...props
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
   label: string;
   variant?: IconBtnVariant;
   ref?: Ref<HTMLAnchorElement>;
 }) {
+  const ripple = useRipple();
   return (
-    <a {...props} aria-label={label} title={label} className={iconBtnClass(variant, className)}>
-      {children}
+    <a
+      {...props}
+      aria-label={label}
+      title={label}
+      onPointerDown={(e) => {
+        ripple.onPointerDown(e);
+        onPointerDown?.(e);
+      }}
+      className={iconBtnClass(variant, className)}
+    >
+      {ripple.layer}
+      <span className="relative inline-flex">{children}</span>
     </a>
   );
 }

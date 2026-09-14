@@ -73,7 +73,7 @@ function CtaRow({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "flex min-h-12 w-full items-center justify-center gap-2 rounded-lg px-5 text-2 font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60",
+        "state-layer flex min-h-12 w-full items-center justify-center gap-2 rounded-lg px-5 text-2 font-semibold transition-transform duration-125 ease-standard active:scale-98 disabled:pointer-events-none disabled:opacity-50",
         filled ? "bg-foreground text-background" : "text-foreground",
         className,
       )}
