@@ -37,10 +37,7 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
             {g}
           </span>
         ))}
-        <span
-          className="rounded-full px-2.5 py-1 text-1 font-semibold"
-          style={{ background: "var(--status-category-bg)", color: "var(--status-category-text)" }}
-        >
+        <span className="rounded-full bg-status-category-bg px-2.5 py-1 text-1 font-semibold text-status-category-text">
           {t.languages.join(" · ")}
         </span>
       </div>

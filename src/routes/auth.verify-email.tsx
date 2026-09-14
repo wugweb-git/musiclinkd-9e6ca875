@@ -51,10 +51,7 @@ function VerifyEmail() {
 
   return (
     <AuthScreen>
-      <div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
-        style={{ background: "var(--pink-container)" }}
-      >
+      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-pink-container">
         <MailCheck size={24} className="text-primary" />
       </div>
       <AuthHeading
@@ -73,7 +70,7 @@ function VerifyEmail() {
       ) : null}
 
       <div className="rounded-lg border border-border bg-card p-4">
-        <p className="text-[13px] font-semibold">Not arrived?</p>
+        <p className="text-1 font-semibold">Not arrived?</p>
         <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
           <li>• Check spam and promotions folders.</li>
           <li>• Make sure the address above is spelled correctly.</li>

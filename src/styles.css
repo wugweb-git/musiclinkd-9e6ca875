@@ -106,6 +106,13 @@
   --color-warn: var(--warn);
   --color-subtle: var(--surface-subtle);
 
+  /* Tinted containers and the text-safe pink. */
+  --color-pink-container: var(--pink-container);
+  --color-pink-strong: var(--pink-strong);
+  --color-success-container: var(--success-container);
+  --color-warn-container: var(--warn-container);
+  --color-danger-container: var(--danger-container);
+
   /* Category badge — the only sanctioned use of purple. */
   --color-status-category-bg: var(--status-category-bg);
   --color-status-category-text: var(--status-category-text);

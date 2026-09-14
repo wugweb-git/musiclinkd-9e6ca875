@@ -268,7 +268,7 @@ export function StepShell({
             <button
               type="button"
               onClick={onSkip}
-              className="shrink-0 text-xs font-semibold text-muted-foreground"
+              className="shrink-0 text-1 font-semibold text-muted-foreground"
             >
               Skip
             </button>
@@ -282,10 +282,7 @@ export function StepShell({
         {banner}
         <h1 className="text-3 leading-tight">{title}</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
-        <p
-          className="mt-3 rounded-lg px-4 py-3 text-xs leading-relaxed text-muted-foreground"
-          style={{ background: "var(--pink-container)" }}
-        >
+        <p className="mt-3 rounded-lg px-4 py-3 text-1 leading-relaxed text-muted-foreground bg-pink-container">
           {why}
         </p>
         <div className="mt-6">{children}</div>
@@ -343,7 +340,7 @@ export function ChoiceGrid({
   value,
   onSelect,
 }: {
-  options: { key: string; label: string; hint: string; emoji?: string }[];
+  options: { key: string; label: string; hint: string; icon?: ReactNode }[];
   value: string | null;
   onSelect: (key: string) => void;
 }) {
@@ -358,13 +355,10 @@ export function ChoiceGrid({
             aria-pressed={on}
             onClick={() => onSelect(o.key)}
             className={`flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-colors ${
-              on ? "border-primary bg-card" : "border-border bg-card"
+              on ? "border-primary bg-pink-container" : "border-border bg-card"
             }`}
-            style={on ? { background: "var(--pink-container)" } : undefined}
           >
-            <span className="text-xl" aria-hidden>
-              {o.emoji ?? "•"}
-            </span>
+            <span className={on ? "text-pink-strong" : "text-muted-foreground"}>{o.icon}</span>
             <span>
               <span className="block text-sm font-semibold">{o.label}</span>
               <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
@@ -412,7 +406,7 @@ export function OptionList({
               </span>
               <span className="min-w-0">
                 <span className="block text-sm font-semibold">{o.label}</span>
-                <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">
+                <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
                   {o.hint}
                 </span>
               </span>
@@ -454,7 +448,7 @@ export function InlineField({
     <div>
       <label
         htmlFor={inputId}
-        className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground"
+        className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
       >
         {label}
       </label>
@@ -487,12 +481,12 @@ export function InlineField({
       </div>
       <div className="mt-1.5 flex items-start justify-between gap-3">
         <p
-          className={`text-xs ${error ? "text-destructive" : ok ? "text-success" : "text-muted-foreground"}`}
+          className={`text-1 ${error ? "text-destructive" : ok ? "text-success" : "text-muted-foreground"}`}
         >
           {error ?? ok ?? hint ?? ""}
         </p>
         {maxLength ? (
-          <p className="shrink-0 text-xs tabular-nums text-muted-foreground">
+          <p className="shrink-0 text-1 tabular-nums text-muted-foreground">
             {value.length}/{maxLength}
           </p>
         ) : null}
@@ -545,7 +539,7 @@ export function PhotoPicker({
             <button
               type="button"
               onClick={() => onChange(null)}
-              className="flex min-h-11 w-full items-center justify-center gap-2 text-xs font-semibold text-muted-foreground"
+              className="flex min-h-11 w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground"
             >
               <Trash2 size={14} /> Remove
             </button>
@@ -584,7 +578,7 @@ export function PhotoPicker({
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-1 text-muted-foreground">
           You can crop and reposition after choosing. No professional headshot needed.
         </p>
       </Sheet>
@@ -613,7 +607,7 @@ export function SelectField({
     <div>
       <label
         htmlFor={selectId}
-        className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground"
+        className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
       >
         {label}
       </label>
@@ -646,7 +640,7 @@ export function OfflineBanner() {
       className="mb-4 flex items-start gap-3 rounded-lg border border-border bg-card p-4"
     >
       <WifiOff size={16} className="mt-0.5 shrink-0 text-warn" />
-      <p className="text-xs leading-relaxed text-muted-foreground">
+      <p className="text-1 leading-relaxed text-muted-foreground">
         You're offline. Your answers are kept on this device and will sync when you're back online —
         nothing has been saved to your profile yet.
       </p>
@@ -658,11 +652,11 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
   return (
     <div role="alert" className="mb-4 rounded-lg border border-destructive/40 bg-card p-4">
       <p className="text-sm font-semibold text-destructive">We couldn't save that</p>
-      <p className="mt-1 text-xs text-muted-foreground">{message}</p>
+      <p className="mt-1 text-1 text-muted-foreground">{message}</p>
       <button
         type="button"
         onClick={onRetry}
-        className="mt-3 min-h-11 text-xs font-bold text-primary"
+        className="mt-3 min-h-11 text-1 font-bold text-primary"
       >
         Try again
       </button>
@@ -677,7 +671,7 @@ export function SavingBanner({ label = "Saving your answers…" }: { label?: str
       className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card p-4"
     >
       <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-1 text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -711,7 +705,7 @@ export function SyncBanner({
   if (state === "local") {
     return (
       <div role="status" className="mb-4 rounded-lg border border-border bg-card p-4">
-        <p className="text-xs leading-relaxed text-muted-foreground">{localNote}</p>
+        <p className="text-1 leading-relaxed text-muted-foreground">{localNote}</p>
       </div>
     );
   }
@@ -730,7 +724,7 @@ export function StepSkeleton() {
 
 export function LocationHint() {
   return (
-    <p className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+    <p className="mt-3 flex items-start gap-2 text-1 text-muted-foreground">
       <MapPin size={14} className="mt-0.5 shrink-0" />
       City level is all we publish. Your exact address is never shown.
     </p>
@@ -745,13 +739,11 @@ export function ReadinessCard({
   label,
   hint,
   done,
-  flow,
   action,
 }: {
   label: string;
   hint: string;
   done: boolean;
-  flow?: string;
   action?: ReactNode;
 }) {
   return (
@@ -773,12 +765,7 @@ export function ReadinessCard({
             {done ? "Done" : "To do"}
           </span>
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
-        {flow ? (
-          <p className="mt-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-            {flow}
-          </p>
-        ) : null}
+        <p className="mt-0.5 text-1 text-muted-foreground">{hint}</p>
         {!done && action ? <div className="mt-2">{action}</div> : null}
       </div>
     </div>
@@ -788,30 +775,29 @@ export function ReadinessCard({
 export function HandoffCard({
   title,
   body,
-  flow,
   action,
   onLater,
 }: {
   title: string;
   body: string;
-  flow: string;
   action: ReactNode;
   onLater?: () => void;
 }) {
   return (
     <div className="rounded-lg border border-border bg-card p-5">
-      <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{flow}</p>
-      <h3 className="mt-1 text-lg">{title}</h3>
+      <h3 className="text-2">{title}</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
       <div className="mt-4 flex items-center gap-2">
         <div className="flex-1">{action}</div>
-        <button
-          type="button"
-          onClick={() => onLater?.()}
-          className="min-h-11 rounded-full border border-border px-5 text-sm font-semibold"
-        >
-          Later
-        </button>
+        {onLater ? (
+          <button
+            type="button"
+            onClick={onLater}
+            className="min-h-11 rounded-full border border-border px-5 text-sm font-semibold"
+          >
+            Later
+          </button>
+        ) : null}
       </div>
     </div>
   );

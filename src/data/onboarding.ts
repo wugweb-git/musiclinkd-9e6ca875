@@ -68,7 +68,6 @@ export type RoleDef = {
   key: RoleKey;
   label: string;
   hint: string;
-  emoji: string;
   /** Roles that should be asked about instruments. */
   instruments: boolean;
 };
@@ -78,75 +77,65 @@ export const roles: RoleDef[] = [
     key: "singer",
     label: "Singer",
     hint: "Vocalist, playback, live",
-    emoji: "🎤",
     instruments: false,
   },
   {
     key: "musician",
     label: "Musician",
     hint: "Session, live, studio",
-    emoji: "🎸",
     instruments: true,
   },
   {
     key: "producer",
     label: "Producer",
     hint: "Beats, arrangement, mix",
-    emoji: "🎛",
     instruments: true,
   },
   {
     key: "composer",
     label: "Composer",
     hint: "Score, jingles, film",
-    emoji: "🎼",
     instruments: true,
   },
   {
     key: "lyricist",
     label: "Lyricist",
     hint: "Writing, adaptation",
-    emoji: "✍️",
     instruments: false,
   },
   {
     key: "music-director",
     label: "Music Director",
     hint: "Leading music teams",
-    emoji: "🎬",
     instruments: false,
   },
   {
     key: "sound-engineer",
     label: "Sound Engineer",
     hint: "Record, mix, master",
-    emoji: "🎚",
     instruments: false,
   },
-  { key: "dj", label: "DJ", hint: "Clubs, weddings, events", emoji: "🎧", instruments: false },
-  { key: "rj", label: "RJ", hint: "Radio, hosting", emoji: "📻", instruments: false },
+  { key: "dj", label: "DJ", hint: "Clubs, weddings, events", instruments: false },
+  { key: "rj", label: "RJ", hint: "Radio, hosting", instruments: false },
   {
     key: "podcaster",
     label: "Podcaster",
     hint: "Shows and audio series",
-    emoji: "🎙",
     instruments: false,
   },
   {
     key: "voice-artist",
     label: "Voice Artist",
     hint: "Dubbing, ads, narration",
-    emoji: "🗣",
     instruments: false,
   },
   {
     key: "music-teacher",
     label: "Music Teacher",
     hint: "Lessons and coaching",
-    emoji: "📚",
     instruments: true,
   },
-  { key: "other", label: "Other", hint: "Tell us in your bio", emoji: "✨", instruments: false },
+  { key: "other", label: "Other", hint: "Tell us in your bio", instruments: false },
 ];
 
 export const instruments = [
@@ -436,13 +425,12 @@ export type OnboardingDraft = {
   discovery: string[]; // PROPOSED preferences.discoveryTopics
   visibility: string; // EXISTING profile.visibility
   businessIntent: string | null; // hand-off to FLOW-12
-  bandIntent: boolean; // hand-off to FLOW-15
   completedSteps: string[]; // COMPUTED
 };
 
 export const emptyDraft: OnboardingDraft = {
-  displayName: "Ananya Sharma",
-  username: "ananya.sharma",
+  displayName: "",
+  username: "",
   photo: null,
   cover: null,
   primaryRole: null,
@@ -466,7 +454,6 @@ export const emptyDraft: OnboardingDraft = {
   discovery: [],
   visibility: "public",
   businessIntent: null,
-  bandIntent: false,
   completedSteps: [],
 };
 
@@ -494,7 +481,6 @@ export type StepId =
   | "discovery"
   | "visibility"
   | "business"
-  | "band"
   | "handoffs";
 
 export type StepDef = {
@@ -788,15 +774,6 @@ export const steps: StepDef[] = [
       ["business"],
     ),
   },
-  {
-    id: "band",
-    group: "Personalisation",
-    title: "Are you in a band or crew?",
-    subtitle: "Bands have a shared profile and calendar.",
-    why: "We'll hand you over to Band setup after onboarding.",
-    optional: true,
-    contract: contract("ONB-27", "Band Intent", "/onboarding/step/band", ["bands"], ["band"]),
-  },
 ];
 
 export function visibleSteps(draft: OnboardingDraft): StepDef[] {
@@ -813,9 +790,8 @@ export type Readiness = {
   label: string;
   hint: string;
   done: boolean;
-  flow?: string;
   cta?: string;
-  to?: string;
+  to?: "/portfolio/new" | "/services" | "/verification";
 };
 
 export function readiness(d: OnboardingDraft): Readiness[] {
@@ -843,24 +819,24 @@ export function readiness(d: OnboardingDraft): Readiness[] {
       label: "Portfolio ready",
       hint: "Add tracks, videos or credits",
       done: false,
-      flow: "FLOW 03",
       cta: "Add portfolio",
+      to: "/portfolio/new",
     },
     {
       key: "services",
       label: "Opportunity ready",
       hint: "Set services and availability",
       done: false,
-      flow: "FLOW 11",
       cta: "Set services",
+      to: "/services",
     },
     {
       key: "verification",
       label: "Trusted profile",
       hint: "Verify your professional identity",
       done: false,
-      flow: "FLOW 16",
       cta: "Verify profile",
+      to: "/verification",
     },
   ];
 }

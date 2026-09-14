@@ -147,14 +147,14 @@ function AuthPage() {
                 Sign in instead
               </Btn>
             ) : error.kind === "invalid_credentials" ? (
-              <Link to="/auth/forgot" className="text-[13px] font-semibold text-primary">
+              <Link to="/auth/forgot" className="text-1 font-semibold text-primary">
                 Reset password
               </Link>
             ) : error.kind === "unconfirmed" ? (
               <Link
                 to="/auth/verify-email"
                 search={{ email }}
-                className="text-[13px] font-semibold text-primary"
+                className="text-1 font-semibold text-primary"
               >
                 Resend confirmation
               </Link>
@@ -199,7 +199,7 @@ function AuthPage() {
 
       {!signup ? (
         <div className="mb-5 -mt-1 text-right">
-          <Link to="/auth/forgot" className="text-[13px] font-semibold text-primary">
+          <Link to="/auth/forgot" className="text-1 font-semibold text-primary">
             Forgot password?
           </Link>
         </div>
@@ -212,7 +212,7 @@ function AuthPage() {
       <button
         type="button"
         onClick={() => switchMode(signup ? "signin" : "signup")}
-        className="mt-5 w-full text-center text-[13.5px] text-muted-foreground"
+        className="mt-5 w-full text-center text-1 text-muted-foreground"
       >
         {signup ? (
           <>
@@ -227,7 +227,7 @@ function AuthPage() {
 
       <LegalNote />
 
-      <p className="mt-6 text-center text-[12px] text-muted-foreground">
+      <p className="mt-6 text-center text-1 text-muted-foreground">
         Browsing without an account?{" "}
         <Link to="/discover" className="font-semibold text-primary">
           Explore Discover

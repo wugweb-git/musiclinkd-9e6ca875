@@ -1,5 +1,21 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  AudioLines,
+  Clapperboard,
+  GraduationCap,
+  Guitar,
+  Headphones,
+  Mic,
+  MicVocal,
+  Music,
+  PenLine,
+  Podcast,
+  Radio,
+  SlidersHorizontal,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import {
   ChipPicker,
@@ -43,6 +59,22 @@ import {
   type StepDef,
 } from "@/data/onboarding";
 
+const roleIcons: Record<RoleKey, LucideIcon> = {
+  singer: Mic,
+  musician: Guitar,
+  producer: SlidersHorizontal,
+  composer: Music,
+  lyricist: PenLine,
+  "music-director": Clapperboard,
+  "sound-engineer": AudioLines,
+  dj: Headphones,
+  rj: Radio,
+  podcaster: Podcast,
+  "voice-artist": MicVocal,
+  "music-teacher": GraduationCap,
+  other: Sparkles,
+};
+
 export const Route = createFileRoute("/onboarding/step/$id")({
   head: () => ({
     meta: [
@@ -82,7 +114,7 @@ function StepRoute() {
 
   if (!hydrated) {
     return (
-      <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background px-5 pt-16">
+      <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background px-5 pt-16">
         <StepSkeleton />
       </div>
     );
@@ -90,8 +122,8 @@ function StepRoute() {
 
   if (!def || index === -1) {
     return (
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col justify-center bg-background px-6 text-center">
-        <p className="text-lg font-semibold">This step isn't part of your setup</p>
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-center bg-background px-6 text-center">
+        <p className="text-2 font-semibold">This step isn't part of your setup</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Your answers so far are safe. We'll take you to the next relevant question.
         </p>
@@ -162,7 +194,7 @@ function StepRoute() {
           <button
             type="button"
             onClick={() => navigate({ to: "/onboarding/skip" })}
-            className="min-h-11 w-full text-xs font-semibold text-muted-foreground"
+            className="min-h-11 w-full text-1 font-semibold text-muted-foreground"
           >
             Finish later
           </button>
@@ -230,7 +262,7 @@ function StepBody({
       return (
         <div className="space-y-5">
           <PhotoPicker photo={d.photo} onChange={(v) => set({ photo: v })} />
-          <p className="rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
+          <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
             A clear photo of your face works better than a logo or a live shot from far away.
           </p>
         </div>
@@ -239,7 +271,15 @@ function StepBody({
     case "role":
       return (
         <ChoiceGrid
-          options={roles.map((r) => ({ key: r.key, label: r.label, hint: r.hint, emoji: r.emoji }))}
+          options={roles.map((r) => {
+            const Icon = roleIcons[r.key];
+            return {
+              key: r.key,
+              label: r.label,
+              hint: r.hint,
+              icon: <Icon size={24} aria-hidden />,
+            };
+          })}
           value={d.primaryRole}
           onSelect={(k) => set({ primaryRole: k as RoleKey })}
         />
@@ -264,7 +304,7 @@ function StepBody({
           />
           {d.instruments.length > 1 ? (
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+              <p className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
                 Primary instrument
               </p>
               <ChipPicker
@@ -285,7 +325,7 @@ function StepBody({
         <div className="space-y-6">
           {spec.groups.map((g) => (
             <div key={g.label}>
-              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+              <p className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
                 {g.label}
               </p>
               <ChipPicker
@@ -411,7 +451,7 @@ function StepBody({
                 }.`,
               })
             }
-            className="min-h-11 w-full rounded-full border border-border text-xs font-semibold"
+            className="min-h-11 w-full rounded-full border border-border text-1 font-semibold"
           >
             Suggest a starting point
           </button>
@@ -476,32 +516,11 @@ function StepBody({
             selected={d.businessIntent ? [d.businessIntent] : []}
             onToggle={(v) => set({ businessIntent: d.businessIntent === v ? null : v })}
           />
-          <p className="rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
+          <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
             Choosing one hands you over to Business setup after onboarding. Your personal profile
             stays yours.
           </p>
         </div>
-      );
-
-    case "band":
-      return (
-        <OptionList
-          options={[
-            {
-              key: "yes",
-              label: "Yes, I'm in a band or crew",
-              hint: "We'll help you create a shared profile.",
-            },
-            {
-              key: "no",
-              label: "Not right now",
-              hint: "You can add one any time from your profile.",
-            },
-          ]}
-          selected={[d.bandIntent ? "yes" : "no"]}
-          onToggle={(k) => set({ bandIntent: k === "yes" })}
-          multi={false}
-        />
       );
 
     default:

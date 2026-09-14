@@ -36,16 +36,13 @@ function Welcome() {
   const started = draft.completedSteps.length > 0;
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
       <div>
-        <span
-          className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-primary"
-          style={{ background: "var(--pink-container)" }}
-        >
+        <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-1 font-bold uppercase tracking-wide text-primary bg-pink-container">
           <Sparkles size={13} /> Step 1 of {total + 2}
         </span>
-        <h1 className="mt-5 text-[32px] leading-[1.1]">Let's build your MusicLinkd profile.</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+        <h1 className="mt-5 text-4">Let's build your MusicLinkd profile.</h1>
+        <p className="mt-3 text-2 leading-relaxed text-muted-foreground">
           Tell us a little about what you do in music. It takes about two minutes, and you can skip
           anything that doesn't apply.
         </p>
@@ -75,7 +72,7 @@ function Welcome() {
               <span className="mt-0.5 text-primary">{f.icon}</span>
               <span>
                 <span className="block text-sm font-semibold">{f.title}</span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">{f.body}</span>
+                <span className="mt-0.5 block text-1 text-muted-foreground">{f.body}</span>
               </span>
             </li>
           ))}

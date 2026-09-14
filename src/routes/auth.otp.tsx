@@ -67,10 +67,7 @@ function OtpScreen() {
         {cells.map((i) => (
           <span
             key={i}
-            className="flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-[20px] font-semibold"
-            style={{
-              borderColor: i === code.length ? "var(--primary)" : "var(--border)",
-            }}
+            className={`flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-3 font-semibold ${i === code.length ? "border-primary" : "border-border"}`}
           >
             {code[i] ?? ""}
           </span>

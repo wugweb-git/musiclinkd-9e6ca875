@@ -56,20 +56,20 @@ function Complete() {
   const pct = completionPercent(d);
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
         <section className="rounded-lg border border-border bg-card p-5">
           <PartyPopper size={26} className="text-primary" />
-          <h1 className="mt-3 text-[24px] leading-tight">
+          <h1 className="mt-3 text-3 leading-tight">
             You're on MusicLinkd, {d.displayName.split(" ")[0] || "there"}
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
             Your profile is live and discoverable. Everything below makes it work harder for you.
           </p>
           <div className="mt-4">
-            <div className="flex items-baseline justify-between text-xs">
+            <div className="flex items-baseline justify-between text-1">
               <span className="font-semibold">Profile strength</span>
               <span className="tabular-nums text-muted-foreground">{pct}%</span>
             </div>
@@ -86,7 +86,7 @@ function Complete() {
           </div>
         </section>
 
-        <h2 className="mt-6 text-[17px]">What's ready</h2>
+        <h2 className="mt-6 text-2">What's ready</h2>
         <div className="mt-3 space-y-2">
           {items.map((r) => (
             <ReadinessCard
@@ -94,11 +94,10 @@ function Complete() {
               label={r.label}
               hint={r.hint}
               done={r.done}
-              {...(r.flow ? { flow: r.flow } : {})}
-              {...(r.cta
+              {...(r.cta && r.to
                 ? {
                     action: (
-                      <BtnLink to="/me" variant="outline">
+                      <BtnLink to={r.to} variant="outline">
                         {r.cta}
                       </BtnLink>
                     ),
@@ -108,10 +107,9 @@ function Complete() {
           ))}
         </div>
 
-        <h2 className="mt-6 text-[17px]">Next steps</h2>
+        <h2 className="mt-6 text-2">Next steps</h2>
         <div className="mt-3 space-y-3">
           <HandoffCard
-            flow="FLOW 03"
             title="Add your portfolio"
             body="Tracks, videos and credits are what turn a profile view into an enquiry."
             action={
@@ -122,7 +120,6 @@ function Complete() {
           />
           {d.businessIntent ? (
             <HandoffCard
-              flow="FLOW 12"
               title={`Set up your ${d.businessIntent.toLowerCase()} profile`}
               body="Add your team, services and location so clients can book the business, not just you."
               action={
@@ -132,24 +129,11 @@ function Complete() {
               }
             />
           ) : null}
-          {d.bandIntent ? (
-            <HandoffCard
-              flow="FLOW 15"
-              title="Create your band profile"
-              body="A shared profile with members, shows and a joint calendar."
-              action={
-                <BtnLink to="/bands/new" className="w-full">
-                  Create band
-                </BtnLink>
-              }
-            />
-          ) : null}
           <HandoffCard
-            flow="FLOW 16"
             title="Verify your identity"
             body="Verified profiles rank higher in discovery and get more replies."
             action={
-              <BtnLink to="/me" className="w-full">
+              <BtnLink to="/verification" className="w-full">
                 Start verification
               </BtnLink>
             }
@@ -157,7 +141,7 @@ function Complete() {
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         <BtnLink to="/onboarding/done" className="w-full">
           Finish
         </BtnLink>

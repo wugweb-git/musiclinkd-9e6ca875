@@ -9,12 +9,12 @@ import { ChevronRight, Star } from "lucide-react";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
-const toneStyle: Record<Tone, { bg: string; fg: string }> = {
-  neutral: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
-  good: { bg: "var(--success-container)", fg: "var(--success)" },
-  warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-  bad: { bg: "var(--danger-container)", fg: "var(--danger)" },
-  brand: { bg: "var(--pink-container)", fg: "var(--pink-strong)" },
+const toneStyle: Record<Tone, { pill: string; dot: string }> = {
+  neutral: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
+  good: { pill: "bg-success-container text-success", dot: "bg-success" },
+  warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+  bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
+  brand: { pill: "bg-pink-container text-pink-strong", dot: "bg-pink-strong" },
 };
 
 /** One status system across every flow. */
@@ -30,10 +30,9 @@ export function StatusPill({
   const c = toneStyle[tone];
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: c.bg, color: c.fg }}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
     >
-      {icon ?? <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.fg }} />}
+      {icon ?? <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} />}
       {label}
     </span>
   );

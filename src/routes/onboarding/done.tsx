@@ -39,13 +39,13 @@ function Done() {
   ].filter(Boolean) as string[];
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-40">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-40">
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
         <section className="rounded-lg border border-border bg-card p-6 text-center">
           <Sparkles size={28} className="mx-auto text-primary" />
-          <h1 className="mt-3 text-[24px] leading-tight">Welcome aboard, {first}</h1>
+          <h1 className="mt-3 text-3 leading-tight">Welcome aboard, {first}</h1>
           <p className="mx-auto mt-2 max-w-[300px] text-sm text-muted-foreground">
             Your profile is live and people can find you. Here's what it says right now.
           </p>
@@ -61,28 +61,28 @@ function Done() {
           </ul>
         ) : null}
 
-        <h2 className="mt-7 text-[17px]">What next</h2>
+        <h2 className="mt-7 text-2">What next</h2>
         <div className="mt-3 space-y-3">
           <Link to="/portfolio/new" className="block rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">Add portfolio work</p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-1 text-muted-foreground">
               Tracks, videos and credits turn a profile view into an enquiry.
             </p>
           </Link>
           <Link to="/discover" className="block rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">Discover talent</p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-1 text-muted-foreground">
               Singers, producers, studios and bands near you.
             </p>
           </Link>
           <Link to="/me" className="block rounded-lg border border-border bg-card p-4">
             <p className="text-sm font-semibold">View my profile</p>
-            <p className="mt-1 text-xs text-muted-foreground">See exactly what others see.</p>
+            <p className="mt-1 text-1 text-muted-foreground">See exactly what others see.</p>
           </Link>
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         <BtnLink to="/feed" className="w-full">
           Go to my home
         </BtnLink>

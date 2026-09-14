@@ -124,7 +124,7 @@ function Dashboard() {
 function Header() {
   return (
     <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
-      <p className="truncate text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <p className="truncate text-1 font-semibold uppercase tracking-widest text-muted-foreground">
         MusicLinkd
       </p>
       <div className="flex shrink-0 items-center gap-2">
@@ -147,9 +147,9 @@ function Header() {
 function StatTile({ tile }: { tile: ForYouTile }) {
   return (
     <Link to={tile.to} className="min-w-0 rounded-lg border border-border bg-card p-4">
-      <p className="text-[24px] font-bold leading-none">{tile.value}</p>
-      <p className="mt-2 truncate text-[12px] font-semibold">{tile.label}</p>
-      <p className="truncate text-[11px] text-muted-foreground">{tile.hint}</p>
+      <p className="text-3 font-bold leading-none">{tile.value}</p>
+      <p className="mt-2 truncate text-1 font-semibold">{tile.label}</p>
+      <p className="truncate text-1 text-muted-foreground">{tile.hint}</p>
     </Link>
   );
 }
@@ -169,7 +169,7 @@ function Body({ data }: { data: DashboardData }) {
     <div className="min-w-0 pb-4">
       {/* 1 — Greeting */}
       <section className="min-w-0 px-5 pt-5">
-        <h1 className="break-words text-[28px] leading-tight">
+        <h1 className="break-words text-3 leading-tight">
           {hello}
           {viewerFirstName ? `, ${viewerFirstName}` : ""}
         </h1>
@@ -177,14 +177,11 @@ function Body({ data }: { data: DashboardData }) {
           {isEmpty ? "Your network is quiet today." : "Here's your MusicLinkd today."}
         </p>
         <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2">
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold"
-            style={{ background: "var(--success-container)", color: "var(--success)" }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--success)" }} />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-container px-3 py-1.5 text-1 font-bold text-success">
+            <span className="h-1.5 w-1.5 rounded-full bg-success" />
             {user.available ? "Open to collaborations" : "Not taking work"}
           </span>
-          <span className="max-w-full truncate rounded-full bg-subtle px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
+          <span className="max-w-full truncate rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold text-muted-foreground">
             {user.role}
           </span>
         </div>
@@ -195,15 +192,12 @@ function Body({ data }: { data: DashboardData }) {
         <section className="px-5 pt-4">
           <Link
             to={headline.to}
-            className="flex min-w-0 items-center gap-3 rounded-lg border border-border p-4"
-            style={{ background: "var(--pink-container)" }}
+            className="flex min-w-0 items-center gap-3 rounded-lg border border-border p-4 bg-pink-container"
           >
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[17px] font-bold leading-snug">{headline.title}</p>
-              <p className="mt-0.5 line-clamp-2 text-[12px] text-muted-foreground">
-                {headline.body}
-              </p>
-              <span className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-primary">
+              <p className="truncate text-2 font-bold leading-snug">{headline.title}</p>
+              <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{headline.body}</p>
+              <span className="mt-2 inline-flex items-center gap-1 text-1 font-semibold text-primary">
                 {headline.cta} <ArrowRight size={13} />
               </span>
             </div>
@@ -265,17 +259,16 @@ function Body({ data }: { data: DashboardData }) {
               <li key={a.id} className="flex min-w-0 items-start gap-3 py-2.5">
                 <span
                   aria-hidden
-                  className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ background: a.kind === "view" ? "var(--border)" : "var(--primary)" }}
+                  className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${a.kind === "view" ? "bg-border" : "bg-primary"}`}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-[13px] font-semibold leading-snug">{a.title}</p>
-                  <p className="truncate text-[11px] text-muted-foreground">
+                  <p className="line-clamp-2 text-1 font-semibold leading-snug">{a.title}</p>
+                  <p className="truncate text-1 text-muted-foreground">
                     {a.meta} · {a.when}
                   </p>
                 </div>
                 {a.kind === "request" ? (
-                  <Btn variant="primary" className="min-h-9 shrink-0 px-4 text-[11px]">
+                  <Btn variant="primary" className="min-h-9 shrink-0 px-4 text-1">
                     Accept
                   </Btn>
                 ) : null}
@@ -284,13 +277,13 @@ function Body({ data }: { data: DashboardData }) {
           </ul>
         ) : (
           <div className="mx-5 rounded-lg border border-border bg-card p-5 text-center">
-            <p className="text-[14px] font-semibold">No activity yet</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">
+            <p className="text-2 font-semibold">No activity yet</p>
+            <p className="mt-1 text-1 text-muted-foreground">
               Connect with artists and studios to see updates here.
             </p>
             <Link
               to="/discover"
-              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-xs font-semibold text-background"
+              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
             >
               Discover talent
             </Link>
@@ -307,7 +300,7 @@ function Body({ data }: { data: DashboardData }) {
             className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-4"
           >
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-semibold">
+              <p className="truncate text-1 font-semibold">
                 Profile {data.user.profileCompletion}% complete
               </p>
               <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-subtle">
@@ -339,18 +332,18 @@ function Body({ data }: { data: DashboardData }) {
 function ContinueBlock({ c }: { c: ContinueCard }) {
   const inner = (
     <>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+      <p className="text-1 font-semibold uppercase tracking-widest text-muted-foreground">
         {c.eyebrow}
       </p>
-      <p className="mt-1 line-clamp-2 text-[16px] font-bold leading-snug">{c.title}</p>
-      <p className="mt-0.5 truncate text-[12px] text-muted-foreground">{c.meta}</p>
-      <p className="mt-1 truncate text-[12px] font-semibold">{c.detail}</p>
+      <p className="mt-1 line-clamp-2 text-2 font-bold leading-snug">{c.title}</p>
+      <p className="mt-0.5 truncate text-1 text-muted-foreground">{c.meta}</p>
+      <p className="mt-1 truncate text-1 font-semibold">{c.detail}</p>
       {typeof c.progress === "number" ? (
         <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-subtle">
           <div className="h-full rounded-full bg-primary" style={{ width: `${c.progress}%` }} />
         </div>
       ) : null}
-      <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-primary">
+      <span className="mt-3 inline-flex items-center gap-1 text-1 font-semibold text-primary">
         {c.cta} <ArrowRight size={13} />
       </span>
     </>
@@ -396,7 +389,7 @@ function QuietAction({
       className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5"
     >
       <span className="shrink-0 text-primary">{icon}</span>
-      <span className="whitespace-nowrap text-[12px] font-semibold">{label}</span>
+      <span className="whitespace-nowrap text-1 font-semibold">{label}</span>
     </Link>
   );
 }
@@ -418,8 +411,8 @@ function StateBlock({
         <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-subtle">
           {icon}
         </span>
-        <h2 className="text-[17px]">{title}</h2>
-        <p className="mt-1 text-[12px] text-muted-foreground">{body}</p>
+        <h2 className="text-2">{title}</h2>
+        <p className="mt-1 text-1 text-muted-foreground">{body}</p>
         <Btn variant="ink" className="mt-4 w-full" onClick={onRetry}>
           Try again
         </Btn>
