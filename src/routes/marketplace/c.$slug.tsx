@@ -3,8 +3,11 @@ import { useState } from "react";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { EmptyState, ListingCard, MarketFilterSheet, SortSheet } from "@/components/ml/market";
 import { listings, marketCategories, subcategories } from "@/data/market";
+import { loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/c/$slug")({
+  // Database listings follow the static ones in their mapped category.
+  loader: () => loadCatalogListings(),
   head: ({ params }) => {
     const c = marketCategories.find((m) => m.slug === params.slug);
     const title = `${c?.label ?? "Category"} | MusicLinkd Market`;
@@ -31,8 +34,9 @@ function CategoryScreen() {
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState(sorts[0]!);
+  const catalog = Route.useLoaderData();
 
-  const items = listings.filter(
+  const items = [...listings, ...catalog].filter(
     (l) => l.category === slug && (sub === "All" || l.subcategory === sub),
   );
 
