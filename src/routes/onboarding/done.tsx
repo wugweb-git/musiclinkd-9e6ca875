@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
 import { BtnLink, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/onboarding/done")({
   head: () => ({
@@ -30,11 +31,17 @@ export const Route = createFileRoute("/onboarding/done")({
 
 function Done() {
   const { draft: d } = useOnboarding();
+  const tx = useTaxonomy().options;
   const first = d.displayName.split(" ")[0] || "there";
   const summary = [
-    d.primaryRole ? `Role: ${d.primaryRole}` : null,
+    d.primaryRole ? `Role: ${labelFor(tx?.person_types, d.primaryRole)}` : null,
     d.city ? `Based in ${d.city}` : null,
-    d.genres.length ? `${d.genres.slice(0, 3).join(", ")}` : null,
+    d.genres.length
+      ? d.genres
+          .slice(0, 3)
+          .map((g) => labelFor(tx?.genres, g))
+          .join(", ")
+      : null,
     d.availability.length ? `Open for ${d.availability.slice(0, 2).join(", ")}` : null,
   ].filter(Boolean) as string[];
 

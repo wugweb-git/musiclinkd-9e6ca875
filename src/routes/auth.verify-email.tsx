@@ -71,10 +71,10 @@ function VerifyEmail() {
 
       <div className="rounded-lg border border-border bg-card p-4">
         <p className="text-1 font-semibold">Not arrived?</p>
-        <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
-          <li>• Check spam and promotions folders.</li>
-          <li>• Make sure the address above is spelled correctly.</li>
-          <li>• Links expire after 24 hours — resend a fresh one.</li>
+        <ul className="mt-2 list-disc space-y-1.5 pl-4 text-1 leading-relaxed text-muted-foreground">
+          <li>Check spam and promotions folders.</li>
+          <li>Make sure the address above is spelled correctly.</li>
+          <li>Links expire after 24 hours — resend a fresh one.</li>
         </ul>
       </div>
 
