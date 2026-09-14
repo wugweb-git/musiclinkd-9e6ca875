@@ -112,7 +112,7 @@ function WelcomeScreen() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && signedIn) void navigate({ to: "/feed" });
+    if (!loading && signedIn) void navigate({ to: "/", replace: true });
   }, [loading, signedIn, navigate]);
 
   async function google() {
@@ -126,7 +126,7 @@ function WelcomeScreen() {
       return;
     }
     if (result.redirected) return;
-    void navigate({ to: "/feed" });
+    void navigate({ to: "/", replace: true });
   }
 
   return (

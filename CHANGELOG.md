@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — new accounts reach onboarding
+
+- **Every sign-in returns through the splash**, which reads the profile: `onboarding_complete` goes to
+  Home, a started draft goes to `/onboarding/resume`, anything else to `/onboarding`. Google sign-up,
+  the email confirmation link, password sign-in and phone all used to land on `/feed` with an empty
+  profile. If the profile read fails, Home still opens.
+- **Phone sign-in is real, and honest when it is off.** `/auth/phone` sends a code with
+  `signInWithOtp` and `/auth/otp` checks it with `verifyOtp`; Resend sends a new code. The phone
+  provider is off on the auth server today, so the phone screen says it is not available and disables
+  Send. Switching the provider on needs no code change. The "Preview mode" notice, which let people
+  reach a code screen that could never succeed, is gone.
+
 ### Changed — 13 Sep 2026 token and route decisions
 
 - **Radius is now the Material 3 shape scale:** 4/8/12/16/20/28/32/full.

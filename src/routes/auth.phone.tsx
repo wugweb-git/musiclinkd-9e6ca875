@@ -1,7 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Btn } from "@/components/ml/ui";
-import { AuthHeading, AuthNotice, AuthScreen, LabeledInput, TrustNote } from "@/components/ml/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { usePhoneSignIn } from "@/lib/post-auth";
+import {
+  AuthHeading,
+  AuthNotice,
+  AuthScreen,
+  LabeledInput,
+  TrustNote,
+  classifyAuthError,
+} from "@/components/ml/auth";
 
 export const Route = createFileRoute("/auth/phone")({
   head: () => ({
@@ -25,6 +34,21 @@ function PhoneAuth() {
   const [phone, setPhone] = useState("");
   const digits = phone.replace(/\D/g, "");
   const ok = digits.length === 10;
+  const provider = usePhoneSignIn();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<ReturnType<typeof classifyAuthError> | null>(null);
+
+  async function send() {
+    setError(null);
+    setBusy(true);
+    const { error: err } = await supabase.auth.signInWithOtp({ phone: `+91${digits}` });
+    setBusy(false);
+    if (err) {
+      setError(classifyAuthError(err.message));
+      return;
+    }
+    void navigate({ to: "/auth/otp", search: { phone: digits } });
+  }
 
   return (
     <AuthScreen>
@@ -50,14 +74,17 @@ function PhoneAuth() {
         </div>
       </div>
 
-      <AuthNotice tone="info" title="Preview mode">
-        SMS delivery is not enabled on this build — continue to see the code screen.
-      </AuthNotice>
+      {provider === "off" ? (
+        <AuthNotice tone="info" title="Phone sign-in is not available yet">
+          Continue with Google or email for now.
+        </AuthNotice>
+      ) : null}
+      {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
       <Btn
         className="w-full"
-        disabled={!ok}
-        onClick={() => void navigate({ to: "/auth/otp", search: { phone: digits } })}
+        disabled={!ok || busy || provider === "off"}
+        onClick={() => void send()}
       >
         Send code
       </Btn>
