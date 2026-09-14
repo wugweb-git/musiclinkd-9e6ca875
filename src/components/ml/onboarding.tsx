@@ -56,6 +56,25 @@ import {
 const LEGACY_KEY = "ml.onboarding.draft";
 const cacheKey = (userId: string) => `ml.onboarding.draft:${userId}`;
 
+const PREVIEW_FLAG = "ml.onboarding.preview";
+const PREVIEW_DRAFT = "ml.onboarding.preview.draft";
+
+function readDevPreview(): boolean {
+  if (!import.meta.env.DEV || typeof window === "undefined") return false;
+  try {
+    const param = new URLSearchParams(window.location.search).get("preview");
+    if (param === "off") {
+      window.sessionStorage.removeItem(PREVIEW_FLAG);
+      window.sessionStorage.removeItem(PREVIEW_DRAFT);
+      return false;
+    }
+    if (param !== null) window.sessionStorage.setItem(PREVIEW_FLAG, "1");
+    return window.sessionStorage.getItem(PREVIEW_FLAG) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export type SyncState = "idle" | "loading" | "saving" | "saved" | "offline" | "error";
 
 type Store = {
@@ -98,15 +117,21 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const pending = useRef<OnboardingDraft | null>(null);
   const loadedFor = useRef<string | null>(null);
   const userId = user?.id ?? null;
-  // Development only: `?preview` opens onboarding screens without an account, for design review.
-  // Nothing is loaded or saved, and production builds drop it.
-  const devPreview =
-    import.meta.env.DEV &&
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).has("preview");
+  // Development only: `?preview` walks onboarding without an account, for design review. It lasts
+  // for the tab (`?preview=off` ends it); answers live in sessionStorage and nothing reaches the
+  // database. Production builds drop it.
+  const devPreview = readDevPreview();
 
   const writeCache = useCallback(
     (next: OnboardingDraft) => {
+      if (devPreview) {
+        try {
+          window.sessionStorage.setItem(PREVIEW_DRAFT, JSON.stringify(next));
+        } catch {
+          /* ignore */
+        }
+        return;
+      }
       if (!userId) return;
       try {
         window.localStorage.setItem(cacheKey(userId), JSON.stringify(next));
@@ -114,7 +139,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         /* storage may be unavailable */
       }
     },
-    [userId],
+    [userId, devPreview],
   );
 
   const push = useCallback(
@@ -139,6 +164,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   // Load this account's answers. Signed out: onboarding is not available, go to Welcome.
   useEffect(() => {
     if (devPreview) {
+      try {
+        const raw = window.sessionStorage.getItem(PREVIEW_DRAFT);
+        if (raw) setDraft({ ...emptyDraft, ...(JSON.parse(raw) as OnboardingDraft) });
+      } catch {
+        /* ignore */
+      }
       setHydrated(true);
       setSync("idle");
       return;
