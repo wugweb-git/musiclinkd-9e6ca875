@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: roles, instruments, genres and languages come from the database
+
+- **Onboarding pickers read the taxonomy** (`taxonomy_options`, published rows; `lib/taxonomy.ts`) and
+  save slugs to the profile (`singer`, `acoustic_guitar`, `bollywood_filmi`, `hi`), matching the
+  backfilled rows. The hard-coded lists in `data/onboarding.ts` are no longer used by onboarding.
+- **Role: group first, then type.** 27 talent person types in 7 groups (Vocal, Instrumentalist, Creator,
+  Technical, Media, Education, Other), so no screen shows more than 12. Business types stay in their
+  own journey. Secondary roles use the same picker, capped at two and excluding the primary, as
+  `persona_bucket` requires.
+- **Instruments and genres come from `persona_bucket`** for the chosen roles and languages, 12 each at
+  most, in the order the function returns. When the roles hold no instruments the step is skipped,
+  including a step that stops applying after a role change. Choices already made stay visible even
+  if the bucket no longer includes them.
+- **Languages come before genres**, because regional genres are ordered by the languages chosen.
+  Languages show their native-script names.
+- Preview and the bio suggestion show labels, not slugs. Loading and error states cover the taxonomy
+  and the bucket. Specialisation keys follow the slugs (`sound_engineer`, `music_teacher`).
+
 ### Added — optional steps say so (plan C2, new user)
 
 - **Optional onboarding steps are labelled.** 15 of the 19 steps are optional in the step data; only
