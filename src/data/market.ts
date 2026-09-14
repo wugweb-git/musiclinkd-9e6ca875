@@ -39,6 +39,8 @@ export type Listing = {
   description: string;
   specs: { label: string; value: string }[];
   sellerId: string;
+  /** Database listings: the seller's profile (username set) or only a seller name. */
+  owner?: { name: string; username: string | null; photo: string; verified: boolean };
   reason?: string;
   status?: "Draft" | "Pending Review" | "Published" | "Paused" | "Sold" | "Rented";
 };

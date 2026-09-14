@@ -15,12 +15,17 @@ import {
   TrustPill,
 } from "@/components/ml/market";
 import { byId, listings, reviews, sellerById } from "@/data/market";
+import { loadCatalogListing } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
-  head: ({ params }) => {
-    const l = byId(params.id);
+  // Static listings win; any other id is looked up as a database listing slug.
+  loader: async ({ params }) => ({
+    catalog: byId(params.id) ? null : await loadCatalogListing(params.id),
+  }),
+  head: ({ params, loaderData }) => {
+    const l = byId(params.id) ?? loaderData?.catalog ?? undefined;
     const title = l ? `${l.title} — ${l.price} | MusicLinkd Market` : "Listing | MusicLinkd Market";
-    const desc = l?.subtitle ?? "Listing details on the MusicLinkd marketplace.";
+    const desc = l?.subtitle || "Listing details on the MusicLinkd marketplace.";
     const image = l?.photos[0];
     return {
       meta: [
@@ -42,7 +47,9 @@ export const Route = createFileRoute("/marketplace/l/$id")({
 
 function ListingDetail() {
   const { id } = Route.useParams();
-  const l = byId(id);
+  const { catalog } = Route.useLoaderData();
+  const fromCatalog = !byId(id);
+  const l = byId(id) ?? catalog ?? undefined;
   const [saved, setSaved] = useState(false);
   const [offer, setOffer] = useState(false);
   const [report, setReport] = useState(false);
@@ -59,7 +66,8 @@ function ListingDetail() {
     );
   }
 
-  const seller = sellerById(l.sellerId)!;
+  const seller = sellerById(l.sellerId);
+  const where = [l.location, l.distance].filter(Boolean).join(" · ");
   const cta =
     l.type === "service"
       ? ["Enquire", "Book"]
@@ -88,21 +96,25 @@ function ListingDetail() {
       />
 
       <div className="relative">
-        <img src={l.photos[shot]} alt={l.title} className="h-64 w-full object-cover" />
-        <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
-          {l.photos.map((p, i) => (
-            <button
-              key={p}
-              aria-label={`Photo ${i + 1}`}
-              onClick={() => setShot(i)}
-              className="h-1.5 rounded-full transition-all"
-              style={{
-                width: i === shot ? 18 : 6,
-                background: i === shot ? "var(--primary)" : "var(--border)",
-              }}
-            />
-          ))}
-        </div>
+        {l.photos[shot] ? (
+          <img src={l.photos[shot]} alt={l.title} className="h-64 w-full object-cover" />
+        ) : null}
+        {l.photos.length > 1 ? (
+          <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+            {l.photos.map((p, i) => (
+              <button
+                key={p}
+                aria-label={`Photo ${i + 1}`}
+                onClick={() => setShot(i)}
+                className="h-1.5 rounded-full transition-all"
+                style={{
+                  width: i === shot ? 18 : 6,
+                  background: i === shot ? "var(--primary)" : "var(--border)",
+                }}
+              />
+            ))}
+          </div>
+        ) : null}
       </div>
 
       <div className="px-5 py-5">
@@ -115,77 +127,108 @@ function ListingDetail() {
           )}
         </div>
         <h1 className="mt-2 text-[22px] leading-tight">{l.title}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{l.subtitle}</p>
+        {l.subtitle ? <p className="mt-1 text-sm text-muted-foreground">{l.subtitle}</p> : null}
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <LocationRow text={`${l.location} · ${l.distance}`} />
-          <TrustPill label="Industry verified" />
+          {where ? <LocationRow text={where} /> : null}
+          {!fromCatalog || l.owner?.verified ? <TrustPill label="Industry verified" /> : null}
           <span className="text-[11px] text-muted-foreground">Listed {l.postedAt}</span>
         </div>
 
-        <h2 className="mt-6 text-[16px]">Description</h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{l.description}</p>
+        {l.description ? (
+          <>
+            <h2 className="mt-6 text-[16px]">Description</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{l.description}</p>
+          </>
+        ) : null}
 
-        <h2 className="mt-6 text-[16px]">
-          {l.type === "service"
-            ? "Service details"
-            : l.type === "rental"
-              ? "Rental terms"
-              : "Specifications"}
-        </h2>
-        <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
-          {l.specs.map((s) => (
-            <div key={s.label} className="flex items-center justify-between px-4 py-3">
-              <dt className="text-xs text-muted-foreground">{s.label}</dt>
-              <dd className="text-xs font-semibold">{s.value}</dd>
-            </div>
-          ))}
-        </dl>
+        {l.specs.length ? (
+          <>
+            <h2 className="mt-6 text-[16px]">
+              {l.type === "service"
+                ? "Service details"
+                : l.type === "rental"
+                  ? "Rental terms"
+                  : "Specifications"}
+            </h2>
+            <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
+              {l.specs.map((s) => (
+                <div key={s.label} className="flex items-center justify-between px-4 py-3">
+                  <dt className="text-xs text-muted-foreground">{s.label}</dt>
+                  <dd className="text-xs font-semibold">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        ) : null}
 
-        <h2 className="mt-6 text-[16px]">{l.type === "product" ? "Seller" : "Provider"}</h2>
-        <div className="mt-2 rounded-lg border border-border bg-card p-4">
-          <SellerSummary seller={seller} />
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-            {[
-              { k: "Response", v: seller.responseRate },
-              { k: "Replies in", v: seller.responseTime },
-              { k: "On MusicLinkd", v: `${seller.years} yrs` },
-            ].map((x) => (
-              <div key={x.k} className="rounded-lg bg-subtle py-2">
-                <p className="text-[12px] font-bold">{x.v}</p>
-                <p className="text-[10px] text-muted-foreground">{x.k}</p>
-              </div>
-            ))}
+        {seller || l.owner ? (
+          <h2 className="mt-6 text-[16px]">{l.type === "product" ? "Seller" : "Provider"}</h2>
+        ) : null}
+        {l.owner && !seller ? (
+          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+            <SellerSummary seller={l.owner} compact />
+            {l.owner.username ? (
+              <BtnLink
+                to="/profile/$username"
+                params={{ username: l.owner.username }}
+                variant="outline"
+                className="mt-3 w-full"
+              >
+                View profile
+              </BtnLink>
+            ) : null}
           </div>
-          <BtnLink
-            to="/marketplace/seller/$id"
-            params={{ id: seller.id }}
-            variant="outline"
-            className="mt-3 w-full"
-          >
-            View profile
-          </BtnLink>
-        </div>
+        ) : null}
+        {seller ? (
+          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+            <SellerSummary seller={seller} />
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+              {[
+                { k: "Response", v: seller.responseRate },
+                { k: "Replies in", v: seller.responseTime },
+                { k: "On MusicLinkd", v: `${seller.years} yrs` },
+              ].map((x) => (
+                <div key={x.k} className="rounded-lg bg-subtle py-2">
+                  <p className="text-[12px] font-bold">{x.v}</p>
+                  <p className="text-[10px] text-muted-foreground">{x.k}</p>
+                </div>
+              ))}
+            </div>
+            <BtnLink
+              to="/marketplace/seller/$id"
+              params={{ id: seller.id }}
+              variant="outline"
+              className="mt-3 w-full"
+            >
+              View profile
+            </BtnLink>
+          </div>
+        ) : null}
 
-        <h2 className="mt-6 text-[16px]">Reviews</h2>
-        <div className="mt-2 space-y-3">
-          {reviews.slice(0, 2).map((r) => (
-            <article key={r.id} className="rounded-lg border border-border bg-card p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-[13px] font-semibold">{r.name}</p>
-                <Rating value={r.rating} />
-              </div>
-              <p className="text-[11px] text-muted-foreground">
-                {r.role} · {r.context} · {r.date}
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
-              {r.response ? (
-                <p className="mt-2 rounded-lg bg-subtle p-3 text-xs text-muted-foreground">
-                  Seller: {r.response}
-                </p>
-              ) : null}
-            </article>
-          ))}
-        </div>
+        {fromCatalog ? null : (
+          <>
+            <h2 className="mt-6 text-[16px]">Reviews</h2>
+            <div className="mt-2 space-y-3">
+              {reviews.slice(0, 2).map((r) => (
+                <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[13px] font-semibold">{r.name}</p>
+                    <Rating value={r.rating} />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    {r.role} · {r.context} · {r.date}
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
+                  {r.response ? (
+                    <p className="mt-2 rounded-lg bg-subtle p-3 text-xs text-muted-foreground">
+                      Seller: {r.response}
+                    </p>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+          </>
+        )}
 
         <h2 className="mt-6 text-[16px]">Related listings</h2>
         <div className="rail mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
