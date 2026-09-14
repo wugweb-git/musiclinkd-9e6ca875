@@ -139,25 +139,58 @@ export function SearchBar({
   );
 }
 
+/*
+ * Chip: the one pill chip. Filters, tabs, tags and every picker use it.
+ *
+ *   <Chip active={on} onClick={…}>Hindi</Chip>                       text
+ *   <Chip media={<Mic size={16} />} active={on}>Singer</Chip>         icon in a circle
+ *   <Chip media="https://…/rock.jpg">Rock</Chip>                       image in a circle
+ *
+ * States: selected (ink), pressed (state layer and a small scale), focus ring, disabled at 50%.
+ * `aria-pressed` is set whenever `active` is given, so toggles read as toggles. Touch area is 48dp.
+ */
 export function Chip({
   children,
   active,
   onClick,
+  media,
+  disabled = false,
 }: {
   children: ReactNode;
   active?: boolean;
   onClick?: () => void;
+  /** A leading circle: an icon element, an image URL, or nothing. */
+  media?: ReactNode;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
+      disabled={disabled}
+      aria-pressed={active === undefined ? undefined : active}
+      className={`state-layer hit-area inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
+        media ? "py-1 pl-1 pr-4" : "px-4"
+      } ${
         active
           ? "border-transparent bg-selected-bg text-selected-text"
           : "border-border bg-card text-foreground"
       }`}
     >
+      {media ? (
+        <span
+          aria-hidden
+          className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full ${
+            active ? "bg-background/15 text-selected-text" : "bg-subtle text-muted-foreground"
+          }`}
+        >
+          {typeof media === "string" ? (
+            <img src={media} alt="" className="h-full w-full object-cover" />
+          ) : (
+            media
+          )}
+        </span>
+      ) : null}
       {children}
     </button>
   );

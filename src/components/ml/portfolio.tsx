@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowDown, ArrowUp, Headphones, Star, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { Btn, BtnLink } from "@/components/ml/ui";
+import { Btn, BtnLink, Chip } from "@/components/ml/ui";
 import {
   analyticsFor,
   contributorDirectory,
@@ -144,24 +144,11 @@ export function SelectableChips({
 }) {
   return (
     <div className="flex flex-wrap gap-2" role={multi ? "group" : "radiogroup"}>
-      {options.map((o) => {
-        const active = value.includes(o);
-        return (
-          <button
-            key={o}
-            type="button"
-            aria-pressed={active}
-            onClick={() => onToggle(o)}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold ${
-              active
-                ? "border-transparent bg-primary text-primary-foreground"
-                : "border-border bg-card text-foreground"
-            }`}
-          >
-            {o}
-          </button>
-        );
-      })}
+      {options.map((o) => (
+        <Chip key={o} active={value.includes(o)} onClick={() => onToggle(o)}>
+          {o}
+        </Chip>
+      ))}
     </div>
   );
 }

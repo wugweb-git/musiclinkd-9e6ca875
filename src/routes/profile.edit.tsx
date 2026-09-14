@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
-import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
@@ -554,19 +554,11 @@ function Chips({
         {label}
       </span>
       <div className="mt-2 flex flex-wrap gap-2">
-        {options.map((o) => {
-          const on = selected.includes(o);
-          return (
-            <button
-              key={o}
-              type="button"
-              onClick={() => onToggle(o)}
-              className={`min-h-9 rounded-full border px-3 text-xs font-semibold ${on ? "border-primary bg-subtle text-foreground" : "border-border bg-card text-muted-foreground"}`}
-            >
-              {labels?.[o] ?? o}
-            </button>
-          );
-        })}
+        {options.map((o) => (
+          <Chip key={o} active={selected.includes(o)} onClick={() => onToggle(o)}>
+            {labels?.[o] ?? o}
+          </Chip>
+        ))}
       </div>
     </div>
   );

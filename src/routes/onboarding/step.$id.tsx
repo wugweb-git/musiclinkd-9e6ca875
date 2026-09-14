@@ -85,7 +85,7 @@ const groupIcons: Record<string, LucideIcon> = {
 };
 function typeIcon(o: TaxonomyOption) {
   const Icon = typeIcons[o.slug] ?? groupIcons[o.metadata?.group ?? ""] ?? Sparkles;
-  return <Icon size={24} aria-hidden />;
+  return <Icon size={16} aria-hidden />;
 }
 
 /** The options to show: the bucket's, plus anything already selected that the bucket left out. */
@@ -567,7 +567,7 @@ function StepBody({
           options={types}
           selected={d.secondaryRoles}
           exclude={[d.primaryRole]}
-          multi
+          icon={typeIcon}
           max={2}
           onToggle={(slug) => toggle("secondaryRoles", slug)}
         />

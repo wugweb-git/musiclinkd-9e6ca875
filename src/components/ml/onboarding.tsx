@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, IconBtn, Sheet } from "@/components/ml/ui";
+import { Btn, Chip, IconBtn, Sheet } from "@/components/ml/ui";
 import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -474,64 +474,79 @@ export function StepShell({
 /* Pickers                                                             */
 /* ------------------------------------------------------------------ */
 
-export type PickerOption = string | { value: string; label: string };
+export type PickerOption =
+  | string
+  | {
+      value: string;
+      label: string;
+      /** Icon element or image URL for the chip's circle. */
+      media?: ReactNode;
+      /** Group key; with `groups`, options render under their group's heading. */
+      group?: string;
+    };
 
+/** Chips from the global `Chip`, optionally under group headings. Selection is the caller's. */
 export function ChipPicker({
   options,
   selected,
   onToggle,
-  columns = false,
   max,
+  groups,
 }: {
   options: PickerOption[];
   selected: string[];
   onToggle: (v: string) => void;
-  columns?: boolean;
   /** When this many are selected, unselected chips are disabled. */
   max?: number;
+  groups?: readonly { key: string; label: string }[];
 }) {
   const full = max !== undefined && selected.length >= max;
-  return (
-    <div className={columns ? "grid grid-cols-2 gap-2" : "flex flex-wrap gap-2"}>
-      {options.map((opt) => {
-        const o = typeof opt === "string" ? opt : opt.value;
-        const text = typeof opt === "string" ? opt : opt.label;
-        const on = selected.includes(o);
+  const chips = (list: PickerOption[]) => (
+    <div className="flex flex-wrap gap-2">
+      {list.map((opt) => {
+        const o = typeof opt === "string" ? { value: opt, label: opt } : opt;
+        const on = selected.includes(o.value);
         return (
-          <button
-            key={o}
-            type="button"
-            aria-pressed={on}
+          <Chip
+            key={o.value}
+            active={on}
+            media={o.media}
             disabled={full && !on}
             onClick={() => {
               haptic("select");
-              onToggle(o);
+              onToggle(o.value);
             }}
-            className={`state-layer flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
-              on
-                ? "border-transparent bg-selected-bg text-selected-text"
-                : "border-border bg-card text-foreground"
-            }`}
           >
-            {on ? <Check size={14} className="animate-pop" aria-hidden /> : null}
-            {text}
-          </button>
+            {o.label}
+          </Chip>
+        );
+      })}
+    </div>
+  );
+  if (!groups) return chips(options);
+  const groupOf = (opt: PickerOption) => (typeof opt === "string" ? undefined : opt.group);
+  return (
+    <div className="space-y-6">
+      {groups.map((g) => {
+        const list = options.filter((opt) => groupOf(opt) === g.key);
+        if (!list.length) return null;
+        return (
+          <section key={g.key}>
+            <h2 className="mb-2 text-sm font-medium">{g.label}</h2>
+            {chips(list)}
+          </section>
         );
       })}
     </div>
   );
 }
 
-/**
- * Person types come from the taxonomy, grouped (vocal, instrumentalist, …). Pick a group, then a
- * type, so no screen shows more than 12 choices. The group opens on the one holding the selection.
- */
+/** Person types from the taxonomy, every group under its heading (vocal, instrumentalist, …). */
 export function PersonTypePicker({
   groups,
   options,
   selected,
   onToggle,
-  multi = false,
   max,
   exclude = [],
   icon,
@@ -540,111 +555,25 @@ export function PersonTypePicker({
   options: TaxonomyOption[];
   selected: string[];
   onToggle: (slug: string) => void;
-  multi?: boolean;
   max?: number;
   exclude?: string[];
   icon?: (o: TaxonomyOption) => ReactNode;
 }) {
-  const shown = options.filter((o) => !exclude.includes(o.slug));
-  const available = groups.filter((g) => shown.some((o) => o.metadata?.group === g.key));
-  const initial =
-    shown.find((o) => selected.includes(o.slug))?.metadata?.group ?? available[0]?.key ?? "";
-  const [group, setGroup] = useState(initial);
-  const inGroup = shown.filter((o) => o.metadata?.group === group);
   return (
-    <div>
-      <div className="rail -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar" role="tablist">
-        {available.map((g) => {
-          const on = g.key === group;
-          const count = shown.filter(
-            (o) => o.metadata?.group === g.key && selected.includes(o.slug),
-          ).length;
-          return (
-            <button
-              key={g.key}
-              type="button"
-              role="tab"
-              aria-selected={on}
-              onClick={() => {
-                haptic("select");
-                setGroup(g.key);
-              }}
-              className={`state-layer flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
-                on
-                  ? "border-transparent bg-selected-bg text-selected-text"
-                  : "border-border bg-card text-foreground"
-              }`}
-            >
-              {g.label}
-              {count ? <span className="text-1 tabular-nums opacity-70">{count}</span> : null}
-            </button>
-          );
-        })}
-      </div>
-      <div className="mt-4" role="tabpanel">
-        {multi ? (
-          <ChipPicker
-            options={inGroup.map((o) => ({ value: o.slug, label: o.label }))}
-            selected={selected}
-            onToggle={onToggle}
-            {...(max !== undefined ? { max } : {})}
-          />
-        ) : (
-          <ChoiceGrid
-            options={inGroup.map((o) => ({
-              key: o.slug,
-              label: o.label,
-              hint: "",
-              icon: icon?.(o),
-            }))}
-            value={selected[0] ?? null}
-            onSelect={onToggle}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
-
-export function ChoiceGrid({
-  options,
-  value,
-  onSelect,
-}: {
-  options: { key: string; label: string; hint: string; icon?: ReactNode }[];
-  value: string | null;
-  onSelect: (key: string) => void;
-}) {
-  return (
-    <div className="grid grid-cols-2 gap-3">
-      {options.map((o) => {
-        const on = value === o.key;
-        return (
-          <button
-            key={o.key}
-            type="button"
-            aria-pressed={on}
-            onClick={() => {
-              haptic("select");
-              onSelect(o.key);
-            }}
-            className={`state-layer flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
-              on ? "border-primary bg-card ring-1 ring-primary" : "border-border bg-card"
-            }`}
-          >
-            <span className={on ? "text-foreground" : "text-muted-foreground"}>{o.icon}</span>
-            <span>
-              <span className="block text-sm font-semibold">{o.label}</span>
-              {o.hint ? (
-                <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
-                  {o.hint}
-                </span>
-              ) : null}
-            </span>
-          </button>
-        );
-      })}
-    </div>
+    <ChipPicker
+      groups={groups}
+      options={options
+        .filter((o) => !exclude.includes(o.slug))
+        .map((o) => ({
+          value: o.slug,
+          label: o.label,
+          media: icon?.(o),
+          group: o.metadata?.group ?? "other",
+        }))}
+      selected={selected}
+      onToggle={onToggle}
+      {...(max !== undefined ? { max } : {})}
+    />
   );
 }
 
