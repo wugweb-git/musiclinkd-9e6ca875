@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
 import { BtnLink, TopBar } from "@/components/ml/ui";
-import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
+import { OnboardingProvider, useOnboarding, useScrollEdges } from "@/components/ml/onboarding";
+import { beat, useArrival } from "@/lib/flow-motion";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
+import { cn } from "@/lib/utils";
+
+/** A next-step card is a link: it takes the button's state layer and press scale. */
+const nextCard =
+  "state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-98";
 
 export const Route = createFileRoute("/onboarding/done")({
   head: () => ({
@@ -32,7 +38,9 @@ export const Route = createFileRoute("/onboarding/done")({
 function Done() {
   const { draft: d } = useOnboarding();
   const tx = useTaxonomy().options;
-  const first = d.displayName.split(" ")[0] || "there";
+  const first = d.displayName.split(" ")[0];
+  const rise = useArrival("onboarding-done") ? "animate-rise" : "";
+  const edges = useScrollEdges();
   const summary = [
     d.primaryRole ? `Role: ${labelFor(tx?.person_types, d.primaryRole)}` : null,
     d.city ? `Based in ${d.city}` : null,
@@ -50,46 +58,64 @@ function Done() {
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
-        <section className="rounded-lg border border-border bg-card p-6 text-center">
-          <Sparkles size={28} className="mx-auto text-primary" />
-          <h1 className="mt-3 text-3 leading-tight">Welcome aboard, {first}</h1>
+        <section className={cn("rounded-lg border border-border bg-card p-6 text-center", rise)}>
+          <Sparkles size={28} className="mx-auto animate-pop text-primary" style={beat(2)} />
+          <h1 className="mt-3 text-3 leading-tight">
+            {first ? `Welcome aboard, ${first}` : "Welcome aboard"}
+          </h1>
           <p className="mx-auto mt-2 max-w-[300px] text-sm text-muted-foreground">
-            Your profile is live and people can find you. Here's what it says right now.
+            Your profile is live and people can find you.
+            {summary.length ? " Here's what it says right now." : null}
           </p>
         </section>
 
         {summary.length ? (
           <ul className="mt-4 space-y-2">
-            {summary.map((line) => (
-              <li key={line} className="rounded-lg border border-border bg-card px-4 py-3 text-sm">
+            {summary.map((line, i) => (
+              <li
+                key={line}
+                className={cn("rounded-lg border border-border bg-card px-4 py-3 text-sm", rise)}
+                style={beat(2 + i)}
+              >
                 {line}
               </li>
             ))}
           </ul>
         ) : null}
 
-        <h2 className="mt-7 text-2">What next</h2>
+        <h2 className={cn("mt-7 text-2", rise)} style={beat(2 + summary.length)}>
+          What next
+        </h2>
         <div className="mt-3 space-y-3">
-          <Link to="/portfolio/new" className="block rounded-lg border border-border bg-card p-4">
+          <Link
+            to="/portfolio/new"
+            className={cn(nextCard, rise)}
+            style={beat(3 + summary.length + 0)}
+          >
             <p className="text-sm font-semibold">Add portfolio work</p>
             <p className="mt-1 text-1 text-muted-foreground">
               Tracks, videos and credits turn a profile view into an enquiry.
             </p>
           </Link>
-          <Link to="/discover" className="block rounded-lg border border-border bg-card p-4">
+          <Link to="/discover" className={cn(nextCard, rise)} style={beat(3 + summary.length + 1)}>
             <p className="text-sm font-semibold">Discover talent</p>
             <p className="mt-1 text-1 text-muted-foreground">
               Singers, producers, studios and bands near you.
             </p>
           </Link>
-          <Link to="/me" className="block rounded-lg border border-border bg-card p-4">
+          <Link to="/me" className={cn(nextCard, rise)} style={beat(3 + summary.length + 2)}>
             <p className="text-sm font-semibold">View my profile</p>
             <p className="mt-1 text-1 text-muted-foreground">See exactly what others see.</p>
           </Link>
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
+          edges.bottom ? "border-border" : "border-transparent",
+        )}
+      >
         <BtnLink to="/feed" className="w-full">
           Go to my home
         </BtnLink>

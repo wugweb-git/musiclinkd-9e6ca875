@@ -11,9 +11,12 @@ import {
   OnboardingProvider,
   ReadinessCard,
   useOnboarding,
+  useScrollEdges,
 } from "@/components/ml/onboarding";
 import { completionPercent, readiness } from "@/data/onboarding";
+import { beat, useArrival } from "@/lib/flow-motion";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/onboarding/complete")({
   head: () => ({
@@ -56,16 +59,19 @@ function Complete() {
     });
   }, [hydrated, signedIn, persist, d]);
   const pct = completionPercent(d);
+  const first = d.displayName.split(" ")[0];
+  const rise = useArrival("onboarding-complete") ? "animate-rise" : "";
+  const edges = useScrollEdges();
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
-        <section className="rounded-lg border border-border bg-card p-5">
-          <PartyPopper size={26} className="animate-pop text-primary" />
+        <section className={cn("rounded-lg border border-border bg-card p-5", rise)}>
+          <PartyPopper size={26} className="animate-pop text-primary" style={beat(2)} />
           <h1 className="mt-3 text-3 leading-tight">
-            You're on MusicLinkd, {d.displayName.split(" ")[0] || "there"}
+            {first ? `You're on MusicLinkd, ${first}` : "You're on MusicLinkd"}
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
             Your profile is live and discoverable. Everything below makes it work harder for you.
@@ -85,17 +91,21 @@ function Complete() {
             >
               <div
                 className="h-full origin-left animate-fill rounded-full bg-primary"
-                style={{ width: `${pct}%` }}
+                style={{ width: `${pct}%`, ...beat(3) }}
               />
             </div>
           </div>
         </section>
 
-        <h2 className="mt-6 text-2">What's ready</h2>
+        <h2 className={cn("mt-6 text-2", rise)} style={beat(3)}>
+          What's ready
+        </h2>
         <div className="mt-3 space-y-2">
-          {items.map((r) => (
+          {items.map((r, i) => (
             <ReadinessCard
               key={r.key}
+              className={rise}
+              style={beat(4 + i)}
               label={r.label}
               hint={r.hint}
               done={r.done}
@@ -146,7 +156,12 @@ function Complete() {
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
+          edges.bottom ? "border-border" : "border-transparent",
+        )}
+      >
         <BtnLink to="/onboarding/done" className="w-full">
           Finish
         </BtnLink>

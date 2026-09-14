@@ -4,6 +4,8 @@ import { Btn, BtnLink } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding, resumeTarget } from "@/components/ml/onboarding";
 import { visibleSteps } from "@/data/onboarding";
 import { AuthLink } from "@/components/ml/auth";
+import { beat, useArrival } from "@/lib/flow-motion";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
@@ -35,13 +37,21 @@ function Welcome() {
   const navigate = useNavigate();
   const total = visibleSteps(draft, bucket).length;
   const started = draft.completedSteps.length > 0;
+  const rise = useArrival("onboarding-intro") ? "animate-rise" : "";
 
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
       <div>
-        <p className="text-1 text-muted-foreground">About two minutes · {total} short questions</p>
-        <h1 className="mt-2 text-4">Let's build your MusicLinkd profile.</h1>
-        <p className="mt-3 text-2 leading-relaxed text-muted-foreground">
+        <p className={cn("text-1 text-muted-foreground", rise)}>
+          About two minutes · {total} short questions
+        </p>
+        <h1 className={cn("mt-2 text-4", rise)} style={beat(1)}>
+          Let's build your MusicLinkd profile.
+        </h1>
+        <p
+          className={cn("mt-3 text-2 leading-relaxed text-muted-foreground", rise)}
+          style={beat(2)}
+        >
           Tell us a little about what you do in music. It takes about two minutes, and you can skip
           anything that doesn't apply.
         </p>
@@ -63,8 +73,8 @@ function Welcome() {
               title: "Private by default",
               body: "Contact details stay hidden until you share them.",
             },
-          ].map((f) => (
-            <li key={f.title} className="flex items-start gap-3">
+          ].map((f, i) => (
+            <li key={f.title} className={cn("flex items-start gap-3", rise)} style={beat(3 + i)}>
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card text-foreground">
                 {f.icon}
               </span>
@@ -77,7 +87,7 @@ function Welcome() {
         </ul>
       </div>
 
-      <div className="mt-8 space-y-2">
+      <div className={cn("mt-8 space-y-2", rise)} style={beat(6)}>
         {hydrated && started ? (
           <BtnLink to="/onboarding/resume" className="w-full">
             Continue setup
