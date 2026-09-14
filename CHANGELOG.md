@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — new user: Back on sign-in screens; three button shapes
+
+- **Back on every sign-in screen after Welcome.** `AuthScreen` takes `back`: Create account and phone go to
+  Welcome, the code screen to phone, email check to sign-up, forgot password and the locked, maintenance
+  and offline holds to sign-in, sign-out to Profile. Back follows history like the Android gesture and
+  uses that destination only when there is no history (a deep link, an email link). The splash,
+  Welcome and "You're in" have none.
+- **Buttons come in three shapes.** `Btn` / `BtnLink` take an optional leading `icon` (icon + text); text
+  only is unchanged; `IconBtn` / `IconBtnLink` are icon-only, 40px to see and 48dp to touch, with `label`
+  as the accessible name. Create account shows Google and phone with their icons, matching Welcome, whose
+  Google mark now comes from the shared `GoogleIcon`.
+
 ### Fixed — new user: usernames are checked against real accounts
 
 - **"Available" is now true.** The identity step compared usernames with a hard-coded list of five

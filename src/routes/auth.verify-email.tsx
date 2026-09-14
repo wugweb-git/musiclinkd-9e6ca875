@@ -50,7 +50,7 @@ function VerifyEmail() {
   }
 
   return (
-    <AuthScreen>
+    <AuthScreen back={{ to: "/auth", search: { mode: "signup" } }}>
       <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-subtle">
         <MailCheck size={24} className="text-primary" />
       </div>

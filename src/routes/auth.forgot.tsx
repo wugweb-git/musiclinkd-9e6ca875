@@ -61,7 +61,7 @@ function ForgotPassword() {
   }
 
   return (
-    <AuthScreen>
+    <AuthScreen back={{ to: "/auth", search: { mode: "signin" } }}>
       <AuthHeading
         title={sent ? "Reset link sent" : "Forgot your password?"}
         sub={

@@ -168,8 +168,16 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
   );
 }
 
+/*
+ * Three button shapes, one vocabulary:
+ *   <Btn>Continue</Btn>                                  text
+ *   <Btn icon={<Mail size={18} />}>Continue with email</Btn>   icon + text (icon leads)
+ *   <IconBtn label="Back"><ArrowLeft size={18} /></IconBtn>     icon only, 48dp, label is the name
+ * BtnLink and IconBtnLink are the same shapes as router links.
+ */
 export function Btn({
   children,
+  icon,
   variant = "primary",
   className = "",
   onClick,
@@ -177,6 +185,8 @@ export function Btn({
   disabled = false,
 }: {
   children: ReactNode;
+  /** Leading icon. Decorative: the text is the button's name. */
+  icon?: ReactNode;
   variant?: BtnVariant;
   className?: string;
   onClick?: () => void;
@@ -190,6 +200,11 @@ export function Btn({
       disabled={disabled}
       className={btnClass(variant, className)}
     >
+      {icon ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {icon}
+        </span>
+      ) : null}
       {children}
     </button>
   );
@@ -205,20 +220,27 @@ const btnVariants: Record<BtnVariant, string> = {
 };
 
 function btnClass(variant: BtnVariant, className: string) {
-  return `inline-flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 ${btnVariants[variant]} ${className}`;
+  return `inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-transform active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 ${btnVariants[variant]} ${className}`;
 }
 
 function BtnAnchor({
   variant = "primary",
   className = "",
+  icon,
   children,
   ...props
 }: AnchorHTMLAttributes<HTMLAnchorElement> & {
   variant?: BtnVariant;
+  icon?: ReactNode;
   ref?: Ref<HTMLAnchorElement>;
 }) {
   return (
     <a {...props} className={btnClass(variant, className)}>
+      {icon ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {icon}
+        </span>
+      ) : null}
       {children}
     </a>
   );
@@ -226,6 +248,68 @@ function BtnAnchor({
 
 /** A router link that looks like `Btn`. One element, one tab stop — never wrap `Btn` in `Link`. */
 export const BtnLink = createLink(BtnAnchor);
+
+type IconBtnVariant = "outline" | "ink" | "ghost" | "plain";
+const iconBtnVariants: Record<IconBtnVariant, string> = {
+  outline: "border border-border bg-card text-foreground",
+  ink: "bg-ink text-primary-foreground",
+  ghost: "bg-subtle text-foreground",
+  plain: "text-foreground",
+};
+function iconBtnClass(variant: IconBtnVariant, className: string) {
+  return `hit-area inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-transform duration-200 ease-standard active:scale-95 disabled:pointer-events-none disabled:opacity-60 ${iconBtnVariants[variant]} ${className}`;
+}
+
+/** Icon-only button. 40px to look at, 48dp to touch; `label` is its accessible name. */
+export function IconBtn({
+  label,
+  children,
+  variant = "outline",
+  className = "",
+  onClick,
+  disabled = false,
+}: {
+  label: string;
+  children: ReactNode;
+  variant?: IconBtnVariant;
+  className?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      disabled={disabled}
+      className={iconBtnClass(variant, className)}
+    >
+      {children}
+    </button>
+  );
+}
+
+function IconAnchor({
+  label,
+  variant = "outline",
+  className = "",
+  children,
+  ...props
+}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+  label: string;
+  variant?: IconBtnVariant;
+  ref?: Ref<HTMLAnchorElement>;
+}) {
+  return (
+    <a {...props} aria-label={label} title={label} className={iconBtnClass(variant, className)}>
+      {children}
+    </a>
+  );
+}
+
+/** Icon-only router link. */
+export const IconBtnLink = createLink(IconAnchor);
 
 export function Sheet({
   open,

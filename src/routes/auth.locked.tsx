@@ -28,6 +28,7 @@ function LockedScreen() {
   const navigate = useNavigate();
   return (
     <AuthStatus
+      back={{ to: "/auth", search: { mode: "signin" } }}
       tone="danger"
       icon={ShieldAlert}
       title="Sign-in paused for 15 minutes"

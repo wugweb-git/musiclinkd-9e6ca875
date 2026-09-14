@@ -101,7 +101,7 @@ function OtpScreen() {
   const cells = [0, 1, 2, 3, 4, 5];
 
   return (
-    <AuthScreen>
+    <AuthScreen back={{ to: "/auth/phone" }}>
       <AuthHeading
         title="Enter your code"
         sub={
