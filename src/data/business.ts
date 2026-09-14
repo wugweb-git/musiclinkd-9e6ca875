@@ -51,6 +51,8 @@ export type BusinessSpace = {
 
 export type BusinessProfile = {
   id: string;
+  /** Bookable.id in data/booking.ts, when the business has a space people can book directly. */
+  bookableId?: string;
   handle: string;
   name: string;
   type: BusinessType;

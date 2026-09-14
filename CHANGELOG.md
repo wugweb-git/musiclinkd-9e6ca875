@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — Book buttons (plan A1)
+
+- **No Book button opens a dead booking.** Three links sent `/booking/svc-1`, a service id the booking
+  flow does not know, so every one showed "This space is unavailable". The business page's Book opens
+  that business's enquiry. The enquiry's "Book a room" card shows only when the business has a
+  `bookableId`; no seeded business has one. An applicant's hire sheet offers their service enquiry
+  when the applicant has a `serviceId`; no seeded applicant has one, so it offers "Start a
+  collaboration" today. Both fields are new and optional, and no link was invented.
+
 ### Added — registration-flow motion and Android behaviour
 
 Measured first at 412px across the 30 screens from Welcome to Home: no page motion; back buttons at

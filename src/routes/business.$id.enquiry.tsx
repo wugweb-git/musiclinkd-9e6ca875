@@ -110,20 +110,23 @@ function BusinessEnquiry() {
           Send enquiry
         </Btn>
 
-        <Card>
-          <p className="text-sm font-semibold">Already know what you want?</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
-            Pick a room and a date and skip the back and forth.
-          </p>
-          <BtnLink
-            to="/booking/$id"
-            params={{ id: "svc-1" }}
-            variant="outline"
-            className="mt-3 w-full"
-          >
-            Book a room
-          </BtnLink>
-        </Card>
+        {/* Direct booking needs a bookable space in data; without one, the enquiry above is the way in. */}
+        {b?.bookableId ? (
+          <Card>
+            <p className="text-sm font-semibold">Already know what you want?</p>
+            <p className="mt-1 text-[13px] text-muted-foreground">
+              Pick a room and a date and skip the back and forth.
+            </p>
+            <BtnLink
+              to="/booking/$id"
+              params={{ id: b.bookableId }}
+              variant="outline"
+              className="mt-3 w-full"
+            >
+              Book a room
+            </BtnLink>
+          </Card>
+        ) : null}
       </div>
     </Screen>
   );
