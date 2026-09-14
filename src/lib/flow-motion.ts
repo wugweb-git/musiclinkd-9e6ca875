@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { ParsedLocation } from "@tanstack/react-router";
 import { steps } from "@/data/onboarding";
 
@@ -19,6 +20,23 @@ const ORDER = [
   "/onboarding/complete",
   "/onboarding/done",
 ];
+
+/** One beat of the arrival choreography: block n of a screen lands n beats after the first. */
+const BEAT_MS = 90;
+export const beat = (n: number) => ({ animationDelay: `${n * BEAT_MS}ms` });
+
+const played = new Set<string>();
+/**
+ * True the first time a screen mounts in this page load, so an arrival plays once and not again on
+ * Back. The server never records a play, so its render matches the client's first one.
+ */
+export function useArrival(key: string) {
+  const [play] = useState(() => !played.has(key));
+  useEffect(() => {
+    played.add(key);
+  }, [key]);
+  return play;
+}
 
 /** Flow screens that sit outside the linear order: they cross-fade rather than slide. */
 const SIDE = new Set(["/", "/onboarding/skip", "/onboarding/resume", "/auth/forgot", "/feed"]);

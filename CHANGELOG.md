@@ -5,6 +5,24 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: motion on the beat
+
+- **Arrivals land on a beat.** Welcome, the onboarding intro and the two finish screens bring their blocks
+  in one 90ms beat apart (`animate-rise`, `beat(n)`, `useArrival` in `flow-motion.ts`). Welcome plays the
+  logo waveform, then the headline a word per beat. Each arrival plays once per page load, not again on Back.
+- **Large title on onboarding steps:** when the question scrolls under the top bar, it replaces the
+  step line there (Apple large-title behaviour); scrolling back restores it.
+- **Chips spring when picked** (`animate-select`); chips already selected when a screen opens stay still.
+- **A complete code pulses** box by box, left to right (`animate-meter`).
+- **Finish screens:** profile strength fills after its card lands; to-do rows show an empty ring instead
+  of a dot; next-step cards on Done have the press state and scale; bottom bars sit on the page ground
+  with a scroll-aware divider, as on the steps.
+
+### Fixed — new user: finish screens without a name
+
+- "You're on MusicLinkd, there" and "Welcome aboard, there" read without the name clause when there is no
+  display name. Done only says "Here's what it says right now." when there is a summary under it.
+
 ### Changed — new user: auth and onboarding states
 
 - **Disabled filled buttons** use a faint ink container with faint ink text (Material 3) instead of a

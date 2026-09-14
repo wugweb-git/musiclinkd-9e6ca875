@@ -8,7 +8,9 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
+  type RefObject,
 } from "react";
 import {
   ArrowLeft,
@@ -362,8 +364,26 @@ export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | nul
 /* ------------------------------------------------------------------ */
 
 /** True once the page has scrolled past its top. */
+/** Whether an element has scrolled up under the sticky top bar (about 72px tall). */
+function useTucked(ref: RefObject<HTMLElement | null>) {
+  const [tucked, setTucked] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) setTucked(!entry.isIntersecting && entry.boundingClientRect.top < 72);
+      },
+      { rootMargin: "-72px 0px 0px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+  return tucked;
+}
+
 /** Whether content sits under the top bar, and whether more of it waits under the bottom bar. */
-function useScrollEdges() {
+export function useScrollEdges() {
   const [edges, setEdges] = useState({ top: false, bottom: false });
   useEffect(() => {
     const update = () => {
@@ -422,6 +442,8 @@ export function StepShell({
 }) {
   const pct = Math.round((step / total) * 100);
   const edges = useScrollEdges();
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleTucked = useTucked(titleRef);
   return (
     <form
       noValidate
@@ -446,10 +468,25 @@ export function StepShell({
             <span className="h-10 w-8" />
           )}
           <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2 text-1 text-muted-foreground">
-              <p className="truncate">
-                {group} · {step} of {total}
-              </p>
+            {/* Large title (Apple): once the question scrolls under the bar, it takes the bar's line. */}
+            <div className="flex h-5 items-center justify-between gap-2 text-1 text-muted-foreground">
+              <div className="relative h-5 min-w-0 flex-1 overflow-hidden">
+                <p
+                  className={`absolute inset-0 flex items-center truncate transition-[transform,opacity] duration-200 ease-standard ${
+                    titleTucked ? "-translate-y-full opacity-0" : ""
+                  }`}
+                >
+                  {group} · {step} of {total}
+                </p>
+                <p
+                  aria-hidden
+                  className={`absolute inset-0 flex items-center truncate text-sm font-semibold text-foreground transition-[transform,opacity] duration-200 ease-standard ${
+                    titleTucked ? "" : "translate-y-full opacity-0"
+                  }`}
+                >
+                  <span className="truncate">{title}</span>
+                </p>
+              </div>
               {status}
             </div>
             <div
@@ -480,7 +517,9 @@ export function StepShell({
       <main className="flex-1 px-5 pb-40 pt-5">
         {banner}
         <div className="flex items-start justify-between gap-3">
-          <h1 className="text-3 leading-tight">{title}</h1>
+          <h1 ref={titleRef} className="text-3 leading-tight">
+            {title}
+          </h1>
           {optional ? (
             <span className="mt-1.5 shrink-0 rounded-full bg-card px-2.5 py-1 text-1 font-semibold text-muted-foreground">
               Optional
@@ -1051,23 +1090,32 @@ export function ReadinessCard({
   hint,
   done,
   action,
+  className,
+  style,
 }: {
   label: string;
   hint: string;
   done: boolean;
   action?: ReactNode;
+  className?: string;
+  /** For arrival timing (`beat`). */
+  style?: CSSProperties;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+    <div
+      className={cn(
+        "flex items-start gap-3 rounded-lg border border-border bg-card p-4",
+        className,
+      )}
+      style={style}
+    >
       <span
         className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
-          done
-            ? "bg-success text-background"
-            : "border border-border bg-subtle text-muted-foreground"
+          done ? "animate-pop bg-success text-background" : "border-2 border-border"
         }`}
         aria-hidden
       >
-        {done ? <Check size={13} strokeWidth={3} /> : <span className="text-1 font-bold">·</span>}
+        {done ? <Check size={13} strokeWidth={3} /> : null}
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">

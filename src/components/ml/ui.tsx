@@ -147,7 +147,8 @@ export function SearchBar({
  *   <Chip media={<Mic size={16} />} active={on}>Singer</Chip>         icon in a circle
  *   <Chip media="https://…/rock.jpg">Rock</Chip>                       image in a circle
  *
- * States: selected (ink), pressed (state layer and a small scale), focus ring, disabled at 50%.
+ * States: selected (ink, with a small spring when picked), pressed (state layer and a small scale),
+ * focus ring, disabled at 50%.
  * `aria-pressed` is set whenever `active` is given, so toggles read as toggles. Touch area is 48dp.
  */
 export function Chip({
@@ -168,6 +169,8 @@ export function Chip({
   atLimit?: boolean;
 }) {
   const [refused, setRefused] = useState(false);
+  // Only a chip the person just picked springs; chips already selected when the screen opens do not.
+  const [picked, setPicked] = useState(false);
   return (
     <button
       type="button"
@@ -177,15 +180,19 @@ export function Chip({
           setRefused(true);
           return;
         }
+        setPicked(true);
         onClick?.();
       }}
-      onAnimationEnd={() => setRefused(false)}
+      onAnimationEnd={() => {
+        setRefused(false);
+        setPicked(false);
+      }}
       disabled={disabled}
       aria-disabled={atLimit || undefined}
       aria-pressed={active === undefined ? undefined : active}
       className={`state-layer hit-area inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
         atLimit ? "opacity-50" : ""
-      } ${refused ? "animate-shake" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
+      } ${refused ? "animate-shake" : picked && active ? "animate-select" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
           ? "border-transparent bg-selected-bg text-selected-text"
           : "border-border bg-card text-foreground"

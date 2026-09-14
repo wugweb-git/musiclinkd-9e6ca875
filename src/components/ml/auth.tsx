@@ -588,10 +588,13 @@ export function CodeInput({
       >
         {Array.from({ length }, (_, i) => {
           const active = i === value.length && focused;
+          const complete = value.length === length && !invalid;
           return (
             <span
               key={i}
+              style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
+                complete && "animate-meter",
                 "flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard",
                 invalid
                   ? "border-destructive"

@@ -145,6 +145,32 @@
   --animate-sound-check: sound-check 500ms var(--easing-enter) both;
   --animate-fill: fill 500ms var(--easing-enter) both;
   --animate-message: message 200ms var(--easing-enter) both;
+  /* Arrival screens land on a beat: each block rises in, delayed by beat(n) (flow-motion.ts). */
+  --animate-rise: rise 480ms var(--easing-enter) both;
+  /* A chip that was just picked gives a little, then springs back. */
+  --animate-select: select 320ms var(--easing-spring);
+  /* A complete code pulses box by box, left to right, like a level meter. */
+  --animate-meter: meter 360ms var(--easing-standard);
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  @keyframes select {
+    40% {
+      transform: scale(0.94);
+    }
+    75% {
+      transform: scale(1.03);
+    }
+  }
+  @keyframes meter {
+    45% {
+      transform: translateY(-5px);
+    }
+  }
 
   @keyframes shake {
     20%,

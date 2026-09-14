@@ -5,6 +5,7 @@ import { Mail, Plus, Smartphone } from "lucide-react";
 import { AuthScreen, Brand, GoogleIcon, LegalNote } from "@/components/ml/auth";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
+import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/welcome")({
@@ -87,6 +88,8 @@ function WelcomeScreen() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const arrive = useArrival("welcome");
+  const rise = arrive ? "animate-rise" : "";
 
   useEffect(() => {
     if (!loading && signedIn) void navigate({ to: "/", replace: true });
@@ -110,24 +113,30 @@ function WelcomeScreen() {
     <AuthScreen brand={false} className="bg-card">
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
         <div className="flex-1 pt-4">
-          <Brand compact />
-          <p className="text-2 font-semibold text-pink-strong">Professional Network For Music</p>
+          <Brand compact animated={arrive} />
+          <p className={cn("text-2 font-semibold text-pink-strong", rise)} style={beat(1)}>
+            Professional Network For Music
+          </p>
 
+          {/* The headline lands a word per beat, after the logo's waveform plays. */}
           <h1 className="mt-7 text-5 font-bold">
-            Connect.
-            <br />
-            Collaborate.
-            <br />
-            Create.
+            {["Connect.", "Collaborate.", "Create."].map((word, i) => (
+              <span key={word} className={cn("block", rise)} style={beat(2 + i)}>
+                {word}
+              </span>
+            ))}
           </h1>
 
-          <p className="mt-5 text-2 leading-relaxed text-muted-foreground">
+          <p
+            className={cn("mt-5 text-2 leading-relaxed text-muted-foreground", rise)}
+            style={beat(5)}
+          >
             Build your profile, discover opportunities, connect with the music industry.
           </p>
 
           <ul className="mt-9 space-y-4">
-            {audience.map((a) => (
-              <li key={a} className="flex items-center gap-3">
+            {audience.map((a, i) => (
+              <li key={a} className={cn("flex items-center gap-3", rise)} style={beat(6 + i / 2)}>
                 <Plus size={14} className="shrink-0 text-muted-foreground" aria-hidden />
                 <span className="min-w-0 text-2 text-muted-foreground">{a}</span>
               </li>
@@ -135,7 +144,7 @@ function WelcomeScreen() {
           </ul>
         </div>
 
-        <div className="mt-10">
+        <div className={cn("mt-10", rise)} style={beat(7.5)}>
           <CtaRow onClick={() => void google()} disabled={busy}>
             <GoogleIcon />
             Continue with Google
@@ -153,7 +162,11 @@ function WelcomeScreen() {
 
           <p className="mt-5 text-center text-1 text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
+            <Link
+              to="/auth"
+              search={{ mode: "signin" }}
+              className="link-action hit-area font-semibold text-foreground"
+            >
               Sign in
             </Link>
           </p>
