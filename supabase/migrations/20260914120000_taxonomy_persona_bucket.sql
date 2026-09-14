@@ -12,14 +12,16 @@
 -- Rules: person_type_instruments (which instruments a person type can hold) and genre_languages
 -- (which languages unlock a regional genre). Both reference taxonomy_options by foreign key.
 --
--- persona_bucket(primary, secondary[], languages[]) returns the options a profile can pick:
--- instruments = union over primary + up to 2 secondary person types;
--- genres = every universal genre + regional genres linked to any selected language.
+-- persona_bucket(primary, secondary[], languages[], limit) returns the options a profile can pick:
+-- instruments = union over primary + up to 2 secondary person types, primary's first;
+-- genres = regional genres linked to any selected language first, then universal genres.
+-- Each category is capped at limit (default 12) so no picker screen exceeds it.
+-- sort_order on instruments and genres is popularity, which decides what survives the cap.
 --
 -- Does not touch profiles. Reference data: public SELECT, no client write.
 --
 -- Rollback:
---   DROP FUNCTION public.persona_bucket(text, text[], text[]);
+--   DROP FUNCTION public.persona_bucket(text, text[], text[], int);
 --   DROP TABLE public.genre_languages, public.person_type_instruments,
 --              public.taxonomy_options, public.taxonomy_categories;
 
@@ -161,73 +163,73 @@ INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, meta
 
 INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, metadata) VALUES
   ('instruments', 'acoustic_guitar', 'Acoustic Guitar', 1, '{"family": "guitar"}'::jsonb),
-  ('instruments', 'electric_guitar', 'Electric Guitar', 2, '{"family": "guitar"}'::jsonb),
-  ('instruments', 'bass_guitar', 'Bass Guitar', 3, '{"family": "guitar"}'::jsonb),
-  ('instruments', 'ukulele', 'Ukulele', 4, '{"family": "guitar"}'::jsonb),
-  ('instruments', 'mandolin', 'Mandolin', 5, '{"family": "guitar"}'::jsonb),
-  ('instruments', 'keyboard_synthesizer', 'Keyboard / Synthesizer', 6, '{"family": "keys"}'::jsonb),
-  ('instruments', 'piano', 'Piano', 7, '{"family": "keys"}'::jsonb),
-  ('instruments', 'harmonium', 'Harmonium', 8, '{"family": "keys"}'::jsonb),
-  ('instruments', 'drums_percussion', 'Drums / Percussion', 9, '{"family": "percussion"}'::jsonb),
-  ('instruments', 'tabla', 'Tabla', 10, '{"family": "percussion"}'::jsonb),
-  ('instruments', 'dholak', 'Dholak', 11, '{"family": "percussion"}'::jsonb),
-  ('instruments', 'mridangam', 'Mridangam', 12, '{"family": "percussion"}'::jsonb),
-  ('instruments', 'ghatam', 'Ghatam', 13, '{"family": "percussion"}'::jsonb),
-  ('instruments', 'kanjira', 'Kanjira', 14, '{"family": "percussion"}'::jsonb),
-  ('instruments', 'cajon', 'Cajón', 15, '{"family": "percussion"}'::jsonb),
-  ('instruments', 'sitar', 'Sitar', 16, '{"family": "indian_string"}'::jsonb),
-  ('instruments', 'sarod', 'Sarod', 17, '{"family": "indian_string"}'::jsonb),
+  ('instruments', 'keyboard_synthesizer', 'Keyboard / Synthesizer', 2, '{"family": "keys"}'::jsonb),
+  ('instruments', 'piano', 'Piano', 3, '{"family": "keys"}'::jsonb),
+  ('instruments', 'electric_guitar', 'Electric Guitar', 4, '{"family": "guitar"}'::jsonb),
+  ('instruments', 'drums_percussion', 'Drums / Percussion', 5, '{"family": "percussion"}'::jsonb),
+  ('instruments', 'tabla', 'Tabla', 6, '{"family": "percussion"}'::jsonb),
+  ('instruments', 'bass_guitar', 'Bass Guitar', 7, '{"family": "guitar"}'::jsonb),
+  ('instruments', 'flute_bansuri', 'Flute (Bansuri)', 8, '{"family": "wind"}'::jsonb),
+  ('instruments', 'violin', 'Violin', 9, '{"family": "bowed"}'::jsonb),
+  ('instruments', 'harmonium', 'Harmonium', 10, '{"family": "keys"}'::jsonb),
+  ('instruments', 'sitar', 'Sitar', 11, '{"family": "indian_string"}'::jsonb),
+  ('instruments', 'dholak', 'Dholak', 12, '{"family": "percussion"}'::jsonb),
+  ('instruments', 'dj_controller', 'DJ Controller / Turntables', 13, '{"family": "electronic"}'::jsonb),
+  ('instruments', 'drum_machine_sampler', 'Drum Machine / Sampler', 14, '{"family": "electronic"}'::jsonb),
+  ('instruments', 'saxophone', 'Saxophone', 15, '{"family": "wind"}'::jsonb),
+  ('instruments', 'ukulele', 'Ukulele', 16, '{"family": "guitar"}'::jsonb),
+  ('instruments', 'cajon', 'Cajón', 17, '{"family": "percussion"}'::jsonb),
   ('instruments', 'santoor', 'Santoor', 18, '{"family": "indian_string"}'::jsonb),
-  ('instruments', 'veena', 'Veena', 19, '{"family": "indian_string"}'::jsonb),
-  ('instruments', 'tanpura', 'Tanpura', 20, '{"family": "indian_string"}'::jsonb),
-  ('instruments', 'violin', 'Violin', 21, '{"family": "bowed"}'::jsonb),
-  ('instruments', 'viola', 'Viola', 22, '{"family": "bowed"}'::jsonb),
-  ('instruments', 'cello', 'Cello', 23, '{"family": "bowed"}'::jsonb),
-  ('instruments', 'double_bass', 'Double Bass', 24, '{"family": "bowed"}'::jsonb),
-  ('instruments', 'sarangi', 'Sarangi', 25, '{"family": "bowed"}'::jsonb),
-  ('instruments', 'flute_bansuri', 'Flute (Bansuri)', 26, '{"family": "wind"}'::jsonb),
-  ('instruments', 'saxophone', 'Saxophone', 27, '{"family": "wind"}'::jsonb),
-  ('instruments', 'trumpet', 'Trumpet', 28, '{"family": "wind"}'::jsonb),
+  ('instruments', 'mridangam', 'Mridangam', 19, '{"family": "percussion"}'::jsonb),
+  ('instruments', 'veena', 'Veena', 20, '{"family": "indian_string"}'::jsonb),
+  ('instruments', 'sarangi', 'Sarangi', 21, '{"family": "bowed"}'::jsonb),
+  ('instruments', 'cello', 'Cello', 22, '{"family": "bowed"}'::jsonb),
+  ('instruments', 'trumpet', 'Trumpet', 23, '{"family": "wind"}'::jsonb),
+  ('instruments', 'sarod', 'Sarod', 24, '{"family": "indian_string"}'::jsonb),
+  ('instruments', 'shehnai', 'Shehnai', 25, '{"family": "wind"}'::jsonb),
+  ('instruments', 'tanpura', 'Tanpura', 26, '{"family": "indian_string"}'::jsonb),
+  ('instruments', 'ghatam', 'Ghatam', 27, '{"family": "percussion"}'::jsonb),
+  ('instruments', 'kanjira', 'Kanjira', 28, '{"family": "percussion"}'::jsonb),
   ('instruments', 'clarinet', 'Clarinet', 29, '{"family": "wind"}'::jsonb),
-  ('instruments', 'shehnai', 'Shehnai', 30, '{"family": "wind"}'::jsonb),
-  ('instruments', 'nadaswaram', 'Nadaswaram', 31, '{"family": "wind"}'::jsonb),
-  ('instruments', 'harmonica', 'Harmonica', 32, '{"family": "wind"}'::jsonb),
-  ('instruments', 'dj_controller', 'DJ Controller / Turntables', 33, '{"family": "electronic"}'::jsonb),
-  ('instruments', 'drum_machine_sampler', 'Drum Machine / Sampler', 34, '{"family": "electronic"}'::jsonb);
+  ('instruments', 'nadaswaram', 'Nadaswaram', 30, '{"family": "wind"}'::jsonb),
+  ('instruments', 'mandolin', 'Mandolin', 31, '{"family": "guitar"}'::jsonb),
+  ('instruments', 'double_bass', 'Double Bass', 32, '{"family": "bowed"}'::jsonb),
+  ('instruments', 'viola', 'Viola', 33, '{"family": "bowed"}'::jsonb),
+  ('instruments', 'harmonica', 'Harmonica', 34, '{"family": "wind"}'::jsonb);
 
 INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, metadata) VALUES
-  ('genres', 'indie_pop', 'Indie Pop', 1, '{"scope": "universal"}'::jsonb),
-  ('genres', 'rock_metal', 'Rock / Metal', 2, '{"scope": "universal"}'::jsonb),
-  ('genres', 'hiphop_trap', 'Hip Hop / Trap', 3, '{"scope": "universal"}'::jsonb),
-  ('genres', 'lofi_chill', 'Lofi / Chill Beats', 4, '{"scope": "universal"}'::jsonb),
-  ('genres', 'edm_synthwave', 'EDM / Synthwave', 5, '{"scope": "universal"}'::jsonb),
-  ('genres', 'acoustic_unplugged', 'Acoustic / Unplugged', 6, '{"scope": "universal"}'::jsonb),
-  ('genres', 'rnb_soul', 'R&B / Soul', 7, '{"scope": "universal"}'::jsonb),
-  ('genres', 'jazz_blues', 'Jazz / Blues', 8, '{"scope": "universal"}'::jsonb),
-  ('genres', 'reggae_dub', 'Reggae / Dub', 9, '{"scope": "universal"}'::jsonb),
-  ('genres', 'fusion', 'Fusion', 10, '{"scope": "universal"}'::jsonb),
-  ('genres', 'bollywood_filmi', 'Bollywood / Filmi', 11, '{"scope": "regional"}'::jsonb),
-  ('genres', 'hindustani_classical', 'Hindustani Classical', 12, '{"scope": "regional"}'::jsonb),
-  ('genres', 'carnatic_classical', 'Carnatic Classical', 13, '{"scope": "regional"}'::jsonb),
-  ('genres', 'sufi_devotional', 'Sufi Devotional', 14, '{"scope": "regional"}'::jsonb),
-  ('genres', 'ghazal', 'Ghazal', 15, '{"scope": "regional"}'::jsonb),
-  ('genres', 'qawwali', 'Qawwali', 16, '{"scope": "regional"}'::jsonb),
-  ('genres', 'bhajan_kirtan', 'Bhajan / Kirtan', 17, '{"scope": "regional"}'::jsonb),
-  ('genres', 'punjabi_folk_bhangra', 'Punjabi Folk / Bhangra', 18, '{"scope": "regional"}'::jsonb),
-  ('genres', 'punjabi_pop', 'Punjabi Pop', 19, '{"scope": "regional"}'::jsonb),
-  ('genres', 'rajasthani_folk', 'Rajasthani Folk', 20, '{"scope": "regional"}'::jsonb),
-  ('genres', 'bhojpuri_folk', 'Bhojpuri Folk', 21, '{"scope": "regional"}'::jsonb),
-  ('genres', 'kollywood', 'Tamil Film (Kollywood)', 22, '{"scope": "regional"}'::jsonb),
-  ('genres', 'gaana', 'Gaana', 23, '{"scope": "regional"}'::jsonb),
-  ('genres', 'tollywood', 'Telugu Film (Tollywood)', 24, '{"scope": "regional"}'::jsonb),
-  ('genres', 'sandalwood', 'Kannada Film (Sandalwood)', 25, '{"scope": "regional"}'::jsonb),
-  ('genres', 'mollywood', 'Malayalam Film (Mollywood)', 26, '{"scope": "regional"}'::jsonb),
-  ('genres', 'rabindra_sangeet', 'Rabindra Sangeet', 27, '{"scope": "regional"}'::jsonb),
-  ('genres', 'baul', 'Baul', 28, '{"scope": "regional"}'::jsonb),
-  ('genres', 'lavani', 'Lavani', 29, '{"scope": "regional"}'::jsonb),
-  ('genres', 'natya_sangeet', 'Natya Sangeet', 30, '{"scope": "regional"}'::jsonb),
-  ('genres', 'garba_dandiya', 'Garba / Dandiya', 31, '{"scope": "regional"}'::jsonb),
-  ('genres', 'bihu', 'Bihu', 32, '{"scope": "regional"}'::jsonb);
+  ('genres', 'bollywood_filmi', 'Bollywood / Filmi', 1, '{"scope": "regional"}'::jsonb),
+  ('genres', 'punjabi_pop', 'Punjabi Pop', 2, '{"scope": "regional"}'::jsonb),
+  ('genres', 'hindustani_classical', 'Hindustani Classical', 3, '{"scope": "regional"}'::jsonb),
+  ('genres', 'carnatic_classical', 'Carnatic Classical', 4, '{"scope": "regional"}'::jsonb),
+  ('genres', 'sufi_devotional', 'Sufi Devotional', 5, '{"scope": "regional"}'::jsonb),
+  ('genres', 'bhajan_kirtan', 'Bhajan / Kirtan', 6, '{"scope": "regional"}'::jsonb),
+  ('genres', 'ghazal', 'Ghazal', 7, '{"scope": "regional"}'::jsonb),
+  ('genres', 'qawwali', 'Qawwali', 8, '{"scope": "regional"}'::jsonb),
+  ('genres', 'punjabi_folk_bhangra', 'Punjabi Folk / Bhangra', 9, '{"scope": "regional"}'::jsonb),
+  ('genres', 'kollywood', 'Tamil Film (Kollywood)', 10, '{"scope": "regional"}'::jsonb),
+  ('genres', 'tollywood', 'Telugu Film (Tollywood)', 11, '{"scope": "regional"}'::jsonb),
+  ('genres', 'mollywood', 'Malayalam Film (Mollywood)', 12, '{"scope": "regional"}'::jsonb),
+  ('genres', 'sandalwood', 'Kannada Film (Sandalwood)', 13, '{"scope": "regional"}'::jsonb),
+  ('genres', 'rabindra_sangeet', 'Rabindra Sangeet', 14, '{"scope": "regional"}'::jsonb),
+  ('genres', 'lavani', 'Lavani', 15, '{"scope": "regional"}'::jsonb),
+  ('genres', 'garba_dandiya', 'Garba / Dandiya', 16, '{"scope": "regional"}'::jsonb),
+  ('genres', 'bihu', 'Bihu', 17, '{"scope": "regional"}'::jsonb),
+  ('genres', 'bhojpuri_folk', 'Bhojpuri Folk', 18, '{"scope": "regional"}'::jsonb),
+  ('genres', 'gaana', 'Gaana', 19, '{"scope": "regional"}'::jsonb),
+  ('genres', 'baul', 'Baul', 20, '{"scope": "regional"}'::jsonb),
+  ('genres', 'natya_sangeet', 'Natya Sangeet', 21, '{"scope": "regional"}'::jsonb),
+  ('genres', 'rajasthani_folk', 'Rajasthani Folk', 22, '{"scope": "regional"}'::jsonb),
+  ('genres', 'indie_pop', 'Indie Pop', 23, '{"scope": "universal"}'::jsonb),
+  ('genres', 'hiphop_trap', 'Hip Hop / Trap', 24, '{"scope": "universal"}'::jsonb),
+  ('genres', 'rock_metal', 'Rock / Metal', 25, '{"scope": "universal"}'::jsonb),
+  ('genres', 'edm_synthwave', 'EDM / Synthwave', 26, '{"scope": "universal"}'::jsonb),
+  ('genres', 'lofi_chill', 'Lofi / Chill Beats', 27, '{"scope": "universal"}'::jsonb),
+  ('genres', 'acoustic_unplugged', 'Acoustic / Unplugged', 28, '{"scope": "universal"}'::jsonb),
+  ('genres', 'fusion', 'Fusion', 29, '{"scope": "universal"}'::jsonb),
+  ('genres', 'rnb_soul', 'R&B / Soul', 30, '{"scope": "universal"}'::jsonb),
+  ('genres', 'jazz_blues', 'Jazz / Blues', 31, '{"scope": "universal"}'::jsonb),
+  ('genres', 'reggae_dub', 'Reggae / Dub', 32, '{"scope": "universal"}'::jsonb);
 
 INSERT INTO public.person_type_instruments (person_type_slug, instrument_slug) VALUES
   ('singer', 'acoustic_guitar'),
@@ -471,9 +473,10 @@ INSERT INTO public.genre_languages (genre_slug, language_slug) VALUES
 CREATE FUNCTION public.persona_bucket(
   p_primary   text,
   p_secondary text[] DEFAULT '{}',
-  p_languages text[] DEFAULT '{}'
+  p_languages text[] DEFAULT '{}',
+  p_limit     int    DEFAULT 12
 )
-RETURNS TABLE (category_key text, slug text, label text, sort_order int)
+RETURNS TABLE (category_key text, slug text, label text, display_order int)
 LANGUAGE plpgsql
 STABLE
 SECURITY INVOKER
@@ -483,6 +486,9 @@ AS $fn$
 DECLARE
   v_roles text[] := array_append(coalesce(p_secondary, '{}'), p_primary);
 BEGIN
+  IF p_limit IS NULL OR p_limit < 1 THEN
+    RAISE EXCEPTION 'persona_bucket: p_limit must be at least 1, got %', p_limit;
+  END IF;
   IF cardinality(coalesce(p_secondary, '{}')) > 2 THEN
     RAISE EXCEPTION 'persona_bucket: at most 2 secondary person types, got %', cardinality(p_secondary);
   END IF;
@@ -500,21 +506,37 @@ BEGIN
     RAISE EXCEPTION 'persona_bucket: unknown person type in %', v_roles;
   END IF;
 
+  -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
+  -- language unlocks. Within a tier, sort_order (popularity). Each category is capped at p_limit.
   RETURN QUERY
-  SELECT o.category_key, o.slug, o.label, o.sort_order
-  FROM taxonomy_options o
-  WHERE o.category_key = 'instruments' AND o.is_active
-    AND EXISTS (SELECT 1 FROM person_type_instruments pti
-                WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
-  UNION ALL
-  SELECT o.category_key, o.slug, o.label, o.sort_order
-  FROM taxonomy_options o
-  WHERE o.category_key = 'genres' AND o.is_active
-    AND (o.metadata->>'scope' = 'universal'
-         OR EXISTS (SELECT 1 FROM genre_languages gl
-                    WHERE gl.genre_slug = o.slug AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
-  ORDER BY 1, 4;
+  WITH candidates AS (
+    SELECT o.category_key AS cat, o.slug AS opt_slug, o.label AS opt_label, o.sort_order AS rank_order,
+           CASE WHEN EXISTS (SELECT 1 FROM person_type_instruments p0
+                             WHERE p0.instrument_slug = o.slug AND p0.person_type_slug = p_primary)
+                THEN 0 ELSE 1 END AS tier
+    FROM taxonomy_options o
+    WHERE o.category_key = 'instruments' AND o.is_active
+      AND EXISTS (SELECT 1 FROM person_type_instruments pti
+                  WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
+    UNION ALL
+    SELECT o.category_key, o.slug, o.label, o.sort_order,
+           CASE WHEN o.metadata->>'scope' = 'regional' THEN 0 ELSE 1 END
+    FROM taxonomy_options o
+    WHERE o.category_key = 'genres' AND o.is_active
+      AND (o.metadata->>'scope' = 'universal'
+           OR EXISTS (SELECT 1 FROM genre_languages gl
+                      WHERE gl.genre_slug = o.slug
+                        AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
+  ),
+  ranked AS (
+    SELECT c.*, (row_number() OVER (PARTITION BY c.cat ORDER BY c.tier, c.rank_order))::int AS rn
+    FROM candidates c
+  )
+  SELECT r.cat, r.opt_slug, r.opt_label, r.rn
+  FROM ranked r
+  WHERE r.rn <= p_limit
+  ORDER BY r.cat, r.rn;
 END
 $fn$;
 
-GRANT EXECUTE ON FUNCTION public.persona_bucket(text, text[], text[]) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.persona_bucket(text, text[], text[], int) TO anon, authenticated;

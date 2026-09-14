@@ -142,6 +142,28 @@ GENRES = [
     ("bihu", "Bihu", ["as"], True),
 ]
 
+# Screen cap: no picker shows more than this many options.
+SCREEN_LIMIT = 12
+
+# Popularity order — sets sort_order, and decides which options survive the screen cap.
+INSTRUMENT_RANK = [
+    "acoustic_guitar", "keyboard_synthesizer", "piano", "electric_guitar", "drums_percussion",
+    "tabla", "bass_guitar", "flute_bansuri", "violin", "harmonium", "sitar", "dholak",
+    "dj_controller", "drum_machine_sampler", "saxophone", "ukulele", "cajon", "santoor",
+    "mridangam", "veena", "sarangi", "cello", "trumpet", "sarod", "shehnai", "tanpura",
+    "ghatam", "kanjira", "clarinet", "nadaswaram", "mandolin", "double_bass", "viola", "harmonica",
+]
+GENRE_RANK = [
+    # regional
+    "bollywood_filmi", "punjabi_pop", "hindustani_classical", "carnatic_classical", "sufi_devotional",
+    "bhajan_kirtan", "ghazal", "qawwali", "punjabi_folk_bhangra", "kollywood", "tollywood",
+    "mollywood", "sandalwood", "rabindra_sangeet", "lavani", "garba_dandiya", "bihu",
+    "bhojpuri_folk", "gaana", "baul", "natya_sangeet", "rajasthani_folk",
+    # universal
+    "indie_pop", "hiphop_trap", "rock_metal", "edm_synthwave", "lofi_chill", "acoustic_unplugged",
+    "fusion", "rnb_soul", "jazz_blues", "reggae_dub",
+]
+
 # ---- integrity checks -------------------------------------------------------
 def unique(xs, what):
     assert len(xs) == len(set(xs)), f"duplicate {what}"
@@ -152,14 +174,26 @@ for p in PERSON_TYPES:
     assert p[2] in dict(GROUPS), p[0]
 for g in GENRES:
     assert g[2] is None or all(l in dict(LANGUAGES) for l in g[2]), g[0]
+assert sorted(INSTRUMENT_RANK) == sorted(ALL), "INSTRUMENT_RANK must list every instrument once"
+assert sorted(GENRE_RANK) == sorted(g[0] for g in GENRES), "GENRE_RANK must list every genre once"
+# Flat pickers and every person-type group must fit one screen.
+assert len(LANGUAGES) <= SCREEN_LIMIT, "languages exceed a screen"
+assert len(BUSINESS_TYPES) <= SCREEN_LIMIT, "business types exceed a screen"
+assert len(GROUPS) <= SCREEN_LIMIT, "person-type groups exceed a screen"
+for gk, _ in GROUPS:
+    assert sum(p[2] == gk for p in PERSON_TYPES) <= SCREEN_LIMIT, f"group {gk} exceeds a screen"
 
-def bucket(primary, secondary, languages):
-    assert len(secondary) <= 2 and primary not in secondary
+def bucket(primary, secondary, languages, limit=SCREEN_LIMIT):
+    """Python mirror of persona_bucket(): (instruments, genres, instruments_total, genres_total)."""
+    assert len(secondary) <= 2 and len(set(secondary)) == len(secondary) and primary not in secondary
     pt = {p[0]: p for p in PERSON_TYPES}
-    allowed = set().union(*(pt[r][4] for r in [primary, *secondary]))
-    instruments = [s for s in ALL if s in allowed]
-    genres = [g[0] for g in GENRES if g[2] is None or set(g[2]) & set(languages)]
-    return instruments, genres
+    prim = set(pt[primary][4])
+    allowed = set().union(prim, *(pt[r][4] for r in secondary))
+    ins = sorted(allowed, key=lambda s: (s not in prim, INSTRUMENT_RANK.index(s)))
+    scope = {g[0]: g[2] for g in GENRES}
+    matched = [g for g in GENRE_RANK if scope[g] is None or set(scope[g]) & set(languages)]
+    gen = sorted(matched, key=lambda g: (scope[g] is None, GENRE_RANK.index(g)))
+    return ins[:limit], gen[:limit], len(ins), len(gen)
 
 def q(s):
     return "'" + s.replace("'", "''") + "'"
@@ -186,14 +220,16 @@ def sql():
 -- Rules: person_type_instruments (which instruments a person type can hold) and genre_languages
 -- (which languages unlock a regional genre). Both reference taxonomy_options by foreign key.
 --
--- persona_bucket(primary, secondary[], languages[]) returns the options a profile can pick:
--- instruments = union over primary + up to 2 secondary person types;
--- genres = every universal genre + regional genres linked to any selected language.
+-- persona_bucket(primary, secondary[], languages[], limit) returns the options a profile can pick:
+-- instruments = union over primary + up to 2 secondary person types, primary's first;
+-- genres = regional genres linked to any selected language first, then universal genres.
+-- Each category is capped at limit (default 12) so no picker screen exceeds it.
+-- sort_order on instruments and genres is popularity, which decides what survives the cap.
 --
 -- Does not touch profiles. Reference data: public SELECT, no client write.
 --
 -- Rollback:
---   DROP FUNCTION public.persona_bucket(text, text[], text[]);
+--   DROP FUNCTION public.persona_bucket(text, text[], text[], int);
 --   DROP TABLE public.genre_languages, public.person_type_instruments,
 --              public.taxonomy_options, public.taxonomy_categories;
 
@@ -283,8 +319,11 @@ CREATE POLICY "Genre languages are readable by everyone"
     options("languages", [(s, l, "NULL") for s, l in LANGUAGES])
     options("business_types", [(s, l, "NULL") for s, l in BUSINESS_TYPES])
     options("person_types", [(p[0], p[1], meta({"group": p[2]})) for p in PERSON_TYPES])
-    options("instruments", [(s, l, meta({"family": f})) for s, l, f, _ in INSTRUMENTS])
-    options("genres", [(g[0], g[1], meta({"scope": "universal" if g[2] is None else "regional"})) for g in GENRES])
+    by_ins = {s: (s, l, f) for s, l, f, _ in INSTRUMENTS}
+    options("instruments", [(s, l, meta({"family": f})) for s, l, f in (by_ins[x] for x in INSTRUMENT_RANK)])
+    by_gen = {g[0]: g for g in GENRES}
+    options("genres", [(g[0], g[1], meta({"scope": "universal" if g[2] is None else "regional"}))
+                       for g in (by_gen[x] for x in GENRE_RANK)])
 
     w("INSERT INTO public.person_type_instruments (person_type_slug, instrument_slug) VALUES")
     w(",\n".join(f"  ({q(p[0])}, {q(i)})" for p in PERSON_TYPES for i in p[4]) + ";\n")
@@ -295,9 +334,10 @@ CREATE POLICY "Genre languages are readable by everyone"
     w("""CREATE FUNCTION public.persona_bucket(
   p_primary   text,
   p_secondary text[] DEFAULT '{}',
-  p_languages text[] DEFAULT '{}'
+  p_languages text[] DEFAULT '{}',
+  p_limit     int    DEFAULT 12
 )
-RETURNS TABLE (category_key text, slug text, label text, sort_order int)
+RETURNS TABLE (category_key text, slug text, label text, display_order int)
 LANGUAGE plpgsql
 STABLE
 SECURITY INVOKER
@@ -307,6 +347,9 @@ AS $fn$
 DECLARE
   v_roles text[] := array_append(coalesce(p_secondary, '{}'), p_primary);
 BEGIN
+  IF p_limit IS NULL OR p_limit < 1 THEN
+    RAISE EXCEPTION 'persona_bucket: p_limit must be at least 1, got %', p_limit;
+  END IF;
   IF cardinality(coalesce(p_secondary, '{}')) > 2 THEN
     RAISE EXCEPTION 'persona_bucket: at most 2 secondary person types, got %', cardinality(p_secondary);
   END IF;
@@ -324,24 +367,40 @@ BEGIN
     RAISE EXCEPTION 'persona_bucket: unknown person type in %', v_roles;
   END IF;
 
+  -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
+  -- language unlocks. Within a tier, sort_order (popularity). Each category is capped at p_limit.
   RETURN QUERY
-  SELECT o.category_key, o.slug, o.label, o.sort_order
-  FROM taxonomy_options o
-  WHERE o.category_key = 'instruments' AND o.is_active
-    AND EXISTS (SELECT 1 FROM person_type_instruments pti
-                WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
-  UNION ALL
-  SELECT o.category_key, o.slug, o.label, o.sort_order
-  FROM taxonomy_options o
-  WHERE o.category_key = 'genres' AND o.is_active
-    AND (o.metadata->>'scope' = 'universal'
-         OR EXISTS (SELECT 1 FROM genre_languages gl
-                    WHERE gl.genre_slug = o.slug AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
-  ORDER BY 1, 4;
+  WITH candidates AS (
+    SELECT o.category_key AS cat, o.slug AS opt_slug, o.label AS opt_label, o.sort_order AS rank_order,
+           CASE WHEN EXISTS (SELECT 1 FROM person_type_instruments p0
+                             WHERE p0.instrument_slug = o.slug AND p0.person_type_slug = p_primary)
+                THEN 0 ELSE 1 END AS tier
+    FROM taxonomy_options o
+    WHERE o.category_key = 'instruments' AND o.is_active
+      AND EXISTS (SELECT 1 FROM person_type_instruments pti
+                  WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
+    UNION ALL
+    SELECT o.category_key, o.slug, o.label, o.sort_order,
+           CASE WHEN o.metadata->>'scope' = 'regional' THEN 0 ELSE 1 END
+    FROM taxonomy_options o
+    WHERE o.category_key = 'genres' AND o.is_active
+      AND (o.metadata->>'scope' = 'universal'
+           OR EXISTS (SELECT 1 FROM genre_languages gl
+                      WHERE gl.genre_slug = o.slug
+                        AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
+  ),
+  ranked AS (
+    SELECT c.*, (row_number() OVER (PARTITION BY c.cat ORDER BY c.tier, c.rank_order))::int AS rn
+    FROM candidates c
+  )
+  SELECT r.cat, r.opt_slug, r.opt_label, r.rn
+  FROM ranked r
+  WHERE r.rn <= p_limit
+  ORDER BY r.cat, r.rn;
 END
 $fn$;
 
-GRANT EXECUTE ON FUNCTION public.persona_bucket(text, text[], text[]) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.persona_bucket(text, text[], text[], int) TO anon, authenticated;
 """)
     return "\n".join(L)
 
@@ -351,7 +410,7 @@ def doc():
     lab = {s: l for s, l, *_ in INSTRUMENTS}
     w("""---
 doc: PERSONA-BUCKET
-version: 0.1
+version: 0.2
 status: DRAFT — for Vedanshu's review
 updated: 2026-09-14
 verified_against: musiclinkd-9e6ca875 supabase/migrations/20260914120000_taxonomy_persona_bucket.sql (generated from the same data)
@@ -368,16 +427,36 @@ originally: new
 **Instruments** = union of the instruments allowed for the primary and each secondary person type.
 **Genres** = every *universal* genre, plus each *regional* genre linked to any selected language.
 
+## Screen limit — 12 per screen
+
+| Screen | How it stays within 12 |
+|---|---|
+| Languages | 12 options |
+| Business types | 9 options |
+| Primary / secondary person type | pick a group (8), then a type (largest group: 8) |
+| Instruments | `persona_bucket` caps at 12 — primary's instruments first, then secondaries', each by popularity |
+| Genres | `persona_bucket` caps at 12 — regional genres for the selected languages first, then universal, each by popularity |
+
+The generator refuses to build if any flat list or person-type group exceeds 12.
+
 Call: `select * from persona_bucket('singer', array['lyricist','composer'], array['hi','en']);`
+— returns `category_key, slug, label, display_order`; `display_order` is the on-screen order, 1–12.
 """)
     w("## Languages (12)\n\n| Slug | Name |\n|---|---|")
     for s, l in LANGUAGES: w(f"| `{s}` | {l} |")
     w("\n## Business types (9)\n\n| Slug | Label |\n|---|---|")
     for s, l in BUSINESS_TYPES: w(f"| `{s}` | {l} |")
     w(f"\n## Instruments ({len(INSTRUMENTS)})\n\n| Family | Instruments |\n|---|---|")
+    popularity = " · ".join(f"{i}. {lab[s]}" for i, s in enumerate(INSTRUMENT_RANK, 1))
     for f, fl in FAMILIES:
         w(f"| {fl} | " + " · ".join(l + (" *(added)*" if a else "") for s, l, ff, a in INSTRUMENTS if ff == f) + " |")
+    w(f"\nPopularity order: {popularity}")
     w(f"\n## Person types ({len(PERSON_TYPES)}) → instruments\n")
+    w("| Group | Types |\n|---|---|")
+    for gk, gname in GROUPS:
+        members = [p[1] for p in PERSON_TYPES if p[2] == gk]
+        w(f"| {gname} ({len(members)}) | " + " · ".join(members) + " |")
+    w("")
     w("| Group | Slug | Label | Source | Instruments | Basis |\n|---|---|---|---|---|---|")
     for p in PERSON_TYPES:
         ins = p[4]
@@ -392,9 +471,9 @@ Call: `select * from persona_bucket('singer', array['lyricist','composer'], arra
                 elif got: parts.append(", ".join(lab[s] for s in got))
             txt = " · ".join(parts)
         w(f"| {dict(GROUPS)[p[2]]} | `{p[0]}` | {p[1]} | {p[3]} | {txt} | {p[5]} |")
-    w(f"\n## Genres ({len(GENRES)}) → languages\n\n| Slug | Label | Scope | Languages |\n|---|---|---|---|")
+    w(f"\n## Genres ({len(GENRES)}) → languages, in popularity order\n\n| Slug | Label | Scope | Languages |\n|---|---|---|---|")
     ln = dict(LANGUAGES)
-    for g in GENRES:
+    for g in sorted(GENRES, key=lambda g: GENRE_RANK.index(g[0])):
         langs = "all" if g[2] is None else ("all Indian" if g[2] == INDIAN else " · ".join(ln[l] for l in g[2]))
         w(f"| `{g[0]}` | {g[1]}{' *(added)*' if g[3] else ''} | {'universal' if g[2] is None else 'regional'} | {langs} |")
     w("\n## Worked examples\n")
@@ -402,11 +481,10 @@ Call: `select * from persona_bucket('singer', array['lyricist','composer'], arra
     for prim, sec, langs in [("singer", ["lyricist", "composer"], ["hi", "en"]),
                              ("singer", ["lyricist", "dj"], ["ta"]),
                              ("drummer", ["folk_vocalist"], ["pa", "bho"])]:
-        ins, gen = bucket(prim, sec, langs)
+        ins, gen, ni, ng = bucket(prim, sec, langs)
         w(f"**{prim} + {', '.join(sec)} · languages {' · '.join(ln[l] for l in langs)}**\n")
-        w(f"- Instruments ({len(ins)}): " + ("all" if ins == ALL else ", ".join(lab[s] for s in ins)))
-        reg = [gl[g] for g in gen if dict((x[0], x[2]) for x in GENRES)[g] is not None]
-        w(f"- Genres ({len(gen)}): 10 universal + " + (", ".join(reg) if reg else "none regional") + "\n")
+        w(f"- Instruments — {len(ins)} shown of {ni} allowed: " + ", ".join(lab[s] for s in ins))
+        w(f"- Genres — {len(gen)} shown of {ng} allowed: " + ", ".join(gl[g] for g in gen) + "\n")
     w("""## Not decided here
 
 - Which person types, instruments and genres ship — every *added* row and every *proposed* basis.
@@ -422,5 +500,8 @@ if __name__ == "__main__":
     open(out_doc, "w", encoding="utf-8").write(doc())
     print("person types", len(PERSON_TYPES), "instruments", len(INSTRUMENTS), "genres", len(GENRES),
           "pti rows", sum(len(p[4]) for p in PERSON_TYPES), "gl rows", sum(len(g[2]) for g in GENRES if g[2]))
-    for args in [("singer", ["lyricist", "composer"], ["hi", "en"]), ("singer", ["lyricist", "dj"], ["ta"])]:
-        i, g = bucket(*args); print(args, len(i), "instruments", len(g), "genres")
+    for args in [("singer", ["lyricist", "composer"], ["hi", "en"]), ("singer", ["lyricist", "dj"], ["ta"]),
+                 ("producer", ["composer", "music_teacher"], [s for s, _ in LANGUAGES])]:
+        i, g, ni, ng = bucket(*args)
+        assert len(i) <= SCREEN_LIMIT and len(g) <= SCREEN_LIMIT
+        print(args[:2], f"instruments {len(i)}/{ni}", f"genres {len(g)}/{ng}")
