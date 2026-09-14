@@ -177,7 +177,7 @@ function WelcomeScreen() {
 
           <p className="mt-5 text-center text-1 text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
+            <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
               Sign in
             </Link>
           </p>

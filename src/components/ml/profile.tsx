@@ -47,7 +47,7 @@ export function ProfileSection({
           <button
             type="button"
             onClick={onAction}
-            className="text-xs font-semibold text-pink-strong"
+            className="text-xs font-semibold text-foreground"
           >
             {action}
           </button>
@@ -111,7 +111,7 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
     <span
       className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-1 font-bold uppercase tracking-wide"
       style={{
-        background: industry ? "var(--pink-container)" : "var(--surface-subtle)",
+        background: industry ? "var(--surface-subtle)" : "var(--surface-subtle)",
         color: industry ? "var(--primary)" : "var(--muted-foreground)",
       }}
       title={tier}
@@ -150,7 +150,7 @@ export function TagChip({
 }) {
   const styles: Record<string, { background: string; color: string }> = {
     subtle: { background: "var(--surface-subtle)", color: "var(--muted-foreground)" },
-    pink: { background: "var(--pink-container)", color: "var(--primary)" },
+    pink: { background: "var(--surface-subtle)", color: "var(--primary)" },
     purple: { background: "var(--status-category-bg)", color: "var(--status-category-text)" },
   };
   return (
@@ -448,7 +448,7 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
         </div>
         <p className="truncate text-1 text-muted-foreground">{p.role}</p>
         <p className="truncate text-1 text-muted-foreground">with {p.collaborators}</p>
-        <p className="mt-1 text-1 font-semibold text-pink-strong">
+        <p className="mt-1 text-1 font-semibold text-foreground">
           {p.genre} · {p.year}
         </p>
       </div>
@@ -462,7 +462,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-2">{s.name}</h3>
         {s.from ? (
-          <span className="shrink-0 text-1 font-bold text-pink-strong">{s.from}</span>
+          <span className="shrink-0 text-1 font-bold text-foreground">{s.from}</span>
         ) : (
           <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
@@ -553,7 +553,7 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
     <article
       className="rounded-lg border border-border p-4"
       style={{
-        background: o.tone === "seeking" ? "var(--pink-container)" : "var(--card)",
+        background: o.tone === "seeking" ? "var(--surface-subtle)" : "var(--card)",
       }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -765,11 +765,11 @@ export function CompletionCard({
   return (
     <div
       className="rounded-lg border border-border p-4"
-      style={{ background: "var(--pink-container)" }}
+      style={{ background: "var(--surface-subtle)" }}
     >
       <div className="flex items-baseline justify-between">
         <h3 className="text-2">Your profile is {percent}% complete</h3>
-        <span className="text-1 font-semibold text-pink-strong">{missing.length} left</span>
+        <span className="text-1 font-semibold text-foreground">{missing.length} left</span>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-card">
         <div

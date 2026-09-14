@@ -51,7 +51,7 @@ function BusinessVerification() {
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-subtle text-pink-strong">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-subtle text-foreground">
               <ShieldCheck size={20} />
             </span>
             <div className="min-w-0 flex-1">

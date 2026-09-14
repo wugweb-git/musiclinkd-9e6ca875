@@ -17,6 +17,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
+import { haptic } from "@/lib/haptics";
+import { useFlowBack } from "@/lib/flow-back";
 import {
   ChipPicker,
   ChoiceGrid,
@@ -107,6 +109,9 @@ function StepRoute() {
   const { draft, set, toggle, markComplete, hydrated, sync, retry } = useOnboarding();
   const navigate = useNavigate();
   const [banner, setBanner] = useState<Banner>("none");
+  // Bumped on each blocked Continue so the button re-mounts and the shake replays.
+  const [nudge, setNudge] = useState(0);
+  const flowBack = useFlowBack();
 
   const list = visibleSteps(draft);
   const def = steps.find((s) => s.id === id);
@@ -151,6 +156,7 @@ function StepRoute() {
   };
 
   const advance = (complete: boolean) => {
+    haptic(complete ? "confirm" : "select");
     if (complete) markComplete(def.id);
     const after = visibleSteps({
       ...draft,
@@ -163,6 +169,26 @@ function StepRoute() {
 
   const valid = isValid(def.id, draft);
 
+  const blocked = () => {
+    haptic("error");
+    setBanner("error");
+    setNudge((n) => n + 1);
+    // The message renders above the question; on a long step it would be off screen.
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const back = () => {
+    const prev = list[index - 1];
+    if (!prev) {
+      flowBack("/onboarding", () => void navigate({ to: "/onboarding", replace: true }));
+      return;
+    }
+    flowBack(
+      `/onboarding/step/${prev.id}`,
+      () => void navigate({ to: "/onboarding/step/$id", params: { id: prev.id }, replace: true }),
+    );
+  };
+
   return (
     <StepShell
       step={index + 1}
@@ -171,7 +197,8 @@ function StepRoute() {
       title={def.title}
       subtitle={def.subtitle}
       why={def.why}
-      onBack={index === 0 ? () => navigate({ to: "/onboarding" }) : () => goto(list[index - 1])}
+      onBack={back}
+      onSubmit={valid ? () => advance(true) : blocked}
       {...(def.optional ? { onSkip: () => advance(false) } : {})}
       banner={
         banner === "error" ? (
@@ -186,8 +213,9 @@ function StepRoute() {
       footer={
         <div className="space-y-2">
           <Btn
-            className={valid ? "w-full" : "w-full opacity-50"}
-            onClick={valid ? () => advance(true) : () => setBanner("error")}
+            key={nudge}
+            type="submit"
+            className={`w-full ${valid ? "" : "opacity-50"} ${nudge ? "animate-shake" : ""}`}
           >
             {index === list.length - 1 ? "Review profile" : "Continue"}
           </Btn>
@@ -243,6 +271,7 @@ function StepBody({
             value={d.displayName}
             onChange={(v) => set({ displayName: v })}
             placeholder="Your professional name"
+            autoComplete="name"
             hint="Use the name you're credited under."
           />
           <InlineField
@@ -252,6 +281,7 @@ function StepBody({
             value={d.username}
             onChange={(v) => set({ username: v.toLowerCase().replace(/\s/g, "") })}
             placeholder="yourname"
+            autoComplete="username"
             {...(check.ok ? { ok: check.message } : { error: check.message })}
           />
         </div>
@@ -383,6 +413,7 @@ function StepBody({
             value={d.locality}
             onChange={(v) => set({ locality: v })}
             placeholder="Andheri West, Indiranagar…"
+            autoComplete="address-level3"
             hint="Only shown as an area — never a full address."
           />
           <LocationHint />
@@ -472,6 +503,8 @@ function StepBody({
                 value={val}
                 onChange={(v) => set({ links: { ...d.links, [p.key]: v } })}
                 placeholder={p.placeholder}
+                inputMode="url"
+                autoComplete="url"
                 {...(bad ? { error: "That doesn't look like a full URL." } : {})}
               />
             );

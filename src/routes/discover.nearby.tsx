@@ -34,7 +34,7 @@ function Nearby() {
         <TopBar title="Nearby" back="/discover" />
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
-            <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-subtle text-pink-strong">
+            <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-subtle text-foreground">
               <MapPin size={24} />
             </span>
             <h2 className="mt-3 text-[19px] leading-tight">Show people near you</h2>

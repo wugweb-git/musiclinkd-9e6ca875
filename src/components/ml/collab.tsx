@@ -41,7 +41,7 @@ import {
 const toneStyle: Record<string, { bg: string; fg: string }> = {
   ok: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-  info: { bg: "var(--pink-container)", fg: "var(--primary)" },
+  info: { bg: "var(--surface-subtle)", fg: "var(--primary)" },
   off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
   bad: { bg: "color-mix(in oklab, var(--destructive) 10%, transparent)", fg: "var(--destructive)" },
 };
@@ -170,11 +170,11 @@ export function ParticipantRow({
           <Link
             to="/profile/$username"
             params={{ username: p.username }}
-            className="text-1 font-semibold text-pink-strong"
+            className="text-1 font-semibold text-foreground"
           >
             View profile
           </Link>
-          <Link to="/messages" className="text-1 font-semibold text-pink-strong">
+          <Link to="/messages" className="text-1 font-semibold text-foreground">
             Message
           </Link>
           {canManage && p.status !== "owner" ? (
@@ -376,7 +376,7 @@ export function MilestoneRow({
         <Link
           to="/collab/$id/milestones/$mid"
           params={{ id: projectId, mid: m.id }}
-          className="mt-2 inline-block text-1 font-semibold text-pink-strong"
+          className="mt-2 inline-block text-1 font-semibold text-foreground"
         >
           Open milestone
         </Link>
@@ -485,7 +485,7 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
-      <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-pink-container text-primary">
+      <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-primary">
         <Music size={24} aria-hidden />
       </span>
       <h3 className="text-2">{title}</h3>
@@ -550,7 +550,7 @@ export function PinnedNote({ children }: { children: ReactNode }) {
   return (
     <div
       className="mb-3 flex items-start gap-2 rounded-lg px-4 py-3"
-      style={{ background: "var(--pink-container)", color: "var(--primary)" }}
+      style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
     >
       <Pin size={14} className="mt-0.5 shrink-0" />
       <p className="text-1 font-semibold">{children}</p>

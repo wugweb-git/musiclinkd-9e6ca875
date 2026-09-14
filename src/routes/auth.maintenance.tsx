@@ -25,7 +25,7 @@ function MaintenanceScreen() {
     <AuthScreen>
       <div
         className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
-        style={{ background: "var(--pink-container)" }}
+        style={{ background: "var(--surface-subtle)" }}
       >
         <Wrench size={22} className="text-primary" />
       </div>
@@ -38,7 +38,7 @@ function MaintenanceScreen() {
       </Btn>
       <TrustNote>Nothing in progress is lost — drafts stay on your device.</TrustNote>
       <p className="mt-6 text-center text-1 text-muted-foreground">
-        <Link to="/help" className="font-semibold text-pink-strong">
+        <Link to="/help" className="font-semibold text-foreground">
           Read status updates
         </Link>
       </p>

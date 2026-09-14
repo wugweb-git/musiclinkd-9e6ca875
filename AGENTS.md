@@ -153,7 +153,7 @@ Check `src/components/ml/ui.tsx`, `src/components/ml/kit.tsx` and `src/component
 
 Type is six fluid `clamp()` tokens, never arbitrary sizes: `text-1` 12-13, `text-sm` 14-15 (Material bodyMedium; the `Btn` label), `text-2` 16-18, `text-3` 22-28, `text-4` 32-44, `text-5` 40-56 hero-only. `text-sm` is a real token, not Tailwind's default. Do not use `text-xs`, `text-base`, `text-lg` or larger defaults. **Spacing is Tailwind's numeric scale only** (`p-1` 4px … `p-8` 32px); the named `--spacing-xs/sm/md/lg` were removed. Secondary text is `text-muted-foreground` (`text-text2` is gone).
 
-Brand pink `#EA4C89`; `#5B4BFF` is from a superseded brief and is always a bug. **Near-black is `ink` `#0D0D0D`** (`bg-ink`, `Btn variant="ink"`); navy is retired and removed. Purple is permitted only on the category badge.
+**Primary is ink `#0D0D0D`** (owner, 14 Sep): primary buttons, selection (`selected-bg` ink, `selected-text` white), progress, checkboxes and focus ring. The palette is black, greys and white. **Brand pink `#EA4C89` (`text-brand`, `bg-brand`) is a rare accent, about 10% of a screen:** the logo mark, unread and notification dots, the Welcome tagline. Never pink for buttons, links, selection, icons or body text; links are `text-foreground` semibold (underlined inside sentences). `#5B4BFF` is from a superseded brief and is always a bug; navy is retired. Purple is permitted only on the category badge.
 
 Photography: Unsplash is fine. The team's own image library lives in the guide repo at `frontend/website/assets/img/` (inspiration, editorials, speakers).
 

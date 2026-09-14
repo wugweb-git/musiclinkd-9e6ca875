@@ -100,7 +100,7 @@ function Overview() {
       <Card className="mb-5">
         <div className="mb-2 flex items-center justify-between">
           <p className="text-[13px] font-semibold">Progress</p>
-          <span className="text-[12px] font-bold text-pink-strong">{project.progress}%</span>
+          <span className="text-[12px] font-bold text-foreground">{project.progress}%</span>
         </div>
         <div className="h-2 w-full overflow-hidden rounded-full bg-border">
           <div
@@ -120,7 +120,7 @@ function Overview() {
         <Card className="mb-5">
           <div className="flex items-center justify-between">
             <ParticipantStack people={project.participants} />
-            <span className="text-[11px] font-semibold text-pink-strong">
+            <span className="text-[11px] font-semibold text-foreground">
               {project.participants.length} collaborators
             </span>
           </div>

@@ -78,7 +78,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       // viewport-fit=cover: without it every env(safe-area-inset-*) in the app resolves to 0,
       // so the bottom nav and sticky headers sit under the notch and home indicator.
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      // interactive-widget=resizes-content: when the Android keyboard opens, the layout viewport
+      // shrinks, so fixed footers (Continue, Send code) ride above the keyboard instead of under it.
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content",
+      },
       { title: "MusicLinkd — Discover Music Talent in India" },
       {
         name: "description",

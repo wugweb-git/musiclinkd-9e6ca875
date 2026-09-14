@@ -104,7 +104,7 @@ function Availability() {
             <button
               type="button"
               onClick={() => setAddOff(true)}
-              className="inline-flex items-center gap-1 text-[12px] font-semibold text-pink-strong"
+              className="inline-flex items-center gap-1 text-[12px] font-semibold text-foreground"
             >
               <Plus size={14} /> Add
             </button>

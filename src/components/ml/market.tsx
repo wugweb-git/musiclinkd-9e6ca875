@@ -121,7 +121,7 @@ export function CategoryTile({
     >
       <span
         className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
-        style={{ background: "var(--pink-container)" }}
+        style={{ background: "var(--surface-subtle)" }}
       >
         {emoji}
       </span>
@@ -248,7 +248,7 @@ export function ListingRow({ l }: { l: Listing }) {
           <LocationRow text={l.distance} />
         </div>
         {l.reason ? (
-          <p className="mt-1.5 truncate text-1 font-semibold text-pink-strong">{l.reason}</p>
+          <p className="mt-1.5 truncate text-1 font-semibold text-foreground">{l.reason}</p>
         ) : null}
       </div>
     </article>
@@ -361,7 +361,7 @@ export function MarketFilterSheet({
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl">Filters</h2>
-        <button onClick={() => setSelected([])} className="text-xs font-semibold text-pink-strong">
+        <button onClick={() => setSelected([])} className="text-xs font-semibold text-foreground">
           Clear all
         </button>
       </div>
@@ -600,7 +600,7 @@ export function SectionRow({
           {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {to ? (
-          <Link to={to} className="text-xs font-semibold text-pink-strong">
+          <Link to={to} className="text-xs font-semibold text-foreground">
             See all
           </Link>
         ) : null}

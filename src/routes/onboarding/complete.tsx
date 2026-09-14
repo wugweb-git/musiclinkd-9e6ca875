@@ -61,7 +61,7 @@ function Complete() {
 
       <main className="px-5 pt-4">
         <section className="rounded-lg border border-border bg-card p-5">
-          <PartyPopper size={26} className="text-primary" />
+          <PartyPopper size={26} className="animate-pop text-primary" />
           <h1 className="mt-3 text-3 leading-tight">
             You're on MusicLinkd, {d.displayName.split(" ")[0] || "there"}
           </h1>
@@ -81,7 +81,10 @@ function Complete() {
               aria-valuemax={100}
               aria-label="Profile strength"
             >
-              <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+              <div
+                className="h-full origin-left animate-fill rounded-full bg-primary"
+                style={{ width: `${pct}%` }}
+              />
             </div>
           </div>
         </section>

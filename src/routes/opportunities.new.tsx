@@ -267,7 +267,7 @@ function CreateOpportunity() {
                     <span className="min-w-0 flex-1 truncate text-[13px]">{r}</span>
                     <button
                       type="button"
-                      className="text-[12px] font-semibold text-pink-strong"
+                      className="text-[12px] font-semibold text-foreground"
                       onClick={() => setReqs((p) => p.filter((_, j) => j !== i))}
                     >
                       Remove

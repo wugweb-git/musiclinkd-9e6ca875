@@ -55,7 +55,7 @@ export function MatchBar({ score, reasons }: { score: number; reasons: string[] 
     <div className="rounded-lg bg-subtle p-3">
       <div className="flex items-baseline justify-between">
         <span className="text-1 font-semibold">Fit for you</span>
-        <span className="text-1 font-bold text-pink-strong">{score}%</span>
+        <span className="text-1 font-bold text-foreground">{score}%</span>
       </div>
       <div className="mt-1.5 h-1.5 rounded-full bg-card">
         <div className="h-1.5 rounded-full bg-primary" style={{ width: `${score}%` }} />
@@ -146,7 +146,7 @@ export function OpportunityCard({
           <span className="min-w-0 flex-1 truncate text-1 text-muted-foreground">
             {o.poster.name}
           </span>
-          <span className="shrink-0 text-1 font-bold text-pink-strong">{o.matchScore}% fit</span>
+          <span className="shrink-0 text-1 font-bold text-foreground">{o.matchScore}% fit</span>
         </div>
       </Link>
     </article>
@@ -200,7 +200,7 @@ export function ApplicantCard({ a }: { a: Applicant }) {
               {a.headline} · {a.city}
             </p>
           </div>
-          <span className="shrink-0 text-1 font-bold text-pink-strong">{a.matchScore}%</span>
+          <span className="shrink-0 text-1 font-bold text-foreground">{a.matchScore}%</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {a.matchReasons.slice(0, 2).map((r) => (

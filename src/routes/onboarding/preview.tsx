@@ -122,7 +122,7 @@ function Row({ title, items, onEdit }: { title: string; items: string[]; onEdit:
         <button
           type="button"
           onClick={onEdit}
-          className="inline-flex min-h-10 items-center gap-1 text-1 font-bold text-pink-strong"
+          className="hit-area inline-flex min-h-10 items-center gap-1 text-1 font-bold text-foreground"
         >
           <Pencil size={12} /> Edit
         </button>

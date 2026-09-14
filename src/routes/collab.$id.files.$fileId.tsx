@@ -100,7 +100,7 @@ function FileDetail() {
                   {i !== 0 ? (
                     <button
                       type="button"
-                      className="mt-2 text-[11px] font-semibold text-pink-strong"
+                      className="mt-2 text-[11px] font-semibold text-foreground"
                     >
                       Compare with latest
                     </button>

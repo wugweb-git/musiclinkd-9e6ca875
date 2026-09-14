@@ -5,6 +5,50 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — registration-flow motion and Android behaviour
+
+Measured first at 412px across the 30 screens from Welcome to Home: no page motion; back buttons at
+40×40 and "Skip" at 25×17 on 12 steps (48dp floor); inline auth links 15-17px tall; no `enterKeyHint` on
+any input; the email and phone forms had no `<form>`, so the keyboard's Go key did nothing.
+
+- **Shared-axis page motion.** Registration screens slide forward or back by their place in the flow
+  (`lib/flow-motion.ts`, View Transitions through the router's `defaultViewTransition`). The Android back
+  gesture animates the same way. The step header and footer hold still while the question moves, and
+  the progress fill grows to its new width. Everything outside the flow stays instant. Honours reduced
+  motion.
+- **Back agrees with the system gesture.** In-app Back on a step pops history when the previous entry is
+  that step (`lib/flow-back.ts`), instead of pushing a new entry the gesture would then walk forward to.
+- **Feedback.** Chips, choice cards and option rows scale on press and their check pops in. Selection
+  gives a light vibration on Android (`lib/haptics.ts`, one place to swap in Capacitor Haptics). Continue
+  on an incomplete step shakes, vibrates and scrolls the message into view.
+- **Keyboard.** Onboarding fields and the email and phone forms submit from the keyboard's
+  Next/Go key. Inputs carry `enterKeyHint` and `autocomplete` (name, username, locality, URL,
+  national phone). URL fields turn off autocapitalise and spellcheck. The viewport sets
+  `interactive-widget=resizes-content`, so fixed footers ride above the keyboard.
+- **OTP.** Six digits verify without a tap, so Android SMS autofill completes sign-in. The active cell
+  shows a caret, digits pop in, and a rejected code shakes the row and clears it. `?phone=` in the URL
+  no longer comes through empty (the router parsed it as a number).
+- **Splash sound check.** The waveform mark is revealed left to right, like a playhead crossing a
+  clip. The splash holds up to 500ms so it can finish, and does not hold at all under reduced motion.
+- **Success moments** (`/auth/success`, Profile published) pop their icon once, and profile strength
+  fills from zero. Sheets slide up over a fading scrim.
+- **48dp touch floor** without resizing anything (`hit-area` utility): step Back and Skip, TopBar Back,
+  password toggle, Forgot password, legal links, section "See all", preview Edit, the Home bell.
+
+### Changed — ink is primary; pink is a rare brand accent
+
+- **Primary is ink `#0D0D0D`.** Owner direction: the palette is black, greys and white, and pink is the
+  brand colour used rarely (about 10%). `--primary`, `--ring` and the selected pair now resolve to ink, so
+  every primary button, selected chip, progress bar, checkbox and focus ring is black. Selected chips are
+  ink with white text; selected choice cards get an ink ring.
+- **Pink is `--brand` (`text-brand`, `bg-brand`)** and appears on the logo mark, the notification and
+  unread dots (Home, Notifications, Messages) and the Welcome tagline. `--gradient-brand` starts from
+  brand pink instead of primary.
+- **Pink links and tints are gone.** 125 `text-pink-strong` text sites became `text-foreground` (legal
+  links on the auth screens are underlined), and 43 `pink-container` tints became `subtle` surfaces; the
+  bottom nav active pill is the page grey. The `brand` StatusPill tone is an ink pill. This supersedes
+  the `pink-strong` sweep below, and dark text on these grounds clears AA with margin.
+
 ### Fixed — logo mark on Welcome and Home
 
 - **Welcome and Home show the MusicLinkd mark.** Welcome, the first screen a new user sees, had a

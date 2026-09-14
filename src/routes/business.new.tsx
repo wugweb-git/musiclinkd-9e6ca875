@@ -75,9 +75,7 @@ function NewBusiness() {
                   type="button"
                   onClick={() => setType(t.key)}
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left ${
-                    type === t.key
-                      ? "border-primary bg-pink-container/40"
-                      : "border-border bg-background"
+                    type === t.key ? "border-primary bg-subtle" : "border-border bg-background"
                   }`}
                 >
                   <span aria-hidden className="text-[20px]">

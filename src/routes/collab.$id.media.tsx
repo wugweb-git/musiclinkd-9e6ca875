@@ -94,7 +94,7 @@ function Media() {
       <Link
         to="/collab/$id/files"
         params={{ id: project.id }}
-        className="mb-8 block text-center text-[12px] font-semibold text-pink-strong"
+        className="mb-8 block text-center text-[12px] font-semibold text-foreground"
       >
         Open file list
       </Link>

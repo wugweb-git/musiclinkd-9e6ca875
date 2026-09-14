@@ -52,47 +52,56 @@ function PhoneAuth() {
 
   return (
     <AuthScreen>
-      <AuthHeading
-        title="Continue with phone"
-        sub="We'll text you a 6-digit code. No password to remember."
-      />
-
-      <div className="mb-4 flex gap-2">
-        <span className="flex h-13 w-20 shrink-0 items-center justify-center rounded-md border border-border bg-card text-2 font-semibold">
-          +91
-        </span>
-        <div className="min-w-0 flex-1">
-          <LabeledInput
-            label="Mobile number"
-            value={phone}
-            onChange={setPhone}
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="98765 43210"
-          />
-        </div>
-      </div>
-
-      {provider === "off" ? (
-        <AuthNotice tone="info" title="Phone sign-in is not available yet">
-          Continue with Google or email for now.
-        </AuthNotice>
-      ) : null}
-      {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-
-      <Btn
-        className="w-full"
-        disabled={!ok || busy || provider === "off"}
-        onClick={() => void send()}
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (ok && !busy && provider !== "off") void send();
+        }}
       >
-        Send code
-      </Btn>
+        <AuthHeading
+          title="Continue with phone"
+          sub="We'll text you a 6-digit code. No password to remember."
+        />
+
+        <div className="mb-4 flex gap-2">
+          <span className="flex h-13 w-20 shrink-0 items-center justify-center rounded-md border border-border bg-card text-2 font-semibold">
+            +91
+          </span>
+          <div className="min-w-0 flex-1">
+            <LabeledInput
+              label="Mobile number"
+              value={phone}
+              onChange={setPhone}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel-national"
+              enterKeyHint="go"
+              placeholder="98765 43210"
+            />
+          </div>
+        </div>
+
+        {provider === "off" ? (
+          <AuthNotice tone="info" title="Phone sign-in is not available yet">
+            Continue with Google or email for now.
+          </AuthNotice>
+        ) : null}
+        {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+
+        <Btn type="submit" className="w-full" disabled={!ok || busy || provider === "off"}>
+          Send code
+        </Btn>
+      </form>
 
       <TrustNote>Your number is never shown on your public profile.</TrustNote>
 
       <p className="mt-6 text-center text-1 text-muted-foreground">
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
+        <Link
+          to="/auth"
+          search={{ mode: "signin" }}
+          className="hit-area font-semibold text-foreground"
+        >
           Use email instead
         </Link>
       </p>

@@ -99,7 +99,7 @@ function AddCollaborators() {
                       <button
                         type="button"
                         onClick={() => setRolePickerFor(c.id)}
-                        className="mt-1 text-[11px] font-semibold text-pink-strong"
+                        className="mt-1 text-[11px] font-semibold text-foreground"
                       >
                         Role: {role} · change
                       </button>

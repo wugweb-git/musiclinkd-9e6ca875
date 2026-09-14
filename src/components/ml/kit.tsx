@@ -14,7 +14,7 @@ const toneStyle: Record<Tone, { pill: string; dot: string }> = {
   good: { pill: "bg-success-container text-success", dot: "bg-success" },
   warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
   bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
-  brand: { pill: "bg-pink-container text-pink-strong", dot: "bg-pink-strong" },
+  brand: { pill: "bg-ink text-primary-foreground", dot: "bg-primary-foreground" },
 };
 
 /** One status system across every flow. */
@@ -97,7 +97,7 @@ export function Row({
   const inner = (
     <>
       {icon ? (
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-pink-strong">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-foreground">
           {icon}
         </span>
       ) : null}

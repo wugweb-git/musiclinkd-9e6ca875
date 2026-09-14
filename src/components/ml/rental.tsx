@@ -58,7 +58,7 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
   const tone: Record<RentalStatus, [string, string]> = {
     Requested: ["var(--warn-container)", "var(--warn)"],
     "Offer sent": ["var(--purple-container)", "var(--purple)"],
-    Confirmed: ["var(--pink-container)", "var(--primary)"],
+    Confirmed: ["var(--surface-subtle)", "var(--primary)"],
     Active: ["var(--success-container)", "var(--success)"],
     Completed: ["var(--surface-subtle)", "var(--muted-foreground)"],
     Cancelled: ["var(--surface-subtle)", "var(--muted-foreground)"],
@@ -109,7 +109,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
           <Link
             to="/marketplace/rent/provider/$id"
             params={{ id: e.providerId }}
-            className="shrink-0 truncate text-1 font-semibold text-pink-strong"
+            className="shrink-0 truncate text-1 font-semibold text-foreground"
           >
             View provider
           </Link>
@@ -305,7 +305,7 @@ export function RentalCalendar({
                 isEdge
                   ? { background: "var(--primary)", color: "var(--primary-foreground)" }
                   : inRange
-                    ? { background: "var(--pink-container)", color: "var(--primary)" }
+                    ? { background: "var(--surface-subtle)", color: "var(--primary)" }
                     : undefined
               }
             >
@@ -443,7 +443,7 @@ export function FulfilmentPicker({
           >
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
-              style={{ background: active ? "var(--pink-container)" : "var(--surface-subtle)" }}
+              style={{ background: active ? "var(--surface-subtle)" : "var(--surface-subtle)" }}
             >
               <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
             </span>
@@ -556,7 +556,7 @@ export function RentalFilterSheet({
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl">Filters</h2>
-        <button onClick={() => setSelected([])} className="text-xs font-semibold text-pink-strong">
+        <button onClick={() => setSelected([])} className="text-xs font-semibold text-foreground">
           Clear all
         </button>
       </div>
@@ -590,7 +590,7 @@ export function RentalFilterSheet({
       {!more ? (
         <button
           onClick={() => setMore(true)}
-          className="mb-5 text-xs font-semibold text-pink-strong"
+          className="mb-5 text-xs font-semibold text-foreground"
         >
           More filters
         </button>

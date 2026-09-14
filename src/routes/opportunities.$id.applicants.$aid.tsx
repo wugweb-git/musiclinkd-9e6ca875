@@ -68,7 +68,7 @@ function ApplicantDetail() {
           </div>
           <div className="flex items-center justify-between gap-2">
             <StatusPill label={a.status} tone={a.status === "shortlisted" ? "brand" : "neutral"} />
-            <span className="text-[13px] font-bold text-pink-strong">{a.matchScore}% fit</span>
+            <span className="text-[13px] font-bold text-foreground">{a.matchScore}% fit</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {a.matchReasons.map((r) => (

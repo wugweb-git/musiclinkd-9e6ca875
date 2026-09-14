@@ -42,7 +42,7 @@ import {
 const toneStyle: Record<string, { bg: string; fg: string }> = {
   ok: { bg: "var(--success-container)", fg: "var(--success)" },
   warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-  info: { bg: "var(--pink-container)", fg: "var(--primary)" },
+  info: { bg: "var(--surface-subtle)", fg: "var(--primary)" },
   off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
 };
 
@@ -101,7 +101,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
             >
               {s.label}
               {current ? (
-                <span className="ml-2 text-1 font-bold uppercase text-pink-strong">Now</span>
+                <span className="ml-2 text-1 font-bold uppercase text-foreground">Now</span>
               ) : null}
             </p>
           </li>
@@ -471,7 +471,7 @@ export function AddOnCard({
           {a.rentalListingId ? (
             <Link
               to="/marketplace/rent"
-              className="mt-1 inline-flex items-center gap-1 text-1 font-bold uppercase tracking-wide text-pink-strong"
+              className="mt-1 inline-flex items-center gap-1 text-1 font-bold uppercase tracking-wide text-foreground"
             >
               Rental marketplace <ChevronRight size={12} />
             </Link>
@@ -681,7 +681,7 @@ export function BookingListCard({
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="text-1 text-muted-foreground">#{booking.ref}</span>
-        <span className="inline-flex items-center gap-1 text-xs font-bold text-pink-strong">
+        <span className="inline-flex items-center gap-1 text-xs font-bold text-foreground">
           View booking <ChevronRight size={14} />
         </span>
       </div>
@@ -725,7 +725,7 @@ export function ProviderRequestCard({
         <Link
           to="/provider/bookings/requests/$ref"
           params={{ ref: booking.ref }}
-          className="inline-flex items-center gap-1 text-xs font-bold text-pink-strong"
+          className="inline-flex items-center gap-1 text-xs font-bold text-foreground"
         >
           Review request <ChevronRight size={14} />
         </Link>
@@ -774,7 +774,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
         <button
           type="button"
           onClick={onRetry}
-          className="min-h-11 shrink-0 text-xs font-bold text-pink-strong"
+          className="min-h-11 shrink-0 text-xs font-bold text-foreground"
         >
           Retry
         </button>

@@ -95,7 +95,7 @@ function Availability() {
                 <button
                   type="button"
                   onClick={() => setBlocked((v) => v.filter((x) => x !== d))}
-                  className="min-h-10 text-xs font-bold text-pink-strong"
+                  className="min-h-10 text-xs font-bold text-foreground"
                 >
                   Unblock
                 </button>

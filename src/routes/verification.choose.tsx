@@ -86,7 +86,7 @@ function ChooseType() {
                   {gate.reason}
                 </p>
               ) : (
-                <p className="flex items-center gap-1 text-[13px] font-semibold text-pink-strong">
+                <p className="flex items-center gap-1 text-[13px] font-semibold text-foreground">
                   {status === "unverified" ? "See requirements" : "Open request"}
                   <ChevronRight size={15} aria-hidden />
                 </p>
@@ -115,12 +115,12 @@ function ChooseType() {
             <Link
               to="/help/$slug"
               params={{ slug: "how-verification-works" }}
-              className="font-semibold text-pink-strong"
+              className="font-semibold text-foreground"
             >
               how verification works
             </Link>{" "}
             or check{" "}
-            <Link to="/verification/privacy" className="font-semibold text-pink-strong">
+            <Link to="/verification/privacy" className="font-semibold text-foreground">
               how your documents are used
             </Link>
             .

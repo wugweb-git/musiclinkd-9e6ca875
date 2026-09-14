@@ -32,11 +32,17 @@ export function AuthScreen({
   );
 }
 
-export function Brand({ compact = false }: { compact?: boolean }) {
+export function Brand({
+  compact = false,
+  animated = false,
+}: {
+  compact?: boolean;
+  animated?: boolean;
+}) {
   return (
     <div className={compact ? "mb-5 flex items-center gap-2" : "mb-7 flex items-center gap-2"}>
       <span className="flex h-9 w-9 items-center justify-center rounded-md bg-pink-container">
-        <LogoMark className="w-6 text-primary" />
+        <LogoMark className={`w-6 text-brand ${animated ? "animate-sound-check" : ""}`} />
       </span>
       <span className="text-2 font-semibold">MusicLinkd</span>
     </div>
@@ -69,7 +75,7 @@ export type NoticeTone = "error" | "info" | "success" | "warn";
 const noticeStyles: Record<NoticeTone, { bg: string; fg: string }> = {
   error: { bg: "bg-danger-container", fg: "text-destructive" },
   warn: { bg: "bg-warn-container", fg: "text-foreground" },
-  info: { bg: "bg-pink-container", fg: "text-foreground" },
+  info: { bg: "bg-subtle", fg: "text-foreground" },
   success: { bg: "bg-success-container", fg: "text-foreground" },
 };
 
@@ -110,12 +116,14 @@ export function LabeledInput({
   hint,
   autoComplete,
   inputMode,
+  enterKeyHint,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: "text" | "email" | "tel";
+  enterKeyHint?: "next" | "go" | "done" | "send";
   hint?: string;
   autoComplete?: string;
   inputMode?: "text" | "email" | "tel" | "numeric";
@@ -130,6 +138,7 @@ export function LabeledInput({
         value={value}
         inputMode={inputMode}
         autoComplete={autoComplete}
+        enterKeyHint={enterKeyHint}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="h-13 w-full rounded-md border border-border bg-card px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground focus:border-primary"
@@ -163,6 +172,7 @@ export function PasswordInput({
           type={show ? "text" : "password"}
           value={value}
           autoComplete={autoComplete}
+          enterKeyHint="go"
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className="h-13 min-w-0 flex-1 bg-transparent px-4 py-3.5 text-2 outline-none placeholder:text-muted-foreground"
@@ -171,7 +181,7 @@ export function PasswordInput({
           type="button"
           onClick={() => setShow((s) => !s)}
           aria-label={show ? "Hide password" : "Show password"}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground"
+          className="hit-area flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground"
         >
           {show ? <EyeOff size={17} /> : <Eye size={17} />}
         </button>
@@ -219,7 +229,7 @@ export function PasswordRequirements({ value }: { value: string }) {
         {checks.map((c) => (
           <li key={c.label} className="flex items-center gap-2 text-1 text-muted-foreground">
             <span
-              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-pink-container" : "bg-border"}`}
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-subtle" : "bg-border"}`}
             >
               {c.ok ? (
                 <Check size={11} className="text-primary" />
@@ -241,11 +251,17 @@ export function LegalNote() {
   return (
     <p className="mt-6 text-center text-1 leading-relaxed text-muted-foreground">
       By continuing you agree to our{" "}
-      <Link to="/legal/terms" className="font-semibold text-pink-strong">
+      <Link
+        to="/legal/terms"
+        className="hit-area font-semibold text-foreground underline underline-offset-2"
+      >
         Terms
       </Link>{" "}
       and{" "}
-      <Link to="/legal/privacy" className="font-semibold text-pink-strong">
+      <Link
+        to="/legal/privacy"
+        className="hit-area font-semibold text-foreground underline underline-offset-2"
+      >
         Privacy Policy
       </Link>
       .

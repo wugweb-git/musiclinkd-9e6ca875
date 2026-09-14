@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AuthScreen, Brand } from "@/components/ml/auth";
 import { useAuth } from "@/hooks/use-auth";
@@ -27,22 +27,28 @@ function SessionCheck() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
   const loadProfile = useServerFn(getMyProfile);
+  const mountedAt = useRef(Date.now());
 
   useEffect(() => {
     if (loading) return;
-    if (!signedIn) {
-      void navigate({ to: "/welcome", replace: true });
-      return;
-    }
     let active = true;
+    // Hold until the 500ms sound check has played; a slow session read is not held further.
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const hold = reduced ? 0 : Math.max(0, 500 - (Date.now() - mountedAt.current));
+    const go = (to: "/welcome" | "/feed" | ReturnType<typeof postAuthTarget>) =>
+      window.setTimeout(() => {
+        if (active) void navigate({ to, replace: true });
+      }, hold);
+    if (!signedIn) {
+      go("/welcome");
+      return () => {
+        active = false;
+      };
+    }
     loadProfile()
-      .then((profile) => {
-        if (active) void navigate({ to: postAuthTarget(profile), replace: true });
-      })
-      .catch(() => {
-        // Offline or a failed read: Home still works from the local session.
-        if (active) void navigate({ to: "/feed", replace: true });
-      });
+      .then((profile) => go(postAuthTarget(profile)))
+      // Offline or a failed read: Home still works from the local session.
+      .catch(() => go("/feed"));
     return () => {
       active = false;
     };
@@ -55,7 +61,7 @@ function SessionCheck() {
         role="status"
         aria-label="Checking your session"
       >
-        <Brand />
+        <Brand animated />
       </div>
     </AuthScreen>
   );

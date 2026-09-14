@@ -70,7 +70,7 @@ function Sell() {
               >
                 <span
                   className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
-                  style={{ background: "var(--pink-container)" }}
+                  style={{ background: "var(--surface-subtle)" }}
                 >
                   {t.emoji}
                 </span>

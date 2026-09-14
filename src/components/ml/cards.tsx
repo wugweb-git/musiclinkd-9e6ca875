@@ -123,7 +123,7 @@ export function TalentGridCard({ t }: { t: Talent }) {
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.location}</p>
-        <p className="mt-1 text-1 font-semibold text-pink-strong">{t.rate}</p>
+        <p className="mt-1 text-1 font-semibold text-foreground">{t.rate}</p>
       </div>
     </Link>
   );

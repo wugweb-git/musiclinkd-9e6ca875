@@ -3,12 +3,17 @@ import { useEffect, useRef, useState } from "react";
 import { Btn } from "@/components/ml/ui";
 import { AuthHeading, AuthNotice, AuthScreen, classifyAuthError } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/haptics";
 
 type Search = { phone: string };
 
 export const Route = createFileRoute("/auth/otp")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    phone: typeof search["phone"] === "string" ? search["phone"] : "",
+    // The router parses a digits-only query value as a number; accept both.
+    phone:
+      typeof search["phone"] === "string" || typeof search["phone"] === "number"
+        ? String(search["phone"])
+        : "",
   }),
   head: () => ({
     meta: [
@@ -33,6 +38,10 @@ function OtpScreen() {
   const [seconds, setSeconds] = useState(30);
   const [error, setError] = useState<{ title: string; body: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [focused, setFocused] = useState(false);
+  // Bumped on each failed code so the row re-mounts and the shake replays.
+  const [misses, setMisses] = useState(0);
+  const tried = useRef("");
 
   async function verify() {
     setError(null);
@@ -44,6 +53,9 @@ function OtpScreen() {
     });
     setBusy(false);
     if (err) {
+      haptic("error");
+      setMisses((n) => n + 1);
+      setCode("");
       const m = err.message.toLowerCase();
       setError(
         m.includes("expired") || m.includes("invalid")
@@ -52,6 +64,7 @@ function OtpScreen() {
       );
       return;
     }
+    haptic("confirm");
     // The splash sends a new account to onboarding and a finished one to Home.
     void navigate({ to: "/", replace: true });
   }
@@ -77,6 +90,14 @@ function OtpScreen() {
     inputRef.current?.focus();
   }, []);
 
+  // Six digits is a complete code: verify without a tap. Android's SMS autofill lands here.
+  useEffect(() => {
+    if (code.length !== 6 || busy || !phone || tried.current === code) return;
+    tried.current = code;
+    void verify();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- verify reads the latest code
+  }, [code, busy, phone]);
+
   const cells = [0, 1, 2, 3, 4, 5];
 
   return (
@@ -95,15 +116,22 @@ function OtpScreen() {
       <button
         type="button"
         onClick={() => inputRef.current?.focus()}
-        className="mb-6 flex w-full justify-between gap-2"
+        key={misses}
+        className={`mb-6 flex w-full justify-between gap-2 ${misses ? "animate-shake" : ""}`}
         aria-label="Enter verification code"
       >
         {cells.map((i) => (
           <span
             key={i}
-            className={`flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-3 font-semibold ${i === code.length ? "border-primary" : "border-border"}`}
+            className={`flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-3 font-semibold transition-colors duration-200 ${i === code.length && focused ? "border-primary" : "border-border"}`}
           >
-            {code[i] ?? ""}
+            {code[i] ? (
+              <span key={code[i]} className="animate-pop">
+                {code[i]}
+              </span>
+            ) : i === code.length && focused ? (
+              <span aria-hidden className="h-6 w-px animate-caret bg-foreground" />
+            ) : null}
           </span>
         ))}
       </button>
@@ -111,6 +139,8 @@ function OtpScreen() {
       <input
         ref={inputRef}
         value={code}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         inputMode="numeric"
         autoComplete="one-time-code"
         maxLength={6}
@@ -137,7 +167,7 @@ function OtpScreen() {
           <button
             type="button"
             onClick={() => void resend()}
-            className="font-semibold text-pink-strong"
+            className="font-semibold text-foreground"
           >
             Resend code
           </button>
@@ -148,12 +178,12 @@ function OtpScreen() {
         <button
           type="button"
           onClick={() => void navigate({ to: "/auth/phone" })}
-          className="font-semibold text-pink-strong"
+          className="font-semibold text-foreground"
         >
           Change number
         </button>
         <span className="mx-2 text-border">|</span>
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
+        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
           Use email
         </Link>
       </p>

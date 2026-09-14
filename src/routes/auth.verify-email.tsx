@@ -51,7 +51,7 @@ function VerifyEmail() {
 
   return (
     <AuthScreen>
-      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-pink-container">
+      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-subtle">
         <MailCheck size={24} className="text-primary" />
       </div>
       <AuthHeading
@@ -95,7 +95,7 @@ function VerifyEmail() {
 
       <p className="mt-6 text-center text-1 text-muted-foreground">
         Already confirmed?{" "}
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-pink-strong">
+        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
           Sign in
         </Link>
       </p>

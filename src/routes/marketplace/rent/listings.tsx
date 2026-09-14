@@ -31,7 +31,7 @@ const statusBuckets = [
   "Archived",
 ] as const;
 const tone: Record<string, string> = {
-  primary: "var(--pink-container)",
+  primary: "var(--surface-subtle)",
   success: "var(--success-container)",
   warn: "var(--warn-container)",
   purple: "var(--purple-container)",
@@ -51,7 +51,7 @@ function MyListings() {
         right={
           <Link
             to="/marketplace/rent/list"
-            className="shrink-0 text-xs font-semibold text-pink-strong"
+            className="shrink-0 text-xs font-semibold text-foreground"
           >
             New
           </Link>
