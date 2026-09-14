@@ -44,7 +44,6 @@ import {
 import {
   BIO_LIMIT,
   availabilityFor,
-  businessTypes,
   citiesByState,
   contactChannels,
   discoveryPrefs,
@@ -615,7 +614,9 @@ function StepBody({
       return (
         <div className="space-y-4">
           <ChipPicker
-            options={businessTypes}
+            options={(tx?.person_types ?? [])
+              .filter((o) => o.metadata?.flow === "business")
+              .map((o) => ({ value: o.slug, label: o.label }))}
             selected={d.businessIntent ? [d.businessIntent] : []}
             onToggle={(v) => set({ businessIntent: d.businessIntent === v ? null : v })}
           />
