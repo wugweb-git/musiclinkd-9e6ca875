@@ -12,6 +12,7 @@ import {
   type PortfolioItem,
   type WorkAnalyticsFigures,
 } from "@/data/portfolio";
+import { showDemoControls } from "@/lib/dev";
 
 export { analyticsFor };
 
@@ -316,9 +317,11 @@ export function MediaUploader({
             Replace
           </Btn>
         ) : null}
-        <Btn variant="ghost" onClick={() => simulate(true)}>
-          Preview failure state
-        </Btn>
+        {showDemoControls ? (
+          <Btn variant="ghost" onClick={() => simulate(true)}>
+            Preview failure state
+          </Btn>
+        ) : null}
       </div>
     </div>
   );

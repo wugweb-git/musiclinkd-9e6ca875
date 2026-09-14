@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — one status screen for sign-in holds (plan B3)
+
+- **`AuthStatus`** in `ml/auth.tsx` (`tone`, `icon`, `title`, `body`, optional checklist, `actions`,
+  `note`, `footer`) now renders `/auth/locked`, `/auth/maintenance` and `/auth/offline`. The tone picks
+  the icon tile from container tokens (`danger-container`, `subtle`), so the two inline backgrounds and
+  the `text-[13px]` in those files are gone. The container token already exists as `danger-container`
+  (same value as `--destructive`). The email, phone, OTP, verify and forgot screens are not merged. The
+  checklist uses a real list instead of typed bullets, and the Back links meet 48dp.
+
+<<<<<<< HEAD
 ### Changed — onboarding is account-only
 
 - **Answers save to the account, not the device.** Onboarding reads and writes
@@ -24,6 +34,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
   `bookableId`; no seeded business has one. An applicant's hire sheet offers their service enquiry
   when the applicant has a `serviceId`; no seeded applicant has one, so it offers "Start a
   collaboration" today. Both fields are new and optional, and no link was invented.
+=======
+### Removed — state simulators from production (plan A2)
+
+- **Demo controls render in development only** (`lib/dev.ts` `showDemoControls` = `import.meta.env.DEV`):
+  Preview failure state (booking payment, portfolio upload), Demo states and Loading/Error buttons
+  (booking schedule), States and Loading/Error/Offline (My bookings), the States cycler (Collaborations),
+  Simulate success/failure (collab file upload) and Simulate a scan (identity scan). A production build
+  contains none of those labels.
+>>>>>>> chore/remove-demo-controls
 
 ### Added — registration-flow motion and Android behaviour
 

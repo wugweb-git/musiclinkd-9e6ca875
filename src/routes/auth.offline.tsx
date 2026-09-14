@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { WifiOff } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
-import { AuthHeading, AuthScreen, TrustNote } from "@/components/ml/auth";
+import { AuthStatus } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/auth/offline")({
   head: () => ({
@@ -23,32 +23,34 @@ export const Route = createFileRoute("/auth/offline")({
 function OfflineScreen() {
   const navigate = useNavigate();
   return (
-    <AuthScreen>
-      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-subtle">
-        <WifiOff size={22} className="text-muted-foreground" />
-      </div>
-      <AuthHeading
-        title="No connection"
-        sub="We couldn't reach MusicLinkd. Nothing you typed was lost — reconnect and try again."
-      />
-      <div className="space-y-3">
-        <Btn className="w-full" onClick={() => window.location.reload()}>
-          Try again
-        </Btn>
-        <Btn
-          variant="outline"
-          className="w-full"
-          onClick={() => void navigate({ to: "/discover" })}
+    <AuthStatus
+      icon={WifiOff}
+      title="No connection"
+      body="We couldn't reach MusicLinkd. Nothing you typed was lost — reconnect and try again."
+      actions={
+        <>
+          <Btn className="w-full" onClick={() => window.location.reload()}>
+            Try again
+          </Btn>
+          <Btn
+            variant="outline"
+            className="w-full"
+            onClick={() => void navigate({ to: "/discover" })}
+          >
+            Browse cached Discover
+          </Btn>
+        </>
+      }
+      note="Drafts you started are stored on this device until you're back online."
+      footer={
+        <Link
+          to="/auth"
+          search={{ mode: "signin" }}
+          className="hit-area font-semibold text-foreground"
         >
-          Browse cached Discover
-        </Btn>
-      </div>
-      <TrustNote>Drafts you started are stored on this device until you're back online.</TrustNote>
-      <p className="mt-6 text-center text-1 text-muted-foreground">
-        <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
           Back to sign in
         </Link>
-      </p>
-    </AuthScreen>
+      }
+    />
   );
 }

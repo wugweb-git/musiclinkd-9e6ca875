@@ -15,6 +15,7 @@ import {
   ActionRow,
 } from "@/components/ml/qr";
 import { destinations, scanHistory } from "@/data/identity";
+import { showDemoControls } from "@/lib/dev";
 
 export const Route = createFileRoute("/identity/scan")({
   head: () => ({
@@ -100,11 +101,13 @@ function Scanner() {
               onGallery={() => setPhase("scanning")}
             />
 
-            <div className="mt-4">
-              <Btn className="w-full" onClick={() => setPhase("scanning")}>
-                <ScanLine size={16} className="mr-2" /> Simulate a scan
-              </Btn>
-            </div>
+            {showDemoControls ? (
+              <div className="mt-4">
+                <Btn className="w-full" onClick={() => setPhase("scanning")}>
+                  <ScanLine size={16} className="mr-2" /> Simulate a scan
+                </Btn>
+              </div>
+            ) : null}
           </>
         )}
 

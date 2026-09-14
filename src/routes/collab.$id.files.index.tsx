@@ -4,6 +4,7 @@ import { Btn, BtnLink, Chip, Screen, Sheet, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { EmptyState, FileRow, Label, PermissionState, UploadPanel } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
+import { showDemoControls } from "@/lib/dev";
 
 export const Route = createFileRoute("/collab/$id/files/")({
   head: ({ params }) => {
@@ -104,14 +105,16 @@ function Files() {
           onCancel={() => setState("idle")}
           onRetry={() => setState("uploading")}
         />
-        <div className="mt-4 flex gap-2">
-          <Btn variant="outline" className="flex-1" onClick={() => setState("done")}>
-            Simulate success
-          </Btn>
-          <Btn variant="ghost" className="flex-1" onClick={() => setState("error")}>
-            Simulate failure
-          </Btn>
-        </div>
+        {showDemoControls ? (
+          <div className="mt-4 flex gap-2">
+            <Btn variant="outline" className="flex-1" onClick={() => setState("done")}>
+              Simulate success
+            </Btn>
+            <Btn variant="ghost" className="flex-1" onClick={() => setState("error")}>
+              Simulate failure
+            </Btn>
+          </div>
+        ) : null}
       </Sheet>
     </WorkspaceShell>
   );

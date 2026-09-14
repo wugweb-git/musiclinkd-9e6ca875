@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { Check, Eye, EyeOff, ShieldCheck, X } from "lucide-react";
+import { Check, Eye, EyeOff, ShieldCheck, X, type LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { LogoMark } from "./logo";
@@ -266,6 +266,64 @@ export function LegalNote() {
       </Link>
       .
     </p>
+  );
+}
+
+/* --------------------------------------------------------------- status */
+
+export type AuthStatusTone = "danger" | "neutral";
+
+const statusTone: Record<AuthStatusTone, { tile: string; icon: string }> = {
+  danger: { tile: "bg-danger-container", icon: "text-destructive" },
+  neutral: { tile: "bg-subtle", icon: "text-muted-foreground" },
+};
+
+/**
+ * The sign-in status screens (locked, maintenance, offline): an icon tile, a heading, an optional
+ * checklist, actions, a reassurance note and a way back. Tone picks the tile from container tokens.
+ */
+export function AuthStatus({
+  tone = "neutral",
+  icon: Icon,
+  title,
+  body,
+  listTitle,
+  list,
+  actions,
+  note,
+  footer,
+}: {
+  tone?: AuthStatusTone;
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  listTitle?: string;
+  list?: string[];
+  actions: ReactNode;
+  note: ReactNode;
+  footer?: ReactNode;
+}) {
+  const t = statusTone[tone];
+  return (
+    <AuthScreen>
+      <div className={cn("mb-6 flex h-14 w-14 items-center justify-center rounded-md", t.tile)}>
+        <Icon size={22} className={t.icon} aria-hidden />
+      </div>
+      <AuthHeading title={title} sub={body} />
+      {list?.length ? (
+        <div className="mb-6 rounded-lg border border-border bg-card p-4">
+          {listTitle ? <p className="text-sm font-semibold">{listTitle}</p> : null}
+          <ul className="mt-2 list-disc space-y-1.5 pl-4 text-1 leading-relaxed text-muted-foreground">
+            {list.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      <div className="space-y-3">{actions}</div>
+      <TrustNote>{note}</TrustNote>
+      {footer ? <p className="mt-6 text-center text-1 text-muted-foreground">{footer}</p> : null}
+    </AuthScreen>
   );
 }
 

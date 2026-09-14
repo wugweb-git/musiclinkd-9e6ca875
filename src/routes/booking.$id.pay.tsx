@@ -5,6 +5,7 @@ import { TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { PaymentSummaryCard, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
+import { showDemoControls } from "@/lib/dev";
 
 export const Route = createFileRoute("/booking/$id/pay")({
   head: () => ({
@@ -124,13 +125,15 @@ function Pay() {
           </p>
         ) : null}
 
-        <button
-          type="button"
-          onClick={() => setPhase("failed")}
-          className="mt-6 min-h-11 text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
-        >
-          Preview failure state
-        </button>
+        {showDemoControls ? (
+          <button
+            type="button"
+            onClick={() => setPhase("failed")}
+            className="mt-6 min-h-11 text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+          >
+            Preview failure state
+          </button>
+        ) : null}
       </main>
 
       <StickyBar
