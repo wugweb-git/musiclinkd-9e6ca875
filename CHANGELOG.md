@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added — button states and motion
+
+- **Every button has the same states.** Enabled; hovered on pointer devices and pressed, shown by a
+  Material 3 state layer of the content colour at 8% and 12% (`state-layer` utility); focused, via the
+  global ring; disabled at 50% and inert; and **loading** — `loading` on `Btn` and `IconBtn` swaps the
+  icon for a spinner, keeps the label and width, sets `aria-busy` and ignores taps.
+- **Motion.** A touch ripple grows from where the finger lands and fades over 550ms; presses scale 2%
+  (5% for icon buttons); the state layer fades in over `--duration-1`. Reduced motion turns them off.
+- **Used on new-user screens.** Create account, Send code, Verify and Resend now use `loading` instead of
+  swapping the label for "Please wait…" or "Sending…". The Welcome sign-in rows, step Back, chips,
+  choice cards, option rows and role group tabs share the state layer.
+
 ### Added — new user: Back on sign-in screens; three button shapes
 
 - **Back on every sign-in screen after Welcome.** `AuthScreen` takes `back`: Create account and phone go to

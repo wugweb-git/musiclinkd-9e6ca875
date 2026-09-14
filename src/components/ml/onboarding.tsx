@@ -324,7 +324,7 @@ export function StepShell({
               type="button"
               onClick={onBack}
               aria-label="Go back"
-              className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-95"
+              className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-95"
             >
               <ChevronLeft size={18} />
             </button>
@@ -424,7 +424,7 @@ export function ChipPicker({
               haptic("select");
               onToggle(o);
             }}
-            className={`flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
+            className={`state-layer flex min-h-11 items-center justify-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
               on
                 ? "border-transparent bg-selected-bg text-selected-text"
                 : "border-border bg-card text-foreground"
@@ -486,7 +486,7 @@ export function PersonTypePicker({
                 haptic("select");
                 setGroup(g.key);
               }}
-              className={`flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
+              className={`state-layer flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
                 on
                   ? "border-transparent bg-selected-bg text-selected-text"
                   : "border-border bg-card text-foreground"
@@ -545,7 +545,7 @@ export function ChoiceGrid({
               haptic("select");
               onSelect(o.key);
             }}
-            className={`flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
+            className={`state-layer flex min-h-[104px] flex-col items-start justify-between rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
               on ? "border-primary bg-card ring-1 ring-primary" : "border-border bg-card"
             }`}
           >
@@ -589,7 +589,7 @@ export function OptionList({
                 haptic("select");
                 onToggle(o.key);
               }}
-              className={`flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
+              className={`state-layer flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
                 on ? "border-primary" : "border-border"
               } bg-card`}
             >

@@ -154,7 +154,8 @@ function OtpScreen() {
 
       <Btn
         className="w-full"
-        disabled={code.length !== 6 || busy || !phone}
+        loading={busy}
+        disabled={code.length !== 6 || !phone}
         onClick={() => void verify()}
       >
         Verify and continue
