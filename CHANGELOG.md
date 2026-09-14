@@ -43,9 +43,8 @@ was drawn.
   instead of an error.
 - **What do you do?** (`role`) asks for the main role, then, on the same screen, "Anything else you do?"
   (up to two, optional). Back returns to the main role. Replaces role and secondary-roles.
-- **How experienced are you?** asks once per instrument picked, stored in
-  `discovery_prefs.instrumentExperience`. The profile's single `experience` is the highest of them. With no
-  instruments it asks once, as before.
+- **Experience** per instrument is stored in `discovery_prefs.instrumentExperience`; the profile's single
+  `experience` is the highest of them. (Moved onto the instruments screen the same day, see above.)
 - **How do you work?** (`work-mode`) adds "Available for" (was its own step).
 - **What brings you to MusicLinkd?** (`intent`) adds "Show me more" (was discovery).
 - **How people find and reach you** (`contact`) holds links, contact options (WhatsApp added) and
