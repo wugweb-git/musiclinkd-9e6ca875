@@ -22,6 +22,7 @@ import {
   tabFilter,
   type SortOption,
 } from "@/data/collab";
+import { showDemoControls } from "@/lib/dev";
 
 export const Route = createFileRoute("/collab/")({
   head: () => ({
@@ -92,25 +93,27 @@ function CollabHome() {
         title="Collaborations"
         subtitle="Projects, invitations and proposals"
         right={
-          <button
-            type="button"
-            onClick={() =>
-              setSim(
-                sim === "ok"
-                  ? "loading"
-                  : sim === "loading"
-                    ? "error"
-                    : sim === "error"
-                      ? "offline"
-                      : sim === "offline"
-                        ? "empty"
-                        : "ok",
-              )
-            }
-            className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
-          >
-            States
-          </button>
+          showDemoControls ? (
+            <button
+              type="button"
+              onClick={() =>
+                setSim(
+                  sim === "ok"
+                    ? "loading"
+                    : sim === "loading"
+                      ? "error"
+                      : sim === "error"
+                        ? "offline"
+                        : sim === "offline"
+                          ? "empty"
+                          : "ok",
+                )
+              }
+              className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+            >
+              States
+            </button>
+          ) : undefined
         }
       />
 

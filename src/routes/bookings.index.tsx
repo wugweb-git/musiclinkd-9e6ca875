@@ -9,6 +9,7 @@ import {
   OfflineBanner,
 } from "@/components/ml/booking";
 import { bookings, getBookable, getResource, type BookingStatus } from "@/data/booking";
+import { showDemoControls } from "@/lib/dev";
 
 export const Route = createFileRoute("/bookings/")({
   head: () => ({
@@ -52,13 +53,15 @@ function MyBookings() {
         title="My bookings"
         subtitle="Studios, rooms and sessions"
         right={
-          <button
-            type="button"
-            onClick={() => setSim(sim === "ok" ? "empty" : "ok")}
-            className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
-          >
-            {sim === "ok" ? "States" : "Reset"}
-          </button>
+          showDemoControls ? (
+            <button
+              type="button"
+              onClick={() => setSim(sim === "ok" ? "empty" : "ok")}
+              className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+            >
+              {sim === "ok" ? "States" : "Reset"}
+            </button>
+          ) : undefined
         }
       />
 
@@ -103,17 +106,19 @@ function MyBookings() {
           </div>
         )}
 
-        <div className="mt-6 flex gap-2">
-          <Btn variant="ghost" className="flex-1" onClick={() => setSim("loading")}>
-            Loading
-          </Btn>
-          <Btn variant="ghost" className="flex-1" onClick={() => setSim("error")}>
-            Error
-          </Btn>
-          <Btn variant="ghost" className="flex-1" onClick={() => setSim("offline")}>
-            Offline
-          </Btn>
-        </div>
+        {showDemoControls ? (
+          <div className="mt-6 flex gap-2">
+            <Btn variant="ghost" className="flex-1" onClick={() => setSim("loading")}>
+              Loading
+            </Btn>
+            <Btn variant="ghost" className="flex-1" onClick={() => setSim("error")}>
+              Error
+            </Btn>
+            <Btn variant="ghost" className="flex-1" onClick={() => setSim("offline")}>
+              Offline
+            </Btn>
+          </div>
+        ) : null}
 
         <Link
           to="/provider/bookings"

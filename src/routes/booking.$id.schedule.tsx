@@ -21,6 +21,7 @@ import {
   inr,
   nextAvailableDate,
 } from "@/data/booking";
+import { showDemoControls } from "@/lib/dev";
 
 export const Route = createFileRoute("/booking/$id/schedule")({
   head: () => ({
@@ -71,13 +72,15 @@ function Schedule() {
         subtitle={`${r.name} · ${b.name}`}
         back={`/booking/${b.id}/service`}
         right={
-          <button
-            type="button"
-            onClick={() => setSim(sim === "ok" ? "offline" : "ok")}
-            className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
-          >
-            {sim === "ok" ? "Demo states" : "Reset"}
-          </button>
+          showDemoControls ? (
+            <button
+              type="button"
+              onClick={() => setSim(sim === "ok" ? "offline" : "ok")}
+              className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+            >
+              {sim === "ok" ? "Demo states" : "Reset"}
+            </button>
+          ) : undefined
         }
       />
 
@@ -190,7 +193,7 @@ function Schedule() {
           </section>
         ) : null}
 
-        {sim === "ok" ? (
+        {showDemoControls && sim === "ok" ? (
           <div className="mt-6 flex gap-2">
             <Btn variant="ghost" className="flex-1" onClick={() => setSim("loading")}>
               Loading state

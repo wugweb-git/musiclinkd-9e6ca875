@@ -5,6 +5,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Removed — state simulators from production (plan A2)
+
+- **Demo controls render in development only** (`lib/dev.ts` `showDemoControls` = `import.meta.env.DEV`):
+  Preview failure state (booking payment, portfolio upload), Demo states and Loading/Error buttons
+  (booking schedule), States and Loading/Error/Offline (My bookings), the States cycler (Collaborations),
+  Simulate success/failure (collab file upload) and Simulate a scan (identity scan). A production build
+  contains none of those labels.
+
 ### Added — registration-flow motion and Android behaviour
 
 Measured first at 412px across the 30 screens from Welcome to Home: no page motion; back buttons at
