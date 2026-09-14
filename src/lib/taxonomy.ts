@@ -1,0 +1,157 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+/*
+ * Selection options for roles, instruments, genres and languages live in the database
+ * (taxonomy_options, published rows only) and profiles store their slugs. Instruments and genres
+ * come from persona_bucket, which narrows them to the person's roles and languages and caps each at
+ * 12 per screen. Spec: Claude outputs/specs/PERSONA-BUCKET.md in the guide repo.
+ *
+ * The generated Supabase types predate these tables, hence the casts at the two call sites.
+ */
+
+export type TaxonomyCategory = "person_types" | "instruments" | "genres" | "languages";
+
+export type TaxonomyOption = {
+  slug: string;
+  label: string;
+  sortOrder: number;
+  metadata: { group?: string; flow?: string; family?: string; scope?: string } | null;
+};
+
+export type PersonaBucket = { instruments: TaxonomyOption[]; genres: TaxonomyOption[] };
+
+type OptionRow = {
+  category_key: TaxonomyCategory;
+  slug: string;
+  label: string;
+  sort_order: number;
+  metadata: TaxonomyOption["metadata"];
+};
+
+let allOptions: Promise<Record<TaxonomyCategory, TaxonomyOption[]>> | null = null;
+let loadedAt = 0;
+// The cache is module-level, so on the SSR server it outlives requests. Five minutes bounds how long a
+// publish or unpublish takes to reach server-rendered pages.
+const TTL_MS = 5 * 60 * 1000;
+
+/** Every published option, grouped by category. Cached for five minutes. */
+export function loadTaxonomy(): Promise<Record<TaxonomyCategory, TaxonomyOption[]>> {
+  if (!allOptions || Date.now() - loadedAt > TTL_MS) {
+    loadedAt = Date.now();
+    const query = supabase.from("taxonomy_options" as never) as unknown as {
+      select: (cols: string) => {
+        in: (
+          col: string,
+          values: string[],
+        ) => {
+          order: (col: string) => Promise<{ data: OptionRow[] | null; error: Error | null }>;
+        };
+      };
+    };
+    allOptions = query
+      .select("category_key,slug,label,sort_order,metadata")
+      .in("category_key", ["person_types", "instruments", "genres", "languages"])
+      .order("sort_order")
+      .then(({ data, error }) => {
+        if (error || !data) throw error ?? new Error("No taxonomy returned");
+        const out: Record<TaxonomyCategory, TaxonomyOption[]> = {
+          person_types: [],
+          instruments: [],
+          genres: [],
+          languages: [],
+        };
+        for (const r of data) {
+          out[r.category_key]?.push({
+            slug: r.slug,
+            label: r.label,
+            sortOrder: r.sort_order,
+            metadata: r.metadata,
+          });
+        }
+        return out;
+      })
+      .catch((err: unknown) => {
+        allOptions = null; // let the next caller retry
+        throw err;
+      });
+  }
+  return allOptions;
+}
+
+export type LoadState = "loading" | "ready" | "error";
+
+export function useTaxonomy() {
+  const [options, setOptions] = useState<Record<TaxonomyCategory, TaxonomyOption[]> | null>(null);
+  const [state, setState] = useState<LoadState>("loading");
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    setState("loading");
+    loadTaxonomy()
+      .then((o) => {
+        if (!active) return;
+        setOptions(o);
+        setState("ready");
+      })
+      .catch(() => active && setState("error"));
+    return () => {
+      active = false;
+    };
+  }, [attempt]);
+
+  return { options, state, retry: () => setAttempt((n) => n + 1) };
+}
+
+/** The talent person-type groups, in picker order. Business types lead to a separate journey. */
+export const talentGroups = [
+  { key: "vocal", label: "Vocal" },
+  { key: "instrumentalist", label: "Instrumentalist" },
+  { key: "creator", label: "Creator" },
+  { key: "technical", label: "Technical" },
+  { key: "media", label: "Media" },
+  { key: "education", label: "Education" },
+  { key: "other", label: "Other" },
+] as const;
+
+export function talentTypes(options: TaxonomyOption[]): TaxonomyOption[] {
+  return options.filter((o) => o.metadata?.flow !== "business");
+}
+
+/** slug → label for display; falls back to the slug so nothing renders blank. */
+export function labelFor(options: TaxonomyOption[] | undefined, slug: string): string {
+  return options?.find((o) => o.slug === slug)?.label ?? slug;
+}
+
+/**
+ * Instruments and genres for this person. An empty instruments list means the step is skipped.
+ * Returns null until the first answer arrives, and when there is no primary role yet.
+ */
+export async function loadPersonaBucket(
+  primary: string,
+  secondary: string[],
+  languages: string[],
+): Promise<PersonaBucket> {
+  const rpc = supabase.rpc as unknown as (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => Promise<{
+    data: { category_key: string; slug: string; label: string; display_order: number }[] | null;
+    error: Error | null;
+  }>;
+  const { data, error } = await rpc.call(supabase, "persona_bucket", {
+    p_primary: primary,
+    // The function rejects more than two secondaries and any repeat of the primary.
+    p_secondary: secondary.filter((s) => s !== primary).slice(0, 2),
+    p_languages: languages,
+    p_limit: 12,
+  });
+  if (error || !data) throw error ?? new Error("No bucket returned");
+  const pick = (key: string) =>
+    data
+      .filter((r) => r.category_key === key)
+      .sort((a, b) => a.display_order - b.display_order)
+      .map((r) => ({ slug: r.slug, label: r.label, sortOrder: r.display_order, metadata: null }));
+  return { instruments: pick("instruments"), genres: pick("genres") };
+}
