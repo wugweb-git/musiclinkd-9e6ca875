@@ -873,15 +873,17 @@ export const screenContracts = {
 };
 
 /** Reserved usernames used for the inline availability check (design-time). */
-export const takenUsernames = ["ananya", "arijit", "admin", "musiclinkd", "rahul"];
+/** Names nobody can take. Availability against real accounts is checked in lib/username.ts. */
+export const reservedUsernames = ["admin", "musiclinkd", "support", "help"];
 
 export function validateUsername(v: string): { ok: boolean; message: string } {
   if (!v) return { ok: false, message: "Pick a username so people can find you." };
   if (v.length < 3) return { ok: false, message: "At least 3 characters." };
   if (!/^[a-z0-9._]+$/.test(v))
     return { ok: false, message: "Lowercase letters, numbers, dots and underscores only." };
-  if (takenUsernames.includes(v)) return { ok: false, message: "That one's taken. Try another." };
-  return { ok: true, message: `musiclinkd.com/${v} is available` };
+  if (reservedUsernames.includes(v))
+    return { ok: false, message: "That one's taken. Try another." };
+  return { ok: true, message: `musiclinkd.com/${v}` };
 }
 
 export function validateUrl(v: string): boolean {

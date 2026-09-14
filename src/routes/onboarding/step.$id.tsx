@@ -26,6 +26,7 @@ import {
 } from "@/lib/taxonomy";
 import { haptic } from "@/lib/haptics";
 import { useFlowBack } from "@/lib/flow-back";
+import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
 import {
   ChipPicker,
   PersonTypePicker,
@@ -134,6 +135,10 @@ function StepRoute() {
   // Bumped on each blocked Continue so the button re-mounts and the shake replays.
   const [nudge, setNudge] = useState(0);
   const flowBack = useFlowBack();
+  const usernameStatus = useUsernameAvailability(
+    draft.username,
+    validateUsername(draft.username).ok,
+  );
 
   const list = visibleSteps(draft, bucket);
   const def = steps.find((s) => s.id === id);
@@ -203,7 +208,7 @@ function StepRoute() {
     goto(after[pos + 1]);
   };
 
-  const valid = isValid(def.id, draft);
+  const valid = isValid(def.id, draft, usernameStatus);
 
   const blocked = () => {
     haptic("error");
@@ -266,15 +271,27 @@ function StepRoute() {
         </div>
       }
     >
-      <StepBody id={def.id} draft={draft} set={set} toggle={toggle} />
+      <StepBody
+        id={def.id}
+        draft={draft}
+        set={set}
+        toggle={toggle}
+        usernameStatus={usernameStatus}
+      />
     </StepShell>
   );
 }
 
-function isValid(id: string, d: OnboardingDraft): boolean {
+function isValid(id: string, d: OnboardingDraft, usernameStatus: UsernameStatus): boolean {
   switch (id) {
     case "identity":
-      return Boolean(d.displayName.trim()) && validateUsername(d.username).ok;
+      // A name that is taken, or still being checked, cannot go forward.
+      return (
+        Boolean(d.displayName.trim()) &&
+        validateUsername(d.username).ok &&
+        usernameStatus !== "taken" &&
+        usernameStatus !== "checking"
+      );
     case "role":
       return Boolean(d.primaryRole);
     case "location":
@@ -291,11 +308,13 @@ function StepBody({
   draft: d,
   set,
   toggle,
+  usernameStatus,
 }: {
   id: string;
   draft: OnboardingDraft;
   set: (p: Partial<OnboardingDraft>) => void;
   toggle: (field: keyof OnboardingDraft, value: string) => void;
+  usernameStatus: UsernameStatus;
 }) {
   const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
@@ -341,7 +360,15 @@ function StepBody({
             onChange={(v) => set({ username: v.toLowerCase().replace(/\s/g, "") })}
             placeholder="yourname"
             autoComplete="username"
-            {...(check.ok ? { ok: check.message } : { error: check.message })}
+            {...(!check.ok
+              ? { error: check.message }
+              : usernameStatus === "taken"
+                ? { error: "That one's taken. Try another." }
+                : usernameStatus === "available"
+                  ? { ok: `${check.message} is available` }
+                  : usernameStatus === "checking"
+                    ? { hint: "Checking…" }
+                    : { hint: check.message })}
           />
         </div>
       );
