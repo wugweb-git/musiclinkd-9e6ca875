@@ -109,11 +109,9 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
   const industry = tier === "Industry Verified" || tier === "Professional";
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{
-        background: industry ? "var(--surface-subtle)" : "var(--surface-subtle)",
-        color: industry ? "var(--primary)" : "var(--muted-foreground)",
-      }}
+      className={`inline-flex items-center gap-1 rounded-full bg-subtle px-2 py-1 text-1 font-bold uppercase tracking-wide ${
+        industry ? "text-foreground" : "text-muted-foreground"
+      }`}
       title={tier}
     >
       <BadgeCheck size={12} aria-hidden />
@@ -126,16 +124,11 @@ export function StatusBadge({ status }: { status: string }) {
   const busy = status === "Busy" || status === "Touring";
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{
-        background: busy ? "var(--surface-subtle)" : "var(--success-container)",
-        color: busy ? "var(--muted-foreground)" : "var(--success)",
-      }}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${
+        busy ? "bg-subtle text-muted-foreground" : "bg-success-container text-success"
+      }`}
     >
-      <span
-        className="h-1.5 w-1.5 rounded-full"
-        style={{ background: busy ? "var(--muted-foreground)" : "var(--success)" }}
-      />
+      <span className={`h-1.5 w-1.5 rounded-full ${busy ? "bg-muted-foreground" : "bg-success"}`} />
       {status}
     </span>
   );
@@ -148,13 +141,13 @@ export function TagChip({
   children: ReactNode;
   tone?: "subtle" | "pink" | "purple";
 }) {
-  const styles: Record<string, { background: string; color: string }> = {
-    subtle: { background: "var(--surface-subtle)", color: "var(--muted-foreground)" },
-    pink: { background: "var(--surface-subtle)", color: "var(--primary)" },
-    purple: { background: "var(--status-category-bg)", color: "var(--status-category-text)" },
+  const styles: Record<string, string> = {
+    subtle: "bg-subtle text-muted-foreground",
+    pink: "bg-subtle text-foreground",
+    purple: "bg-status-category-bg text-status-category-text",
   };
   return (
-    <span className="rounded-full px-3 py-1.5 text-1 font-semibold" style={styles[tone]}>
+    <span className={`rounded-full px-3 py-1.5 text-1 font-semibold ${styles[tone]}`}>
       {children}
     </span>
   );
@@ -343,10 +336,7 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
       />
       <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
       <div className="absolute inset-x-4 bottom-4 text-background">
-        <span
-          className="rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-          style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
-        >
+        <span className="rounded-full bg-primary px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-primary-foreground">
           Featured {featured.kind}
         </span>
         <h3 className="mt-2 text-2 text-background">{featured.title}</h3>
@@ -551,10 +541,7 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
 export function OpportunityCard({ o }: { o: OpportunityItem }) {
   return (
     <article
-      className="rounded-lg border border-border p-4"
-      style={{
-        background: o.tone === "seeking" ? "var(--surface-subtle)" : "var(--card)",
-      }}
+      className={`rounded-lg border border-border p-4 ${o.tone === "seeking" ? "bg-subtle" : "bg-card"}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -622,17 +609,12 @@ function QrBlock({ seed }: { seed: string }) {
   });
   return (
     <div
-      className="grid gap-[2px] rounded-lg bg-card p-3"
-      style={{ gridTemplateColumns: "repeat(13, 1fr)" }}
+      className="grid grid-cols-13 gap-0.5 rounded-lg bg-card p-3"
       aria-label="Profile QR code"
       role="img"
     >
       {cells.map((on, i) => (
-        <span
-          key={i}
-          className="aspect-square rounded-xs"
-          style={{ background: on ? "var(--ink)" : "transparent" }}
-        />
+        <span key={i} className={`aspect-square rounded-xs ${on ? "bg-ink" : ""}`} />
       ))}
     </div>
   );
@@ -651,10 +633,7 @@ export function ShareSheet({
   const url = `musiclinkd.com/${p.username}`;
   return (
     <Sheet open={open} onClose={onClose} title="Share profile">
-      <div
-        className="overflow-hidden rounded-lg border border-border"
-        style={{ background: "var(--gradient-ink)" }}
-      >
+      <div className="ink-gradient overflow-hidden rounded-lg border border-border">
         <div className="flex items-center gap-3 p-4 text-background">
           {p.photo ? (
             <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-md object-cover" />
@@ -763,10 +742,7 @@ export function CompletionCard({
   missing: { id: string; label: string }[];
 }) {
   return (
-    <div
-      className="rounded-lg border border-border p-4"
-      style={{ background: "var(--surface-subtle)" }}
-    >
+    <div className="rounded-lg border border-border bg-subtle p-4">
       <div className="flex items-baseline justify-between">
         <h3 className="text-2">Your profile is {percent}% complete</h3>
         <span className="text-1 font-semibold text-foreground">{missing.length} left</span>

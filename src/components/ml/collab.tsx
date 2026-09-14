@@ -38,12 +38,12 @@ import {
 /* Tone helpers                                                        */
 /* ------------------------------------------------------------------ */
 
-const toneStyle: Record<string, { bg: string; fg: string }> = {
-  ok: { bg: "var(--success-container)", fg: "var(--success)" },
-  warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-  info: { bg: "var(--surface-subtle)", fg: "var(--primary)" },
-  off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
-  bad: { bg: "color-mix(in oklab, var(--destructive) 10%, transparent)", fg: "var(--destructive)" },
+const toneStyle: Record<string, { pill: string; dot: string }> = {
+  ok: { pill: "bg-success-container text-success", dot: "bg-success" },
+  warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+  info: { pill: "bg-subtle text-foreground", dot: "bg-foreground" },
+  off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
+  bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
 };
 
 export function StatusPill({ status }: { status: CollabStatus }) {
@@ -51,10 +51,9 @@ export function StatusPill({ status }: { status: CollabStatus }) {
   const c = toneStyle[meta.tone]!;
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: c.bg, color: c.fg }}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
     >
-      <span className="h-1.5 w-1.5 rounded-full" style={{ background: c.fg }} aria-hidden />
+      <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} aria-hidden />
       {meta.label}
     </span>
   );
@@ -64,8 +63,7 @@ export function Tag({ children, tone = "off" }: { children: ReactNode; tone?: st
   const c = toneStyle[tone] ?? toneStyle["off"]!;
   return (
     <span
-      className="inline-flex items-center rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: c.bg, color: c.fg }}
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
     >
       {children}
     </span>
@@ -106,15 +104,11 @@ export function ParticipantStack({
           key={p.name}
           src={p.photo}
           alt={p.name}
-          className="h-7 w-7 rounded-full border-2 border-card object-cover"
-          style={{ marginLeft: i === 0 ? 0 : -8 }}
+          className={`h-7 w-7 rounded-full border-2 border-card object-cover ${i === 0 ? "" : "-ml-2"}`}
         />
       ))}
       {rest > 0 ? (
-        <span
-          className="ml-[-8px] flex h-7 w-7 items-center justify-center rounded-full border-2 border-card text-1 font-bold"
-          style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
-        >
+        <span className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-subtle text-1 font-bold text-muted-foreground">
           +{rest}
         </span>
       ) : null}
@@ -254,10 +248,7 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
       {file.cover ? (
         <img src={file.cover} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" />
       ) : (
-        <span
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-base"
-          style={{ background: "var(--surface-subtle)", color: "var(--muted-foreground)" }}
-        >
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-subtle text-muted-foreground">
           {meta.icon}
         </span>
       )}
@@ -299,11 +290,8 @@ export function Waveform({ progress = 38 }: { progress?: number }) {
       {bars.map((h, i) => (
         <span
           key={i}
-          className="flex-1 rounded-full"
-          style={{
-            height: `${h}%`,
-            background: (i / bars.length) * 100 < progress ? "var(--primary)" : "var(--border)",
-          }}
+          className={`flex-1 rounded-full ${(i / bars.length) * 100 < progress ? "bg-primary" : "bg-border"}`}
+          /* computed bar height */ style={{ height: `${h}%` }}
         />
       ))}
     </div>
@@ -354,12 +342,9 @@ export function MilestoneRow({
         type="button"
         onClick={onToggle}
         aria-label={`Toggle ${m.name}`}
-        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border"
-        style={
-          m.status === "done"
-            ? { background: "var(--success)", borderColor: "transparent" }
-            : undefined
-        }
+        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
+          m.status === "done" ? "border-transparent bg-success" : "border-border"
+        }`}
       >
         {m.status === "done" ? <Check size={14} className="text-background" /> : null}
       </button>
@@ -520,10 +505,7 @@ export function ErrorState({
 
 export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
-    <div
-      className="mb-3 flex items-center gap-3 rounded-lg px-4 py-3"
-      style={{ background: "var(--warn-container)", color: "var(--warn)" }}
-    >
+    <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn">
       <WifiOff size={16} className="shrink-0" />
       <p className="flex-1 text-1 font-semibold">
         Offline — showing cached project data. 2 changes not yet synced.
@@ -548,10 +530,7 @@ export function PermissionState() {
 
 export function PinnedNote({ children }: { children: ReactNode }) {
   return (
-    <div
-      className="mb-3 flex items-start gap-2 rounded-lg px-4 py-3"
-      style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
-    >
+    <div className="mb-3 flex items-start gap-2 rounded-lg bg-subtle px-4 py-3 text-foreground">
       <Pin size={14} className="mt-0.5 shrink-0" />
       <p className="text-1 font-semibold">{children}</p>
     </div>

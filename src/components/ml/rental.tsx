@@ -20,17 +20,16 @@ export function RentalAvailabilityBadge({
   tone?: "ok" | "warn" | "off";
 }) {
   const map = {
-    ok: { bg: "var(--success-container)", fg: "var(--success)" },
-    warn: { bg: "var(--warn-container)", fg: "var(--warn)" },
-    off: { bg: "var(--surface-subtle)", fg: "var(--muted-foreground)" },
+    ok: { pill: "bg-success-container text-success", dot: "bg-success" },
+    warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+    off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
   } as const;
   const c = map[tone];
   return (
     <span
-      className="inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: c.bg, color: c.fg }}
+      className={`inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
     >
-      <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: c.fg }} />
+      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${c.dot}`} />
       <span className="truncate">{text}</span>
     </span>
   );
@@ -55,20 +54,18 @@ export function RentalPriceBlock({ e, size = "md" }: { e: Equipment; size?: "md"
 }
 
 export function RentalStatusPill({ status }: { status: RentalStatus }) {
-  const tone: Record<RentalStatus, [string, string]> = {
-    Requested: ["var(--warn-container)", "var(--warn)"],
-    "Offer sent": ["var(--purple-container)", "var(--purple)"],
-    Confirmed: ["var(--surface-subtle)", "var(--primary)"],
-    Active: ["var(--success-container)", "var(--success)"],
-    Completed: ["var(--surface-subtle)", "var(--muted-foreground)"],
-    Cancelled: ["var(--surface-subtle)", "var(--muted-foreground)"],
-    Declined: ["var(--surface-subtle)", "var(--muted-foreground)"],
+  const tone: Record<RentalStatus, string> = {
+    Requested: "bg-warn-container text-warn",
+    "Offer sent": "bg-status-category-bg text-status-category-text",
+    Confirmed: "bg-subtle text-foreground",
+    Active: "bg-success-container text-success",
+    Completed: "bg-subtle text-muted-foreground",
+    Cancelled: "bg-subtle text-muted-foreground",
+    Declined: "bg-subtle text-muted-foreground",
   };
-  const [bg, fg] = tone[status];
   return (
     <span
-      className="shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide"
-      style={{ background: bg, color: fg }}
+      className={`shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${tone[status]}`}
     >
       {status}
     </span>
@@ -231,11 +228,7 @@ export function ProviderCard({ p }: { p: Provider }) {
         {p.badges.map((b) => (
           <span
             key={b}
-            className="rounded-full px-2.5 py-1 text-1 font-semibold"
-            style={{
-              background: "var(--status-category-bg)",
-              color: "var(--status-category-text)",
-            }}
+            className="rounded-full bg-status-category-bg px-2.5 py-1 text-1 font-semibold text-status-category-text"
           >
             {b}
           </span>
@@ -300,14 +293,7 @@ export function RentalCalendar({
               onClick={() => onSelect(day)}
               className={`flex h-9 items-center justify-center rounded-md text-1 font-semibold transition-colors ${
                 isBlocked ? "text-muted-foreground line-through opacity-50" : ""
-              }`}
-              style={
-                isEdge
-                  ? { background: "var(--primary)", color: "var(--primary-foreground)" }
-                  : inRange
-                    ? { background: "var(--surface-subtle)", color: "var(--primary)" }
-                    : undefined
-              }
+              } ${isEdge ? "bg-primary text-primary-foreground" : inRange ? "bg-subtle text-foreground" : ""}`}
             >
               {day}
             </button>
@@ -316,8 +302,7 @@ export function RentalCalendar({
       </div>
       <div className="mt-3 flex flex-wrap gap-3 text-1 text-muted-foreground">
         <span className="inline-flex items-center gap-1">
-          <span className="h-2 w-2 rounded-full" style={{ background: "var(--primary)" }} />{" "}
-          Selected
+          <span className="h-2 w-2 rounded-full bg-primary" /> Selected
         </span>
         <span className="inline-flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-border" /> Unavailable
@@ -367,14 +352,9 @@ export function PriceBreakdown({
         <span className="text-1 font-semibold">Estimated total</span>
         <span className="text-xl font-bold">{inr(total)}</span>
       </div>
-      <div
-        className="mt-3 flex items-start justify-between gap-3 rounded-lg p-3"
-        style={{ background: "var(--warn-container)" }}
-      >
+      <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
         <div className="min-w-0">
-          <p className="text-1 font-bold" style={{ color: "var(--warn)" }}>
-            Refundable security deposit
-          </p>
+          <p className="text-1 font-bold text-warn">Refundable security deposit</p>
           <p className="text-1 text-muted-foreground">
             Held by the provider, returned after the equipment is checked.
           </p>
@@ -441,10 +421,7 @@ export function FulfilmentPicker({
             onClick={() => onChange(o.id)}
             className="flex w-full items-center gap-3 px-4 py-4 text-left"
           >
-            <span
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
-              style={{ background: active ? "var(--surface-subtle)" : "var(--surface-subtle)" }}
-            >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-subtle">
               <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
             </span>
             <span className="min-w-0 flex-1">
@@ -452,8 +429,7 @@ export function FulfilmentPicker({
               <span className="block truncate text-1 text-muted-foreground">{o.line}</span>
             </span>
             <span
-              className={`h-5 w-5 shrink-0 rounded-full border-2 ${active ? "border-primary" : "border-border"}`}
-              style={active ? { background: "var(--primary)" } : undefined}
+              className={`h-5 w-5 shrink-0 rounded-full border-2 ${active ? "border-primary bg-primary" : "border-border"}`}
             />
           </button>
         );

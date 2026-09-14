@@ -36,6 +36,8 @@ export function flowTransitionTypes({
   pathChanged: boolean;
 }): string[] | false {
   if (!fromLocation || !pathChanged) return false;
+  // A hidden document (app in the background, a prerender) rejects startViewTransition.
+  if (typeof document !== "undefined" && document.visibilityState !== "visible") return false;
   const from = clean(fromLocation.pathname);
   const to = clean(toLocation.pathname);
   const a = ORDER.indexOf(from);

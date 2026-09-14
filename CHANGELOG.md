@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — no inline colour styles in the kit (plan B5)
+
+- **`components/ml` inline `style` went from 53 to 13**, and the 13 left are runtime values: seven
+  computed progress widths, waveform bar heights, avatar and save-button `size` props, and the QR code's
+  scheme colours. Tone maps in collab, booking, rental, profile and portfolio pills are class strings
+  (`bg-success-container text-success` and so on), so they follow tokens and the ink palette. Media
+  status uses a real dot instead of a `●` glyph. Added `ink-gradient` and `grid-cols-13`. `AGENTS.md`
+  lists what may stay inline.
+- Page transitions are skipped while the document is hidden, which removes the "Transition was
+  aborted" console errors from backgrounded tabs.
+
 ### Changed — one status screen for sign-in holds (plan B3)
 
 - **`AuthStatus`** in `ml/auth.tsx` (`tone`, `icon`, `title`, `body`, optional checklist, `actions`,

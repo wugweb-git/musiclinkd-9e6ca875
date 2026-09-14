@@ -479,3 +479,7 @@ html:active-view-transition-type(fade)::view-transition-new(root) {
     animation: none !important;
   }
 }
+
+@utility ink-gradient {
+  background-image: var(--gradient-ink);
+}
