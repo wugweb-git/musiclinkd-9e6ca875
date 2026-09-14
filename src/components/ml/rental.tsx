@@ -9,6 +9,7 @@ import {
   type Booking,
   type Equipment,
   type Provider,
+  type RentalItem,
   type RentalStatus,
 } from "@/data/rentals";
 
@@ -35,19 +36,24 @@ export function RentalAvailabilityBadge({
   );
 }
 
-export function RentalPriceBlock({ e, size = "md" }: { e: Equipment; size?: "md" | "lg" }) {
+export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md" | "lg" }) {
+  // Database rentals have a day rate and a price note, but no weekly or monthly rate.
+  const longer =
+    e.weekly != null && e.monthly != null
+      ? `${inr(e.weekly)} / week · ${inr(e.monthly)} / month`
+      : e.priceNote;
   return (
     <div className="min-w-0">
-      <div className="flex items-baseline gap-1">
-        <span className={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}>
-          {inr(e.daily)}
-        </span>
-        <span className="text-1 text-muted-foreground">/ day</span>
-      </div>
-      {size === "lg" ? (
-        <p className="mt-1 text-1 text-muted-foreground">
-          {inr(e.weekly)} / week · {inr(e.monthly)} / month
-        </p>
+      {e.daily != null ? (
+        <div className="flex items-baseline gap-1">
+          <span className={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}>
+            {inr(e.daily)}
+          </span>
+          <span className="text-1 text-muted-foreground">/ day</span>
+        </div>
+      ) : null}
+      {size === "lg" && longer ? (
+        <p className="mt-1 text-1 text-muted-foreground">{longer}</p>
       ) : null}
     </div>
   );
@@ -124,23 +130,29 @@ export function EquipmentCard({ e }: { e: Equipment }) {
   );
 }
 
-export function EquipmentTile({ e }: { e: Equipment }) {
+export function EquipmentTile({ e }: { e: RentalItem }) {
   return (
     <Link
       to="/marketplace/rent/e/$id"
       params={{ id: e.id }}
       className="block w-[176px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
     >
-      <img
-        src={e.photos[0]}
-        alt={e.name}
-        loading="lazy"
-        className="h-[124px] w-full object-cover"
-      />
+      {e.photos[0] ? (
+        <img
+          src={e.photos[0]}
+          alt={e.name}
+          loading="lazy"
+          className="h-[124px] w-full object-cover"
+        />
+      ) : (
+        <div className="h-[124px] w-full bg-subtle" />
+      )}
       <div className="p-3">
         <RentalPriceBlock e={e} />
         <h3 className="mt-1 line-clamp-2 text-1 leading-snug">{e.name}</h3>
-        <p className="mt-1 truncate text-1 text-muted-foreground">{e.distance}</p>
+        {e.distance ? (
+          <p className="mt-1 truncate text-1 text-muted-foreground">{e.distance}</p>
+        ) : null}
         <div className="mt-2">
           <RentalAvailabilityBadge text={e.availableFrom ?? "Enquire"} />
         </div>
@@ -149,17 +161,22 @@ export function EquipmentTile({ e }: { e: Equipment }) {
   );
 }
 
-export function EquipmentRow({ e, action }: { e: Equipment; action?: ReactNode }) {
+export function EquipmentRow({ e, action }: { e: RentalItem; action?: ReactNode }) {
   const [saved, setSaved] = useState(false);
+  const provider = providerName(e);
   return (
     <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="shrink-0">
-        <img
-          src={e.photos[0]}
-          alt={e.name}
-          loading="lazy"
-          className="h-24 w-24 rounded-lg object-cover"
-        />
+        {e.photos[0] ? (
+          <img
+            src={e.photos[0]}
+            alt={e.name}
+            loading="lazy"
+            className="h-24 w-24 rounded-lg object-cover"
+          />
+        ) : (
+          <div className="h-24 w-24 rounded-lg bg-subtle" />
+        )}
       </Link>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
@@ -169,27 +186,35 @@ export function EquipmentRow({ e, action }: { e: Equipment; action?: ReactNode }
           </Link>
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <RentalAvailabilityBadge text={e.availability} />
-          <ConditionBadge value={e.condition} />
-        </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-2">
-          <LocationRow text={e.distance} />
-          <span className="truncate text-1 text-muted-foreground">by {providerName(e)}</span>
-        </div>
+        {e.availability || e.condition ? (
+          <div className="mt-1.5 flex flex-wrap items-center gap-2">
+            {e.availability ? <RentalAvailabilityBadge text={e.availability} /> : null}
+            {e.condition ? <ConditionBadge value={e.condition} /> : null}
+          </div>
+        ) : null}
+        {e.distance || provider ? (
+          <div className="mt-1.5 flex flex-wrap items-center gap-2">
+            {e.distance ? <LocationRow text={e.distance} /> : null}
+            {provider ? (
+              <span className="truncate text-1 text-muted-foreground">by {provider}</span>
+            ) : null}
+          </div>
+        ) : null}
         {action ? <div className="mt-2">{action}</div> : null}
       </div>
     </article>
   );
 }
 
-function providerName(e: Equipment) {
+function providerName(e: RentalItem) {
   const map: Record<string, string> = {
     soundhouse: "SoundHouse Studio",
     "ravi-gear": "Ravi Deshmukh",
     "swaraj-instruments": "Swaraj Instruments",
     "pulse-live": "Pulse Live Systems",
   };
+  // Database rentals have no static provider; they name the stored seller, or nobody.
+  if (!e.providerId) return e.owner?.name ?? "";
   return map[e.providerId] ?? "MusicLinkd provider";
 }
 

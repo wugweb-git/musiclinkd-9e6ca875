@@ -15,8 +15,11 @@ import {
   recentRentalSearches,
   rentalCategories,
 } from "@/data/rentals";
+import { loadCatalogRentals } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/rent/search")({
+  // Database rentals are searched after the static ones.
+  loader: () => loadCatalogRentals(),
   head: () => ({
     meta: [
       { title: "Search Rental Equipment | MusicLinkd" },
@@ -41,10 +44,11 @@ function RentSearch() {
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState(rentalSortOptions[0]!);
   const [loading] = useState(false);
+  const catalog = Route.useLoaderData();
 
   const results = q
-    ? equipment.filter((e) =>
-        `${e.name} ${e.brand} ${e.model} ${e.subcategory} ${e.location}`
+    ? [...equipment, ...catalog].filter((e) =>
+        `${e.name} ${e.brand ?? ""} ${e.model ?? ""} ${e.subcategory ?? ""} ${e.location ?? ""}`
           .toLowerCase()
           .includes(q.toLowerCase()),
       )

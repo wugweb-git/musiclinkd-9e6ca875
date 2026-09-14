@@ -28,7 +28,7 @@ export type Equipment = {
   model: string;
   category: RentalCategory;
   subcategory: string;
-  condition: "New" | "Like New" | "Excellent" | "Good" | "Fair";
+  condition: "New" | "Like New" | "Excellent" | "Good" | "Fair" | "Used";
   daily: number;
   weekly: number;
   monthly: number;
@@ -69,6 +69,19 @@ export type Equipment = {
     | "Completed"
     | "Archived";
 };
+
+/**
+ * A rental as the browse rows, tiles and detail screen render it. Static equipment carries every
+ * field; database rentals (src/lib/market-view.ts) carry only stored fields, so screens skip the
+ * absent ones.
+ */
+export type RentalItem = Pick<Equipment, "id" | "name" | "photos"> &
+  Partial<Omit<Equipment, "id" | "name" | "photos">> & {
+    /** Price text stored beside the amount ("+ ₹5,000 deposit"). */
+    priceNote?: string;
+    /** Database rentals: the provider's profile (username set) or only a name. */
+    owner?: { name: string; username: string | null; photo: string; verified: boolean };
+  };
 
 const img = (id: string, w = 900) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;

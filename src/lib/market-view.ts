@@ -1,11 +1,6 @@
 import { subcategories, type Listing, type ListingType } from "@/data/market";
-import {
-  formatPaise,
-  getListing,
-  listListings,
-  taxonomyLabel,
-  type ListingRow,
-} from "@/lib/catalog.functions";
+import type { RentalCategory, RentalItem } from "@/data/rentals";
+import { formatPaise, listListings, taxonomyLabel, type ListingRow } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 
 /*
@@ -27,6 +22,7 @@ const TYPES: Record<string, ListingType> = {
 const CONDITIONS: Partial<Record<NonNullable<ListingRow["condition"]>, Listing["condition"]>> = {
   new: "New",
   like_new: "Like New",
+  used: "Used",
 };
 
 /** Item taxonomy slugs with an obvious static subcategory. */
@@ -69,20 +65,26 @@ function postedAt(createdAt: string, now: number) {
   return plural(Math.floor(hours / 24), "day");
 }
 
+/** The seller's profile when linked, otherwise only the stored seller name. */
+function ownerOf(row: ListingRow): Listing["owner"] {
+  if (row.seller) {
+    return {
+      name: row.seller.display_name ?? row.seller.username ?? row.seller_name ?? "",
+      username: row.seller.username,
+      photo: row.seller.avatar_url ?? "",
+      verified: row.seller.is_verified,
+    };
+  }
+  return row.seller_name
+    ? { name: row.seller_name, username: null, photo: "", verified: false }
+    : undefined;
+}
+
 export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: number): Listing {
   const type = TYPES[row.category] ?? "product";
   const category = categoryOf(row, labels);
   const condition = type !== "service" && row.condition ? CONDITIONS[row.condition] : undefined;
-  const owner = row.seller
-    ? {
-        name: row.seller.display_name ?? row.seller.username ?? row.seller_name ?? "",
-        username: row.seller.username,
-        photo: row.seller.avatar_url ?? "",
-        verified: row.seller.is_verified,
-      }
-    : row.seller_name
-      ? { name: row.seller_name, username: null, photo: "", verified: false }
-      : undefined;
+  const owner = ownerOf(row);
   return {
     id: row.slug,
     type,
@@ -111,21 +113,65 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
   };
 }
 
-/** Every database listing, newest first. Empty when the catalog cannot be read. */
-export async function loadCatalogListings(): Promise<Listing[]> {
-  const [rows, labels] = await Promise.all([
+async function loadRows() {
+  return Promise.all([
     listListings().catch((): ListingRow[] => []),
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
+}
+
+/** Every database listing, newest first. Empty when the catalog cannot be read. */
+export async function loadCatalogListings(): Promise<Listing[]> {
+  const [rows, labels] = await loadRows();
   const now = Date.now();
   return rows.map((row) => listingFromRow(row, labels, now));
 }
 
-/** One database listing by slug, or null. */
-export async function loadCatalogListing(slug: string): Promise<Listing | null> {
-  const [row, labels] = await Promise.all([
-    getListing({ data: { slug } }).catch(() => null),
-    getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-  ]);
-  return row ? listingFromRow(row, labels, Date.now()) : null;
+/** Item taxonomy slugs with an obvious static rental category and sub-category. */
+const RENTAL_EQUIPMENT: Record<string, { category: RentalCategory; subcategory: string }> = {
+  microphones: { category: "audio", subcategory: "Microphones" },
+  audio_interfaces: { category: "audio", subcategory: "Audio Interfaces" },
+  studio_monitors: { category: "audio", subcategory: "Studio Monitors" },
+  drums_percussion: { category: "instruments", subcategory: "Drums" },
+};
+
+/**
+ * A database gear_rental row shaped as the rental screens' item. Only stored fields are carried:
+ * the day rate (when the stored unit is a day), the price note, condition, photo and provider.
+ * A row with no item category has no rental category, so it shows in search but in no category.
+ */
+export function rentalFromRow(row: ListingRow, labels: TaxonomyLabels): RentalItem {
+  const mapped = row.item_category ? RENTAL_EQUIPMENT[row.item_category] : undefined;
+  const category: RentalCategory | undefined =
+    mapped?.category ?? (row.item_category_kind === "instrument" ? "instruments" : undefined);
+  const subcategory = mapped
+    ? mapped.subcategory
+    : row.item_category
+      ? taxonomyLabel(
+          labels,
+          row.item_category_kind === "instrument" ? "instruments" : "equipment_categories",
+          row.item_category,
+        )
+      : undefined;
+  const condition = row.condition ? CONDITIONS[row.condition] : undefined;
+  const owner = ownerOf(row);
+  return {
+    id: row.slug,
+    name: row.title,
+    photos: row.image_url ? [row.image_url] : [],
+    ...(row.price_paise != null && row.price_unit === "day"
+      ? { daily: row.price_paise / 100 }
+      : {}),
+    ...(row.price_note ? { priceNote: row.price_note } : {}),
+    ...(condition ? { condition } : {}),
+    ...(category ? { category } : {}),
+    ...(subcategory ? { subcategory } : {}),
+    ...(owner ? { owner } : {}),
+  };
+}
+
+/** Database rentals (category gear_rental), newest first. Empty when the catalog cannot be read. */
+export async function loadCatalogRentals(): Promise<RentalItem[]> {
+  const [rows, labels] = await loadRows();
+  return rows.filter((row) => row.category === "gear_rental").map((r) => rentalFromRow(r, labels));
 }

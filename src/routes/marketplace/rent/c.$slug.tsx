@@ -5,8 +5,11 @@ import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState, SortSheet } from "@/components/ml/market";
 import { EquipmentRow, RentalFilterSheet, rentalSortOptions } from "@/components/ml/rental";
 import { equipmentByCategory, rentalCategories } from "@/data/rentals";
+import { loadCatalogRentals } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/rent/c/$slug")({
+  // Database rentals follow the static ones in their mapped category.
+  loader: () => loadCatalogRentals(),
   head: ({ params }) => {
     const c = rentalCategories.find((x) => x.slug === params.slug);
     const title = `${c?.label ?? "Equipment"} for Rent | MusicLinkd`;
@@ -31,7 +34,8 @@ export const Route = createFileRoute("/marketplace/rent/c/$slug")({
 function RentCategory() {
   const { slug } = Route.useParams();
   const cat = rentalCategories.find((c) => c.slug === slug);
-  const items = equipmentByCategory(slug);
+  const catalog = Route.useLoaderData();
+  const items = [...equipmentByCategory(slug), ...catalog.filter((e) => e.category === slug)];
   const [sub, setSub] = useState("All");
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);

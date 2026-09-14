@@ -2,7 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Share2, Flag, Check } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { ConditionBadge, LocationRow, Rating, SaveButton } from "@/components/ml/market";
+import {
+  ConditionBadge,
+  LocationRow,
+  Rating,
+  SaveButton,
+  SellerSummary,
+} from "@/components/ml/market";
 import {
   EquipmentTile,
   ProviderSummary,
@@ -10,14 +16,28 @@ import {
   RentalPriceBlock,
   RentalReportSheet,
 } from "@/components/ml/rental";
-import { equipment, equipmentById, inr, providerById, rentalReviews } from "@/data/rentals";
+import {
+  equipment,
+  equipmentById,
+  inr,
+  providerById,
+  rentalReviews,
+  type RentalItem,
+} from "@/data/rentals";
+import { loadCatalogRentals } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/rent/e/$id")({
-  head: ({ params }) => {
-    const e = equipmentById(params.id);
-    const title = e ? `Rent ${e.name} — ${inr(e.daily)}/day | MusicLinkd` : "Rental | MusicLinkd";
-    const desc = e
-      ? `${e.brand} ${e.model} for rent in ${e.location}. ${e.availability}. Deposit ${inr(e.deposit)}.`
+  // Static equipment wins; any other id is looked up as a database rental slug. Database rentals
+  // also fill in related equipment after the static ones.
+  loader: () => loadCatalogRentals(),
+  head: ({ params, loaderData }) => {
+    const known = equipmentById(params.id);
+    const e: RentalItem | undefined = known ?? loaderData?.find((x) => x.id === params.id);
+    const title = e
+      ? `Rent ${e.name}${e.daily != null ? ` — ${inr(e.daily)}/day` : ""} | MusicLinkd`
+      : "Rental | MusicLinkd";
+    const desc = known
+      ? `${known.brand} ${known.model} for rent in ${known.location}. ${known.availability}. Deposit ${inr(known.deposit)}.`
       : "Rental equipment on MusicLinkd.";
     const image = e?.photos[0];
     return {
@@ -40,7 +60,9 @@ export const Route = createFileRoute("/marketplace/rent/e/$id")({
 
 function RentalDetail() {
   const { id } = Route.useParams();
-  const e = equipmentById(id);
+  const catalog = Route.useLoaderData();
+  const e: RentalItem | undefined = equipmentById(id) ?? catalog.find((x) => x.id === id);
+  const fromCatalog = !equipmentById(id);
   const [saved, setSaved] = useState(false);
   const [shot, setShot] = useState(0);
   const [report, setReport] = useState(false);
@@ -56,8 +78,39 @@ function RentalDetail() {
     );
   }
 
-  const p = providerById(e.providerId)!;
-  const related = equipment.filter((x) => x.category === e.category && x.id !== e.id).slice(0, 5);
+  const p = e.providerId ? providerById(e.providerId) : undefined;
+  const related = [
+    ...equipment.filter((x) => x.category === e.category && x.id !== e.id).slice(0, 5),
+    ...catalog.filter((x) => e.category && x.category === e.category && x.id !== e.id),
+  ];
+  const byline = [e.brand, e.model, e.rentals != null ? `${e.rentals} completed rentals` : ""]
+    .filter(Boolean)
+    .join(" · ");
+  const where = [e.location, e.distance].filter(Boolean).join(" · ");
+  const terms = [
+    ...(e.daily != null ? [{ k: "Daily", v: inr(e.daily) }] : []),
+    ...(e.weekly != null ? [{ k: "Weekly", v: inr(e.weekly) }] : []),
+    ...(e.monthly != null ? [{ k: "Monthly", v: inr(e.monthly) }] : []),
+    ...(e.minDays != null
+      ? [{ k: "Minimum rental", v: `${e.minDays} day${e.minDays > 1 ? "s" : ""}` }]
+      : []),
+    ...(e.maxDays != null ? [{ k: "Maximum rental", v: `${e.maxDays} days` }] : []),
+    ...(e.noticePeriod ? [{ k: "Notice period", v: e.noticePeriod }] : []),
+    ...(e.quantity != null ? [{ k: "Quantity available", v: `${e.quantity}` }] : []),
+    ...(e.pickup != null && e.delivery != null
+      ? [
+          {
+            k: "Pickup / delivery",
+            v: e.delivery
+              ? `${e.pickup ? "Pickup or " : ""}delivery ${inr(e.deliveryFee ?? 0)}`
+              : "Pickup only",
+          },
+        ]
+      : []),
+  ];
+  const barNote = [e.deposit != null ? `Deposit ${inr(e.deposit)}` : e.priceNote, e.availability]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <Screen>
@@ -78,7 +131,9 @@ function RentalDetail() {
       />
 
       <div className="relative">
-        <img src={e.photos[shot]} alt={e.name} className="h-64 w-full object-cover" />
+        {e.photos[shot] ? (
+          <img src={e.photos[shot]} alt={e.name} className="h-64 w-full object-cover" />
+        ) : null}
         <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
           {e.photos.map((src, i) => (
             <button
@@ -111,135 +166,165 @@ function RentalDetail() {
         <div className="flex items-start justify-between gap-3">
           <RentalPriceBlock e={e} size="lg" />
           <div className="flex shrink-0 flex-col items-end gap-1.5">
-            <ConditionBadge value={e.condition} />
+            {e.condition ? <ConditionBadge value={e.condition} /> : null}
             <Rating value={e.rating} count={e.reviews} />
           </div>
         </div>
         <h1 className="mt-2 text-[22px] leading-tight">{e.name}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {e.brand} · {e.model} · {e.rentals} completed rentals
-        </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <RentalAvailabilityBadge text={e.availability} />
-          <LocationRow text={`${e.location} · ${e.distance}`} />
-        </div>
-
-        <div
-          className="mt-4 flex items-start justify-between gap-3 rounded-lg p-4"
-          style={{ background: "var(--warn-container)" }}
-        >
-          <div className="min-w-0">
-            <p className="text-[12px] font-bold" style={{ color: "var(--warn)" }}>
-              Refundable security deposit
-            </p>
-            <p className="text-[11px] text-muted-foreground">
-              Held by the provider for the rental period.
-            </p>
+        {byline ? <p className="mt-1 text-sm text-muted-foreground">{byline}</p> : null}
+        {e.availability || where ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {e.availability ? <RentalAvailabilityBadge text={e.availability} /> : null}
+            {where ? <LocationRow text={where} /> : null}
           </div>
-          <span className="shrink-0 text-[15px] font-bold">{inr(e.deposit)}</span>
-        </div>
+        ) : null}
 
-        <h2 className="mt-6 text-[16px]">Description</h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{e.description}</p>
-
-        <h2 className="mt-6 text-[16px]">Specifications</h2>
-        <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
-          {e.specs.map((s) => (
-            <div key={s.label} className="flex items-center justify-between gap-3 px-4 py-3">
-              <dt className="text-xs text-muted-foreground">{s.label}</dt>
-              <dd className="text-right text-xs font-semibold">{s.value}</dd>
+        {e.deposit != null ? (
+          <div
+            className="mt-4 flex items-start justify-between gap-3 rounded-lg p-4"
+            style={{ background: "var(--warn-container)" }}
+          >
+            <div className="min-w-0">
+              <p className="text-[12px] font-bold" style={{ color: "var(--warn)" }}>
+                Refundable security deposit
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Held by the provider for the rental period.
+              </p>
             </div>
-          ))}
-        </dl>
-
-        <h2 className="mt-6 text-[16px]">What's included</h2>
-        <ul className="mt-2 space-y-2 rounded-lg border border-border p-4">
-          {e.included.map((x) => (
-            <li key={x} className="flex items-center gap-2 text-[13px]">
-              <Check size={14} className="shrink-0 text-primary" /> {x}
-            </li>
-          ))}
-        </ul>
-
-        <h2 className="mt-6 text-[16px]">Rental terms</h2>
-        <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
-          {[
-            { k: "Daily", v: inr(e.daily) },
-            { k: "Weekly", v: inr(e.weekly) },
-            { k: "Monthly", v: inr(e.monthly) },
-            { k: "Minimum rental", v: `${e.minDays} day${e.minDays > 1 ? "s" : ""}` },
-            { k: "Maximum rental", v: `${e.maxDays} days` },
-            { k: "Notice period", v: e.noticePeriod },
-            { k: "Quantity available", v: `${e.quantity}` },
-            {
-              k: "Pickup / delivery",
-              v: e.delivery
-                ? `${e.pickup ? "Pickup or " : ""}delivery ${inr(e.deliveryFee ?? 0)}`
-                : "Pickup only",
-            },
-          ].map((r) => (
-            <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
-              <dt className="text-xs text-muted-foreground">{r.k}</dt>
-              <dd className="text-xs font-semibold">{r.v}</dd>
-            </div>
-          ))}
-        </dl>
-
-        <h2 className="mt-6 text-[16px]">Provider</h2>
-        <div className="mt-2 rounded-lg border border-border bg-card p-4">
-          <ProviderSummary p={p} />
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-            {[
-              { k: "Response", v: p.responseRate },
-              { k: "Replies in", v: p.responseTime },
-              { k: "Rentals", v: `${p.completedRentals}` },
-            ].map((x) => (
-              <div key={x.k} className="rounded-lg bg-subtle py-2">
-                <p className="truncate text-[12px] font-bold">{x.v}</p>
-                <p className="text-[10px] text-muted-foreground">{x.k}</p>
-              </div>
-            ))}
+            <span className="shrink-0 text-[15px] font-bold">{inr(e.deposit)}</span>
           </div>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <BtnLink
-              to="/marketplace/rent/provider/$id"
-              params={{ id: p.id }}
-              variant="outline"
-              className="w-full"
-            >
-              View profile
-            </BtnLink>
-            <BtnLink to="/messages" variant="outline" className="w-full">
-              Message
-            </BtnLink>
-          </div>
-        </div>
+        ) : null}
 
-        <h2 className="mt-6 text-[16px]">Reviews</h2>
-        <div className="mt-2 space-y-3">
-          {rentalReviews.slice(0, 2).map((r) => (
-            <article key={r.id} className="rounded-lg border border-border bg-card p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold">{r.name}</p>
-                  <p className="truncate text-[11px] text-muted-foreground">{r.context}</p>
+        {e.description ? (
+          <>
+            <h2 className="mt-6 text-[16px]">Description</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{e.description}</p>
+          </>
+        ) : null}
+
+        {e.specs?.length ? (
+          <>
+            <h2 className="mt-6 text-[16px]">Specifications</h2>
+            <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
+              {e.specs.map((s) => (
+                <div key={s.label} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <dt className="text-xs text-muted-foreground">{s.label}</dt>
+                  <dd className="text-right text-xs font-semibold">{s.value}</dd>
                 </div>
-                <Rating value={r.rating} />
-              </div>
-              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{r.body}</p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {r.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-full bg-subtle px-2 py-1 text-[10px] font-semibold text-muted-foreground"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
+              ))}
+            </dl>
+          </>
+        ) : null}
+
+        {e.included?.length ? (
+          <>
+            <h2 className="mt-6 text-[16px]">What's included</h2>
+            <ul className="mt-2 space-y-2 rounded-lg border border-border p-4">
+              {e.included.map((x) => (
+                <li key={x} className="flex items-center gap-2 text-[13px]">
+                  <Check size={14} className="shrink-0 text-primary" /> {x}
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
+
+        {terms.length ? (
+          <>
+            <h2 className="mt-6 text-[16px]">Rental terms</h2>
+            <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
+              {terms.map((r) => (
+                <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <dt className="text-xs text-muted-foreground">{r.k}</dt>
+                  <dd className="text-xs font-semibold">{r.v}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        ) : null}
+
+        {p || e.owner ? <h2 className="mt-6 text-[16px]">Provider</h2> : null}
+        {e.owner && !p ? (
+          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+            <SellerSummary seller={e.owner} compact />
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {e.owner.username ? (
+                <BtnLink
+                  to="/profile/$username"
+                  params={{ username: e.owner.username }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  View profile
+                </BtnLink>
+              ) : null}
+              <BtnLink to="/messages" variant="outline" className="w-full">
+                Message
+              </BtnLink>
+            </div>
+          </div>
+        ) : null}
+        {p ? (
+          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+            <ProviderSummary p={p} />
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+              {[
+                { k: "Response", v: p.responseRate },
+                { k: "Replies in", v: p.responseTime },
+                { k: "Rentals", v: `${p.completedRentals}` },
+              ].map((x) => (
+                <div key={x.k} className="rounded-lg bg-subtle py-2">
+                  <p className="truncate text-[12px] font-bold">{x.v}</p>
+                  <p className="text-[10px] text-muted-foreground">{x.k}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <BtnLink
+                to="/marketplace/rent/provider/$id"
+                params={{ id: p.id }}
+                variant="outline"
+                className="w-full"
+              >
+                View profile
+              </BtnLink>
+              <BtnLink to="/messages" variant="outline" className="w-full">
+                Message
+              </BtnLink>
+            </div>
+          </div>
+        ) : null}
+
+        {fromCatalog ? null : (
+          <>
+            <h2 className="mt-6 text-[16px]">Reviews</h2>
+            <div className="mt-2 space-y-3">
+              {rentalReviews.slice(0, 2).map((r) => (
+                <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate text-[13px] font-semibold">{r.name}</p>
+                      <p className="truncate text-[11px] text-muted-foreground">{r.context}</p>
+                    </div>
+                    <Rating value={r.rating} />
+                  </div>
+                  <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{r.body}</p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {r.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full bg-subtle px-2 py-1 text-[10px] font-semibold text-muted-foreground"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
+        )}
 
         <h2 className="mt-6 text-[16px]">Related equipment</h2>
       </div>
@@ -262,17 +347,26 @@ function RentalDetail() {
       <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[15px] font-bold">
-              {inr(e.daily)}{" "}
-              <span className="text-[11px] font-normal text-muted-foreground">/ day</span>
-            </p>
-            <p className="truncate text-[10px] text-muted-foreground">
-              Deposit {inr(e.deposit)} · {e.availability}
-            </p>
+            {e.daily != null ? (
+              <p className="truncate text-[15px] font-bold">
+                {inr(e.daily)}{" "}
+                <span className="text-[11px] font-normal text-muted-foreground">/ day</span>
+              </p>
+            ) : null}
+            {barNote ? (
+              <p className="truncate text-[10px] text-muted-foreground">{barNote}</p>
+            ) : null}
           </div>
-          <BtnLink to="/marketplace/rent/request/$id" params={{ id: e.id }} className="shrink-0">
-            Check availability
-          </BtnLink>
+          {fromCatalog ? (
+            // The request flow needs dates, rates and a deposit a database rental does not store.
+            <BtnLink to="/messages" className="shrink-0">
+              Check availability
+            </BtnLink>
+          ) : (
+            <BtnLink to="/marketplace/rent/request/$id" params={{ id: e.id }} className="shrink-0">
+              Check availability
+            </BtnLink>
+          )}
         </div>
       </div>
 
