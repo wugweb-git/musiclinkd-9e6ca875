@@ -143,6 +143,7 @@
   --animate-pop: pop 320ms var(--easing-spring) both;
   --animate-caret: caret 1s steps(1) infinite;
   --animate-sound-check: sound-check 500ms var(--easing-enter) both;
+  --animate-fill: fill 500ms var(--easing-enter) both;
 
   @keyframes shake {
     20%,
@@ -158,6 +159,11 @@
     from {
       transform: scale(0.6);
       opacity: 0;
+    }
+  }
+  @keyframes fill {
+    from {
+      transform: scaleX(0);
     }
   }
   @keyframes caret {

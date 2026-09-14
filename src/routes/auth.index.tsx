@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Btn } from "@/components/ml/ui";
+import { haptic } from "@/lib/haptics";
 import {
   AuthHeading,
   AuthNotice,
@@ -103,6 +104,7 @@ function AuthPage() {
       toast.success("Welcome back");
       void navigate({ to: "/", replace: true });
     } catch (err) {
+      haptic("error");
       setError(classifyAuthError(err instanceof Error ? err.message : "Something went wrong"));
     } finally {
       setBusy(false);
@@ -180,39 +182,48 @@ function AuthPage() {
 
       <Divider label="or use email" />
 
-      <LabeledInput
-        label="Email"
-        value={email}
-        onChange={setEmail}
-        type="email"
-        inputMode="email"
-        autoComplete="email"
-        placeholder="you@example.com"
-      />
-      <PasswordInput
-        value={password}
-        onChange={setPassword}
-        autoComplete={signup ? "new-password" : "current-password"}
-      />
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!busy) void submit();
+        }}
+      >
+        <LabeledInput
+          label="Email"
+          value={email}
+          onChange={setEmail}
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          enterKeyHint="next"
+          placeholder="you@example.com"
+        />
+        <PasswordInput
+          value={password}
+          onChange={setPassword}
+          autoComplete={signup ? "new-password" : "current-password"}
+        />
 
-      {signup ? <PasswordRequirements value={password} /> : null}
+        {signup ? <PasswordRequirements value={password} /> : null}
 
-      {!signup ? (
-        <div className="mb-5 -mt-1 text-right">
-          <Link to="/auth/forgot" className="text-1 font-semibold text-foreground">
-            Forgot password?
-          </Link>
-        </div>
-      ) : null}
+        {!signup ? (
+          <div className="mb-5 -mt-1 text-right">
+            <Link to="/auth/forgot" className="hit-area text-1 font-semibold text-foreground">
+              Forgot password?
+            </Link>
+          </div>
+        ) : null}
 
-      <Btn className="w-full" onClick={() => void submit()} disabled={busy}>
-        {busy ? "Please wait…" : signup ? "Create account" : "Sign in"}
-      </Btn>
+        <Btn type="submit" className="w-full" disabled={busy}>
+          {busy ? "Please wait…" : signup ? "Create account" : "Sign in"}
+        </Btn>
+      </form>
 
       <button
         type="button"
         onClick={() => switchMode(signup ? "signin" : "signup")}
-        className="mt-5 w-full text-center text-1 text-muted-foreground"
+        className="mt-2 min-h-12 w-full text-center text-1 text-muted-foreground"
       >
         {signup ? (
           <>
@@ -230,7 +241,7 @@ function AuthPage() {
 
       <p className="mt-6 text-center text-1 text-muted-foreground">
         Browsing without an account?{" "}
-        <Link to="/discover" className="font-semibold text-foreground">
+        <Link to="/discover" className="hit-area font-semibold text-foreground">
           Explore Discover
         </Link>
       </p>

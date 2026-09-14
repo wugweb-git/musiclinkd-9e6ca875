@@ -25,7 +25,7 @@ function AuthSuccess() {
   return (
     <AuthScreen>
       <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-md bg-subtle">
-        <PartyPopper size={24} className="text-primary" />
+        <PartyPopper size={24} className="animate-pop text-primary" />
       </div>
       <AuthHeading
         title="You're in"

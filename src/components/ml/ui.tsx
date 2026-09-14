@@ -89,7 +89,7 @@ export function TopBar({
       {back ? (
         <Link
           to={back}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card"
+          className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-95"
           aria-label="Back"
         >
           <ArrowLeft size={18} aria-hidden />
@@ -244,9 +244,9 @@ export function Sheet({
       <button
         aria-label="Close"
         onClick={onClose}
-        className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
+        className="absolute inset-0 animate-in fade-in bg-ink/50 backdrop-blur-[2px] duration-200"
       />
-      <div className="relative max-h-[88vh] overflow-y-auto rounded-t-2xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar">
+      <div className="relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-2xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar duration-300 ease-enter">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
         {title ? <h2 className="mb-4 text-xl">{title}</h2> : null}
         {children}
@@ -260,7 +260,7 @@ export function SectionHeader({ title, action }: { title: string; action?: React
     <div className="mb-3 flex items-baseline justify-between gap-3 px-5">
       <h2 className="min-w-0 truncate text-2">{title}</h2>
       {action ? (
-        <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-foreground">
+        <span className="hit-area shrink-0 whitespace-nowrap text-1 font-semibold text-foreground">
           {action}
         </span>
       ) : null}

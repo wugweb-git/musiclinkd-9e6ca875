@@ -135,7 +135,7 @@ function Header() {
         <Link
           to="/notifications"
           aria-label="Notifications"
-          className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+          className="hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
         >
           <Bell size={18} />
           {unreadCount() > 0 ? (
