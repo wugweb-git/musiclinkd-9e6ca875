@@ -455,16 +455,7 @@ export const emptyDraft: OnboardingDraft = {
 /* ------------------------------------------------------------------ */
 
 export type StepId =
-  | "identity"
-  | "role"
-  | "instruments"
-  | "experience"
-  | "specialisation"
-  | "languages"
-  | "genres"
-  | "work-mode"
-  | "intent"
-  | "contact";
+  "identity" | "role" | "instruments" | "languages" | "genres" | "work-mode" | "intent" | "contact";
 
 export type StepDef = {
   id: StepId;
@@ -523,40 +514,6 @@ export const steps: StepDef[] = [
       "/onboarding/step/instruments",
       ["persona_bucket"],
       ["instrument"],
-    ),
-  },
-  {
-    // Instrument players answer this on the instruments screen, per instrument. Everyone else,
-    // and players who picked no instruments, answer once here for their main role.
-    id: "experience",
-    group: "Expertise",
-    title: "How experienced are you?",
-    subtitle: "Not a ranking — just context.",
-    why: "Helps match you to the right briefs. Never shown as a score.",
-    optional: true,
-    visible: (d) => d.instruments.length === 0,
-    contract: contract(
-      "ONB-13",
-      "Experience",
-      "/onboarding/step/experience",
-      ["masterData"],
-      ["professionalProfile"],
-    ),
-  },
-  {
-    id: "specialisation",
-    group: "Expertise",
-    title: "Your specialisation",
-    subtitle: "Only what's relevant to your role.",
-    why: "Specialisation is what turns a search result into a booking.",
-    optional: true,
-    visible: (d) => Boolean(d.primaryRole && specialisationByRole[d.primaryRole]),
-    contract: contract(
-      "ONB-07",
-      "Professional Specialisation",
-      "/onboarding/step/specialisation",
-      ["masterData"],
-      ["professionalProfile"],
     ),
   },
   {
