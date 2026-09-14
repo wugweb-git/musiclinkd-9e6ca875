@@ -15,13 +15,18 @@ import {
   TrustPill,
 } from "@/components/ml/market";
 import { byId, listings, reviews, sellerById } from "@/data/market";
-import { loadCatalogListing } from "@/lib/market-view";
+import { loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
-  // Static listings win; any other id is looked up as a database listing slug.
-  loader: async ({ params }) => ({
-    catalog: byId(params.id) ? null : await loadCatalogListing(params.id),
-  }),
+  // Static listings win; any other id is looked up as a database listing slug. Database listings
+  // in the same category follow the static related listings.
+  loader: async ({ params }) => {
+    const all = await loadCatalogListings();
+    return {
+      catalog: byId(params.id) ? null : (all.find((x) => x.id === params.id) ?? null),
+      all,
+    };
+  },
   head: ({ params, loaderData }) => {
     const l = byId(params.id) ?? loaderData?.catalog ?? undefined;
     const title = l ? `${l.title} — ${l.price} | MusicLinkd Market` : "Listing | MusicLinkd Market";
@@ -47,7 +52,7 @@ export const Route = createFileRoute("/marketplace/l/$id")({
 
 function ListingDetail() {
   const { id } = Route.useParams();
-  const { catalog } = Route.useLoaderData();
+  const { catalog, all } = Route.useLoaderData();
   const fromCatalog = !byId(id);
   const l = byId(id) ?? catalog ?? undefined;
   const [saved, setSaved] = useState(false);
@@ -232,12 +237,12 @@ function ListingDetail() {
 
         <h2 className="mt-6 text-[16px]">Related listings</h2>
         <div className="rail mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
-          {listings
-            .filter((x) => x.id !== l.id)
-            .slice(0, 4)
-            .map((x) => (
-              <ListingTile key={x.id} l={x} />
-            ))}
+          {[
+            ...listings.filter((x) => x.id !== l.id).slice(0, 4),
+            ...all.filter((x) => x.category === l.category && x.id !== l.id),
+          ].map((x) => (
+            <ListingTile key={x.id} l={x} />
+          ))}
         </div>
 
         <button

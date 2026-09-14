@@ -22,7 +22,7 @@ export type Listing = {
   subtitle: string;
   price: string;
   priceNote?: string;
-  condition?: "New" | "Like New" | "Excellent" | "Good" | "Fair";
+  condition?: "New" | "Like New" | "Excellent" | "Good" | "Fair" | "Used";
   location: string;
   distance: string;
   category: string;
