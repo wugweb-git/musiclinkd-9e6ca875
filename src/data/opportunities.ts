@@ -216,7 +216,7 @@ export const opportunities: Opportunity[] = [
       "Backline: DW kit, you bring cymbals and snare.",
     ],
     requirements: [
-      { label: "Funk / soul pocket", must: true },
+      { label: "Funk pocket", must: true },
       { label: "Own cymbals + snare", must: true },
       { label: "Reading charts", must: false },
     ],
