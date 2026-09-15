@@ -118,7 +118,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
           </p>
         </div>
         <div className="absolute right-4 top-4">
-          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
+          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} onMedia />
         </div>
       </div>
 

@@ -44,7 +44,7 @@ export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md
     <div className="min-w-0">
       {e.daily != null ? (
         <div className="flex items-baseline gap-1">
-          <span className={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}>
+          <span className={`text-price ${size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}`}>
             {inr(e.daily)}
           </span>
           <span className="text-1 text-muted-foreground">/ day</span>
@@ -77,7 +77,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full bg-ink/80 pill text-background backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full pill pill-glass">
             Rental
           </span>
         </div>
@@ -367,7 +367,7 @@ export function PriceBreakdown({
       </div>
       <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
         <span className="text-1 font-semibold">Estimated total</span>
-        <span className="text-xl font-bold">{inr(total)}</span>
+        <span className="text-xl font-bold text-price">{inr(total)}</span>
       </div>
       <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
         <div className="min-w-0">
@@ -376,7 +376,7 @@ export function PriceBreakdown({
             Held by the provider, returned after the equipment is checked.
           </p>
         </div>
-        <span className="shrink-0 text-1 font-bold">{inr(deposit)}</span>
+        <span className="shrink-0 text-1 font-bold text-price">{inr(deposit)}</span>
       </div>
       <p className="mt-3 text-1 text-muted-foreground">
         Estimate only. Nothing is charged on MusicLinkd — the provider confirms the final amount in

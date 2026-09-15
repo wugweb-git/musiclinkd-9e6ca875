@@ -90,7 +90,7 @@ function BookingEntry() {
                       .join(" · ")}
                   </p>
                 </div>
-                <span className="shrink-0 text-sm font-semibold">
+                <span className="shrink-0 text-sm font-semibold text-price">
                   {inr(Math.min(...r.tiers.map((t) => t.price)))}
                 </span>
               </div>

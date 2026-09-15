@@ -161,7 +161,7 @@ function BusinessProfileScreen() {
                     className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
                   >
                     <span className="min-w-0 flex-1 truncate text-[13px]">{s.label}</span>
-                    <span className="shrink-0 text-[13px] font-semibold">{s.price}</span>
+                    <span className="shrink-0 text-[13px] font-semibold text-price">{s.price}</span>
                   </div>
                 ))}
               </Card>
@@ -216,7 +216,7 @@ function BusinessProfileScreen() {
                 <div className="space-y-2 p-4 pt-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-[14px] font-semibold">{sp.name}</p>
-                    <p className="text-[13px] font-bold">{sp.rate}</p>
+                    <p className="text-[13px] font-bold text-price">{sp.rate}</p>
                   </div>
                   {sp.detail ? (
                     <p className="text-[12px] text-muted-foreground">{sp.detail}</p>
