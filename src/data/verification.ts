@@ -14,6 +14,8 @@ export type VerificationRequirement = {
   label: string;
   /** Why the Trust team needs it — never ask without a reason. */
   why: string;
+  /** Not needed to submit. */
+  optional?: boolean;
   /** Upload of a file, or information typed into the form. */
   kind: "document" | "info";
 };
@@ -79,9 +81,10 @@ export const verificationTypes: VerificationType[] = [
         kind: "info",
       },
       {
-        label: "Professional affiliation (optional)",
+        label: "Affiliation",
         why: "Label, studio or agency you work with, if any.",
         kind: "info",
+        optional: true,
       },
     ],
     turnaround: "3–5 days",

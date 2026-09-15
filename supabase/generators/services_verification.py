@@ -109,7 +109,7 @@ for r in person_type_services:
 
 # MAPPING CHOICE: service category -> studio_services / engineer_specialties options, only where the
 # option is the same thing by slug and label (Mixing, Mastering). Recording is not mapped: no service
-# category is recording alone (Studio time and Session vocals both may be).
+# category is recording alone (Studio and Vocals both may be).
 SPECIALTIES = [
     ("mixing", "studio_services", "mixing"), ("mixing", "engineer_specialties", "mixing"),
     ("mastering", "studio_services", "mastering"), ("mastering", "engineer_specialties", "mastering"),
@@ -132,9 +132,9 @@ MODE_SLUG = {"Remote": "remote", "In person": "in_person"}
 # a room of a recording studio. None = left empty, with the reason.
 CATEGORY_OF = [
     # wugweb (studio, sound_engineer)
-    ("205ee30a-9535-5184-8863-b85a3551fcef", "Full Band Live Tracking", None, "Studio time or Production"),
+    ("205ee30a-9535-5184-8863-b85a3551fcef", "Full Band Live Tracking", None, "Studio or Production"),
     ("dae5d070-3ee4-53f7-a443-c2fcf3dbe359", "Certified Dolby Atmos Mixing", "mixing", None),
-    ("b60d9d28-1ba1-5104-8b94-1ca11379202b", "Acoustic Grand Piano Session", None, "Studio time or Session instrument"),
+    ("b60d9d28-1ba1-5104-8b94-1ca11379202b", "Acoustic Grand Piano Session", None, "Studio or Instrument"),
     ("cb3bd535-e606-58ad-aebc-c8d0caa15405", "Commercial Film Stereo Dubbing", None, "no category fits"),
     ("312416cd-bb74-52b8-aa99-838cbd963967", "Masterclass Audio Production", None, "a class; no category fits"),
     ("cb995cf5-08c5-56e4-8e2d-af314ade836a", "Vintage Backline Gear Rental", None, "no category fits"),
@@ -147,7 +147,7 @@ CATEGORY_OF = [
     ("177c9e87-4f9b-5379-b185-44f5db0f9afb", "Session guitar", "instrument", None),
     ("d5f6910d-282c-5e28-882d-27dd0719a9ae", "Support slot", "live", None),
     # thequarter (venue)
-    ("f3349118-ad2c-5188-ac5f-1e8a3f84d0ca", "Headline night", None, "a venue slot or Live performance"),
+    ("f3349118-ad2c-5188-ac5f-1e8a3f84d0ca", "Headline night", None, "a venue slot or Live"),
     ("ffe392a9-626c-56de-a3f7-fbc2b373eb65", "Private event hire", None, "no category fits"),
     # meeraraghav (producer, musician)
     ("84c18a58-e831-512f-9530-ea853cb5e53e", "Band production", "production", None),
@@ -157,7 +157,7 @@ CATEGORY_OF = [
     ("ad2077a9-a02a-511f-9df8-f50269df72bb", "Music video", None, "no category fits"),
     # rheadsouza (musician)
     ("e6cb6008-6b9d-55b9-a896-a65fd2fcf265", "Session keys", "instrument", None),
-    ("9da9074d-f013-54d1-9822-f7a3c2a335c7", "Live and touring keys", None, "Live performance or Session instrument"),
+    ("9da9074d-f013-54d1-9822-f7a3c2a335c7", "Live and touring keys", None, "Live or Instrument"),
     # arjunpillai (musician, composer)
     ("9a1e81d0-dbff-5979-8e44-cc063f556c5b", "Arrangement and charts", None, "Production or Songwriting"),
     ("5f93a2a2-85cd-590e-8953-67eae5f427b1", "Session piano", "instrument", None),
@@ -289,7 +289,7 @@ for t in TYPES:
         requirements.append({
             "id": uid(f"verification_requirement:{t['key']}/{slug}"), "type_slug": t["key"], "slug": slug,
             "label": r["label"], "why": r["why"], "kind": r["kind"],
-            "is_optional": r["label"].endswith("(optional)"),
+            "is_optional": bool(r.get("optional")),
             "private_field": PRIVATE_FIELD.get((t["key"], r["label"])), "sort_order": i + 1,
         })
 for (k, label), _ in PRIVATE_FIELD.items():

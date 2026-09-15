@@ -67,21 +67,21 @@ export const pricingModelUnit: Record<PricingModel, string | undefined> = {
 };
 
 export const serviceCategories = [
-  { key: "vocals", label: "Session vocals", emoji: "🎤" },
+  { key: "vocals", label: "Vocals", emoji: "🎤" },
   { key: "mixing", label: "Mixing", emoji: "🎚️" },
   { key: "mastering", label: "Mastering", emoji: "💿" },
   { key: "production", label: "Production", emoji: "🎹" },
-  { key: "instrument", label: "Session instrument", emoji: "🎸" },
+  { key: "instrument", label: "Instrument", emoji: "🎸" },
   { key: "songwriting", label: "Songwriting", emoji: "✍️" },
-  { key: "live", label: "Live performance", emoji: "🎫" },
-  { key: "studio", label: "Studio time", emoji: "🏠" },
+  { key: "live", label: "Live", emoji: "🎫" },
+  { key: "studio", label: "Studio", emoji: "🏠" },
 ];
 
 export const myServices: Service[] = [
   {
     id: "svc-1",
     title: "Session vocals — lead & harmonies",
-    category: "Session vocals",
+    category: "Vocals",
     emoji: "🎤",
     status: "active",
     pricingModel: "per_song",
@@ -151,7 +151,7 @@ export const myServices: Service[] = [
   {
     id: "svc-3",
     title: "Live set — 45 minutes",
-    category: "Live performance",
+    category: "Live",
     emoji: "🎫",
     status: "paused",
     pricingModel: "per_day",

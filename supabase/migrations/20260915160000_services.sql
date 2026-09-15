@@ -83,10 +83,10 @@
 --   (services.ts prices its Live set per_day "per show"); other units and rows with no price stay empty.
 --   work_modes from mode: Remote remote, In person in_person, "Remote · In person" both.
 --   205ee30a Full Band Live Tracking | category - | pricing hourly (4500 hr) | work_modes -
---            category left empty: Studio time or Production
+--            category left empty: Studio or Production
 --   dae5d070 Certified Dolby Atmos Mixing | category mixing | pricing per_song (15000 track) | work_modes -
 --   b60d9d28 Acoustic Grand Piano Session | category - | pricing hourly (3500 hr) | work_modes -
---            category left empty: Studio time or Session instrument
+--            category left empty: Studio or Instrument
 --   cb3bd535 Commercial Film Stereo Dubbing | category - | pricing per_day (25000 day) | work_modes -
 --            category left empty: no category fits
 --   312416cd Masterclass Audio Production | category - | pricing - (12000 5 sessions) | work_modes -
@@ -101,7 +101,7 @@
 --   177c9e87 Session guitar | category instrument | pricing per_song (6000 song) | work_modes remote
 --   d5f6910d Support slot | category live | pricing - (no price) | work_modes in_person
 --   f3349118 Headline night | category - | pricing - (Door split or fixed fee) | work_modes in_person
---            category left empty: a venue slot or Live performance
+--            category left empty: a venue slot or Live
 --   ffe392a9 Private event hire | category - | pricing - (85000 night) | work_modes in_person
 --            category left empty: no category fits
 --   84c18a58 Band production | category production | pricing - (60000 project) | work_modes in_person
@@ -112,7 +112,7 @@
 --            category left empty: no category fits
 --   e6cb6008 Session keys | category instrument | pricing per_song (7000 song) | work_modes remote,in_person
 --   9da9074d Live and touring keys | category - | pricing per_day (12000 show) | work_modes in_person
---            category left empty: Live performance or Session instrument
+--            category left empty: Live or Instrument
 --   9a1e81d0 Arrangement and charts | category - | pricing per_song (8000 song) | work_modes remote
 --            category left empty: Production or Songwriting
 --   5f93a2a2 Session piano | category instrument | pricing per_song (5000 song) | work_modes remote,in_person
@@ -146,7 +146,7 @@
 -- 1. The option categories used here exist, and their labels are the app's
 DO $guard$
 DECLARE
-  v_app jsonb := $json$[{"category_key":"service_categories","slug":"vocals","label":"Session vocals"},{"category_key":"service_categories","slug":"mixing","label":"Mixing"},{"category_key":"service_categories","slug":"mastering","label":"Mastering"},{"category_key":"service_categories","slug":"production","label":"Production"},{"category_key":"service_categories","slug":"instrument","label":"Session instrument"},{"category_key":"service_categories","slug":"songwriting","label":"Songwriting"},{"category_key":"service_categories","slug":"live","label":"Live performance"},{"category_key":"service_categories","slug":"studio","label":"Studio time"},{"category_key":"pricing_models","slug":"hourly","label":"Per hour"},{"category_key":"pricing_models","slug":"per_song","label":"Per song"},{"category_key":"pricing_models","slug":"per_day","label":"Per day"},{"category_key":"pricing_models","slug":"package","label":"Packages only"},{"category_key":"pricing_models","slug":"custom","label":"Custom quote"}]$json$;
+  v_app jsonb := $json$[{"category_key":"service_categories","slug":"vocals","label":"Vocals"},{"category_key":"service_categories","slug":"mixing","label":"Mixing"},{"category_key":"service_categories","slug":"mastering","label":"Mastering"},{"category_key":"service_categories","slug":"production","label":"Production"},{"category_key":"service_categories","slug":"instrument","label":"Instrument"},{"category_key":"service_categories","slug":"songwriting","label":"Songwriting"},{"category_key":"service_categories","slug":"live","label":"Live"},{"category_key":"service_categories","slug":"studio","label":"Studio"},{"category_key":"pricing_models","slug":"hourly","label":"Per hour"},{"category_key":"pricing_models","slug":"per_song","label":"Per song"},{"category_key":"pricing_models","slug":"per_day","label":"Per day"},{"category_key":"pricing_models","slug":"package","label":"Packages only"},{"category_key":"pricing_models","slug":"custom","label":"Custom quote"}]$json$;
   v_missing text;
 BEGIN
   SELECT string_agg(k, ', ') INTO v_missing

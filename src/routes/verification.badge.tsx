@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Row } from "@/components/ml/kit";
 import { badgePlacements } from "@/data/verification";
+import { useViewer } from "@/components/ml/viewer";
 
 export const Route = createFileRoute("/verification/badge")({
   head: () => ({
@@ -25,13 +26,14 @@ export const Route = createFileRoute("/verification/badge")({
 });
 
 function BadgeGuide() {
+  const { displayName } = useViewer();
   return (
     <Screen>
       <TopBar title="Your badge" subtitle="One meaning, everywhere" back="/verification" />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="text-[17px] leading-tight">Aarav Mehta</span>
+            {displayName ? <span className="text-[17px] leading-tight">{displayName}</span> : null}
             <VerifiedBadge />
           </div>
           <p className="text-[13px] text-muted-foreground">
