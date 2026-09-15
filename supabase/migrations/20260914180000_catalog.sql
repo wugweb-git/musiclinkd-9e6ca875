@@ -296,7 +296,7 @@ $import$;
 -- brand assets (2 rows)
 DO $import$
 DECLARE
-  payload jsonb := $json$[{"profile_id":"2baecd1b-d9b3-5f47-9578-5c724efb3c28","logo_url":"https://example.com/mock-brand/octave-logo.png","hero_banner_url":"https://example.com/mock-brand/octave-hero.jpg","thumbnail_url":"https://example.com/mock-brand/octave-thumb.jpg","icon_url":"https://example.com/mock-brand/octave-icon.png"},{"profile_id":"86a5d555-61eb-5619-b452-3a9387baa66f","logo_url":"https://example.com/mock-brand/yashraj-logo.png","hero_banner_url":null,"thumbnail_url":null,"icon_url":"https://example.com/mock-brand/yashraj-icon.png"}]$json$;
+  payload jsonb := $json$[{"profile_id":"2baecd1b-d9b3-5f47-9578-5c724efb3c28","logo_url":"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400","hero_banner_url":"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800","thumbnail_url":"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400","icon_url":"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400"},{"profile_id":"86a5d555-61eb-5619-b452-3a9387baa66f","logo_url":"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400","hero_banner_url":null,"thumbnail_url":null,"icon_url":"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400"}]$json$;
 BEGIN
   UPDATE public.profile_business t SET logo_url = r.logo_url, hero_banner_url = r.hero_banner_url,
     thumbnail_url = r.thumbnail_url, icon_url = r.icon_url
