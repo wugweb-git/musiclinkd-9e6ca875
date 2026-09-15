@@ -229,7 +229,7 @@ SCHEMA = """-- Profile sections: the rest of each profile bucket, keyed by profi
 --   role_profiles), service offerings, business / venue details, team and band lineup, shows, and
 --   reviews of people. Studio reviews belong to studios and are not here.
 --   The 11 linked seed profiles: services, experience, reviews and gallery from their TS sections.
---   Not imported: gender, GSTIN, email.
+--   Email, gender and GSTIN are imported privately by 20260915180000_private_imports_and_counts.sql.
 --
 -- Each data block re-reads what it wrote and raises on any difference. Idempotent.
 

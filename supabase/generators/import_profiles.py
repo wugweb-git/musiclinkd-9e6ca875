@@ -1,9 +1,11 @@
-"""Generates the profile import migration: Firebase users + portfolio_projects, and the linked seed
-profiles' portfolio sections and covers.
+"""Generates two migrations from Firebase users + portfolio_projects: the profile import (with the linked
+seed profiles' portfolio sections and covers), and the private-details and portfolio-counts import.
 
 Usage (repo root):
   bun run supabase/generators/export_linked_profiles.ts > /tmp/linked.json
-  python3 supabase/generators/import_profiles.py <FIRESTORE-FULL-DUMP.md> /tmp/linked.json <out.sql>
+  python3 supabase/generators/import_profiles.py <FIRESTORE-FULL-DUMP.md> /tmp/linked.json \
+    supabase/migrations/20260914150000_import_profiles.sql \
+    supabase/migrations/20260915180000_private_imports_and_counts.sql
 
 Every value is written in the shape the app already reads: taxonomy slugs in roles / instruments /
 genres / languages, "<role slug>:<label>" in specialisations, onboarding availability values,
@@ -19,7 +21,7 @@ import uuid
 
 from taxonomy_renames import clean_row
 
-DUMP, LINKED, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
+DUMP, LINKED, OUT, OUT_PRIVATE = sys.argv[1:5]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # stable ids across re-runs
 
 
@@ -179,6 +181,50 @@ for fid, items in by_owner.items():
             p.get("visibility") == "Public", 100 + i,  # after the linked profile's own items
         ))
 
+# ---- private details and portfolio counts (20260915180000; owner, 16 Sep 2026) ------------------------
+# Firebase gender -> profile_private.gender (its CHECK: woman, man, non_binary, prefer_not_to_say).
+GENDER = {"Male": "man", "Female": "woman"}
+EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")  # same shape as the column CHECK
+GSTIN = re.compile(r"[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]")  # 15-character GSTIN layout
+E164 = re.compile(r"\+[1-9][0-9]{7,14}")
+
+
+def e164(raw: str) -> str:
+    """'+91 98200 00000' -> '+919820000000'."""
+    return re.sub(r"[^0-9+]", "", raw)
+
+
+private_rows: dict[str, dict] = {}
+for u in FB["users"]:
+    fid = u["_id"]
+    gender = u.get("gender")
+    if gender is not None and gender not in GENDER:
+        problems.append(f"{fid}: gender {gender!r} has no value")
+    email, gstin = u.get("email"), u.get("gstin")
+    if email is not None and not (EMAIL.fullmatch(email) and len(email) <= 254):
+        problems.append(f"{fid}: email {email!r} is not an address")
+    if gstin is not None and not GSTIN.fullmatch(gstin):
+        problems.append(f"{fid}: gstin {gstin!r} is not a GSTIN")
+    private_rows[owner_of[fid]] = {"id": owner_of[fid], "email": email, "gender": GENDER.get(gender),
+                                   "gstin": gstin, "business_phone": None}
+# A studio's contact number is its owner's business phone, kept privately on the owner's profile_private.
+for st in FB["studios"]:
+    if st.get("phone"):
+        row = private_rows[owner_of[st["ownerUid"]]]
+        phone = e164(st["phone"])
+        if not E164.fullmatch(phone):
+            problems.append(f"{st['_id']}: phone {st['phone']!r} is not a phone number")
+        elif row["business_phone"] not in (None, phone):
+            problems.append(f"{st['ownerUid']}: two studio phones")
+        row["business_phone"] = phone
+private_rows_list = [r for r in private_rows.values() if any(r[c] is not None for c in ("email", "gender", "gstin", "business_phone"))]
+
+COUNTS = ("likes_count", "views_count", "shares_count")
+count_rows = [{"id": uid(f"firebase:portfolio_projects/{p['_id']}"), "likes_count": int(p.get("likes") or 0),
+               "views_count": int(p.get("projectViews") or 0), "shares_count": int(p.get("shares") or 0)}
+              for p in FB["portfolio_projects"]]
+assert all(r[c] >= 0 for r in count_rows for c in COUNTS)
+
 covers: list[dict] = []
 for lp in LINKED_PROFILES:
     pid, order = lp["id"], 0
@@ -301,7 +347,8 @@ header = f"""-- Profile import: Firebase users and portfolio projects, and the l
 -- Firebase users: {created} new profiles, each with a sign-in-less auth.users row (no email, no
 -- password, as in 20260913090949_seed_linked_profiles.sql). {renamed} clashed with an existing username:
 -- mock-business-octave-sound-labs is imported as "Wugweb" (username wugweb); the existing
--- octave.sound.labs profile is unchanged. Email, GSTIN and phone are not imported.
+-- octave.sound.labs profile is unchanged. Email, gender, GSTIN and the studio phone go to the owner-only
+-- profile_private table (20260915180000_private_imports_and_counts.sql), never to profiles.
 --
 -- Values are written in the shapes the app reads: taxonomy slugs; "<role slug>:<label>"
 -- specialisations; availability Shows or Touring (other Firebase statuses have no equivalent, so null);
@@ -310,7 +357,7 @@ header = f"""-- Profile import: Firebase users and portfolio projects, and the l
 -- phrases are shortened.
 --
 -- Not imported here (no column or table yet): hourly rate, budget tier, persona and trust badges,
--- verified / available flags, gender, business address / hours / team / service offerings / rosters /
+-- verified / available flags, business address / hours / team / service offerings / rosters /
 -- courses, band lineup and shows, venue capacity / features, and the linked profiles' services,
 -- experience, reviews and gallery.
 --
@@ -328,3 +375,161 @@ with open(OUT, "w", encoding="utf-8") as f:
     f.write(header + "\n" + "\n".join(blocks))
 print(f"profiles created {created}, renamed {renamed}, portfolio rows {len(portfolio_rows)}, covers {len(covers)}, "
       f"blocks {[len(b.encode()) for b in blocks]}")
+
+# ---- 20260915180000: private details and portfolio counts ---------------------------------------------
+PRIVATE_COLS = [("id", "uuid"), ("email", "text"), ("gender", "text"), ("gstin", "text"), ("business_phone", "text")]
+PRIVATE_FIELDS = [c for c, _ in PRIVATE_COLS if c != "id"]
+COUNT_COLS = [("id", "uuid")] + [(c, "int") for c in COUNTS]
+gender_counts = {g: sum(r["gender"] == g for r in private_rows_list) for g in sorted(set(GENDER.values()))}
+source_genders = {str(g): sum(u.get("gender") == g for u in FB["users"]) for g in ("Male", "Female", None)}
+expected = {"email": sum(r["email"] is not None for r in private_rows_list),
+            "gstin": sum(r["gstin"] is not None for r in private_rows_list),
+            "business_phone": sum(r["business_phone"] is not None for r in private_rows_list), **gender_counts}
+
+PRIVATE_SCHEMA = f"""-- Private imports: Firebase email, gender and GSTIN, and a studio's contact phone, into the owner-only
+-- public.profile_private; and portfolio likes, views and shares on public.portfolio_items.
+--
+-- Generated by supabase/generators/import_profiles.py from Claude outputs/audits/FIRESTORE-FULL-DUMP.md
+-- (musiclinkd-7ae30). Edit the generator, not this file. Owner decisions of 16 Sep 2026.
+--
+-- profile_private (owner-only: its policies in 20260915100000_profile_private.sql cover the new columns;
+-- anon has no privilege on the table, and this migration raises if that changes)
+--   email           Firebase users.email. auth.users is not touched: imported accounts stay sign-in-less.
+--   gender          Firebase users.gender: Male -> man, Female -> woman ({source_genders["Male"]} and {source_genders["Female"]}; {source_genders["None"]} users have none).
+--   gstin           Firebase users.gstin. Shape-checked as a 15-character GSTIN (state code, PAN, entity,
+--                   Z, check character); the check character itself is not verified.
+--   business_phone  Firebase studios.phone, on the studio owner's row, in E.164 ("+91 98200 00000" is
+--                   stored as +919820000000). The studios table is public, so the number is not kept there.
+--   Rows: {len(private_rows_list)} profiles ({expected["email"]} emails, {gender_counts["man"]} man, {gender_counts["woman"]} woman, {expected["gstin"]} GSTIN, {expected["business_phone"]} business phone). Profile ids are
+--   import_profiles.py's (uuid5 of "firebase:users/<id>"). A value already stored is never cleared.
+--
+-- portfolio_items + likes_count, views_count, shares_count (int, NOT NULL DEFAULT 0, never negative).
+--   Backfilled for the {len(count_rows)} Firebase portfolio_projects (likes, projectViews, shares); every other
+--   row keeps 0. artworkTheme is not imported.
+--
+-- Each data block re-reads what it wrote and raises on any difference. Idempotent.
+--
+-- Rollback:
+--   ALTER TABLE public.portfolio_items DROP COLUMN IF EXISTS likes_count, DROP COLUMN IF EXISTS views_count,
+--     DROP COLUMN IF EXISTS shares_count;
+--   ALTER TABLE public.profile_private DROP COLUMN IF EXISTS email, DROP COLUMN IF EXISTS gstin,
+--     DROP COLUMN IF EXISTS business_phone;
+--   (gender values imported here: UPDATE public.profile_private SET gender = NULL WHERE id IN (payload ids).)
+
+ALTER TABLE public.profile_private
+  ADD COLUMN IF NOT EXISTS email text,
+  ADD COLUMN IF NOT EXISTS gstin text,
+  ADD COLUMN IF NOT EXISTS business_phone text;
+
+ALTER TABLE public.profile_private DROP CONSTRAINT IF EXISTS profile_private_email;
+ALTER TABLE public.profile_private ADD CONSTRAINT profile_private_email CHECK (
+  email IS NULL OR (char_length(email) <= 254 AND email ~ '^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+);
+
+ALTER TABLE public.profile_private DROP CONSTRAINT IF EXISTS profile_private_gstin;
+ALTER TABLE public.profile_private ADD CONSTRAINT profile_private_gstin CHECK (
+  gstin IS NULL OR gstin ~ '^[0-9]{{2}}[A-Z]{{5}}[0-9]{{4}}[A-Z][1-9A-Z]Z[0-9A-Z]$'
+);
+
+ALTER TABLE public.profile_private DROP CONSTRAINT IF EXISTS profile_private_business_phone;
+ALTER TABLE public.profile_private ADD CONSTRAINT profile_private_business_phone CHECK (
+  business_phone IS NULL OR business_phone ~ '^\\+[1-9][0-9]{{7,14}}$'
+);
+
+-- Owner-only, restated: nothing public reads these columns.
+REVOKE ALL ON public.profile_private FROM anon;
+REVOKE ALL ON public.profile_private FROM PUBLIC;
+ALTER TABLE public.profile_private ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE public.portfolio_items
+  ADD COLUMN IF NOT EXISTS likes_count int NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS views_count int NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS shares_count int NOT NULL DEFAULT 0;
+
+ALTER TABLE public.portfolio_items DROP CONSTRAINT IF EXISTS portfolio_items_counts_nonnegative;
+ALTER TABLE public.portfolio_items ADD CONSTRAINT portfolio_items_counts_nonnegative CHECK (
+  likes_count >= 0 AND views_count >= 0 AND shares_count >= 0
+);
+"""
+
+PRIVATE_BODY = f"""  INSERT INTO public.profile_private ({", ".join(c for c, _ in PRIVATE_COLS)})
+  SELECT {", ".join("r." + c for c, _ in PRIVATE_COLS)}
+  FROM {recordset(PRIVATE_COLS)}
+  ON CONFLICT (id) DO UPDATE SET {", ".join(f"{c} = coalesce(EXCLUDED.{c}, profile_private.{c})" for c in PRIVATE_FIELDS)},
+    updated_at = now()
+  WHERE ({", ".join("profile_private." + c for c in PRIVATE_FIELDS)})
+        IS DISTINCT FROM ({", ".join(f"coalesce(EXCLUDED.{c}, profile_private.{c})" for c in PRIVATE_FIELDS)});
+
+  IF (SELECT count(*) FROM {recordset(PRIVATE_COLS)} JOIN public.profile_private p ON p.id = r.id
+      WHERE {" AND ".join(f"(r.{c} IS NULL OR p.{c} = r.{c})" for c in PRIVATE_FIELDS)})
+     <> jsonb_array_length(payload) THEN
+    RAISE EXCEPTION 'private import: stored rows differ from the payload';
+  END IF;"""
+
+COUNT_BODY = f"""  UPDATE public.portfolio_items t SET {", ".join(f"{c} = r.{c}" for c in COUNTS)}
+  FROM {recordset(COUNT_COLS)}
+  WHERE t.id = r.id AND ({", ".join("t." + c for c in COUNTS)}) IS DISTINCT FROM ({", ".join("r." + c for c in COUNTS)});
+
+  IF (SELECT count(*) FROM {recordset(COUNT_COLS)} JOIN public.portfolio_items t ON t.id = r.id
+      WHERE ({", ".join("t." + c for c in COUNTS)}) = ({", ".join("r." + c for c in COUNTS)}))
+     <> jsonb_array_length(payload) THEN
+    RAISE EXCEPTION 'portfolio counts import: stored rows differ from the payload';
+  END IF;"""
+
+PRIVATE_VERIFY = f"""-- verify
+DO $verify$
+DECLARE
+  c text;
+BEGIN
+  IF (SELECT count(*) FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'profile_private'
+        AND column_name IN ('email', 'gstin', 'business_phone') AND is_nullable = 'YES') <> 3 THEN
+    RAISE EXCEPTION 'profile_private email, gstin and business_phone columns missing';
+  END IF;
+  IF (SELECT count(*) FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'portfolio_items'
+        AND column_name IN ('likes_count', 'views_count', 'shares_count') AND is_nullable = 'NO'
+        AND column_default = '0') <> 3 THEN
+    RAISE EXCEPTION 'portfolio_items count columns missing';
+  END IF;
+
+  -- Private stays private: no privilege for anon or PUBLIC, row security on, no policy that reaches them.
+  FOREACH c IN ARRAY ARRAY['id', 'date_of_birth', 'gender', 'email', 'gstin', 'business_phone'] LOOP
+    IF has_column_privilege('anon', 'public.profile_private', c, 'SELECT') THEN
+      RAISE EXCEPTION 'profile_private.% is readable by anon', c;
+    END IF;
+  END LOOP;
+  IF has_table_privilege('anon', 'public.profile_private', 'SELECT')
+     OR EXISTS (SELECT 1 FROM pg_class t, aclexplode(t.relacl) g
+                WHERE t.oid = 'public.profile_private'::regclass AND g.grantee = 0)
+     OR EXISTS (SELECT 1 FROM pg_attribute t, aclexplode(t.attacl) g
+                WHERE t.attrelid = 'public.profile_private'::regclass AND g.grantee = 0)
+     OR NOT (SELECT relrowsecurity FROM pg_class WHERE oid = 'public.profile_private'::regclass)
+     OR EXISTS (SELECT 1 FROM pg_policy
+                WHERE polrelid = 'public.profile_private'::regclass
+                  AND (polroles @> ARRAY[0::oid] OR polroles @> ARRAY[(SELECT oid FROM pg_roles WHERE rolname = 'anon')])) THEN
+    RAISE EXCEPTION 'profile_private is reachable by anon or PUBLIC';
+  END IF;
+
+  IF (SELECT count(*) FILTER (WHERE email IS NOT NULL) FROM public.profile_private) < {expected["email"]}
+     OR (SELECT count(*) FILTER (WHERE gender = 'man') FROM public.profile_private) < {gender_counts["man"]}
+     OR (SELECT count(*) FILTER (WHERE gender = 'woman') FROM public.profile_private) < {gender_counts["woman"]}
+     OR (SELECT count(*) FILTER (WHERE gstin IS NOT NULL) FROM public.profile_private) < {expected["gstin"]}
+     OR (SELECT count(*) FILTER (WHERE business_phone IS NOT NULL) FROM public.profile_private) < {expected["business_phone"]} THEN
+    RAISE EXCEPTION 'private import: fewer values stored than imported';
+  END IF;
+END
+$verify$;
+"""
+
+private_blocks = []
+for label, rows, body in (("profile_private", private_rows_list, PRIVATE_BODY),
+                          ("portfolio_items counts", count_rows, COUNT_BODY)):
+    cs = chunks(rows)
+    for i, rs in enumerate(cs, 1):
+        private_blocks.append(block(f"{label} {i}/{len(cs)} ({len(rs)} rows)", rs, body))
+
+with open(OUT_PRIVATE, "w", encoding="utf-8") as f:
+    f.write(PRIVATE_SCHEMA + "\n" + "\n".join(private_blocks) + "\n" + PRIVATE_VERIFY)
+print({"private rows": len(private_rows_list), **expected, "source genders": source_genders,
+       "count rows": len(count_rows), "bytes": [len(b.encode()) for b in private_blocks]})

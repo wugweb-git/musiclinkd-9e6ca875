@@ -6,7 +6,8 @@
 -- Firebase users: 83 new profiles, each with a sign-in-less auth.users row (no email, no
 -- password, as in 20260913090949_seed_linked_profiles.sql). 1 clashed with an existing username:
 -- mock-business-octave-sound-labs is imported as "Wugweb" (username wugweb); the existing
--- octave.sound.labs profile is unchanged. Email, GSTIN and phone are not imported.
+-- octave.sound.labs profile is unchanged. Email, gender, GSTIN and the studio phone go to the owner-only
+-- profile_private table (20260915180000_private_imports_and_counts.sql), never to profiles.
 --
 -- Values are written in the shapes the app reads: taxonomy slugs; "<role slug>:<label>"
 -- specialisations; availability Shows or Touring (other Firebase statuses have no equivalent, so null);
@@ -15,7 +16,7 @@
 -- phrases are shortened.
 --
 -- Not imported here (no column or table yet): hourly rate, budget tier, persona and trust badges,
--- verified / available flags, gender, business address / hours / team / service offerings / rosters /
+-- verified / available flags, business address / hours / team / service offerings / rosters /
 -- courses, band lineup and shows, venue capacity / features, and the linked profiles' services,
 -- experience, reviews and gallery.
 --

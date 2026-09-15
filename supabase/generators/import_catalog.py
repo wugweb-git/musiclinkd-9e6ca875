@@ -204,7 +204,8 @@ SCHEMA = """-- Catalog: studios (rooms, equipment, reviews), opportunities, mark
 -- Imported text is written without "/" (owner, 15 Sep 2026; taxonomy_renames.py): role and title
 -- text, old combined labels, equipment names and post bodies. CMS routes are paths and keep theirs.
 -- Read: public (CMS pages when published). Write: owners of their own rows; CMS is not client-writable.
--- Not imported: studio phone numbers.
+-- The one studio phone number is its owner's business_phone in profile_private
+-- (20260915180000_private_imports_and_counts.sql), not a public studios column.
 --
 -- Each data block re-reads what it wrote and raises on any difference. Idempotent.
 
