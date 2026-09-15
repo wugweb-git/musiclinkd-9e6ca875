@@ -16,6 +16,8 @@ import sys
 import unicodedata
 import uuid
 
+from taxonomy_renames import renamed, with_added
+
 DUMP, SEED, SECTIONS, OUT = sys.argv[1:5]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
 
@@ -50,14 +52,19 @@ for m in re.finditer(r'\{\s*key: "(\w+)",\s*label: "([^"]+)",\s*description:\s*"
     if key in ALREADY:
         continue
     taxonomy_categories.append({"key": key, "label": label, "description": description.replace('\\"', '"')})
+    seeded = []
     for i, o in enumerate(re.finditer(r'\{ label: "([^"]+)", value: "([^"]+)"(?:, metadata: \{ group: "([^"]+)" \})? \}',
                                       opts), 1):
         olabel, value, group = o.group(1), o.group(2), o.group(3)
         slug = SLUG_OVERRIDE.get((key, olabel)) or (value if re.fullmatch(r"[a-z0-9_]+", value) else slugify(olabel))
+        slug = renamed(key, slug)
         SLUG[(key, value)] = SLUG[(key, olabel)] = slug
-        taxonomy_options.append({"category_key": key, "slug": slug, "label": olabel, "sort_order": i,
-                                 "metadata": {"group": group} if group else None})
+        seeded.append({"category_key": key, "slug": slug, "label": olabel, "sort_order": i,
+                       "metadata": {"group": group} if group else None})
+    # Single names, no "/" in labels (owner, 15 Sep 2026): Company PAN / GSTIN is two options.
+    taxonomy_options.extend(with_added(key, seeded))
 assert len(taxonomy_categories) == 25, len(taxonomy_categories)
+assert not [o for o in taxonomy_options if "/" in o["label"]], "an option label has a /"
 
 
 def tax(category, values, fid):
@@ -89,8 +96,8 @@ def period(p: str):
 
 
 INSTRUMENT_SLUG = {"Acoustic Guitar": "acoustic_guitar", "Electric Guitar": "electric_guitar", "Bass Guitar": "bass_guitar",
-                   "Keyboard / Synthesizer": "keyboard_synthesizer", "Piano": "piano",
-                   "Drums / Percussion": "drums_percussion", "Tabla": "tabla", "Sitar": "sitar",
+                   "Keyboard / Synthesizer": "keyboard", "Piano": "piano",
+                   "Drums / Percussion": "drums", "Tabla": "tabla", "Sitar": "sitar",
                    "Flute (Bansuri)": "flute_bansuri", "Harmonium": "harmonium", "Violin": "violin",
                    "Saxophone": "saxophone"}
 FB_USERS = {u["_id"]: u for u in FB["users"]}
@@ -153,7 +160,7 @@ for rp in FB["role_profiles"]:
         snake["primary_instrument"] = INSTRUMENT_SLUG[snake["primary_instrument"]]
     if "secondary_instruments" in snake:
         snake["secondary_instruments"] = [INSTRUMENT_SLUG[i] for i in snake["secondary_instruments"]]
-    role_details.setdefault((pid, rp["roleKey"]), {}).update(snake)
+    role_details.setdefault((pid, renamed("person_types", rp["roleKey"])), {}).update(snake)
 
 # Reviews of people. Firebase USER reviews carry the attribution inside the text: '"…" — Name, Org'.
 for r in FB["reviews"]:
@@ -212,7 +219,8 @@ SCHEMA = """-- Profile sections: the rest of each profile bucket, keyed by profi
 --   Money is integer paise; a price with no amount keeps its text in price_note.
 --
 -- Data
---   Taxonomy: the 25 categories not yet loaded (published).
+--   Taxonomy: the 25 categories not yet loaded (published). Labels are single names, no "/" (owner,
+--   15 Sep 2026): the seed's Company PAN / GSTIN is company_pan and company_gstin.
 --   Firebase: rates, budget tiers, badges, verified / available, role details (user fields and
 --   role_profiles), service offerings, business / venue details, team and band lineup, shows, and
 --   reviews of people. Studio reviews belong to studios and are not here.

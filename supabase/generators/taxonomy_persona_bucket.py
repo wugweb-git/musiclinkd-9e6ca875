@@ -22,10 +22,10 @@ INSTRUMENTS = [
     ("bass_guitar", "Bass Guitar", "guitar", False),
     ("ukulele", "Ukulele", "guitar", True),
     ("mandolin", "Mandolin", "guitar", True),
-    ("keyboard_synthesizer", "Keyboard / Synthesizer", "keys", False),
+    ("keyboard", "Keyboard", "keys", False),
     ("piano", "Piano", "keys", False),
     ("harmonium", "Harmonium", "keys", False),
-    ("drums_percussion", "Drums / Percussion", "percussion", False),
+    ("drums", "Drums", "percussion", False),
     ("tabla", "Tabla", "percussion", False),
     ("dholak", "Dholak", "percussion", False),
     ("mridangam", "Mridangam", "percussion", False),
@@ -49,8 +49,9 @@ INSTRUMENTS = [
     ("shehnai", "Shehnai", "wind", False),
     ("nadaswaram", "Nadaswaram", "wind", True),
     ("harmonica", "Harmonica", "wind", True),
-    ("dj_controller", "DJ Controller / Turntables", "electronic", True),
-    ("drum_machine_sampler", "Drum Machine / Sampler", "electronic", True),
+    ("dj_controller", "DJ Controller", "electronic", True),
+    ("drum_machine", "Drum Machine", "electronic", True),
+    ("sampler", "Sampler", "electronic", True),
 ]
 FAM = {s: f for s, _, f, _ in INSTRUMENTS}
 ALL = [s for s, *_ in INSTRUMENTS]
@@ -65,28 +66,28 @@ GROUPS = [("vocal", "Vocal"), ("instrumentalist", "Instrumentalist"), ("creator"
 
 # (slug, label, group, source, instruments, basis)
 PERSON_TYPES = [
-    ("singer", "Singer / Vocalist", "vocal", "both", fam("guitar", "keys"), "Vedanshu, 14 Sep"),
-    ("rapper", "Rapper / MC", "vocal", "firestore", [], "none"),
+    ("singer", "Singer", "vocal", "both", fam("guitar", "keys"), "Vedanshu, 14 Sep"),
+    ("rapper", "Rapper", "vocal", "firestore", [], "none"),
     ("folk_vocalist", "Folk Vocalist", "vocal", "firestore", ["acoustic_guitar", "harmonium", "dholak"], "proposed"),
     ("voice_artist", "Voice Artist", "vocal", "app", [], "app: not asked"),
     ("musician", "Musician", "instrumentalist", "app", ALL, "app: asked"),
     ("guitarist", "Guitarist", "instrumentalist", "firestore", fam("guitar"), "label"),
     ("bassist", "Bassist", "instrumentalist", "added", ["bass_guitar", "double_bass"], "label"),
-    ("keyboardist", "Keyboardist / Pianist", "instrumentalist", "firestore", fam("keys"), "label"),
-    ("drummer", "Drummer / Percussionist", "instrumentalist", "firestore", fam("percussion", plus=["drum_machine_sampler"]), "label"),
-    ("sitarist", "Sitarist / Flutist", "instrumentalist", "firestore", fam("indian_string", plus=["flute_bansuri"]), "label"),
-    ("violinist", "Violinist / String Player", "instrumentalist", "added", fam("bowed"), "label"),
-    ("wind_player", "Flautist / Wind Player", "instrumentalist", "added", fam("wind"), "label"),
+    ("keyboardist", "Keyboardist", "instrumentalist", "firestore", fam("keys"), "label"),
+    ("drummer", "Drummer", "instrumentalist", "firestore", fam("percussion", plus=["drum_machine", "sampler"]), "label"),
+    ("sitarist", "Sitarist", "instrumentalist", "firestore", fam("indian_string"), "label"),
+    ("violinist", "Violinist", "instrumentalist", "added", fam("bowed"), "label"),
+    ("flautist", "Flautist", "instrumentalist", "added", fam("wind"), "label"),
     ("composer", "Composer", "creator", "both", ALL, "app: asked"),
     ("lyricist", "Lyricist", "creator", "both", [], "app: not asked"),
     ("arranger", "Vocal Arranger", "creator", "firestore", fam("keys"), "proposed"),
     ("music_director", "Music Director", "creator", "app", [], "app: not asked"),
     ("producer", "Music Producer", "creator", "both", ALL, "app: asked"),
-    ("beatmaker", "Beatmaker", "creator", "added", ["keyboard_synthesizer", "drum_machine_sampler"], "proposed"),
+    ("beatmaker", "Beatmaker", "creator", "added", ["keyboard", "drum_machine", "sampler"], "proposed"),
     ("sound_engineer", "Sound Engineer", "technical", "both", [], "app: not asked"),
     ("mixing_engineer", "Mixing Engineer", "technical", "added", [], "none"),
     ("mastering_engineer", "Mastering Engineer", "technical", "added", [], "none"),
-    ("sound_designer", "Sound Designer", "technical", "firestore", ["keyboard_synthesizer", "drum_machine_sampler"], "proposed"),
+    ("sound_designer", "Sound Designer", "technical", "firestore", ["keyboard", "drum_machine", "sampler"], "proposed"),
     ("dj", "DJ", "media", "app", fam("electronic"), "proposed (no acoustic instruments)"),
     ("rj", "RJ", "media", "app", [], "app: not asked"),
     ("podcaster", "Podcaster", "media", "app", [], "app: not asked"),
@@ -111,23 +112,26 @@ PERSON_TYPES = [
 # (slug, label, languages or None for universal, added)
 GENRES = [
     ("indie_pop", "Indie Pop", None, False),
-    ("rock_metal", "Rock / Metal", None, False),
-    ("hiphop_trap", "Hip Hop / Trap", None, False),
-    ("lofi_chill", "Lofi / Chill Beats", None, False),
-    ("edm_synthwave", "EDM / Synthwave", None, False),
-    ("acoustic_unplugged", "Acoustic / Unplugged", None, False),
-    ("rnb_soul", "R&B / Soul", None, False),
-    ("jazz_blues", "Jazz / Blues", None, False),
-    ("reggae_dub", "Reggae / Dub", None, False),
+    ("rock", "Rock", None, False),
+    ("metal", "Metal", None, True),
+    ("hiphop", "Hip Hop", None, False),
+    ("trap", "Trap", None, True),
+    ("lofi", "Lofi", None, False),
+    ("edm", "EDM", None, False),
+    ("acoustic", "Acoustic", None, False),
+    ("rnb", "R&B", None, False),
+    ("jazz", "Jazz", None, False),
+    ("blues", "Blues", None, True),
+    ("reggae", "Reggae", None, False),
     ("fusion", "Fusion", None, True),
-    ("bollywood_filmi", "Bollywood / Filmi", ["hi"], False),
+    ("bollywood", "Bollywood", ["hi"], False),
     ("hindustani_classical", "Hindustani Classical", ["hi", "pa", "bn", "mr", "gu", "as", "bho"], False),
     ("carnatic_classical", "Carnatic Classical", ["ta", "te", "kn", "ml"], False),
     ("sufi_devotional", "Sufi Devotional", ["hi", "pa"], False),
     ("ghazal", "Ghazal", ["hi"], False),
     ("qawwali", "Qawwali", ["hi", "pa"], False),
-    ("bhajan_kirtan", "Bhajan / Kirtan", INDIAN, True),
-    ("punjabi_folk_bhangra", "Punjabi Folk / Bhangra", ["pa"], False),
+    ("bhajan", "Bhajan", INDIAN, True),
+    ("bhangra", "Bhangra", ["pa"], False),
     ("punjabi_pop", "Punjabi Pop", ["pa"], True),
     ("rajasthani_folk", "Rajasthani Folk", ["hi"], False),
     ("bhojpuri_folk", "Bhojpuri Folk", ["bho"], True),
@@ -140,7 +144,7 @@ GENRES = [
     ("baul", "Baul", ["bn"], True),
     ("lavani", "Lavani", ["mr"], True),
     ("natya_sangeet", "Natya Sangeet", ["mr"], True),
-    ("garba_dandiya", "Garba / Dandiya", ["gu"], True),
+    ("garba", "Garba", ["gu"], True),
     ("bihu", "Bihu", ["as"], True),
 ]
 
@@ -149,21 +153,21 @@ SCREEN_LIMIT = 12
 
 # Popularity order — sets sort_order, and decides which options survive the screen cap.
 INSTRUMENT_RANK = [
-    "acoustic_guitar", "keyboard_synthesizer", "piano", "electric_guitar", "drums_percussion",
+    "acoustic_guitar", "keyboard", "piano", "electric_guitar", "drums",
     "tabla", "bass_guitar", "flute_bansuri", "violin", "harmonium", "sitar", "dholak",
-    "dj_controller", "drum_machine_sampler", "saxophone", "ukulele", "cajon", "santoor",
+    "dj_controller", "drum_machine", "sampler", "saxophone", "ukulele", "cajon", "santoor",
     "mridangam", "veena", "sarangi", "cello", "trumpet", "sarod", "shehnai", "tanpura",
     "ghatam", "kanjira", "clarinet", "nadaswaram", "mandolin", "double_bass", "viola", "harmonica",
 ]
 GENRE_RANK = [
     # regional
-    "bollywood_filmi", "punjabi_pop", "hindustani_classical", "carnatic_classical", "sufi_devotional",
-    "bhajan_kirtan", "ghazal", "qawwali", "punjabi_folk_bhangra", "kollywood", "tollywood",
-    "mollywood", "sandalwood", "rabindra_sangeet", "lavani", "garba_dandiya", "bihu",
+    "bollywood", "punjabi_pop", "hindustani_classical", "carnatic_classical", "sufi_devotional",
+    "bhajan", "ghazal", "qawwali", "bhangra", "kollywood", "tollywood",
+    "mollywood", "sandalwood", "rabindra_sangeet", "lavani", "garba", "bihu",
     "bhojpuri_folk", "gaana", "baul", "natya_sangeet", "rajasthani_folk",
     # universal
-    "indie_pop", "hiphop_trap", "rock_metal", "edm_synthwave", "lofi_chill", "acoustic_unplugged",
-    "fusion", "rnb_soul", "jazz_blues", "reggae_dub",
+    "indie_pop", "hiphop", "trap", "rock", "metal", "edm", "lofi", "acoustic",
+    "fusion", "rnb", "jazz", "blues", "reggae",
 ]
 
 # ---- integrity checks -------------------------------------------------------
@@ -176,6 +180,7 @@ for p in PERSON_TYPES:
     assert p[2] in dict(GROUPS), p[0]
 for g in GENRES:
     assert g[2] is None or all(l in dict(LANGUAGES) for l in g[2]), g[0]
+assert not [x for x in LANGUAGES + INSTRUMENTS + PERSON_TYPES + GENRES if "/" in x[1]], "a label has a /"
 assert sorted(INSTRUMENT_RANK) == sorted(ALL), "INSTRUMENT_RANK must list every instrument once"
 assert sorted(GENRE_RANK) == sorted(g[0] for g in GENRES), "GENRE_RANK must list every genre once"
 # Flat pickers and every person-type group must fit one screen.
@@ -207,7 +212,7 @@ def meta(d):
 def sql():
     L = []
     w = L.append
-    w("""-- Taxonomy reference data and the persona bucket.
+    w(f"""-- Taxonomy reference data and the persona bucket.
 --
 -- Generated by supabase/generators/taxonomy_persona_bucket.py, which also writes
 -- Claude outputs/specs/PERSONA-BUCKET.md. Edit the data there and regenerate, not this file.
@@ -215,8 +220,11 @@ def sql():
 -- display string.
 --
 -- Categories: languages (12, native-script labels, ISO 639-1 slugs; Bhojpuri ISO 639-3 `bho`),
--- person_types (39, metadata.group; metadata.flow = business for the 12 business types, talent
--- otherwise), instruments (34, metadata.family), genres (32, metadata.scope universal | regional).
+-- person_types ({len(PERSON_TYPES)}, metadata.group; metadata.flow = business for the 12 business types, talent
+-- otherwise), instruments ({len(INSTRUMENTS)}, metadata.family), genres ({len(GENRES)}, metadata.scope universal | regional).
+--
+-- Option labels are single names, no "/" (owner, 15 Sep 2026). A database created before then is moved
+-- to these slugs by 20260915110000_taxonomy_single_names_and_options.sql.
 --
 -- Publish / unpublish: is_published on categories and options. Clients only ever see published
 -- rows (RLS); an unpublished category hides all its options; persona_bucket skips unpublished
@@ -537,7 +545,8 @@ Call: `select * from persona_bucket('singer', array['lyricist','composer'], arra
 - Which person types, instruments and genres ship — every *added* row and every *proposed* basis.
 - `profiles.roles`, `.instruments`, `.genres`, `.languages` still store the app's English strings; this
   data is not wired to onboarding or to `profiles` yet.
-- Firestore `person_types` kept its combined label `Sitarist / Flutist`; `wind_player` now also covers flute.
+- Labels are single names (owner, 15 Sep 2026): Firestore's combined labels were split or shortened, and
+  flute sits only under Flautist (`flautist`, formerly `wind_player`), which still holds every wind instrument.
 """)
     return "\n".join(L)
 
