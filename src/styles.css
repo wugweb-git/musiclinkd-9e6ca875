@@ -419,13 +419,14 @@
 @utility pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   border-radius: 9999px;
-  padding: 0.2rem 0.55rem;
-  font-size: var(--type-1);
-  line-height: 1.25;
+  padding: 0.125rem 0.5rem;
+  /* Eyebrow size: 11px, Material labelSmall / iOS caption 2. Caps read larger than their px size. */
+  font-size: 11px;
+  line-height: 1rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
 }
