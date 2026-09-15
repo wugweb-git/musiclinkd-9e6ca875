@@ -124,7 +124,7 @@ export type PersonProfile = {
   location: string;
   availability?: AvailabilityState | undefined;
   verification: VerificationTier;
-  privacy: "Public" | "Connections only" | "Private";
+  privacy: "Public" | "MusicLinkd members" | "Limited";
   yearsActive: string;
   shortBio: string;
   longBio: string;

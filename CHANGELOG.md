@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — profile visibility has three values (15 Sep)
+
+- **Public, MusicLinkd members, Limited** everywhere (owner: "keep 3"). The profile edit screen offered
+  Connections only and Private and saved `connections` / `private`, which nothing else understood; it now
+  uses onboarding's three options. The profile page labels the stored value, and the settings privacy
+  list matches. Migration `20260915150000_profile_visibility_three` (not applied yet) moves saved
+  `connections` and `private` rows to `limited` and adds a CHECK for the three values.
+- Also resolved leftover merge-conflict markers in this file; both entries are kept.
+
 ### Changed — taxonomy: single option names, and the app's option lists in the database (15 Sep)
 
 - **No "/" in any option label, ids renamed to match** (owner, 15 Sep). Migration
@@ -414,7 +423,6 @@ was drawn.
   (same value as `--destructive`). The email, phone, OTP, verify and forgot screens are not merged. The
   checklist uses a real list instead of typed bullets, and the Back links meet 48dp.
 
-<<<<<<< HEAD
 ### Changed — onboarding is account-only
 
 - **Answers save to the account, not the device.** Onboarding reads and writes
@@ -434,7 +442,7 @@ was drawn.
   `bookableId`; no seeded business has one. An applicant's hire sheet offers their service enquiry
   when the applicant has a `serviceId`; no seeded applicant has one, so it offers "Start a
   collaboration" today. Both fields are new and optional, and no link was invented.
-=======
+
 ### Removed — state simulators from production (plan A2)
 
 - **Demo controls render in development only** (`lib/dev.ts` `showDemoControls` = `import.meta.env.DEV`):
@@ -442,7 +450,6 @@ was drawn.
   (booking schedule), States and Loading/Error/Offline (My bookings), the States cycler (Collaborations),
   Simulate success/failure (collab file upload) and Simulate a scan (identity scan). A production build
   contains none of those labels.
->>>>>>> chore/remove-demo-controls
 
 ### Added — registration-flow motion and Android behaviour
 

@@ -121,12 +121,15 @@ export function mergeProfileRow(
     specialisations: row.specialisations?.length
       ? row.specialisations.map((s) => (s.includes(":") ? s.slice(s.indexOf(":") + 1) : s))
       : base.specialisations,
+    // profiles.visibility is one of public, members, limited.
     privacy:
-      row.visibility === "private"
-        ? "Private"
-        : row.visibility === "connections"
-          ? "Connections only"
-          : base.privacy,
+      row.visibility === "members"
+        ? "MusicLinkd members"
+        : row.visibility === "limited"
+          ? "Limited"
+          : row.visibility === "public"
+            ? "Public"
+            : base.privacy,
     links: links.length ? links : base.links,
   };
 }
