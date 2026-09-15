@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
+import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
+import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
@@ -37,6 +39,7 @@ export const Route = createFileRoute("/discover/")({
 
 function Discover() {
   const { dbStudios } = Route.useLoaderData();
+  const [searchOpen, setSearchOpen] = useState(false);
   return (
     <Screen>
       <header className="px-5 pb-4 pt-6">
@@ -51,14 +54,19 @@ function Discover() {
             <button className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card">
               🔔
             </button>
+            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
             <ViewerAvatar />
           </div>
         </div>
-        <div className="mt-4">
-          <Link to="/search">
-            <SearchBar />
-          </Link>
-        </div>
+        {searchOpen ? (
+          <div className="mt-4">
+            <SearchField
+              to="/search"
+              placeholder="Search talent, studios, bands, labels"
+              onClose={() => setSearchOpen(false)}
+            />
+          </div>
+        ) : null}
       </header>
 
       <div className="rail flex gap-2 overflow-x-auto px-5 pb-5 no-scrollbar">
@@ -101,9 +109,7 @@ function Discover() {
             >
               <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
-              <span className="pill absolute left-3 top-3 bg-ink/80 text-primary-foreground backdrop-blur">
-                {t.tag}
-              </span>
+              <span className="pill absolute left-3 top-3 pill-glass">{t.tag}</span>
               <div className="absolute bottom-3 left-3 right-3 text-background">
                 <h3 className="text-[15px] text-background">{t.name}</h3>
                 <p className="text-[11px] opacity-80">{t.meta}</p>
@@ -175,7 +181,7 @@ function Discover() {
                 </div>
                 <p className="truncate text-[11px] text-muted-foreground">{t.role} · 2.4 km away</p>
               </div>
-              <span className="text-[11px] font-semibold text-foreground">{t.rate}</span>
+              <span className="text-[11px] font-semibold text-price">{t.rate}</span>
             </Link>
           ))}
           {studios.slice(0, 1).map((s) => (
@@ -191,7 +197,7 @@ function Discover() {
                   {s.location} · {s.rating} ★
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-foreground">{s.rate}</span>
+              <span className="text-[11px] font-semibold text-price">{s.rate}</span>
             </Link>
           ))}
           {dbStudios.map((s) => (
@@ -213,7 +219,7 @@ function Discover() {
                 </p>
               </div>
               {s.rate ? (
-                <span className="text-[11px] font-semibold text-foreground">{s.rate}</span>
+                <span className="text-[11px] font-semibold text-price">{s.rate}</span>
               ) : null}
             </Link>
           ))}

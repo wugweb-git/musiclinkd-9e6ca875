@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
+import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   CategoryTile,
   ListingCard,
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/marketplace/")({
 
 function MarketHome() {
   const [filters, setFilters] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const recommended = listings.filter((l) => l.reason);
   const nearby = listings.slice(0, 4);
   const trending = [...listings].sort((a, b) => b.saves - a.saves).slice(0, 5);
@@ -63,13 +65,16 @@ function MarketHome() {
             >
               <SlidersHorizontal size={16} />
             </button>
+            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
           </div>
         </div>
-        <Link to="/marketplace/search" className="block">
-          <div className="pointer-events-none">
-            <SearchBar placeholder="Search instruments, equipment, services..." />
-          </div>
-        </Link>
+        {searchOpen ? (
+          <SearchField
+            to="/marketplace/search"
+            placeholder="Search instruments, equipment, services"
+            onClose={() => setSearchOpen(false)}
+          />
+        ) : null}
       </header>
 
       <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">

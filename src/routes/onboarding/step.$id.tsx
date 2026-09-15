@@ -30,6 +30,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useServerFn } from "@tanstack/react-start";
 import { useFlowBack } from "@/lib/flow-back";
+import { getLocationGuess } from "@/lib/location-guess.functions";
 import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
 import { listMyPortfolio, type UsernameClaim } from "@/lib/portfolio.functions";
 import {
@@ -71,12 +72,6 @@ function typeIcon(o: TaxonomyOption) {
 }
 
 /** The options to show: the bucket's, plus anything already selected that the bucket left out. */
-/** The profile's single experience level: the highest across instruments. */
-function topExperience(map: Record<string, string>): string | null {
-  const rank = (key: string) => experienceLevels.findIndex((e) => e.key === key);
-  return Object.values(map).sort((x, y) => rank(y) - rank(x))[0] ?? null;
-}
-
 function withSelected(
   shown: TaxonomyOption[],
   selected: string[],
@@ -122,6 +117,18 @@ export const Route = createFileRoute("/onboarding/step/$id")({
   ),
 });
 
+/** Older names the edge may report for listed cities. */
+const CITY_ALIASES: Record<string, string> = {
+  bangalore: "bengaluru",
+  bombay: "mumbai",
+  gurgaon: "gurugram",
+  mysore: "mysuru",
+  mangalore: "mangaluru",
+  calcutta: "kolkata",
+  madras: "chennai",
+  delhi: "new delhi",
+};
+
 type Banner = "none" | "error" | "claim";
 type RoleStage = "primary" | "secondary";
 
@@ -158,6 +165,51 @@ function StepRoute() {
   const [claiming, setClaiming] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
   useEffect(() => setClaimError(null), [draft.username]);
+
+  // Google sign-in gives first and last name: prefill the display name and suggest first.last as
+  // the username, once, only into empty fields. The availability check runs on the suggestion.
+  const { user } = useAuth();
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (!hydrated || !user || prefilled.current) return;
+    prefilled.current = true;
+    const meta = user.user_metadata as { given_name?: string; family_name?: string };
+    const first = meta.given_name?.trim() ?? "";
+    const last = meta.family_name?.trim() ?? "";
+    if (!first) return;
+    const patch: Partial<OnboardingDraft> = {};
+    if (!draft.displayName.trim()) patch.displayName = [first, last].filter(Boolean).join(" ");
+    if (!draft.username && !claimedUsername) {
+      const slug = (s: string) =>
+        s
+          .normalize("NFKD")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+      const suggestion = [slug(first), slug(last)].filter(Boolean).join(".").slice(0, 30);
+      if (validateUsername(suggestion).ok) patch.username = suggestion;
+    }
+    if (Object.keys(patch).length) set(patch);
+  }, [hydrated, user, draft.displayName, draft.username, claimedUsername, set]);
+
+  // State and city start from the connection's rough location (no permission prompt), once, only
+  // when both are empty and the guess matches a listed state. The person confirms or changes it.
+  const locate = useServerFn(getLocationGuess);
+  const located = useRef(false);
+  useEffect(() => {
+    if (!hydrated || id !== "identity" || located.current || draft.state) return;
+    located.current = true;
+    void locate()
+      .then(({ city, region }) => {
+        const states = statesByCountry[draft.country] ?? [];
+        const lower = (v: string | null) => (v ?? "").toLowerCase();
+        const state = states.find((s) => lower(region).includes(s.toLowerCase()));
+        if (!state) return;
+        const wanted = CITY_ALIASES[lower(city)] ?? lower(city);
+        const match = (citiesByState[state] ?? []).find((c) => c.toLowerCase() === wanted);
+        set({ state, city: match ?? "" });
+      })
+      .catch(() => undefined);
+  }, [hydrated, id, draft.state, draft.country, locate, set]);
   // Role and instruments ask twice on one screen: the choice, then a follow-up (extra roles; how
   // long each instrument has been played). The second question is `?q=2`.
   const stageReady = secondQuestionReady(id, draft);
@@ -439,6 +491,20 @@ function StepBody({
 }) {
   const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
+  // Languages start from the phone's own languages (e.g. hi-IN, en-IN), once, while none are picked.
+  const langPrefilled = useRef(false);
+  useEffect(() => {
+    const options = taxonomy.options?.languages;
+    if (id !== "languages" || !options?.length || langPrefilled.current) return;
+    langPrefilled.current = true;
+    if (d.languages.length || typeof navigator === "undefined") return;
+    const names = new Intl.DisplayNames(["en"], { type: "language" });
+    const picks = (navigator.languages ?? [navigator.language])
+      .map((tag) => names.of(tag.split("-")[0] ?? "")?.toLowerCase())
+      .map((name) => options.find((o) => o.label.toLowerCase() === name)?.slug)
+      .filter((slug): slug is string => Boolean(slug));
+    if (picks.length) set({ languages: [...new Set(picks)] });
+  }, [id, taxonomy.options, d.languages.length, set]);
   const needsTaxonomy = ["role", "instruments", "genres", "languages"].includes(id);
   const needsBucket = id === "instruments" || id === "genres";
   if (needsTaxonomy && taxonomy.state === "error") {
@@ -585,7 +651,6 @@ function StepBody({
                   instruments: d.instruments.filter((x) => x !== slug),
                   primaryInstrument: null,
                   instrumentExperience: map,
-                  experience: topExperience(map),
                 });
                 return;
               }
@@ -594,9 +659,20 @@ function StepBody({
           />
         );
       }
-      // Back returns to the instruments.
+      // Back returns to the instruments. The career question comes first: it is the one the
+      // profile header shows; the per-instrument answers stay with each instrument.
       return (
         <div key="secondary" className="space-y-4">
+          <SelectField
+            selectId="experience-music"
+            label="How long have you worked in music?"
+            value={experienceLevels.find((e) => e.key === d.experience)?.label ?? ""}
+            options={experienceLevels.map((e) => e.label)}
+            placeholder="Choose"
+            onChange={(label) =>
+              set({ experience: experienceLevels.find((e) => e.label === label)?.key ?? null })
+            }
+          />
           {d.instruments.map((slug) => {
             const key = d.instrumentExperience[slug];
             return (
@@ -612,7 +688,7 @@ function StepBody({
                   const map = { ...d.instrumentExperience };
                   if (nextKey) map[slug] = nextKey;
                   else delete map[slug];
-                  set({ instrumentExperience: map, experience: topExperience(map) });
+                  set({ instrumentExperience: map });
                 }}
               />
             );

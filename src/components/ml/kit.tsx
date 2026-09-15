@@ -22,14 +22,19 @@ export function StatusPill({
   label,
   tone = "neutral",
   icon,
+  onMedia = false,
 }: {
   label: string;
   tone?: Tone;
   icon?: ReactNode;
+  /** Over a photo or video: the blurred light material, the tone kept in the dot. */
+  onMedia?: boolean;
 }) {
   const c = toneStyle[tone];
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full pill ${c.pill}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-full pill ${onMedia ? "pill-glass" : c.pill}`}
+    >
       {icon ?? <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} />}
       {label}
     </span>

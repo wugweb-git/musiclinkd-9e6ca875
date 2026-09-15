@@ -135,7 +135,7 @@ function Availability() {
             {r.tiers.map((p) => (
               <div key={p.label} className="flex items-baseline justify-between text-xs">
                 <span className="text-muted-foreground">{p.label}</span>
-                <span className="font-semibold">{inr(p.price)}</span>
+                <span className="font-semibold text-price">{inr(p.price)}</span>
               </div>
             ))}
           </div>

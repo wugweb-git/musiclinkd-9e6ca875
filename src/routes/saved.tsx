@@ -67,7 +67,7 @@ function Saved() {
                       {t.role} · {t.location.split(",").pop()}
                     </p>
                   </div>
-                  <span className="text-[11px] font-semibold text-foreground">{t.rate}</span>
+                  <span className="text-[11px] font-semibold text-price">{t.rate}</span>
                 </div>
                 <Notes
                   note="Shortlisted for the Sufi title track — great upper register."

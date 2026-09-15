@@ -41,7 +41,7 @@ function Studio() {
         >
           ←
         </Link>
-        <span className="pill absolute bottom-5 left-5 bg-ink/80 text-primary-foreground backdrop-blur">
+        <span className="pill absolute bottom-5 left-5 pill-glass">
           Dolby Atmos 7.1.4
         </span>
       </div>
@@ -62,11 +62,11 @@ function Studio() {
 
         <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
           <div>
-            <p className="text-[15px] font-bold">₹1,800</p>
+            <p className="text-[15px] font-bold text-price">₹1,800</p>
             <p className="text-[10px] uppercase text-muted-foreground">Per hour</p>
           </div>
           <div>
-            <p className="text-[15px] font-bold">₹12,000</p>
+            <p className="text-[15px] font-bold text-price">₹12,000</p>
             <p className="text-[10px] uppercase text-muted-foreground">Day rate</p>
           </div>
           <div>

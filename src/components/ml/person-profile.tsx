@@ -38,6 +38,7 @@ import {
   ExperienceCard,
   FeaturedCard,
   GalleryGrid,
+  NoCover,
   MarketEntryCard,
   MoreSheet,
   OpportunityCard,
@@ -506,7 +507,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
                     className="aspect-square w-full object-cover"
                   />
                 ) : (
-                  <div aria-hidden className="aspect-square w-full bg-subtle" />
+                  <NoCover className="aspect-square w-full" />
                 )}
                 <div className="p-3">
                   <h3 className="truncate text-1">{release.title}</h3>
