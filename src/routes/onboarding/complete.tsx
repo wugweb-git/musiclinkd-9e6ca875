@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PartyPopper } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { saveMyProfile } from "@/lib/portfolio.functions";
+import { listMyPortfolio, saveMyProfile } from "@/lib/portfolio.functions";
 import { draftToProfile } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { BtnLink, TopBar } from "@/components/ml/ui";
@@ -45,7 +45,16 @@ function Complete() {
   const { signedIn } = useAuth();
   const persist = useServerFn(saveMyProfile);
   const savedRef = useRef(false);
-  const items = readiness(d);
+  const listPortfolio = useServerFn(listMyPortfolio);
+  const [hasWork, setHasWork] = useState(false);
+  useEffect(() => {
+    if (!signedIn) return;
+    void (listPortfolio() as Promise<{ published: boolean }[]>)
+      .then((w) => setHasWork(w.some((x) => x.published)))
+      .catch(() => {});
+  }, [signedIn, listPortfolio]);
+  // The first work is published before this screen, so its row reads from the real portfolio.
+  const items = readiness(d).map((r) => (r.key === "portfolio" ? { ...r, done: hasWork } : r));
   const tx = useTaxonomy().options;
 
   // Persist the finished profile once for signed-in users; drafts stay local.
@@ -124,15 +133,6 @@ function Complete() {
 
         <h2 className="mt-6 text-2">Next steps</h2>
         <div className="mt-3 space-y-3">
-          <HandoffCard
-            title="Add your portfolio"
-            body="Tracks, videos and credits are what turn a profile view into an enquiry."
-            action={
-              <BtnLink to="/portfolio/new" className="w-full">
-                Add work
-              </BtnLink>
-            }
-          />
           {d.businessIntent ? (
             <HandoffCard
               title={`Set up your ${labelFor(tx?.person_types, d.businessIntent).toLowerCase()} profile`}

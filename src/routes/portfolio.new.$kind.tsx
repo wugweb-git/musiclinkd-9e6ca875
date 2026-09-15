@@ -4,7 +4,12 @@ import { WorkForm } from "@/components/ml/work-form";
 import { workType } from "@/data/portfolio";
 import { useAuth } from "@/hooks/use-auth";
 
+type FlowSearch = { from?: "onboarding" };
+
 export const Route = createFileRoute("/portfolio/new/$kind")({
+  // `from=onboarding`: the new user's first work, between the last question and Review profile.
+  validateSearch: (search: Record<string, unknown>): FlowSearch =>
+    search["from"] === "onboarding" ? { from: "onboarding" } : {},
   head: () => ({
     meta: [
       { title: "Describe your work — MusicLinkd portfolio" },
@@ -24,6 +29,7 @@ export const Route = createFileRoute("/portfolio/new/$kind")({
 
 function NewWork() {
   const { kind } = Route.useParams();
+  const { from } = Route.useSearch();
   const { signedIn } = useAuth();
   const t = workType(kind);
 
@@ -35,7 +41,7 @@ function NewWork() {
         back="/portfolio/new"
       />
       <main className="px-5 pt-4">
-        <WorkForm kind={kind} signedIn={signedIn} />
+        <WorkForm kind={kind} signedIn={signedIn} fromOnboarding={from === "onboarding"} />
       </main>
     </div>
   );

@@ -16,6 +16,10 @@ const ORDER = [
   "/auth/verify-email",
   "/onboarding",
   ...steps.map((s) => `/onboarding/step/${s.id}`),
+  // The new user's first work (`?from=onboarding`), between the last question and Review profile.
+  "/portfolio/new",
+  "/portfolio/new/$kind",
+  "/portfolio/$id",
   "/onboarding/preview",
   "/onboarding/complete",
   "/onboarding/done",
@@ -43,9 +47,20 @@ const SIDE = new Set(["/", "/onboarding/skip", "/onboarding/resume", "/auth/forg
 
 const clean = (p: string) => (p.length > 1 ? p.replace(/\/$/, "") : p);
 
+/** The flow's name for a location: work pages collapse to their pattern inside the first-work stretch. */
+const flowPath = (loc: ParsedLocation) => {
+  const p = clean(loc.pathname);
+  if (p.startsWith("/portfolio/new/")) return "/portfolio/new/$kind";
+  const fromOnboarding = (loc.search as { from?: unknown }).from === "onboarding";
+  if (fromOnboarding && /^\/portfolio\/[^/]+$/.test(p) && p !== "/portfolio/new") {
+    return "/portfolio/$id";
+  }
+  return p;
+};
+
 /** A two-question screen's second question (`?q=2`) sits just after its first. */
 const position = (loc: ParsedLocation) => {
-  const i = ORDER.indexOf(clean(loc.pathname));
+  const i = ORDER.indexOf(flowPath(loc));
   const q = Number((loc.search as { q?: unknown }).q);
   return i < 0 ? -1 : q === 2 ? i + 0.5 : i;
 };
@@ -62,8 +77,8 @@ export function flowTransitionTypes({
   if (!fromLocation) return false;
   // A hidden document (app in the background, a prerender) rejects startViewTransition.
   if (typeof document !== "undefined" && document.visibilityState !== "visible") return false;
-  const from = clean(fromLocation.pathname);
-  const to = clean(toLocation.pathname);
+  const from = flowPath(fromLocation);
+  const to = flowPath(toLocation);
   const a = position(fromLocation);
   const b = position(toLocation);
   // Same screen, other question: slide like a screen change. Any other same-path change: none.

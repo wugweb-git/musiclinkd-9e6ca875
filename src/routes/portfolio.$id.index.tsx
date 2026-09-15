@@ -19,7 +19,12 @@ import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { deletePortfolioItem, getMyPortfolioItem } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
 
+type FlowSearch = { from?: "onboarding" };
+
 export const Route = createFileRoute("/portfolio/$id/")({
+  // `from=onboarding`: the new user's first work, between the last question and Review profile.
+  validateSearch: (search: Record<string, unknown>): FlowSearch =>
+    search["from"] === "onboarding" ? { from: "onboarding" } : {},
   head: () => ({
     meta: [
       { title: "Work detail — MusicLinkd portfolio" },
@@ -42,6 +47,8 @@ export const Route = createFileRoute("/portfolio/$id/")({
 
 function WorkDetail() {
   const { id } = Route.useParams();
+  const { from } = Route.useSearch();
+  const onboarding = from === "onboarding";
   const navigate = useNavigate();
   const { signedIn, loading } = useAuth();
   const fetchItem = useServerFn(getMyPortfolioItem);
@@ -77,8 +84,8 @@ function WorkDetail() {
   }
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-24">
-      <TopBar title="Work" back="/portfolio" />
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+      <TopBar title={onboarding ? "Your first work" : "Work"} back="/portfolio" />
       <main className="px-5 pt-4">
         {signedIn && !demo && q.isLoading ? <PortfolioSkeleton /> : null}
 
@@ -200,6 +207,15 @@ function WorkDetail() {
           </>
         ) : null}
       </main>
+
+      {/* New user: the first work is published; the flow carries on to Review profile. */}
+      {onboarding && item?.published ? (
+        <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+          <BtnLink to="/onboarding/preview" className="w-full">
+            Continue to review profile
+          </BtnLink>
+        </div>
+      ) : null}
     </div>
   );
 }

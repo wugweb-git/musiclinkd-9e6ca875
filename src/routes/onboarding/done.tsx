@@ -87,23 +87,13 @@ function Done() {
           What next
         </h2>
         <div className="mt-3 space-y-3">
-          <Link
-            to="/portfolio/new"
-            className={cn(nextCard, rise)}
-            style={beat(3 + summary.length + 0)}
-          >
-            <p className="text-sm font-semibold">Add portfolio work</p>
-            <p className="mt-1 text-1 text-muted-foreground">
-              Tracks, videos and credits turn a profile view into an enquiry.
-            </p>
-          </Link>
-          <Link to="/discover" className={cn(nextCard, rise)} style={beat(3 + summary.length + 1)}>
+          <Link to="/discover" className={cn(nextCard, rise)} style={beat(3 + summary.length)}>
             <p className="text-sm font-semibold">Discover talent</p>
             <p className="mt-1 text-1 text-muted-foreground">
               Singers, producers, studios and bands near you.
             </p>
           </Link>
-          <Link to="/me" className={cn(nextCard, rise)} style={beat(3 + summary.length + 2)}>
+          <Link to="/me" className={cn(nextCard, rise)} style={beat(4 + summary.length)}>
             <p className="text-sm font-semibold">View my profile</p>
             <p className="mt-1 text-1 text-muted-foreground">See exactly what others see.</p>
           </Link>
