@@ -336,8 +336,7 @@ function Wizard({
             <Card className="flex gap-3 py-3">
               <Lock size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
               <p className="text-[12px] text-muted-foreground">
-                We never ask for bank details, passwords or your Aadhaar number. Review time:{" "}
-                {def.turnaround.toLowerCase()}.
+                Review time: {def.turnaround.toLowerCase()}.
               </p>
             </Card>
             <Btn className="w-full" onClick={() => void go(1)}>
