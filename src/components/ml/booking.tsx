@@ -553,7 +553,9 @@ function Row({
       >
         {label}
       </span>
-      <span className={`shrink-0 text-sm text-price ${strong ? "text-base font-bold" : "font-semibold"}`}>
+      <span
+        className={`shrink-0 text-sm text-price ${strong ? "text-base font-bold" : "font-semibold"}`}
+      >
         {value}
       </span>
     </div>

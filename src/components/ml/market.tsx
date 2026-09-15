@@ -77,7 +77,9 @@ export function PriceBlock({
 }) {
   return (
     <div className="flex items-baseline gap-1">
-      <span className={`text-price ${size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}`}>{price}</span>
+      <span className={`text-price ${size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}`}>
+        {price}
+      </span>
       {note ? <span className="text-1 text-muted-foreground">{note}</span> : null}
     </div>
   );
@@ -170,9 +172,7 @@ export function ListingCard({
             onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
           />
         </div>
-        <span className="absolute left-2 top-2 rounded-full pill pill-glass">
-          {meta.tag}
-        </span>
+        <span className="absolute left-2 top-2 rounded-full pill pill-glass">{meta.tag}</span>
       </div>
       <div className="p-3.5">
         <div className="flex items-start justify-between gap-2">

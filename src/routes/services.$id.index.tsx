@@ -131,7 +131,9 @@ function ServiceDetail() {
                 className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
               >
                 <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
-                <span className="text-[13px] font-semibold text-price">{priceLabel(a.price, a.unit)}</span>
+                <span className="text-[13px] font-semibold text-price">
+                  {priceLabel(a.price, a.unit)}
+                </span>
               </div>
             ))}
           </Card>
