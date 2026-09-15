@@ -421,7 +421,7 @@ export const bookables: Bookable[] = [
       },
       {
         id: "jam-2",
-        name: "Room 2 — Acoustic / writing",
+        name: "Room 2 — Acoustic",
         description: "Small carpeted room for writing sessions and acoustic rehearsals.",
         capacity: 4,
         equipment: ["Upright piano", "2× SM58", "Mixer"],

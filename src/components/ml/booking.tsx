@@ -343,7 +343,7 @@ export function AvailabilityCalendar({
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-muted-foreground">
         <Legend dot="bg-success" label="Available" />
         <Legend dot="bg-warn" label="Limited" />
-        <Legend dot="bg-border" label="Unavailable / closed" />
+        <Legend dot="bg-border" label="Unavailable" />
       </div>
       <p className="mt-2 text-1 text-muted-foreground">All times shown in {timezone}.</p>
     </div>

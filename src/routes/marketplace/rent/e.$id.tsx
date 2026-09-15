@@ -100,7 +100,7 @@ function RentalDetail() {
     ...(e.pickup != null && e.delivery != null
       ? [
           {
-            k: "Pickup / delivery",
+            k: "Delivery",
             v: e.delivery
               ? `${e.pickup ? "Pickup or " : ""}delivery ${inr(e.deliveryFee ?? 0)}`
               : "Pickup only",

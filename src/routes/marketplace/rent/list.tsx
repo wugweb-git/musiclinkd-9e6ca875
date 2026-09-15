@@ -327,7 +327,7 @@ function ListForRent() {
                   <LocationRow text="Andheri West, Mumbai · 6.8 km away" />
                 </div>
                 <p className="mt-2 text-[11px] text-muted-foreground">
-                  Deposit ₹15,000 · {fulfilment.join(" / ") || "Pickup"} · min 1 day
+                  Deposit ₹15,000 · {fulfilment.join(" or ") || "Pickup"} · min 1 day
                 </p>
               </div>
             </article>

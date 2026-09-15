@@ -85,7 +85,7 @@ function QrSettings() {
         </p>
         <Toggle label="Phone number" value={state.phone} onChange={set("phone")} />
         <Toggle label="Email address" value={state.email} onChange={set("email")} />
-        <Toggle label="Studio / company" value={state.company} onChange={set("company")} />
+        <Toggle label="Company" value={state.company} onChange={set("company")} />
         <Toggle label="Website" value={state.website} onChange={set("website")} />
 
         <p className="mt-3 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">

@@ -38,9 +38,9 @@ export const opportunityCategories: OpportunityCategory[] = [
   { key: "equipment", label: "Equipment", kind: "Equipment", emoji: "🎹", count: 6 },
   { key: "bandmember", label: "Band member", kind: "Collaborator", emoji: "🤝", count: 16 },
   { key: "collab", label: "Collaborator", kind: "Collaborator", emoji: "✨", count: 23 },
-  { key: "gig", label: "Gig / performance", kind: "Gig", emoji: "🎫", count: 31 },
+  { key: "gig", label: "Gig", kind: "Gig", emoji: "🎫", count: 31 },
   { key: "recording", label: "Recording project", kind: "Project", emoji: "🎙", count: 25 },
-  { key: "film", label: "Film / advertising", kind: "Project", emoji: "🎬", count: 10 },
+  { key: "film", label: "Film", kind: "Project", emoji: "🎬", count: 10 },
   { key: "podcast", label: "Podcast production", kind: "Project", emoji: "🎚", count: 5 },
   { key: "event", label: "Event requirement", kind: "Gig", emoji: "📅", count: 13 },
 ];
@@ -71,7 +71,7 @@ export type Opportunity = {
   /** opportunity_compensation */
   compensation: {
     /** Unset when a stored collaboration type has no unambiguous match. */
-    type?: "Paid" | "Revenue share" | "Unpaid / credit";
+    type?: "Paid" | "Revenue share" | "Unpaid";
     min?: number;
     max?: number;
     unit: string;
@@ -175,7 +175,7 @@ export const opportunities: Opportunity[] = [
       "Mastering handled separately — see the linked opportunity.",
     ],
     requirements: [
-      { label: "Alt-rock / post-rock references", must: true },
+      { label: "Alt-rock references", must: true },
       { label: "3-week turnaround", must: true },
       { label: "Analogue summing", must: false },
     ],
@@ -209,7 +209,7 @@ export const opportunities: Opportunity[] = [
     postedAt: "1 day ago",
     closesAt: "Closes in 4 days",
     compensation: { type: "Paid", min: 15000, unit: "per night", negotiable: false },
-    summary: "Funk/soul house band, two nights, one paid rehearsal. Backline provided.",
+    summary: "Funk house band, two nights, one paid rehearsal. Backline provided.",
     brief: [
       "Set list shared 5 days out.",
       "Load-in 6pm, downbeat 9pm.",
@@ -300,7 +300,7 @@ export const opportunities: Opportunity[] = [
     ],
     requirements: [
       { label: "Hindi writing samples", must: true },
-      { label: "Ad / brand film experience", must: true },
+      { label: "Ad film experience", must: true },
       { label: "NDA signature", must: true },
     ],
     genres: ["Hip hop", "Advertising"],
@@ -374,8 +374,7 @@ export const myApplications: Application[] = [
     opportunityId: "op-3",
     status: "viewed",
     submittedAt: "20 hours ago",
-    message:
-      "Funk/soul is my home turf — two nights work, I have my own cymbals and a Ludwig snare.",
+    message: "Funk is my home turf — two nights work, I have my own cymbals and a Ludwig snare.",
     portfolioIds: ["pf-5"],
     timeline: [
       { label: "Applied", at: "1 Sep, 22:31", done: true },
@@ -490,7 +489,7 @@ export const applicants: Applicant[] = [
     name: "Rhea D'Souza",
     username: "rheadsouza",
     photo: u("photo-1544005313-94ddf0286df2"),
-    headline: "Keys / synths · session player",
+    headline: "Keys · session player",
     city: "Mumbai",
     rating: 4.9,
     verified: true,

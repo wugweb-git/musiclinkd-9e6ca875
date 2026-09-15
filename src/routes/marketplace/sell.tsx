@@ -28,7 +28,7 @@ const types = [
   { label: "Audio equipment", emoji: "🎙" },
   { label: "Rental", emoji: "📦" },
   { label: "Service", emoji: "🎚" },
-  { label: "Studio / space", emoji: "🏢" },
+  { label: "Studio", emoji: "🏢" },
 ];
 
 const conditions = ["New", "Like New", "Excellent", "Good", "Fair"];
@@ -123,7 +123,7 @@ function Sell() {
                 className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
               />
             </Field>
-            {type !== "Service" && type !== "Studio / space" ? (
+            {type !== "Service" && type !== "Studio" ? (
               <Field label="Condition">
                 <div className="flex flex-wrap gap-2">
                   {conditions.map((c) => (

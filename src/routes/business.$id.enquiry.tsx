@@ -27,7 +27,7 @@ export const Route = createFileRoute("/business/$id/enquiry")({
   component: BusinessEnquiry,
 });
 
-const intents = ["Book a room", "Mixing / mastering", "Event or live", "Something else"];
+const intents = ["Book a room", "Mixing", "Event or live", "Something else"];
 
 function BusinessEnquiry() {
   const b = businessView(Route.useLoaderData());

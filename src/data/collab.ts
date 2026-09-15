@@ -17,7 +17,7 @@ export type CollabType =
   | "Songwriting"
   | "Mixing"
   | "Mastering"
-  | "Film / Media"
+  | "Film"
   | "Commercial"
   | "Podcast"
   | "Event"
@@ -35,7 +35,7 @@ export const collabTypes: CollabType[] = [
   "Songwriting",
   "Mixing",
   "Mastering",
-  "Film / Media",
+  "Film",
   "Commercial",
   "Podcast",
   "Event",
@@ -757,7 +757,7 @@ export const projects: Project[] = [
   {
     id: "aftertaste-score",
     name: "Aftertaste — Original Score",
-    type: "Film / Media",
+    type: "Film",
     status: "onHold",
     artwork: u("photo-1489599849927-2ee91cede3ba"),
     description:

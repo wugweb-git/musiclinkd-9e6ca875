@@ -419,7 +419,7 @@ function Body({ home }: { home: Home }) {
           </Link>
         </div>
         <div className="rail no-scrollbar mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
-          <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track / EP" />
+          <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track" />
           <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
           <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />
           <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />

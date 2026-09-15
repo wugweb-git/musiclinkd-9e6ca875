@@ -243,7 +243,7 @@ const rahul: PersonProfile = {
   specialisations: ["Vocal production", "Analog summing", "Hybrid mixing", "Stem mastering prep"],
   professional: [
     { label: "DAW", value: "Ableton Live · Pro Tools" },
-    { label: "Production styles", value: "Hybrid analog / ITB, live tracking" },
+    { label: "Production styles", value: "Hybrid analog, live tracking" },
     { label: "Monitoring", value: "Focal Shape 65 · Neumann KH 80" },
     { label: "Turnaround", value: "3–5 working days per mix" },
     { label: "Session experience", value: "180+ released tracks" },

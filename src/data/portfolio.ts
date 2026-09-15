@@ -159,7 +159,7 @@ export const roleSuggestions: Record<string, string> = {
   Singer: "Add a performance you're proud of",
   Musician: "Add a recording that shows your playing",
   Producer: "Add a production you led",
-  "Mixing Engineer": "Add a mix with before/after context",
+  "Mixing Engineer": "Add a mix with its reference",
   default: "Add your first track, project or performance",
 };
 
