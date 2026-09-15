@@ -1,14 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
-import {
-  PortfolioHeader,
-  PortfolioSkeleton,
-  SignedOutCard,
-  StateCard,
-  WorkCard,
-} from "@/components/ml/portfolio";
+import { Settings } from "lucide-react";
+import { Btn, BtnLink, IconBtnLink, TopBar } from "@/components/ml/ui";
+import { PortfolioHeader, PortfolioSkeleton, StateCard, WorkCard } from "@/components/ml/portfolio";
 import { demoPortfolio, roleSuggestions, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -46,53 +41,55 @@ function PortfolioOverview() {
   const items: PortfolioItem[] = signedIn ? (q.data ?? []) : demoPortfolio;
   const published = items.filter((i) => i.published);
   const featured = items.slice(0, 3);
+  // Nothing to manage yet: the empty state's Add work is the one action.
+  const empty = signedIn && !q.isLoading && !q.isError && items.length === 0;
+  // Counts and tools wait for the list, so a new user never sees a row of zeros flash first.
+  const showTools = !empty && !(signedIn && (q.isLoading || authLoading));
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar
         title="Your portfolio"
         subtitle="Show the work you're proud of"
         back="/me"
         right={
-          <Link to="/portfolio/settings" aria-label="Portfolio settings" className="text-xl">
-            ⚙︎
-          </Link>
+          <IconBtnLink to="/portfolio/settings" label="Portfolio settings" variant="plain">
+            <Settings size={20} aria-hidden />
+          </IconBtnLink>
         }
       />
 
       <main className="px-5 pt-4">
-        <PortfolioHeader
-          total={items.length}
-          published={published.length}
-          drafts={items.length - published.length}
-          featured={featured.length}
-        />
+        {showTools ? (
+          <>
+            <PortfolioHeader
+              total={items.length}
+              published={published.length}
+              drafts={items.length - published.length}
+              featured={featured.length}
+            />
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          <BtnLink to="/portfolio/new">Add work</BtnLink>
-          <BtnLink to="/portfolio/reorder" variant="outline">
-            Reorder
-          </BtnLink>
-          <BtnLink to="/portfolio/analytics" variant="outline">
-            Performance
-          </BtnLink>
-          <BtnLink to="/portfolio/select" variant="outline">
-            Share work
-          </BtnLink>
-          <BtnLink to="/me" variant="outline">
-            Preview on profile
-          </BtnLink>
-        </div>
-
-        {!signedIn && !authLoading ? (
-          <div className="mt-5">
-            <SignedOutCard />
-          </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <BtnLink to="/portfolio/new">Add work</BtnLink>
+              <BtnLink to="/portfolio/reorder" variant="outline">
+                Reorder
+              </BtnLink>
+              <BtnLink to="/portfolio/analytics" variant="outline">
+                Performance
+              </BtnLink>
+              <BtnLink to="/portfolio/select" variant="outline">
+                Share work
+              </BtnLink>
+              <BtnLink to="/me" variant="outline">
+                Preview on profile
+              </BtnLink>
+            </div>
+          </>
         ) : null}
 
-        {featured.length ? (
+        {items.length > featured.length ? (
           <>
-            <h2 className="mt-7 text-[17px]">Featured</h2>
+            <h2 className="mt-7 text-2">Featured</h2>
             <div className="mt-3 space-y-3">
               {featured.map((item) => (
                 <WorkCard key={`f-${item.id}`} item={item} />
@@ -101,7 +98,7 @@ function PortfolioOverview() {
           </>
         ) : null}
 
-        <h2 className="mt-7 text-[17px]">All work</h2>
+        {empty ? null : <h2 className="mt-7 text-2">All work</h2>}
         <div className="mt-3 space-y-3">
           {signedIn && (q.isLoading || authLoading) ? <PortfolioSkeleton /> : null}
 
@@ -114,7 +111,7 @@ function PortfolioOverview() {
             />
           ) : null}
 
-          {!q.isLoading && !q.isError && items.length === 0 ? (
+          {empty ? (
             <StateCard
               title="Your work belongs here"
               body={roleSuggestions["default"]!}

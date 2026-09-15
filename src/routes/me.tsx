@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
-import { ownerProfile } from "@/data/profile";
+import { ProfileSkeleton } from "@/components/ml/profile";
+import { StateCard } from "@/components/ml/portfolio";
+import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
 import {
   getMyProfile,
   getMyProfileSections,
@@ -11,9 +13,9 @@ import {
   type TaxonomyLabels,
 } from "@/lib/portfolio.functions";
 import { mergeProfileRow, mergeSections, profileFromRow } from "@/lib/profile-view";
-import type { ProfileRow } from "@/lib/profile-map";
+import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
-import { Screen, TopBar } from "@/components/ml/ui";
+import { Btn, Screen } from "@/components/ml/ui";
 
 export const Route = createFileRoute("/me")({
   head: () => ({
@@ -45,6 +47,8 @@ function MyProfile() {
   const [labels, setLabels] = useState<TaxonomyLabels>({});
   const [sections, setSections] = useState<ProfileSections | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  // Bumped by Retry to run the load again.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (loading || !signedIn) return;
@@ -63,25 +67,47 @@ function MyProfile() {
         setState("ready");
       })
       .catch(() => setState("error"));
-  }, [loading, signedIn, load, loadLabels, loadSections]);
+  }, [loading, signedIn, load, loadLabels, loadSections, attempt]);
 
   if (loading || (signedIn && (state === "idle" || state === "loading"))) {
     return (
       <Screen>
-        <TopBar title="My profile" />
-        <div className="space-y-3 px-5 py-6" aria-busy>
-          <div className="h-32 animate-pulse rounded-lg bg-subtle" />
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-subtle" />
-          ))}
+        <ProfileSkeleton />
+      </Screen>
+    );
+  }
+
+  if (signedIn && state === "error") {
+    return (
+      <Screen>
+        <div className="px-5 py-6">
+          <StateCard
+            tone="error"
+            title="We couldn't load your profile"
+            body="Check your connection and try again."
+            action={<Btn onClick={() => setAttempt((n) => n + 1)}>Retry</Btn>}
+          />
         </div>
       </Screen>
     );
   }
 
   // Signed in: your own record, with empty states for what it doesn't hold. Signed out: the demo owner.
-  const view = signedIn
-    ? mergeSections(mergeProfileRow(profileFromRow(row ?? {}), row, labels), sections, labels)
-    : ownerProfile;
-  return <PersonProfileExperience p={view} owner />;
+  if (!signedIn) {
+    return (
+      <PersonProfileExperience
+        p={ownerProfile}
+        owner
+        completion={profileCompletion}
+        insights={profileInsights}
+      />
+    );
+  }
+  const view = mergeSections(
+    mergeProfileRow(profileFromRow(row ?? {}), row, labels),
+    sections,
+    labels,
+  );
+  // Completion comes from the record itself; there are no insight figures for a real profile yet.
+  return <PersonProfileExperience p={view} owner completion={profileGaps(row)} />;
 }

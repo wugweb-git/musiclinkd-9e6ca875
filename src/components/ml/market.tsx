@@ -37,11 +37,7 @@ export function SaveButton({
 }
 
 export function ConditionBadge({ value }: { value: string }) {
-  return (
-    <span className="rounded-full bg-subtle px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-      {value}
-    </span>
-  );
+  return <span className="rounded-full bg-subtle pill text-muted-foreground">{value}</span>;
 }
 
 export function Rating({
@@ -174,7 +170,7 @@ export function ListingCard({
             onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
           />
         </div>
-        <span className="absolute left-2 top-2 rounded-full bg-ink/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
+        <span className="absolute left-2 top-2 rounded-full bg-ink/80 pill text-background backdrop-blur">
           {meta.tag}
         </span>
       </div>
@@ -502,7 +498,7 @@ export function OfferSheet({
     <Sheet open={open} onClose={close}>
       {sent ? (
         <div className="py-10 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success-strong">
             <Check size={28} aria-hidden />
           </div>
           <h2 className="text-xl">Offer sent</h2>

@@ -72,7 +72,7 @@ function ForgotPassword() {
   }
 
   return (
-    <AuthScreen back={{ to: "/auth", search: { mode: "signin" } }}>
+    <AuthScreen back={{ to: "/auth/phone" }}>
       <AuthHeading
         title={sent ? "Reset link sent" : "Forgot your password?"}
         sub={
@@ -90,10 +90,7 @@ function ForgotPassword() {
             The link expires in 60 minutes and can be used once.
           </AuthNotice>
           <div className="space-y-3">
-            <Btn
-              className="w-full"
-              onClick={() => void navigate({ to: "/auth", search: { mode: "signin" } })}
-            >
+            <Btn className="w-full" onClick={() => void navigate({ to: "/auth/phone" })}>
               Back to sign in
             </Btn>
             <Btn variant="outline" className="w-full" onClick={() => setSent(false)}>
@@ -128,10 +125,7 @@ function ForgotPassword() {
             For your safety we show the same message whether or not an account exists.
           </TrustNote>
           <p className="mt-6 text-center text-1 text-muted-foreground">
-            Remembered it?{" "}
-            <AuthLink to="/auth" search={{ mode: "signin" }}>
-              Sign in
-            </AuthLink>
+            Remembered it? <AuthLink to="/auth/phone">Sign in</AuthLink>
           </p>
         </form>
       )}

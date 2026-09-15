@@ -11,8 +11,8 @@ export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
 const toneStyle: Record<Tone, { pill: string; dot: string }> = {
   neutral: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
-  good: { pill: "bg-success-container text-success", dot: "bg-success" },
-  warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+  good: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
+  warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
   bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
   brand: { pill: "bg-ink text-primary-foreground", dot: "bg-primary-foreground" },
 };
@@ -29,9 +29,7 @@ export function StatusPill({
 }) {
   const c = toneStyle[tone];
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
-    >
+    <span className={`inline-flex items-center gap-1 rounded-full pill ${c.pill}`}>
       {icon ?? <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} />}
       {label}
     </span>

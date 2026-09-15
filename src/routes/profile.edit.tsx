@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
@@ -95,13 +95,14 @@ function fromRow(row: ProfileRow | null): Form {
 
 function EditProfile() {
   const { signedIn, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const load = useServerFn(getMyProfile);
   const persist = useServerFn(saveMyProfile);
 
   const [open, setOpen] = useState<string | null>("identity");
   const [form, setForm] = useState<Form>(empty);
   const [row, setRow] = useState<ProfileRow | null>(null);
-  const [state, setState] = useState<"loading" | "ready" | "error" | "signed-out">("loading");
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [status, setStatus] = useState<
     "idle" | "saving" | "saved" | "error" | "offline" | "taken" | "reserved" | "invalid"
   >("idle");
@@ -120,12 +121,13 @@ function EditProfile() {
 
   useEffect(() => {
     if (authLoading) return;
+    // Editing needs an account. A signed-out visit goes to Welcome, as onboarding does.
     if (!signedIn) {
-      setState("signed-out");
+      void navigate({ to: "/welcome", replace: true });
       return;
     }
     fetchProfile();
-  }, [authLoading, signedIn, fetchProfile]);
+  }, [authLoading, signedIn, fetchProfile, navigate]);
 
   const gaps = profileGaps({ ...(row ?? {}), ...form } as ProfileRow);
 
@@ -179,25 +181,6 @@ function EditProfile() {
       );
     }
   };
-
-  if (state === "signed-out") {
-    return (
-      <Screen>
-        <TopBar title="Edit profile" back="/me" />
-        <main className="px-5 py-6">
-          <div className="rounded-lg border border-border bg-card p-5">
-            <h1 className="text-[19px]">Sign in to edit your profile</h1>
-            <p className="mt-1.5 text-sm text-muted-foreground">
-              Your profile lives on your account, so changes follow you to every device.
-            </p>
-            <BtnLink to="/welcome" className="mt-4 w-full">
-              Sign in
-            </BtnLink>
-          </div>
-        </main>
-      </Screen>
-    );
-  }
 
   if (state === "loading") {
     return (

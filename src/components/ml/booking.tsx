@@ -40,8 +40,8 @@ import {
 /* ------------------------------------------------------------------ */
 
 const toneStyle: Record<string, { pill: string; dot: string }> = {
-  ok: { pill: "bg-success-container text-success", dot: "bg-success" },
-  warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+  ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
+  warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
   info: { pill: "bg-subtle text-foreground", dot: "bg-foreground" },
   off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
 };
@@ -50,9 +50,7 @@ export function BookingStatusPill({ status }: { status: BookingStatus }) {
   const meta = statusMeta[status];
   const c = toneStyle[meta.tone]!;
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
-    >
+    <span className={`inline-flex items-center gap-1.5 rounded-full pill ${c.pill}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} aria-hidden />
       {meta.label}
     </span>
@@ -61,7 +59,7 @@ export function BookingStatusPill({ status }: { status: BookingStatus }) {
 
 export function PaymentPill({ status }: { status: PaymentStatus }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border pill text-muted-foreground">
       {paymentMeta[status]}
     </span>
   );
@@ -128,7 +126,7 @@ export function BookableHero({ b }: { b: Bookable }) {
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/80 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
         {b.kind ? (
-          <span className="inline-flex rounded-full bg-background/90 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-muted-foreground">
+          <span className="inline-flex rounded-full bg-background/90 pill text-muted-foreground">
             {b.kind}
           </span>
         ) : null}

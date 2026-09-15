@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
+import { Pencil, Plus, Share2, Trash2 } from "lucide-react";
+import { Btn, BtnLink, IconBtn, IconBtnLink, TopBar } from "@/components/ml/ui";
 import {
   analyticsFor,
   AudioPlayer,
@@ -12,6 +13,7 @@ import {
   StatusPill,
   VideoPlayer,
   WorkAnalytics,
+  WorkTypeIcon,
 } from "@/components/ml/portfolio";
 import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { deletePortfolioItem, getMyPortfolioItem } from "@/lib/portfolio.functions";
@@ -75,7 +77,7 @@ function WorkDetail() {
   }
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-24">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-24">
       <TopBar title="Work" back="/portfolio" />
       <main className="px-5 pt-4">
         {signedIn && !demo && q.isLoading ? <PortfolioSkeleton /> : null}
@@ -101,13 +103,11 @@ function WorkDetail() {
           <>
             <section className="rounded-lg border border-border bg-card p-5">
               <div className="flex items-start justify-between gap-3">
-                <span className="text-3xl" aria-hidden>
-                  {workType(item.kind).emoji}
-                </span>
+                <WorkTypeIcon kind={item.kind} />
                 <StatusPill published={item.published} />
               </div>
-              <h1 className="mt-3 text-[24px] leading-tight">{item.title}</h1>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <h1 className="mt-3 text-3 leading-tight">{item.title}</h1>
+              <p className="mt-1 text-1 text-muted-foreground">
                 {workType(item.kind).label}
                 {item.release_year ? ` · ${item.release_year}` : ""}
               </p>
@@ -162,29 +162,41 @@ function WorkDetail() {
               </div>
             </section>
 
-            <div className="mt-6 flex flex-wrap gap-2">
+            {/* Icon-only actions: each label is the button's accessible name and tooltip. */}
+            <div className="mt-6 flex items-center gap-2">
               {demo ? null : (
-                <BtnLink to="/portfolio/$id/edit" params={{ id }}>
-                  Edit
-                </BtnLink>
+                <IconBtnLink
+                  to="/portfolio/$id/edit"
+                  params={{ id }}
+                  label="Edit work"
+                  variant="ink"
+                  className="h-11 w-11"
+                >
+                  <Pencil size={18} aria-hidden />
+                </IconBtnLink>
               )}
-              <Btn variant="outline" onClick={share}>
-                Share
-              </Btn>
-              <BtnLink to="/portfolio/new" variant="outline">
-                Add another
-              </BtnLink>
-            </div>
-
-            {demo ? null : (
-              <button
-                type="button"
-                onClick={onDelete}
-                className="mt-6 w-full text-center text-sm font-semibold text-foreground"
+              <IconBtn label="Share work" variant="outline" className="h-11 w-11" onClick={share}>
+                <Share2 size={18} aria-hidden />
+              </IconBtn>
+              <IconBtnLink
+                to="/portfolio/new"
+                label="Add another work"
+                variant="outline"
+                className="h-11 w-11"
               >
-                Delete this work
-              </button>
-            )}
+                <Plus size={18} aria-hidden />
+              </IconBtnLink>
+              {demo ? null : (
+                <IconBtn
+                  label="Delete this work"
+                  variant="outline"
+                  className="ml-auto h-11 w-11 text-destructive"
+                  onClick={onDelete}
+                >
+                  <Trash2 size={18} aria-hidden />
+                </IconBtn>
+              )}
+            </div>
           </>
         ) : null}
       </main>

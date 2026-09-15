@@ -2,13 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Lock, ChevronRight } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
-import {
-  verificationTypes,
-  myVerifications,
-  statusLabel,
-  statusTone,
-  eligibility,
-} from "@/data/verification";
+import { useMyVerification } from "@/hooks/use-my-verification";
+import { statusLabel, statusTone, eligibility } from "@/data/verification";
 
 export const Route = createFileRoute("/verification/choose")({
   head: () => ({
@@ -31,6 +26,7 @@ export const Route = createFileRoute("/verification/choose")({
 });
 
 function ChooseType() {
+  const { types, requests } = useMyVerification();
   return (
     <Screen>
       <TopBar title="Get verified" subtitle="Pick the badge that fits you" back="/verification" />
@@ -39,10 +35,10 @@ function ChooseType() {
           Every badge is reviewed by a person. We only ask for what the badge actually proves.
         </p>
 
-        {verificationTypes.map((t) => {
-          const req = myVerifications.find((v) => v.type === t.key);
+        {(types ?? []).map((t) => {
+          const req = requests.find((v) => v.type === t.key);
           const status = req?.status ?? "unverified";
-          const gate = eligibility(t.key);
+          const gate = eligibility(t.key, requests);
           const locked = !gate.allowed && status === "unverified";
           const body = (
             <Card className="space-y-3">

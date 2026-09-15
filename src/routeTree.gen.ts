@@ -39,6 +39,7 @@ import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
+import { Route as DevNewUserRouteImport } from './routes/dev.new-user'
 import { Route as DiscoverIndexRouteImport } from './routes/discover.index'
 import { Route as DiscoverCommunityRouteImport } from './routes/discover.community'
 import { Route as DiscoverMusicRouteImport } from './routes/discover.music'
@@ -367,6 +368,11 @@ const BusinessNewRoute = BusinessNewRouteImport.update({
 const CollabIndexRoute = CollabIndexRouteImport.update({
   id: '/collab/',
   path: '/collab/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevNewUserRoute = DevNewUserRouteImport.update({
+  id: '/dev/new-user',
+  path: '/dev/new-user',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiscoverIndexRoute = DiscoverIndexRouteImport.update({
@@ -1304,6 +1310,7 @@ export interface FileRoutesByFullPath {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
+  '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
   '/discover/nearby': typeof DiscoverNearbyRoute
@@ -1514,6 +1521,7 @@ export interface FileRoutesByTo {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/new': typeof BandsNewRoute
   '/business/new': typeof BusinessNewRoute
+  '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
   '/discover/nearby': typeof DiscoverNearbyRoute
@@ -1726,6 +1734,7 @@ export interface FileRoutesById {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
+  '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
   '/discover/nearby': typeof DiscoverNearbyRoute
@@ -1939,6 +1948,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/new'
+    | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
     | '/discover/nearby'
@@ -2149,6 +2159,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/bands/new'
     | '/business/new'
+    | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
     | '/discover/nearby'
@@ -2360,6 +2371,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/new'
+    | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
     | '/discover/nearby'
@@ -2572,6 +2584,7 @@ export interface RootRouteChildren {
   BandsNewRoute: typeof BandsNewRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   BusinessNewRoute: typeof BusinessNewRoute
+  DevNewUserRoute: typeof DevNewUserRoute
   DiscoverCommunityRoute: typeof DiscoverCommunityRoute
   DiscoverMusicRoute: typeof DiscoverMusicRoute
   DiscoverNearbyRoute: typeof DiscoverNearbyRoute
@@ -2961,6 +2974,13 @@ declare module '@tanstack/react-router' {
       path: '/collab'
       fullPath: '/collab/'
       preLoaderRoute: typeof CollabIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev/new-user': {
+      id: '/dev/new-user'
+      path: '/dev/new-user'
+      fullPath: '/dev/new-user'
+      preLoaderRoute: typeof DevNewUserRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/discover/': {
@@ -4269,6 +4289,7 @@ const rootRouteChildren: RootRouteChildren = {
   BandsNewRoute: BandsNewRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   BusinessNewRoute: BusinessNewRoute,
+  DevNewUserRoute: DevNewUserRoute,
   DiscoverCommunityRoute: DiscoverCommunityRoute,
   DiscoverMusicRoute: DiscoverMusicRoute,
   DiscoverNearbyRoute: DiscoverNearbyRoute,

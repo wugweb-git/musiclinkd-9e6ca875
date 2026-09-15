@@ -61,7 +61,7 @@ function SessionCheck() {
         role="status"
         aria-label="Checking your session"
       >
-        <Brand animated />
+        <Brand animated className="vt-brand" />
       </div>
     </AuthScreen>
   );

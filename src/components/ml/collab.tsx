@@ -39,8 +39,8 @@ import {
 /* ------------------------------------------------------------------ */
 
 const toneStyle: Record<string, { pill: string; dot: string }> = {
-  ok: { pill: "bg-success-container text-success", dot: "bg-success" },
-  warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+  ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
+  warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
   info: { pill: "bg-subtle text-foreground", dot: "bg-foreground" },
   off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
   bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
@@ -50,9 +50,7 @@ export function StatusPill({ status }: { status: CollabStatus }) {
   const meta = statusMeta[status];
   const c = toneStyle[meta.tone]!;
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
-    >
+    <span className={`inline-flex items-center gap-1.5 rounded-full pill ${c.pill}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} aria-hidden />
       {meta.label}
     </span>
@@ -61,13 +59,7 @@ export function StatusPill({ status }: { status: CollabStatus }) {
 
 export function Tag({ children, tone = "off" }: { children: ReactNode; tone?: string }) {
   const c = toneStyle[tone] ?? toneStyle["off"]!;
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
-    >
-      {children}
-    </span>
-  );
+  return <span className={`inline-flex items-center rounded-full pill ${c.pill}`}>{children}</span>;
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {

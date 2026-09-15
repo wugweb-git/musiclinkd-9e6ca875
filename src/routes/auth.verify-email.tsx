@@ -28,10 +28,10 @@ export const Route = createFileRoute("/auth/verify-email")({
       { title: "Enter your email code — MusicLinkd" },
       {
         name: "description",
-        content: "Enter the 6-digit code we emailed you to activate your MusicLinkd account.",
+        content: "Enter the 6-digit code we emailed you to sign in to MusicLinkd.",
       },
       { property: "og:title", content: "Enter your email code — MusicLinkd" },
-      { property: "og:description", content: "One code and your MusicLinkd account is ready." },
+      { property: "og:description", content: "One code and you're signed in." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -52,7 +52,7 @@ function VerifyEmail() {
     if (!email || busy) return;
     setError(null);
     setBusy(true);
-    const { error: err } = await supabase.auth.verifyOtp({ email, token, type: "signup" });
+    const { error: err } = await supabase.auth.verifyOtp({ email, token, type: "email" });
     setBusy(false);
     if (err) {
       haptic("error");
@@ -76,11 +76,14 @@ function VerifyEmail() {
 
   async function resend() {
     if (!email) {
-      void navigate({ to: "/auth", search: { mode: "signup" } });
+      void navigate({ to: "/auth" });
       return;
     }
     setError(null);
-    const { error: err } = await supabase.auth.resend({ type: "signup", email });
+    const { error: err } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true },
+    });
     if (err) {
       setError(classifyAuthError(err.message));
       return;
@@ -90,7 +93,7 @@ function VerifyEmail() {
   }
 
   return (
-    <AuthScreen back={{ to: "/auth", search: { mode: "signup" } }}>
+    <AuthScreen back={{ to: "/auth" }}>
       <AuthHeading
         title="Check your email"
         sub={
@@ -138,7 +141,7 @@ function VerifyEmail() {
       <TrustNote>Not there? Check spam and promotions.</TrustNote>
 
       <p className="mt-6 flex justify-center text-1">
-        <AuthLink to="/auth" search={{ mode: "signup" }} icon={<Pencil size={15} />}>
+        <AuthLink to="/auth" icon={<Pencil size={15} />}>
           Use a different email
         </AuthLink>
       </p>

@@ -1,23 +1,18 @@
-import { useEffect, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
-  AudioLines,
-  Clapperboard,
-  GraduationCap,
-  Guitar,
-  Headphones,
-  Mic,
-  MicVocal,
-  Music,
-  PenLine,
-  Podcast,
-  Radio,
-  SlidersHorizontal,
-  Sparkles,
+  Globe,
+  Lock,
+  Mail,
+  MessageCircle,
+  Phone,
+  Plus,
+  Users,
   type LucideIcon,
 } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Btn } from "@/components/ml/ui";
 import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
+import { BrandIcon } from "@/components/ml/brand-icons";
 import {
   labelFor,
   talentGroups,
@@ -26,6 +21,14 @@ import {
   type TaxonomyOption,
 } from "@/lib/taxonomy";
 import { haptic } from "@/lib/haptics";
+import { roleIcon } from "@/lib/role-icons";
+import {
+  GENDERS,
+  getMyPrivateDetails,
+  saveMyPrivateDetails,
+} from "@/lib/profile-private.functions";
+import { useAuth } from "@/hooks/use-auth";
+import { useServerFn } from "@tanstack/react-start";
 import { useFlowBack } from "@/lib/flow-back";
 import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
 import type { UsernameClaim } from "@/lib/portfolio.functions";
@@ -35,7 +38,6 @@ import {
   InlineField,
   OnboardingProvider,
   OptionList,
-  PhotoPicker,
   SelectField,
   StepShell,
   StepSkeleton,
@@ -63,28 +65,8 @@ import {
   type StepDef,
 } from "@/data/onboarding";
 
-// Icons for person types: a few by slug, the rest by taxonomy group.
-const typeIcons: Record<string, LucideIcon> = {
-  producer: SlidersHorizontal,
-  beatmaker: SlidersHorizontal,
-  lyricist: PenLine,
-  music_director: Clapperboard,
-  voice_artist: MicVocal,
-  dj: Headphones,
-  rj: Radio,
-  podcaster: Podcast,
-};
-const groupIcons: Record<string, LucideIcon> = {
-  vocal: Mic,
-  instrumentalist: Guitar,
-  creator: Music,
-  technical: AudioLines,
-  media: Radio,
-  education: GraduationCap,
-  other: Sparkles,
-};
 function typeIcon(o: TaxonomyOption) {
-  const Icon = typeIcons[o.slug] ?? groupIcons[o.metadata?.group ?? ""] ?? Sparkles;
+  const Icon = roleIcon(o);
   return <Icon size={16} aria-hidden />;
 }
 
@@ -475,7 +457,6 @@ function StepBody({
       const check = validateUsername(d.username);
       return (
         <div className="space-y-5">
-          <PhotoPicker photo={d.photo} onChange={(v) => set({ photo: v })} />
           <InlineField
             inputId="displayName"
             label="Display name"
@@ -529,15 +510,7 @@ function StepBody({
               onChange={(v) => set({ city: v })}
             />
           </div>
-          <InlineField
-            inputId="locality"
-            label="Area (optional)"
-            value={d.locality}
-            onChange={(v) => set({ locality: v })}
-            placeholder="Andheri West, Indiranagar…"
-            autoComplete="address-level3"
-            hint="Only the area is shown, never a full address."
-          />
+          <PrivateDetailsFields />
           <InlineField
             inputId="bio"
             label="Short bio (optional)"
@@ -658,7 +631,7 @@ function StepBody({
       return (
         <div className="space-y-6">
           <div>
-            <p className="mb-2 text-sm font-medium">Where you work</p>
+            <p className="mb-2 text-sm font-medium text-muted-foreground">Where you work</p>
             <OptionList
               options={workModes}
               selected={d.workModes}
@@ -666,7 +639,7 @@ function StepBody({
             />
           </div>
           <div>
-            <p className="mb-2 text-sm font-medium">Available for</p>
+            <p className="mb-2 text-sm font-medium text-muted-foreground">Available for</p>
             <ChipPicker
               options={availabilityFor}
               selected={d.availability}
@@ -680,7 +653,7 @@ function StepBody({
       return (
         <div className="space-y-6">
           <div>
-            <p className="mb-2 text-sm font-medium">You're here to</p>
+            <p className="mb-2 text-sm font-medium text-muted-foreground">You're here to</p>
             <ChipPicker
               options={intents}
               selected={d.intents}
@@ -688,7 +661,7 @@ function StepBody({
             />
           </div>
           <div>
-            <p className="mb-2 text-sm font-medium">Show me more</p>
+            <p className="mb-2 text-sm font-medium text-muted-foreground">Show me more</p>
             <ChipPicker
               options={discoveryPrefs}
               selected={d.discovery}
@@ -699,48 +672,232 @@ function StepBody({
       );
 
     case "contact":
-      return (
-        <div className="space-y-6">
-          <div className="space-y-4">
-            {linkPlatforms.map((p) => {
-              const val = d.links[p.key] ?? "";
-              const bad = val.length > 0 && !validateUrl(val);
-              return (
-                <InlineField
-                  key={p.key}
-                  inputId={`link-${p.key}`}
-                  label={p.label}
-                  value={val}
-                  onChange={(v) => set({ links: { ...d.links, [p.key]: v } })}
-                  placeholder={p.placeholder}
-                  inputMode="url"
-                  autoComplete="url"
-                  {...(bad ? { error: "That doesn't look like a full URL." } : {})}
-                />
-              );
-            })}
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">How people can reach you</p>
-            <OptionList
-              options={contactChannels.filter((c) => c.key !== "business")}
-              selected={d.contact}
-              onToggle={(k) => toggle("contact", k)}
-            />
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">Who can see your profile</p>
-            <OptionList
-              options={visibilityOptions}
-              selected={[d.visibility]}
-              onToggle={(k) => set({ visibility: k })}
-              multi={false}
-            />
-          </div>
-        </div>
-      );
+      return <ContactStep draft={d} set={set} toggle={toggle} />;
 
     default:
       return null;
   }
+}
+
+/* ------------------------------------------------------------------ contact */
+
+const linkIcons: Record<string, ReactNode> = {
+  website: <Globe size={18} strokeWidth={1.75} />,
+  instagram: <BrandIcon brand="instagram" />,
+  youtube: <BrandIcon brand="youtube" />,
+  spotify: <BrandIcon brand="spotify" />,
+  soundcloud: <BrandIcon brand="soundcloud" />,
+};
+
+const channelIcons: Record<string, ReactNode> = {
+  messages: <MessageCircle size={16} aria-hidden />,
+  email: <Mail size={16} aria-hidden />,
+  phone: <Phone size={16} aria-hidden />,
+  whatsapp: <BrandIcon brand="whatsapp" size={16} />,
+};
+
+const visibilityIcons: Record<string, LucideIcon> = {
+  public: Globe,
+  members: Users,
+  limited: Lock,
+};
+
+/** Links shown before the person adds more. Any platform that already has a link shows too. */
+const DEFAULT_LINKS = ["instagram", "youtube"];
+
+function ContactStep({
+  draft: d,
+  set,
+  toggle,
+}: {
+  draft: OnboardingDraft;
+  set: (p: Partial<OnboardingDraft>) => void;
+  toggle: (field: keyof OnboardingDraft, value: string) => void;
+}) {
+  const [shown, setShown] = useState<string[]>(() =>
+    linkPlatforms.map((p) => p.key).filter((k) => DEFAULT_LINKS.includes(k) || Boolean(d.links[k])),
+  );
+  const [adding, setAdding] = useState(false);
+  const hidden = linkPlatforms.filter((p) => !shown.includes(p.key));
+  const visibility = visibilityOptions.find((v) => v.key === d.visibility);
+
+  const add = (key: string) => {
+    haptic("select");
+    setShown((list) => [...list, key]);
+    setAdding(false);
+    window.setTimeout(() => document.getElementById(`link-${key}`)?.focus(), 50);
+  };
+
+  return (
+    <div className="space-y-8">
+      <section className="space-y-4">
+        {linkPlatforms
+          .filter((p) => shown.includes(p.key))
+          .map((p) => {
+            const val = d.links[p.key] ?? "";
+            const bad = val.length > 0 && !validateUrl(val);
+            return (
+              <InlineField
+                key={p.key}
+                inputId={`link-${p.key}`}
+                label={p.label}
+                leading={linkIcons[p.key]}
+                value={val}
+                onChange={(v) => set({ links: { ...d.links, [p.key]: v } })}
+                placeholder={p.placeholder}
+                inputMode="url"
+                autoComplete="url"
+                {...(bad ? { error: "That doesn't look like a full URL." } : {})}
+              />
+            );
+          })}
+
+        {hidden.length ? (
+          adding ? (
+            <div className="animate-message">
+              <p className="mb-2 text-sm font-medium text-muted-foreground">Add a link</p>
+              <ChipPicker
+                options={hidden.map((p) => ({
+                  value: p.key,
+                  label: p.label,
+                  media: linkIcons[p.key],
+                }))}
+                selected={[]}
+                onToggle={add}
+              />
+            </div>
+          ) : (
+            <AuthTextButton
+              icon={<Plus size={16} />}
+              onClick={() => setAdding(true)}
+              className="text-sm"
+            >
+              Add more
+            </AuthTextButton>
+          )
+        ) : null}
+      </section>
+
+      <section>
+        <p className="mb-2 text-sm font-medium text-muted-foreground">How people can reach you</p>
+        <ChipPicker
+          options={contactChannels
+            .filter((c) => c.key !== "business")
+            .map((c) => ({ value: c.key, label: c.label, media: channelIcons[c.key] }))}
+          selected={d.contact}
+          onToggle={(k) => toggle("contact", k)}
+        />
+      </section>
+
+      <section>
+        <p className="mb-2 text-sm font-medium text-muted-foreground">Who can see your profile</p>
+        <div
+          role="radiogroup"
+          aria-label="Who can see your profile"
+          className="grid grid-cols-3 gap-2"
+        >
+          {visibilityOptions.map((v) => {
+            const on = d.visibility === v.key;
+            const Icon = visibilityIcons[v.key] ?? Globe;
+            return (
+              <button
+                key={v.key}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => {
+                  haptic("select");
+                  set({ visibility: v.key });
+                }}
+                className={`state-layer flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-lg border px-2 py-3 text-center text-sm font-semibold leading-tight transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
+                  on
+                    ? "border-transparent bg-selected-bg text-selected-text"
+                    : "border-border bg-card text-foreground"
+                }`}
+              >
+                <Icon size={18} strokeWidth={1.75} aria-hidden />
+                {v.label}
+              </button>
+            );
+          })}
+        </div>
+        {visibility ? (
+          <p key={visibility.key} className="mt-2 animate-message text-1 text-muted-foreground">
+            {visibility.hint}
+          </p>
+        ) : null}
+      </section>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------- private details */
+
+/**
+ * Date of birth and gender. Saved to the owner-only profile_private table as they change, never
+ * into the draft, and hidden from everyone else by default. In dev preview (no account) they stay on
+ * the screen only.
+ */
+function PrivateDetailsFields() {
+  const { signedIn } = useAuth();
+  const load = useServerFn(getMyPrivateDetails);
+  const save = useServerFn(saveMyPrivateDetails);
+  const [dob, setDob] = useState("");
+  const [gender, setGender] = useState<string | null>(null);
+  const loaded = useRef(false);
+  const today = new Date().toISOString().slice(0, 10);
+  const dobError =
+    dob && (dob > today || dob < "1900-01-01") ? "Enter your real date of birth." : undefined;
+
+  useEffect(() => {
+    if (!signedIn) return;
+    load()
+      .then((p) => {
+        setDob(p.dateOfBirth ?? "");
+        setGender(p.gender);
+      })
+      .catch(() => {})
+      .finally(() => {
+        loaded.current = true;
+      });
+  }, [signedIn, load]);
+
+  useEffect(() => {
+    if (!signedIn || !loaded.current || dobError) return;
+    const t = window.setTimeout(() => {
+      void save({
+        data: {
+          dateOfBirth: dob || null,
+          gender: (gender as (typeof GENDERS)[number]["value"] | null) ?? null,
+        },
+      }).catch(() => {});
+    }, 600);
+    return () => window.clearTimeout(t);
+  }, [dob, gender, signedIn, save, dobError]);
+
+  return (
+    <div className="space-y-5">
+      <InlineField
+        inputId="dateOfBirth"
+        label="Date of birth"
+        type="date"
+        max={today}
+        value={dob}
+        onChange={setDob}
+        placeholder="DD/MM/YYYY"
+        autoComplete="bday"
+        hint="Only you can see this."
+        {...(dobError ? { error: dobError } : {})}
+      />
+      <div>
+        <p className="mb-2 text-sm font-medium text-muted-foreground">Gender</p>
+        <ChipPicker
+          options={GENDERS.map((g) => ({ value: g.value, label: g.label }))}
+          selected={gender ? [gender] : []}
+          onToggle={(v) => setGender((cur) => (cur === v ? null : v))}
+        />
+        <p className="mt-1.5 text-1 text-muted-foreground">Only you can see this.</p>
+      </div>
+    </div>
+  );
 }

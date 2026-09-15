@@ -23,7 +23,7 @@ export const Route = createFileRoute("/auth/maintenance")({
 function MaintenanceScreen() {
   return (
     <AuthStatus
-      back={{ to: "/auth", search: { mode: "signin" } }}
+      back={{ to: "/auth/phone" }}
       icon={Wrench}
       title="Back in a few minutes"
       body="We're shipping an update to MusicLinkd. Your account, work and bookings are safe."

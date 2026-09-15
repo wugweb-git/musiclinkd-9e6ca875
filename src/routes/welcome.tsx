@@ -1,11 +1,21 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
-import { Mail, Plus, Smartphone } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type CSSProperties } from "react";
 
-import { AuthScreen, Brand, GoogleIcon, LegalNote } from "@/components/ml/auth";
+import {
+  AuthLink,
+  AuthNotice,
+  AuthScreen,
+  Brand,
+  GoogleIcon,
+  LegalNote,
+} from "@/components/ml/auth";
+import { Btn } from "@/components/ml/ui";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
+import { showDemoControls } from "@/lib/dev";
 import { beat, useArrival } from "@/lib/flow-motion";
+import { roleIcon } from "@/lib/role-icons";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/welcome")({
@@ -47,40 +57,72 @@ const audience = [
 ];
 
 /**
- * The comp's CTA treatment is not the Btn vocabulary: two of the three entries
- * are borderless rows and the primary is a rounded rectangle rather than a pill.
- * Built here on the system's own radius step and the 48dp touch floor instead of
- * bending Btn, whose rounded-full is load-bearing on every other screen.
- *
- * Filled uses --foreground, the app's near-black. The design guide's rule is
- * "black is the primary button, not pink". --foreground is the same near-black as --ink.
+ * Who is on MusicLinkd, as it moves: every published role from the taxonomy as a pill with its
+ * icon, in three rows (performers, makers, businesses) drifting at different speeds; the edges fade. The roles come from the
+ * database, so the ticker is never a claim the product can't back. Until they load, the two rows
+ * hold their height; if they fail to load, the rows stay empty and the headline carries the screen.
  */
-function CtaRow({
-  children,
-  onClick,
-  filled = false,
-  disabled = false,
-  className = "",
-}: {
-  children: ReactNode;
-  onClick: () => void;
-  filled?: boolean | undefined;
-  disabled?: boolean | undefined;
-  className?: string | undefined;
-}) {
+function RoleTicker({ className, style }: { className?: string; style?: CSSProperties }) {
+  const { options } = useTaxonomy();
+  const roles = (options?.person_types ?? []).filter((o) => o.slug !== "other");
+  const inGroups = (groups: string[]) =>
+    roles.filter((o) => groups.includes(o.metadata?.group ?? ""));
+  // Three rows at slightly different speeds and alternating directions, so they never move in step.
+  const rows = [
+    { key: "performers", items: inGroups(["vocal", "instrumentalist"]), reverse: false, secs: 64 },
+    {
+      key: "makers",
+      items: inGroups(["creator", "technical", "media", "education"]),
+      reverse: true,
+      secs: 76,
+    },
+    { key: "business", items: inGroups(["business"]), reverse: false, secs: 58 },
+  ];
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
+    <div
+      aria-hidden
       className={cn(
-        "state-layer flex min-h-12 w-full items-center justify-center gap-2 rounded-lg px-5 text-2 font-semibold transition-transform duration-125 ease-standard active:scale-98 disabled:pointer-events-none disabled:opacity-50",
-        filled ? "bg-foreground text-background" : "text-foreground",
+        "space-y-2.5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]",
         className,
       )}
+      style={style}
     >
-      {children}
-    </button>
+      {rows.map((row) => (
+        // On short phones the middle row steps out, so the buttons stay above the fold.
+        <div
+          key={row.key}
+          className={cn(
+            "h-10 overflow-hidden",
+            row.key === "makers" && "[@media(max-height:780px)]:hidden",
+          )}
+        >
+          {row.items.length ? (
+            <div
+              className={cn(
+                "flex w-max animate-marquee gap-2",
+                row.reverse && "[animation-direction:reverse]",
+              )}
+              // computed: each row's own loop length
+              style={{ animationDuration: `${row.secs}s` }}
+            >
+              {/* Two copies, so the loop joins without a seam. */}
+              {[...row.items, ...row.items].map((o, i) => {
+                const Icon = roleIcon(o);
+                return (
+                  <span
+                    key={`${o.slug}-${i}`}
+                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-subtle pl-3 pr-4 text-sm font-medium text-foreground"
+                  >
+                    <Icon size={16} strokeWidth={1.75} className="text-muted-foreground" />
+                    {o.label}
+                  </span>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -88,6 +130,7 @@ function WelcomeScreen() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [googleFailed, setGoogleFailed] = useState(false);
   const arrive = useArrival("welcome");
   const rise = arrive ? "animate-rise" : "";
 
@@ -96,13 +139,20 @@ function WelcomeScreen() {
   }, [loading, signedIn, navigate]);
 
   async function google() {
+    // Local dev server: Google can't return to localhost, so continue as a new test account
+    // (/dev/new-user), which lands where a Google sign-up would. Production builds use Google.
+    if (showDemoControls) {
+      void navigate({ to: "/dev/new-user" });
+      return;
+    }
     setBusy(true);
+    setGoogleFailed(false);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      // Hand off to /auth, which owns the full error surface for sign-in.
-      void navigate({ to: "/auth", search: { mode: "signup" } });
+      setBusy(false);
+      setGoogleFailed(true);
       return;
     }
     if (result.redirected) return;
@@ -112,14 +162,17 @@ function WelcomeScreen() {
   return (
     <AuthScreen brand={false} className="bg-card">
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
-        <div className="flex-1 pt-4">
-          <Brand compact animated={arrive} />
-          <p className={cn("text-2 font-semibold text-pink-strong", rise)} style={beat(1)}>
-            Professional Network For Music
+        {/* The splash mark glides here (view transition "brand"), so it does not play again. */}
+        <Brand compact className="vt-brand pt-2" />
+
+        {/* The hero sits centred between the mark and the buttons on any phone height. */}
+        <div className="flex flex-1 flex-col justify-center py-6">
+          <p className={cn("text-sm font-semibold text-pink-strong", rise)} style={beat(1)}>
+            Professional network for music
           </p>
 
-          {/* The headline lands a word per beat, after the logo's waveform plays. */}
-          <h1 className="mt-7 text-5 font-bold">
+          {/* The headline lands a word per beat. */}
+          <h1 className="mt-3 text-5 font-bold">
             {["Connect.", "Collaborate.", "Create."].map((word, i) => (
               <span key={word} className={cn("block", rise)} style={beat(2 + i)}>
                 {word}
@@ -134,44 +187,48 @@ function WelcomeScreen() {
             Build your profile, discover opportunities, connect with the music industry.
           </p>
 
-          <ul className="mt-9 space-y-4">
-            {audience.map((a, i) => (
-              <li key={a} className={cn("flex items-center gap-3", rise)} style={beat(6 + i / 2)}>
-                <Plus size={14} className="shrink-0 text-muted-foreground" aria-hidden />
-                <span className="min-w-0 text-2 text-muted-foreground">{a}</span>
-              </li>
+          {/* Screen readers get the three lines; the ticker below is the visual version. */}
+          <ul className="sr-only">
+            {audience.map((a) => (
+              <li key={a}>{a}</li>
             ))}
           </ul>
+
+          <RoleTicker className={cn("-mx-5 mt-9", rise)} style={beat(6)} />
         </div>
 
-        <div className={cn("mt-10", rise)} style={beat(7.5)}>
-          <CtaRow onClick={() => void google()} disabled={busy}>
-            <GoogleIcon />
+        {/*
+         * Welcome is the sign-in screen: Google, or Sign in (mobile with a code, email on the next
+         * screen). New and returning people take the same way in; a new account is made on sign-in.
+         */}
+        <div className={cn("space-y-3", rise)} style={beat(7.5)}>
+          {googleFailed ? (
+            <AuthNotice title="Google sign-in didn't finish">
+              Try again, or sign in with your mobile number.
+            </AuthNotice>
+          ) : null}
+          <Btn
+            variant="outline"
+            className="w-full"
+            icon={<GoogleIcon />}
+            loading={busy}
+            onClick={() => void google()}
+          >
             Continue with Google
-          </CtaRow>
-
-          <CtaRow filled className="my-2" onClick={() => void navigate({ to: "/auth/phone" })}>
-            <Smartphone size={17} aria-hidden />
-            Continue with Mobile
-          </CtaRow>
-
-          <CtaRow onClick={() => void navigate({ to: "/auth", search: { mode: "signup" } })}>
-            <Mail size={17} aria-hidden />
-            Continue with Email &amp; Password
-          </CtaRow>
-
-          <p className="mt-5 text-center text-1 text-muted-foreground">
-            Already have an account?{" "}
-            <Link
-              to="/auth"
-              search={{ mode: "signin" }}
-              className="link-action hit-area font-semibold text-foreground"
-            >
-              Sign in
-            </Link>
-          </p>
+          </Btn>
+          <Btn className="w-full" onClick={() => void navigate({ to: "/auth/phone" })}>
+            Sign in
+          </Btn>
 
           <LegalNote />
+
+          {showDemoControls ? (
+            <p className="text-center text-1">
+              <AuthLink to="/dev/new-user" className="text-muted-foreground">
+                Dev: test as a new user
+              </AuthLink>
+            </p>
+          ) : null}
         </div>
       </div>
     </AuthScreen>

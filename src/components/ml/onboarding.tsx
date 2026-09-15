@@ -688,12 +688,15 @@ export function InlineField({
   error,
   ok,
   prefix,
+  leading,
   multiline = false,
   maxLength,
   inputId,
   autoComplete,
   inputMode,
   enterKeyHint = "next",
+  type = "text",
+  max,
   readOnly = false,
 }: {
   label: string;
@@ -704,11 +707,17 @@ export function InlineField({
   error?: string;
   ok?: string;
   prefix?: string;
+  /** An icon at the start of the box, e.g. a platform's mark. */
+  leading?: ReactNode;
   multiline?: boolean;
   maxLength?: number;
   inputId: string;
   autoComplete?: string;
-  inputMode?: "text" | "url" | "email";
+  inputMode?: "text" | "url" | "email" | "numeric";
+  /** A date field opens the phone's date picker. */
+  type?: "text" | "date";
+  /** Latest date allowed, for type="date" (YYYY-MM-DD). */
+  max?: string;
   /** The label on the Android keyboard's action key. Next submits the step. */
   enterKeyHint?: "next" | "done" | "go";
   /** Shown but not editable, e.g. a username that is already set. */
@@ -718,8 +727,15 @@ export function InlineField({
   const shared =
     "w-full min-w-0 bg-transparent text-2 outline-none placeholder:text-muted-foreground/60 focus-visible:outline-none";
   return (
-    <div>
-      <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-foreground">
+    <div className="group">
+      {/* Same label states as TextField: grey at rest, ink while focused, red when invalid. */}
+      <label
+        htmlFor={inputId}
+        className={cn(
+          "mb-1.5 block text-sm font-medium transition-colors duration-125 ease-standard",
+          error ? "text-destructive" : "text-muted-foreground group-focus-within:text-foreground",
+        )}
+      >
         {label}
       </label>
       <div
@@ -732,6 +748,11 @@ export function InlineField({
             : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
         )}
       >
+        {leading ? (
+          <span aria-hidden className="mr-1.5 flex shrink-0 text-foreground">
+            {leading}
+          </span>
+        ) : null}
         {prefix ? <span className="shrink-0 text-2 text-muted-foreground">{prefix}</span> : null}
         {multiline ? (
           <textarea
@@ -748,6 +769,8 @@ export function InlineField({
         ) : (
           <input
             id={inputId}
+            type={type}
+            max={max}
             value={value}
             maxLength={maxLength}
             autoComplete={autoComplete}

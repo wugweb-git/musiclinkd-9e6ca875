@@ -10,9 +10,12 @@ import {
   ExternalLink,
   FolderKanban,
   Globe2,
+  Guitar,
+  Heart,
   Languages,
   LifeBuoy,
   MapPin,
+  Music,
   Mic2,
   Pencil,
   Play,
@@ -24,10 +27,10 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import type { PersonProfile } from "@/data/profile";
-import { profileInsights, profileCompletion } from "@/data/profile";
+import type { PersonProfile, profileInsights } from "@/data/profile";
+import type { WorkKind } from "@/data/portfolio";
 import { joinParts } from "@/lib/utils";
-import { Btn, BtnLink, Chip, Screen } from "./ui";
+import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
 import {
   AudioTrackCard,
   CollaboratorCard,
@@ -39,6 +42,7 @@ import {
   MoreSheet,
   OpportunityCard,
   ProfileEmpty,
+  type ProfileEmptyCta,
   ProfileHero,
   ProfileSection,
   ProjectCard,
@@ -48,6 +52,7 @@ import {
   SocialLinks,
   VideoCard,
   ChipGroup,
+  ChipGroupList,
   InfoRow,
   StatRow,
 } from "./profile";
@@ -57,12 +62,27 @@ type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About";
 
 const tabs: ProfileTab[] = ["Overview", "Portfolio", "Projects", "Services", "About"];
 
+/** An owner's empty-state button that opens new portfolio work of the kind the section shows. */
+const addWork = (label: string, kind: WorkKind): ProfileEmptyCta => ({
+  label,
+  to: "/portfolio/new/$kind",
+  kind,
+});
+
+type Completion = { percent: number; missing: { id: string; label: string; to?: string }[] };
+
 export function PersonProfileExperience({
   p,
   owner = false,
+  completion,
+  insights,
 }: {
   p: PersonProfile;
   owner?: boolean;
+  /** Owner only: what the profile still needs. Hidden when nothing is missing. */
+  completion?: Completion | undefined;
+  /** Owner only: insight figures. Left out for a real profile, so no sample numbers show. */
+  insights?: typeof profileInsights | undefined;
 }) {
   const [tab, setTab] = useState<ProfileTab>("Overview");
   const [playingId, setPlayingId] = useState<string | null>(null);
@@ -72,6 +92,8 @@ export function PersonProfileExperience({
   const [insightsOpen, setInsightsOpen] = useState(false);
 
   const toggleTrack = (id: string) => setPlayingId((current) => (current === id ? null : id));
+  // Sharing needs a public link, and the link needs a username.
+  const share = p.username ? () => setShareOpen(true) : undefined;
 
   return (
     <Screen>
@@ -79,7 +101,7 @@ export function PersonProfileExperience({
         p={p}
         owner={owner}
         back={owner ? undefined : "/discover"}
-        onShare={() => setShareOpen(true)}
+        onShare={share}
         onMore={owner ? undefined : () => setMoreOpen(true)}
       />
 
@@ -87,7 +109,7 @@ export function PersonProfileExperience({
         {owner ? (
           <OwnerActions
             username={p.username}
-            onShare={() => setShareOpen(true)}
+            onShare={share}
             onInsights={() => setInsightsOpen((open) => !open)}
           />
         ) : (
@@ -96,7 +118,9 @@ export function PersonProfileExperience({
         <StatRow p={p} />
       </div>
 
-      {owner ? <OwnerPanel p={p} insightsOpen={insightsOpen} /> : null}
+      {owner ? (
+        <OwnerPanel completion={completion} insights={insights} insightsOpen={insightsOpen} />
+      ) : null}
 
       <nav
         aria-label="Profile sections"
@@ -124,13 +148,11 @@ export function PersonProfileExperience({
           <Portfolio p={p} playingId={playingId} onToggleTrack={toggleTrack} owner={owner} />
         ) : null}
         {tab === "Projects" ? <Projects p={p} owner={owner} /> : null}
-        {tab === "Services" ? (
-          <Services p={p} onHire={() => setHireOpen(true)} owner={owner} />
-        ) : null}
+        {tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
         {tab === "About" ? <About p={p} /> : null}
       </main>
 
-      <ShareSheet p={p} open={shareOpen} onClose={() => setShareOpen(false)} />
+      {share ? <ShareSheet p={p} open={shareOpen} onClose={() => setShareOpen(false)} /> : null}
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} name={p.name} />
       <HireModal
         open={hireOpen}
@@ -144,19 +166,19 @@ export function PersonProfileExperience({
 function ViewerActions({ onHire }: { onHire: () => void }) {
   return (
     <div className="grid grid-cols-4 gap-2">
-      <Btn variant="ink" className="min-w-0 px-2 text-xs" onClick={() => undefined}>
+      <Btn variant="ink" className="min-w-0 px-2 text-1" onClick={() => undefined}>
         Connect
       </Btn>
       <Link
         to="/messages"
-        className="inline-flex min-h-12 min-w-0 items-center justify-center rounded-full bg-primary px-2 text-xs font-semibold text-primary-foreground"
+        className="inline-flex min-h-12 min-w-0 items-center justify-center rounded-full bg-primary px-2 text-1 font-semibold text-primary-foreground"
       >
         Message
       </Link>
-      <Btn variant="outline" className="min-w-0 px-2 text-xs" onClick={onHire}>
+      <Btn variant="outline" className="min-w-0 px-2 text-1" onClick={onHire}>
         Hire
       </Btn>
-      <Btn variant="ghost" className="min-w-0 px-2 text-xs" onClick={() => undefined}>
+      <Btn variant="ghost" className="min-w-0 px-2 text-1" onClick={() => undefined}>
         Follow
       </Btn>
     </div>
@@ -169,44 +191,52 @@ function OwnerActions({
   onInsights,
 }: {
   username: string;
-  onShare: () => void;
+  onShare?: (() => void) | undefined;
   onInsights: () => void;
 }) {
   return (
-    <div className="grid grid-cols-4 gap-2">
-      <Link
-        to="/profile/edit"
-        className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-xs font-semibold text-primary-foreground"
-      >
-        <Pencil size={14} aria-hidden />
-        Edit
-      </Link>
-      <Btn variant="outline" className="min-w-0 gap-1 px-2 text-xs" onClick={onShare}>
-        <Share2 size={14} aria-hidden />
-        Share
-      </Btn>
-      <Btn variant="ink" className="min-w-0 gap-1 px-2 text-xs" onClick={onInsights}>
-        <BarChart3 size={14} aria-hidden />
-        Stats
-      </Btn>
+    // Icon-only actions: the label is each button's accessible name and its tooltip.
+    <div className="flex items-center gap-2">
+      <IconBtnLink to="/profile/edit" label="Edit profile" variant="ink" className="h-11 w-11">
+        <Pencil size={18} aria-hidden />
+      </IconBtnLink>
+      {onShare ? (
+        <IconBtn label="Share profile" variant="outline" className="h-11 w-11" onClick={onShare}>
+          <Share2 size={18} aria-hidden />
+        </IconBtn>
+      ) : null}
+      <IconBtn label="Stats" variant="outline" className="h-11 w-11" onClick={onInsights}>
+        <BarChart3 size={18} aria-hidden />
+      </IconBtn>
       {/* The public page needs a username; without one, set it in profile edit. */}
-      <Link
+      <IconBtnLink
         {...(username
           ? { to: "/profile/$username" as const, params: { username } }
           : { to: "/profile/edit" as const })}
-        className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
+        label="View public profile"
+        variant="outline"
+        className="h-11 w-11"
       >
-        <ExternalLink size={14} aria-hidden />
-        Public
-      </Link>
+        <ExternalLink size={18} aria-hidden />
+      </IconBtnLink>
     </div>
   );
 }
 
-function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boolean }) {
+function OwnerPanel({
+  completion,
+  insights,
+  insightsOpen,
+}: {
+  completion: Completion | undefined;
+  insights: typeof profileInsights | undefined;
+  insightsOpen: boolean;
+}) {
   return (
     <section className="space-y-3 px-5 pt-5">
-      <CompletionCard percent={profileCompletion.percent} missing={profileCompletion.missing} />
+      {completion?.missing.length ? (
+        <CompletionCard percent={completion.percent} missing={completion.missing} />
+      ) : null}
       <div className="grid grid-cols-2 gap-2">
         <OwnerLink to="/portfolio" icon={<FolderKanban size={16} />} label="Manage portfolio" />
         <OwnerLink to="/services" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
@@ -229,19 +259,21 @@ function OwnerPanel({ p, insightsOpen }: { p: PersonProfile; insightsOpen: boole
               <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
                 Profile insights
               </p>
-              <h2 className="mt-1 text-2">{profileInsights.range}</h2>
+              {insights ? <h2 className="mt-1 text-2">{insights.range}</h2> : null}
             </div>
             <BarChart3 size={18} className="text-primary" aria-hidden />
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            {profileInsights.headline.map((item) => (
-              <div key={item.label} className="rounded-lg bg-subtle p-3">
-                <p className="text-1 text-muted-foreground">{item.label}</p>
-                <p className="mt-1 text-lg font-bold">{item.value}</p>
-                <p className="text-1 font-semibold text-foreground">{item.delta}</p>
-              </div>
-            ))}
-          </div>
+          {insights ? (
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {insights.headline.map((item) => (
+                <div key={item.label} className="rounded-lg bg-subtle p-3">
+                  <p className="text-1 text-muted-foreground">{item.label}</p>
+                  <p className="mt-1 text-2 font-bold">{item.value}</p>
+                  <p className="text-1 font-semibold text-foreground">{item.delta}</p>
+                </div>
+              ))}
+            </div>
+          ) : null}
           <BtnLink to="/profile/insights" variant="ghost" className="mt-3 w-full">
             Full insights
           </BtnLink>
@@ -269,7 +301,7 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
   return (
     <Link
       to={to}
-      className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3 text-xs font-semibold"
+      className="state-layer flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3 text-1 font-semibold transition-transform duration-125 ease-standard active:scale-98"
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
@@ -301,7 +333,7 @@ function Overview({
             <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
             <button
               type="button"
-              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-foreground"
+              className="state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-98"
               onClick={() => onTab("About")}
             >
               Read full profile <ChevronRight size={14} aria-hidden />
@@ -311,7 +343,7 @@ function Overview({
           <ProfileEmpty
             title="No summary yet"
             body="This professional has not written a summary yet."
-            cta={owner ? "Write a summary" : undefined}
+            cta={owner ? { label: "Write a summary", to: "/profile/edit" } : undefined}
           />
         )}
       </ProfileSection>
@@ -322,13 +354,11 @@ function Overview({
       ) : null}
       {p.genres.length || p.instruments.length || p.languages.length ? (
         <ProfileSection title="Music identity">
-          <div className="space-y-3">
-            <ChipGroup label="Genres" items={p.genres} tone="pink" />
-            <div className="grid grid-cols-2 gap-3">
-              <ChipGroup label="Instruments" items={p.instruments} />
-              <ChipGroup label="Languages" items={p.languages} />
-            </div>
-          </div>
+          <ChipGroupList>
+            <ChipGroup label="Genres" icon={Music} items={p.genres} />
+            <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
+            <ChipGroup label="Languages" icon={Languages} items={p.languages} />
+          </ChipGroupList>
         </ProfileSection>
       ) : null}
       {p.audio.length ? (
@@ -353,7 +383,7 @@ function Overview({
           <ProfileEmpty
             title="No audio yet"
             body="This professional has not added audio samples yet."
-            cta={owner ? "Add audio" : undefined}
+            cta={owner ? addWork("Add audio", "track") : undefined}
           />
         </ProfileSection>
       )}
@@ -412,7 +442,7 @@ function Portfolio({
             <ProfileEmpty
               title="No tracks added"
               body="Audio samples, demos and sessions will appear here."
-              cta={owner ? "Add track" : undefined}
+              cta={owner ? addWork("Add track", "track") : undefined}
             />
           )}
         </div>
@@ -426,7 +456,7 @@ function Portfolio({
               <ProfileEmpty
                 title="No videos yet"
                 body="Performance and studio videos will appear here."
-                cta={owner ? "Add video" : undefined}
+                cta={owner ? addWork("Add video", "video") : undefined}
               />
             </div>
           )}
@@ -436,10 +466,10 @@ function Portfolio({
         {p.gallery.length ? (
           <GalleryGrid images={p.gallery} />
         ) : (
+          // No owner button: the gallery reads its own table, and new image work lands in Projects.
           <ProfileEmpty
             title="No gallery images"
             body="Studio, performance and behind-the-scenes images will appear here."
-            cta={owner ? "Add images" : undefined}
           />
         )}
       </ProfileSection>
@@ -461,7 +491,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
           <ProfileEmpty
             title="No projects yet"
             body="Released work, film scores and collaborations will appear here."
-            cta={owner ? "Add project" : undefined}
+            cta={owner ? addWork("Add project", "project") : undefined}
           />
         )}
       </ProfileSection>
@@ -499,7 +529,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
           <ProfileEmpty
             title="No releases yet"
             body="Discography and credited releases will appear here."
-            cta={owner ? "Add release" : undefined}
+            cta={owner ? addWork("Add release", "album") : undefined}
           />
         )}
       </ProfileSection>
@@ -511,18 +541,15 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
             ))}
           </div>
         ) : (
-          <ProfileEmpty
-            title="No credits yet"
-            body="Professional experience will appear here."
-            cta={owner ? "Add experience" : undefined}
-          />
+          // No owner button: nothing in the app adds experience yet.
+          <ProfileEmpty title="No credits yet" body="Professional experience will appear here." />
         )}
       </ProfileSection>
     </>
   );
 }
 
-function Services({ p, onHire, owner }: { p: PersonProfile; onHire: () => void; owner: boolean }) {
+function Services({ p, onHire }: { p: PersonProfile; onHire: () => void }) {
   return (
     <ProfileSection title="Services">
       <div className="space-y-3">
@@ -531,10 +558,10 @@ function Services({ p, onHire, owner }: { p: PersonProfile; onHire: () => void; 
             <ServiceCard key={service.id} s={service} onEnquire={onHire} />
           ))
         ) : (
+          // No owner button: the new-service flow does not save a service yet.
           <ProfileEmpty
             title="No services listed"
             body="This professional has not listed services yet."
-            cta={owner ? "Add a service" : undefined}
           />
         )}
       </div>
@@ -573,14 +600,12 @@ function About({ p }: { p: PersonProfile }) {
         p.influences.length ||
         p.instruments.length ||
         p.languages.length ? (
-          <div className="space-y-3">
-            <ChipGroup label="Specialisations" items={p.specialisations} tone="purple" />
-            <ChipGroup label="Influences" items={p.influences} />
-            <div className="grid grid-cols-2 gap-3">
-              <ChipGroup label="Instruments" items={p.instruments} />
-              <ChipGroup label="Languages" items={p.languages} />
-            </div>
-          </div>
+          <ChipGroupList>
+            <ChipGroup label="Specialisations" icon={Sparkles} items={p.specialisations} />
+            <ChipGroup label="Influences" icon={Heart} items={p.influences} />
+            <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
+            <ChipGroup label="Languages" icon={Languages} items={p.languages} />
+          </ChipGroupList>
         ) : (
           <ProfileEmpty
             title="No music identity yet"
@@ -636,7 +661,7 @@ function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; 
         {icon}
       </span>
       <p className="mt-3 text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 truncate text-xs font-semibold">{value}</p>
+      <p className="mt-1 truncate text-1 font-semibold">{value}</p>
     </div>
   );
 }
@@ -682,7 +707,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold">{p.studio.name}</span>
-              <span className="mt-1 block truncate text-xs text-muted-foreground">
+              <span className="mt-1 block truncate text-1 text-muted-foreground">
                 {p.studio.meta}
               </span>
             </span>

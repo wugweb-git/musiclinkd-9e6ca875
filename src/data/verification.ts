@@ -321,3 +321,30 @@ export const verificationSteps = [
   "Submitted",
 ] as const;
 export type VerificationStep = (typeof verificationSteps)[number];
+
+/** Business roles that run a bookable space, so the studio & space badge applies. */
+const SPACE_ROLES = ["studio", "venue", "rental_provider"];
+
+/**
+ * The badges that fit a person, from their profile roles (taxonomy person_types slugs):
+ * - everyone: identity
+ * - talent roles (or no role yet): professional
+ * - business roles: business
+ * - studios, venues and rental providers: studio & space
+ */
+export function verificationTypesFor(
+  roles: readonly string[],
+  personTypes: readonly { slug: string; metadata: { flow?: string } | null }[],
+): VerificationType[] {
+  const flowOf = (slug: string) => personTypes.find((o) => o.slug === slug)?.metadata?.flow;
+  const business = roles.some((r) => flowOf(r) === "business");
+  const talent = roles.length === 0 || roles.some((r) => flowOf(r) !== "business");
+  const space = roles.some((r) => SPACE_ROLES.includes(r));
+  const keys: VerificationType["key"][] = [
+    "identity",
+    ...(talent ? (["professional"] as const) : []),
+    ...(business ? (["business"] as const) : []),
+    ...(space ? (["studio"] as const) : []),
+  ];
+  return verificationTypes.filter((t) => keys.includes(t.key));
+}

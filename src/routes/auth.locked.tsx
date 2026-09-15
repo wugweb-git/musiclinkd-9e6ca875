@@ -28,7 +28,7 @@ function LockedScreen() {
   const navigate = useNavigate();
   return (
     <AuthStatus
-      back={{ to: "/auth", search: { mode: "signin" } }}
+      back={{ to: "/auth/phone" }}
       tone="danger"
       icon={ShieldAlert}
       title="Sign-in paused for 15 minutes"
@@ -51,11 +51,7 @@ function LockedScreen() {
       }
       note="Your account is not suspended and nothing has been deleted."
       footer={
-        <Link
-          to="/auth"
-          search={{ mode: "signin" }}
-          className="hit-area font-semibold text-foreground"
-        >
+        <Link to="/auth/phone" className="hit-area font-semibold text-foreground">
           Back to sign in
         </Link>
       }

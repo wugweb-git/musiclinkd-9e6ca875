@@ -37,7 +37,7 @@ function EditWork() {
   });
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-8">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Edit work" back="/portfolio" />
       <main className="px-5 pt-4">
         {q.isLoading ? <PortfolioSkeleton /> : null}

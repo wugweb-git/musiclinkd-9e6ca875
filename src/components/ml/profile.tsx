@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { toast } from "sonner";
 import {
   BadgeCheck,
+  MoreHorizontal,
   Pause,
   Play,
   Share2,
@@ -11,6 +13,7 @@ import {
   ArrowLeft,
   ChevronRight,
   MapPin,
+  type LucideIcon,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -24,7 +27,8 @@ import type {
   ServiceItem,
   VideoItem,
 } from "@/data/profile";
-import { Btn, Sheet } from "./ui";
+import type { WorkKind } from "@/data/portfolio";
+import { Btn, BtnLink, IconBtn, Sheet } from "./ui";
 import { joinParts } from "@/lib/utils";
 
 /* ── Section shell ─────────────────────────────────────────── */
@@ -48,7 +52,7 @@ export function ProfileSection({
           <button
             type="button"
             onClick={onAction}
-            className="text-xs font-semibold text-foreground"
+            className="state-layer hit-area rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-98"
           >
             {action}
           </button>
@@ -59,58 +63,67 @@ export function ProfileSection({
   );
 }
 
+/** Where an owner's empty-state button goes: profile edit, or new portfolio work of one kind. */
+export type ProfileEmptyCta =
+  | { label: string; to: "/profile/edit" }
+  | { label: string; to: "/portfolio/new/$kind"; kind: WorkKind };
+
 export function ProfileEmpty({
   title,
   body,
   cta,
-  onCta,
 }: {
   title: string;
   body: string;
-  cta?: string | undefined;
-  onCta?: (() => void) | undefined;
+  cta?: ProfileEmptyCta | undefined;
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card p-5 text-center">
       <h3 className="text-2">{title}</h3>
-      <p className="mx-auto mt-1 max-w-[260px] text-xs leading-relaxed text-muted-foreground">
-        {body}
-      </p>
+      <p className="mx-auto mt-1 max-w-xs text-1 leading-relaxed text-muted-foreground">{body}</p>
       {cta ? (
-        <Btn variant="outline" className="mt-3 min-h-11 text-xs" onClick={() => onCta?.()}>
-          {cta}
-        </Btn>
+        <BtnLink
+          {...(cta.to === "/portfolio/new/$kind"
+            ? { to: cta.to, params: { kind: cta.kind } }
+            : { to: cta.to })}
+          variant="outline"
+          className="mt-3 min-h-11 text-1"
+        >
+          {cta.label}
+        </BtnLink>
       ) : null}
     </div>
   );
 }
 
+/** Same frame as the loaded profile (full-bleed cover, overlapping photo, actions), so nothing jumps. */
 export function ProfileSkeleton() {
   return (
-    <div className="animate-pulse px-5 py-6" aria-busy="true" aria-label="Loading profile">
-      <div className="h-40 w-full rounded-lg bg-subtle" />
-      <div className="mt-4 flex items-center gap-3">
-        <div className="h-20 w-20 rounded-lg bg-subtle" />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 w-2/3 rounded-full bg-subtle" />
-          <div className="h-3 w-1/2 rounded-full bg-subtle" />
-        </div>
+    <div className="animate-pulse" aria-busy="true" aria-label="Loading profile">
+      <div className="h-44 w-full bg-subtle" />
+      <div className="-mt-10 px-5">
+        <div className="h-20 w-20 rounded-lg border-2 border-background bg-subtle" />
+        <div className="mt-3 h-4 w-2/3 rounded-full bg-subtle" />
+        <div className="mt-2 h-3 w-1/2 rounded-full bg-subtle" />
       </div>
-      <div className="mt-4 h-12 rounded-full bg-subtle" />
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="mt-4 h-24 rounded-lg bg-subtle" />
-      ))}
+      <div className="px-5 pt-4">
+        <div className="h-12 rounded-full bg-subtle" />
+        <div className="mt-4 h-16 rounded-lg bg-subtle" />
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="mt-4 h-24 rounded-lg bg-subtle" />
+        ))}
+      </div>
     </div>
   );
 }
 
-/* ── Badges & chips ────────────────────────────────────────── */
+/* ── Badges & pills ────────────────────────────────────────── */
 
 export function VerificationBadge({ tier, compact }: { tier: string; compact?: boolean }) {
   const industry = tier === "Industry Verified" || tier === "Professional";
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full bg-subtle px-2 py-1 text-1 font-bold uppercase tracking-wide ${
+      className={`inline-flex items-center gap-1 rounded-full bg-subtle pill ${
         industry ? "text-foreground" : "text-muted-foreground"
       }`}
       title={tier}
@@ -125,8 +138,8 @@ export function StatusBadge({ status }: { status: string }) {
   const busy = status === "Busy" || status === "Touring";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${
-        busy ? "bg-subtle text-muted-foreground" : "bg-success-container text-success"
+      className={`pill shrink-0 ${
+        busy ? "bg-subtle text-muted-foreground" : "bg-success-container text-success-strong"
       }`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${busy ? "bg-muted-foreground" : "bg-success"}`} />
@@ -143,14 +156,26 @@ export function TagChip({
   tone?: "subtle" | "pink" | "purple";
 }) {
   const styles: Record<string, string> = {
-    subtle: "bg-subtle text-muted-foreground",
+    subtle: "bg-subtle text-foreground",
     pink: "bg-subtle text-foreground",
     purple: "bg-status-category-bg text-status-category-text",
   };
   return (
-    <span className={`rounded-full px-3 py-1.5 text-1 font-semibold ${styles[tone]}`}>
+    <span className={`rounded-full px-3 py-1.5 text-sm font-medium ${styles[tone]}`}>
       {children}
     </span>
+  );
+}
+
+/**
+ * Facets of a profile (genres, instruments, languages…) as one grouped list: each row is an icon
+ * and a sentence-case label over its tags, rows split by hairlines. Empty rows don't render.
+ */
+export function ChipGroupList({ children }: { children: ReactNode }) {
+  return (
+    <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+      {children}
+    </div>
   );
 }
 
@@ -158,15 +183,18 @@ export function ChipGroup({
   label,
   items,
   tone,
+  icon: Icon,
 }: {
   label: string;
   items: string[];
   tone?: "subtle" | "pink" | "purple";
+  icon?: LucideIcon;
 }) {
   if (!items.length) return null;
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <p className="mb-2.5 text-1 font-bold uppercase tracking-wide text-muted-foreground">
+    <div className="px-4 py-3.5">
+      <p className="mb-2.5 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+        {Icon ? <Icon size={16} strokeWidth={1.75} aria-hidden /> : null}
         {label}
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -186,7 +214,7 @@ export function InfoRow({ label, value }: { label: string; value: string }) {
       <span className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
-      <span className="max-w-[58%] text-right text-xs font-semibold">{value}</span>
+      <span className="max-w-3/5 text-right text-1 font-semibold">{value}</span>
     </div>
   );
 }
@@ -207,10 +235,12 @@ export function ProfileHero({
 }: {
   p: PersonProfile;
   owner?: boolean;
-  onShare: () => void;
+  /** Left out when there is no username to share. */
+  onShare?: (() => void) | undefined;
   onMore?: (() => void) | undefined;
   back?: string | undefined;
 }) {
+  const handle = joinParts(p.username ? `@${p.username}` : "", p.yearsActive);
   return (
     <header>
       <div className="relative h-44">
@@ -232,23 +262,16 @@ export function ProfileHero({
           </Link>
         ) : null}
         <div className="absolute right-5 top-5 flex gap-2">
-          <button
-            type="button"
-            onClick={onShare}
-            aria-label="Share profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
-          >
-            <Share2 size={16} aria-hidden />
-          </button>
+          {/* The owner shares from the actions row, so the hero has no second Share. */}
+          {onShare && !owner ? (
+            <IconBtn label="Share profile" variant="plain" className="bg-card/90" onClick={onShare}>
+              <Share2 size={16} aria-hidden />
+            </IconBtn>
+          ) : null}
           {onMore ? (
-            <button
-              type="button"
-              onClick={onMore}
-              aria-label="More options"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-card/90 text-lg leading-none"
-            >
-              ⋯
-            </button>
+            <IconBtn label="More options" variant="plain" className="bg-card/90" onClick={onMore}>
+              <MoreHorizontal size={18} aria-hidden />
+            </IconBtn>
           ) : null}
         </div>
       </div>
@@ -273,14 +296,15 @@ export function ProfileHero({
           ) : null}
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <h1 className="text-3 leading-tight">{p.name}</h1>
-          <VerificationBadge tier={p.verification} />
-        </div>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          @{p.username}
-          {p.yearsActive ? ` · ${p.yearsActive}` : ""}
-        </p>
+        {p.name || isVerifiedTier(p.verification) || p.availability ? (
+          <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+            {p.name ? <h1 className="text-3 leading-tight">{p.name}</h1> : null}
+            {isVerifiedTier(p.verification) ? <VerificationBadge tier={p.verification} /> : null}
+            {/* Availability sits with the name, where people look first. */}
+            {p.availability ? <StatusBadge status={p.availability} /> : null}
+          </div>
+        ) : null}
+        {handle ? <p className="mt-0.5 text-1 text-muted-foreground">{handle}</p> : null}
         {p.primaryRole ? (
           <p className="mt-2 text-sm font-semibold">
             {[p.primaryRole, ...p.secondaryRoles].join(" · ")}
@@ -291,11 +315,6 @@ export function ProfileHero({
             <MapPin size={12} className="shrink-0" aria-hidden />
             {p.location}
           </p>
-        ) : null}
-        {p.availability ? (
-          <div className="mt-2.5">
-            <StatusBadge status={p.availability} />
-          </div>
         ) : null}
         {owner && p.privacy !== "Public" ? (
           <p className="mt-2 text-1 font-semibold text-warn">Visibility: {p.privacy}</p>
@@ -310,7 +329,8 @@ export function StatRow({ p }: { p: PersonProfile }) {
     { label: "Connections", value: p.stats.connections },
     { label: "Followers", value: p.stats.followers },
     { label: "Plays", value: p.stats.plays },
-    { label: "Credits", value: String(p.stats.credits) },
+    // No credits reads "—", like the other empty stats, not "0".
+    { label: "Credits", value: p.stats.credits ? String(p.stats.credits) : "—" },
   ];
   return (
     <div className="mt-4 grid grid-cols-4 gap-2 rounded-lg border border-border bg-card p-3">
@@ -337,7 +357,7 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
       />
       <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
       <div className="absolute inset-x-4 bottom-4 text-background">
-        <span className="rounded-full bg-primary px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-primary-foreground">
+        <span className="rounded-full bg-primary pill text-primary-foreground">
           Featured {featured.kind}
         </span>
         <h3 className="mt-2 text-2 text-background">{featured.title}</h3>
@@ -475,7 +495,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
         )}
       </div>
       {s.description ? (
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{s.description}</p>
+        <p className="mt-1 text-1 leading-relaxed text-muted-foreground">{s.description}</p>
       ) : null}
       {s.mode || s.turnaround || s.availability ? (
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -484,7 +504,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
           {s.availability ? <TagChip tone="pink">{s.availability}</TagChip> : null}
         </div>
       ) : null}
-      <Btn variant="outline" className="mt-3 w-full min-h-11 text-xs" onClick={onEnquire}>
+      <Btn variant="outline" className="mt-3 w-full min-h-11 text-1" onClick={onEnquire}>
         Enquire
       </Btn>
     </article>
@@ -498,7 +518,7 @@ export function ExperienceCard({ e }: { e: ExperienceItem }) {
       <div className="min-w-0">
         <h3 className="text-2">{e.title}</h3>
         <p className="text-1 font-semibold text-muted-foreground">{joinParts(e.org, e.period)}</p>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{e.detail}</p>
+        <p className="mt-1 text-1 leading-relaxed text-muted-foreground">{e.detail}</p>
       </div>
     </div>
   );
@@ -538,7 +558,7 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
           <h3 className="truncate text-2">{r.by}</h3>
           <p className="truncate text-1 text-muted-foreground">{r.org}</p>
         </div>
-        <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-warn">
+        <span className="flex shrink-0 items-center gap-1 text-1 font-semibold text-warn">
           <Star size={12} fill="currentColor" aria-hidden />
           {r.stars.toFixed(1)}
         </span>
@@ -548,11 +568,11 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
           {r.context}
         </p>
       ) : null}
-      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{r.text}</p>
+      <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.text}</p>
       {r.response ? (
         <div className="mt-3 rounded-lg bg-subtle p-3">
           <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Response</p>
-          <p className="mt-1 text-xs text-muted-foreground">{r.response}</p>
+          <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
         </div>
       ) : null}
     </article>
@@ -567,7 +587,7 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-2">{o.title}</h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">{o.detail}</p>
+          <p className="mt-0.5 text-1 text-muted-foreground">{o.detail}</p>
         </div>
         <Link
           to="/messages"
@@ -639,7 +659,7 @@ function QrBlock({ seed }: { seed: string }) {
       role="img"
     >
       {cells.map((on, i) => (
-        <span key={i} className={`aspect-square rounded-xs ${on ? "bg-ink" : ""}`} />
+        <span key={i} className={`aspect-square rounded-sm ${on ? "bg-ink" : ""}`} />
       ))}
     </div>
   );
@@ -654,8 +674,10 @@ export function ShareSheet({
   open: boolean;
   onClose: () => void;
 }) {
-  const [copied, setCopied] = useState(false);
-  const url = `musiclinkd.com/${p.username}`;
+  // Only rendered in the browser once opened, so window and navigator are there when it shows.
+  const url =
+    typeof window === "undefined" ? "" : `${window.location.origin}/profile/${p.username}`;
+  const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
   return (
     <Sheet open={open} onClose={onClose} title="Share profile">
       <div className="ink-gradient overflow-hidden rounded-lg border border-border">
@@ -686,24 +708,35 @@ export function ShareSheet({
             <p className="text-1 font-bold uppercase tracking-wide opacity-70">
               MusicLinkd identity
             </p>
-            <p className="mt-1 truncate text-1 font-semibold">{url}</p>
+            <p className="mt-1 truncate text-1 font-semibold">{url.replace(/^https?:\/\//, "")}</p>
             <p className="mt-1 text-1 opacity-75">Scan to open this profile in MusicLinkd.</p>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
+      {/* Only actions that work: copy the link, and the system share sheet where the browser has one. */}
+      <div className={`mt-4 grid gap-2 ${canShare ? "grid-cols-2" : "grid-cols-1"}`}>
         <Btn
           onClick={() => {
-            setCopied(true);
-            window.setTimeout(() => setCopied(false), 1600);
+            navigator.clipboard
+              ?.writeText(url)
+              .then(() => toast.success("Link copied"))
+              .catch(() => toast.error("Couldn't copy the link"));
           }}
         >
-          {copied ? "Link copied" : "Copy link"}
+          Copy link
         </Btn>
-        <Btn variant="ink">Share card</Btn>
-        <Btn variant="outline">Save contact</Btn>
-        <Btn variant="ghost">Download QR</Btn>
+        {canShare ? (
+          <Btn
+            variant="ink"
+            onClick={() => {
+              // A dismissed share sheet rejects; nothing to report.
+              navigator.share({ title: p.name, url }).catch(() => undefined);
+            }}
+          >
+            Share
+          </Btn>
+        ) : null}
       </div>
     </Sheet>
   );
@@ -764,7 +797,8 @@ export function CompletionCard({
   missing,
 }: {
   percent: number;
-  missing: { id: string; label: string }[];
+  /** Each gap links to where it is filled in; profile edit when it names no place. */
+  missing: { id: string; label: string; to?: string }[];
 }) {
   return (
     <div className="rounded-lg border border-border bg-subtle p-4">
@@ -783,20 +817,23 @@ export function CompletionCard({
           aria-label="Profile completion"
         />
       </div>
-      <ul className="mt-3 space-y-1.5">
+      <ul className="mt-3 space-y-0.5">
         {missing.map((m) => (
-          <li key={m.id} className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            {m.label}
+          <li key={m.id}>
+            <Link
+              to={m.to ?? "/profile/edit"}
+              className="state-layer flex min-h-10 items-center gap-2 rounded-md text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-98"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              {m.label}
+              <ChevronRight size={14} className="ml-auto shrink-0" aria-hidden />
+            </Link>
           </li>
         ))}
       </ul>
-      <Link
-        to="/profile/edit"
-        className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground"
-      >
+      <BtnLink to="/profile/edit" className="mt-3 min-h-11 w-full text-1">
         Complete profile
-      </Link>
+      </BtnLink>
     </div>
   );
 }

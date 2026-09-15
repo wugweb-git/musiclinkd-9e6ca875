@@ -141,7 +141,7 @@ function OtpScreen() {
         <AuthLink to="/auth/phone" icon={<Pencil size={15} />}>
           Change number
         </AuthLink>
-        <AuthLink to="/auth" search={{ mode: "signin" }} icon={<Mail size={15} />}>
+        <AuthLink to="/auth" icon={<Mail size={15} />}>
           Use email
         </AuthLink>
       </p>
