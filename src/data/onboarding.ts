@@ -182,7 +182,7 @@ export const workModes = [
   { key: "in-person", label: "In person", hint: "Studios, stages, sets" },
   { key: "remote", label: "Remote", hint: "Files, stems, online sessions" },
   { key: "hybrid", label: "Hybrid", hint: "A mix of both" },
-  { key: "touring", label: "Travel / touring", hint: "Happy to travel for work" },
+  { key: "touring", label: "Touring", hint: "Happy to travel for work" },
 ];
 
 export const availabilityFor = [
@@ -217,7 +217,7 @@ export const experienceLevels = [
   { key: "3-5", label: "3–5 years", hint: "Steady professional work" },
   { key: "5-10", label: "5–10 years", hint: "Established across projects" },
   { key: "10+", label: "10+ years", hint: "Deep industry experience" },
-  { key: "established", label: "Professional / established", hint: "Recognised body of work" },
+  { key: "established", label: "Established", hint: "Recognised body of work" },
 ];
 
 export const discoveryPrefs = [

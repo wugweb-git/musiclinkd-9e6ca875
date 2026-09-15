@@ -38,6 +38,7 @@ import {
   ExperienceCard,
   FeaturedCard,
   GalleryGrid,
+  NoCover,
   MarketEntryCard,
   MoreSheet,
   OpportunityCard,
@@ -462,17 +463,12 @@ function Portfolio({
           )}
         </div>
       </ProfileSection>
-      <ProfileSection title="Gallery">
-        {p.gallery.length ? (
+      {/* Gallery shows only for profiles that already have images (owner, 15 Sep); there is no upload. */}
+      {p.gallery.length ? (
+        <ProfileSection title="Gallery">
           <GalleryGrid images={p.gallery} />
-        ) : (
-          // No owner button: the gallery reads its own table, and new image work lands in Projects.
-          <ProfileEmpty
-            title="No gallery images"
-            body="Studio, performance and behind-the-scenes images will appear here."
-          />
-        )}
-      </ProfileSection>
+        </ProfileSection>
+      ) : null}
     </>
   );
 }
@@ -511,7 +507,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
                     className="aspect-square w-full object-cover"
                   />
                 ) : (
-                  <div aria-hidden className="aspect-square w-full bg-subtle" />
+                  <NoCover className="aspect-square w-full" />
                 )}
                 <div className="p-3">
                   <h3 className="truncate text-1">{release.title}</h3>

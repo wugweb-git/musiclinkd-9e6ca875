@@ -29,7 +29,8 @@ import type {
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { Btn, BtnLink, IconBtn, Sheet } from "./ui";
-import { joinParts } from "@/lib/utils";
+import { cn, joinParts } from "@/lib/utils";
+import { LogoMark } from "./logo";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -387,7 +388,7 @@ export function AudioTrackCard({
           className="h-14 w-14 rounded-md object-cover"
         />
       ) : (
-        <div aria-hidden className="h-14 w-14 shrink-0 rounded-md bg-subtle" />
+        <NoCover className="h-14 w-14 shrink-0 rounded-md" />
       )}
       <div className="min-w-0 flex-1">
         <h3 className="truncate text-2">{track.title}</h3>
@@ -410,6 +411,15 @@ export function AudioTrackCard({
   );
 }
 
+/** A work with no cover (its link had no preview image): the logo on ink. */
+export function NoCover({ className }: { className?: string }) {
+  return (
+    <div aria-hidden className={cn("flex items-center justify-center bg-ink", className)}>
+      <LogoMark className="w-2/5 max-w-16 text-primary-foreground" />
+    </div>
+  );
+}
+
 export function VideoCard({ v }: { v: VideoItem }) {
   return (
     <article className="w-[220px] shrink-0 overflow-hidden rounded-lg border border-border bg-card">
@@ -417,7 +427,7 @@ export function VideoCard({ v }: { v: VideoItem }) {
         {v.thumb ? (
           <img src={v.thumb} alt={v.title} loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <div aria-hidden className="h-full w-full bg-subtle" />
+          <NoCover className="h-full w-full" />
         )}
         <span className="absolute inset-0 flex items-center justify-center">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-card/90">
