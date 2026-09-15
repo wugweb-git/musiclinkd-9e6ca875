@@ -158,6 +158,31 @@ function StepRoute() {
   const [claiming, setClaiming] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
   useEffect(() => setClaimError(null), [draft.username]);
+
+  // Google sign-in gives first and last name: prefill the display name and suggest first.last as
+  // the username, once, only into empty fields. The availability check runs on the suggestion.
+  const { user } = useAuth();
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (!hydrated || !user || prefilled.current) return;
+    prefilled.current = true;
+    const meta = user.user_metadata as { given_name?: string; family_name?: string };
+    const first = meta.given_name?.trim() ?? "";
+    const last = meta.family_name?.trim() ?? "";
+    if (!first) return;
+    const patch: Partial<OnboardingDraft> = {};
+    if (!draft.displayName.trim()) patch.displayName = [first, last].filter(Boolean).join(" ");
+    if (!draft.username && !claimedUsername) {
+      const slug = (s: string) =>
+        s
+          .normalize("NFKD")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+      const suggestion = [slug(first), slug(last)].filter(Boolean).join(".").slice(0, 30);
+      if (validateUsername(suggestion).ok) patch.username = suggestion;
+    }
+    if (Object.keys(patch).length) set(patch);
+  }, [hydrated, user, draft.displayName, draft.username, claimedUsername, set]);
   // Role and instruments ask twice on one screen: the choice, then a follow-up (extra roles; how
   // long each instrument has been played). The second question is `?q=2`.
   const stageReady = secondQuestionReady(id, draft);
