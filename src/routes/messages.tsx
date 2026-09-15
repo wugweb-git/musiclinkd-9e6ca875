@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Handshake } from "lucide-react";
 import { Screen } from "@/components/ml/ui";
 import { TabHeader } from "@/components/ml/tab-header";
 import { talents } from "@/data/discover";
@@ -27,10 +26,9 @@ function Messages() {
         actions={
           <Link
             to="/collab"
-            aria-label="Collaborations"
-            className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            className="text-[11px] font-bold uppercase tracking-wide text-foreground"
           >
-            <Handshake size={18} aria-hidden />
+            Collabs
           </Link>
         }
       />

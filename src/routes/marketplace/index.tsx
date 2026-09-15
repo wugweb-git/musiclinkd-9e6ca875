@@ -52,10 +52,9 @@ function MarketHome() {
           <>
             <Link
               to="/marketplace/sell"
-              aria-label="Sell"
-              className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full bg-ink text-background"
+              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-xs font-semibold text-background"
             >
-              <Plus size={18} aria-hidden />
+              <Plus size={14} aria-hidden /> Sell
             </Link>
             <button
               type="button"
