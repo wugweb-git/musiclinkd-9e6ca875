@@ -3,9 +3,12 @@ import { useState } from "react";
 import { Plus, Users } from "lucide-react";
 import { Screen, TopBar, SearchBar, BtnLink } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
-import { bands, myBandId } from "@/data/band";
+import { useAuth } from "@/hooks/use-auth";
+import { bandViewFromRow, loadBands } from "@/lib/band-view";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/bands/")({
+  loader: () => loadBands(),
   head: () => ({
     meta: [
       { title: "Bands & Groups | MusicLinkd" },
@@ -27,13 +30,17 @@ const tabs = ["Discover", "My bands"] as const;
 function BandsIndex() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Discover");
   const [q, setQ] = useState("");
-  const [loading] = useState(false);
+  const { bands: rows, labels } = Route.useLoaderData();
+  const { user, loading } = useAuth();
+  const viewerId = user?.id ?? null;
+  const bands = rows.map((r) => bandViewFromRow(r, labels, viewerId));
 
   const list = bands.filter(
     (b) =>
       (q
         ? `${b.name} ${b.genres.join(" ")} ${b.city}`.toLowerCase().includes(q.toLowerCase())
-        : true) && (tab === "My bands" ? b.id === myBandId : true),
+        : true) &&
+      (tab === "My bands" ? b.members.some((m) => m.profileId === viewerId) || b.owner : true),
   );
 
   return (
@@ -55,7 +62,7 @@ function BandsIndex() {
         <SearchBar value={q} onChange={setQ} placeholder="Search bands, genres, cities" />
         <Segmented value={tab} options={tabs} onChange={setTab} />
 
-        {loading ? (
+        {loading && tab === "My bands" ? (
           <Loading />
         ) : list.length === 0 ? (
           <EmptyState
@@ -71,40 +78,53 @@ function BandsIndex() {
             {list.map((b) => (
               <Link key={b.id} to="/bands/$id" params={{ id: b.id }} className="block">
                 <Card className="p-0 overflow-hidden">
-                  <img src={b.cover} alt="" loading="lazy" className="h-28 w-full object-cover" />
+                  {b.cover ? (
+                    <img src={b.cover} alt="" loading="lazy" className="h-28 w-full object-cover" />
+                  ) : (
+                    <div aria-hidden className="h-28 w-full bg-subtle" />
+                  )}
                   <div className="p-4">
                     <div className="flex items-start gap-3">
-                      <img
-                        src={b.avatar}
-                        alt=""
-                        loading="lazy"
-                        className="-mt-10 h-14 w-14 shrink-0 rounded-md border-2 border-card object-cover"
-                      />
+                      {b.avatar ? (
+                        <img
+                          src={b.avatar}
+                          alt=""
+                          loading="lazy"
+                          className="-mt-10 h-14 w-14 shrink-0 rounded-md border-2 border-card object-cover"
+                        />
+                      ) : (
+                        <div
+                          aria-hidden
+                          className="-mt-10 h-14 w-14 shrink-0 rounded-md border-2 border-card bg-subtle"
+                        />
+                      )}
                       <div className="min-w-0 flex-1">
                         <h2 className="truncate text-[17px] leading-tight">{b.name}</h2>
                         <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
-                          {b.genres.join(" · ")} · {b.city}
+                          {joinParts(b.genres.join(" · "), b.city)}
                         </p>
                       </div>
-                      <StatusPill
-                        label={b.availability}
-                        tone={
-                          b.availability === "Available"
-                            ? "good"
-                            : b.availability === "Booked"
-                              ? "bad"
-                              : "warn"
-                        }
-                      />
+                      {b.availability ? (
+                        <StatusPill
+                          label={b.availability}
+                          tone={
+                            b.availability === "Available"
+                              ? "good"
+                              : b.availability === "Booked"
+                                ? "bad"
+                                : "warn"
+                          }
+                        />
+                      ) : null}
                     </div>
-                    <p className="mt-3 line-clamp-2 text-[13px] text-muted-foreground">
-                      {b.tagline}
-                    </p>
+                    {b.tagline ? (
+                      <p className="mt-3 line-clamp-2 text-[13px] text-muted-foreground">
+                        {b.tagline}
+                      </p>
+                    ) : null}
                     <div className="mt-3 flex items-center gap-2 text-[12px] text-muted-foreground">
                       <Users size={14} aria-hidden />
-                      <span className="truncate">
-                        {b.members.length} members · {b.followers.toLocaleString()} followers
-                      </span>
+                      <span className="truncate">{b.members.length} members</span>
                     </div>
                     {b.lookingFor.length ? (
                       <div className="rail no-scrollbar mt-3 flex gap-2 overflow-x-auto">

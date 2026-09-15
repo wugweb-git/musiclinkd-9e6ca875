@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented, StatusPill } from "@/components/ml/kit";
-import { getBusiness } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
 
 export const Route = createFileRoute("/business/$id/portfolio")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Business portfolio | MusicLinkd" },
@@ -24,8 +25,7 @@ export const Route = createFileRoute("/business/$id/portfolio")({
 const tabs = ["Credits", "Gallery"] as const;
 
 function BusinessPortfolio() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [tab, setTab] = useState<(typeof tabs)[number]>("Credits");
 
   if (!b) {
@@ -53,11 +53,13 @@ function BusinessPortfolio() {
           b.credits.length ? (
             <div className="space-y-3">
               {b.credits.map((c) => (
-                <Card key={c.title}>
+                <Card key={c.id}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{c.title}</p>
-                      <p className="mt-1 text-[13px] text-muted-foreground">{c.meta}</p>
+                      {c.meta ? (
+                        <p className="mt-1 text-[13px] text-muted-foreground">{c.meta}</p>
+                      ) : null}
                     </div>
                     <StatusPill label="Public" tone="good" />
                   </div>

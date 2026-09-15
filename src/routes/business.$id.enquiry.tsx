@@ -3,9 +3,10 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
-import { getBusiness } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
 
 export const Route = createFileRoute("/business/$id/enquiry")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Enquire with a business | MusicLinkd" },
@@ -29,8 +30,7 @@ export const Route = createFileRoute("/business/$id/enquiry")({
 const intents = ["Book a room", "Mixing / mastering", "Event or live", "Something else"];
 
 function BusinessEnquiry() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [intent, setIntent] = useState(intents[0]!);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
@@ -109,24 +109,6 @@ function BusinessEnquiry() {
         <Btn className="w-full" disabled={message.trim().length < 8} onClick={() => setSent(true)}>
           Send enquiry
         </Btn>
-
-        {/* Direct booking needs a bookable space in data; without one, the enquiry above is the way in. */}
-        {b?.bookableId ? (
-          <Card>
-            <p className="text-sm font-semibold">Already know what you want?</p>
-            <p className="mt-1 text-[13px] text-muted-foreground">
-              Pick a room and a date and skip the back and forth.
-            </p>
-            <BtnLink
-              to="/booking/$id"
-              params={{ id: b.bookableId }}
-              variant="outline"
-              className="mt-3 w-full"
-            >
-              Book a room
-            </BtnLink>
-          </Card>
-        ) : null}
       </div>
     </Screen>
   );

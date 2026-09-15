@@ -1,7 +1,10 @@
 /**
- * FLOW 12 — BUSINESS PROFILES (design-only mock data).
+ * FLOW 12 — BUSINESS PROFILES. Types, copy and demo content. The business screens read the database
+ * (src/lib/profile-groups.functions.ts); `myBusinesses` and `businessReviews` are the seed source for
+ * supabase/migrations/20260915120000_business_accounts.sql (supabase/generators/import_groups.py).
  * Canonical names: business_profile, business_type, business_member, business_space.
- * A business is a separate entity owned by a person profile — never a duplicate person.
+ * A business is an account of its own (every account that is not talent), in the same username
+ * namespace as talent.
  */
 
 export type BusinessType = "studio" | "label" | "production_house" | "venue" | "agency" | "rental";
@@ -164,8 +167,6 @@ export const myBusinesses: BusinessProfile[] = [
     ownerUsername: "ananya",
   },
 ];
-
-export const getBusiness = (id: string) => myBusinesses.find((b) => b.id === id);
 
 export const businessRoleLabel: Record<BusinessRole, string> = {
   owner: "Owner",

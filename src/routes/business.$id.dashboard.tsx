@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BarChart3, CalendarClock, Images, Inbox, ShieldCheck, Star, Wrench } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
-import { businessAnalytics, businessLeads, getBusiness } from "@/data/business";
+import { EmptyState, Row } from "@/components/ml/kit";
+import { businessView, loadBusiness } from "@/lib/business-view";
 
 export const Route = createFileRoute("/business/$id/dashboard")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Business dashboard | MusicLinkd" },
@@ -26,8 +27,7 @@ export const Route = createFileRoute("/business/$id/dashboard")({
 });
 
 function BusinessDashboard() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
 
   if (!b) {
     return (
@@ -43,45 +43,17 @@ function BusinessDashboard() {
     );
   }
 
-  const newLeads = businessLeads.filter((l) => l.status === "new").length;
-
   return (
     <Screen>
       <TopBar title="Dashboard" subtitle={b.name} back={`/business/${b.id}`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        <Card>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold">
-                {newLeads} new {newLeads === 1 ? "enquiry" : "enquiries"}
-              </p>
-              <p className="mt-1 text-[13px] text-muted-foreground">
-                Answering within an hour is the single biggest lever you have.
-              </p>
-            </div>
-            <StatusPill label="Today" tone="brand" />
-          </div>
-        </Card>
-
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { label: "Views", value: businessAnalytics.views.toLocaleString("en-IN") },
-            { label: "Enquiries", value: businessAnalytics.enquiries },
-            { label: "Bookings", value: businessAnalytics.bookings },
-          ].map((s) => (
-            <Card key={s.label}>
-              <p className="text-[11px] text-muted-foreground">{s.label}</p>
-              <p className="mt-1 text-[18px] font-bold leading-none">{s.value}</p>
-            </Card>
-          ))}
-        </div>
-
+        {/* Leads, views, enquiries and bookings are not stored yet: no card or figures. */}
         <div className="space-y-2">
           <Row
             icon={<Inbox size={16} />}
             title="Leads"
-            subtitle={`${newLeads} waiting on a reply`}
+            subtitle=""
             to="/business/$id/leads"
             params={{ id: b.id }}
           />
@@ -116,7 +88,11 @@ function BusinessDashboard() {
           <Row
             icon={<Star size={16} />}
             title="Reviews"
-            subtitle={`${b.stats.rating} from ${b.stats.reviews} reviews`}
+            subtitle={
+              b.rating != null && b.reviewCount != null
+                ? `${b.rating} from ${b.reviewCount} reviews`
+                : ""
+            }
             to="/business/$id/reviews"
             params={{ id: b.id }}
           />

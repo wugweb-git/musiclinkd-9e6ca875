@@ -2,9 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarClock, Plus } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
-import { getBusiness } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/business/$id/services")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Business services | MusicLinkd" },
@@ -23,8 +25,7 @@ export const Route = createFileRoute("/business/$id/services")({
 });
 
 function BusinessServices() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
 
   if (!b) {
     return (
@@ -104,7 +105,7 @@ function BusinessServices() {
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{sp.name}</p>
                   <p className="truncate text-[12px] text-muted-foreground">
-                    {sp.rate} · {sp.capacity}
+                    {joinParts(sp.rate, sp.capacity)}
                   </p>
                 </div>
                 <StatusPill label="Bookable" tone="brand" />
