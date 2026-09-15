@@ -1,8 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Dialog, Price } from "@/components/ml/kit";
-import { getService, pricingModelLabel, serviceStatusTone, servicePrice } from "@/data/services";
+import { Card, StatusPill, EmptyState, Dialog, Loading, Price } from "@/components/ml/kit";
+import { StateCard } from "@/components/ml/portfolio";
+import { serviceStatusTone } from "@/data/services";
+import {
+  categoryEmoji,
+  optionLabel,
+  useRefreshServices,
+  useService,
+  useServiceOptions,
+  workModesText,
+} from "@/hooks/use-services";
+import { priceParts } from "@/lib/price";
+import { deleteService, setServiceStatus } from "@/lib/services.functions";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/services/$id/")({
   head: () => ({
@@ -26,149 +40,200 @@ export const Route = createFileRoute("/services/$id/")({
 
 function ServiceDetail() {
   const { id } = Route.useParams();
-  const s = getService(id);
+  const { service: s, owner, pending, error, retry } = useService(id);
+  const { options } = useServiceOptions();
+  const refresh = useRefreshServices();
+  const updateStatus = useServerFn(setServiceStatus);
+  const remove = useServerFn(deleteService);
   const [manage, setManage] = useState(false);
-  const [paused, setPaused] = useState(s?.status === "paused");
+  const [busy, setBusy] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const [removed, setRemoved] = useState(false);
 
-  if (!s) {
+  if (pending || error || (!s && !removed)) {
     return (
       <Screen>
         <TopBar title="Service" back="/services" />
         <div className="px-5 pt-6">
-          <EmptyState title="Service not found" body="It may have been removed." />
+          {pending ? (
+            <Loading />
+          ) : error ? (
+            <StateCard
+              tone="error"
+              title="We couldn't load this service"
+              body="Check your connection and try again."
+              action={<Btn onClick={retry}>Retry</Btn>}
+            />
+          ) : (
+            <EmptyState title="Service not found" body="It may have been removed." />
+          )}
         </div>
       </Screen>
     );
   }
 
+  async function run(action: () => Promise<unknown>) {
+    setBusy(true);
+    try {
+      await action();
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update this service");
+    } finally {
+      setBusy(false);
+      setManage(false);
+    }
+  }
+
+  const paused = s?.status !== "active";
+
   return (
     <Screen>
       <TopBar
-        title={s.category}
+        title={optionLabel(options?.categories, s?.category) || "Service"}
         back="/services"
         right={
-          <button
-            type="button"
-            onClick={() => setManage(true)}
-            className="text-[12px] font-semibold text-foreground"
-          >
-            Manage
-          </button>
+          owner ? (
+            <button
+              type="button"
+              onClick={() => setManage(true)}
+              className="text-[12px] font-semibold text-foreground"
+            >
+              Manage
+            </button>
+          ) : null
         }
       />
 
-      <div className="space-y-4 px-5 pt-4 pb-6">
-        <Card className="space-y-3">
-          <div className="flex items-start gap-3">
-            <span
-              aria-hidden
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-subtle text-[22px]"
-            >
-              {s.emoji}
-            </span>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-[17px] font-bold leading-snug">{s.title}</h1>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                {pricingModelLabel[s.pricingModel]} · {s.workMode}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start justify-between gap-2">
-            <Price
-              price={servicePrice({ price: s.basePrice, unit: s.unit })}
-              amountClassName="text-[18px] font-bold"
-            />
-            <StatusPill
-              label={paused ? "paused" : s.status}
-              tone={paused ? "warn" : serviceStatusTone[s.status]}
-            />
-          </div>
-          <p className="text-[13px] leading-relaxed text-muted-foreground">{s.description}</p>
-        </Card>
-
-        <Card className="space-y-2">
-          <h2 className="text-[15px]">What you get</h2>
-          <ul className="space-y-1.5">
-            {s.deliverables.map((d) => (
-              <li key={d} className="flex gap-2 text-[13px]">
-                <span aria-hidden className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                {d}
-              </li>
-            ))}
-          </ul>
-          <p className="pt-1 text-[12px] text-muted-foreground">Turnaround {s.turnaround}</p>
-        </Card>
-
-        {s.packages.length ? (
-          <section className="space-y-3">
-            <h2 className="text-[15px] font-semibold">Packages</h2>
-            {s.packages.map((p) => (
-              <Card key={p.id} className="space-y-2">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-[14px] font-semibold">{p.name}</p>
-                  {p.popular ? <StatusPill label="popular" tone="brand" /> : null}
-                </div>
-                <Price price={servicePrice(p)} amountClassName="text-[16px] font-bold" />
-                <ul className="space-y-1">
-                  {p.includes.map((i) => (
-                    <li key={i} className="text-[12px] text-muted-foreground">
-                      · {i}
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-[11px] text-muted-foreground">
-                  {p.turnaround} · {p.revisions}
-                </p>
-              </Card>
-            ))}
-          </section>
-        ) : null}
-
-        {s.addons.length ? (
-          <Card className="space-y-2">
-            <h2 className="text-[15px]">Add-ons</h2>
-            {s.addons.map((a) => (
-              <div
-                key={a.id}
-                className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
+      {s ? (
+        <div className="space-y-4 px-5 pt-4 pb-6">
+          <Card className="space-y-3">
+            <div className="flex items-start gap-3">
+              <span
+                aria-hidden
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-subtle text-[22px]"
               >
-                <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
-                <Price
-                  price={servicePrice(a)}
-                  align="end"
-                  className="shrink-0"
-                  amountClassName="text-[13px] font-semibold"
-                />
+                {categoryEmoji(s.category)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-[17px] font-bold leading-snug">{s.name}</h1>
+                <p className="mt-1 text-[12px] text-muted-foreground">
+                  {joinParts(
+                    optionLabel(options?.pricingModels, s.pricing_model),
+                    workModesText(options, s.work_modes) || s.mode,
+                  )}
+                </p>
               </div>
-            ))}
+            </div>
+            <div className="flex items-start justify-between gap-2">
+              <Price
+                price={priceParts(s.price_paise, s.price_unit, s.price_note)}
+                amountClassName="text-[18px] font-bold"
+              />
+              {owner ? <StatusPill label={s.status} tone={serviceStatusTone[s.status]} /> : null}
+            </div>
+            {s.description ? (
+              <p className="text-[13px] leading-relaxed text-muted-foreground">{s.description}</p>
+            ) : null}
           </Card>
-        ) : null}
 
-        <Card className="space-y-2">
-          <h2 className="text-[15px]">What the client should send</h2>
-          {s.requirements.map((r) => (
-            <p key={r} className="text-[13px] text-muted-foreground">
-              · {r}
-            </p>
-          ))}
-        </Card>
+          {s.deliverables.length || s.turnaround ? (
+            <Card className="space-y-2">
+              <h2 className="text-[15px]">What you get</h2>
+              <ul className="space-y-1.5">
+                {s.deliverables.map((d) => (
+                  <li key={d} className="flex gap-2 text-[13px]">
+                    <span
+                      aria-hidden
+                      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+                    />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+              {s.turnaround ? (
+                <p className="pt-1 text-[12px] text-muted-foreground">Turnaround {s.turnaround}</p>
+              ) : null}
+            </Card>
+          ) : null}
 
-        <div className="grid grid-cols-2 gap-2">
-          <BtnLink to="/services/availability" variant="outline" className="w-full">
-            Availability
-          </BtnLink>
-          <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
-            Preview booking
-          </BtnLink>
+          {s.packages.length ? (
+            <section className="space-y-3">
+              <h2 className="text-[15px] font-semibold">Packages</h2>
+              {s.packages.map((p) => (
+                <Card key={p.id} className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[14px] font-semibold">{p.name}</p>
+                    {p.is_popular ? <StatusPill label="popular" tone="brand" /> : null}
+                  </div>
+                  <Price
+                    price={priceParts(p.price_paise, p.price_unit)}
+                    amountClassName="text-[16px] font-bold"
+                  />
+                  <ul className="space-y-1">
+                    {p.includes.map((i) => (
+                      <li key={i} className="text-[12px] text-muted-foreground">
+                        · {i}
+                      </li>
+                    ))}
+                  </ul>
+                  {p.turnaround || p.revisions ? (
+                    <p className="text-[11px] text-muted-foreground">
+                      {joinParts(p.turnaround, p.revisions)}
+                    </p>
+                  ) : null}
+                </Card>
+              ))}
+            </section>
+          ) : null}
+
+          {s.addons.length ? (
+            <Card className="space-y-2">
+              <h2 className="text-[15px]">Add-ons</h2>
+              {s.addons.map((a) => (
+                <div
+                  key={a.id}
+                  className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
+                >
+                  <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
+                  <Price
+                    price={priceParts(a.price_paise, a.price_unit)}
+                    align="end"
+                    className="shrink-0"
+                    amountClassName="text-[13px] font-semibold"
+                  />
+                </div>
+              ))}
+            </Card>
+          ) : null}
+
+          {s.requirements.length ? (
+            <Card className="space-y-2">
+              <h2 className="text-[15px]">What the client should send</h2>
+              {s.requirements.map((r) => (
+                <p key={r} className="text-[13px] text-muted-foreground">
+                  · {r}
+                </p>
+              ))}
+            </Card>
+          ) : null}
+
+          <div className="grid grid-cols-2 gap-2">
+            <BtnLink to="/services/availability" variant="outline" className="w-full">
+              Availability
+            </BtnLink>
+            <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
+              Preview booking
+            </BtnLink>
+          </div>
         </div>
-      </div>
+      ) : null}
 
-      <Sheet open={manage} onClose={() => setManage(false)} title="Manage service">
+      <Sheet open={manage && Boolean(s)} onClose={() => setManage(false)} title="Manage service">
         <div className="space-y-2">
           <BtnLink
             to="/services/new"
-            search={{ step: "category" as const }}
+            search={{ step: "category" as const, id }}
             variant="outline"
             className="w-full"
           >
@@ -177,19 +242,20 @@ function ServiceDetail() {
           <Btn
             variant="outline"
             className="w-full"
-            onClick={() => {
-              setPaused((p) => !p);
-              setManage(false);
-            }}
+            loading={busy}
+            onClick={() =>
+              void run(() => updateStatus({ data: { id, status: paused ? "active" : "paused" } }))
+            }
           >
             {paused ? "Make bookable again" : "Pause bookings"}
           </Btn>
           <Btn
             variant="ghost"
             className="w-full"
+            loading={busy}
             onClick={() => {
               setManage(false);
-              setRemoved(true);
+              setConfirmRemove(true);
             }}
           >
             Remove service
@@ -198,9 +264,31 @@ function ServiceDetail() {
       </Sheet>
 
       <Dialog
+        open={confirmRemove && Boolean(s)}
+        title={`Delete "${s?.name ?? ""}"?`}
+        body="This cannot be undone. If you only want a break, pause it instead."
+        onClose={() => setConfirmRemove(false)}
+      >
+        <Btn
+          loading={busy}
+          onClick={() =>
+            void run(async () => {
+              await remove({ data: { id } });
+              setRemoved(true);
+            }).then(() => setConfirmRemove(false))
+          }
+        >
+          Delete service
+        </Btn>
+        <Btn variant="ghost" onClick={() => setConfirmRemove(false)}>
+          Keep it
+        </Btn>
+      </Dialog>
+
+      <Dialog
         open={removed}
         title="Service removed"
-        body="Existing bookings are unaffected. You can publish it again any time."
+        body="Existing bookings are unaffected."
         onClose={() => setRemoved(false)}
       >
         <BtnLink to="/services" className="w-full">

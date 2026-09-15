@@ -1,10 +1,10 @@
 /**
- * FLOW 11 — SERVICES & AVAILABILITY (design-only mock data).
- * Canonical names: service, service_package, service_addon, availability_rule, time_off.
- * Booking (FLOW 08) consumes these; it does not own them.
+ * FLOW 11 — SERVICES & AVAILABILITY.
+ * Services are stored (src/lib/services.functions.ts). What stays here: the category emoji (not
+ * stored), the pricing model units, the service status tones and the availability design data.
+ * `myServices` is design data no screen reads; supabase/generators/export_services_verification.ts
+ * exports it.
  */
-
-import { rupeeParts, type PriceParts } from "@/lib/price";
 
 export type ServiceStatus = "active" | "paused" | "draft";
 export type PricingModel = "hourly" | "per_song" | "per_day" | "package" | "custom";
@@ -48,13 +48,6 @@ export type Service = {
   addons: ServiceAddon[];
   stats: { views: number; enquiries: number; bookings: number; rating: number; reviews: number };
 };
-
-/** A service, package or add-on price as amount, unit and note. */
-export const servicePrice = (p: {
-  price: number;
-  unit?: string | undefined;
-  note?: string | undefined;
-}): PriceParts => ({ ...rupeeParts(p.price, p.unit), ...(p.note ? { note: p.note } : {}) });
 
 export const pricingModelLabel: Record<PricingModel, string> = {
   hourly: "Per hour",
@@ -175,8 +168,6 @@ export const myServices: Service[] = [
     stats: { views: 640, enquiries: 11, bookings: 4, rating: 5, reviews: 4 },
   },
 ];
-
-export const getService = (id: string) => myServices.find((s) => s.id === id);
 
 export const serviceStatusTone: Record<ServiceStatus, "good" | "warn" | "neutral"> = {
   active: "good",

@@ -113,23 +113,25 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 <p className="text-[13px] leading-relaxed text-muted-foreground">{b.about}</p>
               </Card>
             ) : null}
-            {b.services.length ? (
+            {b.services.some((s) => s.status === "active") ? (
               <Card className="space-y-2">
                 <h2 className="text-[15px]">Services & rates</h2>
-                {b.services.map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
-                  >
-                    <span className="min-w-0 flex-1 truncate text-[13px]">{s.label}</span>
-                    <Price
-                      price={s.price}
-                      align="end"
-                      className="shrink-0"
-                      amountClassName="text-[13px] font-semibold"
-                    />
-                  </div>
-                ))}
+                {b.services
+                  .filter((s) => s.status === "active")
+                  .map((s) => (
+                    <div
+                      key={s.id}
+                      className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
+                    >
+                      <span className="min-w-0 flex-1 truncate text-[13px]">{s.label}</span>
+                      <Price
+                        price={s.price}
+                        align="end"
+                        className="shrink-0"
+                        amountClassName="text-[13px] font-semibold"
+                      />
+                    </div>
+                  ))}
               </Card>
             ) : null}
             {b.hours.length ? (

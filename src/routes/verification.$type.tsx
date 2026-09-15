@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
-import { createFileRoute, useNavigate, notFound } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { createFileRoute, useNavigate, useRouter, notFound } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import {
   Check,
   FileText,
@@ -11,16 +13,25 @@ import {
   Eye,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet, VerifiedBadge } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Row } from "@/components/ml/kit";
+import { Card, Dialog, StatusPill, EmptyState, Loading, Row } from "@/components/ml/kit";
+import { StateCard } from "@/components/ml/portfolio";
+import { statusLabel, statusTone, verificationSteps } from "@/data/verification";
+import { formatDay, gateFor, useMyVerification } from "@/hooks/use-my-verification";
+import { haptic } from "@/lib/haptics";
 import {
-  verificationTypes,
-  myVerifications,
-  statusLabel,
-  statusTone,
-  verificationSteps,
-  eligibility,
-  type VerificationType,
-} from "@/data/verification";
+  documentProblem,
+  uploadVerificationDocument,
+  VERIFICATION_DOCUMENT_ACCEPT,
+} from "@/lib/verification-documents";
+import {
+  getVerificationTypes,
+  resubmitVerificationRequest,
+  startVerificationRequest,
+  submitVerificationRequest,
+  withdrawVerificationRequest,
+  type VerificationRequestInfo,
+  type VerificationTypeInfo,
+} from "@/lib/verification.functions";
 
 type Search = { step: number; mode?: "new" };
 
@@ -32,13 +43,16 @@ export const Route = createFileRoute("/verification/$type")({
       : 0;
     return search["mode"] === "new" ? { step, mode: "new" } : { step };
   },
-  loader: ({ params }) => {
-    const def = verificationTypes.find((t) => t.key === params.type);
-    if (!def) throw notFound();
-    return { key: def.key };
+  // A type the database does not have is not found. When the types cannot be read the screen loads
+  // them again itself.
+  loader: async ({ params }) => {
+    const result = await getVerificationTypes({ data: { roles: [] } }).catch(() => null);
+    const def = result?.types.find((t) => t.key === params.type) ?? null;
+    if (result && !def) throw notFound();
+    return { key: params.type, def };
   },
   head: ({ loaderData }) => {
-    const def = loaderData ? verificationTypes.find((t) => t.key === loaderData.key) : undefined;
+    const def = loaderData?.def;
     if (!def) {
       return {
         meta: [
@@ -81,15 +95,16 @@ function TypeNotFound() {
 }
 
 function VerificationRequestScreen() {
-  const { key } = Route.useLoaderData();
+  const { key, def: loaded } = Route.useLoaderData();
   const { step, mode } = Route.useSearch();
   const navigate = useNavigate();
-  const def = useMemo(() => verificationTypes.find((t) => t.key === key)!, [key]);
-  const existing = myVerifications.find((v) => v.type === key);
-  const gate = eligibility(key);
-
-  const resubmitting = mode === "new";
-  const status = resubmitting ? "unverified" : (existing?.status ?? "unverified");
+  const router = useRouter();
+  const v = useMyVerification();
+  const def = v.allTypes?.find((t) => t.key === key) ?? loaded;
+  const withdraw = useServerFn(withdrawVerificationRequest);
+  const resubmit = useServerFn(resubmitVerificationRequest);
+  const [busy, setBusy] = useState(false);
+  const [confirmWithdraw, setConfirmWithdraw] = useState(false);
 
   const go = (next: number) =>
     navigate({
@@ -97,6 +112,59 @@ function VerificationRequestScreen() {
       params: { type: key },
       search: { step: next, mode: "new" },
     });
+
+  if (!def || v.pending || v.error) {
+    return (
+      <Screen>
+        <TopBar title={def?.title ?? "Verification"} back="/verification" />
+        <div className="px-5 pt-6">
+          {v.error || (!def && !v.pending) ? (
+            <StateCard
+              tone="error"
+              title="We couldn't load your verification"
+              body="Check your connection and try again."
+              action={
+                <Btn
+                  onClick={() => {
+                    v.retry();
+                    void router.invalidate();
+                  }}
+                >
+                  Retry
+                </Btn>
+              }
+            />
+          ) : (
+            <Loading />
+          )}
+        </div>
+      </Screen>
+    );
+  }
+
+  const existing = v.requests.find((r) => r.type === key);
+  const gate = gateFor(def, v.history);
+
+  const resubmitting = mode === "new";
+  const status = resubmitting ? "unverified" : (existing?.status ?? "unverified");
+  // The open draft the wizard continues, if the newest request is one.
+  const draft = existing?.status === "unverified" ? existing : null;
+  const label = (id: string) => def.requirements.find((r) => r.id === id)?.label ?? "";
+  const phoneRequirement = def.requirements.find((r) => r.privateField === "phone");
+
+  async function act(action: () => Promise<unknown>) {
+    setBusy(true);
+    try {
+      await action();
+      return true;
+    } catch (err) {
+      haptic("error");
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Try again.");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
 
   if (!gate.allowed && status === "unverified") {
     return (
@@ -106,7 +174,7 @@ function VerificationRequestScreen() {
           <EmptyState title="Verify your identity first" body={gate.reason}>
             <BtnLink
               to="/verification/$type"
-              params={{ type: "identity" }}
+              params={{ type: gate.needs ?? "identity" }}
               search={{ step: 0 }}
               className="w-full"
             >
@@ -132,12 +200,15 @@ function VerificationRequestScreen() {
             </div>
             <h2 className="text-[18px] leading-tight">Verified</h2>
             <p className="text-[13px] text-muted-foreground">
-              Approved on {existing.decided} by {existing.reviewer ?? "the Trust team"}.
+              Approved on {formatDay(existing.reviewedAt)} by the Trust team.
+              {existing.expiresAt ? ` Renew by ${formatDay(existing.expiresAt)}.` : ""}
             </p>
-            <div className="flex items-center justify-center gap-2 rounded-[16px] bg-subtle px-3 py-2">
-              <span className="text-[14px] font-semibold">Aarav Mehta</span>
-              <VerifiedBadge size={14} />
-            </div>
+            {v.name ? (
+              <div className="flex items-center justify-center gap-2 rounded-[16px] bg-subtle px-3 py-2">
+                <span className="text-[14px] font-semibold">{v.name}</span>
+                <VerifiedBadge size={14} />
+              </div>
+            ) : null}
           </Card>
           <p className="text-[13px] text-muted-foreground">{def.whatOthersSee}</p>
           <Row
@@ -156,6 +227,10 @@ function VerificationRequestScreen() {
   }
 
   if (status === "in_review" && existing) {
+    const sent = [
+      ...existing.items.map((i) => label(i.requirementId)),
+      ...(existing.phone && phoneRequirement ? [phoneRequirement.label] : []),
+    ].filter(Boolean);
     return (
       <Screen>
         <TopBar title={def.title} back="/verification" />
@@ -166,27 +241,27 @@ function VerificationRequestScreen() {
               <StatusPill label={statusLabel.in_review} tone={statusTone.in_review} />
             </div>
             <p className="text-[13px] text-muted-foreground">
-              Submitted {existing.submitted}. A reviewer checks each request by hand —{" "}
+              Submitted {formatDay(existing.submittedAt)}. A reviewer checks each request by hand —{" "}
               {def.turnaround.toLowerCase()}. You will get a notification with the decision.
             </p>
           </Card>
           <Card className="space-y-2">
             <h3 className="text-[14px]">What you sent</h3>
-            {existing.documents.map((d) => (
-              <div
-                key={d.name}
-                className="flex items-center gap-2 text-[13px] text-muted-foreground"
-              >
+            {sent.map((name) => (
+              <div key={name} className="flex items-center gap-2 text-[13px] text-muted-foreground">
                 <Check size={14} className="shrink-0 text-primary" aria-hidden />
-                <span className="min-w-0 break-words">{d.name}</span>
+                <span className="min-w-0 break-words">{name}</span>
               </div>
             ))}
           </Card>
-          <Card className="py-3">
+          <Card className="space-y-3 py-3">
             <p className="text-[12px] text-muted-foreground">
               You can withdraw this request while it is in review. Withdrawing removes the documents
               from the queue.
             </p>
+            <Btn variant="outline" className="w-full" onClick={() => setConfirmWithdraw(true)}>
+              Withdraw
+            </Btn>
           </Card>
           <Row
             title="Document privacy"
@@ -194,11 +269,39 @@ function VerificationRequestScreen() {
             to="/verification/privacy"
           />
         </div>
+        <Dialog
+          open={confirmWithdraw}
+          title="Withdraw this request?"
+          body="Withdrawing removes the documents from the queue."
+          onClose={() => setConfirmWithdraw(false)}
+        >
+          <Btn
+            loading={busy}
+            onClick={() =>
+              void act(async () => {
+                await withdraw({ data: { id: existing.id } });
+                await v.refresh();
+              }).then((ok) => ok && setConfirmWithdraw(false))
+            }
+          >
+            Withdraw
+          </Btn>
+          <Btn variant="ghost" onClick={() => setConfirmWithdraw(false)}>
+            Keep it
+          </Btn>
+        </Dialog>
       </Screen>
     );
   }
 
   if (status === "rejected" && existing) {
+    // Every requirement the request should have had, and whether what was sent was accepted.
+    const checks = def.requirements.flatMap((r) => {
+      const item = existing.items.find((i) => i.requirementId === r.id);
+      const accepted = r.privateField ? Boolean(existing.phone) : item?.state === "uploaded";
+      if (r.isOptional && !item) return [];
+      return [{ id: r.id, name: r.label, accepted }];
+    });
     return (
       <Screen>
         <TopBar title={def.title} back="/verification" />
@@ -208,17 +311,19 @@ function VerificationRequestScreen() {
               <h2 className="text-[17px] leading-tight">Needs changes</h2>
               <StatusPill label={statusLabel.rejected} tone={statusTone.rejected} />
             </div>
-            <p className="text-[13px] text-muted-foreground">{existing.reason}</p>
-            <p className="text-[12px] text-muted-foreground">Reviewed {existing.decided}</p>
+            <p className="text-[13px] text-muted-foreground">{existing.rejectionReason}</p>
+            <p className="text-[12px] text-muted-foreground">
+              Reviewed {formatDay(existing.reviewedAt)}
+            </p>
           </Card>
           <Card className="space-y-2">
             <h3 className="text-[14px]">What to fix</h3>
-            {existing.documents.map((d) => (
-              <div key={d.name} className="flex items-center justify-between gap-3 text-[13px]">
-                <span className="min-w-0 break-words text-muted-foreground">{d.name}</span>
+            {checks.map((c) => (
+              <div key={c.id} className="flex items-center justify-between gap-3 text-[13px]">
+                <span className="min-w-0 break-words text-muted-foreground">{c.name}</span>
                 <StatusPill
-                  label={d.state === "rejected" ? "Replace" : "Accepted"}
-                  tone={d.state === "rejected" ? "bad" : "good"}
+                  label={c.accepted ? "Accepted" : "Replace"}
+                  tone={c.accepted ? "good" : "bad"}
                 />
               </div>
             ))}
@@ -228,9 +333,14 @@ function VerificationRequestScreen() {
           </Card>
           <Btn
             className="w-full"
-            onClick={() => {
-              void go(2);
-            }}
+            loading={busy}
+            onClick={() =>
+              void act(async () => {
+                await resubmit({ data: { fromId: existing.id } });
+                await v.refresh();
+                await go(2);
+              })
+            }
           >
             Resubmit
           </Btn>
@@ -253,8 +363,8 @@ function VerificationRequestScreen() {
               <StatusPill label={statusLabel.expired} tone={statusTone.expired} />
             </div>
             <p className="text-[13px] text-muted-foreground">
-              This badge expired on {existing.expiresOn}. It is hidden from your listings until you
-              renew.
+              This badge expired on {formatDay(existing.expiresAt)}. It is hidden from your listings
+              until you renew.
             </p>
           </Card>
           <Btn
@@ -271,28 +381,144 @@ function VerificationRequestScreen() {
     );
   }
 
-  return <Wizard def={def} step={step} go={go} />;
+  return (
+    <Wizard
+      def={def}
+      step={step}
+      go={go}
+      draft={draft}
+      signedIn={v.signedIn}
+      onSubmitted={v.refresh}
+    />
+  );
 }
+
+/** Ten digits typed with or without the country code, as +91 and the number; null otherwise. */
+function indianPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const local =
+    digits.length === 12 && digits.startsWith("91")
+      ? digits.slice(2)
+      : digits.length === 11 && digits.startsWith("0")
+        ? digits.slice(1)
+        : digits;
+  return /^[1-9]\d{9}$/.test(local) ? `+91${local}` : null;
+}
+
+type Attached = { name: string; file?: File; path?: string };
 
 function Wizard({
   def,
   step,
   go,
+  draft,
+  signedIn,
+  onSubmitted,
 }: {
-  def: VerificationType;
+  def: VerificationTypeInfo;
   step: number;
   go: (n: number) => void | Promise<void>;
+  /** The open draft of this type, whose details and documents the form starts from. */
+  draft: VerificationRequestInfo | null;
+  signedIn: boolean;
+  onSubmitted: () => Promise<unknown>;
 }) {
+  const navigate = useNavigate();
+  const start = useServerFn(startVerificationRequest);
+  const submitRequest = useServerFn(submitVerificationRequest);
   const docs = def.requirements.filter((r) => r.kind === "document");
   const infos = def.requirements.filter((r) => r.kind === "info");
 
   const [values, setValues] = useState<Record<string, string>>({});
-  const [files, setFiles] = useState<Record<string, string>>({});
+  const [files, setFiles] = useState<Record<string, Attached>>({});
   const [consent, setConsent] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [filledFrom, setFilledFrom] = useState<string | null>(null);
+  const picker = useRef<HTMLInputElement>(null);
+  const [pickFor, setPickFor] = useState<string | null>(null);
 
-  const infoDone = infos.every((r) => (values[r.label] ?? "").trim().length > 1);
-  const docsDone = docs.every((r) => files[r.label]);
+  // Continue a draft: its typed details, phone and attached documents.
+  useEffect(() => {
+    if (!draft || filledFrom === draft.id) return;
+    setFilledFrom(draft.id);
+    const nextValues: Record<string, string> = {};
+    const nextFiles: Record<string, Attached> = {};
+    for (const item of draft.items) {
+      if (item.kind === "info" && item.infoText) nextValues[item.requirementId] = item.infoText;
+      if (item.kind === "document" && item.filePath) {
+        nextFiles[item.requirementId] = { name: item.fileName ?? "", path: item.filePath };
+      }
+    }
+    const phone = def.requirements.find((r) => r.privateField === "phone");
+    if (phone && draft.phone) nextValues[phone.id] = draft.phone.replace(/^\+91/, "");
+    setValues(nextValues);
+    setFiles(nextFiles);
+  }, [draft, filledFrom, def.requirements]);
+
+  const filledIn = (r: VerificationTypeInfo["requirements"][number]) =>
+    r.privateField === "phone"
+      ? indianPhone(values[r.id] ?? "") !== null
+      : (values[r.id] ?? "").trim().length > 1;
+  const infoDone = infos.every((r) => r.isOptional || filledIn(r));
+  const docsDone = docs.every((r) => r.isOptional || files[r.id]);
+
+  function pick(requirementId: string) {
+    setPickFor(requirementId);
+    picker.current?.click();
+  }
+
+  async function submit() {
+    if (!signedIn) {
+      void navigate({ to: "/welcome" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { id } = await start({ data: { type: def.key } });
+      const items = [];
+      for (const r of def.requirements) {
+        if (r.privateField) continue;
+        if (r.kind === "info") {
+          const text = (values[r.id] ?? "").trim();
+          if (text) {
+            items.push({
+              requirementId: r.id,
+              kind: r.kind,
+              filePath: null,
+              fileName: null,
+              infoText: text,
+            });
+          }
+          continue;
+        }
+        const attached = files[r.id];
+        // A file picked now is uploaded; one already in the draft keeps its stored path.
+        const path = attached?.file
+          ? await uploadVerificationDocument(id, r.slug, attached.file)
+          : attached?.path;
+        if (!attached || !path) continue;
+        items.push({
+          requirementId: r.id,
+          kind: r.kind,
+          filePath: path,
+          fileName: attached.name,
+          infoText: null,
+        });
+      }
+      const phoneRequirement = def.requirements.find((r) => r.privateField === "phone");
+      const phone = phoneRequirement ? indianPhone(values[phoneRequirement.id] ?? "") : null;
+      await submitRequest({ data: { requestId: id, items, phone } });
+      haptic("confirm");
+      await onSubmitted();
+      void go(4);
+    } catch (err) {
+      haptic("error");
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   const label = verificationSteps[step] ?? verificationSteps[0]!;
 
@@ -302,6 +528,24 @@ function Wizard({
         title={def.title}
         subtitle={`Step ${step + 1} of ${verificationSteps.length} · ${label}`}
         back="/verification/choose"
+      />
+      <input
+        ref={picker}
+        type="file"
+        accept={VERIFICATION_DOCUMENT_ACCEPT}
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (!file || !pickFor) return;
+          const problem = documentProblem(file);
+          if (problem) {
+            haptic("error");
+            toast.error(problem);
+            return;
+          }
+          setFiles((f) => ({ ...f, [pickFor]: { name: file.name, file } }));
+        }}
       />
       <div className="px-5 pt-3">
         <div className="flex gap-1.5" aria-hidden>
@@ -326,7 +570,7 @@ function Wizard({
               <h2 className="text-[15px]">What you need</h2>
               <div className="mt-3 space-y-2">
                 {def.requirements.map((r) => (
-                  <Card key={r.label} className="py-3">
+                  <Card key={r.id} className="py-3">
                     <p className="text-[13px] font-semibold break-words">{r.label}</p>
                     <p className="mt-1 text-[12px] text-muted-foreground">{r.why}</p>
                   </Card>
@@ -339,7 +583,16 @@ function Wizard({
                 Review time: {def.turnaround.toLowerCase()}.
               </p>
             </Card>
-            <Btn className="w-full" onClick={() => void go(1)}>
+            <Btn
+              className="w-full"
+              onClick={() => {
+                if (!signedIn) {
+                  void navigate({ to: "/welcome" });
+                  return;
+                }
+                void go(1);
+              }}
+            >
               Start
             </Btn>
           </>
@@ -358,16 +611,31 @@ function Wizard({
               </Card>
             ) : (
               infos.map((r) => (
-                <label key={r.label} className="block">
+                <label key={r.id} className="block">
                   <span className="text-[13px] font-semibold">{r.label}</span>
                   <span className="mt-0.5 block text-[12px] text-muted-foreground">{r.why}</span>
-                  <input
-                    value={values[r.label] ?? ""}
-                    onChange={(e) => setValues((v) => ({ ...v, [r.label]: e.target.value }))}
-                    maxLength={140}
-                    className="mt-2 h-12 w-full rounded-[16px] border border-border bg-card px-4 text-sm outline-none focus:border-primary"
-                    placeholder="Type here"
-                  />
+                  {r.privateField === "phone" ? (
+                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-[16px] border border-border bg-card px-4 focus-within:border-primary">
+                      <span className="text-sm text-muted-foreground">+91</span>
+                      <input
+                        value={values[r.id] ?? ""}
+                        onChange={(e) => setValues((v) => ({ ...v, [r.id]: e.target.value }))}
+                        maxLength={16}
+                        inputMode="tel"
+                        autoComplete="tel-national"
+                        className="h-full min-w-0 flex-1 bg-transparent text-sm outline-none"
+                        placeholder="Type here"
+                      />
+                    </span>
+                  ) : (
+                    <input
+                      value={values[r.id] ?? ""}
+                      onChange={(e) => setValues((v) => ({ ...v, [r.id]: e.target.value }))}
+                      maxLength={140}
+                      className="mt-2 h-12 w-full rounded-[16px] border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+                      placeholder="Type here"
+                    />
+                  )}
                 </label>
               ))
             )}
@@ -404,9 +672,9 @@ function Wizard({
               Attach each document. Previews stay on this device until you submit.
             </p>
             {docs.map((r) => {
-              const file = files[r.label];
+              const file = files[r.id]?.name;
               return (
-                <Card key={r.label} className="space-y-2 py-3">
+                <Card key={r.id} className="space-y-2 py-3">
                   <div className="flex items-start gap-3">
                     <FileText size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
                     <div className="min-w-0 flex-1">
@@ -430,12 +698,7 @@ function Wizard({
                         </button>
                         <button
                           type="button"
-                          onClick={() =>
-                            setFiles((f) => ({
-                              ...f,
-                              [r.label]: `${r.label.toLowerCase().replace(/\s+/g, "-")}-v2.jpg`,
-                            }))
-                          }
+                          onClick={() => pick(r.id)}
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibold"
                         >
                           <RefreshCw size={13} aria-hidden /> Replace
@@ -445,7 +708,7 @@ function Wizard({
                           onClick={() =>
                             setFiles((f) => {
                               const next = { ...f };
-                              delete next[r.label];
+                              delete next[r.id];
                               return next;
                             })
                           }
@@ -458,12 +721,7 @@ function Wizard({
                   ) : (
                     <button
                       type="button"
-                      onClick={() =>
-                        setFiles((f) => ({
-                          ...f,
-                          [r.label]: `${r.label.toLowerCase().replace(/\s+/g, "-")}.jpg`,
-                        }))
-                      }
+                      onClick={() => pick(r.id)}
                       className="inline-flex items-center gap-1 rounded-full bg-subtle px-3 py-2 text-[12px] font-semibold"
                     >
                       <Paperclip size={13} aria-hidden /> Attach file
@@ -510,9 +768,13 @@ function Wizard({
               <Card className="space-y-2 py-3">
                 <h3 className="text-[14px]">Your details</h3>
                 {infos.map((r) => (
-                  <div key={r.label} className="text-[13px]">
+                  <div key={r.id} className="text-[13px]">
                     <p className="text-[12px] text-muted-foreground break-words">{r.label}</p>
-                    <p className="break-words text-muted-foreground">{values[r.label] || "—"}</p>
+                    <p className="break-words text-muted-foreground">
+                      {r.privateField === "phone"
+                        ? (indianPhone(values[r.id] ?? "") ?? "—")
+                        : values[r.id] || "—"}
+                    </p>
                   </div>
                 ))}
               </Card>
@@ -521,11 +783,11 @@ function Wizard({
               <h3 className="text-[14px]">Documents</h3>
               {docs.map((r) => (
                 <div
-                  key={r.label}
+                  key={r.id}
                   className="flex items-center gap-2 text-[13px] text-muted-foreground"
                 >
                   <Check size={14} className="shrink-0 text-primary" aria-hidden />
-                  <span className="min-w-0 break-words">{files[r.label] ?? "Missing"}</span>
+                  <span className="min-w-0 break-words">{files[r.id]?.name ?? "Missing"}</span>
                 </div>
               ))}
             </Card>
@@ -547,8 +809,9 @@ function Wizard({
               </Btn>
               <Btn
                 className="flex-1"
+                loading={submitting}
                 onClick={() => {
-                  if (consent) void go(4);
+                  if (consent) void submit();
                 }}
               >
                 Submit for review

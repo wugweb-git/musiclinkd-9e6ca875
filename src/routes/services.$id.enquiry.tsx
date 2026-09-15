@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, EmptyState, Price } from "@/components/ml/kit";
-import { getService, servicePrice } from "@/data/services";
+import { Card, EmptyState, Loading, Price } from "@/components/ml/kit";
+import { StateCard } from "@/components/ml/portfolio";
+import { useService } from "@/hooks/use-services";
+import { priceParts } from "@/lib/price";
 
 export const Route = createFileRoute("/services/$id/enquiry")({
   head: () => ({
@@ -27,22 +29,34 @@ const modes = ["Quick question", "Custom quote"] as const;
 
 function ServiceEnquiry() {
   const { id } = Route.useParams();
-  const s = getService(id);
+  const { service: s, owner, pending, error, retry } = useService(id);
   const [mode, setMode] = useState<(typeof modes)[number]>("Quick question");
   const [message, setMessage] = useState("");
   const [budget, setBudget] = useState("");
   const [scope, setScope] = useState("");
   const [sent, setSent] = useState(false);
 
-  if (!s) {
+  // A paused service takes no new enquiries; its owner can still preview it.
+  if (pending || error || !s || (s.status !== "active" && !owner)) {
     return (
       <Screen>
         <TopBar title="Enquiry" back="/services" />
         <div className="px-5 pt-6">
-          <EmptyState
-            title="Service not found"
-            body="This service may have been paused or removed."
-          />
+          {pending ? (
+            <Loading />
+          ) : error ? (
+            <StateCard
+              tone="error"
+              title="We couldn't load this service"
+              body="Check your connection and try again."
+              action={<Btn onClick={retry}>Retry</Btn>}
+            />
+          ) : (
+            <EmptyState
+              title="Service not found"
+              body="This service may have been paused or removed."
+            />
+          )}
         </div>
       </Screen>
     );
@@ -79,17 +93,19 @@ function ServiceEnquiry() {
 
   return (
     <Screen>
-      <TopBar title="Enquire" subtitle={s.title} back={`/services/${s.id}`} />
+      <TopBar title="Enquire" subtitle={s.name} back={`/services/${s.id}`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
-          <p className="text-sm font-semibold">{s.title}</p>
+          <p className="text-sm font-semibold">{s.name}</p>
           <Price
-            price={servicePrice({ price: s.basePrice, unit: s.unit })}
+            price={priceParts(s.price_paise, s.price_unit, s.price_note)}
             className="mt-1"
             amountClassName="text-[13px] font-semibold"
           />
-          <p className="mt-1 text-[13px] text-muted-foreground">Turnaround {s.turnaround}</p>
+          {s.turnaround ? (
+            <p className="mt-1 text-[13px] text-muted-foreground">Turnaround {s.turnaround}</p>
+          ) : null}
         </Card>
 
         <div className="flex gap-2">
@@ -147,6 +163,7 @@ function ServiceEnquiry() {
           </Card>
         )}
 
+        {/* No enquiry is stored or sent yet: there is no enquiry table or message to write to. */}
         <Btn className="w-full" disabled={!ready} onClick={() => setSent(true)}>
           {mode === "Custom quote" ? "Request quote" : "Send question"}
         </Btn>

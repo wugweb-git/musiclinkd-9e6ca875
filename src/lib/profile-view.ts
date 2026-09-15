@@ -140,6 +140,16 @@ const serviceModes: NonNullable<ServiceItem["mode"]>[] = [
   "Remote · In person",
 ];
 
+/** The card's mode from work_modes slugs, when the stored mode text is not one the card shows. */
+function modeFromWorkModes(slugs: string[] | null | undefined): ServiceItem["mode"] {
+  const remote = slugs?.includes("remote") ?? false;
+  const inPerson = slugs?.includes("in_person") ?? false;
+  if (remote && inPerson) return "Remote · In person";
+  if (remote) return "Remote";
+  if (inPerson) return "In person";
+  return undefined;
+}
+
 /** Integer paise and a unit as the amount and unit the service card shows; the note alone when unpriced. */
 function servicePrice(s: ProfileSections["services"][number]): PriceParts | undefined {
   return (
@@ -345,7 +355,7 @@ export function mergeSections(
         description: s.description ?? "",
         from: servicePrice(s),
         turnaround: s.turnaround ?? undefined,
-        mode: serviceModes.find((m) => m === s.mode),
+        mode: serviceModes.find((m) => m === s.mode) ?? modeFromWorkModes(s.work_modes),
         availability: s.availability ?? undefined,
       })),
     ),

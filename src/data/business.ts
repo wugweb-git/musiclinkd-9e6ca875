@@ -316,25 +316,3 @@ export const relatedBusinesses = [
     note: "Live room, 300 capacity",
   },
 ];
-
-export const businessVerificationChecks = [
-  {
-    key: "registration",
-    label: "Business registration",
-    detail: "GST or shop licence in the business name",
-    done: true,
-  },
-  { key: "address", label: "Address proof", detail: "Utility bill or rent agreement", done: true },
-  {
-    key: "owner",
-    label: "Owner identity",
-    detail: "Government ID of the account owner",
-    done: false,
-  },
-  {
-    key: "photos",
-    label: "Premises photos",
-    detail: "At least three photos of the actual space",
-    done: false,
-  },
-];

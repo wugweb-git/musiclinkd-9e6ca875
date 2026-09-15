@@ -39,12 +39,16 @@ export type BusinessRecord = {
     hero_banner_url: string | null;
     founded_year: number | null;
   };
+  /** Drafts are the owner's only, so a public read has active and paused services. */
   services: {
     id: string;
     name: string;
     price_paise: number | null;
     price_unit: string | null;
     price_note: string | null;
+    /** service_categories slug. */
+    category: string | null;
+    status: "active" | "paused" | "draft";
   }[];
   team: {
     id: string;
@@ -105,7 +109,7 @@ async function businessRecord(
       .maybeSingle(),
     client
       .from("profile_services")
-      .select("id, name, price_paise, price_unit, price_note")
+      .select("id, name, price_paise, price_unit, price_note, category, status")
       .eq("profile_id", profile.id)
       .order("sort_order"),
     client

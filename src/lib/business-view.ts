@@ -12,6 +12,8 @@ import { joinParts } from "@/lib/utils";
 export type BusinessView = {
   /** The account's username: the id in /business/$id. */
   id: string;
+  /** profiles.id, to tell the owner apart. */
+  profileId: string;
   name: string;
   typeLabel: string;
   verified: boolean;
@@ -25,7 +27,13 @@ export type BusinessView = {
   rating: number | null;
   reviewCount: number | null;
   about: string;
-  services: { id: string; label: string; price: PriceParts | null }[];
+  services: {
+    id: string;
+    label: string;
+    price: PriceParts | null;
+    category: string;
+    status: "active" | "paused" | "draft";
+  }[];
   hours: { day: string; hours: string }[];
   address: string;
   spaces: {
@@ -69,6 +77,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
   const typeLabel = role ? taxonomyLabel(labels, "person_types", role) : "";
   return {
     id: profile.username ?? profile.id,
+    profileId: profile.id,
     name: profile.display_name ?? profile.username ?? "",
     typeLabel,
     verified: profile.is_verified,
@@ -97,6 +106,8 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
       id: s.id,
       label: s.name,
       price: priceParts(s.price_paise, s.price_unit, s.price_note),
+      category: s.category ? taxonomyLabel(labels, "service_categories", s.category) : "",
+      status: s.status,
     })),
     hours: hoursFrom(business.operating_hours),
     address: business.business_address ?? "",
