@@ -38,20 +38,22 @@ LANGUAGE = {"English": "en", "Hindi (हिंदी)": "hi", "Punjabi (ਪੰ�
             "Tamil": "ta", "Telugu (తెలుగు)": "te", "Marathi (मराठी)": "mr", "Gujarati (ગુજરાતી)": "gu",
             "Kannada (ಕನ್ನಡ)": "kn", "Kannada": "kn", "Malayalam (മലയാളം)": "ml", "Bengali (বাংলা)": "bn",
             "Assamese (অসমীয়া)": "as"}
+# Firebase labels (keys) -> taxonomy slugs (values). A combined label maps to its first name's slug
+# (taxonomy_renames.py, owner 15 Sep 2026).
 INSTRUMENT = {"Acoustic Guitar": "acoustic_guitar", "Electric Guitar": "electric_guitar",
-              "Bass Guitar": "bass_guitar", "Keyboard / Synthesizer": "keyboard_synthesizer",
-              "Piano": "piano", "Drums / Percussion": "drums_percussion", "Tabla": "tabla",
+              "Bass Guitar": "bass_guitar", "Keyboard / Synthesizer": "keyboard",
+              "Piano": "piano", "Drums / Percussion": "drums", "Tabla": "tabla",
               "Sitar": "sitar", "Flute (Bansuri)": "flute_bansuri", "Harmonium": "harmonium",
               "Dholak": "dholak", "Violin": "violin", "Saxophone": "saxophone", "Trumpet": "trumpet",
               "Sarod": "sarod", "Shehnai": "shehnai", "Mridangam": "mridangam", "Santoor": "santoor",
               "Veena": "veena", "Tanpura": "tanpura", "Cello": "cello"}
-GENRE = {"Bollywood / Filmi": "bollywood_filmi", "Indie Pop": "indie_pop",
+GENRE = {"Bollywood / Filmi": "bollywood", "Indie Pop": "indie_pop",
          "Hindustani Classical": "hindustani_classical", "Carnatic Classical": "carnatic_classical",
-         "Punjabi Folk / Bhangra": "punjabi_folk_bhangra", "Rajasthani Folk": "rajasthani_folk",
+         "Punjabi Folk / Bhangra": "bhangra", "Rajasthani Folk": "rajasthani_folk",
          "Sufi Devotional": "sufi_devotional", "Ghazal": "ghazal", "Qawwali": "qawwali",
-         "Rock / Metal": "rock_metal", "Hip Hop / Trap": "hiphop_trap", "Lofi / Chill Beats": "lofi_chill",
-         "EDM / Synthwave": "edm_synthwave", "Acoustic / Unplugged": "acoustic_unplugged",
-         "R&B / Soul": "rnb_soul", "Jazz / Blues": "jazz_blues", "Reggae / Dub": "reggae_dub"}
+         "Rock / Metal": "rock", "Hip Hop / Trap": "hiphop", "Lofi / Chill Beats": "lofi",
+         "EDM / Synthwave": "edm", "Acoustic / Unplugged": "acoustic",
+         "R&B / Soul": "rnb", "Jazz / Blues": "jazz", "Reggae / Dub": "reggae"}
 # Firebase person_types slugs that exist unchanged in taxonomy person_types.
 PERSON_TYPES = {"singer", "rapper", "folk_vocalist", "guitarist", "keyboardist", "drummer", "sitarist",
                 "composer", "lyricist", "arranger", "producer", "sound_engineer", "sound_designer",

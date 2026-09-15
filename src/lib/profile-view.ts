@@ -57,7 +57,7 @@ const roleTypeFromKey: Record<string, ProfileRole> = {
   drummer: "Musician",
   sitarist: "Musician",
   violinist: "Musician",
-  wind_player: "Musician",
+  flautist: "Musician",
   composer: "Musician",
   sound_engineer: "Engineer",
   mixing_engineer: "Engineer",

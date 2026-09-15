@@ -15,6 +15,8 @@ import re
 import sys
 import uuid
 
+from taxonomy_renames import fixed_text, renamed
+
 DUMP, SEED, OUT = sys.argv[1:4]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
 
@@ -40,9 +42,11 @@ for m in re.finditer(r'\{\s*key: "(\w+)",\s*label: "([^"]+)",\s*description:\s*"
             r"_+", "_", re.sub(r"[^a-z0-9]+", "_", label.lower().replace("&", "and"))).strip("_")
         SLUG[(m.group(1), label)] = SLUG[(m.group(1), value)] = slug
 SLUG[("studio_amenities", "24x7 Access")] = "access_24x7"  # TAXONOMY-MIGRATION-SPEC §3
-GENRE = {"Bollywood / Filmi": "bollywood_filmi", "Indie Pop": "indie_pop", "Hindustani Classical": "hindustani_classical",
-         "Carnatic Classical": "carnatic_classical", "Rajasthani Folk": "rajasthani_folk", "Rock / Metal": "rock_metal",
-         "EDM / Synthwave": "edm_synthwave", "Acoustic / Unplugged": "acoustic_unplugged"}
+for (category, key), slug in list(SLUG.items()):
+    SLUG[(category, key)] = renamed(category, slug)  # single names, owner 15 Sep 2026 (taxonomy_renames.py)
+GENRE = {"Bollywood / Filmi": "bollywood", "Indie Pop": "indie_pop", "Hindustani Classical": "hindustani_classical",
+         "Carnatic Classical": "carnatic_classical", "Rajasthani Folk": "rajasthani_folk", "Rock / Metal": "rock",
+         "EDM / Synthwave": "edm", "Acoustic / Unplugged": "acoustic"}
 
 
 def slugs(category, values, ref):
@@ -112,7 +116,8 @@ for p in FB["projects"]:
     amount, unit, note = price(p["budget"])
     opportunities.append({
         "id": uid(f"firebase:projects/{p['_id']}"), "creator_profile_id": PROFILE_ID[p["creatorUid"]],
-        "slug": p["_id"].removeprefix("mock-project-"), "title": p["title"], "role_required": p.get("roleRequired"),
+        "slug": p["_id"].removeprefix("mock-project-"), "title": p["title"],
+        "role_required": fixed_text("opportunities", "role_required", p.get("roleRequired")),
         "genres": slugs("genres", p.get("genres"), p["_id"]), "budget_paise": amount, "budget_unit": unit,
         "budget_note": note, "collaboration_type": slugs("collaboration_types", [p["collaborationType"]], p["_id"])[0],
         "location": p.get("location"), "status": p["status"].lower(), "applicant_count": p.get("applicantCount") or 0,
@@ -136,7 +141,7 @@ for m in FB["marketplace_items"]:
         "seller_profile_id": seller,
         # Sellers with no user document: the name comes from the Firebase id, as nothing else carries it.
         "seller_name": None if seller else m["sellerUid"].removeprefix("mock-seller-").replace("-", " ").title(),
-        "title": m["title"], "category": slugs("marketplace_categories", [m["category"]], m["_id"])[0],
+        "title": fixed_text("marketplace_listings", "title", m["title"]), "category": slugs("marketplace_categories", [m["category"]], m["_id"])[0],
         "item_category": item_category, "item_category_kind": item_kind, "condition": CONDITION[m["condition"]],
         "price_paise": amount, "price_unit": unit, "price_note": note, "image_url": m.get("imageUrl"),
         "created_at": m["createdAt"]})
@@ -154,6 +159,8 @@ pages = [{"slug": p["_id"], "route": p["route"], "title": p["title"], "status": 
 
 if problems:
     sys.exit("Unmapped values:\n" + "\n".join(problems))
+assert not [o for o in opportunities if "/" in (o["role_required"] or "")], "a role_required has a /"
+assert not [m for m in listings if "/" in m["title"]], "a listing title has a /"
 
 SCHEMA = """-- Catalog: studios (rooms, equipment, reviews), opportunities, marketplace listings, feed posts,
 -- brand assets and CMS pages.
@@ -166,6 +173,7 @@ SCHEMA = """-- Catalog: studios (rooms, equipment, reviews), opportunities, mark
 -- ("+ ₹5,000 deposit", "Royalties Split") is kept in a *_note column.
 -- mock-studio-octave-sound-labs is imported as Wugweb (slug wugweb), matching its owner's profile.
 -- Marketplace sellers with no Firebase user document keep a seller_name and no profile.
+-- Imported role and title text is written without "/" (owner, 15 Sep 2026; taxonomy_renames.py).
 -- Read: public (CMS pages when published). Write: owners of their own rows; CMS is not client-writable.
 -- Not imported: studio phone numbers.
 --

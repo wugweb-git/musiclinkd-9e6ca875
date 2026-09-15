@@ -30,7 +30,7 @@ const SUBCATEGORIES: Record<string, string> = {
   microphones: "Microphones",
   audio_interfaces: "Interfaces",
   studio_monitors: "Monitors",
-  drums_percussion: "Drums",
+  drums: "Drums",
 };
 
 const AUDIO_GEAR = new Set(["microphones", "audio_interfaces", "studio_monitors"]);
@@ -132,7 +132,7 @@ const RENTAL_EQUIPMENT: Record<string, { category: RentalCategory; subcategory: 
   microphones: { category: "audio", subcategory: "Microphones" },
   audio_interfaces: { category: "audio", subcategory: "Audio Interfaces" },
   studio_monitors: { category: "audio", subcategory: "Studio Monitors" },
-  drums_percussion: { category: "instruments", subcategory: "Drums" },
+  drums: { category: "instruments", subcategory: "Drums" },
 };
 
 /**
