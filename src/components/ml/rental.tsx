@@ -3,6 +3,8 @@ import { useMemo, useState, type ReactNode } from "react";
 import { CalendarDays, Package, Truck, MapPin } from "lucide-react";
 import { Btn, BtnLink, Chip, Sheet, VerifiedBadge } from "./ui";
 import { ConditionBadge, LocationRow, Rating, SaveButton } from "./market";
+import { Price } from "./kit";
+import { rupeeParts } from "@/lib/price";
 import {
   inr,
   priceFor,
@@ -36,22 +38,21 @@ export function RentalAvailabilityBadge({
 
 export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md" | "lg" }) {
   // Database rentals have a day rate and a price note, but no weekly or monthly rate.
-  const longer =
-    e.weekly != null && e.monthly != null
-      ? `${inr(e.weekly)} / week · ${inr(e.monthly)} / month`
-      : e.priceNote;
   return (
     <div className="min-w-0">
       {e.daily != null ? (
-        <div className="flex items-baseline gap-1">
-          <span className={`text-price ${size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}`}>
-            {inr(e.daily)}
-          </span>
-          <span className="text-1 text-muted-foreground">/ day</span>
-        </div>
+        <Price
+          price={rupeeParts(e.daily, "day")}
+          amountClassName={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}
+        />
       ) : null}
-      {size === "lg" && longer ? (
-        <p className="mt-1 text-1 text-muted-foreground">{longer}</p>
+      {size === "lg" && e.weekly != null && e.monthly != null ? (
+        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
+          <Price price={rupeeParts(e.weekly, "week")} amountClassName="text-1 font-semibold" />
+          <Price price={rupeeParts(e.monthly, "month")} amountClassName="text-1 font-semibold" />
+        </div>
+      ) : size === "lg" && e.priceNote ? (
+        <p className="mt-1 text-1 text-muted-foreground">{e.priceNote}</p>
       ) : null}
     </div>
   );
@@ -77,9 +78,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full pill pill-glass">
-            Rental
-          </span>
+          <span className="absolute left-3 top-3 rounded-full pill pill-glass">Rental</span>
         </div>
       </Link>
       <div className="absolute" />

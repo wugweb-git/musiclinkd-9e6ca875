@@ -6,6 +6,7 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChevronRight, Star } from "lucide-react";
+import { unitLabel, type PriceParts } from "@/lib/price";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
@@ -37,6 +38,56 @@ export function StatusPill({
     >
       {icon ?? <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} />}
       {label}
+    </span>
+  );
+}
+
+/**
+ * A rate as two values: the amount in brand pink, and under it the unit line ("per hour") in small
+ * muted type. Price text that is not a unit ("+ ₹5,000 deposit") is its own muted line. A price with
+ * no unit shows only the amount. `amountClassName` keeps each place's size and weight; `align="end"`
+ * right-aligns both lines in rows where the amount sits on the right.
+ */
+export function Price({
+  price,
+  align = "start",
+  tone = "price",
+  className = "",
+  amountClassName = "",
+  unitClassName = "text-1",
+}: {
+  price: PriceParts | null | undefined;
+  align?: "start" | "center" | "end" | undefined;
+  /** "inherit" leaves the amount in the surrounding colour where prices were never pink (plans). */
+  tone?: "price" | "inherit" | undefined;
+  className?: string | undefined;
+  amountClassName?: string | undefined;
+  /** Size of the unit and note lines; never larger than the amount. */
+  unitClassName?: string | undefined;
+}) {
+  if (!price?.amount) return null;
+  const unit = unitLabel(price.unit);
+  const alignment =
+    align === "end"
+      ? "items-end text-right"
+      : align === "center"
+        ? "items-center text-center"
+        : "items-start";
+  return (
+    <span className={`inline-flex min-w-0 flex-col ${alignment} ${className}`}>
+      <span className={`${tone === "price" ? "text-price" : ""} ${amountClassName}`}>
+        {price.amount}
+      </span>
+      {unit ? (
+        <span className={`${unitClassName} font-normal leading-tight text-muted-foreground`}>
+          {unit}
+        </span>
+      ) : null}
+      {price.note ? (
+        <span className={`${unitClassName} font-normal leading-tight text-muted-foreground`}>
+          {price.note}
+        </span>
+      ) : null}
     </span>
   );
 }

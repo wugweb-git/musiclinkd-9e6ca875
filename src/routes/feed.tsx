@@ -19,6 +19,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import { TabHeader } from "@/components/ml/tab-header";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
@@ -352,6 +353,11 @@ function Body({ home }: { home: Home }) {
                   <p className="truncate text-1 text-muted-foreground">
                     {a.meta} · {a.when}
                   </p>
+                  <Price
+                    price={a.price}
+                    className="mt-0.5"
+                    amountClassName="text-1 font-semibold"
+                  />
                 </div>
                 {a.kind === "request" ? (
                   <Btn variant="primary" className="min-h-9 shrink-0 px-4 text-1">

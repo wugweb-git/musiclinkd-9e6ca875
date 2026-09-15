@@ -6,6 +6,8 @@
  * booking (FLOW 08), business_profile (FLOW 12).
  */
 
+import { inr, type PriceParts } from "@/lib/price";
+
 export type OpportunityKind =
   "Person" | "Gig" | "Project" | "Studio" | "Venue" | "Equipment" | "Collaborator";
 
@@ -74,6 +76,7 @@ export type Opportunity = {
     type?: "Paid" | "Revenue share" | "Unpaid";
     min?: number;
     max?: number;
+    /** A bare unit ("song"), empty when the pay is not per unit. */
     unit: string;
     negotiable: boolean;
     /** Stored price text that is not an amount ("Royalties Split", "Under Discussion"). */
@@ -118,7 +121,7 @@ export const opportunities: Opportunity[] = [
     workMode: "Hybrid",
     postedAt: "2 days ago",
     closesAt: "Closes in 9 days",
-    compensation: { type: "Paid", min: 25000, max: 40000, unit: "per song", negotiable: true },
+    compensation: { type: "Paid", min: 25000, max: 40000, unit: "song", negotiable: true },
     summary:
       "Warm mid-range vocal for a 3-minute indie-pop single. Two studio days in Andheri plus remote comps.",
     brief: [
@@ -166,7 +169,7 @@ export const opportunities: Opportunity[] = [
     workMode: "Remote",
     postedAt: "5 hours ago",
     closesAt: "Closes in 14 days",
-    compensation: { type: "Paid", min: 8000, max: 12000, unit: "per track", negotiable: true },
+    compensation: { type: "Paid", min: 8000, max: 12000, unit: "track", negotiable: true },
     summary:
       "Tracked and edited, needs a mixer who can keep guitars aggressive without losing the vocal.",
     brief: [
@@ -208,7 +211,7 @@ export const opportunities: Opportunity[] = [
     workMode: "On-site",
     postedAt: "1 day ago",
     closesAt: "Closes in 4 days",
-    compensation: { type: "Paid", min: 15000, unit: "per night", negotiable: false },
+    compensation: { type: "Paid", min: 15000, unit: "night", negotiable: false },
     summary: "Funk house band, two nights, one paid rehearsal. Backline provided.",
     brief: [
       "Set list shared 5 days out.",
@@ -249,7 +252,7 @@ export const opportunities: Opportunity[] = [
     workMode: "On-site",
     postedAt: "3 days ago",
     closesAt: "Closes in 6 days",
-    compensation: { type: "Paid", min: 18000, max: 30000, unit: "per day", negotiable: true },
+    compensation: { type: "Paid", min: 18000, max: 30000, unit: "day", negotiable: true },
     summary:
       "Looking for a live room that fits a 5-piece with isolation for drums and a decent piano.",
     brief: [
@@ -291,7 +294,7 @@ export const opportunities: Opportunity[] = [
     workMode: "Remote",
     postedAt: "6 days ago",
     closesAt: "Closes in 2 days",
-    compensation: { type: "Paid", min: 60000, unit: "flat", negotiable: false },
+    compensation: { type: "Paid", min: 60000, unit: "", note: "flat", negotiable: false },
     summary: "60-second brand film. Needs punchy, street-leaning Hindi with one English hook line.",
     brief: [
       "Locked picture and scratch bed shared on shortlist.",
@@ -322,15 +325,19 @@ export function categoryLabel(key: string) {
   return opportunityCategories.find((c) => c.key === key)?.label ?? key;
 }
 
-export function payLabel(o: Opportunity) {
+/** The pay as amount ("₹25,000–₹40,000"), unit ("song") and note; null when nothing is known. */
+export function payParts(o: Opportunity): PriceParts | null {
   const c = o.compensation;
   // Stored opportunities without an amount show their price text as stored.
-  if (c.min == null && c.note) return c.note;
-  if (c.type !== "Paid") return c.type ?? "";
-  if (c.min == null) return "";
-  const fmt = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-  const range = c.max ? `${fmt(c.min)}–${fmt(c.max)}` : fmt(c.min);
-  return [range, c.unit, c.note].filter(Boolean).join(" ");
+  if (c.min == null && c.note) return { amount: c.note };
+  if (c.type !== "Paid") return c.type ? { amount: c.type } : null;
+  if (c.min == null) return null;
+  const range = c.max ? `${inr(c.min)}–${inr(c.max)}` : inr(c.min);
+  return {
+    amount: range,
+    ...(c.unit ? { unit: c.unit } : {}),
+    ...(c.note ? { note: c.note } : {}),
+  };
 }
 
 /* -------------------------------------------------- applications */
@@ -344,7 +351,7 @@ export type Application = {
   message: string;
   /** portfolio_item.id[] attached as proof of fit */
   portfolioIds: string[];
-  rateQuoted?: string;
+  rateQuoted?: PriceParts;
   timeline: { label: string; at: string; done: boolean }[];
   /** message thread handed to FLOW 06 */
   threadId?: string;
@@ -359,7 +366,7 @@ export const myApplications: Application[] = [
     message:
       "I've sung three indie-pop singles in a similar register — sending the two closest to your reference. Free the whole of that week and I track at home too.",
     portfolioIds: ["pf-1", "pf-3"],
-    rateQuoted: "₹32,000 per song",
+    rateQuoted: { amount: "₹32,000", unit: "song" },
     timeline: [
       { label: "Applied", at: "1 Sep, 10:12", done: true },
       { label: "Viewed by Sunset Records", at: "1 Sep, 18:40", done: true },

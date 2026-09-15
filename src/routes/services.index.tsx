@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarClock, Plus, Settings2 } from "lucide-react";
 import { Screen, TopBar, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Row } from "@/components/ml/kit";
-import { myServices, priceLabel, serviceStatusTone, type ServiceStatus } from "@/data/services";
+import { Card, StatusPill, EmptyState, Price, Row } from "@/components/ml/kit";
+import { myServices, serviceStatusTone, servicePrice, type ServiceStatus } from "@/data/services";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -105,9 +105,12 @@ function ServicesHome() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[14px] font-semibold">{s.title}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">
-                        {s.category} · {priceLabel(s.basePrice, s.unit)}
-                      </p>
+                      <p className="truncate text-[12px] text-muted-foreground">{s.category}</p>
+                      <Price
+                        price={servicePrice({ price: s.basePrice, unit: s.unit })}
+                        amountClassName="text-[12px] font-semibold"
+                        unitClassName="text-[11px]"
+                      />
                     </div>
                     <StatusPill label={s.status} tone={serviceStatusTone[s.status]} />
                   </div>

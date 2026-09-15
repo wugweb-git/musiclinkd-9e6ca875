@@ -9,6 +9,8 @@
  *   PROPOSED  — needs a schema addition before production
  */
 
+import { rupeeParts, type PriceParts } from "@/lib/price";
+
 export type BookableKind =
   | "Recording Studio"
   | "Mixing Studio"
@@ -638,6 +640,16 @@ export function priceFor(b: Bookable, r: Resource, hours: number, addOnIds: stri
 }
 
 export const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+
+/** The cheapest tier as amount and unit ("₹1,200", "hour"). A custom tier has no unit. */
+export function lowestRate(tiers: PricingTier[]): PriceParts | null {
+  const tier = tiers.reduce<PricingTier | undefined>(
+    (low, t) => (!low || t.price < low.price ? t : low),
+    undefined,
+  );
+  if (!tier) return null;
+  return rupeeParts(tier.price, tier.unit === "custom" ? null : tier.unit);
+}
 
 export function formatDate(iso: string) {
   const d = new Date(`${iso}T00:00:00`);

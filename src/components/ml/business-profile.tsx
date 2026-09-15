@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, Settings2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
+import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 
 const tabs = ["Overview", "Spaces", "Team", "Credits"] as const;
@@ -119,10 +119,15 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 {b.services.map((s) => (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
+                    className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
                   >
                     <span className="min-w-0 flex-1 truncate text-[13px]">{s.label}</span>
-                    <span className="shrink-0 text-[13px] font-semibold text-price">{s.price}</span>
+                    <Price
+                      price={s.price}
+                      align="end"
+                      className="shrink-0"
+                      amountClassName="text-[13px] font-semibold"
+                    />
                   </div>
                 ))}
               </Card>
@@ -160,9 +165,14 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                   <img src={sp.photo} alt="" className="h-32 w-full object-cover" loading="lazy" />
                 ) : null}
                 <div className="space-y-2 p-4 pt-0">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-start justify-between gap-2">
                     <p className="text-[14px] font-semibold">{sp.name}</p>
-                    <p className="text-[13px] font-bold text-price">{sp.rate}</p>
+                    <Price
+                      price={sp.rate}
+                      align="end"
+                      className="shrink-0"
+                      amountClassName="text-[13px] font-bold"
+                    />
                   </div>
                   {sp.detail ? (
                     <p className="text-[12px] text-muted-foreground">{sp.detail}</p>

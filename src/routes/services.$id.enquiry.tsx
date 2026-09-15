@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
-import { getService, priceLabel } from "@/data/services";
+import { Card, EmptyState, Price } from "@/components/ml/kit";
+import { getService, servicePrice } from "@/data/services";
 
 export const Route = createFileRoute("/services/$id/enquiry")({
   head: () => ({
@@ -84,9 +84,12 @@ function ServiceEnquiry() {
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
           <p className="text-sm font-semibold">{s.title}</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
-            Listed at {priceLabel(s.basePrice, s.unit)} · {s.turnaround}
-          </p>
+          <Price
+            price={servicePrice({ price: s.basePrice, unit: s.unit })}
+            className="mt-1"
+            amountClassName="text-[13px] font-semibold"
+          />
+          <p className="mt-1 text-[13px] text-muted-foreground">Turnaround {s.turnaround}</p>
         </Card>
 
         <div className="flex gap-2">

@@ -50,7 +50,7 @@ function compensationFromRow(row: OpportunityRow): Opportunity["compensation"] {
     return {
       type: "Paid",
       min: row.budget_paise / 100,
-      unit: row.budget_unit ? `per ${row.budget_unit.toLowerCase()}` : "",
+      unit: row.budget_unit ? row.budget_unit.toLowerCase() : "",
       negotiable: false,
       ...note,
     };

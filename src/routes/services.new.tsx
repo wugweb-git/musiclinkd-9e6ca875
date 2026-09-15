@@ -1,13 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, Dialog } from "@/components/ml/kit";
+import { Card, Dialog, Price } from "@/components/ml/kit";
 import {
   serviceCategories,
   pricingModelLabel,
+  pricingModelUnit,
   bookingWindows,
   type PricingModel,
 } from "@/data/services";
+import type { PriceParts } from "@/lib/price";
 
 const steps = ["category", "basics", "pricing", "delivery", "review"] as const;
 type Step = (typeof steps)[number];
@@ -166,13 +168,22 @@ function NewService() {
         {step === "review" ? (
           <Card className="space-y-2">
             <h1 className="text-[16px] font-bold">Review</h1>
-            {[
-              ["Category", category],
-              ["Title", title || "Untitled service"],
-              ["Pricing", `${pricingModelLabel[model]} · ₹${price || "—"}`],
-              ["Turnaround", turnaround],
-              ["Notice", notice],
-            ].map(([k, v]) => (
+            {(
+              [
+                ["Category", category],
+                ["Title", title || "Untitled service"],
+                [
+                  "Pricing",
+                  {
+                    amount: `₹${price || "—"}`,
+                    unit: pricingModelUnit[model],
+                    note: pricingModelUnit[model] ? undefined : pricingModelLabel[model],
+                  },
+                ],
+                ["Turnaround", turnaround],
+                ["Notice", notice],
+              ] as [string, string | PriceParts][]
+            ).map(([k, v]) => (
               <div
                 key={k}
                 className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
@@ -180,7 +191,16 @@ function NewService() {
                 <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
                   {k}
                 </span>
-                <span className="max-w-[60%] text-right text-[13px] font-semibold">{v}</span>
+                {typeof v === "string" ? (
+                  <span className="max-w-[60%] text-right text-[13px] font-semibold">{v}</span>
+                ) : (
+                  <Price
+                    price={v}
+                    align="end"
+                    className="max-w-[60%]"
+                    amountClassName="text-[13px] font-semibold"
+                  />
+                )}
               </div>
             ))}
             <p className="pt-1 text-[12px] text-muted-foreground">

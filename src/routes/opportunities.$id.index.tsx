@@ -11,7 +11,7 @@ import {
   Circle,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
+import { Card, StatusPill, EmptyState, Dialog, Price } from "@/components/ml/kit";
 import {
   MatchBar,
   PosterRow,
@@ -21,7 +21,7 @@ import {
 import {
   getOpportunity,
   categoryLabel,
-  payLabel,
+  payParts,
   reportReasons,
   myApplications,
 } from "@/data/opportunities";
@@ -112,7 +112,7 @@ function OpportunityDetail() {
 
         <div className="grid grid-cols-3 gap-2">
           {[
-            { icon: <Wallet size={14} />, label: "Pay", value: payLabel(o) },
+            { icon: <Wallet size={14} />, label: "Pay", value: payParts(o) },
             {
               icon: <MapPin size={14} />,
               label: "Where",
@@ -126,7 +126,15 @@ function OpportunityDetail() {
                 <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
                   {s.icon} {s.label}
                 </span>
-                <p className="mt-1 text-[13px] font-semibold leading-snug">{s.value}</p>
+                {typeof s.value === "string" ? (
+                  <p className="mt-1 text-[13px] font-semibold leading-snug">{s.value}</p>
+                ) : (
+                  <Price
+                    price={s.value}
+                    className="mt-1"
+                    amountClassName="text-[13px] font-semibold leading-snug"
+                  />
+                )}
               </div>
             ))}
         </div>

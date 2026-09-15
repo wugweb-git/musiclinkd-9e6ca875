@@ -1,4 +1,5 @@
 import { talents, studios, trending } from "./discover";
+import type { PriceParts } from "@/lib/price";
 import { categoryLabel, myApplications, opportunities } from "./opportunities";
 
 export type Stat = {
@@ -19,6 +20,8 @@ export type ActivityEvent = {
   kind: "request" | "view" | "booking" | "release" | "opportunity";
   title: string;
   meta: string;
+  /** A rate the event carries, rendered as amount and unit under the meta. */
+  price?: PriceParts;
   when: string;
   photo: string;
 };
@@ -123,7 +126,8 @@ export const dashboardData: DashboardData = {
       id: "a3",
       kind: "opportunity",
       title: "Indie label is looking for a mix engineer",
-      meta: "Posted in Bengaluru · ₹25,000/track",
+      meta: "Posted in Bengaluru",
+      price: { amount: "₹25,000", unit: "track" },
       when: "Yesterday",
       photo: trending[1]!.photo,
     },

@@ -1,6 +1,7 @@
 import { subcategories, type Listing, type ListingType } from "@/data/market";
 import type { RentalCategory, RentalItem } from "@/data/rentals";
-import { formatPaise, listListings, taxonomyLabel, type ListingRow } from "@/lib/catalog.functions";
+import { listListings, taxonomyLabel, type ListingRow } from "@/lib/catalog.functions";
+import { priceParts } from "@/lib/price";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 
 /*
@@ -90,13 +91,8 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     type,
     title: row.title,
     subtitle: "",
-    // With no amount the note is the price, as formatPaise returns it.
-    price: formatPaise(
-      row.price_paise,
-      row.price_unit,
-      row.price_paise == null ? row.price_note : null,
-    ),
-    ...(row.price_paise != null && row.price_note ? { priceNote: row.price_note } : {}),
+    // Amount, unit and note as parts; with no amount the note is the price.
+    price: priceParts(row.price_paise, row.price_unit, row.price_note) ?? { amount: "" },
     // Condition describes goods; a service stored as "new" is not shown with a condition badge.
     ...(condition ? { condition } : {}),
     location: "",

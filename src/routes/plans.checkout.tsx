@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, Row, Dialog, StatusPill } from "@/components/ml/kit";
+import { Card, Row, Dialog, Price, StatusPill } from "@/components/ml/kit";
 import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
 
 export const Route = createFileRoute("/plans/checkout")({
@@ -57,9 +57,13 @@ function Checkout() {
             >
               <span className="min-w-0">
                 <span className="block text-[13px] font-semibold capitalize">{c}</span>
-                <span className="block truncate text-[12px] text-muted-foreground">
-                  {c === "monthly" ? `${p.price} ${p.period}` : p.yearly}
-                </span>
+                <Price
+                  price={c === "monthly" ? p.monthly : p.yearly}
+                  tone="inherit"
+                  className="text-muted-foreground"
+                  amountClassName="text-[12px]"
+                  unitClassName="text-[11px]"
+                />
               </span>
               <span
                 className={`h-4 w-4 shrink-0 rounded-full border-4 ${cycle === c ? "border-primary" : "border-border"}`}
@@ -84,13 +88,13 @@ function Checkout() {
           <h2 className="text-[15px]">Summary</h2>
           <SummaryLine
             label={`${p.name} · ${cycle}`}
-            value={cycle === "monthly" ? p.price : (p.yearly.split(" · ")[0] ?? p.yearly)}
+            value={cycle === "monthly" ? p.monthly.amount : p.yearly.amount}
           />
           <SummaryLine label="GST (18%)" value="Included" />
           <div className="mt-2 flex items-center justify-between border-t border-border pt-2">
             <span className="text-[13px] font-semibold">Total today</span>
             <span className="text-[17px] font-bold">
-              {cycle === "monthly" ? p.price : (p.yearly.split(" · ")[0] ?? p.yearly)}
+              {cycle === "monthly" ? p.monthly.amount : p.yearly.amount}
             </span>
           </div>
         </Card>

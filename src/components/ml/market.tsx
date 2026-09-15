@@ -3,6 +3,8 @@ import { useState, type ReactNode } from "react";
 import { Heart, MapPin, Star, ShieldCheck, Check } from "lucide-react";
 import type { Listing } from "@/data/market";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
+import { Price } from "./kit";
+import type { PriceParts } from "@/lib/price";
 
 export function SaveButton({
   saved,
@@ -66,20 +68,13 @@ export function LocationRow({ text }: { text: string }) {
   );
 }
 
-export function PriceBlock({
-  price,
-  note,
-  size = "md",
-}: {
-  price: string;
-  note?: string | undefined;
-  size?: "md" | "lg";
-}) {
+/** A listing's price: the amount, with the unit line and any price note under it. */
+export function PriceBlock({ price, size = "md" }: { price: PriceParts; size?: "md" | "lg" }) {
   return (
-    <div className="flex items-baseline gap-1">
-      <span className={`text-price ${size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}`}>{price}</span>
-      {note ? <span className="text-1 text-muted-foreground">{note}</span> : null}
-    </div>
+    <Price
+      price={price}
+      amountClassName={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}
+    />
   );
 }
 
@@ -170,13 +165,11 @@ export function ListingCard({
             onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
           />
         </div>
-        <span className="absolute left-2 top-2 rounded-full pill pill-glass">
-          {meta.tag}
-        </span>
+        <span className="absolute left-2 top-2 rounded-full pill pill-glass">{meta.tag}</span>
       </div>
       <div className="p-3.5">
         <div className="flex items-start justify-between gap-2">
-          <PriceBlock price={l.price} note={l.priceNote} />
+          <PriceBlock price={l.price} />
           {l.condition ? (
             <ConditionBadge value={l.condition} />
           ) : (
@@ -222,7 +215,7 @@ export function ListingTile({ l }: { l: Listing }) {
         </div>
       </div>
       <div className="p-3">
-        <PriceBlock price={l.price} note={l.priceNote} />
+        <PriceBlock price={l.price} />
         <h3 className="mt-1 line-clamp-2 text-1 leading-snug">{l.title}</h3>
         {l.distance ? (
           <p className="mt-1 truncate text-1 text-muted-foreground">{l.distance}</p>
@@ -251,7 +244,7 @@ export function ListingRow({ l }: { l: Listing }) {
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <Link to="/marketplace/l/$id" params={{ id: l.id }} className="min-w-0">
-            <PriceBlock price={l.price} note={l.priceNote} />
+            <PriceBlock price={l.price} />
             <h3 className="line-clamp-2 text-1 leading-snug">{l.title}</h3>
           </Link>
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
@@ -518,7 +511,8 @@ export function OfferSheet({
             ) : null}
             <div className="min-w-0 flex-1">
               <p className="truncate text-1 font-semibold">{listing.title}</p>
-              <p className="text-1 text-muted-foreground">Asking {listing.price}</p>
+              <p className="text-1 text-muted-foreground">Asking</p>
+              <Price price={listing.price} amountClassName="text-1" />
             </div>
           </div>
 

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, Minus, Sparkles } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, Segmented, StatusPill, Row } from "@/components/ml/kit";
+import { Card, Price, Segmented, StatusPill, Row } from "@/components/ml/kit";
 import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
 
 export const Route = createFileRoute("/plans/")({
@@ -43,10 +43,16 @@ function Plans() {
               You are on {plans.find((p) => p.key === currentSubscription.planKey)?.name}
             </h2>
           </div>
-          <p className="text-[12px] text-muted-foreground">
-            Renews {currentSubscription.renewsOn} · {currentSubscription.amount}{" "}
-            {currentSubscription.billingCycle}
-          </p>
+          <p className="text-[12px] text-muted-foreground">Renews {currentSubscription.renewsOn}</p>
+          <Price
+            price={{
+              amount: currentSubscription.amount,
+              unit: currentSubscription.billingCycle === "monthly" ? "month" : "year",
+            }}
+            tone="inherit"
+            amountClassName="text-[12px] font-semibold"
+            unitClassName="text-[11px]"
+          />
           <BtnLink to="/plans/manage" variant="outline" className="w-full">
             Manage subscription
           </BtnLink>
@@ -76,12 +82,17 @@ function Plans() {
                     <StatusPill label="Current" tone="good" />
                   ) : null}
                 </div>
-                <p className="mt-3 text-[24px] font-bold leading-none">
-                  {cycle === "Monthly" ? p.price : p.yearly.split(" · ")[0]}
-                  <span className="ml-1 text-[12px] font-semibold text-muted-foreground">
-                    {cycle === "Monthly" ? p.period : "per year"}
-                  </span>
-                </p>
+                <Price
+                  price={
+                    cycle === "Monthly"
+                      ? p.monthly
+                      : { amount: p.yearly.amount, unit: p.yearly.unit }
+                  }
+                  tone="inherit"
+                  className="mt-3"
+                  amountClassName="text-[24px] font-bold leading-none"
+                  unitClassName="mt-1 text-[12px]"
+                />
                 {cycle === "Yearly" && p.key !== "free" ? (
                   <p className="mt-1 text-[12px] font-semibold text-foreground">2 months free</p>
                 ) : null}

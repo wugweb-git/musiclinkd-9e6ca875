@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarDays, MessageSquare, QrCode, Settings2, Share2, UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, VerifiedBadge } from "@/components/ml/ui";
-import { Card, Segmented, StatusPill, EmptyState, Row } from "@/components/ml/kit";
+import { Card, Segmented, StatusPill, EmptyState, Price, Row } from "@/components/ml/kit";
 import { bandRoleCopy } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
@@ -167,14 +167,14 @@ function BandProfile() {
                     <p className="mt-2 text-[13px] text-muted-foreground">{band.bio}</p>
                   ) : null}
                   {band.availability || band.rate ? (
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
                       {band.availability ? (
                         <StatusPill
                           label={band.availability}
                           tone={band.availability === "Available" ? "good" : "warn"}
                         />
                       ) : null}
-                      {band.rate ? <StatusPill label={band.rate} tone="brand" /> : null}
+                      <Price price={band.rate} amountClassName="text-sm font-semibold" />
                     </div>
                   ) : null}
                 </Card>

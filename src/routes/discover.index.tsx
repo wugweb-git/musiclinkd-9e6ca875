@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { TabHeader } from "@/components/ml/tab-header";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
@@ -157,7 +158,13 @@ function Discover() {
                 </div>
                 <p className="truncate text-[11px] text-muted-foreground">{t.role} · 2.4 km away</p>
               </div>
-              <span className="text-[11px] font-semibold text-price">{t.rate}</span>
+              <Price
+                price={t.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-[11px] font-semibold"
+                unitClassName="text-[10px]"
+              />
             </Link>
           ))}
           {studios.slice(0, 1).map((s) => (
@@ -173,7 +180,13 @@ function Discover() {
                   {s.location} · {s.rating} ★
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-price">{s.rate}</span>
+              <Price
+                price={s.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-[11px] font-semibold"
+                unitClassName="text-[10px]"
+              />
             </Link>
           ))}
           {dbStudios.map((s) => (
@@ -194,9 +207,13 @@ function Discover() {
                     .join(" · ")}
                 </p>
               </div>
-              {s.rate ? (
-                <span className="text-[11px] font-semibold text-price">{s.rate}</span>
-              ) : null}
+              <Price
+                price={s.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-[11px] font-semibold"
+                unitClassName="text-[10px]"
+              />
             </Link>
           ))}
         </div>

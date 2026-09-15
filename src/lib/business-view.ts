@@ -3,8 +3,9 @@
 // empty and the screens skip it. There is no follower or booking count, contact detail, lead,
 // analytics figure or verification document in the database.
 
-import { formatPaise, taxonomyLabel } from "@/lib/catalog.functions";
+import { taxonomyLabel } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { priceParts, type PriceParts } from "@/lib/price";
 import { getPublicBusiness, type BusinessRecord } from "@/lib/profile-groups.functions";
 import { joinParts } from "@/lib/utils";
 
@@ -24,13 +25,13 @@ export type BusinessView = {
   rating: number | null;
   reviewCount: number | null;
   about: string;
-  services: { id: string; label: string; price: string }[];
+  services: { id: string; label: string; price: PriceParts | null }[];
   hours: { day: string; hours: string }[];
   address: string;
   spaces: {
     id: string;
     name: string;
-    rate: string;
+    rate: PriceParts | null;
     capacity: string;
     detail: string;
     gear: string[];
@@ -95,7 +96,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     services: r.services.map((s) => ({
       id: s.id,
       label: s.name,
-      price: formatPaise(s.price_paise, s.price_unit, s.price_note),
+      price: priceParts(s.price_paise, s.price_unit, s.price_note),
     })),
     hours: hoursFrom(business.operating_hours),
     address: business.business_address ?? "",
@@ -104,7 +105,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
       return {
         id: room.id,
         name: room.name,
-        rate: formatPaise(room.hourly_rate_paise, "hr"),
+        rate: priceParts(room.hourly_rate_paise, "hr"),
         capacity,
         detail: joinParts(room.kind, capacity),
         gear: room.gear,

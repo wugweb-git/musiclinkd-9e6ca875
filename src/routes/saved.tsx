@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Chip, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import { talents, studios } from "@/data/discover";
 
 export const Route = createFileRoute("/saved")({
@@ -45,10 +46,15 @@ function Saved() {
                   <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-[14px]">{s.name}</h3>
-                    <p className="truncate text-[11px] text-muted-foreground">
-                      {s.location} · {s.rate}
-                    </p>
+                    <p className="truncate text-[11px] text-muted-foreground">{s.location}</p>
                   </div>
+                  <Price
+                    price={s.rate}
+                    align="end"
+                    className="shrink-0"
+                    amountClassName="text-[11px] font-semibold"
+                    unitClassName="text-[10px]"
+                  />
                 </div>
                 <Notes note="Hold 3 days in Sept for album tracking." tags={["Album", "Mumbai"]} />
                 <Actions />
@@ -67,7 +73,13 @@ function Saved() {
                       {t.role} · {t.location.split(",").pop()}
                     </p>
                   </div>
-                  <span className="text-[11px] font-semibold text-price">{t.rate}</span>
+                  <Price
+                    price={t.rate}
+                    align="end"
+                    className="shrink-0"
+                    amountClassName="text-[11px] font-semibold"
+                    unitClassName="text-[10px]"
+                  />
                 </div>
                 <Notes
                   note="Shortlisted for the Sufi title track — great upper register."
