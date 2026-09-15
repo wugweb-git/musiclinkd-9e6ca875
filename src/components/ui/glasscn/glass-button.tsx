@@ -1,4 +1,3 @@
-// @ts-nocheck -- third-party registry code on trial in Storybook (feat/storybook); not used by the app.
 "use client";
 
 import { FrostGlassVariantProp, glassVariantStyles } from "@/lib/glass-variants";
@@ -16,7 +15,10 @@ function GlassButton({ className, glassVariant = "liquid-refract", ...props }: G
         <Button
           data-slot="glass-button"
           data-glass-variant={glassVariant}
-          className={cn("text-foreground cursor-pointer bg-transparent border-0 shadow-none", className)}
+          className={cn(
+            "text-foreground cursor-pointer bg-transparent border-0 shadow-none",
+            className,
+          )}
           {...props}
         />
       </LiquidGlass>

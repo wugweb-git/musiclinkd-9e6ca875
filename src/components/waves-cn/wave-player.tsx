@@ -1,4 +1,3 @@
-// @ts-nocheck -- third-party registry code on trial in Storybook (feat/storybook); not used by the app.
 "use client";
 
 import * as React from "react";
@@ -6,14 +5,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Loader2,
-  RotateCcw,
-} from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Loader2, RotateCcw } from "lucide-react";
 import WavesurferPlayer from "@/lib/wave-cn";
 import type WaveSurfer from "wavesurfer.js";
 
@@ -84,10 +76,7 @@ export function WavePlayer({
   const [duration, setDuration] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
 
-  const togglePlay = React.useCallback(
-    () => wavesurferRef.current?.playPause(),
-    [],
-  );
+  const togglePlay = React.useCallback(() => wavesurferRef.current?.playPause(), []);
 
   const restart = React.useCallback(() => {
     if (!wavesurferRef.current || !isReady) return;
@@ -96,7 +85,7 @@ export function WavePlayer({
   }, [isReady]);
 
   const handleVolume = React.useCallback((v: number[]) => {
-    const value = v[0];
+    const value = v[0] ?? 0;
     setVolume(value);
     setIsMuted(value === 0);
     wavesurferRef.current?.setVolume(value);
@@ -110,7 +99,7 @@ export function WavePlayer({
   }, [isMuted, volume]);
 
   const handleSeek = React.useCallback(
-    ([v]: number[]) => {
+    ([v = 0]: number[]) => {
       if (!wavesurferRef.current || !isReady) return;
       wavesurferRef.current.seekTo(v);
     },
@@ -172,18 +161,9 @@ export function WavePlayer({
 
   // ── Render
   return (
-    <Card
-      className={cn(
-        "w-full px-0 border-0 rounded-none bg-transparent",
-        className,
-      )}
-    >
+    <Card className={cn("w-full px-0 border-0 rounded-none bg-transparent", className)}>
       <CardContent className=" border-0 px-0 space-y-3">
-        {title && (
-          <p className="text-sm font-medium text-foreground truncate">
-            {title}
-          </p>
-        )}
+        {title && <p className="text-sm font-medium text-foreground truncate">{title}</p>}
 
         <div className="relative w-full rounded-sm overflow-hidden bg-muted/40">
           {!isReady && (
@@ -196,13 +176,13 @@ export function WavePlayer({
           )}
           <WavesurferPlayer
             url={src}
-            waveColor={waveColor}
-            progressColor={progressColor}
-            height={waveHeight}
-            barWidth={barWidth}
-            barGap={barGap}
-            barRadius={barRadius}
-            minPxPerSec={minPxPerSec}
+            {...(waveColor !== undefined ? { waveColor } : {})}
+            {...(progressColor !== undefined ? { progressColor } : {})}
+            {...(waveHeight !== undefined ? { height: waveHeight } : {})}
+            {...(barWidth !== undefined ? { barWidth } : {})}
+            {...(barGap !== undefined ? { barGap } : {})}
+            {...(barRadius !== undefined ? { barRadius } : {})}
+            {...(minPxPerSec !== undefined ? { minPxPerSec } : {})}
             dragToSeek
             onReady={handleReady}
             onPlay={handlePlay}

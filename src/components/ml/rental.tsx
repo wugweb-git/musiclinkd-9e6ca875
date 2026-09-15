@@ -44,7 +44,9 @@ export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md
     <div className="min-w-0">
       {e.daily != null ? (
         <div className="flex items-baseline gap-1">
-          <span className={`text-price ${size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}`}>
+          <span
+            className={`text-price ${size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}`}
+          >
             {inr(e.daily)}
           </span>
           <span className="text-1 text-muted-foreground">/ day</span>
@@ -77,9 +79,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full pill pill-glass">
-            Rental
-          </span>
+          <span className="absolute left-3 top-3 rounded-full pill pill-glass">Rental</span>
         </div>
       </Link>
       <div className="absolute" />

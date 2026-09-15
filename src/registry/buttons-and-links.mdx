@@ -8,15 +8,15 @@ The system, then every hand-styled button or link that does not use it yet. Gene
 
 ## The system
 
-| Type | Component | Variants | Stories |
-|---|---|---|---|
-| Button: label | `Btn` | `primary` (ink fill), `outline` (card + border), `ghost` (grey fill), `ink` (same as primary: duplicate) | Primitives/Btn |
-| Button: label with icon | `Btn icon={…}` | as above, icon leads | Primitives/Btn → With icon |
-| Button: icon only | `IconBtn label="…"` | `outline`, `ink`, `ghost`, `plain` | Primitives/Btn → IconBtn |
-| Link as button | `BtnLink` | as `Btn` | Primitives/Links |
-| Link as icon button | `IconBtnLink` | as `IconBtn` | Primitives/Links |
-| Text link | `AuthLink` | one look; `icon` optional | Primitives/Links |
-| Text action (not navigation) | `AuthTextButton` | enabled, disabled | Primitives/Links |
+| Type                         | Component           | Variants                                                                                                 | Stories                    |
+| ---------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Button: label                | `Btn`               | `primary` (ink fill), `outline` (card + border), `ghost` (grey fill), `ink` (same as primary: duplicate) | Primitives/Btn             |
+| Button: label with icon      | `Btn icon={…}`      | as above, icon leads                                                                                     | Primitives/Btn → With icon |
+| Button: icon only            | `IconBtn label="…"` | `outline`, `ink`, `ghost`, `plain`                                                                       | Primitives/Btn → IconBtn   |
+| Link as button               | `BtnLink`           | as `Btn`                                                                                                 | Primitives/Links           |
+| Link as icon button          | `IconBtnLink`       | as `IconBtn`                                                                                             | Primitives/Links           |
+| Text link                    | `AuthLink`          | one look; `icon` optional                                                                                | Primitives/Links           |
+| Text action (not navigation) | `AuthTextButton`    | enabled, disabled                                                                                        | Primitives/Links           |
 
 **Button states:** default, hover and pressed overlay (`state-layer`), press shrink, touch ripple, focus ring, disabled, pending (looks disabled, still takes the tap), loading (spinner, `aria-busy`).
 
@@ -26,302 +26,302 @@ The system, then every hand-styled button or link that does not use it yet. Gene
 
 ## Hand-styled, by look
 
-| Look | `<button>` | `<Link>` | Total |
-|---|---|---|---|
-| Filled (primary look) | 24 | 18 | 42 |
-| Outline (secondary look) | 23 | 3 | 26 |
-| Tonal / grey fill | 2 | 3 | 5 |
-| Icon only | 22 | 13 | 35 |
-| Text (link look) | 41 | 33 | 74 |
-| Whole row or card is the button | 53 | 0 | 53 |
-| Other | 6 | 0 | 6 |
-| No classes (styled by parent) | 5 | 0 | 5 |
-| **All** | 176 | 70 | 246 |
+| Look                            | `<button>` | `<Link>` | Total |
+| ------------------------------- | ---------- | -------- | ----- |
+| Filled (primary look)           | 24         | 18       | 42    |
+| Outline (secondary look)        | 23         | 3        | 26    |
+| Tonal / grey fill               | 2          | 3        | 5     |
+| Icon only                       | 22         | 13       | 35    |
+| Text (link look)                | 41         | 33       | 74    |
+| Whole row or card is the button | 53         | 0        | 53    |
+| Other                           | 6          | 0        | 6     |
+| No classes (styled by parent)   | 5          | 0        | 5     |
+| **All**                         | 176        | 70       | 246   |
 
 Links that only style text inside a row or card are left out of the `<Link>` count.
 
 ### Filled (primary look) (42)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/components/ml/booking.tsx` | 310 | `button` | <code>flex h-12 flex-col items-center justify-center rounded-md text-sm $&#123; isSel ? "bg-primary text-primar</code> |
-| `src/components/ml/booking.tsx` | 383 | `button` | <code>min-h-12 rounded-lg border px-2 text-xs font-semibold $&#123; active ? "border-transparent bg-primary tex</code> |
-| `src/components/ml/cards.tsx` | 50 | `Link` | <code>inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-ink text-xs font-semibold te</code> |
-| `src/components/ml/collab.tsx` | 301 | `button` | <code>flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/components/ml/kit.tsx` | 229 | `button` | <code>absolute inset-0 bg-ink/50 backdrop-blur-[2px]</code> |
-| `src/components/ml/person-profile.tsx` | 173 | `Link` | <code>inline-flex min-h-12 min-w-0 items-center justify-center rounded-full bg-primary px-2 text-1 font-se</code> |
-| `src/components/ml/portfolio.tsx` | 459 | `button` | <code>inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-1 font-semibold text-primary</code> |
-| `src/components/ml/portfolio.tsx` | 514 | `button` | <code>rounded-full border px-4 py-2 text-1 font-semibold $&#123; on ? "border-transparent bg-primary text-prima</code> |
-| `src/components/ml/profile.tsx` | 402 | `button` | <code>flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/components/ml/profile.tsx` | 602 | `Link` | <code>shrink-0 rounded-full bg-ink px-3.5 py-2 text-1 font-semibold text-background</code> |
-| `src/components/ml/qr.tsx` | 186 | `button` | <code>flex h-12 w-12 items-center justify-center rounded-full border border-border $&#123; flash ? "bg-primary </code> |
-| `src/components/ml/rental.tsx` | 306 | `button` | <code>flex h-9 items-center justify-center rounded-md text-1 font-semibold transition-colors $&#123; isBlocked </code> |
-| `src/components/ml/ui.tsx` | 495 | `button` | <code>absolute inset-0 animate-in fade-in bg-ink/50 backdrop-blur-[2px] duration-200</code> |
-| `src/routes/__root.tsx` | 27 | `Link` | <code>inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-pri</code> |
-| `src/routes/__root.tsx` | 54 | `button` | <code>inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-pri</code> |
-| `src/routes/bands.$id.index.tsx` | 122 | `Link` | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-xs </code> |
-| `src/routes/bands.$id.index.tsx` | 152 | `Link` | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-xs font</code> |
-| `src/routes/bands.index.tsx` | 45 | `Link` | <code>flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/routes/business.$id.services.tsx` | 50 | `Link` | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/routes/business.$id.team.tsx` | 58 | `button` | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/routes/business.index.tsx` | 33 | `Link` | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/routes/collab.index.tsx` | 229 | `Link` | <code>fixed bottom-24 left-1/2 z-40 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-primar</code> |
-| `src/routes/discover.index.tsx` | 128 | `Link` | <code>flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background</code> |
-| `src/routes/feed.tsx` | 389 | `Link` | <code>mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold </code> |
-| `src/routes/identity.print.tsx` | 43 | `button` | <code>flex-1 rounded-full border px-4 py-2.5 text-xs font-semibold $&#123; subject === s ? "border-transparent </code> |
-| `src/routes/identity.qr.tsx` | 133 | `button` | <code>shrink-0 rounded-full border px-4 py-2 text-xs font-semibold capitalize $&#123; style === s ? "border-tra</code> |
-| `src/routes/marketplace/index.tsx` | 55 | `Link` | <code>inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-xs font-semibold text-background</code> |
-| `src/routes/marketplace/rent/index.tsx` | 63 | `Link` | <code>inline-flex h-10 items-center gap-1 rounded-full bg-ink px-3.5 text-xs font-semibold text-background</code> |
-| `src/routes/notifications.settings.tsx` | 62 | `button` | <code>min-h-9 rounded-full px-3.5 text-[12px] font-semibold $&#123; p[c.key] ? "bg-primary text-primary-foregro</code> |
-| `src/routes/notifications.settings.tsx` | 85 | `button` | <code>h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors $&#123;quiet ? "bg-primary" : "bg-subtle"&#125;</code> |
-| `src/routes/opportunities.index.tsx` | 66 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/routes/opportunities.mine.tsx` | 37 | `Link` | <code>flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/routes/provider.availability.tsx` | 55 | `button` | <code>min-h-11 min-w-[52px] rounded-full border px-3 text-sm font-semibold $&#123; on ? "border-primary bg-prim</code> |
-| `src/routes/provider.bookings.calendar.tsx` | 149 | `Link` | <code>mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-xs font-semibold</code> |
-| `src/routes/recommendations.swipe.tsx` | 99 | `button` | <code>flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl text-primary-foreground</code> |
-| `src/routes/saved.tsx` | 109 | `button` | <code>min-h-11 flex-1 rounded-full bg-ink text-xs font-semibold text-background</code> |
-| `src/routes/search.index.tsx` | 77 | `button` | <code>fixed bottom-24 left-1/2 z-40 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full </code> |
-| `src/routes/search.index.tsx` | 172 | `Link` | <code>inline-flex min-h-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-back</code> |
-| `src/routes/services.availability.tsx` | 74 | `button` | <code>h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors $&#123;d.enabled ? "bg-primary" : "bg-subtle"&#125;</code> |
-| `src/routes/services.index.tsx` | 43 | `Link` | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code> |
-| `src/routes/singers.tsx` | 45 | `button` | <code>h-10 w-10 text-sm $&#123;!grid ? "bg-ink text-background" : "bg-card"&#125;</code> |
-| `src/routes/singers.tsx` | 51 | `button` | <code>h-10 w-10 text-sm $&#123;grid ? "bg-ink text-background" : "bg-card"&#125;</code> |
+| File                                        | Line | Element  | Classes                                                                                                                 |
+| ------------------------------------------- | ---- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `src/components/ml/booking.tsx`             | 310  | `button` | <code>flex h-12 flex-col items-center justify-center rounded-md text-sm $&#123; isSel ? "bg-primary text-primar</code>  |
+| `src/components/ml/booking.tsx`             | 383  | `button` | <code>min-h-12 rounded-lg border px-2 text-xs font-semibold $&#123; active ? "border-transparent bg-primary tex</code>  |
+| `src/components/ml/cards.tsx`               | 50   | `Link`   | <code>inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-ink text-xs font-semibold te</code>       |
+| `src/components/ml/collab.tsx`              | 301  | `button` | <code>flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground</code>                 |
+| `src/components/ml/kit.tsx`                 | 229  | `button` | <code>absolute inset-0 bg-ink/50 backdrop-blur-[2px]</code>                                                             |
+| `src/components/ml/person-profile.tsx`      | 173  | `Link`   | <code>inline-flex min-h-12 min-w-0 items-center justify-center rounded-full bg-primary px-2 text-1 font-se</code>       |
+| `src/components/ml/portfolio.tsx`           | 459  | `button` | <code>inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-1 font-semibold text-primary</code>       |
+| `src/components/ml/portfolio.tsx`           | 514  | `button` | <code>rounded-full border px-4 py-2 text-1 font-semibold $&#123; on ? "border-transparent bg-primary text-prima</code>  |
+| `src/components/ml/profile.tsx`             | 402  | `button` | <code>flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground</code>        |
+| `src/components/ml/profile.tsx`             | 602  | `Link`   | <code>shrink-0 rounded-full bg-ink px-3.5 py-2 text-1 font-semibold text-background</code>                              |
+| `src/components/ml/qr.tsx`                  | 186  | `button` | <code>flex h-12 w-12 items-center justify-center rounded-full border border-border $&#123; flash ? "bg-primary </code>  |
+| `src/components/ml/rental.tsx`              | 306  | `button` | <code>flex h-9 items-center justify-center rounded-md text-1 font-semibold transition-colors $&#123; isBlocked </code>  |
+| `src/components/ml/ui.tsx`                  | 495  | `button` | <code>absolute inset-0 animate-in fade-in bg-ink/50 backdrop-blur-[2px] duration-200</code>                             |
+| `src/routes/__root.tsx`                     | 27   | `Link`   | <code>inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-pri</code>       |
+| `src/routes/__root.tsx`                     | 54   | `button` | <code>inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-pri</code>       |
+| `src/routes/bands.$id.index.tsx`            | 122  | `Link`   | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-xs </code>       |
+| `src/routes/bands.$id.index.tsx`            | 152  | `Link`   | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-xs font</code>       |
+| `src/routes/bands.index.tsx`                | 45   | `Link`   | <code>flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground</code>                 |
+| `src/routes/business.$id.services.tsx`      | 50   | `Link`   | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code>                          |
+| `src/routes/business.$id.team.tsx`          | 58   | `button` | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code>                          |
+| `src/routes/business.index.tsx`             | 33   | `Link`   | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code>                          |
+| `src/routes/collab.index.tsx`               | 229  | `Link`   | <code>fixed bottom-24 left-1/2 z-40 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-primar</code>       |
+| `src/routes/discover.index.tsx`             | 128  | `Link`   | <code>flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background</code>                         |
+| `src/routes/feed.tsx`                       | 389  | `Link`   | <code>mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold </code>       |
+| `src/routes/identity.print.tsx`             | 43   | `button` | <code>flex-1 rounded-full border px-4 py-2.5 text-xs font-semibold $&#123; subject === s ? "border-transparent </code>  |
+| `src/routes/identity.qr.tsx`                | 133  | `button` | <code>shrink-0 rounded-full border px-4 py-2 text-xs font-semibold capitalize $&#123; style === s ? "border-tra</code>  |
+| `src/routes/marketplace/index.tsx`          | 55   | `Link`   | <code>inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-xs font-semibold text-background</code>         |
+| `src/routes/marketplace/rent/index.tsx`     | 63   | `Link`   | <code>inline-flex h-10 items-center gap-1 rounded-full bg-ink px-3.5 text-xs font-semibold text-background</code>       |
+| `src/routes/notifications.settings.tsx`     | 62   | `button` | <code>min-h-9 rounded-full px-3.5 text-[12px] font-semibold $&#123; p[c.key] ? "bg-primary text-primary-foregro</code>  |
+| `src/routes/notifications.settings.tsx`     | 85   | `button` | <code>h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors $&#123;quiet ? "bg-primary" : "bg-subtle"&#125;</code>     |
+| `src/routes/opportunities.index.tsx`        | 66   | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground</code>                 |
+| `src/routes/opportunities.mine.tsx`         | 37   | `Link`   | <code>flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground</code>                 |
+| `src/routes/provider.availability.tsx`      | 55   | `button` | <code>min-h-11 min-w-[52px] rounded-full border px-3 text-sm font-semibold $&#123; on ? "border-primary bg-prim</code>  |
+| `src/routes/provider.bookings.calendar.tsx` | 149  | `Link`   | <code>mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-xs font-semibold</code>       |
+| `src/routes/recommendations.swipe.tsx`      | 99   | `button` | <code>flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl text-primary-foreground</code>         |
+| `src/routes/saved.tsx`                      | 109  | `button` | <code>min-h-11 flex-1 rounded-full bg-ink text-xs font-semibold text-background</code>                                  |
+| `src/routes/search.index.tsx`               | 77   | `button` | <code>fixed bottom-24 left-1/2 z-40 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full </code>       |
+| `src/routes/search.index.tsx`               | 172  | `Link`   | <code>inline-flex min-h-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-back</code>       |
+| `src/routes/services.availability.tsx`      | 74   | `button` | <code>h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors $&#123;d.enabled ? "bg-primary" : "bg-subtle"&#125;</code> |
+| `src/routes/services.index.tsx`             | 43   | `Link`   | <code>grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground</code>                          |
+| `src/routes/singers.tsx`                    | 45   | `button` | <code>h-10 w-10 text-sm $&#123;!grid ? "bg-ink text-background" : "bg-card"&#125;</code>                                |
+| `src/routes/singers.tsx`                    | 51   | `button` | <code>h-10 w-10 text-sm $&#123;grid ? "bg-ink text-background" : "bg-card"&#125;</code>                                 |
 
 ### Outline (secondary look) (26)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/components/ml/booking.tsx` | 428 | `button` | <code>min-h-11 rounded-full border px-4 text-xs font-semibold $&#123; active ? "border-transparent bg-selected-</code> |
-| `src/components/ml/collab-workspace.tsx` | 54 | `Link` | <code>shrink-0 rounded-full border px-4 py-2 text-xs font-semibold $&#123; active ? "border-transparent bg-sele</code> |
-| `src/components/ml/collab.tsx` | 333 | `button` | <code>mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border $&#123; m.status === "done" </code> |
-| `src/components/ml/kit.tsx` | 64 | `button` | <code>shrink-0 rounded-full border px-4 py-2 text-xs font-semibold $&#123; value === o ? "border-transparent bg</code> |
-| `src/components/ml/market.tsx` | 17 | `button` | <code>flex items-center justify-center rounded-full border border-border bg-card/95 backdrop-blur transiti</code> |
-| `src/components/ml/profile.tsx` | 643 | `button` | <code>flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-1 font-semibold d</code> |
-| `src/components/ml/qr.tsx` | 197 | `button` | <code>inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-</code> |
-| `src/components/ml/ui.tsx` | 175 | `button` | <code>state-layer hit-area inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border text-sm fo</code> |
-| `src/routes/collab.index.tsx` | 138 | `button` | <code>inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semi</code> |
-| `src/routes/collab.index.tsx` | 146 | `button` | <code>inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semi</code> |
-| `src/routes/feed.tsx` | 490 | `Link` | <code>inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5</code> |
-| `src/routes/marketplace/rent/c.$slug.tsx` | 65 | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code> |
-| `src/routes/marketplace/rent/c.$slug.tsx` | 71 | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code> |
-| `src/routes/marketplace/rent/search.tsx` | 122 | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code> |
-| `src/routes/marketplace/rent/search.tsx` | 128 | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code> |
-| `src/routes/opportunities.search.tsx` | 76 | `button` | <code>inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs </code> |
-| `src/routes/portfolio.settings.tsx` | 89 | `button` | <code>h-7 w-12 shrink-0 rounded-full border border-border</code> |
-| `src/routes/provider.bookings.index.tsx` | 190 | `Link` | <code>inline-flex shrink-0 items-center rounded-full border border-border bg-card px-4 py-2.5 text-[12px] </code> |
-| `src/routes/provider.bookings.requests.$ref.tsx` | 141 | `button` | <code>min-h-10 rounded-full border border-border px-3 text-xs font-semibold</code> |
-| `src/routes/recommendations.swipe.tsx` | 85 | `button` | <code>flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-xl</code> |
-| `src/routes/saved.tsx` | 112 | `button` | <code>min-h-11 flex-1 rounded-full border border-border text-xs font-semibold</code> |
-| `src/routes/search.why.$id.tsx` | 87 | `button` | <code>min-h-11 rounded-full border border-border bg-card px-4 text-xs font-semibold</code> |
-| `src/routes/singers.tsx` | 77 | `button` | <code>shrink-0 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-muted-foregr</code> |
-| `src/routes/verification.$type.tsx` | 425 | `button` | <code>inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibo</code> |
-| `src/routes/verification.$type.tsx` | 432 | `button` | <code>inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibo</code> |
-| `src/routes/verification.$type.tsx` | 444 | `button` | <code>inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibo</code> |
+| File                                             | Line | Element  | Classes                                                                                                                |
+| ------------------------------------------------ | ---- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `src/components/ml/booking.tsx`                  | 428  | `button` | <code>min-h-11 rounded-full border px-4 text-xs font-semibold $&#123; active ? "border-transparent bg-selected-</code> |
+| `src/components/ml/collab-workspace.tsx`         | 54   | `Link`   | <code>shrink-0 rounded-full border px-4 py-2 text-xs font-semibold $&#123; active ? "border-transparent bg-sele</code> |
+| `src/components/ml/collab.tsx`                   | 333  | `button` | <code>mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border $&#123; m.status === "done" </code> |
+| `src/components/ml/kit.tsx`                      | 64   | `button` | <code>shrink-0 rounded-full border px-4 py-2 text-xs font-semibold $&#123; value === o ? "border-transparent bg</code> |
+| `src/components/ml/market.tsx`                   | 17   | `button` | <code>flex items-center justify-center rounded-full border border-border bg-card/95 backdrop-blur transiti</code>      |
+| `src/components/ml/profile.tsx`                  | 643  | `button` | <code>flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-1 font-semibold d</code>      |
+| `src/components/ml/qr.tsx`                       | 197  | `button` | <code>inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-</code>      |
+| `src/components/ml/ui.tsx`                       | 175  | `button` | <code>state-layer hit-area inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border text-sm fo</code>      |
+| `src/routes/collab.index.tsx`                    | 138  | `button` | <code>inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semi</code>      |
+| `src/routes/collab.index.tsx`                    | 146  | `button` | <code>inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semi</code>      |
+| `src/routes/feed.tsx`                            | 490  | `Link`   | <code>inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5</code>             |
+| `src/routes/marketplace/rent/c.$slug.tsx`        | 65   | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code>      |
+| `src/routes/marketplace/rent/c.$slug.tsx`        | 71   | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code>      |
+| `src/routes/marketplace/rent/search.tsx`         | 122  | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code>      |
+| `src/routes/marketplace/rent/search.tsx`         | 128  | `button` | <code>inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-s</code>      |
+| `src/routes/opportunities.search.tsx`            | 76   | `button` | <code>inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs </code>      |
+| `src/routes/portfolio.settings.tsx`              | 89   | `button` | <code>h-7 w-12 shrink-0 rounded-full border border-border</code>                                                       |
+| `src/routes/provider.bookings.index.tsx`         | 190  | `Link`   | <code>inline-flex shrink-0 items-center rounded-full border border-border bg-card px-4 py-2.5 text-[12px] </code>      |
+| `src/routes/provider.bookings.requests.$ref.tsx` | 141  | `button` | <code>min-h-10 rounded-full border border-border px-3 text-xs font-semibold</code>                                     |
+| `src/routes/recommendations.swipe.tsx`           | 85   | `button` | <code>flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-xl</code>              |
+| `src/routes/saved.tsx`                           | 112  | `button` | <code>min-h-11 flex-1 rounded-full border border-border text-xs font-semibold</code>                                   |
+| `src/routes/search.why.$id.tsx`                  | 87   | `button` | <code>min-h-11 rounded-full border border-border bg-card px-4 text-xs font-semibold</code>                             |
+| `src/routes/singers.tsx`                         | 77   | `button` | <code>shrink-0 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-muted-foregr</code>      |
+| `src/routes/verification.$type.tsx`              | 425  | `button` | <code>inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibo</code>      |
+| `src/routes/verification.$type.tsx`              | 432  | `button` | <code>inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibo</code>      |
+| `src/routes/verification.$type.tsx`              | 444  | `button` | <code>inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-[12px] font-semibo</code>      |
 
 ### Tonal / grey fill (5)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/routes/bands.$id.index.tsx` | 130 | `Link` | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs f</code> |
-| `src/routes/bands.$id.index.tsx` | 142 | `Link` | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs f</code> |
-| `src/routes/bands.$id.index.tsx` | 159 | `Link` | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs f</code> |
-| `src/routes/recommendations.swipe.tsx` | 92 | `button` | <code>flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-xl</code> |
-| `src/routes/verification.$type.tsx` | 460 | `button` | <code>inline-flex items-center gap-1 rounded-full bg-subtle px-3 py-2 text-[12px] font-semibold</code> |
+| File                                   | Line | Element  | Classes                                                                                                           |
+| -------------------------------------- | ---- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| `src/routes/bands.$id.index.tsx`       | 130  | `Link`   | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs f</code> |
+| `src/routes/bands.$id.index.tsx`       | 142  | `Link`   | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs f</code> |
+| `src/routes/bands.$id.index.tsx`       | 159  | `Link`   | <code>inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs f</code> |
+| `src/routes/recommendations.swipe.tsx` | 92   | `button` | <code>flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-xl</code>                            |
+| `src/routes/verification.$type.tsx`    | 460  | `button` | <code>inline-flex items-center gap-1 rounded-full bg-subtle px-3 py-2 text-[12px] font-semibold</code>            |
 
 ### Icon only (35)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/components/ml/booking.tsx` | 273 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border</code> |
-| `src/components/ml/booking.tsx` | 284 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border</code> |
-| `src/components/ml/cards.tsx` | 60 | `button` | <code>flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/components/ml/opportunity.tsx` | 130 | `button` | <code>absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-border bg</code> |
-| `src/components/ml/portfolio.tsx` | 554 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40</code> |
-| `src/components/ml/portfolio.tsx` | 563 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40</code> |
-| `src/components/ml/profile.tsx` | 257 | `Link` | <code>absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90</code> |
-| `src/components/ml/qr.tsx` | 329 | `button` | <code>flex h-9 w-9 items-center justify-center rounded-full bg-subtle</code> |
-| `src/components/ml/tab-header.tsx` | 13 | `button` | <code>hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-</code> |
-| `src/components/ml/ui.tsx` | 98 | `Link` | <code>hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-ca</code> |
-| `src/routes/bands.$id.index.tsx` | 76 | `Link` | <code>flex h-10 w-10 items-center justify-center rounded-full bg-subtle</code> |
-| `src/routes/booking.$id.details.tsx` | 79 | `button` | <code>h-12 w-12 rounded-full border border-border bg-card text-lg</code> |
-| `src/routes/booking.$id.details.tsx` | 88 | `button` | <code>h-12 w-12 rounded-full border border-border bg-card text-lg</code> |
-| `src/routes/booking.$id.index.tsx` | 40 | `Link` | <code>absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 </code> |
-| `src/routes/business.$id.index.tsx` | 71 | `Link` | <code>grid h-10 w-10 place-items-center rounded-full bg-subtle</code> |
-| `src/routes/discover.index.tsx` | 54 | `button` | <code>flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/feed.tsx` | 238 | `Link` | <code>hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-ca</code> |
-| `src/routes/identity.full.tsx` | 45 | `Link` | <code>flex h-11 w-11 items-center justify-center rounded-full</code> |
-| `src/routes/identity.history.tsx` | 38 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/identity.qr.tsx` | 76 | `Link` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/marketplace/index.tsx` | 61 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/marketplace/l.$id.tsx` | 92 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/marketplace/rent/e.$id.tsx` | 122 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/marketplace/rent/index.tsx` | 69 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/marketplace/rent/request.$id.tsx` | 122 | `button` | <code>flex h-9 w-9 items-center justify-center rounded-full border border-border</code> |
-| `src/routes/marketplace/rent/request.$id.tsx` | 130 | `button` | <code>flex h-9 w-9 items-center justify-center rounded-full border border-border</code> |
-| `src/routes/notifications.index.tsx` | 62 | `Link` | <code>grid h-10 w-10 place-items-center rounded-full bg-subtle</code> |
-| `src/routes/opportunities.$id.index.tsx` | 91 | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/opportunities.$id.index.tsx` | 196 | `button` | <code>flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-background</code> |
-| `src/routes/recommendations.index.tsx` | 67 | `Link` | <code>flex h-10 w-10 items-center justify-center rounded-full bg-subtle</code> |
-| `src/routes/saved.tsx` | 115 | `button` | <code>min-h-11 w-11 rounded-full border border-border text-xs</code> |
-| `src/routes/search.history.tsx` | 76 | `button` | <code>flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground</code> |
-| `src/routes/search.index.tsx` | 42 | `Link` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/search.index.tsx` | 49 | `Link` | <code>ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code> |
-| `src/routes/studio.tsx` | 38 | `Link` | <code>absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90</code> |
+| File                                          | Line | Element  | Classes                                                                                                           |
+| --------------------------------------------- | ---- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| `src/components/ml/booking.tsx`               | 273  | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border</code>                         |
+| `src/components/ml/booking.tsx`               | 284  | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border</code>                         |
+| `src/components/ml/cards.tsx`                 | 60   | `button` | <code>flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/components/ml/opportunity.tsx`           | 130  | `button` | <code>absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-border bg</code> |
+| `src/components/ml/portfolio.tsx`             | 554  | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40</code>     |
+| `src/components/ml/portfolio.tsx`             | 563  | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40</code>     |
+| `src/components/ml/profile.tsx`               | 257  | `Link`   | <code>absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90</code>             |
+| `src/components/ml/qr.tsx`                    | 329  | `button` | <code>flex h-9 w-9 items-center justify-center rounded-full bg-subtle</code>                                      |
+| `src/components/ml/tab-header.tsx`            | 13   | `button` | <code>hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-</code> |
+| `src/components/ml/ui.tsx`                    | 98   | `Link`   | <code>hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-ca</code> |
+| `src/routes/bands.$id.index.tsx`              | 76   | `Link`   | <code>flex h-10 w-10 items-center justify-center rounded-full bg-subtle</code>                                    |
+| `src/routes/booking.$id.details.tsx`          | 79   | `button` | <code>h-12 w-12 rounded-full border border-border bg-card text-lg</code>                                          |
+| `src/routes/booking.$id.details.tsx`          | 88   | `button` | <code>h-12 w-12 rounded-full border border-border bg-card text-lg</code>                                          |
+| `src/routes/booking.$id.index.tsx`            | 40   | `Link`   | <code>absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 </code> |
+| `src/routes/business.$id.index.tsx`           | 71   | `Link`   | <code>grid h-10 w-10 place-items-center rounded-full bg-subtle</code>                                             |
+| `src/routes/discover.index.tsx`               | 54   | `button` | <code>flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/feed.tsx`                         | 238  | `Link`   | <code>hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-ca</code> |
+| `src/routes/identity.full.tsx`                | 45   | `Link`   | <code>flex h-11 w-11 items-center justify-center rounded-full</code>                                              |
+| `src/routes/identity.history.tsx`             | 38   | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/identity.qr.tsx`                  | 76   | `Link`   | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/marketplace/index.tsx`            | 61   | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/marketplace/l.$id.tsx`            | 92   | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/marketplace/rent/e.$id.tsx`       | 122  | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/marketplace/rent/index.tsx`       | 69   | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/marketplace/rent/request.$id.tsx` | 122  | `button` | <code>flex h-9 w-9 items-center justify-center rounded-full border border-border</code>                           |
+| `src/routes/marketplace/rent/request.$id.tsx` | 130  | `button` | <code>flex h-9 w-9 items-center justify-center rounded-full border border-border</code>                           |
+| `src/routes/notifications.index.tsx`          | 62   | `Link`   | <code>grid h-10 w-10 place-items-center rounded-full bg-subtle</code>                                             |
+| `src/routes/opportunities.$id.index.tsx`      | 91   | `button` | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/opportunities.$id.index.tsx`      | 196  | `button` | <code>flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-background</code>  |
+| `src/routes/recommendations.index.tsx`        | 67   | `Link`   | <code>flex h-10 w-10 items-center justify-center rounded-full bg-subtle</code>                                    |
+| `src/routes/saved.tsx`                        | 115  | `button` | <code>min-h-11 w-11 rounded-full border border-border text-xs</code>                                              |
+| `src/routes/search.history.tsx`               | 76   | `button` | <code>flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground</code>               |
+| `src/routes/search.index.tsx`                 | 42   | `Link`   | <code>flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>                 |
+| `src/routes/search.index.tsx`                 | 49   | `Link`   | <code>ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card</code>         |
+| `src/routes/studio.tsx`                       | 38   | `Link`   | <code>absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90</code>             |
 
 ### Text (link look) (74)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/components/ml/auth.tsx` | 238 | `button` | <code>link-action hit-area inline-flex items-center gap-1.5 font-semibold text-foreground disabled:pointer</code> |
-| `src/components/ml/auth.tsx` | 694 | `Link` | <code>hit-area font-semibold text-foreground underline underline-offset-2</code> |
-| `src/components/ml/auth.tsx` | 701 | `Link` | <code>hit-area font-semibold text-foreground underline underline-offset-2</code> |
-| `src/components/ml/booking.tsx` | 489 | `Link` | <code>mt-1 inline-flex items-center gap-1 text-1 font-bold uppercase tracking-wide text-foreground</code> |
-| `src/components/ml/booking.tsx` | 742 | `Link` | <code>inline-flex items-center gap-1 text-xs font-bold text-foreground</code> |
-| `src/components/ml/booking.tsx` | 791 | `button` | <code>min-h-11 shrink-0 text-xs font-bold text-foreground</code> |
-| `src/components/ml/collab-workspace.tsx` | 36 | `Link` | <code>text-1 font-bold uppercase tracking-wide text-muted-foreground</code> |
-| `src/components/ml/collab.tsx` | 156 | `Link` | <code>text-1 font-semibold text-foreground</code> |
-| `src/components/ml/collab.tsx` | 163 | `Link` | <code>text-1 font-semibold text-foreground</code> |
-| `src/components/ml/collab.tsx` | 167 | `button` | <code>text-1 font-semibold text-destructive</code> |
-| `src/components/ml/collab.tsx` | 353 | `Link` | <code>mt-2 inline-block text-1 font-semibold text-foreground</code> |
-| `src/components/ml/collab.tsx` | 506 | `button` | <code>text-1 font-bold uppercase</code> |
-| `src/components/ml/filter-sheet.tsx` | 35 | `button` | <code>text-xs font-semibold text-foreground</code> |
-| `src/components/ml/market.tsx` | 381 | `button` | <code>text-xs font-semibold text-foreground</code> |
-| `src/components/ml/market.tsx` | 622 | `Link` | <code>text-xs font-semibold text-foreground</code> |
-| `src/components/ml/person-profile.tsx` | 335 | `button` | <code>state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-fore</code> |
-| `src/components/ml/profile.tsx` | 53 | `button` | <code>state-layer hit-area rounded-full text-1 font-semibold text-foreground transition-transform duration</code> |
-| `src/components/ml/rental.tsx` | 104 | `Link` | <code>shrink-0 truncate text-1 font-semibold text-foreground</code> |
-| `src/components/ml/rental.tsx` | 552 | `button` | <code>text-xs font-semibold text-foreground</code> |
-| `src/components/ml/rental.tsx` | 584 | `button` | <code>mb-5 text-xs font-semibold text-foreground</code> |
-| `src/routes/auth.locked.tsx` | 54 | `Link` | <code>hit-area font-semibold text-foreground</code> |
-| `src/routes/auth.maintenance.tsx` | 37 | `Link` | <code>hit-area font-semibold text-foreground</code> |
-| `src/routes/auth.offline.tsx` | 47 | `Link` | <code>hit-area font-semibold text-foreground</code> |
-| `src/routes/booking.$id.index.tsx` | 148 | `Link` | <code>mt-2 inline-block text-xs font-bold text-foreground</code> |
-| `src/routes/booking.$id.pay.tsx` | 137 | `button` | <code>mt-6 min-h-11 text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code> |
-| `src/routes/booking.$id.review.tsx` | 93 | `button` | <code>mt-3 min-h-11 text-xs font-bold text-foreground</code> |
-| `src/routes/booking.$id.schedule.tsx` | 84 | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code> |
-| `src/routes/booking.$id.schedule.tsx` | 124 | `button` | <code>text-xs font-semibold text-foreground</code> |
-| `src/routes/bookings.index.tsx` | 57 | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code> |
-| `src/routes/business.$id.index.tsx` | 263 | `Link` | <code>block text-[12px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.files.$fileId.tsx` | 101 | `button` | <code>mt-2 text-[11px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.invite-link.tsx` | 95 | `Link` | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.media.tsx` | 94 | `Link` | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.milestones.$mid.tsx` | 96 | `Link` | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.participants.tsx` | 120 | `button` | <code>mt-2 text-[11px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.participants.tsx` | 127 | `Link` | <code>mt-2 block text-[11px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.participants.tsx` | 136 | `Link` | <code>mb-5 block text-center text-[12px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.settings.tsx` | 197 | `Link` | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code> |
-| `src/routes/collab.$id.share.tsx` | 86 | `Link` | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code> |
-| `src/routes/collab.index.tsx` | 97 | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code> |
-| `src/routes/collab.invites.$id.tsx` | 81 | `Link` | <code>text-[11px] font-semibold text-foreground</code> |
-| `src/routes/collab.new.collaborators.tsx` | 99 | `button` | <code>mt-1 text-[11px] font-semibold text-foreground</code> |
-| `src/routes/identity.full.tsx` | 71 | `button` | <code>inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold</code> |
-| `src/routes/identity.full.tsx` | 79 | `button` | <code>inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold</code> |
-| `src/routes/marketplace/index.tsx` | 50 | `button` | <code>mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground</code> |
-| `src/routes/marketplace/index.tsx` | 141 | `Link` | <code>mt-2 block text-center text-xs font-semibold text-foreground</code> |
-| `src/routes/marketplace/l.$id.tsx` | 248 | `button` | <code>mx-auto mt-6 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground</code> |
-| `src/routes/marketplace/mine.tsx` | 36 | `Link` | <code>text-xs font-semibold text-foreground</code> |
-| `src/routes/marketplace/rent/e.$id.tsx` | 339 | `button` | <code>inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground</code> |
-| `src/routes/marketplace/rent/index.tsx` | 58 | `button` | <code>mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-foreground</code> |
-| `src/routes/marketplace/rent/listings.tsx` | 52 | `Link` | <code>shrink-0 text-xs font-semibold text-foreground</code> |
-| `src/routes/marketplace/rent/mine.tsx` | 36 | `Link` | <code>shrink-0 text-xs font-semibold text-foreground</code> |
-| `src/routes/marketplace/rent/provider.$id.tsx` | 166 | `button` | <code>text-[11px] font-semibold text-muted-foreground</code> |
-| `src/routes/messages.tsx` | 27 | `Link` | <code>text-[11px] font-bold uppercase tracking-wide text-foreground</code> |
-| `src/routes/notifications.index.tsx` | 81 | `button` | <code>inline-flex items-center gap-1.5 text-[12px] font-semibold text-foreground</code> |
-| `src/routes/opportunities.$id.index.tsx` | 185 | `button` | <code>inline-flex items-center gap-2 text-[12px] font-semibold text-muted-foreground</code> |
-| `src/routes/opportunities.new.tsx` | 268 | `button` | <code>text-[12px] font-semibold text-foreground</code> |
-| `src/routes/provider.availability.tsx` | 95 | `button` | <code>min-h-10 text-xs font-bold text-foreground</code> |
-| `src/routes/provider.bookings.calendar.tsx` | 92 | `button` | <code>min-h-11 px-2 text-sm font-semibold text-foreground</code> |
-| `src/routes/provider.bookings.calendar.tsx` | 100 | `button` | <code>min-h-11 px-2 text-sm font-semibold text-foreground</code> |
-| `src/routes/provider.bookings.index.tsx` | 58 | `Link` | <code>text-[11px] font-bold uppercase tracking-wide text-foreground</code> |
-| `src/routes/provider.bookings.requests.$ref.tsx` | 151 | `button` | <code>mt-3 min-h-10 text-xs font-bold text-muted-foreground</code> |
-| `src/routes/provider.bookings.requests.index.tsx` | 45 | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code> |
-| `src/routes/reset-password.tsx` | 114 | `Link` | <code>font-semibold text-foreground</code> |
-| `src/routes/search.history.tsx` | 48 | `button` | <code>shrink-0 text-1 font-semibold text-foreground</code> |
-| `src/routes/search.saved.tsx` | 78 | `button` | <code>shrink-0 text-1 font-semibold text-foreground</code> |
-| `src/routes/services.$id.index.tsx` | 51 | `button` | <code>text-[12px] font-semibold text-foreground</code> |
-| `src/routes/services.availability.tsx` | 104 | `button` | <code>inline-flex items-center gap-1 text-[12px] font-semibold text-foreground</code> |
-| `src/routes/services.availability.tsx` | 122 | `button` | <code>text-[12px] font-semibold text-muted-foreground</code> |
-| `src/routes/services.new.tsx` | 157 | `Link` | <code>block text-[12px] font-semibold text-foreground</code> |
-| `src/routes/settings.account.tsx` | 47 | `button` | <code>shrink-0 text-[12px] font-semibold text-foreground</code> |
-| `src/routes/settings.security.tsx` | 66 | `button` | <code>shrink-0 text-[12px] font-semibold text-foreground</code> |
-| `src/routes/verification.choose.tsx` | 111 | `Link` | <code>font-semibold text-foreground</code> |
-| `src/routes/verification.choose.tsx` | 119 | `Link` | <code>font-semibold text-foreground</code> |
+| File                                              | Line | Element  | Classes                                                                                                           |
+| ------------------------------------------------- | ---- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| `src/components/ml/auth.tsx`                      | 238  | `button` | <code>link-action hit-area inline-flex items-center gap-1.5 font-semibold text-foreground disabled:pointer</code> |
+| `src/components/ml/auth.tsx`                      | 694  | `Link`   | <code>hit-area font-semibold text-foreground underline underline-offset-2</code>                                  |
+| `src/components/ml/auth.tsx`                      | 701  | `Link`   | <code>hit-area font-semibold text-foreground underline underline-offset-2</code>                                  |
+| `src/components/ml/booking.tsx`                   | 489  | `Link`   | <code>mt-1 inline-flex items-center gap-1 text-1 font-bold uppercase tracking-wide text-foreground</code>         |
+| `src/components/ml/booking.tsx`                   | 742  | `Link`   | <code>inline-flex items-center gap-1 text-xs font-bold text-foreground</code>                                     |
+| `src/components/ml/booking.tsx`                   | 791  | `button` | <code>min-h-11 shrink-0 text-xs font-bold text-foreground</code>                                                  |
+| `src/components/ml/collab-workspace.tsx`          | 36   | `Link`   | <code>text-1 font-bold uppercase tracking-wide text-muted-foreground</code>                                       |
+| `src/components/ml/collab.tsx`                    | 156  | `Link`   | <code>text-1 font-semibold text-foreground</code>                                                                 |
+| `src/components/ml/collab.tsx`                    | 163  | `Link`   | <code>text-1 font-semibold text-foreground</code>                                                                 |
+| `src/components/ml/collab.tsx`                    | 167  | `button` | <code>text-1 font-semibold text-destructive</code>                                                                |
+| `src/components/ml/collab.tsx`                    | 353  | `Link`   | <code>mt-2 inline-block text-1 font-semibold text-foreground</code>                                               |
+| `src/components/ml/collab.tsx`                    | 506  | `button` | <code>text-1 font-bold uppercase</code>                                                                           |
+| `src/components/ml/filter-sheet.tsx`              | 35   | `button` | <code>text-xs font-semibold text-foreground</code>                                                                |
+| `src/components/ml/market.tsx`                    | 381  | `button` | <code>text-xs font-semibold text-foreground</code>                                                                |
+| `src/components/ml/market.tsx`                    | 622  | `Link`   | <code>text-xs font-semibold text-foreground</code>                                                                |
+| `src/components/ml/person-profile.tsx`            | 335  | `button` | <code>state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-fore</code> |
+| `src/components/ml/profile.tsx`                   | 53   | `button` | <code>state-layer hit-area rounded-full text-1 font-semibold text-foreground transition-transform duration</code> |
+| `src/components/ml/rental.tsx`                    | 104  | `Link`   | <code>shrink-0 truncate text-1 font-semibold text-foreground</code>                                               |
+| `src/components/ml/rental.tsx`                    | 552  | `button` | <code>text-xs font-semibold text-foreground</code>                                                                |
+| `src/components/ml/rental.tsx`                    | 584  | `button` | <code>mb-5 text-xs font-semibold text-foreground</code>                                                           |
+| `src/routes/auth.locked.tsx`                      | 54   | `Link`   | <code>hit-area font-semibold text-foreground</code>                                                               |
+| `src/routes/auth.maintenance.tsx`                 | 37   | `Link`   | <code>hit-area font-semibold text-foreground</code>                                                               |
+| `src/routes/auth.offline.tsx`                     | 47   | `Link`   | <code>hit-area font-semibold text-foreground</code>                                                               |
+| `src/routes/booking.$id.index.tsx`                | 148  | `Link`   | <code>mt-2 inline-block text-xs font-bold text-foreground</code>                                                  |
+| `src/routes/booking.$id.pay.tsx`                  | 137  | `button` | <code>mt-6 min-h-11 text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code>                    |
+| `src/routes/booking.$id.review.tsx`               | 93   | `button` | <code>mt-3 min-h-11 text-xs font-bold text-foreground</code>                                                      |
+| `src/routes/booking.$id.schedule.tsx`             | 84   | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code>                                  |
+| `src/routes/booking.$id.schedule.tsx`             | 124  | `button` | <code>text-xs font-semibold text-foreground</code>                                                                |
+| `src/routes/bookings.index.tsx`                   | 57   | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code>                                  |
+| `src/routes/business.$id.index.tsx`               | 263  | `Link`   | <code>block text-[12px] font-semibold text-foreground</code>                                                      |
+| `src/routes/collab.$id.files.$fileId.tsx`         | 101  | `button` | <code>mt-2 text-[11px] font-semibold text-foreground</code>                                                       |
+| `src/routes/collab.$id.invite-link.tsx`           | 95   | `Link`   | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code>                                     |
+| `src/routes/collab.$id.media.tsx`                 | 94   | `Link`   | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code>                                     |
+| `src/routes/collab.$id.milestones.$mid.tsx`       | 96   | `Link`   | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code>                                     |
+| `src/routes/collab.$id.participants.tsx`          | 120  | `button` | <code>mt-2 text-[11px] font-semibold text-foreground</code>                                                       |
+| `src/routes/collab.$id.participants.tsx`          | 127  | `Link`   | <code>mt-2 block text-[11px] font-semibold text-foreground</code>                                                 |
+| `src/routes/collab.$id.participants.tsx`          | 136  | `Link`   | <code>mb-5 block text-center text-[12px] font-semibold text-foreground</code>                                     |
+| `src/routes/collab.$id.settings.tsx`              | 197  | `Link`   | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code>                                     |
+| `src/routes/collab.$id.share.tsx`                 | 86   | `Link`   | <code>mb-8 block text-center text-[12px] font-semibold text-foreground</code>                                     |
+| `src/routes/collab.index.tsx`                     | 97   | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code>                                  |
+| `src/routes/collab.invites.$id.tsx`               | 81   | `Link`   | <code>text-[11px] font-semibold text-foreground</code>                                                            |
+| `src/routes/collab.new.collaborators.tsx`         | 99   | `button` | <code>mt-1 text-[11px] font-semibold text-foreground</code>                                                       |
+| `src/routes/identity.full.tsx`                    | 71   | `button` | <code>inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold</code>     |
+| `src/routes/identity.full.tsx`                    | 79   | `button` | <code>inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-semibold</code>     |
+| `src/routes/marketplace/index.tsx`                | 50   | `button` | <code>mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground</code>                |
+| `src/routes/marketplace/index.tsx`                | 141  | `Link`   | <code>mt-2 block text-center text-xs font-semibold text-foreground</code>                                         |
+| `src/routes/marketplace/l.$id.tsx`                | 248  | `button` | <code>mx-auto mt-6 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground</code>               |
+| `src/routes/marketplace/mine.tsx`                 | 36   | `Link`   | <code>text-xs font-semibold text-foreground</code>                                                                |
+| `src/routes/marketplace/rent/e.$id.tsx`           | 339  | `button` | <code>inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground</code>                     |
+| `src/routes/marketplace/rent/index.tsx`           | 58   | `button` | <code>mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-foreground</code>                        |
+| `src/routes/marketplace/rent/listings.tsx`        | 52   | `Link`   | <code>shrink-0 text-xs font-semibold text-foreground</code>                                                       |
+| `src/routes/marketplace/rent/mine.tsx`            | 36   | `Link`   | <code>shrink-0 text-xs font-semibold text-foreground</code>                                                       |
+| `src/routes/marketplace/rent/provider.$id.tsx`    | 166  | `button` | <code>text-[11px] font-semibold text-muted-foreground</code>                                                      |
+| `src/routes/messages.tsx`                         | 27   | `Link`   | <code>text-[11px] font-bold uppercase tracking-wide text-foreground</code>                                        |
+| `src/routes/notifications.index.tsx`              | 81   | `button` | <code>inline-flex items-center gap-1.5 text-[12px] font-semibold text-foreground</code>                           |
+| `src/routes/opportunities.$id.index.tsx`          | 185  | `button` | <code>inline-flex items-center gap-2 text-[12px] font-semibold text-muted-foreground</code>                       |
+| `src/routes/opportunities.new.tsx`                | 268  | `button` | <code>text-[12px] font-semibold text-foreground</code>                                                            |
+| `src/routes/provider.availability.tsx`            | 95   | `button` | <code>min-h-10 text-xs font-bold text-foreground</code>                                                           |
+| `src/routes/provider.bookings.calendar.tsx`       | 92   | `button` | <code>min-h-11 px-2 text-sm font-semibold text-foreground</code>                                                  |
+| `src/routes/provider.bookings.calendar.tsx`       | 100  | `button` | <code>min-h-11 px-2 text-sm font-semibold text-foreground</code>                                                  |
+| `src/routes/provider.bookings.index.tsx`          | 58   | `Link`   | <code>text-[11px] font-bold uppercase tracking-wide text-foreground</code>                                        |
+| `src/routes/provider.bookings.requests.$ref.tsx`  | 151  | `button` | <code>mt-3 min-h-10 text-xs font-bold text-muted-foreground</code>                                                |
+| `src/routes/provider.bookings.requests.index.tsx` | 45   | `button` | <code>text-[11px] font-bold uppercase tracking-wide text-muted-foreground</code>                                  |
+| `src/routes/reset-password.tsx`                   | 114  | `Link`   | <code>font-semibold text-foreground</code>                                                                        |
+| `src/routes/search.history.tsx`                   | 48   | `button` | <code>shrink-0 text-1 font-semibold text-foreground</code>                                                        |
+| `src/routes/search.saved.tsx`                     | 78   | `button` | <code>shrink-0 text-1 font-semibold text-foreground</code>                                                        |
+| `src/routes/services.$id.index.tsx`               | 51   | `button` | <code>text-[12px] font-semibold text-foreground</code>                                                            |
+| `src/routes/services.availability.tsx`            | 104  | `button` | <code>inline-flex items-center gap-1 text-[12px] font-semibold text-foreground</code>                             |
+| `src/routes/services.availability.tsx`            | 122  | `button` | <code>text-[12px] font-semibold text-muted-foreground</code>                                                      |
+| `src/routes/services.new.tsx`                     | 157  | `Link`   | <code>block text-[12px] font-semibold text-foreground</code>                                                      |
+| `src/routes/settings.account.tsx`                 | 47   | `button` | <code>shrink-0 text-[12px] font-semibold text-foreground</code>                                                   |
+| `src/routes/settings.security.tsx`                | 66   | `button` | <code>shrink-0 text-[12px] font-semibold text-foreground</code>                                                   |
+| `src/routes/verification.choose.tsx`              | 111  | `Link`   | <code>font-semibold text-foreground</code>                                                                        |
+| `src/routes/verification.choose.tsx`              | 119  | `Link`   | <code>font-semibold text-foreground</code>                                                                        |
 
 ### Whole row or card is the button (53)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/components/ml/auth.tsx` | 578 | `button` | <code>mb-6 flex w-full justify-between gap-2 animate-shake</code> |
-| `src/components/ml/cards.tsx` | 10 | `button` | <code>flex w-full items-start gap-3 text-left</code> |
-| `src/components/ml/collab.tsx` | 549 | `button` | <code>flex w-full flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-8</code> |
-| `src/components/ml/collab.tsx` | 711 | `button` | <code>flex w-full items-center gap-3 px-4 py-4 text-left</code> |
-| `src/components/ml/collab.tsx` | 731 | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left</code> |
-| `src/components/ml/filter-sheet.tsx` | 89 | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left</code> |
-| `src/components/ml/hire-modal.tsx` | 65 | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-3 text-left $&#123; choice === o.label ? "border-prima</code> |
-| `src/components/ml/market.tsx` | 423 | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left</code> |
-| `src/components/ml/market.tsx` | 459 | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium</code> |
-| `src/components/ml/market.tsx` | 580 | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium</code> |
-| `src/components/ml/onboarding.tsx` | 648 | `button` | <code>state-layer flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-[transform,back</code> |
-| `src/components/ml/onboarding.tsx` | 924 | `button` | <code>flex min-h-11 w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground</code> |
-| `src/components/ml/onboarding.tsx` | 951 | `button` | <code>flex min-h-14 w-full items-center gap-3 rounded-lg border border-border bg-card px-4 text-sm font-se</code> |
-| `src/components/ml/portfolio.tsx` | 474 | `button` | <code>state-layer flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py</code> |
-| `src/components/ml/portfolio.tsx` | 485 | `button` | <code>state-layer w-full rounded-lg border border-dashed border-border bg-card px-4 py-3 text-left transit</code> |
-| `src/components/ml/profile.tsx` | 781 | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium $&#123; danger ? "text-d</code> |
-| `src/components/ml/rental.tsx` | 435 | `button` | <code>flex w-full items-center gap-3 px-4 py-4 text-left</code> |
-| `src/components/ml/rental.tsx` | 632 | `button` | <code>flex w-full items-center justify-between gap-3 px-4 py-4 text-left</code> |
-| `src/components/ml/rental.tsx` | 673 | `button` | <code>w-full px-4 py-4 text-left text-sm font-medium</code> |
-| `src/components/ml/work-form.tsx` | 40 | `button` | <code>state-layer flex min-h-14 w-full items-center gap-3 px-4 text-left</code> |
-| `src/routes/booking.$id.pay.tsx` | 175 | `button` | <code>flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left $&#123; active ? "border-primary" </code> |
-| `src/routes/bookings.$ref.cancel.tsx` | 105 | `button` | <code>flex min-h-12 w-full items-center justify-between rounded-lg border bg-card px-4 text-left text-sm $</code> |
-| `src/routes/business.$id.team.tsx` | 73 | `button` | <code>flex w-full items-center gap-3 border-b border-border py-2.5 text-left last:border-0</code> |
-| `src/routes/business.new.tsx` | 73 | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-3 text-left $&#123; type === t.key ? "border-primary b</code> |
-| `src/routes/collab.$id.timeline.tsx` | 97 | `button` | <code>flex w-full items-center gap-3 py-4 text-left</code> |
-| `src/routes/identity.card.tsx` | 100 | `button` | <code>mt-4 w-full text-[12px] text-muted-foreground underline</code> |
-| `src/routes/identity.customize.tsx` | 52 | `button` | <code>flex items-center gap-3 rounded-[20px] border px-4 py-3 text-left $&#123; style === s.value ? "border-pri</code> |
-| `src/routes/identity.print.tsx` | 85 | `button` | <code>flex items-center justify-between gap-3 rounded-[20px] border px-4 py-3 text-left $&#123; format === f.id</code> |
-| `src/routes/marketplace/rent/active.$id.tsx` | 150 | `button` | <code>w-full py-2 text-[11px] font-semibold text-muted-foreground</code> |
-| `src/routes/marketplace/rent/active.$id.tsx` | 207 | `button` | <code>mt-4 w-full rounded-lg border border-dashed border-border py-6 text-[12px] font-semibold text-muted-</code> |
-| `src/routes/marketplace/rent/list.tsx` | 98 | `button` | <code>rounded-lg border p-4 text-left</code> |
-| `src/routes/marketplace/rent/list.tsx` | 139 | `button` | <code>flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border t</code> |
-| `src/routes/marketplace/rent/list.tsx` | 143 | `button` | <code>mt-3 w-full rounded-lg border border-dashed border-border py-5 text-[12px] font-semibold text-muted-</code> |
-| `src/routes/marketplace/rent/nearby.tsx` | 52 | `button` | <code>mt-2 w-full text-center text-[11px] font-semibold text-foreground</code> |
-| `src/routes/marketplace/sell.tsx` | 66 | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-4 text-left $&#123;type === t.label ? "border-primary"</code> |
-| `src/routes/notifications.index.tsx` | 93 | `button` | <code>block w-full text-left</code> |
-| `src/routes/onboarding/preview.tsx` | 49 | `button` | <code>state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left</code> |
-| `src/routes/onboarding/step.$id.tsx` | 891 | `button` | <code>state-layer flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-lg border px-2 py-3 t</code> |
-| `src/routes/plans.checkout.tsx` | 52 | `button` | <code>flex w-full items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left $&#123;cycle === c ?</code> |
-| `src/routes/plans.index.tsx` | 61 | `button` | <code>block w-full text-left</code> |
-| `src/routes/plans.manage.tsx` | 128 | `button` | <code>w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold</code> |
-| `src/routes/portfolio.select.tsx` | 63 | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-4 text-left $&#123; on ? "border-primary" : "border-bo</code> |
-| `src/routes/portfolio.settings.tsx` | 38 | `button` | <code>w-full rounded-lg border p-4 text-left $&#123; visibility === v.value ? "border-primary bg-card" : "borde</code> |
-| `src/routes/portfolio.settings.tsx` | 66 | `button` | <code>w-full rounded-lg border p-4 text-left $&#123; ordering === o.key ? "border-primary bg-card" : "border-bo</code> |
-| `src/routes/profile.edit.tsx` | 367 | `button` | <code>flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left $&#123;form.visibility === o</code> |
-| `src/routes/profile.edit.tsx` | 408 | `button` | <code>flex min-h-[72px] w-full items-center gap-3 px-4 text-left</code> |
-| `src/routes/provider.availability.tsx` | 108 | `button` | <code>mt-3 flex w-full items-center gap-3 rounded-lg border border-border bg-card p-4 text-left</code> |
-| `src/routes/provider.bookings.calendar.tsx` | 177 | `button` | <code>flex w-full min-w-0 items-center justify-between gap-3 py-1 text-left</code> |
-| `src/routes/provider.bookings.calendar.tsx` | 223 | `button` | <code>flex aspect-square min-w-0 flex-col items-center justify-center rounded-lg border border-border text</code> |
-| `src/routes/recommendations.index.tsx` | 122 | `button` | <code>shrink-0 p-1 text-muted-foreground</code> |
-| `src/routes/recommendations.index.tsx` | 181 | `button` | <code>w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold</code> |
-| `src/routes/recommendations.settings.tsx` | 34 | `button` | <code>flex w-full items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-left</code> |
-| `src/routes/reviews.write.$id.tsx` | 72 | `button` | <code>p-1</code> |
+| File                                         | Line | Element  | Classes                                                                                                                |
+| -------------------------------------------- | ---- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `src/components/ml/auth.tsx`                 | 578  | `button` | <code>mb-6 flex w-full justify-between gap-2 animate-shake</code>                                                      |
+| `src/components/ml/cards.tsx`                | 10   | `button` | <code>flex w-full items-start gap-3 text-left</code>                                                                   |
+| `src/components/ml/collab.tsx`               | 549  | `button` | <code>flex w-full flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-8</code>         |
+| `src/components/ml/collab.tsx`               | 711  | `button` | <code>flex w-full items-center gap-3 px-4 py-4 text-left</code>                                                        |
+| `src/components/ml/collab.tsx`               | 731  | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left</code>                                              |
+| `src/components/ml/filter-sheet.tsx`         | 89   | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left</code>                                              |
+| `src/components/ml/hire-modal.tsx`           | 65   | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-3 text-left $&#123; choice === o.label ? "border-prima</code> |
+| `src/components/ml/market.tsx`               | 423  | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left</code>                                              |
+| `src/components/ml/market.tsx`               | 459  | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium</code>                          |
+| `src/components/ml/market.tsx`               | 580  | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium</code>                          |
+| `src/components/ml/onboarding.tsx`           | 648  | `button` | <code>state-layer flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-[transform,back</code>      |
+| `src/components/ml/onboarding.tsx`           | 924  | `button` | <code>flex min-h-11 w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground</code>         |
+| `src/components/ml/onboarding.tsx`           | 951  | `button` | <code>flex min-h-14 w-full items-center gap-3 rounded-lg border border-border bg-card px-4 text-sm font-se</code>      |
+| `src/components/ml/portfolio.tsx`            | 474  | `button` | <code>state-layer flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py</code>      |
+| `src/components/ml/portfolio.tsx`            | 485  | `button` | <code>state-layer w-full rounded-lg border border-dashed border-border bg-card px-4 py-3 text-left transit</code>      |
+| `src/components/ml/profile.tsx`              | 781  | `button` | <code>flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium $&#123; danger ? "text-d</code> |
+| `src/components/ml/rental.tsx`               | 435  | `button` | <code>flex w-full items-center gap-3 px-4 py-4 text-left</code>                                                        |
+| `src/components/ml/rental.tsx`               | 632  | `button` | <code>flex w-full items-center justify-between gap-3 px-4 py-4 text-left</code>                                        |
+| `src/components/ml/rental.tsx`               | 673  | `button` | <code>w-full px-4 py-4 text-left text-sm font-medium</code>                                                            |
+| `src/components/ml/work-form.tsx`            | 40   | `button` | <code>state-layer flex min-h-14 w-full items-center gap-3 px-4 text-left</code>                                        |
+| `src/routes/booking.$id.pay.tsx`             | 175  | `button` | <code>flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left $&#123; active ? "border-primary" </code> |
+| `src/routes/bookings.$ref.cancel.tsx`        | 105  | `button` | <code>flex min-h-12 w-full items-center justify-between rounded-lg border bg-card px-4 text-left text-sm $</code>      |
+| `src/routes/business.$id.team.tsx`           | 73   | `button` | <code>flex w-full items-center gap-3 border-b border-border py-2.5 text-left last:border-0</code>                      |
+| `src/routes/business.new.tsx`                | 73   | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-3 text-left $&#123; type === t.key ? "border-primary b</code> |
+| `src/routes/collab.$id.timeline.tsx`         | 97   | `button` | <code>flex w-full items-center gap-3 py-4 text-left</code>                                                             |
+| `src/routes/identity.card.tsx`               | 100  | `button` | <code>mt-4 w-full text-[12px] text-muted-foreground underline</code>                                                   |
+| `src/routes/identity.customize.tsx`          | 52   | `button` | <code>flex items-center gap-3 rounded-[20px] border px-4 py-3 text-left $&#123; style === s.value ? "border-pri</code> |
+| `src/routes/identity.print.tsx`              | 85   | `button` | <code>flex items-center justify-between gap-3 rounded-[20px] border px-4 py-3 text-left $&#123; format === f.id</code> |
+| `src/routes/marketplace/rent/active.$id.tsx` | 150  | `button` | <code>w-full py-2 text-[11px] font-semibold text-muted-foreground</code>                                               |
+| `src/routes/marketplace/rent/active.$id.tsx` | 207  | `button` | <code>mt-4 w-full rounded-lg border border-dashed border-border py-6 text-[12px] font-semibold text-muted-</code>      |
+| `src/routes/marketplace/rent/list.tsx`       | 98   | `button` | <code>rounded-lg border p-4 text-left</code>                                                                           |
+| `src/routes/marketplace/rent/list.tsx`       | 139  | `button` | <code>flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border t</code>      |
+| `src/routes/marketplace/rent/list.tsx`       | 143  | `button` | <code>mt-3 w-full rounded-lg border border-dashed border-border py-5 text-[12px] font-semibold text-muted-</code>      |
+| `src/routes/marketplace/rent/nearby.tsx`     | 52   | `button` | <code>mt-2 w-full text-center text-[11px] font-semibold text-foreground</code>                                         |
+| `src/routes/marketplace/sell.tsx`            | 66   | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-4 text-left $&#123;type === t.label ? "border-primary"</code> |
+| `src/routes/notifications.index.tsx`         | 93   | `button` | <code>block w-full text-left</code>                                                                                    |
+| `src/routes/onboarding/preview.tsx`          | 49   | `button` | <code>state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left</code>                                   |
+| `src/routes/onboarding/step.$id.tsx`         | 891  | `button` | <code>state-layer flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-lg border px-2 py-3 t</code>      |
+| `src/routes/plans.checkout.tsx`              | 52   | `button` | <code>flex w-full items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left $&#123;cycle === c ?</code> |
+| `src/routes/plans.index.tsx`                 | 61   | `button` | <code>block w-full text-left</code>                                                                                    |
+| `src/routes/plans.manage.tsx`                | 128  | `button` | <code>w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold</code>              |
+| `src/routes/portfolio.select.tsx`            | 63   | `button` | <code>flex w-full items-center gap-3 rounded-lg border p-4 text-left $&#123; on ? "border-primary" : "border-bo</code> |
+| `src/routes/portfolio.settings.tsx`          | 38   | `button` | <code>w-full rounded-lg border p-4 text-left $&#123; visibility === v.value ? "border-primary bg-card" : "borde</code> |
+| `src/routes/portfolio.settings.tsx`          | 66   | `button` | <code>w-full rounded-lg border p-4 text-left $&#123; ordering === o.key ? "border-primary bg-card" : "border-bo</code> |
+| `src/routes/profile.edit.tsx`                | 367  | `button` | <code>flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left $&#123;form.visibility === o</code> |
+| `src/routes/profile.edit.tsx`                | 408  | `button` | <code>flex min-h-[72px] w-full items-center gap-3 px-4 text-left</code>                                                |
+| `src/routes/provider.availability.tsx`       | 108  | `button` | <code>mt-3 flex w-full items-center gap-3 rounded-lg border border-border bg-card p-4 text-left</code>                 |
+| `src/routes/provider.bookings.calendar.tsx`  | 177  | `button` | <code>flex w-full min-w-0 items-center justify-between gap-3 py-1 text-left</code>                                     |
+| `src/routes/provider.bookings.calendar.tsx`  | 223  | `button` | <code>flex aspect-square min-w-0 flex-col items-center justify-center rounded-lg border border-border text</code>      |
+| `src/routes/recommendations.index.tsx`       | 122  | `button` | <code>shrink-0 p-1 text-muted-foreground</code>                                                                        |
+| `src/routes/recommendations.index.tsx`       | 181  | `button` | <code>w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold</code>              |
+| `src/routes/recommendations.settings.tsx`    | 34   | `button` | <code>flex w-full items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-left</code>          |
+| `src/routes/reviews.write.$id.tsx`           | 72   | `button` | <code>p-1</code>                                                                                                       |
 
 ### Other (6)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/routes/marketplace/l.$id.tsx` | 110 | `button` | <code>h-1.5 rounded-full transition-all</code> |
-| `src/routes/marketplace/rent/active.$id.tsx` | 243 | `button` | <code>text-2xl</code> |
-| `src/routes/marketplace/rent/e.$id.tsx` | 139 | `button` | <code>h-1.5 rounded-full transition-all</code> |
-| `src/routes/marketplace/rent/e.$id.tsx` | 154 | `button` | <code>shrink-0</code> |
-| `src/routes/marketplace/rent/list.tsx` | 125 | `button` | <code>relative</code> |
-| `src/routes/opportunities.$id.apply.tsx` | 120 | `button` | <code>overflow-hidden rounded-[20px] border text-left $&#123;on ? "border-primary" : "border-border"&#125; bg-card</code> |
+| File                                         | Line | Element  | Classes                                                                                                                   |
+| -------------------------------------------- | ---- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/marketplace/l.$id.tsx`           | 110  | `button` | <code>h-1.5 rounded-full transition-all</code>                                                                            |
+| `src/routes/marketplace/rent/active.$id.tsx` | 243  | `button` | <code>text-2xl</code>                                                                                                     |
+| `src/routes/marketplace/rent/e.$id.tsx`      | 139  | `button` | <code>h-1.5 rounded-full transition-all</code>                                                                            |
+| `src/routes/marketplace/rent/e.$id.tsx`      | 154  | `button` | <code>shrink-0</code>                                                                                                     |
+| `src/routes/marketplace/rent/list.tsx`       | 125  | `button` | <code>relative</code>                                                                                                     |
+| `src/routes/opportunities.$id.apply.tsx`     | 120  | `button` | <code>overflow-hidden rounded-[20px] border text-left $&#123;on ? "border-primary" : "border-border"&#125; bg-card</code> |
 
 ### No classes (styled by parent) (5)
 
-| File | Line | Element | Classes |
-|---|---|---|---|
-| `src/components/ml/collab.tsx` | 567 | `button` | <code></code> |
-| `src/components/ml/kit.tsx` | 125 | `button` | <code></code> |
-| `src/components/ml/qr.tsx` | 311 | `button` | <code></code> |
-| `src/components/ml/ui.tsx` | 351 | `button` | <code></code> |
-| `src/components/ml/ui.tsx` | 430 | `button` | <code></code> |
+| File                           | Line | Element  | Classes       |
+| ------------------------------ | ---- | -------- | ------------- |
+| `src/components/ml/collab.tsx` | 567  | `button` | <code></code> |
+| `src/components/ml/kit.tsx`    | 125  | `button` | <code></code> |
+| `src/components/ml/qr.tsx`     | 311  | `button` | <code></code> |
+| `src/components/ml/ui.tsx`     | 351  | `button` | <code></code> |
+| `src/components/ml/ui.tsx`     | 430  | `button` | <code></code> |

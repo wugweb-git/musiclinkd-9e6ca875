@@ -1,4 +1,3 @@
-// @ts-nocheck -- third-party registry code on trial in Storybook (feat/storybook); not used by the app.
 "use client";
 
 import {
@@ -187,9 +186,17 @@ export const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(function
       const height = Math.round(rect.height);
       if (!width || !height) return;
       const parsed = Number.parseFloat(getComputedStyle(el).borderTopLeftRadius);
-      const radius = Math.min(Number.isFinite(parsed) ? parsed : Math.min(width, height) / 2, width / 2, height / 2);
+      const radius = Math.min(
+        Number.isFinite(parsed) ? parsed : Math.min(width, height) / 2,
+        width / 2,
+        height / 2,
+      );
       setGeometry((prev) =>
-        prev && prev.width === width && prev.height === height && prev.radius === radius && prev.bezel === bezel
+        prev &&
+        prev.width === width &&
+        prev.height === height &&
+        prev.radius === radius &&
+        prev.bezel === bezel
           ? prev
           : { width, height, radius, bezel },
       );
@@ -224,10 +231,7 @@ export const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(function
     <>
       <div
         ref={setRefs}
-        className={cn(
-          "relative overflow-hidden rounded-full bg-white/[0.08]",
-          className,
-        )}
+        className={cn("relative overflow-hidden rounded-full bg-white/[0.08]", className)}
         style={{ ...style, backdropFilter, WebkitBackdropFilter: backdropFilter } as CSSProperties}
         {...props}
       >
@@ -258,8 +262,23 @@ export const LiquidGlass = forwardRef<HTMLDivElement, LiquidGlassProps>(function
 
       {refractionActive && (
         <svg className="absolute size-0 overflow-hidden" aria-hidden>
-          <filter id={filterId} x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
-            <feImage href={mapUrl} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
+          <filter
+            id={filterId}
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            colorInterpolationFilters="sRGB"
+          >
+            <feImage
+              href={mapUrl}
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              preserveAspectRatio="none"
+              result="map"
+            />
             <feDisplacementMap
               in="SourceGraphic"
               in2="map"

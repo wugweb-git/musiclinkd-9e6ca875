@@ -1,15 +1,7 @@
-// @ts-nocheck -- third-party registry code on trial in Storybook (feat/storybook); not used by the app.
 "use client";
 
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Pause,
-  Play,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type {
   ComponentProps,
@@ -18,14 +10,7 @@ import type {
   ReactNode,
   VideoHTMLAttributes,
 } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -102,19 +87,19 @@ export const Reel = ({
   const [currentIndex, setCurrentIndexState] = useControllableState({
     defaultProp: defaultIndex,
     prop: controlledIndex,
-    onChange: controlledOnIndexChange,
+    ...(controlledOnIndexChange ? { onChange: controlledOnIndexChange } : {}),
   });
 
   const [isPlaying, setIsPlaying] = useControllableState({
     defaultProp: defaultPlaying ?? autoPlay,
     prop: controlledPlaying,
-    onChange: controlledOnPlayingChange,
+    ...(controlledOnPlayingChange ? { onChange: controlledOnPlayingChange } : {}),
   });
 
   const [isMuted, setIsMuted] = useControllableState({
     defaultProp: defaultMuted,
     prop: controlledMuted,
-    onChange: controlledOnMutedChange,
+    ...(controlledOnMutedChange ? { onChange: controlledOnMutedChange } : {}),
   });
 
   const [progress, setProgress] = useState(0);
@@ -128,10 +113,11 @@ export const Reel = ({
       setProgress(0); // Reset progress immediately to prevent showing 100% during transition
       setCurrentIndexState(index);
     },
-    [setCurrentIndexState]
+    [setCurrentIndexState],
   );
 
-  const currentItem = data[currentIndex];
+  // Clamped: an index past the end (data shrank) shows the last item instead of crashing.
+  const currentItem = data[Math.min(currentIndex, data.length - 1)] as ReelItem;
 
   return (
     <ReelContext.Provider
@@ -158,7 +144,7 @@ export const Reel = ({
         className={cn(
           "relative isolate h-full w-auto overflow-hidden bg-black",
           "aspect-[9/16]",
-          className
+          className,
         )}
         {...props}
       />
@@ -166,18 +152,11 @@ export const Reel = ({
   );
 };
 
-export type ReelContentProps = Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "children"
-> & {
+export type ReelContentProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   children: (item: ReelItem, index: number) => ReactNode;
 };
 
-export const ReelContent = ({
-  className,
-  children,
-  ...props
-}: ReelContentProps) => {
+export const ReelContent = ({ className, children, ...props }: ReelContentProps) => {
   const { currentIndex, currentItem, setIsTransitioning } = useReelContext();
 
   const renderContent = () => {
@@ -189,11 +168,7 @@ export const ReelContent = ({
   };
 
   return (
-    <div
-      className={cn("relative size-full", className)}
-      data-reel-content
-      {...props}
-    >
+    <div className={cn("relative size-full", className)} data-reel-content {...props}>
       <AnimatePresence mode="wait">
         <motion.div
           animate={{ opacity: 1 }}
@@ -217,11 +192,7 @@ export const ReelContent = ({
 export type ReelItemProps = HTMLAttributes<HTMLDivElement>;
 
 export const ReelItem = ({ className, ...props }: ReelItemProps) => (
-  <div
-    className={cn("relative size-full overflow-hidden", className)}
-    data-reel-item
-    {...props}
-  />
+  <div className={cn("relative size-full overflow-hidden", className)} data-reel-item {...props} />
 );
 
 export type ReelVideoProps = VideoHTMLAttributes<HTMLVideoElement>;
@@ -290,8 +261,7 @@ export const ReelVideo = ({ className, ...props }: ReelVideoProps) => {
       startTimeRef.current = performance.now() - elapsedTime * MS_TO_SECONDS;
 
       const updateProgress = (currentTime: number) => {
-        const elapsed =
-          (currentTime - (startTimeRef.current || 0)) / MS_TO_SECONDS;
+        const elapsed = (currentTime - (startTimeRef.current || 0)) / MS_TO_SECONDS;
         const newProgress = (elapsed / duration) * PERCENTAGE;
 
         if (newProgress >= PERCENTAGE) {
@@ -317,15 +287,7 @@ export const ReelVideo = ({ className, ...props }: ReelVideoProps) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [
-    isPlaying,
-    duration,
-    currentIndex,
-    setProgress,
-    setCurrentIndex,
-    data,
-    isTransitioning,
-  ]);
+  }, [isPlaying, duration, currentIndex, setProgress, setCurrentIndex, data, isTransitioning]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Reset video when index changes
   useEffect(() => {
@@ -336,6 +298,8 @@ export const ReelVideo = ({ className, ...props }: ReelVideoProps) => {
   }, [currentIndex]);
 
   return (
+    // Captions come in as <track> children from the caller (`{...props}` below).
+    // eslint-disable-next-line jsx-a11y/media-has-caption
     <video
       className={cn("absolute inset-0 size-full object-cover", className)}
       loop
@@ -394,8 +358,7 @@ export const ReelImage = ({
       startTimeRef.current = performance.now() - elapsedTime * MS_TO_SECONDS;
 
       const updateProgress = (currentTime: number) => {
-        const elapsed =
-          (currentTime - (startTimeRef.current || 0)) / MS_TO_SECONDS;
+        const elapsed = (currentTime - (startTimeRef.current || 0)) / MS_TO_SECONDS;
         const newProgress = (elapsed / duration) * PERCENTAGE;
 
         if (newProgress >= PERCENTAGE) {
@@ -447,19 +410,10 @@ export const ReelImage = ({
 };
 
 export type ReelProgressProps = HTMLAttributes<HTMLDivElement> & {
-  children?: (
-    item: ReelItem,
-    index: number,
-    isActive: boolean,
-    progress: number
-  ) => ReactNode;
+  children?: (item: ReelItem, index: number, isActive: boolean, progress: number) => ReactNode;
 };
 
-export const ReelProgress = ({
-  className,
-  children,
-  ...props
-}: ReelProgressProps) => {
+export const ReelProgress = ({ className, children, ...props }: ReelProgressProps) => {
   const { progress, currentIndex, data } = useReelContext();
   const FULL_PROGRESS = 100;
 
@@ -477,20 +431,12 @@ export const ReelProgress = ({
   if (typeof children === "function") {
     return (
       <div
-        className={cn(
-          "absolute top-0 right-0 left-0 z-40 flex gap-1 p-2",
-          className
-        )}
+        className={cn("absolute top-0 right-0 left-0 z-40 flex gap-1 p-2", className)}
         {...props}
       >
         {data.map((item, index) => (
           <div className="relative flex-1" key={`${item.id}-progress`}>
-            {children(
-              item,
-              index,
-              index === currentIndex,
-              calculateProgress(index)
-            )}
+            {children(item, index, index === currentIndex, calculateProgress(index))}
           </div>
         ))}
       </div>
@@ -498,13 +444,7 @@ export const ReelProgress = ({
   }
 
   return (
-    <div
-      className={cn(
-        "absolute top-0 right-0 left-0 z-40 flex gap-1 p-2",
-        className
-      )}
-      {...props}
-    >
+    <div className={cn("absolute top-0 right-0 left-0 z-40 flex gap-1 p-2", className)} {...props}>
       {data.map((item, index) => (
         <Progress
           className="h-0.5 flex-1 bg-white/30 [&>div]:bg-white [&>div]:transition-none"
@@ -523,7 +463,7 @@ export const ReelControls = ({ className, ...props }: ReelControlsProps) => (
     className={cn(
       "absolute right-0 bottom-0 left-0 z-20 flex items-center justify-between p-4",
       "bg-gradient-to-t from-black/60 to-transparent",
-      className
+      className,
     )}
     {...props}
   />
@@ -531,11 +471,7 @@ export const ReelControls = ({ className, ...props }: ReelControlsProps) => (
 
 export type ReelPreviousButtonProps = ComponentProps<typeof Button>;
 
-export const ReelPreviousButton = ({
-  className,
-  children,
-  ...props
-}: ReelPreviousButtonProps) => {
+export const ReelPreviousButton = ({ className, children, ...props }: ReelPreviousButtonProps) => {
   const { currentIndex, setCurrentIndex, setIsNavigating } = useReelContext();
   const NAVIGATION_RESET_DELAY = 50;
 
@@ -550,10 +486,7 @@ export const ReelPreviousButton = ({
   return (
     <Button
       aria-label="Previous"
-      className={cn(
-        "rounded-full text-white hover:bg-white/10 hover:text-white",
-        className
-      )}
+      className={cn("rounded-full text-white hover:bg-white/10 hover:text-white", className)}
       disabled={currentIndex === 0}
       onClick={handlePrevious}
       size="icon"
@@ -568,13 +501,8 @@ export const ReelPreviousButton = ({
 
 export type ReelNextButtonProps = ComponentProps<typeof Button>;
 
-export const ReelNextButton = ({
-  className,
-  children,
-  ...props
-}: ReelNextButtonProps) => {
-  const { currentIndex, setCurrentIndex, data, setIsNavigating } =
-    useReelContext();
+export const ReelNextButton = ({ className, children, ...props }: ReelNextButtonProps) => {
+  const { currentIndex, setCurrentIndex, data, setIsNavigating } = useReelContext();
   const totalItems = data?.length || 0;
   const NAVIGATION_RESET_DELAY = 50;
 
@@ -589,10 +517,7 @@ export const ReelNextButton = ({
   return (
     <Button
       aria-label="Next"
-      className={cn(
-        "rounded-full text-white hover:bg-white/10 hover:text-white",
-        className
-      )}
+      className={cn("rounded-full text-white hover:bg-white/10 hover:text-white", className)}
       disabled={currentIndex === totalItems - 1}
       onClick={handleNext}
       size="icon"
@@ -607,74 +532,46 @@ export const ReelNextButton = ({
 
 export type ReelPlayButtonProps = ComponentProps<typeof Button>;
 
-export const ReelPlayButton = ({
-  className,
-  children,
-  ...props
-}: ReelPlayButtonProps) => {
+export const ReelPlayButton = ({ className, children, ...props }: ReelPlayButtonProps) => {
   const { isPlaying, setIsPlaying } = useReelContext();
 
   return (
     <Button
       aria-label={isPlaying ? "Pause" : "Play"}
-      className={cn(
-        "rounded-full text-white hover:bg-white/10 hover:text-white",
-        className
-      )}
+      className={cn("rounded-full text-white hover:bg-white/10 hover:text-white", className)}
       onClick={() => setIsPlaying(!isPlaying)}
       size="icon"
       variant="ghost"
       {...props}
     >
-      {children ||
-        (isPlaying ? (
-          <Pause className="size-4" />
-        ) : (
-          <Play className="size-4" />
-        ))}
+      {children || (isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />)}
     </Button>
   );
 };
 
 export type ReelMuteButtonProps = ComponentProps<typeof Button>;
 
-export const ReelMuteButton = ({
-  className,
-  children,
-  ...props
-}: ReelMuteButtonProps) => {
+export const ReelMuteButton = ({ className, children, ...props }: ReelMuteButtonProps) => {
   const { isMuted, setIsMuted } = useReelContext();
 
   return (
     <Button
       aria-label={isMuted ? "Unmute" : "Mute"}
-      className={cn(
-        "rounded-full text-white hover:bg-white/10 hover:text-white",
-        className
-      )}
+      className={cn("rounded-full text-white hover:bg-white/10 hover:text-white", className)}
       onClick={() => setIsMuted(!isMuted)}
       size="icon"
       variant="ghost"
       {...props}
     >
-      {children ||
-        (isMuted ? (
-          <VolumeX className="size-4" />
-        ) : (
-          <Volume2 className="size-4" />
-        ))}
+      {children || (isMuted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />)}
     </Button>
   );
 };
 
 export type ReelNavigationProps = HTMLAttributes<HTMLButtonElement>;
 
-export const ReelNavigation = ({
-  className,
-  ...props
-}: ReelNavigationProps) => {
-  const { setCurrentIndex, currentIndex, data, setIsNavigating } =
-    useReelContext();
+export const ReelNavigation = ({ className, ...props }: ReelNavigationProps) => {
+  const { setCurrentIndex, currentIndex, data, setIsNavigating } = useReelContext();
   const totalItems = data?.length || 0;
   const NAVIGATION_RESET_DELAY = 50;
   const HALF_WIDTH_DIVISOR = 2;
@@ -713,10 +610,7 @@ export const ReelNavigation = ({
 export type ReelOverlayProps = HTMLAttributes<HTMLDivElement>;
 
 export const ReelOverlay = ({ className, ...props }: ReelOverlayProps) => (
-  <div
-    className={cn("pointer-events-none absolute inset-0 z-30", className)}
-    {...props}
-  />
+  <div className={cn("pointer-events-none absolute inset-0 z-30", className)} {...props} />
 );
 
 export type ReelHeaderProps = HTMLAttributes<HTMLDivElement>;
@@ -726,7 +620,7 @@ export const ReelHeader = ({ className, ...props }: ReelHeaderProps) => (
     className={cn(
       "absolute top-0 right-0 left-0 z-20 p-4 pt-6",
       "bg-gradient-to-b from-black/60 to-transparent",
-      className
+      className,
     )}
     {...props}
   />
@@ -739,7 +633,7 @@ export const ReelFooter = ({ className, ...props }: ReelFooterProps) => (
     className={cn(
       "absolute right-0 bottom-0 left-0 z-20 p-4",
       "bg-gradient-to-t from-black/60 to-transparent",
-      className
+      className,
     )}
     {...props}
   />

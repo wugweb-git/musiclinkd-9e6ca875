@@ -1,4 +1,3 @@
-// @ts-nocheck -- third-party registry code on trial in Storybook (feat/storybook); not used by the app.
 export type FrostGlassVariant = "clear" | "frosted" | "subtle" | "liquid" | "liquid-refract";
 export type FrostGlassVariantProp = { glassVariant?: FrostGlassVariant };
 

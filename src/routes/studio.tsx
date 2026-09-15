@@ -41,9 +41,7 @@ function Studio() {
         >
           ←
         </Link>
-        <span className="pill absolute bottom-5 left-5 pill-glass">
-          Dolby Atmos 7.1.4
-        </span>
+        <span className="pill absolute bottom-5 left-5 pill-glass">Dolby Atmos 7.1.4</span>
       </div>
 
       <div className="px-5 pt-4">

@@ -10,7 +10,9 @@ const btnMeta = {
   title: "Primitives/Btn",
   component: Btn,
   args: { children: "Continue", variant: "primary" },
-  argTypes: { variant: { control: "inline-radio", options: ["primary", "ink", "outline", "ghost"] } },
+  argTypes: {
+    variant: { control: "inline-radio", options: ["primary", "ink", "outline", "ghost"] },
+  },
 } satisfies Meta<typeof Btn>;
 export default btnMeta;
 type BtnStory = StoryObj<typeof btnMeta>;

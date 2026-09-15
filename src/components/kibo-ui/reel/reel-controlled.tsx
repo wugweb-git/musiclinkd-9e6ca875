@@ -1,4 +1,3 @@
-// @ts-nocheck -- third-party registry code on trial in Storybook (feat/storybook); not used by the app.
 "use client";
 
 import { useState } from "react";
@@ -88,7 +87,7 @@ export function ReelControlledExample() {
     }
   };
 
-  const currentItem = reelItems[currentIndex];
+  const currentItem = reelItems[Math.min(currentIndex, reelItems.length - 1)] as ReelItem;
 
   return (
     <div className="flex flex-col gap-6">
@@ -131,9 +130,7 @@ export function ReelControlledExample() {
           {reelItems.map((item, index) => (
             <button
               className={`rounded px-3 py-1 ${
-                index === currentIndex
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                index === currentIndex ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"
               }`}
               key={item.id}
               onClick={() => handleJumpToItem(index)}
@@ -180,11 +177,7 @@ export function ReelControlledExample() {
                 {item.type === "video" ? (
                   <ReelVideo src={item.src} />
                 ) : (
-                  <ReelImage
-                    alt={item.alt || ""}
-                    duration={item.duration}
-                    src={item.src}
-                  />
+                  <ReelImage alt={item.alt || ""} duration={item.duration} src={item.src} />
                 )}
               </>
             )}
@@ -196,9 +189,7 @@ export function ReelControlledExample() {
             <div className="text-white">
               <h3 className="font-semibold text-lg">{currentItem.title}</h3>
               {currentItem.description && (
-                <p className="mt-1 text-sm opacity-90">
-                  {currentItem.description}
-                </p>
+                <p className="mt-1 text-sm opacity-90">{currentItem.description}</p>
               )}
             </div>
           </ReelFooter>
@@ -211,8 +202,8 @@ export function ReelControlledExample() {
       <div className="flex flex-col gap-4 rounded-lg border p-4">
         <h3 className="font-semibold text-lg">Advanced Controlled Example</h3>
         <p className="text-gray-600 text-sm">
-          This example shows how you can build a completely custom UI while
-          controlling the Reel state from outside.
+          This example shows how you can build a completely custom UI while controlling the Reel
+          state from outside.
         </p>
 
         <div className="flex gap-4">
@@ -233,11 +224,7 @@ export function ReelControlledExample() {
                     {item.type === "video" ? (
                       <ReelVideo src={item.src} />
                     ) : (
-                      <ReelImage
-                        alt={item.alt || ""}
-                        duration={item.duration}
-                        src={item.src}
-                      />
+                      <ReelImage alt={item.alt || ""} duration={item.duration} src={item.src} />
                     )}
                   </>
                 )}
@@ -319,9 +306,7 @@ export function ReelControlledExample() {
 export default function ControlledReelPage() {
   return (
     <div className="container mx-auto py-8">
-      <h1 className="mb-8 text-center font-bold text-3xl">
-        Controlled Reel Examples
-      </h1>
+      <h1 className="mb-8 text-center font-bold text-3xl">Controlled Reel Examples</h1>
       <ReelControlledExample />
     </div>
   );
