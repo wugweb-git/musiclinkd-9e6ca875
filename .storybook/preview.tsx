@@ -6,6 +6,9 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 
+// Lab only: @liquefy-ui component styles, loaded before the app stylesheet so Tailwind utilities win.
+import "./layers.css";
+import "../src/styles/liquefy-ui.css";
 import "../src/styles.css";
 
 /*
