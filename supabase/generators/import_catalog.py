@@ -146,8 +146,21 @@ posts = [{"id": uid(f"firebase:feed_posts/{p['_id']}"), "author_profile_id": PRO
           "post_type": p["postType"], "body": p.get("text"), "media_urls": p.get("mediaUrls") or [],
           "audio_url": p.get("audioUrl"), "likes_count": p.get("likesCount") or 0,
           "comments_count": p.get("commentsCount") or 0, "created_at": p["timestamp"]} for p in FB["feed_posts"]]
-brand = [{"profile_id": PROFILE_ID[b["ownerUid"]], "logo_url": b.get("logoUrl"), "hero_banner_url": b.get("heroBannerUrl"),
-          "thumbnail_url": b.get("thumbnailUrl"), "icon_url": b.get("iconUrl")} for b in FB["brand_assets"]]
+# Firebase brand assets point at example.com placeholders. Owner's call (15 Sep): use our own images
+# instead — the owner's avatar for logo, thumbnail and icon; the owner's studio photo for the banner.
+AVATAR = {u["_id"]: u.get("avatarUrl") for u in FB["users"]}
+STUDIO_IMAGE = {s["ownerUid"]: s.get("imageUrl") for s in FB["studios"] if s.get("imageUrl")}
+
+
+def own_image(url: str | None, fallback: str | None) -> str | None:
+    return fallback if url and re.match(r"https?://(www\.)?example\.com/", url) else url
+
+
+brand = [{"profile_id": PROFILE_ID[b["ownerUid"]],
+          "logo_url": own_image(b.get("logoUrl"), AVATAR.get(b["ownerUid"])),
+          "hero_banner_url": own_image(b.get("heroBannerUrl"), STUDIO_IMAGE.get(b["ownerUid"])),
+          "thumbnail_url": own_image(b.get("thumbnailUrl"), AVATAR.get(b["ownerUid"])),
+          "icon_url": own_image(b.get("iconUrl"), AVATAR.get(b["ownerUid"]))} for b in FB["brand_assets"]]
 pages = [{"slug": p["_id"], "route": p["route"], "title": p["title"], "status": p["status"].lower(),
           "content": p["content"], "seo_description": p.get("seoDescription"), "updated_at": p["updatedAt"]}
          for p in FB["page_content"]]
