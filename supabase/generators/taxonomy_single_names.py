@@ -14,7 +14,7 @@ import re
 import sys
 
 import taxonomy_persona_bucket as tpb
-from taxonomy_renames import ADDED, REMOVED_INSTRUMENT_MAPPINGS, RENAMES, SEED_LABELS, TEXT
+from taxonomy_renames import ADDED, OLD_LABELS, REMOVED_INSTRUMENT_MAPPINGS, RENAMES, SEED_LABELS, TEXT
 
 APP, OUT = sys.argv[1:3]
 app = json.load(open(APP, encoding="utf-8"))
@@ -66,6 +66,9 @@ for a in added:  # an added option holds exactly its parent's rules
         gl = {(r["genre_slug"], r["language_slug"]) for r in expected_gl}
         assert {l for g, l in gl if g == a["slug"]} == {l for g, l in gl if g == a["parent"]}, a
 assert not [o for o in target_options + split_options if "/" in o["label"]]
+# Each old combined label's single name (text rule, 20260915140000) is the label of a current option.
+assert set(OLD_LABELS.values()) <= {o["label"] for o in target_options + split_options}, \
+    set(OLD_LABELS.values()) - {o["label"] for o in target_options + split_options}
 
 # ---- Part B: option categories from the app's copy -------------------------------------------------
 
@@ -77,8 +80,8 @@ def slugify(s: str) -> str:
 # App labels that carry a "/": the single name used instead.
 LABEL = {("work_types", "album"): "Album", ("work_modes", "touring"): "Touring"}
 
-# Simple Icons (CC0), simple-icons v13 as in src/components/ml/brand-icons.tsx. JioSaavn has no icon
-# there; LinkedIn is in v13 and was removed in later releases.
+# Simple Icons (CC0), simple-icons v13 as in src/components/ml/brand-icons.tsx. LinkedIn is in v13 and
+# was removed in later releases. JioSaavn is not offered: it has no brand icon (owner, 15 Sep 2026).
 PLATFORMS = [  # (slug, label, icon, brand colour, placeholder)
     ("website", "Website", None, None, None),
     ("instagram", "Instagram", "instagram", "#FF0069", None),
@@ -86,13 +89,14 @@ PLATFORMS = [  # (slug, label, icon, brand colour, placeholder)
     ("spotify", "Spotify", "spotify", "#1ED760", None),
     ("soundcloud", "SoundCloud", "soundcloud", "#FF5500", None),
     ("apple_music", "Apple Music", "applemusic", "#FA243C", "https://music.apple.com/in/artist/..."),
-    ("jiosaavn", "JioSaavn", None, None, "https://www.jiosaavn.com/artist/..."),
     ("bandcamp", "Bandcamp", "bandcamp", "#408294", "https://yourname.bandcamp.com"),
     ("facebook", "Facebook", "facebook", "#0866FF", "https://facebook.com/username"),
     ("x", "X", "x", "#000000", "https://x.com/username"),
     ("linkedin", "LinkedIn", "linkedin", "#0A66C2", "https://linkedin.com/in/username"),
 ]
 
+REMOVED_PLATFORMS = ["jiosaavn"]
+assert not {p[0] for p in PLATFORMS} & set(REMOVED_PLATFORMS)
 app_links = {p["key"]: p for p in app["linkPlatforms"]}
 assert set(app_links) <= {p[0] for p in PLATFORMS}, "the app has a link platform this list lacks"
 
@@ -269,7 +273,12 @@ w(f"""-- Taxonomy: single option names, and the app's option lists as taxonomy c
 -- {", ".join(f"{c['key']} ({sum(o['category_key'] == c['key'] for o in new_options)})" for c in new_categories)}.
 -- metadata.app_key holds the value the app writes today, so an option maps to stored profile values
 -- without changing them. Labels with a "/" in the app use a single name: Album (app "Album / EP"),
--- Touring (app "Travel / touring").
+-- Touring (app "Travel / touring"). link_platforms has no JioSaavn (no brand icon; owner, 15 Sep 2026):
+-- a jiosaavn option is removed and sort orders stay 1..n.
+--
+-- persona_bucket: genres are capped at GREATEST(p_limit, {tpb.GENRE_SCREEN_LIMIT}) (owner, 15 Sep 2026: up to
+-- {tpb.GENRE_SCREEN_LIMIT} genres per screen); instruments stay at p_limit. Same signature, so the app's call with
+-- p_limit 12 now gets up to {tpb.GENRE_SCREEN_LIMIT} genres. The function body is taxonomy_persona_bucket.py's.
 --
 -- Stops before writing if a new slug is already taken in its category. Each block re-reads what it
 -- wrote and raises on any difference; the last block asserts that no option label and none of the fixed
@@ -398,6 +407,10 @@ BEGIN
   ON CONFLICT (key) DO UPDATE SET label = EXCLUDED.label, description = EXCLUDED.description
   WHERE (taxonomy_categories.label, taxonomy_categories.description) IS DISTINCT FROM (EXCLUDED.label, EXCLUDED.description);
 
+  -- Platforms no longer offered.
+  DELETE FROM public.taxonomy_options
+  WHERE category_key = 'link_platforms' AND slug IN ({", ".join(f"'{x}'" for x in REMOVED_PLATFORMS)});
+
   INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, metadata)
   SELECT r.category_key, r.slug, r.label, r.sort_order, r.metadata
   FROM jsonb_to_recordset(v_options) AS r(category_key text, slug text, label text, sort_order int, metadata jsonb)
@@ -417,6 +430,13 @@ BEGIN
       WHERE (o.label, o.sort_order, o.metadata) IS NOT DISTINCT FROM (r.label, r.sort_order, r.metadata))
      <> jsonb_array_length(v_options) THEN
     RAISE EXCEPTION 'taxonomy options import: stored rows differ from the payload';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.taxonomy_options
+             WHERE category_key = 'link_platforms' AND slug IN ({", ".join(f"'{x}'" for x in REMOVED_PLATFORMS)}))
+     OR EXISTS (SELECT 1 FROM (SELECT sort_order, row_number() OVER (ORDER BY sort_order, slug) AS n
+                               FROM public.taxonomy_options WHERE category_key = 'link_platforms') x
+                WHERE x.sort_order <> x.n) THEN
+    RAISE EXCEPTION 'link_platforms: a removed platform remains or sort orders are not 1..n';
   END IF;
 END
 $import$;
@@ -468,7 +488,41 @@ ref_checks = "\n".join(
     f"""  IF EXISTS (SELECT 1 FROM public.{table} t WHERE {cond}) THEN
     RAISE EXCEPTION 'taxonomy rename: {label} still holds an old slug';
   END IF;""" for label, table, cond in conditions)
-w(f"""-- 6. Verify
+w(f"""-- 6. persona_bucket: up to {tpb.GENRE_SCREEN_LIMIT} genres per screen, other categories on p_limit
+{tpb.persona_bucket_function("CREATE OR REPLACE FUNCTION")}
+DO $bucket$
+DECLARE
+  v_languages text[] := ARRAY(SELECT slug FROM public.taxonomy_options WHERE category_key = 'languages' AND is_published);
+  v_primary text;
+  v_available int;
+BEGIN
+  -- Any published person type will do; the genre count does not depend on it.
+  SELECT o.slug INTO v_primary FROM public.taxonomy_options o
+  JOIN public.taxonomy_categories c ON c.key = o.category_key AND c.is_published
+  WHERE o.category_key = 'person_types' AND o.is_published ORDER BY o.sort_order LIMIT 1;
+  IF v_primary IS NULL THEN
+    RETURN;
+  END IF;
+  SELECT count(*) INTO v_available
+  FROM public.taxonomy_options o
+  JOIN public.taxonomy_categories c ON c.key = o.category_key AND c.is_published
+  WHERE o.category_key = 'genres' AND o.is_published
+    AND (o.metadata->>'scope' = 'universal'
+         OR EXISTS (SELECT 1 FROM public.genre_languages gl WHERE gl.genre_slug = o.slug
+                    AND gl.language_slug = ANY (v_languages)));
+  IF (SELECT count(*) FROM public.persona_bucket(v_primary, '{{}}', v_languages, {SCREEN_LIMIT}) b
+      WHERE b.category_key = 'genres') <> LEAST(v_available, {tpb.GENRE_SCREEN_LIMIT}) THEN
+    RAISE EXCEPTION 'persona_bucket: genres are not capped at {tpb.GENRE_SCREEN_LIMIT}';
+  END IF;
+  IF (SELECT count(*) FROM public.persona_bucket(v_primary, '{{}}', v_languages, {SCREEN_LIMIT}) b
+      WHERE b.category_key = 'instruments') > {SCREEN_LIMIT} THEN
+    RAISE EXCEPTION 'persona_bucket: instruments exceed p_limit';
+  END IF;
+END
+$bucket$;
+""")
+
+w(f"""-- 7. Verify
 DO $verify$
 DECLARE
   v_renames jsonb := {payload(renames_obj)};

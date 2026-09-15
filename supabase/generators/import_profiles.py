@@ -7,7 +7,8 @@ Usage (repo root):
 
 Every value is written in the shape the app already reads: taxonomy slugs in roles / instruments /
 genres / languages, "<role slug>:<label>" in specialisations, onboarding availability values,
-link maps keyed by platform, and portfolio_items kinds from src/data/portfolio.ts.
+link maps keyed by platform, and portfolio_items kinds from src/data/portfolio.ts. Text is written without
+"/" (owner, 15 Sep 2026): taxonomy_renames.clean_text.
 """
 from __future__ import annotations
 
@@ -15,6 +16,8 @@ import json
 import re
 import sys
 import uuid
+
+from taxonomy_renames import clean_row
 
 DUMP, LINKED, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # stable ids across re-runs
@@ -145,7 +148,7 @@ for u in FB["users"]:
 
     city, state = city_state(u["location"])
     links = {k: v for k, v in (u.get("externalLinks") or {}).items() if v}
-    profile_rows.append({
+    profile_rows.append(clean_row("profiles", {
         "id": pid, "username": name, "display_name": display, "headline": u.get("tagline"),
         "bio": u["bio"], "city": city, "state": state, "country": "India", "roles": roles,
         "instruments": mapped(u.get("instruments"), INSTRUMENT, "instrument", fid, problems),
@@ -154,7 +157,9 @@ for u in FB["users"]:
         "specialisations": specs, "avatar_url": u["avatarUrl"],
         "availability": AVAILABILITY.get(u.get("sessionAvailability")), "visibility": "public",
         "links": links, "created_at": u["createdAt"],
-    })
+    }))
+    if "Mumbai/Chandigarh" in u["bio"]:  # the phrase rule keeps Mumbai, the profile's city
+        assert city == "Mumbai", (fid, city)
     created += 1
 
 portfolio_rows: list[tuple] = []  # (id, user_id, title, kind, description, role, collaborators, cover, media, year, sort)
@@ -209,7 +214,7 @@ for r in portfolio_rows:
 
 PORTFOLIO_FIELDS = ["id", "user_id", "title", "kind", "description", "role", "collaborators", "cover_url",
                     "media_url", "release_year", "published", "sort_order"]
-portfolio_dicts = [dict(zip(PORTFOLIO_FIELDS, r)) for r in portfolio_rows]
+portfolio_dicts = [clean_row("portfolio_items", dict(zip(PORTFOLIO_FIELDS, r))) for r in portfolio_rows]
 
 PROFILE_COLS = [("id", "uuid"), ("username", "text"), ("display_name", "text"), ("headline", "text"),
                 ("bio", "text"), ("city", "text"), ("state", "text"), ("country", "text"), ("roles", "text[]"),
@@ -299,8 +304,10 @@ header = f"""-- Profile import: Firebase users and portfolio projects, and the l
 -- octave.sound.labs profile is unchanged. Email, GSTIN and phone are not imported.
 --
 -- Values are written in the shapes the app reads: taxonomy slugs; "<role slug>:<label>"
--- specialisations; availability Shows / Touring (other Firebase statuses have no equivalent, so null);
--- business and venue users get their business type as the first role.
+-- specialisations; availability Shows or Touring (other Firebase statuses have no equivalent, so null);
+-- business and venue users get their business type as the first role. Text is written without "/"
+-- (owner, 15 Sep 2026; taxonomy_renames.py): old combined labels become single ones, and the listed
+-- phrases are shortened.
 --
 -- Not imported here (no column or table yet): hourly rate, budget tier, persona and trust badges,
 -- verified / available flags, gender, business address / hours / team / service offerings / rosters /

@@ -26,10 +26,15 @@
 -- slugs, so company_pan_gstin has no references to move.
 --
 -- Part B — published option categories from the app's copy, each at most 12 options:
--- verification_types (4), work_types (10), profile_visibility (3), link_platforms (11), intents (11), work_modes (4), available_for (9), service_categories (8), pricing_models (5).
+-- verification_types (4), work_types (10), profile_visibility (3), link_platforms (10), intents (11), work_modes (4), available_for (9), service_categories (8), pricing_models (5).
 -- metadata.app_key holds the value the app writes today, so an option maps to stored profile values
 -- without changing them. Labels with a "/" in the app use a single name: Album (app "Album / EP"),
--- Touring (app "Travel / touring").
+-- Touring (app "Travel / touring"). link_platforms has no JioSaavn (no brand icon; owner, 15 Sep 2026):
+-- a jiosaavn option is removed and sort orders stay 1..n.
+--
+-- persona_bucket: genres are capped at GREATEST(p_limit, 20) (owner, 15 Sep 2026: up to
+-- 20 genres per screen); instruments stay at p_limit. Same signature, so the app's call with
+-- p_limit 12 now gets up to 20 genres. The function body is taxonomy_persona_bucket.py's.
 --
 -- Stops before writing if a new slug is already taken in its category. Each block re-reads what it
 -- wrote and raises on any difference; the last block asserts that no option label and none of the fixed
@@ -143,16 +148,20 @@ BEGIN
 END
 $rename$;
 
--- 3. Option categories from the app's copy (9 categories, 65 options)
+-- 3. Option categories from the app's copy (9 categories, 64 options)
 DO $import$
 DECLARE
   v_categories jsonb := $json$[{"key":"verification_types","label":"Verification Types","description":"Verification badges a profile can apply for. metadata.description is the app's blurb."},{"key":"work_types","label":"Work Types","description":"Kinds of work added to a portfolio (Add work). metadata.app_key is the portfolio_items.kind the app writes; metadata.media is what the work carries."},{"key":"profile_visibility","label":"Profile Visibility","description":"Who can see your profile. metadata.app_key is the profiles.visibility value."},{"key":"link_platforms","label":"Link Platforms","description":"External links on a profile. metadata.app_key is the profiles.links key the app writes (absent when the app does not offer the platform yet); icon is a Simple Icons slug, brand_color its hex, placeholder an example URL."},{"key":"intents","label":"Intents","description":"What brings a person to MusicLinkd. metadata.app_key is the profiles.intents value the app writes."},{"key":"work_modes","label":"Work Modes","description":"How a person works. metadata.app_key is the profiles.work_modes value the app writes."},{"key":"available_for","label":"Available For","description":"What a person is available for. metadata.app_key is the profiles.availability value the app writes."},{"key":"service_categories","label":"Service Categories","description":"What a service offers. metadata.app_key is the app's service category key."},{"key":"pricing_models","label":"Pricing Models","description":"How a service is priced. metadata.app_key is the app's pricing model key."}]$json$;
-  v_options jsonb := $json$[{"category_key":"verification_types","slug":"identity","label":"Identity verification","metadata":{"app_key":"identity","description":"Confirms you are a real person. Required before any other badge."},"sort_order":1},{"category_key":"verification_types","slug":"professional","label":"Professional verification","metadata":{"app_key":"professional","description":"Confirms credited work as an artist, engineer or producer."},"sort_order":2},{"category_key":"verification_types","slug":"business","label":"Business verification","metadata":{"app_key":"business","description":"Confirms a registered label, agency or management company."},"sort_order":3},{"category_key":"verification_types","slug":"studio","label":"Studio & space verification","metadata":{"app_key":"studio","description":"Confirms a physical bookable space with real photos."},"sort_order":4},{"category_key":"work_types","slug":"track","label":"Track","metadata":{"app_key":"track","media":"audio","description":"A single song or recording"},"sort_order":1},{"category_key":"work_types","slug":"album","label":"Album","metadata":{"app_key":"album","media":"audio","description":"A release with multiple tracks"},"sort_order":2},{"category_key":"work_types","slug":"video","label":"Video","metadata":{"app_key":"video","media":"video","description":"Music video, session or reel"},"sort_order":3},{"category_key":"work_types","slug":"performance","label":"Performance","metadata":{"app_key":"performance","media":"video","description":"Live show, tour or festival set"},"sort_order":4},{"category_key":"work_types","slug":"project","label":"Project","metadata":{"app_key":"project","media":"link","description":"A body of work you contributed to"},"sort_order":5},{"category_key":"work_types","slug":"client","label":"Client work","metadata":{"app_key":"client","media":"link","description":"Work delivered for a client or brand"},"sort_order":6},{"category_key":"work_types","slug":"case_study","label":"Case study","metadata":{"app_key":"case-study","media":"none","description":"Brief, approach, outcome"},"sort_order":7},{"category_key":"work_types","slug":"writing","label":"Writing sample","metadata":{"app_key":"writing","media":"none","description":"Lyrics, topline or notation"},"sort_order":8},{"category_key":"work_types","slug":"image","label":"Image","metadata":{"app_key":"image","media":"image","description":"Artwork, stills or behind the scenes"},"sort_order":9},{"category_key":"work_types","slug":"link","label":"External link","metadata":{"app_key":"link","media":"link","description":"YouTube, Spotify, SoundCloud, site"},"sort_order":10},{"category_key":"profile_visibility","slug":"public","label":"Public","metadata":{"app_key":"public","description":"Anyone on the internet can find your profile. Best for getting hired."},"sort_order":1},{"category_key":"profile_visibility","slug":"members","label":"MusicLinkd members","metadata":{"app_key":"members","description":"Only signed-in members can view your full profile."},"sort_order":2},{"category_key":"profile_visibility","slug":"limited","label":"Limited","metadata":{"app_key":"limited","description":"Only your connections see details. You'll appear less in discovery."},"sort_order":3},{"category_key":"link_platforms","slug":"website","label":"Website","metadata":{"app_key":"website","icon":null,"brand_color":null,"placeholder":"https://yourname.com"},"sort_order":1},{"category_key":"link_platforms","slug":"instagram","label":"Instagram","metadata":{"app_key":"instagram","icon":"instagram","brand_color":"#FF0069","placeholder":"https://instagram.com/username"},"sort_order":2},{"category_key":"link_platforms","slug":"youtube","label":"YouTube","metadata":{"app_key":"youtube","icon":"youtube","brand_color":"#FF0000","placeholder":"https://youtube.com/@channel"},"sort_order":3},{"category_key":"link_platforms","slug":"spotify","label":"Spotify","metadata":{"app_key":"spotify","icon":"spotify","brand_color":"#1ED760","placeholder":"https://open.spotify.com/artist/..."},"sort_order":4},{"category_key":"link_platforms","slug":"soundcloud","label":"SoundCloud","metadata":{"app_key":"soundcloud","icon":"soundcloud","brand_color":"#FF5500","placeholder":"https://soundcloud.com/username"},"sort_order":5},{"category_key":"link_platforms","slug":"apple_music","label":"Apple Music","metadata":{"icon":"applemusic","brand_color":"#FA243C","placeholder":"https://music.apple.com/in/artist/..."},"sort_order":6},{"category_key":"link_platforms","slug":"jiosaavn","label":"JioSaavn","metadata":{"icon":null,"brand_color":null,"placeholder":"https://www.jiosaavn.com/artist/..."},"sort_order":7},{"category_key":"link_platforms","slug":"bandcamp","label":"Bandcamp","metadata":{"icon":"bandcamp","brand_color":"#408294","placeholder":"https://yourname.bandcamp.com"},"sort_order":8},{"category_key":"link_platforms","slug":"facebook","label":"Facebook","metadata":{"icon":"facebook","brand_color":"#0866FF","placeholder":"https://facebook.com/username"},"sort_order":9},{"category_key":"link_platforms","slug":"x","label":"X","metadata":{"icon":"x","brand_color":"#000000","placeholder":"https://x.com/username"},"sort_order":10},{"category_key":"link_platforms","slug":"linkedin","label":"LinkedIn","metadata":{"icon":"linkedin","brand_color":"#0A66C2","placeholder":"https://linkedin.com/in/username"},"sort_order":11},{"category_key":"intents","slug":"find_collaborators","label":"Find Collaborators","metadata":{"app_key":"Find Collaborators"},"sort_order":1},{"category_key":"intents","slug":"find_work","label":"Find Work","metadata":{"app_key":"Find Work"},"sort_order":2},{"category_key":"intents","slug":"hire_talent","label":"Hire Talent","metadata":{"app_key":"Hire Talent"},"sort_order":3},{"category_key":"intents","slug":"find_studios","label":"Find Studios","metadata":{"app_key":"Find Studios"},"sort_order":4},{"category_key":"intents","slug":"buy_equipment","label":"Buy Equipment","metadata":{"app_key":"Buy Equipment"},"sort_order":5},{"category_key":"intents","slug":"rent_equipment","label":"Rent Equipment","metadata":{"app_key":"Rent Equipment"},"sort_order":6},{"category_key":"intents","slug":"sell_equipment","label":"Sell Equipment","metadata":{"app_key":"Sell Equipment"},"sort_order":7},{"category_key":"intents","slug":"join_communities","label":"Join Communities","metadata":{"app_key":"Join Communities"},"sort_order":8},{"category_key":"intents","slug":"discover_music","label":"Discover Music","metadata":{"app_key":"Discover Music"},"sort_order":9},{"category_key":"intents","slug":"promote_my_work","label":"Promote My Work","metadata":{"app_key":"Promote My Work"},"sort_order":10},{"category_key":"intents","slug":"build_professional_network","label":"Build Professional Network","metadata":{"app_key":"Build Professional Network"},"sort_order":11},{"category_key":"work_modes","slug":"in_person","label":"In person","metadata":{"app_key":"in-person","description":"Studios, stages, sets"},"sort_order":1},{"category_key":"work_modes","slug":"remote","label":"Remote","metadata":{"app_key":"remote","description":"Files, stems, online sessions"},"sort_order":2},{"category_key":"work_modes","slug":"hybrid","label":"Hybrid","metadata":{"app_key":"hybrid","description":"A mix of both"},"sort_order":3},{"category_key":"work_modes","slug":"touring","label":"Touring","metadata":{"app_key":"touring","description":"Happy to travel for work"},"sort_order":4},{"category_key":"available_for","slug":"shows","label":"Shows","metadata":{"app_key":"Shows"},"sort_order":1},{"category_key":"available_for","slug":"session_work","label":"Session Work","metadata":{"app_key":"Session Work"},"sort_order":2},{"category_key":"available_for","slug":"collaborations","label":"Collaborations","metadata":{"app_key":"Collaborations"},"sort_order":3},{"category_key":"available_for","slug":"projects","label":"Projects","metadata":{"app_key":"Projects"},"sort_order":4},{"category_key":"available_for","slug":"teaching","label":"Teaching","metadata":{"app_key":"Teaching"},"sort_order":5},{"category_key":"available_for","slug":"recording","label":"Recording","metadata":{"app_key":"Recording"},"sort_order":6},{"category_key":"available_for","slug":"production","label":"Production","metadata":{"app_key":"Production"},"sort_order":7},{"category_key":"available_for","slug":"freelance_work","label":"Freelance Work","metadata":{"app_key":"Freelance Work"},"sort_order":8},{"category_key":"available_for","slug":"touring","label":"Touring","metadata":{"app_key":"Touring"},"sort_order":9},{"category_key":"service_categories","slug":"vocals","label":"Session vocals","metadata":{"app_key":"vocals"},"sort_order":1},{"category_key":"service_categories","slug":"mixing","label":"Mixing","metadata":{"app_key":"mixing"},"sort_order":2},{"category_key":"service_categories","slug":"mastering","label":"Mastering","metadata":{"app_key":"mastering"},"sort_order":3},{"category_key":"service_categories","slug":"production","label":"Production","metadata":{"app_key":"production"},"sort_order":4},{"category_key":"service_categories","slug":"instrument","label":"Session instrument","metadata":{"app_key":"instrument"},"sort_order":5},{"category_key":"service_categories","slug":"songwriting","label":"Songwriting","metadata":{"app_key":"songwriting"},"sort_order":6},{"category_key":"service_categories","slug":"live","label":"Live performance","metadata":{"app_key":"live"},"sort_order":7},{"category_key":"service_categories","slug":"studio","label":"Studio time","metadata":{"app_key":"studio"},"sort_order":8},{"category_key":"pricing_models","slug":"hourly","label":"Per hour","metadata":{"app_key":"hourly"},"sort_order":1},{"category_key":"pricing_models","slug":"per_song","label":"Per song","metadata":{"app_key":"per_song"},"sort_order":2},{"category_key":"pricing_models","slug":"per_day","label":"Per day","metadata":{"app_key":"per_day"},"sort_order":3},{"category_key":"pricing_models","slug":"package","label":"Packages only","metadata":{"app_key":"package"},"sort_order":4},{"category_key":"pricing_models","slug":"custom","label":"Custom quote","metadata":{"app_key":"custom"},"sort_order":5}]$json$;
+  v_options jsonb := $json$[{"category_key":"verification_types","slug":"identity","label":"Identity verification","metadata":{"app_key":"identity","description":"Confirms you are a real person. Required before any other badge."},"sort_order":1},{"category_key":"verification_types","slug":"professional","label":"Professional verification","metadata":{"app_key":"professional","description":"Confirms credited work as an artist, engineer or producer."},"sort_order":2},{"category_key":"verification_types","slug":"business","label":"Business verification","metadata":{"app_key":"business","description":"Confirms a registered label, agency or management company."},"sort_order":3},{"category_key":"verification_types","slug":"studio","label":"Studio & space verification","metadata":{"app_key":"studio","description":"Confirms a physical bookable space with real photos."},"sort_order":4},{"category_key":"work_types","slug":"track","label":"Track","metadata":{"app_key":"track","media":"audio","description":"A single song or recording"},"sort_order":1},{"category_key":"work_types","slug":"album","label":"Album","metadata":{"app_key":"album","media":"audio","description":"A release with multiple tracks"},"sort_order":2},{"category_key":"work_types","slug":"video","label":"Video","metadata":{"app_key":"video","media":"video","description":"Music video, session or reel"},"sort_order":3},{"category_key":"work_types","slug":"performance","label":"Performance","metadata":{"app_key":"performance","media":"video","description":"Live show, tour or festival set"},"sort_order":4},{"category_key":"work_types","slug":"project","label":"Project","metadata":{"app_key":"project","media":"link","description":"A body of work you contributed to"},"sort_order":5},{"category_key":"work_types","slug":"client","label":"Client work","metadata":{"app_key":"client","media":"link","description":"Work delivered for a client or brand"},"sort_order":6},{"category_key":"work_types","slug":"case_study","label":"Case study","metadata":{"app_key":"case-study","media":"none","description":"Brief, approach, outcome"},"sort_order":7},{"category_key":"work_types","slug":"writing","label":"Writing sample","metadata":{"app_key":"writing","media":"none","description":"Lyrics, topline or notation"},"sort_order":8},{"category_key":"work_types","slug":"image","label":"Image","metadata":{"app_key":"image","media":"image","description":"Artwork, stills or behind the scenes"},"sort_order":9},{"category_key":"work_types","slug":"link","label":"External link","metadata":{"app_key":"link","media":"link","description":"YouTube, Spotify, SoundCloud, site"},"sort_order":10},{"category_key":"profile_visibility","slug":"public","label":"Public","metadata":{"app_key":"public","description":"Anyone on the internet can find your profile. Best for getting hired."},"sort_order":1},{"category_key":"profile_visibility","slug":"members","label":"MusicLinkd members","metadata":{"app_key":"members","description":"Only signed-in members can view your full profile."},"sort_order":2},{"category_key":"profile_visibility","slug":"limited","label":"Limited","metadata":{"app_key":"limited","description":"Only your connections see details. You'll appear less in discovery."},"sort_order":3},{"category_key":"link_platforms","slug":"website","label":"Website","metadata":{"app_key":"website","icon":null,"brand_color":null,"placeholder":"https://yourname.com"},"sort_order":1},{"category_key":"link_platforms","slug":"instagram","label":"Instagram","metadata":{"app_key":"instagram","icon":"instagram","brand_color":"#FF0069","placeholder":"https://instagram.com/username"},"sort_order":2},{"category_key":"link_platforms","slug":"youtube","label":"YouTube","metadata":{"app_key":"youtube","icon":"youtube","brand_color":"#FF0000","placeholder":"https://youtube.com/@channel"},"sort_order":3},{"category_key":"link_platforms","slug":"spotify","label":"Spotify","metadata":{"app_key":"spotify","icon":"spotify","brand_color":"#1ED760","placeholder":"https://open.spotify.com/artist/..."},"sort_order":4},{"category_key":"link_platforms","slug":"soundcloud","label":"SoundCloud","metadata":{"app_key":"soundcloud","icon":"soundcloud","brand_color":"#FF5500","placeholder":"https://soundcloud.com/username"},"sort_order":5},{"category_key":"link_platforms","slug":"apple_music","label":"Apple Music","metadata":{"icon":"applemusic","brand_color":"#FA243C","placeholder":"https://music.apple.com/in/artist/..."},"sort_order":6},{"category_key":"link_platforms","slug":"bandcamp","label":"Bandcamp","metadata":{"icon":"bandcamp","brand_color":"#408294","placeholder":"https://yourname.bandcamp.com"},"sort_order":7},{"category_key":"link_platforms","slug":"facebook","label":"Facebook","metadata":{"icon":"facebook","brand_color":"#0866FF","placeholder":"https://facebook.com/username"},"sort_order":8},{"category_key":"link_platforms","slug":"x","label":"X","metadata":{"icon":"x","brand_color":"#000000","placeholder":"https://x.com/username"},"sort_order":9},{"category_key":"link_platforms","slug":"linkedin","label":"LinkedIn","metadata":{"icon":"linkedin","brand_color":"#0A66C2","placeholder":"https://linkedin.com/in/username"},"sort_order":10},{"category_key":"intents","slug":"find_collaborators","label":"Find Collaborators","metadata":{"app_key":"Find Collaborators"},"sort_order":1},{"category_key":"intents","slug":"find_work","label":"Find Work","metadata":{"app_key":"Find Work"},"sort_order":2},{"category_key":"intents","slug":"hire_talent","label":"Hire Talent","metadata":{"app_key":"Hire Talent"},"sort_order":3},{"category_key":"intents","slug":"find_studios","label":"Find Studios","metadata":{"app_key":"Find Studios"},"sort_order":4},{"category_key":"intents","slug":"buy_equipment","label":"Buy Equipment","metadata":{"app_key":"Buy Equipment"},"sort_order":5},{"category_key":"intents","slug":"rent_equipment","label":"Rent Equipment","metadata":{"app_key":"Rent Equipment"},"sort_order":6},{"category_key":"intents","slug":"sell_equipment","label":"Sell Equipment","metadata":{"app_key":"Sell Equipment"},"sort_order":7},{"category_key":"intents","slug":"join_communities","label":"Join Communities","metadata":{"app_key":"Join Communities"},"sort_order":8},{"category_key":"intents","slug":"discover_music","label":"Discover Music","metadata":{"app_key":"Discover Music"},"sort_order":9},{"category_key":"intents","slug":"promote_my_work","label":"Promote My Work","metadata":{"app_key":"Promote My Work"},"sort_order":10},{"category_key":"intents","slug":"build_professional_network","label":"Build Professional Network","metadata":{"app_key":"Build Professional Network"},"sort_order":11},{"category_key":"work_modes","slug":"in_person","label":"In person","metadata":{"app_key":"in-person","description":"Studios, stages, sets"},"sort_order":1},{"category_key":"work_modes","slug":"remote","label":"Remote","metadata":{"app_key":"remote","description":"Files, stems, online sessions"},"sort_order":2},{"category_key":"work_modes","slug":"hybrid","label":"Hybrid","metadata":{"app_key":"hybrid","description":"A mix of both"},"sort_order":3},{"category_key":"work_modes","slug":"touring","label":"Touring","metadata":{"app_key":"touring","description":"Happy to travel for work"},"sort_order":4},{"category_key":"available_for","slug":"shows","label":"Shows","metadata":{"app_key":"Shows"},"sort_order":1},{"category_key":"available_for","slug":"session_work","label":"Session Work","metadata":{"app_key":"Session Work"},"sort_order":2},{"category_key":"available_for","slug":"collaborations","label":"Collaborations","metadata":{"app_key":"Collaborations"},"sort_order":3},{"category_key":"available_for","slug":"projects","label":"Projects","metadata":{"app_key":"Projects"},"sort_order":4},{"category_key":"available_for","slug":"teaching","label":"Teaching","metadata":{"app_key":"Teaching"},"sort_order":5},{"category_key":"available_for","slug":"recording","label":"Recording","metadata":{"app_key":"Recording"},"sort_order":6},{"category_key":"available_for","slug":"production","label":"Production","metadata":{"app_key":"Production"},"sort_order":7},{"category_key":"available_for","slug":"freelance_work","label":"Freelance Work","metadata":{"app_key":"Freelance Work"},"sort_order":8},{"category_key":"available_for","slug":"touring","label":"Touring","metadata":{"app_key":"Touring"},"sort_order":9},{"category_key":"service_categories","slug":"vocals","label":"Session vocals","metadata":{"app_key":"vocals"},"sort_order":1},{"category_key":"service_categories","slug":"mixing","label":"Mixing","metadata":{"app_key":"mixing"},"sort_order":2},{"category_key":"service_categories","slug":"mastering","label":"Mastering","metadata":{"app_key":"mastering"},"sort_order":3},{"category_key":"service_categories","slug":"production","label":"Production","metadata":{"app_key":"production"},"sort_order":4},{"category_key":"service_categories","slug":"instrument","label":"Session instrument","metadata":{"app_key":"instrument"},"sort_order":5},{"category_key":"service_categories","slug":"songwriting","label":"Songwriting","metadata":{"app_key":"songwriting"},"sort_order":6},{"category_key":"service_categories","slug":"live","label":"Live performance","metadata":{"app_key":"live"},"sort_order":7},{"category_key":"service_categories","slug":"studio","label":"Studio time","metadata":{"app_key":"studio"},"sort_order":8},{"category_key":"pricing_models","slug":"hourly","label":"Per hour","metadata":{"app_key":"hourly"},"sort_order":1},{"category_key":"pricing_models","slug":"per_song","label":"Per song","metadata":{"app_key":"per_song"},"sort_order":2},{"category_key":"pricing_models","slug":"per_day","label":"Per day","metadata":{"app_key":"per_day"},"sort_order":3},{"category_key":"pricing_models","slug":"package","label":"Packages only","metadata":{"app_key":"package"},"sort_order":4},{"category_key":"pricing_models","slug":"custom","label":"Custom quote","metadata":{"app_key":"custom"},"sort_order":5}]$json$;
 BEGIN
   INSERT INTO public.taxonomy_categories (key, label, description)
   SELECT r.key, r.label, r.description FROM jsonb_to_recordset(v_categories) AS r(key text, label text, description text)
   ON CONFLICT (key) DO UPDATE SET label = EXCLUDED.label, description = EXCLUDED.description
   WHERE (taxonomy_categories.label, taxonomy_categories.description) IS DISTINCT FROM (EXCLUDED.label, EXCLUDED.description);
+
+  -- Platforms no longer offered.
+  DELETE FROM public.taxonomy_options
+  WHERE category_key = 'link_platforms' AND slug IN ('jiosaavn');
 
   INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, metadata)
   SELECT r.category_key, r.slug, r.label, r.sort_order, r.metadata
@@ -173,6 +182,13 @@ BEGIN
       WHERE (o.label, o.sort_order, o.metadata) IS NOT DISTINCT FROM (r.label, r.sort_order, r.metadata))
      <> jsonb_array_length(v_options) THEN
     RAISE EXCEPTION 'taxonomy options import: stored rows differ from the payload';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.taxonomy_options
+             WHERE category_key = 'link_platforms' AND slug IN ('jiosaavn'))
+     OR EXISTS (SELECT 1 FROM (SELECT sort_order, row_number() OVER (ORDER BY sort_order, slug) AS n
+                               FROM public.taxonomy_options WHERE category_key = 'link_platforms') x
+                WHERE x.sort_order <> x.n) THEN
+    RAISE EXCEPTION 'link_platforms: a removed platform remains or sort orders are not 1..n';
   END IF;
 END
 $import$;
@@ -242,7 +258,115 @@ BEGIN
 END
 $text$;
 
--- 6. Verify
+-- 6. persona_bucket: up to 20 genres per screen, other categories on p_limit
+CREATE OR REPLACE FUNCTION public.persona_bucket(
+  p_primary   text,
+  p_secondary text[] DEFAULT '{}',
+  p_languages text[] DEFAULT '{}',
+  p_limit     int    DEFAULT 12
+)
+RETURNS TABLE (category_key text, slug text, label text, display_order int)
+LANGUAGE plpgsql
+STABLE
+SECURITY INVOKER
+SET search_path = public
+AS $fn$
+#variable_conflict use_column
+DECLARE
+  v_roles text[] := array_append(coalesce(p_secondary, '{}'), p_primary);
+BEGIN
+  IF p_limit IS NULL OR p_limit < 1 THEN
+    RAISE EXCEPTION 'persona_bucket: p_limit must be at least 1, got %', p_limit;
+  END IF;
+  IF cardinality(coalesce(p_secondary, '{}')) > 2 THEN
+    RAISE EXCEPTION 'persona_bucket: at most 2 secondary person types, got %', cardinality(p_secondary);
+  END IF;
+  IF (SELECT count(DISTINCT x) FROM unnest(coalesce(p_secondary, '{}')) x) <> cardinality(coalesce(p_secondary, '{}')) THEN
+    RAISE EXCEPTION 'persona_bucket: secondary person types repeat: %', p_secondary;
+  END IF;
+  IF p_primary = ANY (coalesce(p_secondary, '{}')) THEN
+    RAISE EXCEPTION 'persona_bucket: secondary person type % repeats the primary', p_primary;
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM unnest(v_roles) r
+    WHERE NOT EXISTS (SELECT 1 FROM taxonomy_options o
+                      JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+                      WHERE o.category_key = 'person_types' AND o.slug = r AND o.is_published)
+  ) THEN
+    RAISE EXCEPTION 'persona_bucket: unknown or unpublished person type in %', v_roles;
+  END IF;
+
+  -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
+  -- language unlocks. Within a tier, sort_order (popularity). Instruments are capped at p_limit,
+  -- genres at GREATEST(p_limit, 20).
+  RETURN QUERY
+  WITH candidates AS (
+    SELECT o.category_key AS cat, o.slug AS opt_slug, o.label AS opt_label, o.sort_order AS rank_order,
+           CASE WHEN EXISTS (SELECT 1 FROM person_type_instruments p0
+                             WHERE p0.instrument_slug = o.slug AND p0.person_type_slug = p_primary)
+                THEN 0 ELSE 1 END AS tier
+    FROM taxonomy_options o
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'instruments' AND o.is_published
+      AND EXISTS (SELECT 1 FROM person_type_instruments pti
+                  WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
+    UNION ALL
+    SELECT o.category_key, o.slug, o.label, o.sort_order,
+           CASE WHEN o.metadata->>'scope' = 'regional' THEN 0 ELSE 1 END
+    FROM taxonomy_options o
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'genres' AND o.is_published
+      AND (o.metadata->>'scope' = 'universal'
+           OR EXISTS (SELECT 1 FROM genre_languages gl
+                      JOIN taxonomy_options lo ON lo.category_key = 'languages' AND lo.slug = gl.language_slug
+                      WHERE gl.genre_slug = o.slug AND lo.is_published
+                        AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
+  ),
+  ranked AS (
+    SELECT c.*, (row_number() OVER (PARTITION BY c.cat ORDER BY c.tier, c.rank_order))::int AS rn
+    FROM candidates c
+  )
+  SELECT r.cat, r.opt_slug, r.opt_label, r.rn
+  FROM ranked r
+  WHERE r.rn <= CASE WHEN r.cat = 'genres' THEN GREATEST(p_limit, 20) ELSE p_limit END
+  ORDER BY r.cat, r.rn;
+END
+$fn$;
+
+GRANT EXECUTE ON FUNCTION public.persona_bucket(text, text[], text[], int) TO anon, authenticated;
+
+DO $bucket$
+DECLARE
+  v_languages text[] := ARRAY(SELECT slug FROM public.taxonomy_options WHERE category_key = 'languages' AND is_published);
+  v_primary text;
+  v_available int;
+BEGIN
+  -- Any published person type will do; the genre count does not depend on it.
+  SELECT o.slug INTO v_primary FROM public.taxonomy_options o
+  JOIN public.taxonomy_categories c ON c.key = o.category_key AND c.is_published
+  WHERE o.category_key = 'person_types' AND o.is_published ORDER BY o.sort_order LIMIT 1;
+  IF v_primary IS NULL THEN
+    RETURN;
+  END IF;
+  SELECT count(*) INTO v_available
+  FROM public.taxonomy_options o
+  JOIN public.taxonomy_categories c ON c.key = o.category_key AND c.is_published
+  WHERE o.category_key = 'genres' AND o.is_published
+    AND (o.metadata->>'scope' = 'universal'
+         OR EXISTS (SELECT 1 FROM public.genre_languages gl WHERE gl.genre_slug = o.slug
+                    AND gl.language_slug = ANY (v_languages)));
+  IF (SELECT count(*) FROM public.persona_bucket(v_primary, '{}', v_languages, 12) b
+      WHERE b.category_key = 'genres') <> LEAST(v_available, 20) THEN
+    RAISE EXCEPTION 'persona_bucket: genres are not capped at 20';
+  END IF;
+  IF (SELECT count(*) FROM public.persona_bucket(v_primary, '{}', v_languages, 12) b
+      WHERE b.category_key = 'instruments') > 12 THEN
+    RAISE EXCEPTION 'persona_bucket: instruments exceed p_limit';
+  END IF;
+END
+$bucket$;
+
+-- 7. Verify
 DO $verify$
 DECLARE
   v_renames jsonb := $json${"genres":{"bollywood_filmi":"bollywood","bhajan_kirtan":"bhajan","punjabi_folk_bhangra":"bhangra","garba_dandiya":"garba","hiphop_trap":"hiphop","rock_metal":"rock","edm_synthwave":"edm","lofi_chill":"lofi","acoustic_unplugged":"acoustic","rnb_soul":"rnb","jazz_blues":"jazz","reggae_dub":"reggae"},"instruments":{"keyboard_synthesizer":"keyboard","drums_percussion":"drums","drum_machine_sampler":"drum_machine"},"person_types":{"wind_player":"flautist"},"verification_id_type":{"company_pan_gstin":"company_pan"}}$json$;

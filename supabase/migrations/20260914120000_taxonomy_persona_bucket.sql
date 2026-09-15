@@ -24,7 +24,8 @@
 -- persona_bucket(primary, secondary[], languages[], limit) returns the options a profile can pick:
 -- instruments = union over primary + up to 2 secondary person types, primary's first;
 -- genres = regional genres linked to any selected language first, then universal genres.
--- Each category is capped at limit (default 12) so no picker screen exceeds it.
+-- Instruments are capped at limit (default 12); genres at GREATEST(limit, 20) (owner, 15 Sep 2026:
+-- up to 20 genres per screen), so no picker screen exceeds its cap.
 -- sort_order on instruments and genres is popularity, which decides what survives the cap.
 --
 -- Does not touch profiles. Reference data: public SELECT of published rows, no client write.
@@ -545,7 +546,8 @@ BEGIN
   END IF;
 
   -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
-  -- language unlocks. Within a tier, sort_order (popularity). Each category is capped at p_limit.
+  -- language unlocks. Within a tier, sort_order (popularity). Instruments are capped at p_limit,
+  -- genres at GREATEST(p_limit, 20).
   RETURN QUERY
   WITH candidates AS (
     SELECT o.category_key AS cat, o.slug AS opt_slug, o.label AS opt_label, o.sort_order AS rank_order,
@@ -575,7 +577,7 @@ BEGIN
   )
   SELECT r.cat, r.opt_slug, r.opt_label, r.rn
   FROM ranked r
-  WHERE r.rn <= p_limit
+  WHERE r.rn <= CASE WHEN r.cat = 'genres' THEN GREATEST(p_limit, 20) ELSE p_limit END
   ORDER BY r.cat, r.rn;
 END
 $fn$;

@@ -18,6 +18,8 @@ import re
 import sys
 import uuid
 
+from taxonomy_renames import single_names
+
 GROUPS, OUT_BUSINESS, OUT_BANDS = sys.argv[1:4]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
 
@@ -256,8 +258,19 @@ def upsert(table, rows, key):
   END IF;"""
 
 
+def no_old_labels(value):
+    """Text without "/" (owner, 15 Sep 2026): an old combined option label becomes its single label."""
+    if isinstance(value, str):
+        return single_names(value)
+    if isinstance(value, list):
+        return [no_old_labels(v) for v in value]
+    if isinstance(value, dict):
+        return {k: no_old_labels(v) for k, v in value.items()}
+    return value
+
+
 def block(label, rows, body):
-    payload = json.dumps(rows, ensure_ascii=False, separators=(",", ":"))
+    payload = json.dumps(no_old_labels(rows), ensure_ascii=False, separators=(",", ":"))
     assert "$json$" not in payload
     return (f"-- {label} ({len(rows)} rows)\nDO $import$\nDECLARE\n  payload jsonb := $json${payload}$json$;\n"
             f"BEGIN\n{body}\nEND\n$import$;\n")

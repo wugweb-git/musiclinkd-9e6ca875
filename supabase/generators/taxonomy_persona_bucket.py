@@ -150,6 +150,9 @@ GENRES = [
 
 # Screen cap: no picker shows more than this many options.
 SCREEN_LIMIT = 12
+# Genres show up to 20 per screen (owner, 15 Sep 2026); every other category keeps SCREEN_LIMIT.
+# persona_bucket caps genres at GREATEST(p_limit, GENRE_SCREEN_LIMIT), so a caller passing 12 gets 20.
+GENRE_SCREEN_LIMIT = 20
 
 # Popularity order — sets sort_order, and decides which options survive the screen cap.
 INSTRUMENT_RANK = [
@@ -199,7 +202,7 @@ def bucket(primary, secondary, languages, limit=SCREEN_LIMIT):
     scope = {g[0]: g[2] for g in GENRES}
     matched = [g for g in GENRE_RANK if scope[g] is None or set(scope[g]) & set(languages)]
     gen = sorted(matched, key=lambda g: (scope[g] is None, GENRE_RANK.index(g)))
-    return ins[:limit], gen[:limit], len(ins), len(gen)
+    return ins[:limit], gen[:max(limit, GENRE_SCREEN_LIMIT)], len(ins), len(gen)
 
 def q(s):
     return "'" + s.replace("'", "''") + "'"
@@ -207,6 +210,90 @@ def q(s):
 def meta(d):
     import json
     return q(json.dumps(d, ensure_ascii=False)) + "::jsonb"
+
+PERSONA_BUCKET_FUNCTION = """@CREATE@ public.persona_bucket(
+  p_primary   text,
+  p_secondary text[] DEFAULT '{}',
+  p_languages text[] DEFAULT '{}',
+  p_limit     int    DEFAULT 12
+)
+RETURNS TABLE (category_key text, slug text, label text, display_order int)
+LANGUAGE plpgsql
+STABLE
+SECURITY INVOKER
+SET search_path = public
+AS $fn$
+#variable_conflict use_column
+DECLARE
+  v_roles text[] := array_append(coalesce(p_secondary, '{}'), p_primary);
+BEGIN
+  IF p_limit IS NULL OR p_limit < 1 THEN
+    RAISE EXCEPTION 'persona_bucket: p_limit must be at least 1, got %', p_limit;
+  END IF;
+  IF cardinality(coalesce(p_secondary, '{}')) > 2 THEN
+    RAISE EXCEPTION 'persona_bucket: at most 2 secondary person types, got %', cardinality(p_secondary);
+  END IF;
+  IF (SELECT count(DISTINCT x) FROM unnest(coalesce(p_secondary, '{}')) x) <> cardinality(coalesce(p_secondary, '{}')) THEN
+    RAISE EXCEPTION 'persona_bucket: secondary person types repeat: %', p_secondary;
+  END IF;
+  IF p_primary = ANY (coalesce(p_secondary, '{}')) THEN
+    RAISE EXCEPTION 'persona_bucket: secondary person type % repeats the primary', p_primary;
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM unnest(v_roles) r
+    WHERE NOT EXISTS (SELECT 1 FROM taxonomy_options o
+                      JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+                      WHERE o.category_key = 'person_types' AND o.slug = r AND o.is_published)
+  ) THEN
+    RAISE EXCEPTION 'persona_bucket: unknown or unpublished person type in %', v_roles;
+  END IF;
+
+  -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
+  -- language unlocks. Within a tier, sort_order (popularity). Instruments are capped at p_limit,
+  -- genres at GREATEST(p_limit, @GENRE_LIMIT@).
+  RETURN QUERY
+  WITH candidates AS (
+    SELECT o.category_key AS cat, o.slug AS opt_slug, o.label AS opt_label, o.sort_order AS rank_order,
+           CASE WHEN EXISTS (SELECT 1 FROM person_type_instruments p0
+                             WHERE p0.instrument_slug = o.slug AND p0.person_type_slug = p_primary)
+                THEN 0 ELSE 1 END AS tier
+    FROM taxonomy_options o
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'instruments' AND o.is_published
+      AND EXISTS (SELECT 1 FROM person_type_instruments pti
+                  WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
+    UNION ALL
+    SELECT o.category_key, o.slug, o.label, o.sort_order,
+           CASE WHEN o.metadata->>'scope' = 'regional' THEN 0 ELSE 1 END
+    FROM taxonomy_options o
+    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
+    WHERE o.category_key = 'genres' AND o.is_published
+      AND (o.metadata->>'scope' = 'universal'
+           OR EXISTS (SELECT 1 FROM genre_languages gl
+                      JOIN taxonomy_options lo ON lo.category_key = 'languages' AND lo.slug = gl.language_slug
+                      WHERE gl.genre_slug = o.slug AND lo.is_published
+                        AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
+  ),
+  ranked AS (
+    SELECT c.*, (row_number() OVER (PARTITION BY c.cat ORDER BY c.tier, c.rank_order))::int AS rn
+    FROM candidates c
+  )
+  SELECT r.cat, r.opt_slug, r.opt_label, r.rn
+  FROM ranked r
+  WHERE r.rn <= CASE WHEN r.cat = 'genres' THEN GREATEST(p_limit, @GENRE_LIMIT@) ELSE p_limit END
+  ORDER BY r.cat, r.rn;
+END
+$fn$;
+
+GRANT EXECUTE ON FUNCTION public.persona_bucket(text, text[], text[], int) TO anon, authenticated;
+"""
+
+
+def persona_bucket_function(create="CREATE FUNCTION"):
+    """persona_bucket() and its grant. 20260915110000 ships the same body with CREATE OR REPLACE FUNCTION."""
+    return (PERSONA_BUCKET_FUNCTION.replace("@CREATE@", create, 1)
+            .replace("@GENRE_LIMIT@", str(GENRE_SCREEN_LIMIT)))
+
 
 # ---- SQL ---------------------------------------------------------------------
 def sql():
@@ -238,7 +325,8 @@ def sql():
 -- persona_bucket(primary, secondary[], languages[], limit) returns the options a profile can pick:
 -- instruments = union over primary + up to 2 secondary person types, primary's first;
 -- genres = regional genres linked to any selected language first, then universal genres.
--- Each category is capped at limit (default 12) so no picker screen exceeds it.
+-- Instruments are capped at limit (default 12); genres at GREATEST(limit, 20) (owner, 15 Sep 2026:
+-- up to 20 genres per screen), so no picker screen exceeds its cap.
 -- sort_order on instruments and genres is popularity, which decides what survives the cap.
 --
 -- Does not touch profiles. Reference data: public SELECT of published rows, no client write.
@@ -368,81 +456,7 @@ CREATE POLICY "Genre languages are readable by everyone"
     w("INSERT INTO public.genre_languages (genre_slug, language_slug) VALUES")
     w(",\n".join(f"  ({q(g[0])}, {q(l)})" for g in GENRES if g[2] for l in g[2]) + ";\n")
 
-    w("""CREATE FUNCTION public.persona_bucket(
-  p_primary   text,
-  p_secondary text[] DEFAULT '{}',
-  p_languages text[] DEFAULT '{}',
-  p_limit     int    DEFAULT 12
-)
-RETURNS TABLE (category_key text, slug text, label text, display_order int)
-LANGUAGE plpgsql
-STABLE
-SECURITY INVOKER
-SET search_path = public
-AS $fn$
-#variable_conflict use_column
-DECLARE
-  v_roles text[] := array_append(coalesce(p_secondary, '{}'), p_primary);
-BEGIN
-  IF p_limit IS NULL OR p_limit < 1 THEN
-    RAISE EXCEPTION 'persona_bucket: p_limit must be at least 1, got %', p_limit;
-  END IF;
-  IF cardinality(coalesce(p_secondary, '{}')) > 2 THEN
-    RAISE EXCEPTION 'persona_bucket: at most 2 secondary person types, got %', cardinality(p_secondary);
-  END IF;
-  IF (SELECT count(DISTINCT x) FROM unnest(coalesce(p_secondary, '{}')) x) <> cardinality(coalesce(p_secondary, '{}')) THEN
-    RAISE EXCEPTION 'persona_bucket: secondary person types repeat: %', p_secondary;
-  END IF;
-  IF p_primary = ANY (coalesce(p_secondary, '{}')) THEN
-    RAISE EXCEPTION 'persona_bucket: secondary person type % repeats the primary', p_primary;
-  END IF;
-  IF EXISTS (
-    SELECT 1 FROM unnest(v_roles) r
-    WHERE NOT EXISTS (SELECT 1 FROM taxonomy_options o
-                      JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
-                      WHERE o.category_key = 'person_types' AND o.slug = r AND o.is_published)
-  ) THEN
-    RAISE EXCEPTION 'persona_bucket: unknown or unpublished person type in %', v_roles;
-  END IF;
-
-  -- tier 0 ranks first: instruments the primary person type allows; regional genres a selected
-  -- language unlocks. Within a tier, sort_order (popularity). Each category is capped at p_limit.
-  RETURN QUERY
-  WITH candidates AS (
-    SELECT o.category_key AS cat, o.slug AS opt_slug, o.label AS opt_label, o.sort_order AS rank_order,
-           CASE WHEN EXISTS (SELECT 1 FROM person_type_instruments p0
-                             WHERE p0.instrument_slug = o.slug AND p0.person_type_slug = p_primary)
-                THEN 0 ELSE 1 END AS tier
-    FROM taxonomy_options o
-    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
-    WHERE o.category_key = 'instruments' AND o.is_published
-      AND EXISTS (SELECT 1 FROM person_type_instruments pti
-                  WHERE pti.instrument_slug = o.slug AND pti.person_type_slug = ANY (v_roles))
-    UNION ALL
-    SELECT o.category_key, o.slug, o.label, o.sort_order,
-           CASE WHEN o.metadata->>'scope' = 'regional' THEN 0 ELSE 1 END
-    FROM taxonomy_options o
-    JOIN taxonomy_categories c ON c.key = o.category_key AND c.is_published
-    WHERE o.category_key = 'genres' AND o.is_published
-      AND (o.metadata->>'scope' = 'universal'
-           OR EXISTS (SELECT 1 FROM genre_languages gl
-                      JOIN taxonomy_options lo ON lo.category_key = 'languages' AND lo.slug = gl.language_slug
-                      WHERE gl.genre_slug = o.slug AND lo.is_published
-                        AND gl.language_slug = ANY (coalesce(p_languages, '{}'))))
-  ),
-  ranked AS (
-    SELECT c.*, (row_number() OVER (PARTITION BY c.cat ORDER BY c.tier, c.rank_order))::int AS rn
-    FROM candidates c
-  )
-  SELECT r.cat, r.opt_slug, r.opt_label, r.rn
-  FROM ranked r
-  WHERE r.rn <= p_limit
-  ORDER BY r.cat, r.rn;
-END
-$fn$;
-
-GRANT EXECUTE ON FUNCTION public.persona_bucket(text, text[], text[], int) TO anon, authenticated;
-""")
+    w(persona_bucket_function("CREATE FUNCTION"))
     return "\n".join(L)
 
 # ---- doc ---------------------------------------------------------------------
@@ -468,14 +482,14 @@ originally: new
 **Instruments** = union of the instruments allowed for the primary and each secondary person type.
 **Genres** = every *universal* genre, plus each *regional* genre linked to any selected language.
 
-## Screen limit — 12 per screen
+## Screen limit — 12 per screen, genres 20
 
 | Screen | How it stays within 12 |
 |---|---|
 | Languages | 12 options |
 | Primary / secondary person type | pick a group (8), then a type (largest group: Business, 12) |
 | Instruments | `persona_bucket` caps at 12 — primary's instruments first, then secondaries', each by popularity |
-| Genres | `persona_bucket` caps at 12 — regional genres for the selected languages first, then universal, each by popularity |
+| Genres | `persona_bucket` caps at 20 (GREATEST(p_limit, 20); owner, 15 Sep 2026) — regional genres for the selected languages first, then universal, each by popularity |
 
 The generator refuses to build if any flat list or person-type group exceeds 12.
 
@@ -497,7 +511,8 @@ The **Business** person-type group *is* the business type list (12). Every row i
 - `updated_at` moves on every update (trigger).
 
 Call: `select * from persona_bucket('singer', array['lyricist','composer'], array['hi','en']);`
-— returns `category_key, slug, label, display_order`; `display_order` is the on-screen order, 1–12.
+— returns `category_key, slug, label, display_order`; `display_order` is the on-screen order, 1–12
+(instruments) or 1–20 (genres).
 """)
     w("## Languages (12)\n\n| Slug | Name |\n|---|---|")
     for s, l in LANGUAGES: w(f"| `{s}` | {l} |")
@@ -559,5 +574,5 @@ if __name__ == "__main__":
     for args in [("singer", ["lyricist", "composer"], ["hi", "en"]), ("singer", ["lyricist", "dj"], ["ta"]),
                  ("producer", ["composer", "music_teacher"], [s for s, _ in LANGUAGES])]:
         i, g, ni, ng = bucket(*args)
-        assert len(i) <= SCREEN_LIMIT and len(g) <= SCREEN_LIMIT
+        assert len(i) <= SCREEN_LIMIT and len(g) <= GENRE_SCREEN_LIMIT
         print(args[:2], f"instruments {len(i)}/{ni}", f"genres {len(g)}/{ng}")

@@ -16,7 +16,7 @@ import sys
 import unicodedata
 import uuid
 
-from taxonomy_renames import renamed, with_added
+from taxonomy_renames import clean_row, renamed, with_added
 
 DUMP, SEED, SECTIONS, OUT = sys.argv[1:5]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
@@ -62,7 +62,8 @@ for m in re.finditer(r'\{\s*key: "(\w+)",\s*label: "([^"]+)",\s*description:\s*"
         seeded.append({"category_key": key, "slug": slug, "label": olabel, "sort_order": i,
                        "metadata": {"group": group} if group else None})
     # Single names, no "/" in labels (owner, 15 Sep 2026): Company PAN / GSTIN is two options.
-    taxonomy_options.extend(with_added(key, seeded))
+    # Text without "/" too: the opportunity_types group "Studio / Space" is "Studio".
+    taxonomy_options.extend(clean_row("taxonomy_options", o) for o in with_added(key, seeded))
 assert len(taxonomy_categories) == 25, len(taxonomy_categories)
 assert not [o for o in taxonomy_options if "/" in o["label"]], "an option label has a /"
 
@@ -220,7 +221,9 @@ SCHEMA = """-- Profile sections: the rest of each profile bucket, keyed by profi
 --
 -- Data
 --   Taxonomy: the 25 categories not yet loaded (published). Labels are single names, no "/" (owner,
---   15 Sep 2026): the seed's Company PAN / GSTIN is company_pan and company_gstin.
+--   15 Sep 2026): the seed's combined Company PAN option is company_pan and company_gstin, and the
+--   opportunity_types group is "Studio". Imported text has no "/" either (taxonomy_renames.py);
+--   category descriptions (developer notes) are kept as they are.
 --   Firebase: rates, budget tiers, badges, verified / available, role details (user fields and
 --   role_profiles), service offerings, business / venue details, team and band lineup, shows, and
 --   reviews of people. Studio reviews belong to studios and are not here.
@@ -491,7 +494,7 @@ REVIEW_BODY = upsert_body("reviews", REVIEW_COLS, "id") + """
   FROM jsonb_to_recordset(payload) AS r(id uuid, created_at timestamptz)
   WHERE t.id = r.id AND r.created_at IS NOT NULL;"""
 
-parts = [("taxonomy categories", taxonomy_categories, CATEGORY_BODY),
+parts = [("taxonomy categories", taxonomy_categories, CATEGORY_BODY),  # descriptions are kept as they are
          ("taxonomy options", taxonomy_options, OPTION_BODY),
          ("profile fields", profile_fields, PROFILE_FIELDS_BODY),
          ("profile_services", pick(services, SERVICE_COLS), upsert_body("profile_services", SERVICE_COLS, "id")),
@@ -503,6 +506,11 @@ parts = [("taxonomy categories", taxonomy_categories, CATEGORY_BODY),
          ("profile_business", pick(business, BUSINESS_COLS), upsert_body("profile_business", BUSINESS_COLS, "profile_id")),
          ("profile_members", pick(members, MEMBER_COLS), upsert_body("profile_members", MEMBER_COLS, "id")),
          ("profile_events", pick(events, EVENT_COLS), upsert_body("profile_events", EVENT_COLS, "id"))]
+
+# Text without "/" (owner, 15 Sep 2026; taxonomy_renames.py). Table per part, for the column rules.
+TABLE = {"profile fields": "profiles", "taxonomy options": "taxonomy_options"}
+parts = [(label, rows if label == "taxonomy categories" else
+          [clean_row(TABLE.get(label, label), r) for r in rows], body) for label, rows, body in parts]
 
 blocks = []
 for label, rows, body in parts:

@@ -15,7 +15,7 @@ import re
 import sys
 import uuid
 
-from taxonomy_renames import fixed_text, renamed
+from taxonomy_renames import clean_row, renamed
 
 DUMP, SEED, OUT = sys.argv[1:4]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
@@ -117,7 +117,7 @@ for p in FB["projects"]:
     opportunities.append({
         "id": uid(f"firebase:projects/{p['_id']}"), "creator_profile_id": PROFILE_ID[p["creatorUid"]],
         "slug": p["_id"].removeprefix("mock-project-"), "title": p["title"],
-        "role_required": fixed_text("opportunities", "role_required", p.get("roleRequired")),
+        "role_required": p.get("roleRequired"),
         "genres": slugs("genres", p.get("genres"), p["_id"]), "budget_paise": amount, "budget_unit": unit,
         "budget_note": note, "collaboration_type": slugs("collaboration_types", [p["collaborationType"]], p["_id"])[0],
         "location": p.get("location"), "status": p["status"].lower(), "applicant_count": p.get("applicantCount") or 0,
@@ -141,7 +141,7 @@ for m in FB["marketplace_items"]:
         "seller_profile_id": seller,
         # Sellers with no user document: the name comes from the Firebase id, as nothing else carries it.
         "seller_name": None if seller else m["sellerUid"].removeprefix("mock-seller-").replace("-", " ").title(),
-        "title": fixed_text("marketplace_listings", "title", m["title"]), "category": slugs("marketplace_categories", [m["category"]], m["_id"])[0],
+        "title": m["title"], "category": slugs("marketplace_categories", [m["category"]], m["_id"])[0],
         "item_category": item_category, "item_category_kind": item_kind, "condition": CONDITION[m["condition"]],
         "price_paise": amount, "price_unit": unit, "price_note": note, "image_url": m.get("imageUrl"),
         "created_at": m["createdAt"]})
@@ -172,6 +172,17 @@ pages = [{"slug": p["_id"], "route": p["route"], "title": p["title"], "status": 
 
 if problems:
     sys.exit("Unmapped values:\n" + "\n".join(problems))
+
+# Text without "/" (owner, 15 Sep 2026; taxonomy_renames.py): whole-value fixes, single labels, phrases.
+studios, rooms, equipment = ([clean_row(t, r) for r in rows] for t, rows in
+                             (("studios", studios), ("studio_rooms", rooms), ("studio_equipment", equipment)))
+studio_reviews = [clean_row("reviews", r) for r in studio_reviews]
+opportunities = [clean_row("opportunities", r) for r in opportunities]
+listings = [clean_row("marketplace_listings", r) for r in listings]
+posts = [clean_row("feed_posts", r) for r in posts]
+pages = [clean_row("cms_pages", r) for r in pages]
+assert not [e for e in equipment if "/" in e["name"]], "an equipment name has a /"
+assert not [p for p in posts if "/" in re.sub(r"(https?://|www\.)\S+", "", p["body"] or "")], "a post body has a /"
 assert not [o for o in opportunities if "/" in (o["role_required"] or "")], "a role_required has a /"
 assert not [m for m in listings if "/" in m["title"]], "a listing title has a /"
 
@@ -186,7 +197,8 @@ SCHEMA = """-- Catalog: studios (rooms, equipment, reviews), opportunities, mark
 -- ("+ ₹5,000 deposit", "Royalties Split") is kept in a *_note column.
 -- mock-studio-octave-sound-labs is imported as Wugweb (slug wugweb), matching its owner's profile.
 -- Marketplace sellers with no Firebase user document keep a seller_name and no profile.
--- Imported role and title text is written without "/" (owner, 15 Sep 2026; taxonomy_renames.py).
+-- Imported text is written without "/" (owner, 15 Sep 2026; taxonomy_renames.py): role and title
+-- text, old combined labels, equipment names and post bodies. CMS routes are paths and keep theirs.
 -- Read: public (CMS pages when published). Write: owners of their own rows; CMS is not client-writable.
 -- Not imported: studio phone numbers.
 --
