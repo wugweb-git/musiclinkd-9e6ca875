@@ -3,21 +3,14 @@ import { useState } from "react";
 import { CalendarDays, MessageSquare, QrCode, Settings2, Share2, UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Row } from "@/components/ml/kit";
-import { getBand, bandRoleCopy } from "@/data/band";
-import { bandViewFromRecord, bandViewFromStatic } from "@/lib/band-view";
-import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { getPublicBand } from "@/lib/profile-groups.functions";
+import { bandRoleCopy } from "@/data/band";
+import { useAuth } from "@/hooks/use-auth";
+import { bandViewFromRow, loadBand } from "@/lib/band-view";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/bands/$id/")({
-  // The demo band wins; otherwise the id is the username of a stored profile with a line-up or shows.
-  loader: async ({ params }) => {
-    if (getBand(params.id)) return { record: null, labels: {} as TaxonomyLabels };
-    const [record, labels] = await Promise.all([
-      getPublicBand({ data: { username: params.id } }).catch(() => null),
-      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-    ]);
-    return { record, labels };
-  },
+  // The id is the band's slug. A band is a group of talent profiles, not an account.
+  loader: ({ params }) => loadBand(params.id),
   head: ({ params }) => ({
     meta: [
       { title: `Band profile | MusicLinkd` },
@@ -37,14 +30,9 @@ export const Route = createFileRoute("/bands/$id/")({
 const tabs = ["Overview", "Members", "Shows", "Music"] as const;
 
 function BandProfile() {
-  const { id } = Route.useParams();
-  const { record, labels } = Route.useLoaderData();
-  const demo = getBand(id);
-  const band = demo
-    ? bandViewFromStatic(demo)
-    : record
-      ? bandViewFromRecord(record, labels)
-      : undefined;
+  const { band: row, labels } = Route.useLoaderData();
+  const { user } = useAuth();
+  const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [tab, setTab] = useState<(typeof tabs)[number]>("Overview");
 
   if (!band) {
@@ -243,15 +231,13 @@ function BandProfile() {
                         <p className="truncate text-[12px] text-muted-foreground">{m.detail}</p>
                       ) : null}
                     </div>
-                    {m.role ? (
-                      <StatusPill
-                        label={bandRoleCopy[m.role].label}
-                        tone={m.role === "owner" ? "brand" : "neutral"}
-                      />
-                    ) : null}
+                    <StatusPill
+                      label={bandRoleCopy[m.role].label}
+                      tone={m.role === "owner" ? "brand" : "neutral"}
+                    />
                   </Card>
                 );
-                // A stored line-up member has no MusicLinkd profile to open.
+                // A member whose profile has no username has no page to open.
                 return m.username ? (
                   <Link
                     key={m.key}
@@ -327,16 +313,20 @@ function BandProfile() {
                     key={r.id}
                     className="overflow-hidden rounded-[24px] border border-border bg-card"
                   >
-                    <img
-                      src={r.cover}
-                      alt=""
-                      loading="lazy"
-                      className="aspect-square w-full object-cover"
-                    />
+                    {r.cover ? (
+                      <img
+                        src={r.cover}
+                        alt=""
+                        loading="lazy"
+                        className="aspect-square w-full object-cover"
+                      />
+                    ) : (
+                      <div aria-hidden className="aspect-square w-full bg-subtle" />
+                    )}
                     <div className="p-3">
                       <h3 className="truncate text-[13px]">{r.title}</h3>
                       <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                        {r.kind} · {r.year}
+                        {joinParts(r.kind, r.year ? String(r.year) : "")}
                       </p>
                     </div>
                   </article>

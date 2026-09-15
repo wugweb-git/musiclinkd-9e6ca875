@@ -2,9 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Stars } from "@/components/ml/kit";
-import { businessReviews, getBusiness } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
 
 export const Route = createFileRoute("/business/$id/reviews")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Business reviews | MusicLinkd" },
@@ -22,8 +23,7 @@ export const Route = createFileRoute("/business/$id/reviews")({
 });
 
 function BusinessReviews() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sent, setSent] = useState<Record<string, string>>({});
@@ -46,26 +46,22 @@ function BusinessReviews() {
     <Screen>
       <TopBar
         title="Reviews"
-        subtitle={`${b.stats.rating} · ${b.stats.reviews} reviews`}
+        subtitle={
+          b.rating != null && b.reviewCount != null ? `${b.rating} · ${b.reviewCount} reviews` : ""
+        }
         back={`/business/${b.id}`}
       />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        {businessReviews.length ? (
-          businessReviews.map((r) => {
+        {b.reviews.length ? (
+          b.reviews.map((r) => {
             const response = sent[r.id] ?? r.response;
             return (
               <Card key={r.id}>
                 <div className="flex items-center gap-3">
-                  <img
-                    src={r.photo}
-                    alt=""
-                    className="h-10 w-10 rounded-full object-cover"
-                    loading="lazy"
-                  />
+                  <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-subtle" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{r.author}</p>
-                    <p className="text-[12px] text-muted-foreground">{r.at}</p>
                   </div>
                   <Stars value={r.rating} />
                 </div>

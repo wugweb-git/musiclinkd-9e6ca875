@@ -2,9 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented } from "@/components/ml/kit";
-import { getBand } from "@/data/band";
+import { useAuth } from "@/hooks/use-auth";
+import { bandViewFromRow, loadBand } from "@/lib/band-view";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/bands/$id/portfolio")({
+  loader: ({ params }) => loadBand(params.id),
   head: () => ({
     meta: [
       { title: "Band portfolio | MusicLinkd" },
@@ -25,8 +28,9 @@ export const Route = createFileRoute("/bands/$id/portfolio")({
 const tabs = ["Discography", "Live"] as const;
 
 function BandPortfolio() {
-  const { id } = Route.useParams();
-  const band = getBand(id);
+  const { band: row, labels } = Route.useLoaderData();
+  const { user } = useAuth();
+  const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [tab, setTab] = useState<(typeof tabs)[number]>("Discography");
 
   if (!band) {
@@ -54,18 +58,22 @@ function BandPortfolio() {
           band.releases.length ? (
             <div className="space-y-3">
               {band.releases.map((r) => (
-                <Card key={r.title}>
+                <Card key={r.id}>
                   <div className="flex items-center gap-3">
-                    <img
-                      src={r.cover}
-                      alt=""
-                      className="h-14 w-14 rounded-[12px] object-cover"
-                      loading="lazy"
-                    />
+                    {r.cover ? (
+                      <img
+                        src={r.cover}
+                        alt=""
+                        className="h-14 w-14 rounded-[12px] object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div aria-hidden className="h-14 w-14 shrink-0 rounded-[12px] bg-subtle" />
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{r.title}</p>
                       <p className="truncate text-[12px] text-muted-foreground">
-                        {r.kind} · {r.year}
+                        {joinParts(r.kind, r.year ? String(r.year) : "")}
                       </p>
                     </div>
                   </div>

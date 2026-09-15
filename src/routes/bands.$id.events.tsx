@@ -2,27 +2,20 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented, StatusPill } from "@/components/ml/kit";
-import { getBand } from "@/data/band";
-import { bandViewFromRecord, bandViewFromStatic } from "@/lib/band-view";
-import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { getPublicBand } from "@/lib/profile-groups.functions";
+import { useAuth } from "@/hooks/use-auth";
+import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { opportunities } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/bands/$id/events")({
-  // The demo band wins; otherwise the id is the username of a stored profile with a line-up or shows.
-  // Stored opportunities follow the static ones; none when the database is unreachable.
+  // The id is the band's slug. Stored opportunities follow the static ones; none when the database
+  // is unreachable.
   loader: async ({ params }) => {
-    const dbOpportunities = loadDbOpportunities();
-    if (getBand(params.id)) {
-      return { record: null, labels: {} as TaxonomyLabels, dbOpportunities: await dbOpportunities };
-    }
-    const [record, labels, opps] = await Promise.all([
-      getPublicBand({ data: { username: params.id } }).catch(() => null),
-      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
-      dbOpportunities,
+    const [{ band, labels }, dbOpportunities] = await Promise.all([
+      loadBand(params.id),
+      loadDbOpportunities(),
     ]);
-    return { record, labels, dbOpportunities: opps };
+    return { band, labels, dbOpportunities };
   },
   head: () => ({
     meta: [
@@ -43,14 +36,9 @@ export const Route = createFileRoute("/bands/$id/events")({
 const tabs = ["Shows", "Opportunities"] as const;
 
 function BandEvents() {
-  const { id } = Route.useParams();
-  const { record, labels, dbOpportunities } = Route.useLoaderData();
-  const demo = getBand(id);
-  const band = demo
-    ? bandViewFromStatic(demo)
-    : record
-      ? bandViewFromRecord(record, labels)
-      : undefined;
+  const { band: row, labels, dbOpportunities } = Route.useLoaderData();
+  const { user } = useAuth();
+  const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [tab, setTab] = useState<(typeof tabs)[number]>("Shows");
 
   if (!band) {

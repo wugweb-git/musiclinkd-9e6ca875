@@ -3,9 +3,11 @@ import { useState } from "react";
 import { Check, ShieldCheck } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
-import { businessVerificationChecks, getBusiness } from "@/data/business";
+import { businessVerificationChecks } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
 
 export const Route = createFileRoute("/business/$id/verification")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Verify your business | MusicLinkd" },
@@ -24,8 +26,7 @@ export const Route = createFileRoute("/business/$id/verification")({
 });
 
 function BusinessVerification() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [submitted, setSubmitted] = useState(false);
 
   if (!b) {
@@ -42,7 +43,9 @@ function BusinessVerification() {
     );
   }
 
-  const done = businessVerificationChecks.filter((c) => c.done).length;
+  // No verification documents are stored yet, so no check is complete.
+  const checks = businessVerificationChecks.map((c) => ({ ...c, done: false }));
+  const done = checks.filter((c) => c.done).length;
 
   return (
     <Screen>
@@ -59,7 +62,7 @@ function BusinessVerification() {
                 {b.verified ? "Verified business" : "Not verified yet"}
               </p>
               <p className="text-[12px] text-muted-foreground">
-                {done} of {businessVerificationChecks.length} checks complete
+                {done} of {checks.length} checks complete
               </p>
             </div>
             <StatusPill
@@ -70,7 +73,7 @@ function BusinessVerification() {
         </Card>
 
         <div className="space-y-2">
-          {businessVerificationChecks.map((c) => (
+          {checks.map((c) => (
             <Card key={c.key}>
               <div className="flex items-start gap-3">
                 <span

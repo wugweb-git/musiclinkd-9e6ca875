@@ -3,9 +3,11 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
-import { getBand } from "@/data/band";
+import { useAuth } from "@/hooks/use-auth";
+import { bandViewFromRow, loadBand } from "@/lib/band-view";
 
 export const Route = createFileRoute("/bands/$id/contact")({
+  loader: ({ params }) => loadBand(params.id),
   head: () => ({
     meta: [
       { title: "Contact a band | MusicLinkd" },
@@ -25,8 +27,9 @@ export const Route = createFileRoute("/bands/$id/contact")({
 const reasons = ["Book for a show", "Studio session", "Collaboration", "Press or feature"];
 
 function BandContact() {
-  const { id } = Route.useParams();
-  const band = getBand(id);
+  const { band: row, labels } = Route.useLoaderData();
+  const { user } = useAuth();
+  const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [reason, setReason] = useState(reasons[0]!);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);

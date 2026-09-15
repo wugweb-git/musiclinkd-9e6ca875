@@ -29,6 +29,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 - App: the Flautist role icon and profile type, the drums marketplace and rental subcategory, and the
   opportunity category match (whole role name, no "/" split) use the new values.
 
+### Changed — business accounts and bands read the database (15 Sep)
+
+- **One username namespace, two account kinds.** `/profile/<username>` shows the business profile screen
+  when the account has a `profile_business` row, otherwise the talent profile. The business profile screen
+  is now `BusinessProfileExperience` (`src/components/ml/business-profile.tsx`), shared by `/business/$id`.
+- **Business screens** (profile, manage, team, enquiry, portfolio, services, availability, reviews,
+  dashboard, leads, analytics, verification) load the business account whose username is the id. What is
+  not stored is hidden: leads and analytics show their empty states, blackout dates and enquiry/booking
+  figures are gone, no verification check is complete, review photos and dates are not shown.
+  `/business` lists the signed-in account when it is a business; `/discover/community` lists business
+  accounts and bands from the database.
+- **Bands** are groups of talent profiles, not accounts, keyed by slug. `/bands`, `/bands/$id` and its
+  shows, portfolio, contact, invite and manage screens read `bands`, `band_members`, `band_events` and
+  `band_releases`. Member name, photo and badge come from the member's profile; Manage and Invite show for
+  the creator, owner and admins; My bands lists the bands you are in. Followers and invitations are not
+  stored and not shown.
+- **Migrations (not applied):** `20260915120000_business_accounts.sql` seeds Soundhouse Bandra
+  (`soundhouse.bandra`) as a business account with its details, gallery, services, team, studio rooms,
+  reviews and credits; `20260915130000_bands.sql` creates the band tables with RLS and seeds The Kite Notes,
+  Static Bloom and The Bangalore Blues Project (five talent profiles in its line-up). Generator:
+  `supabase/generators/import_groups.py`.
+
+### Removed
+
+- The stop-gap that opened `/bands/<username>` for a profile with a line-up (`getPublicBand`,
+  `bandViewFromRecord`), the static demo business and band views (`businessViewFromStatic`,
+  `bandViewFromStatic`) and `getBusiness` / `getBand`.
+
 ### Changed — new user: first work before the profile is published (15 Sep)
 
 - After the last onboarding question, Continue opens **Your first work** (`/portfolio/new?from=onboarding`):

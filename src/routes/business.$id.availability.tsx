@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
-import { getBusiness } from "@/data/business";
-import { bookingWindows, timeOff } from "@/data/services";
+import { businessView, loadBusiness } from "@/lib/business-view";
+import { bookingWindows } from "@/data/services";
 
 export const Route = createFileRoute("/business/$id/availability")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Business availability | MusicLinkd" },
@@ -24,8 +25,7 @@ export const Route = createFileRoute("/business/$id/availability")({
 });
 
 function BusinessAvailability() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [notice, setNotice] = useState(bookingWindows[1] ?? "24 hours notice");
   const [saved, setSaved] = useState(false);
 
@@ -48,17 +48,22 @@ function BusinessAvailability() {
       <TopBar title="Availability" subtitle={b.name} back={`/business/${b.id}/services`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        <Card>
-          <p className="text-sm font-semibold">Opening hours</p>
-          <div className="mt-3 space-y-2">
-            {b.hours.map((h) => (
-              <div key={h.day} className="flex items-center justify-between text-[13px]">
-                <span className="font-semibold">{h.day}</span>
-                <span className="text-muted-foreground">{h.hours}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        {b.hours.length ? (
+          <Card>
+            <p className="text-sm font-semibold">Opening hours</p>
+            <div className="mt-3 space-y-2">
+              {b.hours.map((h) => (
+                <div
+                  key={`${h.day}${h.hours}`}
+                  className="flex items-center justify-between text-[13px]"
+                >
+                  <span className="font-semibold">{h.day}</span>
+                  <span className="text-muted-foreground">{h.hours}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        ) : null}
 
         <Card>
           <p className="text-sm font-semibold">How much notice do you need?</p>
@@ -76,17 +81,7 @@ function BusinessAvailability() {
           <p className="mt-1 text-[13px] text-muted-foreground">
             Days the rooms are closed, whatever the calendar says.
           </p>
-          <div className="mt-3 space-y-2">
-            {timeOff.map((t) => (
-              <div
-                key={t.label}
-                className="flex items-center justify-between rounded-[16px] border border-border px-3 py-2 text-[13px]"
-              >
-                <span className="font-semibold">{t.label}</span>
-                <span className="text-muted-foreground">{t.range}</span>
-              </div>
-            ))}
-          </div>
+          {/* Blackout dates are not stored yet. */}
           <Btn variant="outline" className="mt-3 w-full">
             Add blackout dates
           </Btn>

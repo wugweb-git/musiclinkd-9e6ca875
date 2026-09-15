@@ -1,6 +1,7 @@
 /**
- * FLOW 15 — BAND. Design-only mock data using canonical schema names
- * (band, band_member, band_role, band_invitation, band_event, portfolio_item).
+ * FLOW 15 — BAND. Types, role copy and the demo bands. The band screens read the database
+ * (src/lib/bands.functions.ts); `bands` is the seed source for
+ * supabase/migrations/20260915130000_bands.sql (supabase/generators/import_groups.py).
  */
 import { talents } from "./discover";
 
@@ -251,7 +252,6 @@ export const bands: Band[] = [
   },
 ];
 
-export const getBand = (id: string) => bands.find((b) => b.id === id);
 export const myBandId = "the-kite-notes";
 
 export const bandRoleCopy: Record<BandRole, { label: string; blurb: string }> = {

@@ -1,10 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { Card, EmptyState, Row } from "@/components/ml/kit";
-import { bands } from "@/data/band";
-import { myBusinesses } from "@/data/business";
+import { bandViewFromRow, loadBands } from "@/lib/band-view";
+import { listPublicBusinesses, type BusinessSummary } from "@/lib/profile-groups.functions";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/discover/community")({
+  // Bands and business accounts from the database; none when it is unreachable.
+  loader: async () => {
+    const [{ bands, labels }, businesses] = await Promise.all([
+      loadBands(),
+      listPublicBusinesses().catch((): BusinessSummary[] => []),
+    ]);
+    return { bands, labels, businesses };
+  },
   head: () => ({
     meta: [
       { title: "Discover the community | MusicLinkd" },
@@ -23,6 +32,8 @@ export const Route = createFileRoute("/discover/community")({
 });
 
 function DiscoverCommunity() {
+  const { bands: rows, labels, businesses } = Route.useLoaderData();
+  const bands = rows.map((r) => bandViewFromRow(r, labels, null));
   return (
     <Screen>
       <TopBar title="Community" subtitle="Bands, studios and labels" back="/discover" />
@@ -36,16 +47,20 @@ function DiscoverCommunity() {
                 <Link key={b.id} to="/bands/$id" params={{ id: b.id }} className="block">
                   <Card>
                     <div className="flex items-center gap-3">
-                      <img
-                        src={b.avatar}
-                        alt=""
-                        className="h-12 w-12 rounded-full object-cover"
-                        loading="lazy"
-                      />
+                      {b.avatar ? (
+                        <img
+                          src={b.avatar}
+                          alt=""
+                          className="h-12 w-12 rounded-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-subtle" />
+                      )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">{b.name}</p>
                         <p className="truncate text-[12px] text-muted-foreground">
-                          {b.genres.join(" · ")} · {b.city}
+                          {joinParts(b.genres.join(" · "), b.city)}
                         </p>
                       </div>
                     </div>
@@ -61,13 +76,13 @@ function DiscoverCommunity() {
         <section>
           <p className="mb-2 text-sm font-semibold">Studios and labels</p>
           <div className="space-y-2">
-            {myBusinesses.map((b) => (
+            {businesses.map((b) => (
               <Row
-                key={b.id}
-                title={b.name}
-                subtitle={`${b.city} · ${b.tagline}`}
+                key={b.username}
+                title={b.display_name ?? b.username}
+                subtitle={joinParts(b.city, b.headline)}
                 to="/business/$id"
-                params={{ id: b.id }}
+                params={{ id: b.username }}
               />
             ))}
           </div>
