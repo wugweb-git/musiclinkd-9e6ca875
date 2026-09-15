@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { Price } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
-import { TabHeader } from "@/components/ml/tab-header";
+import { ViewerAvatar } from "@/components/ml/viewer";
+import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
+import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
@@ -38,13 +40,35 @@ export const Route = createFileRoute("/discover/")({
 
 function Discover() {
   const { dbStudios } = Route.useLoaderData();
+  const [searchOpen, setSearchOpen] = useState(false);
   return (
     <Screen>
-      <TabHeader
-        title="Discover"
-        search={{ to: "/search", placeholder: "Search talent, studios, bands, labels" }}
-      />
-      <div className="h-4" />
+      <header className="px-5 pb-4 pt-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              MusicLinkd
+            </p>
+            <h1 className="text-[30px] leading-tight">Discover</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card">
+              🔔
+            </button>
+            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+            <ViewerAvatar />
+          </div>
+        </div>
+        {searchOpen ? (
+          <div className="mt-4">
+            <SearchField
+              to="/search"
+              placeholder="Search talent, studios, bands, labels"
+              onClose={() => setSearchOpen(false)}
+            />
+          </div>
+        ) : null}
+      </header>
 
       <div className="rail flex gap-2 overflow-x-auto px-5 pb-5 no-scrollbar">
         {quickCategories.map((c) => (

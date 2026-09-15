@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
-import { TabHeader } from "@/components/ml/tab-header";
+import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   CategoryTile,
   ListingCard,
@@ -36,45 +36,46 @@ export const Route = createFileRoute("/marketplace/")({
 
 function MarketHome() {
   const [filters, setFilters] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const recommended = listings.filter((l) => l.reason);
   const nearby = listings.slice(0, 4);
   const trending = [...listings].sort((a, b) => b.saves - a.saves).slice(0, 5);
 
   return (
     <Screen>
-      <TabHeader
-        title="Market"
-        search={{
-          to: "/marketplace/search",
-          placeholder: "Search instruments, equipment, services",
-        }}
-        actions={
-          <>
+      <header className="sticky top-0 z-30 bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <h1 className="text-[24px] leading-tight">Market</h1>
+            <button className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
+              <MapPin size={12} /> Mumbai, Maharashtra · change
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
             <Link
               to="/marketplace/sell"
-              aria-label="Sell"
-              className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full bg-ink text-background"
+              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-xs font-semibold text-background"
             >
-              <Plus size={18} aria-hidden />
+              <Plus size={14} /> Sell
             </Link>
             <button
-              type="button"
               aria-label="Filters"
               onClick={() => setFilters(true)}
-              className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <SlidersHorizontal size={18} aria-hidden />
+              <SlidersHorizontal size={16} />
             </button>
-          </>
-        }
-      >
-        <button
-          type="button"
-          className="inline-flex items-center gap-1 text-1 font-medium text-muted-foreground"
-        >
-          <MapPin size={12} aria-hidden /> Mumbai, Maharashtra · change
-        </button>
-      </TabHeader>
+            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+          </div>
+        </div>
+        {searchOpen ? (
+          <SearchField
+            to="/marketplace/search"
+            placeholder="Search instruments, equipment, services"
+            onClose={() => setSearchOpen(false)}
+          />
+        ) : null}
+      </header>
 
       <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {["For You", "Nearby", "Rentals", "Services", "Studios", "Saved"].map((c, i) => (

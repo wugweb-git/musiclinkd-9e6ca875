@@ -1,7 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Handshake } from "lucide-react";
-import { Screen } from "@/components/ml/ui";
-import { TabHeader } from "@/components/ml/tab-header";
+import { Screen, TopBar } from "@/components/ml/ui";
 import { talents } from "@/data/discover";
 
 export const Route = createFileRoute("/messages")({
@@ -22,15 +20,15 @@ export const Route = createFileRoute("/messages")({
 function Messages() {
   return (
     <Screen>
-      <TabHeader
-        title="Connections"
-        actions={
+      <TopBar
+        title="Messages"
+        subtitle="3 unread"
+        right={
           <Link
             to="/collab"
-            aria-label="Collaborations"
-            className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            className="text-[11px] font-bold uppercase tracking-wide text-foreground"
           >
-            <Handshake size={18} aria-hidden />
+            Collabs
           </Link>
         }
       />
