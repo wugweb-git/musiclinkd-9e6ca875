@@ -60,10 +60,13 @@ export function WorkForm({
   kind,
   initial,
   signedIn,
+  fromOnboarding = false,
 }: {
   kind: string;
   initial?: PortfolioItem;
   signedIn: boolean;
+  /** The new user's first work: publish only (no draft), then on to Review profile. */
+  fromOnboarding?: boolean;
 }) {
   const navigate = useNavigate();
   const save = useServerFn(savePortfolioItem);
@@ -158,7 +161,11 @@ export function WorkForm({
       })) as PortfolioItem;
       haptic("confirm");
       toast.success(publish && isPublic ? "Work published" : "Draft saved");
-      void navigate({ to: "/portfolio/$id", params: { id: row.id } });
+      void navigate({
+        to: "/portfolio/$id",
+        params: { id: row.id },
+        search: fromOnboarding ? { from: "onboarding" } : {},
+      });
     } catch (err) {
       haptic("error");
       toast.error(err instanceof Error ? err.message : "Could not save this work");
@@ -329,15 +336,17 @@ export function WorkForm({
           edges.bottom ? "border-border" : "border-transparent",
         )}
       >
-        <Btn
-          variant="outline"
-          className="flex-1"
-          loading={busy === "draft"}
-          disabled={busy === "publish"}
-          onClick={() => void submit(false)}
-        >
-          Save draft
-        </Btn>
+        {fromOnboarding ? null : (
+          <Btn
+            variant="outline"
+            className="flex-1"
+            loading={busy === "draft"}
+            disabled={busy === "publish"}
+            onClick={() => void submit(false)}
+          >
+            Save draft
+          </Btn>
+        )}
         <Btn
           type="submit"
           className="flex-[1.4]"

@@ -31,7 +31,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useServerFn } from "@tanstack/react-start";
 import { useFlowBack } from "@/lib/flow-back";
 import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
-import type { UsernameClaim } from "@/lib/portfolio.functions";
+import { listMyPortfolio, type UsernameClaim } from "@/lib/portfolio.functions";
 import {
   ChipPicker,
   PersonTypePicker,
@@ -145,6 +145,7 @@ function StepRoute() {
     claimUsername,
   } = useOnboarding();
   const navigate = useNavigate();
+  const listPortfolio = useServerFn(listMyPortfolio);
   const [banner, setBanner] = useState<Banner>("none");
   // Bumped on each blocked Continue so the button re-mounts and the shake replays.
   const [nudge, setNudge] = useState(0);
@@ -208,7 +209,18 @@ function StepRoute() {
 
   const goto = (target: StepDef | undefined) => {
     if (!target) {
-      navigate({ to: "/onboarding/preview" });
+      // After the last question: the first published work, then Review profile. Someone who
+      // already has published work goes straight to Review.
+      void (listPortfolio() as Promise<{ published: boolean }[]>)
+        .then((items) => items.some((w) => w.published))
+        .catch(() => false)
+        .then((hasWork) =>
+          navigate(
+            hasWork
+              ? { to: "/onboarding/preview" }
+              : { to: "/portfolio/new", search: { from: "onboarding" } },
+          ),
+        );
       return;
     }
     navigate({ to: "/onboarding/step/$id", params: { id: target.id } });
@@ -354,7 +366,7 @@ function StepRoute() {
             pending={!valid}
             className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
-            {index === list.length - 1 ? "Review profile" : "Continue"}
+            Continue
           </Btn>
           <AuthTextButton
             onClick={() => navigate({ to: "/onboarding/skip" })}

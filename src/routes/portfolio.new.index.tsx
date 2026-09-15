@@ -6,7 +6,12 @@ import { workTypes } from "@/data/portfolio";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
 
+type FlowSearch = { from?: "onboarding" };
+
 export const Route = createFileRoute("/portfolio/new/")({
+  // `from=onboarding`: the new user's first work, between the last question and Review profile.
+  validateSearch: (search: Record<string, unknown>): FlowSearch =>
+    search["from"] === "onboarding" ? { from: "onboarding" } : {},
   head: () => ({
     meta: [
       { title: "Add work — MusicLinkd portfolio" },
@@ -25,10 +30,16 @@ export const Route = createFileRoute("/portfolio/new/")({
 });
 
 function AddWork() {
+  const { from } = Route.useSearch();
+  const onboarding = from === "onboarding";
   const rise = useArrival("add-work") ? "animate-rise" : "";
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-24">
-      <TopBar title="Add work" subtitle="Step 1 of 3 · Choose a type" back="/portfolio" />
+      <TopBar
+        title={onboarding ? "Your first work" : "Add work"}
+        subtitle="Step 1 of 3 · Choose a type"
+        back={onboarding ? "/onboarding/step/contact" : "/portfolio"}
+      />
       <main className="px-5 pt-4">
         <h2 className="text-3 leading-tight">What would you like to add?</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -41,6 +52,7 @@ function AddWork() {
               key={t.kind}
               to="/portfolio/new/$kind"
               params={{ kind: t.kind }}
+              search={onboarding ? { from: "onboarding" } : {}}
               className={cn(
                 "state-layer flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-98",
                 rise,

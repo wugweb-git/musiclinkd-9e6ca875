@@ -5,6 +5,16 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — new user: first work before the profile is published (15 Sep)
+
+- After the last onboarding question, Continue opens **Your first work** (`/portfolio/new?from=onboarding`):
+  choose a type, add the link and publish (no Save draft in this stretch), then the work page offers
+  **Continue to review profile**. An account that already has published work goes straight to Review
+  profile. The order is now questions → first work → Review profile → Profile published → All set → Home.
+- Profile published reads "Portfolio ready" from the real portfolio and drops its "Add your portfolio" card;
+  All set drops "Add portfolio work".
+- The first-work screens are in the flow's motion order, so they slide forward and back like the questions.
+
 ### Changed — sign-in (15 Sep)
 
 - **Welcome is the sign-in screen:** "Continue with Google" and "Sign in". The email button, the separate
