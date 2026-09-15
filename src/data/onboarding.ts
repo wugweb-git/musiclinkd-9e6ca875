@@ -693,7 +693,7 @@ export const screenContracts = {
     ["professionalProfile"],
   ),
   done: contract("ONB-22", "Onboarding Complete", "/onboarding/done", ["users"], ["user"]),
-  skip: contract("ONB-23", "Skip / Complete Later", "/onboarding/skip", ["users"], ["user"]),
+  skip: contract("ONB-23", "Skip", "/onboarding/skip", ["users"], ["user"]),
   resume: contract("ONB-24", "Resume Onboarding", "/onboarding/resume", ["users"], ["user"]),
 };
 

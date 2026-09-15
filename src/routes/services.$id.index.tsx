@@ -75,7 +75,7 @@ function ServiceDetail() {
             </div>
           </div>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[18px] font-bold">{priceLabel(s.basePrice, s.unit)}</p>
+            <p className="text-[18px] font-bold text-price">{priceLabel(s.basePrice, s.unit)}</p>
             <StatusPill
               label={paused ? "paused" : s.status}
               tone={paused ? "warn" : serviceStatusTone[s.status]}
@@ -106,7 +106,7 @@ function ServiceDetail() {
                   <p className="text-[14px] font-semibold">{p.name}</p>
                   {p.popular ? <StatusPill label="popular" tone="brand" /> : null}
                 </div>
-                <p className="text-[16px] font-bold">{priceLabel(p.price, p.unit)}</p>
+                <p className="text-[16px] font-bold text-price">{priceLabel(p.price, p.unit)}</p>
                 <ul className="space-y-1">
                   {p.includes.map((i) => (
                     <li key={i} className="text-[12px] text-muted-foreground">
@@ -131,7 +131,7 @@ function ServiceDetail() {
                 className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
               >
                 <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
-                <span className="text-[13px] font-semibold">{priceLabel(a.price, a.unit)}</span>
+                <span className="text-[13px] font-semibold text-price">{priceLabel(a.price, a.unit)}</span>
               </div>
             ))}
           </Card>

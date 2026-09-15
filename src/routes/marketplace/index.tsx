@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
+import { TabHeader } from "@/components/ml/tab-header";
 import {
   CategoryTile,
   ListingCard,
@@ -41,36 +42,39 @@ function MarketHome() {
 
   return (
     <Screen>
-      <header className="sticky top-0 z-30 bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
-        <div className="mb-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-[24px] leading-tight">Market</h1>
-            <button className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
-              <MapPin size={12} /> Mumbai, Maharashtra · change
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
+      <TabHeader
+        title="Market"
+        search={{
+          to: "/marketplace/search",
+          placeholder: "Search instruments, equipment, services",
+        }}
+        actions={
+          <>
             <Link
               to="/marketplace/sell"
-              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-xs font-semibold text-background"
+              aria-label="Sell"
+              className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full bg-ink text-background"
             >
-              <Plus size={14} /> Sell
+              <Plus size={18} aria-hidden />
             </Link>
             <button
+              type="button"
               aria-label="Filters"
               onClick={() => setFilters(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+              className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <SlidersHorizontal size={16} />
+              <SlidersHorizontal size={18} aria-hidden />
             </button>
-          </div>
-        </div>
-        <Link to="/marketplace/search" className="block">
-          <div className="pointer-events-none">
-            <SearchBar placeholder="Search instruments, equipment, services..." />
-          </div>
-        </Link>
-      </header>
+          </>
+        }
+      >
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 text-1 font-medium text-muted-foreground"
+        >
+          <MapPin size={12} aria-hidden /> Mumbai, Maharashtra · change
+        </button>
+      </TabHeader>
 
       <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {["For You", "Nearby", "Rentals", "Services", "Studios", "Saved"].map((c, i) => (
