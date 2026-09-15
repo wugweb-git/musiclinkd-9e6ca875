@@ -44,6 +44,10 @@ function MarketHome() {
     <Screen>
       <TabHeader
         title="Market"
+        search={{
+          to: "/marketplace/search",
+          placeholder: "Search instruments, equipment, services",
+        }}
         actions={
           <>
             <Link
@@ -64,14 +68,9 @@ function MarketHome() {
           </>
         }
       >
-        <Link to="/marketplace/search" className="block">
-          <div className="pointer-events-none">
-            <SearchBar placeholder="Search instruments, equipment, services..." />
-          </div>
-        </Link>
         <button
           type="button"
-          className="mt-2 inline-flex items-center gap-1 text-1 font-medium text-muted-foreground"
+          className="inline-flex items-center gap-1 text-1 font-medium text-muted-foreground"
         >
           <MapPin size={12} aria-hidden /> Mumbai, Maharashtra · change
         </button>

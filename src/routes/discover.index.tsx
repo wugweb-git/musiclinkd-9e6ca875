@@ -39,11 +39,10 @@ function Discover() {
   const { dbStudios } = Route.useLoaderData();
   return (
     <Screen>
-      <TabHeader title="Discover">
-        <Link to="/search">
-          <SearchBar />
-        </Link>
-      </TabHeader>
+      <TabHeader
+        title="Discover"
+        search={{ to: "/search", placeholder: "Search talent, studios, bands, labels" }}
+      />
       <div className="h-4" />
 
       <div className="rail flex gap-2 overflow-x-auto px-5 pb-5 no-scrollbar">
@@ -86,9 +85,7 @@ function Discover() {
             >
               <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
-              <span className="pill absolute left-3 top-3 pill-glass">
-                {t.tag}
-              </span>
+              <span className="pill absolute left-3 top-3 pill-glass">{t.tag}</span>
               <div className="absolute bottom-3 left-3 right-3 text-background">
                 <h3 className="text-[15px] text-background">{t.name}</h3>
                 <p className="text-[11px] opacity-80">{t.meta}</p>

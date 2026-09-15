@@ -6,6 +6,8 @@ import { listings, popularSearches, recentSearches } from "@/data/market";
 import { loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/search")({
+  validateSearch: (search: Record<string, unknown>): { q?: string } =>
+    typeof search["q"] === "string" && search["q"] ? { q: search["q"] } : {},
   // Database listings are searched after the static ones.
   loader: () => loadCatalogListings(),
   head: () => ({
@@ -35,7 +37,7 @@ const sorts = [
 ];
 
 function MarketSearch() {
-  const [q, setQ] = useState("condenser microphone");
+  const [q, setQ] = useState(Route.useSearch().q ?? "condenser microphone");
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState(sorts[0]!);
