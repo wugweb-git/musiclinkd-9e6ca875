@@ -19,7 +19,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
-import { TabHeader } from "@/components/ml/tab-header";
+import { LogoMark } from "@/components/ml/logo";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import {
@@ -226,7 +226,26 @@ function Dashboard() {
 }
 
 function Header() {
-  return <TabHeader brand title="MusicLinkd" />;
+  return (
+    <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
+      <p className="flex min-w-0 items-center gap-2 text-2 font-semibold text-foreground">
+        <span aria-hidden className="shrink-0 text-brand">
+          <LogoMark className="w-6" />
+        </span>
+        <span className="truncate">MusicLinkd</span>
+      </p>
+      <div className="flex shrink-0 items-center gap-2">
+        <Link
+          to="/notifications"
+          aria-label="Notifications"
+          className="hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+        >
+          <Bell size={18} />
+        </Link>
+        <ViewerAvatar className="h-10 w-10" />
+      </div>
+    </header>
+  );
 }
 
 function StatTile({ tile }: { tile: ForYouTile }) {
