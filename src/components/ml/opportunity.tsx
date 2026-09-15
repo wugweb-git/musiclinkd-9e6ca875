@@ -5,11 +5,11 @@
 import { Link } from "@tanstack/react-router";
 import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
 import { Bookmark, MapPin, Clock, Users, Wallet, Star } from "lucide-react";
-import { Card, StatusPill, ReasonChip, type Tone } from "@/components/ml/kit";
+import { Card, Price, StatusPill, ReasonChip, type Tone } from "@/components/ml/kit";
 import { VerifiedBadge } from "@/components/ml/ui";
 import {
   categoryLabel,
-  payLabel,
+  payParts,
   savedOpportunityKey,
   type Application,
   type Applicant,
@@ -123,7 +123,7 @@ export function OpportunityCard({
   saved?: boolean;
   onSave?: () => void;
 }) {
-  const pay = payLabel(o);
+  const pay = payParts(o);
   return (
     <article className="relative rounded-lg border border-border bg-card p-4">
       {onSave ? (
@@ -152,8 +152,9 @@ export function OpportunityCard({
         ) : null}
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
           {pay ? (
-            <span className="inline-flex items-center gap-1">
-              <Wallet size={13} /> {pay}
+            <span className="inline-flex items-start gap-1">
+              <Wallet size={13} className="mt-0.5 shrink-0" />
+              <Price price={pay} amountClassName="text-1 font-semibold" />
             </span>
           ) : null}
           {o.city ? (

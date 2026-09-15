@@ -156,7 +156,7 @@ function Sell() {
               Cover photo
             </div>
             <div className="p-4">
-              <PriceBlock price={price ? `₹${price}` : "₹1,84,000"} size="lg" />
+              <PriceBlock price={{ amount: price ? `₹${price}` : "₹1,84,000" }} size="lg" />
               <h2 className="mt-1 text-[16px]">{title || "Fender Stratocaster, 2022"}</h2>
               <p className="text-[11px] text-muted-foreground">
                 {type} · {condition} · Dadar, Mumbai

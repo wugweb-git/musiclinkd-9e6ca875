@@ -4,6 +4,7 @@
  * supabase/migrations/20260915130000_bands.sql (supabase/generators/import_groups.py).
  */
 import { talents } from "./discover";
+import type { PriceParts } from "@/lib/price";
 
 export type BandRole = "owner" | "admin" | "member";
 
@@ -60,7 +61,7 @@ export type Band = {
   bio: string;
   lookingFor: string[];
   availability: "Available" | "Selective" | "Booked";
-  rate: string;
+  rate: PriceParts;
   members: BandMember[];
   invitations: BandInvitation[];
   events: BandEvent[];
@@ -88,7 +89,7 @@ export const bands: Band[] = [
     bio: "Four players, one room, everything tracked live. We tour the west-coast circuit and record between runs at Octave Sound Labs.",
     lookingFor: ["Touring drummer", "Live sound engineer"],
     availability: "Selective",
-    rate: "₹85,000 per show",
+    rate: { amount: "₹85,000", unit: "show" },
     members: [
       {
         userId: talents[1]!.id,
@@ -205,7 +206,7 @@ export const bands: Band[] = [
     bio: "Modular rigs, no laptops on stage. Currently writing a first full-length.",
     lookingFor: ["Visual artist", "Booking agent"],
     availability: "Available",
-    rate: "₹40,000 per show",
+    rate: { amount: "₹40,000", unit: "show" },
     members: [
       {
         userId: talents[4]!.id,

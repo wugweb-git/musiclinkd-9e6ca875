@@ -7,6 +7,8 @@
  * namespace as talent.
  */
 
+import type { PriceParts } from "@/lib/price";
+
 export type BusinessType = "studio" | "label" | "production_house" | "venue" | "agency" | "rental";
 export type BusinessRole = "owner" | "manager" | "engineer" | "staff";
 export type MemberStatus = "active" | "invited" | "removed";
@@ -46,7 +48,7 @@ export type BusinessSpace = {
   id: string;
   name: string;
   kind: string;
-  rate: string;
+  rate: PriceParts;
   capacity: string;
   gear: string[];
   photo: string;
@@ -69,7 +71,7 @@ export type BusinessProfile = {
   cover: string;
   gallery: string[];
   hours: { day: string; hours: string }[];
-  services: { id: string; label: string; price: string }[];
+  services: { id: string; label: string; price: PriceParts }[];
   spaces: BusinessSpace[];
   members: BusinessMember[];
   credits: { title: string; meta: string }[];
@@ -107,16 +109,24 @@ export const myBusinesses: BusinessProfile[] = [
       { day: "Sunday", hours: "Closed" },
     ],
     services: [
-      { id: "bsv-1", label: "Studio A — tracking", price: "₹2,500 per hour" },
-      { id: "bsv-2", label: "Studio B — overdubs & vocals", price: "₹1,400 per hour" },
-      { id: "bsv-3", label: "Mixing with house engineer", price: "₹14,000 per song" },
+      { id: "bsv-1", label: "Studio A — tracking", price: { amount: "₹2,500", unit: "hour" } },
+      {
+        id: "bsv-2",
+        label: "Studio B — overdubs & vocals",
+        price: { amount: "₹1,400", unit: "hour" },
+      },
+      {
+        id: "bsv-3",
+        label: "Mixing with house engineer",
+        price: { amount: "₹14,000", unit: "song" },
+      },
     ],
     spaces: [
       {
         id: "sp-1",
         name: "Studio A",
         kind: "Live room + control room",
-        rate: "₹2,500 / hour",
+        rate: { amount: "₹2,500", unit: "hour" },
         capacity: "8 musicians",
         gear: ["SSL console", "Neumann U87", "Yamaha C3 grand", "Vintage Ludwig kit"],
         photo: img("photo-1519508234439-4f23643125c1", 500),
@@ -125,7 +135,7 @@ export const myBusinesses: BusinessProfile[] = [
         id: "sp-2",
         name: "Studio B",
         kind: "Vocal booth",
-        rate: "₹1,400 / hour",
+        rate: { amount: "₹1,400", unit: "hour" },
         capacity: "2 musicians",
         gear: ["Warm Audio WA-47", "UA Apollo x8", "Barefoot monitors"],
         photo: img("photo-1590602847861-f357a9332bbc", 500),

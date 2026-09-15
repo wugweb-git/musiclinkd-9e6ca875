@@ -4,7 +4,8 @@
 
 import type { Band } from "@/data/band";
 import { getBandBySlug, listBands, type BandRow } from "@/lib/bands.functions";
-import { formatPaise, taxonomyLabel } from "@/lib/catalog.functions";
+import { taxonomyLabel } from "@/lib/catalog.functions";
+import { priceParts, type PriceParts } from "@/lib/price";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { joinParts } from "@/lib/utils";
 
@@ -49,7 +50,7 @@ export type BandView = {
   tagline: string;
   bio: string;
   availability?: Band["availability"] | undefined;
-  rate: string;
+  rate: PriceParts | null;
   lookingFor: string[];
   nextShow: string;
   portfolioCount: number;
@@ -165,7 +166,7 @@ export function bandViewFromRow(
     tagline: row.tagline ?? "",
     bio: row.bio ?? "",
     availability: row.availability ? AVAILABILITY[row.availability] : undefined,
-    rate: formatPaise(row.rate_paise, row.rate_unit),
+    rate: priceParts(row.rate_paise, row.rate_unit),
     lookingFor: row.looking_for,
     nextShow: joinParts(next?.title ?? "No shows scheduled", next?.date),
     portfolioCount: row.releases.length,

@@ -43,8 +43,10 @@ MEMBER_ROLE = {"owner": "Owner", "manager": "Manager", "engineer": "Engineer", "
 PRICE_UNIT = {"hour": "hr", "song": "song", "show": "show", "day": "day", "track": "track"}
 
 
-def price(raw: str, ref: str):
-    """'₹2,500 per hour' / '₹2,500 / hour' -> (250000, 'hr')."""
+def price(raw, ref: str):
+    """{amount: '₹2,500', unit: 'hour'} (or '₹2,500 per hour' / '₹2,500 / hour') -> (250000, 'hr')."""
+    if isinstance(raw, dict):
+        raw = f"{raw['amount']} / {raw.get('unit') or ''}"
     m = re.fullmatch(r"₹([\d,]+)\s*(?:per|/)\s*(\w+)", raw.strip())
     if not m or m.group(2) not in PRICE_UNIT:
         problems.append(f"{ref}: price {raw!r} not understood")

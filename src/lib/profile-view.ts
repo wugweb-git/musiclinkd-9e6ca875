@@ -16,13 +16,13 @@ import {
 } from "@/data/profile";
 import { experienceLevels, roles as roleDefs } from "@/data/onboarding";
 import { asLinkMap, type ProfileRow } from "@/lib/profile-map";
-import { formatPaise } from "@/lib/catalog.functions";
 import { listingFromRow } from "@/lib/market-view";
 import {
   CATEGORY_LABELS,
   type ProfileSections,
   type TaxonomyLabels,
 } from "@/lib/portfolio.functions";
+import { priceParts, type PriceParts } from "@/lib/price";
 import { joinParts } from "@/lib/utils";
 
 /** Profiles store taxonomy slugs; show the published label, or the slug if it has none. */
@@ -140,11 +140,12 @@ const serviceModes: NonNullable<ServiceItem["mode"]>[] = [
   "Remote · In person",
 ];
 
-/** Integer paise and a unit back to the "₹8,000 / song" the service card shows. */
-function servicePrice(s: ProfileSections["services"][number]): string | undefined {
-  if (s.price_paise == null) return s.price_note ?? undefined;
-  const amount = `₹${(s.price_paise / 100).toLocaleString("en-IN")}`;
-  return s.price_unit ? `${amount} / ${s.price_unit}` : amount;
+/** Integer paise and a unit as the amount and unit the service card shows; the note alone when unpriced. */
+function servicePrice(s: ProfileSections["services"][number]): PriceParts | undefined {
+  return (
+    priceParts(s.price_paise, s.price_unit, s.price_paise == null ? s.price_note : null) ??
+    undefined
+  );
 }
 
 /** Portfolio items grouped into the profile's audio, video, release and project sections. */
@@ -254,10 +255,12 @@ function professionalRows(sections: ProfileSections, labels: TaxonomyLabels | un
     }
   }
   if (sections.budget_tier) add("budget_type", [sections.budget_tier]);
-  const out = [...rows].map(([label, values]) => ({ label, value: values.join(" · ") }));
-  if (sections.hourly_rate_paise != null) {
-    out.push({ label: "Hourly rate", value: formatPaise(sections.hourly_rate_paise, "hr") });
-  }
+  const out: { label: string; value: string | PriceParts }[] = [...rows].map(([label, values]) => ({
+    label,
+    value: values.join(" · "),
+  }));
+  const hourly = priceParts(sections.hourly_rate_paise, "hr");
+  if (hourly) out.push({ label: "Hourly rate", value: hourly });
   const persona = names["persona_badges"];
   const badges = sections.persona_badges
     .map((s) => labels?.["persona_badges"]?.[s])
@@ -278,16 +281,16 @@ function storedAvailability(sections: ProfileSections): AvailabilityState | unde
 }
 
 function storedOpportunities(sections: ProfileSections): OpportunityItem[] {
-  return sections.opportunities.map((o) => ({
-    id: o.id,
-    title: o.title,
-    detail: joinParts(
-      o.role_required,
-      formatPaise(o.budget_paise, o.budget_unit, o.budget_note),
-      o.location,
-    ),
-    tone: "seeking",
-  }));
+  return sections.opportunities.map((o): OpportunityItem => {
+    const price = priceParts(o.budget_paise, o.budget_unit, o.budget_note);
+    return {
+      id: o.id,
+      title: o.title,
+      detail: joinParts(o.role_required, o.location),
+      ...(price ? { price } : {}),
+      tone: "seeking",
+    };
+  });
 }
 
 function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefined) {
@@ -297,7 +300,8 @@ function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefi
     return {
       id: row.id,
       title: listing.title,
-      meta: joinParts(listing.condition, listing.price),
+      meta: listing.condition ?? "",
+      ...(listing.price.amount ? { price: listing.price } : {}),
       image: listing.photos[0] ?? "",
       kind: listing.type === "rental" ? "rental" : "sale",
       to: "/marketplace/l/$id",
@@ -309,9 +313,11 @@ function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefi
 function storedStudio(sections: ProfileSections): PersonProfile["studio"] {
   const studio = sections.studios[0];
   if (!studio) return undefined;
+  const price = priceParts(studio.hourly_rate_paise, "hr");
   return {
     name: studio.name,
-    meta: joinParts(studio.location, formatPaise(studio.hourly_rate_paise, "hr")),
+    meta: studio.location ?? "",
+    ...(price ? { price } : {}),
     to: `/booking/${studio.slug}`,
   };
 }

@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarClock, Plus } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
+import { Card, EmptyState, Price, Row, StatusPill } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
-import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/business/$id/services")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -74,7 +73,7 @@ function BusinessServices() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{s.label}</p>
-                  <p className="mt-1 text-[13px] text-muted-foreground">{s.price}</p>
+                  <Price price={s.price} className="mt-1" amountClassName="text-[13px]" />
                 </div>
                 <StatusPill label="Live" tone="good" />
               </div>
@@ -104,9 +103,10 @@ function BusinessServices() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{sp.name}</p>
-                  <p className="truncate text-[12px] text-muted-foreground">
-                    {joinParts(sp.rate, sp.capacity)}
-                  </p>
+                  {sp.capacity ? (
+                    <p className="truncate text-[12px] text-muted-foreground">{sp.capacity}</p>
+                  ) : null}
+                  <Price price={sp.rate} amountClassName="text-[12px] font-semibold" />
                 </div>
                 <StatusPill label="Bookable" tone="brand" />
               </div>

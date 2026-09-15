@@ -24,7 +24,9 @@ import {
   rentalReviews,
   type RentalItem,
 } from "@/data/rentals";
+import { Price } from "@/components/ml/kit";
 import { loadCatalogRentals } from "@/lib/market-view";
+import { priceText, rupeeParts } from "@/lib/price";
 
 export const Route = createFileRoute("/marketplace/rent/e/$id")({
   // Static equipment wins; any other id is looked up as a database rental slug. Database rentals
@@ -34,7 +36,7 @@ export const Route = createFileRoute("/marketplace/rent/e/$id")({
     const known = equipmentById(params.id);
     const e: RentalItem | undefined = known ?? loaderData?.find((x) => x.id === params.id);
     const title = e
-      ? `Rent ${e.name}${e.daily != null ? ` — ${inr(e.daily)}/day` : ""} | MusicLinkd`
+      ? `Rent ${e.name}${e.daily != null ? ` — ${priceText(rupeeParts(e.daily, "day"))}` : ""} | MusicLinkd`
       : "Rental | MusicLinkd";
     const desc = known
       ? `${known.brand} ${known.model} for rent in ${known.location}. ${known.availability}. Deposit ${inr(known.deposit)}.`
@@ -348,10 +350,11 @@ function RentalDetail() {
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             {e.daily != null ? (
-              <p className="truncate text-[15px] font-bold">
-                {inr(e.daily)}{" "}
-                <span className="text-[11px] font-normal text-muted-foreground">/ day</span>
-              </p>
+              <Price
+                price={rupeeParts(e.daily, "day")}
+                amountClassName="text-[15px] font-bold"
+                unitClassName="text-[11px]"
+              />
             ) : null}
             {barNote ? (
               <p className="truncate text-[10px] text-muted-foreground">{barNote}</p>

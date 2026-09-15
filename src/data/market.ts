@@ -1,3 +1,5 @@
+import type { PriceParts } from "@/lib/price";
+
 export type ListingType = "product" | "service" | "rental" | "space";
 
 export type Seller = {
@@ -20,8 +22,8 @@ export type Listing = {
   type: ListingType;
   title: string;
   subtitle: string;
-  price: string;
-  priceNote?: string;
+  /** Amount and unit ("day" for rentals); a sale price has no unit. */
+  price: PriceParts;
   condition?: "New" | "Like New" | "Excellent" | "Good" | "Fair" | "Used";
   location: string;
   distance: string;
@@ -159,7 +161,7 @@ export const listings: Listing[] = [
     type: "product",
     title: "Fender American Vintage II '61 Stratocaster",
     subtitle: "Olympic White · with original hard case",
-    price: "₹1,84,000",
+    price: { amount: "₹1,84,000" },
     condition: "Excellent",
     location: "Dadar, Mumbai",
     distance: "3.2 km away",
@@ -191,7 +193,7 @@ export const listings: Listing[] = [
     type: "product",
     title: "Neumann TLM 103 Condenser Microphone",
     subtitle: "Large diaphragm · shockmount included",
-    price: "₹78,500",
+    price: { amount: "₹78,500" },
     condition: "Like New",
     location: "Andheri, Mumbai",
     distance: "6.8 km away",
@@ -219,7 +221,7 @@ export const listings: Listing[] = [
     type: "product",
     title: "Handcrafted Ravi Shankar Style Sitar",
     subtitle: "Seasoned tun wood · gourd resonator",
-    price: "₹64,000",
+    price: { amount: "₹64,000" },
     condition: "New",
     location: "Girgaon, Mumbai",
     distance: "1.4 km away",
@@ -247,8 +249,7 @@ export const listings: Listing[] = [
     type: "service",
     title: "Mixing & Mastering for Indie Releases",
     subtitle: "Meher Kaur · 200+ released songs",
-    price: "From ₹12,000",
-    priceNote: "per song",
+    price: { amount: "From ₹12,000", unit: "song" },
     location: "New Delhi · Remote",
     distance: "Remote available",
     category: "services",
@@ -278,8 +279,7 @@ export const listings: Listing[] = [
     type: "rental",
     title: "Full Backline Rental — Drums, Amps, DI",
     subtitle: "Gig ready kit with delivery in Mumbai",
-    price: "₹6,500",
-    priceNote: "per day",
+    price: { amount: "₹6,500", unit: "day" },
     location: "Dadar, Mumbai",
     distance: "3.2 km away",
     category: "rentals",
@@ -305,8 +305,7 @@ export const listings: Listing[] = [
     type: "space",
     title: "Yash Raj Sound — Studio A",
     subtitle: "Neve console · Dolby Atmos certified",
-    price: "₹9,500",
-    priceNote: "per shift",
+    price: { amount: "₹9,500", unit: "shift" },
     location: "Andheri West, Mumbai",
     distance: "6.8 km away",
     category: "spaces",
@@ -338,7 +337,7 @@ export const listings: Listing[] = [
     type: "product",
     title: "Focusrite Scarlett 18i20 3rd Gen",
     subtitle: "18-in, 20-out USB interface",
-    price: "₹32,000",
+    price: { amount: "₹32,000" },
     condition: "Good",
     location: "Bandra, Mumbai",
     distance: "8.1 km away",
@@ -365,8 +364,7 @@ export const listings: Listing[] = [
     type: "space",
     title: "Bandra Jam Room — Hourly Rehearsal",
     subtitle: "Acoustically treated · backline included",
-    price: "₹800",
-    priceNote: "per hour",
+    price: { amount: "₹800", unit: "hour" },
     location: "Bandra East, Mumbai",
     distance: "7.4 km away",
     category: "spaces",

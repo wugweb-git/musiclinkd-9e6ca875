@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
-import { getService, priceLabel, pricingModelLabel, serviceStatusTone } from "@/data/services";
+import { Card, StatusPill, EmptyState, Dialog, Price } from "@/components/ml/kit";
+import { getService, pricingModelLabel, serviceStatusTone, servicePrice } from "@/data/services";
 
 export const Route = createFileRoute("/services/$id/")({
   head: () => ({
@@ -74,8 +74,11 @@ function ServiceDetail() {
               </p>
             </div>
           </div>
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[18px] font-bold">{priceLabel(s.basePrice, s.unit)}</p>
+          <div className="flex items-start justify-between gap-2">
+            <Price
+              price={servicePrice({ price: s.basePrice, unit: s.unit })}
+              amountClassName="text-[18px] font-bold"
+            />
             <StatusPill
               label={paused ? "paused" : s.status}
               tone={paused ? "warn" : serviceStatusTone[s.status]}
@@ -106,7 +109,7 @@ function ServiceDetail() {
                   <p className="text-[14px] font-semibold">{p.name}</p>
                   {p.popular ? <StatusPill label="popular" tone="brand" /> : null}
                 </div>
-                <p className="text-[16px] font-bold">{priceLabel(p.price, p.unit)}</p>
+                <Price price={servicePrice(p)} amountClassName="text-[16px] font-bold" />
                 <ul className="space-y-1">
                   {p.includes.map((i) => (
                     <li key={i} className="text-[12px] text-muted-foreground">
@@ -128,10 +131,15 @@ function ServiceDetail() {
             {s.addons.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between gap-3 border-b border-border py-2 last:border-0"
+                className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
               >
                 <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
-                <span className="text-[13px] font-semibold">{priceLabel(a.price, a.unit)}</span>
+                <Price
+                  price={servicePrice(a)}
+                  align="end"
+                  className="shrink-0"
+                  amountClassName="text-[13px] font-semibold"
+                />
               </div>
             ))}
           </Card>

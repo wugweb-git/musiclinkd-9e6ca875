@@ -10,6 +10,8 @@ import {
   RentalCalendar,
 } from "@/components/ml/rental";
 import { equipmentById, inr, providerById } from "@/data/rentals";
+import { Price } from "@/components/ml/kit";
+import { rupeeParts } from "@/lib/price";
 
 export const Route = createFileRoute("/marketplace/rent/request/$id")({
   head: ({ params }) => {
@@ -104,9 +106,12 @@ function RequestFlow() {
           <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-semibold">{e.name}</p>
-            <p className="truncate text-[11px] text-muted-foreground">
-              {inr(e.daily)} / day · deposit {inr(e.deposit)}
-            </p>
+            <Price
+              price={rupeeParts(e.daily, "day")}
+              amountClassName="text-[11px] font-semibold"
+              unitClassName="text-[10px]"
+            />
+            <p className="truncate text-[11px] text-muted-foreground">Deposit {inr(e.deposit)}</p>
           </div>
         </div>
 

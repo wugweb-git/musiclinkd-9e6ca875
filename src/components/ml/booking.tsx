@@ -14,12 +14,14 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Btn, VerifiedBadge } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import {
   availabilityFor,
   formatDate,
   formatTime,
   inr,
   isoDate,
+  lowestRate,
   monthGrid,
   paymentMeta,
   statusMeta,
@@ -173,7 +175,7 @@ export function ResourceCard({
   selected?: boolean;
   onSelect?: () => void;
 }) {
-  const from = Math.min(...r.tiers.map((t) => t.price));
+  const from = lowestRate(r.tiers);
   return (
     <div
       className={`overflow-hidden rounded-lg border bg-card ${
@@ -222,7 +224,7 @@ export function ResourceCard({
       ) : null}
       <div className="flex items-center justify-between border-t border-border px-4 py-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold">{inr(from)}</p>
+          <Price price={from} amountClassName="text-sm font-semibold" />
           <p className="text-1 text-muted-foreground">
             {r.model === "instant" ? "Instant booking" : "Request to book"}
           </p>
@@ -479,12 +481,11 @@ export function AddOnCard({
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{a.name}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">{a.description}</p>
-          <p className="mt-1.5 text-sm font-semibold">
-            {inr(a.price)}
-            {a.perHour ? (
-              <span className="text-xs font-normal text-muted-foreground"> / hour</span>
-            ) : null}
-          </p>
+          <Price
+            price={{ amount: inr(a.price), unit: a.perHour ? "hour" : undefined }}
+            className="mt-1.5"
+            amountClassName="text-sm font-semibold"
+          />
           {a.rentalListingId ? (
             <Link
               to="/marketplace/rent"
@@ -553,7 +554,9 @@ function Row({
       >
         {label}
       </span>
-      <span className={`shrink-0 text-sm ${strong ? "text-base font-bold" : "font-semibold"}`}>
+      <span
+        className={`shrink-0 text-sm text-price ${strong ? "text-base font-bold" : "font-semibold"}`}
+      >
         {value}
       </span>
     </div>
@@ -694,7 +697,7 @@ export function BookingListCard({
         <span className="inline-flex items-center gap-1">
           <Clock size={13} /> {formatTime(booking.start)} – {formatTime(booking.end)}
         </span>
-        <span className="font-semibold text-foreground">{inr(booking.amount)}</span>
+        <span className="font-semibold text-price">{inr(booking.amount)}</span>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="text-1 text-muted-foreground">#{booking.ref}</span>
@@ -738,7 +741,7 @@ export function ProviderRequestCard({
         </p>
       </div>
       <div className="mt-3 flex items-center justify-between">
-        <span className="text-sm font-bold">{inr(booking.amount)}</span>
+        <span className="text-sm font-bold text-price">{inr(booking.amount)}</span>
         <Link
           to="/provider/bookings/requests/$ref"
           params={{ ref: booking.ref }}
@@ -886,7 +889,7 @@ export function StickyBar({
     <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
-          {price ? <p className="truncate text-base font-bold">{price}</p> : null}
+          {price ? <p className="truncate text-base font-bold text-price">{price}</p> : null}
           {hint ? <p className="truncate text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {secondary}

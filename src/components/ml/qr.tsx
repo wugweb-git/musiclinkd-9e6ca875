@@ -9,6 +9,7 @@ import QRCode from "qrcode";
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, BtnLink, VerifiedBadge } from "./ui";
+import { Price } from "./kit";
 import { canonicalUrl, styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 
 /* ------------------------------------------------------------------ */
@@ -241,8 +242,13 @@ export function DestinationPreviewCard({ preview }: { preview: DestinationPrevie
             <h2 className="min-w-0 text-2 leading-tight">{preview.title}</h2>
             {preview.verified ? <VerifiedBadge size={15} /> : null}
           </div>
-          <p className="mt-1 text-1 text-muted-foreground">{preview.subtitle}</p>
-          <p className="mt-0.5 truncate text-1 text-muted-foreground">{preview.meta}</p>
+          {preview.subtitle ? (
+            <p className="mt-1 text-1 text-muted-foreground">{preview.subtitle}</p>
+          ) : null}
+          {preview.meta ? (
+            <p className="mt-0.5 truncate text-1 text-muted-foreground">{preview.meta}</p>
+          ) : null}
+          <Price price={preview.price} className="mt-1" amountClassName="text-1 font-semibold" />
           {preview.extra ? (
             <p className="mt-0.5 truncate text-1 text-muted-foreground">{preview.extra}</p>
           ) : null}

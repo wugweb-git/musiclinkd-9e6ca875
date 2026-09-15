@@ -4,15 +4,25 @@
  * Booking (FLOW 08) consumes these; it does not own them.
  */
 
+import { rupeeParts, type PriceParts } from "@/lib/price";
+
 export type ServiceStatus = "active" | "paused" | "draft";
 export type PricingModel = "hourly" | "per_song" | "per_day" | "package" | "custom";
 
-export type ServiceAddon = { id: string; label: string; price: number; unit: string };
+/** Prices are whole rupees with a bare unit ("song"); `note` is price text that is not a unit ("each"). */
+export type ServiceAddon = {
+  id: string;
+  label: string;
+  price: number;
+  unit?: string | undefined;
+  note?: string | undefined;
+};
 export type ServicePackage = {
   id: string;
   name: string;
   price: number;
-  unit: string;
+  unit?: string | undefined;
+  note?: string | undefined;
   includes: string[];
   turnaround: string;
   revisions: string;
@@ -39,8 +49,12 @@ export type Service = {
   stats: { views: number; enquiries: number; bookings: number; rating: number; reviews: number };
 };
 
-export const priceLabel = (amount: number, unit: string) =>
-  `₹${amount.toLocaleString("en-IN")} ${unit}`;
+/** A service, package or add-on price as amount, unit and note. */
+export const servicePrice = (p: {
+  price: number;
+  unit?: string | undefined;
+  note?: string | undefined;
+}): PriceParts => ({ ...rupeeParts(p.price, p.unit), ...(p.note ? { note: p.note } : {}) });
 
 export const pricingModelLabel: Record<PricingModel, string> = {
   hourly: "Per hour",
@@ -48,6 +62,15 @@ export const pricingModelLabel: Record<PricingModel, string> = {
   per_day: "Per day",
   package: "Packages only",
   custom: "Custom quote",
+};
+
+/** The unit a pricing model charges by; packages and custom quotes have none. */
+export const pricingModelUnit: Record<PricingModel, string | undefined> = {
+  hourly: "hour",
+  per_song: "song",
+  per_day: "day",
+  package: undefined,
+  custom: undefined,
 };
 
 export const serviceCategories = [
@@ -70,7 +93,7 @@ export const myServices: Service[] = [
     status: "active",
     pricingModel: "per_song",
     basePrice: 8000,
-    unit: "per song",
+    unit: "song",
     description:
       "Studio-quality lead vocals with stacked harmonies, comped and tuned, delivered as stems.",
     deliverables: [
@@ -87,7 +110,7 @@ export const myServices: Service[] = [
         id: "pkg-1",
         name: "Single song",
         price: 8000,
-        unit: "per song",
+        unit: "song",
         includes: ["Lead vocal", "2 harmony stacks", "1 revision"],
         turnaround: "3–4 days",
         revisions: "1 revision",
@@ -96,7 +119,7 @@ export const myServices: Service[] = [
         id: "pkg-2",
         name: "EP bundle",
         price: 30000,
-        unit: "for 4 songs",
+        note: "for 4 songs",
         includes: ["Lead vocals ×4", "Full harmony stacks", "2 revisions each", "Priority queue"],
         turnaround: "2 weeks",
         revisions: "2 revisions per song",
@@ -104,9 +127,9 @@ export const myServices: Service[] = [
       },
     ],
     addons: [
-      { id: "add-1", label: "Extra revision pass", price: 1500, unit: "each" },
-      { id: "add-2", label: "Hindi + Tamil versions", price: 4000, unit: "per song" },
-      { id: "add-3", label: "48h rush delivery", price: 3000, unit: "per song" },
+      { id: "add-1", label: "Extra revision pass", price: 1500, note: "each" },
+      { id: "add-2", label: "Hindi + Tamil versions", price: 4000, unit: "song" },
+      { id: "add-3", label: "48h rush delivery", price: 3000, unit: "song" },
     ],
     stats: { views: 1840, enquiries: 46, bookings: 22, rating: 4.9, reviews: 18 },
   },
@@ -118,7 +141,7 @@ export const myServices: Service[] = [
     status: "active",
     pricingModel: "per_song",
     basePrice: 12000,
-    unit: "per song",
+    unit: "song",
     description:
       "Analogue-flavoured mixes for indie, pop and film songs. Stems in, radio-ready mix out.",
     deliverables: ["Stereo mix (WAV 24/48)", "Instrumental & TV mixes", "2 revision rounds"],
@@ -127,8 +150,8 @@ export const myServices: Service[] = [
     turnaround: "5–7 days",
     packages: [],
     addons: [
-      { id: "add-4", label: "Stem mix delivery", price: 2500, unit: "per song" },
-      { id: "add-5", label: "Attended online session", price: 4000, unit: "per hour" },
+      { id: "add-4", label: "Stem mix delivery", price: 2500, unit: "song" },
+      { id: "add-5", label: "Attended online session", price: 4000, unit: "hour" },
     ],
     stats: { views: 1210, enquiries: 28, bookings: 15, rating: 4.8, reviews: 12 },
   },
@@ -140,7 +163,7 @@ export const myServices: Service[] = [
     status: "paused",
     pricingModel: "per_day",
     basePrice: 45000,
-    unit: "per show",
+    unit: "show",
     description:
       "Acoustic trio set for venues, weddings and private events across Mumbai and Pune.",
     deliverables: ["45-minute set", "Own in-ear monitors", "Soundcheck 2h before"],
@@ -148,7 +171,7 @@ export const myServices: Service[] = [
     workMode: "In studio",
     turnaround: "Book 2 weeks ahead",
     packages: [],
-    addons: [{ id: "add-6", label: "Extra 30 minutes", price: 12000, unit: "per set" }],
+    addons: [{ id: "add-6", label: "Extra 30 minutes", price: 12000, unit: "set" }],
     stats: { views: 640, enquiries: 11, bookings: 4, rating: 5, reviews: 4 },
   },
 ];

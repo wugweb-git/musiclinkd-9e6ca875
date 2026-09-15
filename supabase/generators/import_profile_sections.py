@@ -80,8 +80,10 @@ def tax(category, values, fid):
 
 
 # ---- helpers ------------------------------------------------------------------------------------
-def paise(price: str):
-    """'₹4,500/hr' -> (450000, 'hr', None); '15% of net' -> (None, None, '15% of net')."""
+def paise(price):
+    """{amount: '₹4,500', unit: 'hr'} or '₹4,500/hr' -> (450000, 'hr', None); '15% of net' -> (None, None, '15% of net')."""
+    if isinstance(price, dict):
+        price = f"{price['amount']} / {price['unit']}" if price.get("unit") else price["amount"]
     m = re.fullmatch(r"₹\s*([\d,]+)\s*(?:/\s*(.+))?", price.strip())
     if not m:
         return None, None, price.strip() or None

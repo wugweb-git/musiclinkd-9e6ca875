@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Btn, Screen, VerifiedBadge } from "@/components/ml/ui";
 import { HireModal } from "@/components/ml/hire-modal";
+import { Price } from "@/components/ml/kit";
 
 export const Route = createFileRoute("/studio")({
   head: () => ({
@@ -41,9 +42,7 @@ function Studio() {
         >
           ←
         </Link>
-        <span className="pill absolute bottom-5 left-5 bg-ink/80 text-primary-foreground backdrop-blur">
-          Dolby Atmos 7.1.4
-        </span>
+        <span className="pill absolute bottom-5 left-5 pill-glass">Dolby Atmos 7.1.4</span>
       </div>
 
       <div className="px-5 pt-4">
@@ -61,14 +60,18 @@ function Studio() {
         </div>
 
         <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
-          <div>
-            <p className="text-[15px] font-bold">₹1,800</p>
-            <p className="text-[10px] uppercase text-muted-foreground">Per hour</p>
-          </div>
-          <div>
-            <p className="text-[15px] font-bold">₹12,000</p>
-            <p className="text-[10px] uppercase text-muted-foreground">Day rate</p>
-          </div>
+          <Price
+            price={{ amount: "₹1,800", unit: "hour" }}
+            align="center"
+            amountClassName="text-[15px] font-bold"
+            unitClassName="text-[10px] uppercase"
+          />
+          <Price
+            price={{ amount: "₹12,000", unit: "day" }}
+            align="center"
+            amountClassName="text-[15px] font-bold"
+            unitClassName="text-[10px] uppercase"
+          />
           <div>
             <p className="text-[15px] font-bold">312</p>
             <p className="text-[10px] uppercase text-muted-foreground">Sessions</p>

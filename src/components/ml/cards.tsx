@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, MapPin, Star } from "lucide-react";
 import { availabilityTone, type Talent } from "@/data/discover";
-import { StatusPill } from "./kit";
+import { Price, StatusPill } from "./kit";
 import { Btn, VerifiedBadge } from "./ui";
 
 export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent) => void }) {
@@ -74,7 +74,7 @@ export function TalentCard({ t }: { t: Talent }) {
     <Link
       to="/profile/$username"
       params={{ username: t.id }}
-      className="block w-[172px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
+      className="state-layer block w-[172px] shrink-0 overflow-hidden rounded-lg border border-border bg-card transition-transform duration-125 ease-standard active:scale-98"
     >
       <div className="relative h-[150px]">
         <img
@@ -84,7 +84,7 @@ export function TalentCard({ t }: { t: Talent }) {
           className="h-full w-full object-cover"
         />
         <div className="absolute left-2 top-2">
-          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
+          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} onMedia />
         </div>
       </div>
       <div className="p-3">
@@ -123,7 +123,7 @@ export function TalentGridCard({ t }: { t: Talent }) {
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.location}</p>
-        <p className="mt-1 text-1 font-semibold text-foreground">{t.rate}</p>
+        <Price price={t.rate} className="mt-1" amountClassName="text-1 font-semibold" />
       </div>
     </Link>
   );

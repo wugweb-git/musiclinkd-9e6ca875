@@ -9,6 +9,8 @@ import { FilterSheet } from "@/components/ml/filter-sheet";
 import { HireModal } from "@/components/ml/hire-modal";
 
 export const Route = createFileRoute("/search/")({
+  validateSearch: (search: Record<string, unknown>): { q?: string } =>
+    typeof search["q"] === "string" && search["q"] ? { q: search["q"] } : {},
   head: () => ({
     meta: [
       { title: "Search Results | MusicLinkd" },
@@ -28,7 +30,7 @@ export const Route = createFileRoute("/search/")({
 });
 
 function SearchResults() {
-  const [q, setQ] = useState("vocalist mumbai");
+  const [q, setQ] = useState(Route.useSearch().q ?? "vocalist mumbai");
   const [filters, setFilters] = useState(false);
   const [preview, setPreview] = useState<Talent | null>(null);
   const [hire, setHire] = useState<Talent | null>(null);
@@ -118,7 +120,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
           </p>
         </div>
         <div className="absolute right-4 top-4">
-          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
+          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} onMedia />
         </div>
       </div>
 
