@@ -41,22 +41,22 @@ LANGUAGE = {"English": "en", "Hindi (हिंदी)": "hi", "Punjabi (ਪੰ�
             "Tamil": "ta", "Telugu (తెలుగు)": "te", "Marathi (मराठी)": "mr", "Gujarati (ગુજરાતી)": "gu",
             "Kannada (ಕನ್ನಡ)": "kn", "Kannada": "kn", "Malayalam (മലയാളം)": "ml", "Bengali (বাংলা)": "bn",
             "Assamese (অসমীয়া)": "as"}
-# Firebase labels (keys) -> taxonomy slugs (values). A combined label maps to its first name's slug
-# (taxonomy_renames.py, owner 15 Sep 2026).
+# Firebase labels (keys) -> taxonomy slugs (values). The dump carries single names since 16 Sep 2026
+# (owner: "edit the export file"; taxonomy_renames.py OLD_LABELS), so keys are the single labels.
 INSTRUMENT = {"Acoustic Guitar": "acoustic_guitar", "Electric Guitar": "electric_guitar",
-              "Bass Guitar": "bass_guitar", "Keyboard / Synthesizer": "keyboard",
-              "Piano": "piano", "Drums / Percussion": "drums", "Tabla": "tabla",
+              "Bass Guitar": "bass_guitar", "Keyboard": "keyboard",
+              "Piano": "piano", "Drums": "drums", "Tabla": "tabla",
               "Sitar": "sitar", "Flute (Bansuri)": "flute_bansuri", "Harmonium": "harmonium",
               "Dholak": "dholak", "Violin": "violin", "Saxophone": "saxophone", "Trumpet": "trumpet",
               "Sarod": "sarod", "Shehnai": "shehnai", "Mridangam": "mridangam", "Santoor": "santoor",
               "Veena": "veena", "Tanpura": "tanpura", "Cello": "cello"}
-GENRE = {"Bollywood / Filmi": "bollywood", "Indie Pop": "indie_pop",
+GENRE = {"Bollywood": "bollywood", "Indie Pop": "indie_pop",
          "Hindustani Classical": "hindustani_classical", "Carnatic Classical": "carnatic_classical",
-         "Punjabi Folk / Bhangra": "bhangra", "Rajasthani Folk": "rajasthani_folk",
+         "Bhangra": "bhangra", "Rajasthani Folk": "rajasthani_folk",
          "Sufi Devotional": "sufi_devotional", "Ghazal": "ghazal", "Qawwali": "qawwali",
-         "Rock / Metal": "rock", "Hip Hop / Trap": "hiphop", "Lofi / Chill Beats": "lofi",
-         "EDM / Synthwave": "edm", "Acoustic / Unplugged": "acoustic",
-         "R&B / Soul": "rnb", "Jazz / Blues": "jazz", "Reggae / Dub": "reggae"}
+         "Rock": "rock", "Hip Hop": "hiphop", "Lofi": "lofi",
+         "EDM": "edm", "Acoustic": "acoustic",
+         "R&B": "rnb", "Jazz": "jazz", "Reggae": "reggae"}
 # Firebase person_types slugs that exist unchanged in taxonomy person_types.
 PERSON_TYPES = {"singer", "rapper", "folk_vocalist", "guitarist", "keyboardist", "drummer", "sitarist",
                 "composer", "lyricist", "arranger", "producer", "sound_engineer", "sound_designer",
@@ -158,7 +158,7 @@ for u in FB["users"]:
         "availability": AVAILABILITY.get(u.get("sessionAvailability")), "visibility": "public",
         "links": links, "created_at": u["createdAt"],
     }))
-    if "Mumbai/Chandigarh" in u["bio"]:  # the phrase rule keeps Mumbai, the profile's city
+    if "Based out of Mumbai" in u["bio"]:  # was "Mumbai/Chandigarh"; the edit kept Mumbai, the profile's city
         assert city == "Mumbai", (fid, city)
     created += 1
 

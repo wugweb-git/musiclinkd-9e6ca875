@@ -96,9 +96,10 @@ def period(p: str):
     return int(m.group(1)), None if m.group(2) == "present" else int(m.group(2))
 
 
+# Firebase instrument labels (single names in the dump since 16 Sep 2026) -> taxonomy slugs.
 INSTRUMENT_SLUG = {"Acoustic Guitar": "acoustic_guitar", "Electric Guitar": "electric_guitar", "Bass Guitar": "bass_guitar",
-                   "Keyboard / Synthesizer": "keyboard", "Piano": "piano",
-                   "Drums / Percussion": "drums", "Tabla": "tabla", "Sitar": "sitar",
+                   "Keyboard": "keyboard", "Piano": "piano",
+                   "Drums": "drums", "Tabla": "tabla", "Sitar": "sitar",
                    "Flute (Bansuri)": "flute_bansuri", "Harmonium": "harmonium", "Violin": "violin",
                    "Saxophone": "saxophone"}
 FB_USERS = {u["_id"]: u for u in FB["users"]}

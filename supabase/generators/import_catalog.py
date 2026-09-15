@@ -15,7 +15,7 @@ import re
 import sys
 import uuid
 
-from taxonomy_renames import clean_row, renamed
+from taxonomy_renames import clean_row, renamed, single_names
 
 DUMP, SEED, OUT = sys.argv[1:4]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
@@ -41,12 +41,16 @@ for m in re.finditer(r'\{\s*key: "(\w+)",\s*label: "([^"]+)",\s*description:\s*"
         slug = value if re.fullmatch(r"[a-z0-9_]+", value) else re.sub(
             r"_+", "_", re.sub(r"[^a-z0-9]+", "_", label.lower().replace("&", "and"))).strip("_")
         SLUG[(m.group(1), label)] = SLUG[(m.group(1), value)] = slug
+        # The dump carries single names since 16 Sep 2026 ("Drums"); the seed still has "Drums / Percussion".
+        if single_names(label) != label:
+            assert SLUG.setdefault((m.group(1), single_names(label)), slug) == slug, (m.group(1), label)
 SLUG[("studio_amenities", "24x7 Access")] = "access_24x7"  # TAXONOMY-MIGRATION-SPEC §3
 for (category, key), slug in list(SLUG.items()):
     SLUG[(category, key)] = renamed(category, slug)  # single names, owner 15 Sep 2026 (taxonomy_renames.py)
-GENRE = {"Bollywood / Filmi": "bollywood", "Indie Pop": "indie_pop", "Hindustani Classical": "hindustani_classical",
-         "Carnatic Classical": "carnatic_classical", "Rajasthani Folk": "rajasthani_folk", "Rock / Metal": "rock",
-         "EDM / Synthwave": "edm", "Acoustic / Unplugged": "acoustic"}
+# Firebase genre labels (single names in the dump since 16 Sep 2026) -> taxonomy slugs.
+GENRE = {"Bollywood": "bollywood", "Indie Pop": "indie_pop", "Hindustani Classical": "hindustani_classical",
+         "Carnatic Classical": "carnatic_classical", "Rajasthani Folk": "rajasthani_folk", "Rock": "rock",
+         "EDM": "edm", "Acoustic": "acoustic"}
 
 
 def slugs(category, values, ref):

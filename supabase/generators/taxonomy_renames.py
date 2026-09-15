@@ -76,6 +76,9 @@ TEXT = {
 # An old combined option label anywhere inside any text becomes the option's single label. Applied
 # by the import generators and, on a live database, by 20260915140000_text_single_names.sql
 # (text_single_names.py) to every text, text[] and jsonb column.
+# The Firebase export (Claude outputs/audits/FIRESTORE-FULL-DUMP.md) was edited with OLD_LABELS, TEXT and
+# PHRASES on 16 Sep 2026 (owner: "edit the export file"; the untouched copy is archive/
+# FIRESTORE-FULL-DUMP-original-2026-09-14.md), so the import generators read single names from it.
 OLD_LABELS = {
     "Singer / Vocalist": "Singer",
     "Rapper / MC": "Rapper",
