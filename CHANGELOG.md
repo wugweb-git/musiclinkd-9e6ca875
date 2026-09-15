@@ -5,6 +5,68 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed — sign-in (15 Sep)
+
+- **Welcome is the sign-in screen:** "Continue with Google" and "Sign in". The email button, the separate
+  create-account screen and "Already have an account?" are gone. Welcome shows who is on MusicLinkd as a
+  slow ticker of every published role from the taxonomy (with role icons), the splash logo glides into
+  Welcome's corner (view transition `brand`), and the buttons are the shared pill `Btn`.
+- **Sign in = mobile + 6-digit code** (`/auth/phone`, titled "Sign in"), with **Sign in with email**
+  (`/auth`): email + 6-digit code (`signInWithOtp`, `verifyOtp` type `email`). No passwords, no Forgot
+  password, no sign-in/sign-up modes; a new account is created on first sign-in. Status screens link to
+  Sign in. `/auth/forgot` and `/reset-password` are no longer linked from anywhere.
+- **Local testing:** `/dev/new-user` (dev server only) signs out, signs in as a new anonymous account and
+  hands to the splash; on localhost, "Continue with Google" goes there. Needs anonymous sign-ins on in
+  Lovable Cloud. Each run is a real account in the database.
+- With reduced motion on, staggered arrivals no longer wait out their delay before appearing.
+
+### Changed — new user: onboarding (15 Sep)
+
+- **About you:** the photo section and Area are removed; **date of birth and gender** are added. They are
+  stored in the new owner-only table `profile_private` (migration `20260915100000_profile_private`),
+  never on the public `profiles` row or its draft, and shown to no one else. Onboarding no longer clears
+  a profile photo it doesn't ask for.
+- **Contact:** each link field shows its platform's brand mark (Simple Icons, CC0); Instagram and YouTube
+  show first and **Add more** adds the others. How people can reach you is icon chips, no descriptions.
+  Who can see your profile is one row of three with icons, the chosen option explained underneath.
+- **Review profile** shows the real profile header built from the answers, then one list of details;
+  each row opens its step. The seven "Not added" boxes are gone.
+- Role icons live in `lib/role-icons.tsx`, with their own marks for keyboard, drums, wind and the
+  business roles.
+
+### Changed — new user: portfolio (15 Sep)
+
+- **Add work is link first.** Pasting a YouTube, Spotify, SoundCloud or any page link reads its title,
+  cover and source on the server (`getLinkPreview`: oEmbed for the three, Open Graph otherwise; signed-in
+  only, public hosts only, 5s and 512KB limits) and fills them in. The title is typed straight onto the
+  page. Role, genre, year, contributors and description are one list of rows, each opening a sheet; a
+  Public switch replaces the three visibility options. The simulated upload and the cover URL field are
+  gone.
+- **Work page actions** (edit, share, add another, delete) are icon buttons.
+- **Work type icons** are line icons (`WorkTypeIcon`) instead of emoji; type rows and work cards have the
+  press state.
+- **Portfolio overview for a new user:** only the empty state and its Add work show until there is work;
+  "Featured" only shows when it differs from "All work"; the settings glyph is an icon button. The
+  signed-out "Sign in to manage your work" card is removed everywhere; `/profile/edit` sends a signed-out
+  visit to Welcome.
+
+### Changed — profile and verification (15 Sep)
+
+- **Own profile (`/me`):** completion uses the real `profileGaps` instead of the seed 78%; Stats shows no
+  seed figures for a signed-in owner; every empty-state button goes to the page that adds that thing (or
+  is hidden when none exists); no "BASIC" badge for unverified people; no bare "@"; a load error has
+  Retry; Copy link copies `/profile/<username>`. The owner actions are icon buttons. Availability sits
+  next to the name. Music identity is one grouped list (icon + label over tags) instead of boxed tiles.
+- **Labels (pills)** share one style app-wide (`pill` utility): small, medium weight, spaced capitals, on
+  their own container; success and warn text use darker `success-strong` / `warn-strong`; labels on photos
+  sit on ink.
+- **Verification** shows only the badges that fit the person's roles (identity for everyone;
+  professional for talent; business for business roles; studio & space for studios, venues and rental
+  providers), no longer shows the seeded "Needs changes" / "Expired" statuses to real accounts, and lays
+  trust signals out as a bento.
+- `InlineField` gains `leading`, `type="date"` and `max`; its label is grey at rest, ink when focused, red
+  when invalid, like `TextField`.
+
 ### Changed — new user: motion on the beat
 
 - **Arrivals land on a beat.** Welcome, the onboarding intro and the two finish screens bring their blocks

@@ -1,10 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Info, MapPin, Pencil } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { BtnLink, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
-import { visibleSteps } from "@/data/onboarding";
+import { ProfileHero } from "@/components/ml/profile";
+import { linkPlatforms, visibilityOptions, visibleSteps } from "@/data/onboarding";
+import type { TaxonomyLabels } from "@/lib/portfolio.functions";
+import { draftToProfile, type ProfileRow } from "@/lib/profile-map";
+import { mergeProfileRow, profileFromRow } from "@/lib/profile-view";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
-import { AuthLink, AuthTextButton } from "@/components/ml/auth";
+import { AuthLink } from "@/components/ml/auth";
 
 export const Route = createFileRoute("/onboarding/preview")({
   head: () => ({
@@ -31,95 +35,111 @@ export const Route = createFileRoute("/onboarding/preview")({
   ),
 });
 
+/** One detail row: what it is, what's set (or "Add"), and a tap to the step that edits it. */
+function DetailRow({
+  label,
+  values,
+  onEdit,
+}: {
+  label: string;
+  values: string[];
+  onEdit: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onEdit}
+      className="state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left"
+    >
+      <span className="w-28 shrink-0 text-sm font-medium">{label}</span>
+      <span
+        className={`min-w-0 flex-1 text-sm ${values.length ? "text-foreground" : "text-muted-foreground"}`}
+      >
+        {values.length ? values.join(", ") : "Add"}
+      </span>
+      <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+    </button>
+  );
+}
+
 function Preview() {
   const { draft: d, bucket } = useOnboarding();
   const navigate = useNavigate();
   const tx = useTaxonomy().options;
-  const roleLabel = d.primaryRole ? labelFor(tx?.person_types, d.primaryRole) : null;
-  const labels = (options: Parameters<typeof labelFor>[0], slugs: string[]) =>
-    slugs.map((s) => labelFor(options, s));
   const list = visibleSteps(d, bucket);
-
   const edit = (id: string) => navigate({ to: "/onboarding/step/$id", params: { id } });
+
+  // The real profile header, built from these answers the way the profile page builds it.
+  const labels: TaxonomyLabels = Object.fromEntries(
+    Object.entries(tx ?? {}).map(([cat, opts]) => [
+      cat,
+      Object.fromEntries(opts.map((o) => [o.slug, o.label])),
+    ]),
+  );
+  const row = draftToProfile(d) as unknown as ProfileRow;
+  const view = mergeProfileRow(profileFromRow(row), row, labels);
+  const names = (cat: keyof NonNullable<typeof tx>, slugs: string[]) =>
+    slugs.map((s) => labelFor(tx?.[cat], s));
+  const linkNames = linkPlatforms.filter((p) => d.links[p.key]).map((p) => p.label);
+  const visibility = visibilityOptions.find((v) => v.key === d.visibility)?.label;
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-36">
       <TopBar
-        title="Profile preview"
+        title="Review profile"
         subtitle="This is what others see"
         back={`/onboarding/step/${list[list.length - 1]?.id ?? "contact"}`}
       />
 
-      <main className="px-5 pt-4">
-        <section className="rounded-lg border border-border bg-card p-5">
-          <div className="flex items-center gap-4">
-            <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-border bg-subtle">
-              {d.photo ? (
-                <img src={d.photo} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <span className="flex h-full w-full items-center justify-center text-3 font-bold text-muted-foreground">
-                  {d.displayName.slice(0, 1)}
-                </span>
-              )}
-            </div>
-            <div className="min-w-0">
-              <h1 className="truncate text-3 leading-tight">{d.displayName || "Your name"}</h1>
-              <p className="truncate text-sm text-muted-foreground">
-                {roleLabel ?? "Add your role"}
-                {d.primaryInstrument ? ` · ${labelFor(tx?.instruments, d.primaryInstrument)}` : ""}
-              </p>
-              {d.city ? (
-                <p className="mt-1 inline-flex items-center gap-1 text-1 text-muted-foreground">
-                  <MapPin size={12} /> {d.locality ? `${d.locality}, ` : ""}
-                  {d.city}
-                </p>
-              ) : null}
-            </div>
-          </div>
-          {d.bio ? (
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{d.bio}</p>
+      <ProfileHero p={view} />
+
+      <main className="px-5 pt-6">
+        <h2 className="text-2">Your details</h2>
+        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          <DetailRow
+            label="Roles"
+            values={names(
+              "person_types",
+              [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[],
+            )}
+            onEdit={() => edit("role")}
+          />
+          {list.some((s) => s.id === "instruments") ? (
+            <DetailRow
+              label="Instruments"
+              values={names("instruments", d.instruments)}
+              onEdit={() => edit("instruments")}
+            />
           ) : null}
-          <p className="mt-3 text-1 text-muted-foreground">musiclinkd.com/{d.username}</p>
-        </section>
-
-        <Row
-          title="Roles"
-          items={labels(
-            tx?.person_types,
-            [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[],
-          )}
-          onEdit={() => edit("role")}
-        />
-        <Row
-          title="Instruments"
-          items={labels(tx?.instruments, d.instruments)}
-          onEdit={() => edit("instruments")}
-        />
-        <Row title="Genres" items={labels(tx?.genres, d.genres)} onEdit={() => edit("genres")} />
-        <Row
-          title="Languages"
-          items={labels(tx?.languages, d.languages)}
-          onEdit={() => edit("languages")}
-        />
-        <Row title="Available for" items={d.availability} onEdit={() => edit("work-mode")} />
-        <Row title="Work mode" items={d.workModes} onEdit={() => edit("work-mode")} />
-        <Row
-          title="Links"
-          items={Object.entries(d.links)
-            .filter(([, v]) => v)
-            .map(([k]) => k)}
-          onEdit={() => edit("contact")}
-        />
-        <Row title="Visibility" items={[d.visibility]} onEdit={() => edit("contact")} />
-
-        <p className="mt-6 flex items-start gap-1.5 text-1 text-muted-foreground">
-          <Info size={14} className="mt-0.5 shrink-0" aria-hidden />
-          Anything empty simply doesn't show on your profile. You can fill it in later from your
-          profile settings.
+          <DetailRow
+            label="Genres"
+            values={names("genres", d.genres)}
+            onEdit={() => edit("genres")}
+          />
+          <DetailRow
+            label="Languages"
+            values={names("languages", d.languages)}
+            onEdit={() => edit("languages")}
+          />
+          <DetailRow
+            label="Available for"
+            values={d.availability}
+            onEdit={() => edit("work-mode")}
+          />
+          <DetailRow label="Work mode" values={d.workModes} onEdit={() => edit("work-mode")} />
+          <DetailRow label="Links" values={linkNames} onEdit={() => edit("contact")} />
+          <DetailRow
+            label="Visibility"
+            values={visibility ? [visibility] : []}
+            onEdit={() => edit("contact")}
+          />
+        </div>
+        <p className="mt-3 text-1 text-muted-foreground">
+          Anything left empty doesn't show on your profile.
         </p>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         <BtnLink to="/onboarding/complete" className="w-full">
           Publish my profile
         </BtnLink>
@@ -130,34 +150,5 @@ function Preview() {
         </p>
       </div>
     </div>
-  );
-}
-
-function Row({ title, items, onEdit }: { title: string; items: string[]; onEdit: () => void }) {
-  return (
-    <section className="mt-3 rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold">{title}</h2>
-        <AuthTextButton onClick={onEdit} icon={<Pencil size={14} />} className="text-1">
-          Edit
-        </AuthTextButton>
-      </div>
-      {items.length ? (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {items.map((x) => (
-            <span
-              key={x}
-              className="rounded-full bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground"
-            >
-              {x}
-            </span>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-1.5 text-1 text-muted-foreground">
-          Not added — this section stays hidden.
-        </p>
-      )}
-    </section>
   );
 }

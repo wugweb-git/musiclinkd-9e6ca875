@@ -101,10 +101,7 @@ function Discover() {
             >
               <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
-              <span
-                className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase text-primary-foreground"
-                style={{ background: "var(--primary)" }}
-              >
+              <span className="pill absolute left-3 top-3 bg-ink/80 text-primary-foreground backdrop-blur">
                 {t.tag}
               </span>
               <div className="absolute bottom-3 left-3 right-3 text-background">

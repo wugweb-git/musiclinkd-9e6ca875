@@ -111,7 +111,7 @@ function ResetPassword() {
           Send a new link
         </Btn>
         <p className="mt-6 text-center text-1 text-muted-foreground">
-          <Link to="/auth" search={{ mode: "signin" }} className="font-semibold text-foreground">
+          <Link to="/auth/phone" className="font-semibold text-foreground">
             Back to sign in
           </Link>
         </p>

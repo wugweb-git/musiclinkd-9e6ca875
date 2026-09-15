@@ -27,11 +27,7 @@ import { IconBtn } from "./ui";
 /* ---------------------------------------------------------------- shell */
 
 /** Where Back lands when there is no history to return to (a deep link, an email link). */
-export type AuthBack =
-  | { to: "/welcome" }
-  | { to: "/auth/phone" }
-  | { to: "/me" }
-  | { to: "/auth"; search: { mode: "signin" | "signup" } };
+export type AuthBack = { to: "/welcome" } | { to: "/auth/phone" } | { to: "/me" } | { to: "/auth" };
 
 export function AuthScreen({
   children,

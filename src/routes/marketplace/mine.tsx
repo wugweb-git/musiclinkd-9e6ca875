@@ -83,7 +83,7 @@ function Mine() {
                   <p className="truncate text-[13px] font-semibold">{o.listing}</p>
                   <p className="text-[11px] text-muted-foreground">Offer {o.amount}</p>
                 </div>
-                <span className="rounded-full bg-subtle px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                <span className="rounded-full bg-subtle pill text-muted-foreground">
                   {o.status}
                 </span>
               </article>

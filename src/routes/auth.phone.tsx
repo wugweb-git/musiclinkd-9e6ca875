@@ -10,6 +10,7 @@ import {
   AuthLink,
   AuthNotice,
   AuthScreen,
+  LegalNote,
   PhoneField,
   TrustNote,
   classifyAuthError,
@@ -19,12 +20,12 @@ import {
 export const Route = createFileRoute("/auth/phone")({
   head: () => ({
     meta: [
-      { title: "Continue with phone — MusicLinkd" },
+      { title: "Sign in — MusicLinkd" },
       {
         name: "description",
         content: "Sign in to MusicLinkd with your mobile number and a one-time code.",
       },
-      { property: "og:title", content: "Continue with phone — MusicLinkd" },
+      { property: "og:title", content: "Sign in — MusicLinkd" },
       { property: "og:description", content: "Fast, password-free sign in for MusicLinkd." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -76,13 +77,13 @@ function PhoneAuth() {
         }}
       >
         <AuthHeading
-          title="Continue with phone"
-          sub="We'll text you a 6-digit code. No password to remember."
+          title="Sign in"
+          sub="Enter your mobile number and we'll text you a 6-digit code."
         />
 
         {provider === "off" ? (
-          <AuthNotice tone="info" title="Phone sign-in is not available yet">
-            Continue with Google or email for now.
+          <AuthNotice tone="info" title="Mobile sign-in isn't switched on yet">
+            Sign in with email or Google for now.
           </AuthNotice>
         ) : null}
         {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
@@ -101,11 +102,13 @@ function PhoneAuth() {
 
       <TrustNote>Your number is never shown on your public profile.</TrustNote>
 
-      <p className="mt-6 flex justify-center text-1">
-        <AuthLink to="/auth" search={{ mode: "signin" }} icon={<Mail size={16} />}>
-          Use email instead
+      <p className="mt-6 flex justify-center text-sm">
+        <AuthLink to="/auth" icon={<Mail size={16} />}>
+          Sign in with email
         </AuthLink>
       </p>
+
+      <LegalNote />
     </AuthScreen>
   );
 }

@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { TopBar } from "@/components/ml/ui";
+import { WorkTypeIcon } from "@/components/ml/portfolio";
 import { workTypes } from "@/data/portfolio";
+import { beat, useArrival } from "@/lib/flow-motion";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/portfolio/new/")({
   head: () => ({
@@ -21,37 +25,34 @@ export const Route = createFileRoute("/portfolio/new/")({
 });
 
 function AddWork() {
+  const rise = useArrival("add-work") ? "animate-rise" : "";
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-24">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-24">
       <TopBar title="Add work" subtitle="Step 1 of 3 · Choose a type" back="/portfolio" />
       <main className="px-5 pt-4">
-        <h2 className="text-[20px] leading-tight">What would you like to add?</h2>
+        <h2 className="text-3 leading-tight">What would you like to add?</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           We'll only ask for the fields this kind of work needs.
         </p>
 
         <div className="mt-5 space-y-2">
-          {workTypes.map((t) => (
+          {workTypes.map((t, i) => (
             <Link
               key={t.kind}
               to="/portfolio/new/$kind"
               params={{ kind: t.kind }}
-              className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
+              className={cn(
+                "state-layer flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-98",
+                rise,
+              )}
+              style={beat(i / 2)}
             >
-              <span
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-xl"
-                style={{ background: "var(--surface-subtle)" }}
-                aria-hidden
-              >
-                {t.emoji}
-              </span>
+              <WorkTypeIcon kind={t.kind} />
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold">{t.label}</span>
-                <span className="block truncate text-xs text-muted-foreground">{t.blurb}</span>
+                <span className="block truncate text-1 text-muted-foreground">{t.blurb}</span>
               </span>
-              <span aria-hidden className="text-muted-foreground">
-                ›
-              </span>
+              <ChevronRight size={18} className="shrink-0 text-muted-foreground" aria-hidden />
             </Link>
           ))}
         </div>

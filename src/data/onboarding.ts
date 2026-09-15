@@ -477,7 +477,7 @@ export const steps: StepDef[] = [
     id: "identity",
     group: "About you",
     title: "Tell people who you are",
-    subtitle: "Your photo, name, where you're based and a short bio.",
+    subtitle: "Your name, where you're based and a short bio.",
     why: "Your name and username appear on every credit, message and search result.",
     optional: false,
     contract: contract(
@@ -623,7 +623,7 @@ export function readiness(d: OnboardingDraft): Readiness[] {
     {
       key: "identity",
       label: "Identity complete",
-      hint: "Name, username and photo",
+      hint: "Name and username",
       done: Boolean(d.displayName && d.username),
     },
     {

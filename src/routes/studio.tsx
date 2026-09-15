@@ -41,10 +41,7 @@ function Studio() {
         >
           ←
         </Link>
-        <span
-          className="absolute bottom-5 left-5 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase text-primary-foreground"
-          style={{ background: "var(--primary)" }}
-        >
+        <span className="pill absolute bottom-5 left-5 bg-ink/80 text-primary-foreground backdrop-blur">
           Dolby Atmos 7.1.4
         </span>
       </div>

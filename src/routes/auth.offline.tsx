@@ -24,7 +24,7 @@ function OfflineScreen() {
   const navigate = useNavigate();
   return (
     <AuthStatus
-      back={{ to: "/auth", search: { mode: "signin" } }}
+      back={{ to: "/auth/phone" }}
       icon={WifiOff}
       title="No connection"
       body="We couldn't reach MusicLinkd. Nothing you typed was lost — reconnect and try again."
@@ -44,11 +44,7 @@ function OfflineScreen() {
       }
       note="Drafts you started are stored on this device until you're back online."
       footer={
-        <Link
-          to="/auth"
-          search={{ mode: "signin" }}
-          className="hit-area font-semibold text-foreground"
-        >
+        <Link to="/auth/phone" className="hit-area font-semibold text-foreground">
           Back to sign in
         </Link>
       }

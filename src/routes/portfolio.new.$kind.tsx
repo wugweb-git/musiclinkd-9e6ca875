@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TopBar } from "@/components/ml/ui";
 import { WorkForm } from "@/components/ml/work-form";
-import { SignedOutCard } from "@/components/ml/portfolio";
 import { workType } from "@/data/portfolio";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -25,22 +24,17 @@ export const Route = createFileRoute("/portfolio/new/$kind")({
 
 function NewWork() {
   const { kind } = Route.useParams();
-  const { signedIn, loading } = useAuth();
+  const { signedIn } = useAuth();
   const t = workType(kind);
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-8">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar
         title={`New ${t.label.toLowerCase()}`}
         subtitle="Step 2 of 3 · Details"
         back="/portfolio/new"
       />
       <main className="px-5 pt-4">
-        {!signedIn && !loading ? (
-          <div className="mb-5">
-            <SignedOutCard what="new work" />
-          </div>
-        ) : null}
         <WorkForm kind={kind} signedIn={signedIn} />
       </main>
     </div>

@@ -1,5 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, Headphones, Star, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  BriefcaseBusiness,
+  Clapperboard,
+  Disc3,
+  FileText,
+  FolderOpen,
+  Headphones,
+  Image as ImageIcon,
+  Link2,
+  Mic,
+  Music2,
+  PenLine,
+  Star,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Btn, BtnLink, Chip } from "@/components/ml/ui";
 import {
@@ -16,6 +33,36 @@ import { showDemoControls } from "@/lib/dev";
 
 export { analyticsFor };
 
+/* ---------------- Work type icon ---------------------------------------- */
+
+const workIcons: Record<string, LucideIcon> = {
+  track: Music2,
+  album: Disc3,
+  video: Clapperboard,
+  performance: Mic,
+  project: FolderOpen,
+  client: BriefcaseBusiness,
+  "case-study": FileText,
+  writing: PenLine,
+  image: ImageIcon,
+  link: Link2,
+};
+
+/** A work type's line icon in a grey tile, in place of the emoji in `workTypes`. */
+export function WorkTypeIcon({ kind, size = "md" }: { kind: string; size?: "md" | "lg" }) {
+  const Icon = workIcons[kind] ?? Music2;
+  return (
+    <span
+      aria-hidden
+      className={`flex shrink-0 items-center justify-center bg-subtle text-foreground ${
+        size === "lg" ? "h-16 w-16 rounded-lg" : "h-12 w-12 rounded-md"
+      }`}
+    >
+      <Icon size={size === "lg" ? 24 : 20} strokeWidth={1.75} />
+    </span>
+  );
+}
+
 /* ---------------- Work card (WHAT · WHO · ROLE · MEDIA · CONTEXT) ------- */
 
 export function WorkCard({ item }: { item: PortfolioItem }) {
@@ -24,29 +71,24 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
     <Link
       to="/portfolio/$id"
       params={{ id: item.id }}
-      className="block rounded-lg border border-border bg-card p-4"
+      className="state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-98"
     >
       <div className="flex gap-3">
-        <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-subtle text-2xl"
-          aria-hidden
-        >
-          {t.emoji}
-        </div>
+        <WorkTypeIcon kind={item.kind} size="lg" />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className="truncate text-2 font-semibold">{item.title}</h3>
             <StatusPill published={item.published} />
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <p className="mt-0.5 text-1 text-muted-foreground">
             {t.label}
             {item.release_year ? ` · ${item.release_year}` : ""}
           </p>
           {item.role ? (
-            <p className="mt-1 truncate text-xs font-semibold text-foreground">{item.role}</p>
+            <p className="mt-1 truncate text-1 font-semibold text-foreground">{item.role}</p>
           ) : null}
           {item.description ? (
-            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{item.description}</p>
+            <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{item.description}</p>
           ) : null}
           {item.collaborators.length ? (
             <p className="mt-1.5 truncate text-1 text-muted-foreground">
@@ -62,8 +104,10 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
 export function StatusPill({ published }: { published: boolean }) {
   return (
     <span
-      className={`shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${
-        published ? "bg-success-container text-success" : "bg-warn-container text-warn"
+      className={`shrink-0 rounded-full pill ${
+        published
+          ? "bg-success-container text-success-strong"
+          : "bg-warn-container text-warn-strong"
       }`}
     >
       {published ? "Published" : "Draft"}
@@ -103,16 +147,6 @@ export function StateCard({
       <p className="mx-auto mt-1.5 max-w-[280px] text-sm text-muted-foreground">{body}</p>
       {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
     </div>
-  );
-}
-
-export function SignedOutCard({ what = "your portfolio" }: { what?: string }) {
-  return (
-    <StateCard
-      title="Sign in to manage your work"
-      body={`Create a free MusicLinkd account to publish and edit ${what}. You're seeing demo work below.`}
-      action={<BtnLink to="/welcome">Sign in or sign up</BtnLink>}
-    />
   );
 }
 
@@ -182,7 +216,7 @@ export function PortfolioHeader({
         {stat(drafts, "Drafts")}
         {stat(featured, "Featured")}
       </div>
-      <p className="mt-4 text-xs text-muted-foreground">
+      <p className="mt-4 text-1 text-muted-foreground">
         Portfolio visibility: <span className="font-semibold text-foreground">{visibility}</span>
       </p>
     </section>
@@ -191,20 +225,22 @@ export function PortfolioHeader({
 
 /* ---------------- Media state pill + uploader --------------------------- */
 
+/** The input box of the shared fields (TextField, InlineField), for inputs inside portfolio controls. */
+const fieldBox =
+  "h-12 w-full rounded-md border border-border bg-card px-3.5 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-1 focus:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground";
+
 export function MediaStatePill({ state }: { state: MediaState }) {
   const c = mediaStateCopy[state];
   const tone =
     c.tone === "good"
-      ? "bg-success-container text-success"
+      ? "bg-success-container text-success-strong"
       : c.tone === "warn"
-        ? "bg-warn-container text-warn"
+        ? "bg-warn-container text-warn-strong"
         : c.tone === "bad"
           ? "bg-danger-container text-destructive"
           : "bg-subtle text-muted-foreground";
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${tone}`}
-    >
+    <span className={`inline-flex items-center gap-1 rounded-full pill ${tone}`}>
       <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
       {c.label}
     </span>
@@ -249,12 +285,12 @@ export function MediaUploader({
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
-          {type} media
+        <p className="text-sm font-medium text-muted-foreground">
+          {type === "link" ? "Link" : `${type[0]!.toUpperCase()}${type.slice(1)}`}
         </p>
         <MediaStatePill state={state} />
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">{copy.hint}</p>
+      <p className="mt-2 text-1 text-muted-foreground">{copy.hint}</p>
 
       {state === "uploading" ? (
         <div
@@ -277,7 +313,10 @@ export function MediaUploader({
         }}
         placeholder="https:// link to the file, YouTube, Spotify…"
         aria-label={`${type} link`}
-        className="mt-3 w-full rounded-lg border border-border bg-background px-4 py-3 text-sm"
+        inputMode="url"
+        autoCapitalize="none"
+        spellCheck={false}
+        className={`mt-3 ${fieldBox}`}
       />
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -320,7 +359,7 @@ export function AudioPlayer({
     return (
       <div className="rounded-lg border border-border bg-card p-4">
         <MediaStatePill state="not-uploaded" />
-        <p className="mt-2 text-xs text-muted-foreground">{mediaStateCopy["not-uploaded"].hint}</p>
+        <p className="mt-2 text-1 text-muted-foreground">{mediaStateCopy["not-uploaded"].hint}</p>
       </div>
     );
   }
@@ -364,7 +403,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
       >
         <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
-        <p className="mt-1 truncate text-xs text-foreground">{src}</p>
+        <p className="mt-1 truncate text-1 text-foreground">{src}</p>
       </a>
     );
   }
@@ -385,7 +424,7 @@ export function CreditRow({ name, role }: { name: string; role?: string }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
       <span className="min-w-0 truncate text-sm font-semibold">{name}</span>
-      {role ? <span className="shrink-0 text-xs text-muted-foreground">{role}</span> : null}
+      {role ? <span className="shrink-0 text-1 text-muted-foreground">{role}</span> : null}
     </div>
   );
 }
@@ -412,7 +451,7 @@ export function ContributorPicker({
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search people and studios on MusicLinkd"
         aria-label="Search contributors"
-        className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm"
+        className={fieldBox}
       />
       {value.length ? (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -436,20 +475,20 @@ export function ContributorPicker({
               key={c.id}
               type="button"
               onClick={() => add(c.name)}
-              className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left"
+              className="state-layer flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-98"
             >
               <span className="text-sm font-semibold">{c.name}</span>
-              <span className="text-xs text-muted-foreground">{c.role}</span>
+              <span className="text-1 text-muted-foreground">{c.role}</span>
             </button>
           ))}
           {matches.length === 0 ? (
             <button
               type="button"
               onClick={() => add(q.trim())}
-              className="w-full rounded-lg border border-dashed border-border bg-card px-4 py-3 text-left"
+              className="state-layer w-full rounded-lg border border-dashed border-border bg-card px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-98"
             >
               <span className="text-sm font-semibold">Add “{q.trim()}”</span>
-              <span className="block text-xs text-muted-foreground">
+              <span className="block text-1 text-muted-foreground">
                 Not on MusicLinkd yet — they'll be credited by name and can claim it later.
               </span>
             </button>
@@ -477,7 +516,7 @@ export function FeaturedToggle({
       aria-pressed={on}
       disabled={disabled && !on}
       onClick={onToggle}
-      className={`rounded-full border px-4 py-2 text-xs font-semibold ${
+      className={`rounded-full border px-4 py-2 text-1 font-semibold ${
         on ? "border-transparent bg-primary text-primary-foreground" : "border-border bg-card"
       } ${disabled && !on ? "opacity-50" : ""}`}
     >
@@ -507,7 +546,7 @@ export function ReorderList({
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{item.title}</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 {workType(item.kind).label} · position {i + 1}
               </p>
             </div>
@@ -563,7 +602,7 @@ export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
       {rows.map(([label, n]) => (
         <div key={label} className="rounded-lg border border-border bg-card p-4">
           <p className="text-3 leading-none tabular-nums">{n.toLocaleString("en-IN")}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{label}</p>
+          <p className="mt-1 text-1 text-muted-foreground">{label}</p>
         </div>
       ))}
     </div>

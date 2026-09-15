@@ -21,15 +21,13 @@ export function RentalAvailabilityBadge({
   tone?: "ok" | "warn" | "off";
 }) {
   const map = {
-    ok: { pill: "bg-success-container text-success", dot: "bg-success" },
-    warn: { pill: "bg-warn-container text-warn", dot: "bg-warn" },
+    ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
+    warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
     off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
   } as const;
   const c = map[tone];
   return (
-    <span
-      className={`inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${c.pill}`}
-    >
+    <span className={`inline-flex max-w-full items-center gap-1 rounded-full pill ${c.pill}`}>
       <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${c.dot}`} />
       <span className="truncate">{text}</span>
     </span>
@@ -61,21 +59,15 @@ export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md
 
 export function RentalStatusPill({ status }: { status: RentalStatus }) {
   const tone: Record<RentalStatus, string> = {
-    Requested: "bg-warn-container text-warn",
+    Requested: "bg-warn-container text-warn-strong",
     "Offer sent": "bg-status-category-bg text-status-category-text",
     Confirmed: "bg-subtle text-foreground",
-    Active: "bg-success-container text-success",
+    Active: "bg-success-container text-success-strong",
     Completed: "bg-subtle text-muted-foreground",
     Cancelled: "bg-subtle text-muted-foreground",
     Declined: "bg-subtle text-muted-foreground",
   };
-  return (
-    <span
-      className={`shrink-0 rounded-full px-2.5 py-1 text-1 font-bold uppercase tracking-wide ${tone[status]}`}
-    >
-      {status}
-    </span>
-  );
+  return <span className={`shrink-0 rounded-full pill ${tone[status]}`}>{status}</span>;
 }
 
 export function EquipmentCard({ e }: { e: Equipment }) {
@@ -85,7 +77,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 text-1 font-bold uppercase tracking-wide text-background backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full bg-ink/80 pill text-background backdrop-blur">
             Rental
           </span>
         </div>
