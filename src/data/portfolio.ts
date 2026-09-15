@@ -50,7 +50,7 @@ export const workTypes: {
   },
   {
     kind: "album",
-    label: "Album or EP",
+    label: "Album",
     blurb: "A release with multiple tracks",
     emoji: "💿",
     media: "audio",
