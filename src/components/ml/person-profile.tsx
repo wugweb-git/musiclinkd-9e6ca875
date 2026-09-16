@@ -68,6 +68,8 @@ import {
   isOpenForWork,
 } from "./profile";
 import { HireModal } from "./hire-modal";
+import { BottomCta } from "./marketing";
+import { useAuth } from "@/hooks/use-auth";
 
 type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About" | "Reviews";
 
@@ -112,6 +114,7 @@ export function PersonProfileExperience({
   const [moreOpen, setMoreOpen] = useState(false);
   const [hireOpen, setHireOpen] = useState(false);
   const [insightsOpen, setInsightsOpen] = useState(false);
+  const { signedIn, loading } = useAuth();
 
   const toggleTrack = (id: string) => setPlayingId((current) => (current === id ? null : id));
   // Sharing needs a public link, and the link needs a username.
@@ -212,6 +215,16 @@ export function PersonProfileExperience({
         {!owner && tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
         {!owner && tab === "About" ? <About p={p} /> : null}
         {!owner && tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
+        {/* A shared profile link is most people's first sight of MusicLinkd, so a signed-out visitor
+            is told what this is and how to join. Copy is the welcome screen's own; no figures. */}
+        {!owner && !loading && !signedIn ? (
+          <BottomCta
+            className="mt-10"
+            title="Connect. Collaborate. Create."
+            body="Build your profile, discover opportunities, connect with the music industry."
+            primary={{ label: "Join MusicLinkd", to: "/welcome" }}
+          />
+        ) : null}
       </main>
 
       {share ? <ShareSheet p={p} open={shareOpen} onClose={() => setShareOpen(false)} /> : null}

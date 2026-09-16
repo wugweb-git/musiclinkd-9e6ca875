@@ -1,9 +1,18 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { BookOpen } from "lucide-react";
+import {
+  CalendarCheck,
+  CreditCard,
+  type LucideIcon,
+  Rocket,
+  Scale,
+  ShieldCheck,
+  Store,
+} from "lucide-react";
 import { Screen, TopBar, SearchBar } from "@/components/ml/ui";
-import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
-import { contentCategories, contentPages, popularSlugs, getPage } from "@/data/cms";
+import { EmptyState, Row } from "@/components/ml/kit";
+import { ArticleGrid, TopicFilter, type Article } from "@/components/ml/marketing";
+import { contentCategories, contentPages, popularSlugs, type ContentPage } from "@/data/cms";
 
 export const Route = createFileRoute("/help/")({
   head: () => ({
@@ -26,13 +35,47 @@ export const Route = createFileRoute("/help/")({
   component: HelpIndex,
 });
 
+/** One keyword per topic for the filter row; the category's full label stays on its own page. */
+const topics: Record<string, { short: string; icon: LucideIcon }> = {
+  "getting-started": { short: "Basics", icon: Rocket },
+  bookings: { short: "Bookings", icon: CalendarCheck },
+  marketplace: { short: "Marketplace", icon: Store },
+  trust: { short: "Trust", icon: ShieldCheck },
+  billing: { short: "Billing", icon: CreditCard },
+  legal: { short: "Legal", icon: Scale },
+};
+
+const topicOf = (key: string) => topics[key]?.short ?? key;
+
+/** Guides carry no pictures, so each card is a grey tile marked with its topic's icon. */
+function toArticle(p: ContentPage): Article {
+  const Icon = topics[p.category]?.icon ?? Rocket;
+  return {
+    id: p.slug,
+    title: p.title,
+    date: p.updated.replace(/^Updated /, ""),
+    topic: topicOf(p.category),
+    to: `/help/${p.slug}`,
+    badge: { kind: "icon", icon: <Icon size={24} aria-hidden /> },
+  };
+}
+
+// Popular guides lead "All"; the rest keep their written order.
+const ordered = [
+  ...popularSlugs.flatMap((slug) => contentPages.filter((p) => p.slug === slug)),
+  ...contentPages.filter((p) => !popularSlugs.includes(p.slug)),
+];
+
 function HelpIndex() {
   const [q, setQ] = useState("");
+  const [topic, setTopic] = useState("All");
   const results = q
     ? contentPages.filter((p) =>
         `${p.title} ${p.summary} ${p.category}`.toLowerCase().includes(q.toLowerCase()),
       )
     : [];
+  const topicNames = ["All", ...contentCategories.map((c) => topicOf(c.key))];
+  const shown = ordered.filter((p) => topic === "All" || topicOf(p.category) === topic);
 
   return (
     <Screen>
@@ -54,60 +97,20 @@ function HelpIndex() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              title="No results"
-              body="Try a shorter search, or browse the categories below."
-            />
+            <EmptyState title="No results" body="Try a shorter search, or pick a topic below." />
           )
         ) : (
-          <>
-            <section>
-              <h2 className="text-sm">Popular right now</h2>
-              <div className="mt-3 space-y-2">
-                {popularSlugs.map((slug) => {
-                  const p = getPage(slug);
-                  if (!p) return null;
-                  return (
-                    <Link key={slug} to="/help/$slug" params={{ slug }} className="block">
-                      <Card className="space-y-1.5">
-                        <div className="flex items-start justify-between gap-3">
-                          <h3 className="min-w-0 flex-1 text-sm leading-tight">{p.title}</h3>
-                          <StatusPill
-                            label={p.kind}
-                            tone={p.kind === "policy" ? "warn" : "brand"}
-                          />
-                        </div>
-                        <p className="line-clamp-2 text-1 text-muted-foreground">{p.summary}</p>
-                        <p className="text-1 text-muted-foreground">
-                          {p.readTime} · {p.updated}
-                        </p>
-                      </Card>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-
-            <section className="pb-4">
-              <div className="flex items-center gap-2">
-                <BookOpen size={16} className="text-primary" aria-hidden />
-                <h2 className="text-sm">Browse by topic</h2>
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {contentCategories.map((c) => (
-                  <Link
-                    key={c.key}
-                    to="/help/category/$key"
-                    params={{ key: c.key }}
-                    className="rounded-[20px] border border-border bg-card p-4"
-                  >
-                    <p className="truncate text-1 font-semibold">{c.label}</p>
-                    <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{c.blurb}</p>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          </>
+          <div className="pb-8">
+            <TopicFilter
+              topics={topicNames}
+              value={topic}
+              onChange={setTopic}
+              className="-mx-5 px-5"
+            />
+            <div className="mt-6">
+              <ArticleGrid articles={shown.map(toArticle)} />
+            </div>
+          </div>
         )}
       </div>
     </Screen>

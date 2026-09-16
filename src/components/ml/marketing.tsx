@@ -172,7 +172,8 @@ export type Article = {
   /** The date as it should read, e.g. "15 June 2026". Never "3 weeks ago". */
   date: string;
   topic: string;
-  image: string;
+  /** Left out when the piece has no picture: the tile stays, grey, carrying only the badge. */
+  image?: string | undefined;
   to: string;
   /** A face or a mark that sits on the image — the author, or the subject of the piece. */
   badge?: { kind: "avatar"; src: string; alt: string } | { kind: "icon"; icon: ReactNode };
@@ -184,12 +185,16 @@ export function ArticleCard({ article: a }: { article: Article }) {
   const body = (
     <>
       <div className="relative overflow-hidden rounded-3xl">
-        <img
-          src={a.image}
-          alt=""
-          loading="lazy"
-          className="aspect-video w-full object-cover transition-transform duration-320 ease-standard group-hover:scale-[1.02] motion-reduce:transition-none"
-        />
+        {a.image ? (
+          <img
+            src={a.image}
+            alt=""
+            loading="lazy"
+            className="aspect-video w-full object-cover transition-transform duration-320 ease-standard group-hover:scale-[1.02] motion-reduce:transition-none"
+          />
+        ) : (
+          <div className="aspect-video w-full bg-subtle" />
+        )}
         {a.badge ? (
           <span className="absolute bottom-4 left-1/2 flex h-14 w-14 -translate-x-1/2 items-center justify-center overflow-hidden rounded-3xl bg-card text-foreground shadow-elevation-2">
             {a.badge.kind === "avatar" ? (
