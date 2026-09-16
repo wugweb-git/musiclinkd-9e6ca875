@@ -280,16 +280,16 @@
    * roadmap.md rather than resolved here.
    */
   --background: #ececf1;
-  --foreground: oklch(0.1591 0 89.88);
+  --foreground: var(--ink); /* default text is ink black */
   --card: oklch(1 0 89.88);
-  --card-foreground: oklch(0.1591 0 89.88);
+  --card-foreground: var(--ink);
   --popover: oklch(1 0 89.88);
-  --popover-foreground: oklch(0.1591 0 89.88);
+  --popover-foreground: var(--ink);
   /* Primary is ink (owner, 14 Sep): buttons, selection, progress, focus. Pink is --brand. */
   --primary: #0d0d0d;
   --primary-foreground: oklch(1 0 89.88);
   --secondary: #f8f8fb;
-  --secondary-foreground: oklch(0.1713 0.0539 282.44);
+  --secondary-foreground: var(--ink);
   --muted: #f8f8fb;
   /*
    * tokens.json `muted`. Adopted 11 Sep 2026, replacing oklch(0.56 0.0257 285.59)
@@ -302,7 +302,7 @@
   --muted-foreground: #66666f;
   /* Accent is a neutral hover surface. Purple lives on the category badge only. */
   --accent: #f8f8fb;
-  --accent-foreground: oklch(0.1591 0 89.88);
+  --accent-foreground: var(--ink);
   --destructive: oklch(0.5771 0.2152 27.33);
   --destructive-foreground: oklch(1 0 89.88);
   /*
@@ -768,4 +768,12 @@ html:active-view-transition-type(fade)::view-transition-new(root) {
 }
 @utility z-sheet {
   z-index: var(--z-sheet);
+}
+
+/* Icons are black by default. A lucide icon takes its colour from the text around it, so inside
+ * grey meta text (or given the grey class itself) it drew grey. Unlayered so it outranks the
+ * utilities; an icon given any other colour class (white on ink, green for available) keeps it. */
+svg.lucide.text-muted-foreground,
+.text-muted-foreground svg.lucide:not([class*="text-"]) {
+  color: var(--color-foreground);
 }
