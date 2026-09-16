@@ -35,6 +35,7 @@ import {
   type Proposal,
 } from "@/data/collab";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 /* ------------------------------------------------------------------ */
 /* Tone helpers                                                        */
@@ -250,7 +251,7 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
         <p className="truncate text-1 text-muted-foreground">{file.access}</p>
       </div>
       {file.available ? (
-        <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
+        <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" />
       ) : null}
     </>
   );
@@ -298,7 +299,7 @@ export function AudioPlayer({ title, meta }: { title: string; meta: string }) {
           aria-label={playing ? "Pause" : "Play"}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground"
         >
-          {playing ? <Pause size={20} /> : <Play size={20} />}
+          {playing ? <Pause size={iconSize.md} /> : <Play size={iconSize.md} />}
         </button>
         <span className="text-1 text-muted-foreground">
           {playing ? "1:28" : "0:00"} / {meta.split("·").pop()?.trim() ?? "—"}
@@ -332,7 +333,7 @@ export function MilestoneRow({
           m.status === "done" ? "border-transparent bg-success" : "border-border"
         }`}
       >
-        {m.status === "done" ? <Check size={16} className="text-background" /> : null}
+        {m.status === "done" ? <Check size={iconSize.sm} className="text-background" /> : null}
       </button>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
@@ -395,7 +396,7 @@ export function ProposalSummary({ p }: { p: Proposal }) {
       <ul className="mb-4 space-y-1.5">
         {p.deliverables.map((d) => (
           <li key={d} className="flex items-start gap-2 text-1">
-            <Check size={16} className="mt-0.5 shrink-0 text-primary" />
+            <Check size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
             {d}
           </li>
         ))}
@@ -458,7 +459,7 @@ export function EmptyState({
   return (
     <BaseEmptyState
       variant="circle-lg"
-      icon={<Music size={24} aria-hidden />}
+      icon={<Music size={iconSize.lg} aria-hidden />}
       title={title}
       body={body}
       action={action}
@@ -477,12 +478,12 @@ export function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center rounded-lg bg-subtle px-6 py-12 text-center">
-      <AlertTriangle size={24} className="mb-3 text-destructive" />
+      <AlertTriangle size={iconSize.lg} className="mb-3 text-destructive" />
       <h3 className="text-2">{title}</h3>
       <p className="mt-1 mb-5 text-1 text-muted-foreground">{body}</p>
       {onRetry ? (
         <Btn onClick={onRetry}>
-          <RefreshCw size={16} className="mr-2" /> Retry
+          <RefreshCw size={iconSize.sm} className="mr-2" /> Retry
         </Btn>
       ) : null}
     </div>
@@ -492,7 +493,7 @@ export function ErrorState({
 export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
     <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn">
-      <WifiOff size={16} className="shrink-0" />
+      <WifiOff size={iconSize.sm} className="shrink-0" />
       <p className="flex-1 text-1 font-semibold">
         Offline — showing cached project data. 2 changes not yet synced.
       </p>
@@ -517,7 +518,7 @@ export function PermissionState() {
 export function PinnedNote({ children }: { children: ReactNode }) {
   return (
     <div className="mb-3 flex items-start gap-2 rounded-lg bg-subtle px-4 py-3 text-foreground">
-      <Pin size={16} className="mt-0.5 shrink-0" />
+      <Pin size={iconSize.sm} className="mt-0.5 shrink-0" />
       <p className="text-1 font-semibold">{children}</p>
     </div>
   );
@@ -545,7 +546,7 @@ export function UploadPanel({
         onClick={onStart}
         className="flex w-full flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-8"
       >
-        <Upload size={20} className="mb-2 text-primary" />
+        <Upload size={iconSize.md} className="mb-2 text-primary" />
         <span className="text-1 font-semibold">Select a file to upload</span>
         <span className="mt-1 text-1 text-muted-foreground">
           Audio, video, images, documents, lyrics or contracts
@@ -559,7 +560,7 @@ export function UploadPanel({
         <div className="mb-2 flex items-center justify-between">
           <p className="text-1 font-semibold">Uploading Mix v4.wav</p>
           <button type="button" onClick={onCancel} aria-label="Cancel upload">
-            <X size={16} className="text-muted-foreground" />
+            <X size={iconSize.sm} className="text-muted-foreground" />
           </button>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-background">
@@ -573,7 +574,7 @@ export function UploadPanel({
     return (
       <Card>
         <div className="flex items-start gap-3">
-          <AlertTriangle size={20} className="mt-0.5 shrink-0 text-destructive" />
+          <AlertTriangle size={iconSize.md} className="mt-0.5 shrink-0 text-destructive" />
           <div className="flex-1">
             <p className="text-1 font-semibold">Upload failed</p>
             <p className="text-1 text-muted-foreground">
@@ -590,7 +591,7 @@ export function UploadPanel({
   return (
     <Card>
       <div className="flex items-center gap-3">
-        <Check size={20} className="text-[color:var(--success)]" />
+        <Check size={iconSize.md} className="text-[color:var(--success)]" />
         <p className="text-1 font-semibold">Mix v4.wav uploaded to the project</p>
       </div>
     </Card>
@@ -660,7 +661,7 @@ export function TextInput({
 
 export function StickyBar({ children }: { children: ReactNode }) {
   return (
-    <div className="sticky bottom-0 z-30 mt-6 border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
+    <div className="sticky bottom-0 z-bar mt-6 border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
       {children}
     </div>
   );
@@ -687,7 +688,7 @@ export function RowLink({
         <p className={`truncate text-2 font-medium ${danger ? "text-destructive" : ""}`}>{title}</p>
         {subtitle ? <p className="truncate text-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
-      <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
+      <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" />
     </>
   );
   if (to) {

@@ -7,6 +7,7 @@ import { Building2, Globe, Mail, Phone, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { QrCode, ActionRow, nativeShare } from "@/components/ml/qr";
 import { canonicalUrl, myIdentity } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/contact/")({
   head: () => ({
@@ -31,13 +32,13 @@ function BusinessCard() {
   const c = myIdentity.contact;
   const url = canonicalUrl(myIdentity.code);
   const shared = [
-    c.phone.shared ? { icon: <Phone size={16} />, label: c.phone.value, hint: "Mobile" } : null,
-    c.email.shared ? { icon: <Mail size={16} />, label: c.email.value, hint: "Email" } : null,
+    c.phone.shared ? { icon: <Phone size={iconSize.sm} />, label: c.phone.value, hint: "Mobile" } : null,
+    c.email.shared ? { icon: <Mail size={iconSize.sm} />, label: c.email.value, hint: "Email" } : null,
     c.company.shared
-      ? { icon: <Building2 size={16} />, label: c.company.value, hint: "Studio" }
+      ? { icon: <Building2 size={iconSize.sm} />, label: c.company.value, hint: "Studio" }
       : null,
     c.website.shared
-      ? { icon: <Globe size={16} />, label: c.website.value, hint: "Website" }
+      ? { icon: <Globe size={iconSize.sm} />, label: c.website.value, hint: "Website" }
       : null,
   ].filter(Boolean) as { icon: React.ReactNode; label: string; hint: string }[];
 
@@ -75,7 +76,7 @@ function BusinessCard() {
 
         <div className="mt-4 flex gap-2">
           <BtnLink to="/identity/contact/save" className="flex-1 w-full">
-            <UserRoundPlus size={16} className="mr-2" /> Save Contact
+            <UserRoundPlus size={iconSize.sm} className="mr-2" /> Save Contact
           </BtnLink>
           <Btn
             variant="outline"

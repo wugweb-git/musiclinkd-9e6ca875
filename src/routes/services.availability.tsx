@@ -20,6 +20,7 @@ import {
   noticeDefault,
   type AvailabilityState,
 } from "@/data/services";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/services/availability")({
   head: () => ({
@@ -117,7 +118,7 @@ function Availability() {
               onClick={() => setAddOff(true)}
               className="inline-flex items-center gap-1 text-1 font-semibold text-foreground"
             >
-              <Plus size={16} /> Add
+              <Plus size={iconSize.sm} /> Add
             </button>
           </div>
           {off.length ? (
@@ -149,7 +150,7 @@ function Availability() {
 
         <Card className="space-y-1">
           <p className="flex items-center gap-2 text-1 font-semibold">
-            <CalendarOff size={16} /> Bookings already confirmed
+            <CalendarOff size={iconSize.sm} /> Bookings already confirmed
           </p>
           <p className="text-1 text-muted-foreground">
             Changing hours never cancels a confirmed booking — manage those in your provider
@@ -161,7 +162,7 @@ function Availability() {
         </Card>
 
         <Row
-          icon={<CalendarOff size={16} />}
+          icon={<CalendarOff size={iconSize.sm} />}
           title="Booking conflicts"
           subtitle="Requests that overlap your hours or time off"
           to="/services/conflicts"

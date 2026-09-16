@@ -40,6 +40,7 @@ import {
   nativeShare,
 } from "@/components/ml/qr";
 import { canonicalUrl, myIdentity, qrStyles, SHORT_HOST, type QrStyle } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/qr")({
   head: () => ({
@@ -144,14 +145,14 @@ function DigitalId() {
             aria-label="Back to your profile"
             className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10"
           >
-            <ArrowLeft size={20} aria-hidden />
+            <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
           <Link
             to="/identity/settings"
             aria-label="QR settings"
             className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10"
           >
-            <Settings2 size={16} aria-hidden />
+            <Settings2 size={iconSize.sm} aria-hidden />
           </Link>
         </div>
 
@@ -203,7 +204,7 @@ function DigitalId() {
               <h1 className="flex items-center justify-center gap-1.5 text-3 leading-tight">
                 {me.name}
                 {me.verified ? (
-                  <BadgeCheck size={20} aria-label="Verified" className="shrink-0" />
+                  <BadgeCheck size={iconSize.md} aria-label="Verified" className="shrink-0" />
                 ) : null}
               </h1>
               {me.username || me.role ? (
@@ -217,7 +218,7 @@ function DigitalId() {
               <Btn
                 variant="ghost"
                 className="min-w-0 flex-1 bg-background px-3 text-foreground"
-                icon={<Share2 size={16} aria-hidden />}
+                icon={<Share2 size={iconSize.sm} aria-hidden />}
                 onClick={() => setShare(true)}
               >
                 Share
@@ -225,7 +226,7 @@ function DigitalId() {
               <Btn
                 variant="ghost"
                 className="min-w-0 flex-1 border border-background/25 px-3 text-background"
-                icon={<Palette size={16} aria-hidden />}
+                icon={<Palette size={iconSize.sm} aria-hidden />}
                 onClick={() => setLook(true)}
               >
                 Style
@@ -241,32 +242,32 @@ function DigitalId() {
 
           <div className="mt-4 flex flex-col gap-2">
             <ActionRow
-              icon={<ScanLine size={16} />}
+              icon={<ScanLine size={iconSize.sm} />}
               label="Scan a MusicLinkd QR"
               hint="Point the camera at someone's code"
               to="/identity/scan"
             />
             <ActionRow
-              icon={<IdCard size={16} />}
+              icon={<IdCard size={iconSize.sm} />}
               label="Digital business card"
               hint="Name, role, the contact details you choose to share"
               to="/identity/contact"
             />
             <ActionRow
-              icon={<Building2 size={16} />}
+              icon={<Building2 size={iconSize.sm} />}
               label="Business QR"
               hint="A code for a studio, label or venue you run"
               to="/identity/business"
             />
             <ActionRow
-              icon={<Printer size={16} />}
+              icon={<Printer size={iconSize.sm} />}
               label="Print preview"
               hint="Card, poster, studio sign, badge"
               to="/identity/print"
             />
-            <ActionRow icon={<History size={16} />} label="Scan history" to="/identity/history" />
+            <ActionRow icon={<History size={iconSize.sm} />} label="Scan history" to="/identity/history" />
             <ActionRow
-              icon={<BarChart3 size={16} />}
+              icon={<BarChart3 size={iconSize.sm} />}
               label="QR analytics"
               hint="Scans, visits, conversions"
               to="/identity/analytics"

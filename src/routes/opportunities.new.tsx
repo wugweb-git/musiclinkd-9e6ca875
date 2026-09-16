@@ -5,6 +5,7 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
 import { categoryIcon } from "@/components/ml/opportunity";
+import { iconSize } from "@/lib/tokens";
 
 type Step =
   | "basics"
@@ -85,7 +86,7 @@ function CreateOpportunity() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="space-y-3 text-center">
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Check size={24} />
+              <Check size={iconSize.lg} />
             </span>
             <h2 className="text-3 leading-tight">Your opportunity is live</h2>
             <p className="text-1 text-muted-foreground">
@@ -325,7 +326,7 @@ function CreateOpportunity() {
         ) : null}
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           {idx > 0 ? (
             <Btn variant="outline" className="flex-1" onClick={() => go(order[idx - 1]!)}>

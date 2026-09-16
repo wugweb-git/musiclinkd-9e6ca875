@@ -9,6 +9,7 @@ import { Download, Printer, Share2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { QrIdentityCard, CopyLinkRow, ShareActions, DownloadNote } from "@/components/ml/qr";
 import { canonicalUrl, myBusiness } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/business")({
   head: () => ({
@@ -53,20 +54,20 @@ function BusinessQr() {
 
         <div className="mt-3 flex gap-2">
           <Btn className="flex-1" onClick={() => setShare(true)}>
-            <Share2 size={16} className="mr-2" /> Share
+            <Share2 size={iconSize.sm} className="mr-2" /> Share
           </Btn>
           <Btn
             variant="outline"
             className="flex-1"
             onClick={() => toast.success("Business QR saved")}
           >
-            <Download size={16} className="mr-2" /> Download
+            <Download size={iconSize.sm} className="mr-2" /> Download
           </Btn>
         </div>
 
         <div className="mt-3">
           <BtnLink to="/identity/print" variant="ghost" className="w-full">
-            <Printer size={16} className="mr-2" /> Preview Studio Sign & Poster
+            <Printer size={iconSize.sm} className="mr-2" /> Preview Studio Sign & Poster
           </BtnLink>
         </div>
 

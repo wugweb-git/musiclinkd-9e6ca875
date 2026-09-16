@@ -15,6 +15,7 @@ import {
 } from "@/components/ml/market";
 import { listings, marketCategories } from "@/data/market";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/")({
   head: () => ({
@@ -61,7 +62,7 @@ function MarketHome() {
 
   return (
     <Screen>
-      <header className="sticky top-0 z-30 bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
+      <header className="sticky top-0 z-bar bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
         <div className="mb-3 flex items-center justify-between">
           <div>
             <h1 className="text-3 leading-tight">Market</h1>
@@ -70,7 +71,7 @@ function MarketHome() {
               onClick={() => setLocationOpen(true)}
               className="mt-0.5 inline-flex items-center gap-1 text-1 font-semibold text-muted-foreground"
             >
-              <MapPin size={12} /> {city} · change
+              <MapPin size={iconSize.xs} /> {city} · change
             </button>
           </div>
           <div className="flex items-center gap-2">
@@ -78,14 +79,14 @@ function MarketHome() {
               to="/marketplace/sell"
               className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
             >
-              <Plus size={16} /> Sell
+              <Plus size={iconSize.sm} /> Sell
             </Link>
             <button
               aria-label="Filters"
               onClick={() => setFilters(true)}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <SlidersHorizontal size={16} />
+              <SlidersHorizontal size={iconSize.sm} />
             </button>
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
           </div>

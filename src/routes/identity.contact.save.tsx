@@ -8,6 +8,7 @@ import { Check, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { StateCard, ActionRow } from "@/components/ml/qr";
 import { myIdentity } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/contact/save")({
   head: () => ({
@@ -39,7 +40,7 @@ function SaveContact() {
             body={`${myIdentity.name} was added to your phone contacts with their MusicLinkd profile link.`}
           >
             <BtnLink to="/identity/contact" className="w-full">
-              <Check size={16} className="mr-2" /> Done
+              <Check size={iconSize.sm} className="mr-2" /> Done
             </BtnLink>
           </StateCard>
         ) : phase === "error" ? (
@@ -55,21 +56,21 @@ function SaveContact() {
               <p className="pill bg-background text-muted-foreground">Will be saved</p>
               <div className="mt-3 flex flex-col gap-2">
                 <ActionRow
-                  icon={<UserRoundPlus size={16} />}
+                  icon={<UserRoundPlus size={iconSize.sm} />}
                   label={myIdentity.name}
                   hint={myIdentity.role}
                 />
                 {c.phone.shared ? (
-                  <ActionRow icon={<Check size={16} />} label={c.phone.value} hint="Mobile" />
+                  <ActionRow icon={<Check size={iconSize.sm} />} label={c.phone.value} hint="Mobile" />
                 ) : null}
                 {c.email.shared ? (
-                  <ActionRow icon={<Check size={16} />} label={c.email.value} hint="Email" />
+                  <ActionRow icon={<Check size={iconSize.sm} />} label={c.email.value} hint="Email" />
                 ) : null}
                 {c.company.shared ? (
-                  <ActionRow icon={<Check size={16} />} label={c.company.value} hint="Company" />
+                  <ActionRow icon={<Check size={iconSize.sm} />} label={c.company.value} hint="Company" />
                 ) : null}
                 <ActionRow
-                  icon={<Check size={16} />}
+                  icon={<Check size={iconSize.sm} />}
                   label={`musiclinkd.app/q/${myIdentity.code}`}
                   hint="Profile link"
                 />

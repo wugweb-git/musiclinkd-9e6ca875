@@ -6,6 +6,7 @@ import { Card, EmptyState, Price, StatusPill } from "@/components/ml/kit";
 import { getOpportunity, payParts } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { iconSize } from "@/lib/tokens";
 
 type Step = "portfolio" | "message" | "review" | "done";
 const order: Step[] = ["portfolio", "message", "review", "done"];
@@ -73,7 +74,7 @@ function ApplyFlow() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="space-y-3 text-center">
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Check size={24} />
+              <Check size={iconSize.lg} />
             </span>
             <h2 className="text-3 leading-tight">You're in for {o.title}</h2>
             <p className="text-1 text-muted-foreground">
@@ -220,7 +221,7 @@ function ApplyFlow() {
         ) : null}
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           {idx > 0 ? (
             <Btn variant="outline" className="flex-1" onClick={() => go(order[idx - 1]!)}>

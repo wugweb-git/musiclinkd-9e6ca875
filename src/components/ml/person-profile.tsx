@@ -70,6 +70,7 @@ import {
 import { HireModal } from "./hire-modal";
 import { BottomCta } from "./marketing";
 import { useAuth } from "@/hooks/use-auth";
+import { iconSize } from "@/lib/tokens";
 
 type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About" | "Reviews";
 
@@ -156,7 +157,7 @@ export function PersonProfileExperience({
       {owner ? null : (
         <nav
           aria-label="Profile sections"
-          className="sticky top-0 z-20 border-b border-border bg-subtle/95 px-2 backdrop-blur"
+          className="sticky top-0 z-tabs border-b border-border bg-subtle/95 px-2 backdrop-blur"
         >
           <div role="tablist" aria-label="Profile sections" className="flex items-stretch">
             {tabs.map(({ key, icon: Icon }) => {
@@ -252,7 +253,7 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
       <Btn
         variant={connected ? "outline" : "primary"}
         className="min-w-0 flex-1 px-3"
-        icon={connected ? <Check size={16} aria-hidden /> : <UserPlus size={16} aria-hidden />}
+        icon={connected ? <Check size={iconSize.sm} aria-hidden /> : <UserPlus size={iconSize.sm} aria-hidden />}
         onClick={() => setConnected((c) => !c)}
       >
         {connected ? "Requested" : "Connect"}
@@ -261,7 +262,7 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         to="/messages"
         variant="outline"
         className="min-w-0 flex-1 px-3"
-        icon={<Send size={16} aria-hidden />}
+        icon={<Send size={iconSize.sm} aria-hidden />}
       >
         Message
       </BtnLink>
@@ -270,14 +271,14 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         <Btn
           variant="outline"
           className="min-w-0 flex-1 px-3"
-          icon={<BriefcaseBusiness size={16} aria-hidden />}
+          icon={<BriefcaseBusiness size={iconSize.sm} aria-hidden />}
           onClick={onHire}
         >
           Hire
         </Btn>
       ) : onHire ? (
         <IconBtn label="Hire" variant="outline" className="h-12 w-12" onClick={onHire}>
-          <BriefcaseBusiness size={20} aria-hidden />
+          <BriefcaseBusiness size={iconSize.md} aria-hidden />
         </IconBtn>
       ) : null}
       <IconBtn
@@ -286,7 +287,7 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         className="h-12 w-12"
         onClick={() => setFollowing((f) => !f)}
       >
-        {following ? <Check size={20} aria-hidden /> : <Plus size={20} aria-hidden />}
+        {following ? <Check size={iconSize.md} aria-hidden /> : <Plus size={iconSize.md} aria-hidden />}
       </IconBtn>
     </div>
   );
@@ -305,15 +306,15 @@ function OwnerActions({
     // Icon-only actions: the label is each button's accessible name and its tooltip.
     <div className="flex items-center gap-2">
       <IconBtnLink to="/profile/edit" label="Edit Profile" variant="ink" className="h-11 w-11">
-        <Pencil size={20} aria-hidden />
+        <Pencil size={iconSize.md} aria-hidden />
       </IconBtnLink>
       {onShare ? (
         <IconBtn label="Share Profile" variant="outline" className="h-11 w-11" onClick={onShare}>
-          <Share2 size={20} aria-hidden />
+          <Share2 size={iconSize.md} aria-hidden />
         </IconBtn>
       ) : null}
       <IconBtn label="Stats" variant="outline" className="h-11 w-11" onClick={onInsights}>
-        <BarChart3 size={20} aria-hidden />
+        <BarChart3 size={iconSize.md} aria-hidden />
       </IconBtn>
       {/* The public page needs a username; without one, set it in profile edit. */}
       <IconBtnLink
@@ -324,7 +325,7 @@ function OwnerActions({
         variant="outline"
         className="h-11 w-11"
       >
-        <ExternalLink size={20} aria-hidden />
+        <ExternalLink size={iconSize.md} aria-hidden />
       </IconBtnLink>
     </div>
   );
@@ -345,10 +346,10 @@ function OwnerPanel({
         <CompletionCard percent={completion.percent} missing={completion.missing} />
       ) : null}
       <div className="grid grid-cols-2 gap-2">
-        <OwnerLink to="/portfolio" icon={<FolderKanban size={16} />} label="Manage portfolio" />
-        <OwnerLink to="/services" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
-        <OwnerLink to="/reviews" icon={<Star size={16} />} label="Reviews" />
-        <OwnerLink to="/settings" icon={<Settings size={16} />} label="Settings" />
+        <OwnerLink to="/portfolio" icon={<FolderKanban size={iconSize.sm} />} label="Manage portfolio" />
+        <OwnerLink to="/services" icon={<BriefcaseBusiness size={iconSize.sm} />} label="Manage services" />
+        <OwnerLink to="/reviews" icon={<Star size={iconSize.sm} />} label="Reviews" />
+        <OwnerLink to="/settings" icon={<Settings size={iconSize.sm} />} label="Settings" />
       </div>
 
       {insightsOpen ? (
@@ -358,7 +359,7 @@ function OwnerPanel({
               <p className="pill bg-background text-muted-foreground">Profile insights</p>
               {insights ? <h2 className="mt-1 text-2">{insights.range}</h2> : null}
             </div>
-            <BarChart3 size={20} className="text-primary" aria-hidden />
+            <BarChart3 size={iconSize.md} className="text-primary" aria-hidden />
           </div>
           {insights ? (
             <div className="mt-4 grid grid-cols-2 gap-3">
@@ -401,7 +402,7 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
-      <ChevronRight size={16} className="ml-auto shrink-0 text-muted-foreground" aria-hidden />
+      <ChevronRight size={iconSize.sm} className="ml-auto shrink-0 text-muted-foreground" aria-hidden />
     </Link>
   );
 }
@@ -432,7 +433,7 @@ function Overview({
               className="state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-97"
               onClick={() => onTab("About")}
             >
-              Read full profile <ChevronRight size={16} aria-hidden />
+              Read full profile <ChevronRight size={iconSize.sm} aria-hidden />
             </button>
           </div>
         ) : (
@@ -740,7 +741,7 @@ function Portfolio({
               className="h-10 w-10"
               onClick={() => setLayout("grid")}
             >
-              <LayoutGrid size={16} aria-hidden />
+              <LayoutGrid size={iconSize.sm} aria-hidden />
             </IconBtn>
             <IconBtn
               label="Row view"
@@ -748,7 +749,7 @@ function Portfolio({
               className="h-10 w-10"
               onClick={() => setLayout("rows")}
             >
-              <Rows3 size={16} aria-hidden />
+              <Rows3 size={iconSize.sm} aria-hidden />
             </IconBtn>
           </span>
         }
@@ -956,14 +957,14 @@ function About({ p }: { p: PersonProfile }) {
       <ProfileSection title="Connections">
         <div className="grid grid-cols-2 gap-3">
           <IdentityFact
-            icon={<Users size={16} />}
+            icon={<Users size={iconSize.sm} />}
             label="Connections"
             value={p.stats.connections}
           />
-          <IdentityFact icon={<Globe2 size={16} />} label="Followers" value={p.stats.followers} />
-          <IdentityFact icon={<MapPin size={16} />} label="Location" value={p.location || "—"} />
+          <IdentityFact icon={<Globe2 size={iconSize.sm} />} label="Followers" value={p.stats.followers} />
+          <IdentityFact icon={<MapPin size={iconSize.sm} />} label="Location" value={p.location || "—"} />
           <IdentityFact
-            icon={<Clock3 size={16} />}
+            icon={<Clock3 size={iconSize.sm} />}
             label="Experience"
             value={p.yearsActive || "—"}
           />
@@ -979,7 +980,7 @@ function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
       <ProfileSection title="Reviews">
         {p.reviewCount ? (
           <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
-            <Star size={16} className="fill-foreground" aria-hidden />
+            <Star size={iconSize.sm} className="fill-foreground" aria-hidden />
             {p.rating.toFixed(1)}
             <span className="font-normal text-muted-foreground">
               · {p.reviewCount} {p.reviewCount === 1 ? "review" : "reviews"}
@@ -1062,7 +1063,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
         <ProfileSection title="Studio connection">
           <Link to={p.studio.to} className="flex items-center gap-3 rounded-lg bg-subtle p-4">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
-              <Mic2 size={20} aria-hidden />
+              <Mic2 size={iconSize.md} aria-hidden />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold">{p.studio.name}</span>
@@ -1077,7 +1078,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
                 amountClassName="text-sm font-semibold"
               />
             </span>
-            <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+            <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
           </Link>
         </ProfileSection>
       ) : null}

@@ -6,6 +6,7 @@ import { Card, Segmented, StatusPill, EmptyState, Loading } from "@/components/m
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBands } from "@/lib/band-view";
 import { joinParts } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/bands/")({
   loader: () => loadBands(),
@@ -54,7 +55,7 @@ function BandsIndex() {
             aria-label="Create a band"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
           >
-            <Plus size={20} aria-hidden />
+            <Plus size={iconSize.md} aria-hidden />
           </Link>
         }
       />
@@ -121,7 +122,7 @@ function BandsIndex() {
                       <p className="mt-3 line-clamp-2 text-1 text-muted-foreground">{b.tagline}</p>
                     ) : null}
                     <div className="mt-3 flex items-center gap-2 text-1 text-muted-foreground">
-                      <Users size={16} aria-hidden />
+                      <Users size={iconSize.sm} aria-hidden />
                       <span className="truncate">{b.members.length} members</span>
                     </div>
                     {b.lookingFor.length ? (

@@ -92,7 +92,7 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
       <button
         type="button"
         onClick={() => shift(-1)}
-        className="min-h-11 px-2 text-sm font-semibold text-foreground"
+        className="min-h-touch px-2 text-sm font-semibold text-foreground"
       >
         ← Prev
       </button>
@@ -100,7 +100,7 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
       <button
         type="button"
         onClick={() => shift(1)}
-        className="min-h-11 px-2 text-sm font-semibold text-foreground"
+        className="min-h-touch px-2 text-sm font-semibold text-foreground"
       >
         Next →
       </button>
@@ -148,7 +148,7 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
           </p>
           <Link
             to="/provider/availability"
-            className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
+            className="mt-3 inline-flex min-h-touch items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
           >
             Edit availability
           </Link>

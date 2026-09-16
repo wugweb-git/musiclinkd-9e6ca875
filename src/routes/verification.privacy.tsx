@@ -3,6 +3,7 @@ import { ShieldCheck } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { Card, Row } from "@/components/ml/kit";
 import { privacyPoints, verificationFaq } from "@/data/verification";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/verification/privacy")({
   head: () => ({
@@ -35,7 +36,7 @@ function VerificationPrivacy() {
       />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="flex gap-3">
-          <ShieldCheck size={20} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+          <ShieldCheck size={iconSize.md} className="mt-0.5 shrink-0 text-primary" aria-hidden />
           <p className="text-1 text-muted-foreground">
             Verification documents are private. Other members only ever see the badge and its
             status.

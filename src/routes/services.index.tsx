@@ -8,6 +8,7 @@ import { serviceStatusTone } from "@/data/services";
 import { categoryEmoji, optionLabel, useMyServices, useServiceOptions } from "@/hooks/use-services";
 import { priceParts } from "@/lib/price";
 import type { ServiceStatus } from "@/lib/services.functions";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -51,7 +52,7 @@ function ServicesHome() {
             aria-label="Add service"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
-            <Plus size={20} />
+            <Plus size={iconSize.md} />
           </Link>
         }
       />
@@ -70,13 +71,13 @@ function ServicesHome() {
 
         <div className="space-y-2">
           <Row
-            icon={<CalendarClock size={16} />}
+            icon={<CalendarClock size={iconSize.sm} />}
             title="Availability"
             subtitle="Weekly hours, notice period, time off"
             to="/services/availability"
           />
           <Row
-            icon={<Settings2 size={16} />}
+            icon={<Settings2 size={iconSize.sm} />}
             title="Booking policies"
             subtitle="Deposits, cancellation, rescheduling"
             to="/provider/policies"

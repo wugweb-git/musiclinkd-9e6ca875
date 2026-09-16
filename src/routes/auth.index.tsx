@@ -20,6 +20,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { MadeByWugweb } from "@/components/ml/kit";
+import { iconSize } from "@/lib/tokens";
 
 /*
  * Sign in with email: the alternative on the mobile sign-in screen. One field and a 6-digit code,
@@ -123,7 +124,7 @@ function EmailSignIn() {
       <TrustNote>Your email is never shown on your public profile.</TrustNote>
 
       <p className="mt-6 flex justify-center text-sm">
-        <AuthLink to="/auth/phone" icon={<Smartphone size={16} />}>
+        <AuthLink to="/auth/phone" icon={<Smartphone size={iconSize.sm} />}>
           Sign in with Mobile
         </AuthLink>
       </p>

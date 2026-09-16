@@ -8,6 +8,7 @@ import { ScanLine, Trash2 } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { ActionRow, StateCard } from "@/components/ml/qr";
 import { scanHistory } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/history")({
   head: () => ({
@@ -41,7 +42,7 @@ function ScanHistory() {
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
               aria-label="Clear history"
             >
-              <Trash2 size={16} />
+              <Trash2 size={iconSize.sm} />
             </button>
           ) : null
         }
@@ -53,7 +54,7 @@ function ScanHistory() {
             body="Codes you scan appear here so you can find that studio or session player again."
           >
             <BtnLink to="/identity/scan" className="w-full">
-              <ScanLine size={16} className="mr-2" /> Open Scanner
+              <ScanLine size={iconSize.sm} className="mr-2" /> Open Scanner
             </BtnLink>
           </StateCard>
         ) : (
@@ -61,7 +62,7 @@ function ScanHistory() {
             {items.map((h) => (
               <Link key={h.code} to="/identity/q/$code" params={{ code: h.code }}>
                 <ActionRow
-                  icon={<ScanLine size={16} />}
+                  icon={<ScanLine size={iconSize.sm} />}
                   label={h.label}
                   hint={`${h.kind} · ${h.when}`}
                 />

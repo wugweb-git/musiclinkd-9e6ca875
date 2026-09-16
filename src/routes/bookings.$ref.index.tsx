@@ -19,6 +19,7 @@ import {
   priceFor,
 } from "@/data/booking";
 import { addToCalendar, openDirections } from "@/lib/booking-actions";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/bookings/$ref/")({
   head: () => ({
@@ -99,7 +100,7 @@ function BookingDetail() {
               <p className="truncate font-semibold">{b.name}</p>
               <p className="truncate text-1 text-muted-foreground">{r.name}</p>
               <p className="mt-1 inline-flex items-center gap-1 text-1 text-muted-foreground">
-                <MapPin size={12} /> {b.area}, {b.city}
+                <MapPin size={iconSize.xs} /> {b.area}, {b.city}
               </p>
             </div>
           </div>
@@ -142,7 +143,7 @@ function BookingDetail() {
 
         <div className="mt-6 space-y-2">
           <BtnLink to="/messages" variant="outline" className="w-full">
-            <MessageCircle size={16} className="mr-1.5" /> Message Provider
+            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message Provider
           </BtnLink>
 
           {upcoming ? (
@@ -162,14 +163,14 @@ function BookingDetail() {
                   })
                 }
               >
-                <CalendarPlus size={16} className="mr-1.5" /> Add to Calendar
+                <CalendarPlus size={iconSize.sm} className="mr-1.5" /> Add to Calendar
               </Btn>
               <Btn
                 variant="outline"
                 className="w-full"
                 onClick={() => openDirections(`${b.name}, ${b.area}, ${b.city}`)}
               >
-                <Navigation size={16} className="mr-1.5" /> Get Directions
+                <Navigation size={iconSize.sm} className="mr-1.5" /> Get Directions
               </Btn>
               <BtnLink
                 to="/bookings/$ref/reschedule"

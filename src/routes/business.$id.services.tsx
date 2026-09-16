@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRefreshServices } from "@/hooks/use-services";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { setServiceStatus } from "@/lib/services.functions";
+import { iconSize } from "@/lib/tokens";
 
 const statusPill = {
   active: { label: "Live", tone: "good" },
@@ -84,14 +85,14 @@ function BusinessServices() {
             aria-label="Add service"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
-            <Plus size={20} />
+            <Plus size={iconSize.md} />
           </Link>
         }
       />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Row
-          icon={<CalendarClock size={16} />}
+          icon={<CalendarClock size={iconSize.sm} />}
           title="Business availability"
           subtitle="Opening hours, blackout dates, notice"
           to="/business/$id/availability"

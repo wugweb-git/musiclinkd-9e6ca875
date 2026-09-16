@@ -5,6 +5,7 @@ import { OnboardingProvider, useOnboarding, useScrollEdges } from "@/components/
 import { beat, useArrival } from "@/lib/flow-motion";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 /** A next-step card is a link: it takes the button's state layer and press scale. */
 const nextCard =
@@ -59,7 +60,7 @@ function Done() {
 
       <main className="px-5 pt-4">
         <section className={cn("rounded-lg bg-subtle p-6 text-center", rise)}>
-          <Sparkles size={32} className="mx-auto animate-pop text-primary" style={beat(2)} />
+          <Sparkles size={iconSize.xl} className="mx-auto animate-pop text-primary" style={beat(2)} />
           <h1 className="mt-3 text-3 leading-tight">
             {first ? `Welcome aboard, ${first}` : "Welcome aboard"}
           </h1>
@@ -102,7 +103,7 @@ function Done() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border" : "border-transparent",
         )}
       >

@@ -27,6 +27,7 @@ import {
 import { Price } from "@/components/ml/kit";
 import { loadCatalogRentals } from "@/lib/market-view";
 import { priceText, rupeeParts } from "@/lib/price";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/e/$id")({
   // Static equipment wins; any other id is looked up as a database rental slug. Database rentals
@@ -125,7 +126,7 @@ function RentalDetail() {
               aria-label="Share"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <Share2 size={16} />
+              <Share2 size={iconSize.sm} />
             </button>
             <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={40} />
           </div>
@@ -225,7 +226,7 @@ function RentalDetail() {
             <ul className="mt-2 space-y-2 rounded-lg border border-border p-4">
               {e.included.map((x) => (
                 <li key={x} className="flex items-center gap-2 text-1">
-                  <Check size={16} className="shrink-0 text-primary" /> {x}
+                  <Check size={iconSize.sm} className="shrink-0 text-primary" /> {x}
                 </li>
               ))}
             </ul>
@@ -342,11 +343,11 @@ function RentalDetail() {
           onClick={() => setReport(true)}
           className="inline-flex items-center gap-1.5 text-1 font-semibold text-muted-foreground"
         >
-          <Flag size={12} /> Report this listing
+          <Flag size={iconSize.xs} /> Report this listing
         </button>
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             {e.daily != null ? (

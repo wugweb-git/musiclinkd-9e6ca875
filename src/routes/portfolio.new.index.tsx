@@ -5,6 +5,7 @@ import { WorkTypeIcon } from "@/components/ml/portfolio";
 import { workTypes } from "@/data/portfolio";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 type FlowSearch = { from?: "onboarding" };
 
@@ -64,7 +65,7 @@ function AddWork() {
                 <span className="block text-sm font-semibold">{t.label}</span>
                 <span className="block truncate text-1 text-muted-foreground">{t.blurb}</span>
               </span>
-              <ChevronRight size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+              <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
             </Link>
           ))}
         </div>

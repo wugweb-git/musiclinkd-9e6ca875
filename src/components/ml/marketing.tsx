@@ -60,12 +60,12 @@ export function BottomCta({
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <CtaAction
           action={primary}
-          className="state-layer inline-flex min-h-12 items-center justify-center rounded-full bg-brand px-7 text-sm font-semibold text-background transition-transform duration-200 ease-standard active:scale-97"
+          className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-brand px-7 text-sm font-semibold text-background transition-transform duration-200 ease-standard active:scale-97"
         />
         {secondary ? (
           <CtaAction
             action={secondary}
-            className="state-layer inline-flex min-h-12 items-center justify-center rounded-full border border-background/35 px-7 text-sm font-semibold text-background transition-transform duration-200 ease-standard active:scale-97"
+            className="state-layer inline-flex min-h-control items-center justify-center rounded-full border border-background/35 px-7 text-sm font-semibold text-background transition-transform duration-200 ease-standard active:scale-97"
           />
         ) : null}
       </div>
@@ -112,11 +112,11 @@ export function DownloadCta({
       <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
         <CtaAction
           action={ios}
-          className="state-layer inline-flex min-h-12 items-center justify-center rounded-full bg-ink px-8 text-2 font-bold text-background transition-transform duration-200 ease-standard active:scale-97"
+          className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-ink px-8 text-2 font-bold text-background transition-transform duration-200 ease-standard active:scale-97"
         />
         <CtaAction
           action={android}
-          className="state-layer inline-flex min-h-12 items-center justify-center rounded-full bg-ink px-8 text-2 font-bold text-background transition-transform duration-200 ease-standard active:scale-97"
+          className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-ink px-8 text-2 font-bold text-background transition-transform duration-200 ease-standard active:scale-97"
         />
       </div>
     </section>

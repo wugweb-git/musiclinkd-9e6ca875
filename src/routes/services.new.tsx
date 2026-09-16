@@ -500,7 +500,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? ""}
         {...(inputMode ? { inputMode } : {})}
-        className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
+        className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
       />
     </label>
   );

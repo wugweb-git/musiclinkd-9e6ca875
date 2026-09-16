@@ -26,6 +26,7 @@ import {
   myApplications,
 } from "@/data/opportunities";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/$id/")({
   // Static opportunities first; any other id is looked up as a stored opportunity slug.
@@ -94,7 +95,7 @@ function OpportunityDetail() {
             className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             aria-label="Share"
           >
-            <Share2 size={16} />
+            <Share2 size={iconSize.sm} />
           </button>
         }
       />
@@ -112,13 +113,13 @@ function OpportunityDetail() {
 
         <div className="grid grid-cols-3 gap-2">
           {[
-            { icon: <Wallet size={16} />, label: "Pay", value: payParts(o) },
+            { icon: <Wallet size={iconSize.sm} />, label: "Pay", value: payParts(o) },
             {
-              icon: <MapPin size={16} />,
+              icon: <MapPin size={iconSize.sm} />,
               label: "Where",
               value: [o.city, o.workMode].filter(Boolean).join(" · "),
             },
-            { icon: <CalendarDays size={16} />, label: "When", value: o.dates },
+            { icon: <CalendarDays size={iconSize.sm} />, label: "When", value: o.dates },
           ]
             .filter((s) => s.value)
             .map((s) => (
@@ -158,9 +159,9 @@ function OpportunityDetail() {
             {o.requirements.map((r) => (
               <div key={r.label} className="flex items-start gap-2">
                 {r.must ? (
-                  <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-primary" />
+                  <CheckCircle2 size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
                 ) : (
-                  <Circle size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+                  <Circle size={iconSize.sm} className="mt-0.5 shrink-0 text-muted-foreground" />
                 )}
                 <p className="text-1">
                   {r.label}
@@ -192,11 +193,11 @@ function OpportunityDetail() {
           onClick={() => setReport(true)}
           className="inline-flex items-center gap-2 text-1 font-semibold text-muted-foreground"
         >
-          <Flag size={12} /> Report this opportunity
+          <Flag size={iconSize.xs} /> Report this opportunity
         </button>
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -205,7 +206,7 @@ function OpportunityDetail() {
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-background"
           >
             <Bookmark
-              size={20}
+              size={iconSize.md}
               className={saved ? "text-primary" : "text-muted-foreground"}
               fill={saved ? "currentColor" : "none"}
             />

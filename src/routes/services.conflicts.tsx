@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, CalendarClock } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/services/conflicts")({
   head: () => ({
@@ -58,7 +59,7 @@ function Conflicts() {
         <Card>
           <div className="flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-background text-foreground">
-              <AlertTriangle size={20} />
+              <AlertTriangle size={iconSize.md} />
             </span>
             <p className="text-1 text-muted-foreground">
               Conflicts do not cancel anything on their own. Nothing changes until you pick an
@@ -94,7 +95,7 @@ function Conflicts() {
         )}
 
         <BtnLink to="/services/availability" variant="outline" className="w-full">
-          <CalendarClock size={16} className="mr-2 inline" aria-hidden />
+          <CalendarClock size={iconSize.sm} className="mr-2 inline" aria-hidden />
           Adjust Availability
         </BtnLink>
       </div>

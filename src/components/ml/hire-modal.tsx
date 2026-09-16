@@ -8,6 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Btn, Sheet } from "./ui";
+import { iconSize } from "@/lib/tokens";
 
 const options: { label: string; desc: string; Icon: LucideIcon }[] = [
   { label: "Send message", desc: "Start a direct conversation", Icon: MessageCircle },
@@ -40,7 +41,7 @@ export function HireModal({
       {sent ? (
         <div className="py-10 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success">
-            <Check size={32} aria-hidden />
+            <Check size={iconSize.xl} aria-hidden />
           </div>
           <h2 className="text-3">Request sent</h2>
           <Btn

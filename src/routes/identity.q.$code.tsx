@@ -15,6 +15,7 @@ import {
   nativeShare,
 } from "@/components/ml/qr";
 import { canonicalUrl, previewFor, resolveCode, statusCopy } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/q/$code")({
   head: () => ({
@@ -96,14 +97,14 @@ function QrResult() {
                   className="flex-1"
                   onClick={() => void nav({ to: "/messages" })}
                 >
-                  <MessageCircle size={16} className="mr-2" /> Message
+                  <MessageCircle size={iconSize.sm} className="mr-2" /> Message
                 </Btn>
                 <Btn
                   variant="ghost"
                   className="flex-1"
                   onClick={() => void nav({ href: preview.route })}
                 >
-                  <UserPlus size={16} className="mr-2" /> Connect
+                  <UserPlus size={iconSize.sm} className="mr-2" /> Connect
                 </Btn>
               </div>
             ) : null}
@@ -118,7 +119,7 @@ function QrResult() {
 
             <div className="mt-3">
               <BtnLink to="/identity/scan" variant="ghost" className="w-full">
-                <ScanLine size={16} className="mr-2" /> Scan Another Code
+                <ScanLine size={iconSize.sm} className="mr-2" /> Scan Another Code
               </BtnLink>
             </div>
           </>
@@ -131,7 +132,7 @@ function QrResult() {
               {statusCopy[dest.status === "active" ? "invalid" : dest.status].cta}
             </BtnLink>
             <BtnLink to="/discover" variant="outline" className="w-full">
-              <Share2 size={16} className="mr-2" /> Discover on MusicLinkd
+              <Share2 size={iconSize.sm} className="mr-2" /> Discover on MusicLinkd
             </BtnLink>
           </StateCard>
         )}

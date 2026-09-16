@@ -7,6 +7,7 @@ import { statusLabel, statusTone } from "@/data/verification";
 import { useAuth } from "@/hooks/use-auth";
 import { useMyVerification } from "@/hooks/use-my-verification";
 import { businessView, loadBusiness } from "@/lib/business-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/$id/verification")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -72,7 +73,7 @@ function BusinessVerification() {
         <Card>
           <div className="flex items-center gap-3">
             <span className="grid h-11 w-11 place-items-center rounded-full bg-background text-foreground">
-              <ShieldCheck size={20} />
+              <ShieldCheck size={iconSize.md} />
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold">
@@ -108,7 +109,7 @@ function BusinessVerification() {
                   <span
                     className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${c.done ? "bg-primary text-primary-foreground" : "border border-border"}`}
                   >
-                    {c.done ? <Check size={16} /> : null}
+                    {c.done ? <Check size={iconSize.sm} /> : null}
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold">{c.label}</p>

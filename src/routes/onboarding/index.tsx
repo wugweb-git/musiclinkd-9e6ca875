@@ -6,6 +6,7 @@ import { visibleSteps } from "@/data/onboarding";
 import { AuthLink } from "@/components/ml/auth";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
@@ -59,17 +60,17 @@ function Welcome() {
         <ul className="mt-8 space-y-5">
           {[
             {
-              icon: <Compass size={20} />,
+              icon: <Compass size={iconSize.md} />,
               title: "Get found for the right work",
               body: "Role, genres, languages and city power discovery.",
             },
             {
-              icon: <Sparkles size={20} />,
+              icon: <Sparkles size={iconSize.md} />,
               title: "A feed that fits you",
               body: "We shape recommendations around what you're here for.",
             },
             {
-              icon: <ShieldCheck size={20} />,
+              icon: <ShieldCheck size={iconSize.md} />,
               title: "Private by default",
               body: "Contact details stay hidden until you share them.",
             },

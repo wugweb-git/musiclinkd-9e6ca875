@@ -13,6 +13,7 @@ import {
   withStoredRead,
   type NotificationCategory,
 } from "@/data/notifications";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/notifications/")({
   head: () => ({
@@ -74,7 +75,7 @@ function NotificationsScreen() {
             aria-label="Notification settings"
             className="grid h-10 w-10 place-items-center rounded-full bg-background"
           >
-            <Settings2 size={16} />
+            <Settings2 size={iconSize.sm} />
           </Link>
         }
       />
@@ -93,7 +94,7 @@ function NotificationsScreen() {
           onClick={() => markRead(items.map((n) => ({ ...n, read: true })))}
           className="inline-flex items-center gap-1.5 text-1 font-semibold text-foreground"
         >
-          <CheckCheck size={16} /> Mark all as read
+          <CheckCheck size={iconSize.sm} /> Mark all as read
         </button>
       </div>
 
@@ -210,7 +211,7 @@ function NotificationsScreen() {
           </ul>
         ) : (
           <EmptyState
-            icon={<BellOff size={20} className="text-muted-foreground" />}
+            icon={<BellOff size={iconSize.md} className="text-muted-foreground" />}
             title="Nothing here"
             body="New activity on your bookings, applications and messages shows up here."
           />

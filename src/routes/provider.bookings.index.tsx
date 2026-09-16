@@ -19,6 +19,7 @@ import {
   type Booking,
 } from "@/data/booking";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/provider/bookings/")({
   head: () => ({
@@ -65,22 +66,22 @@ function ProviderBookings() {
       <main className="px-5 pt-2">
         <div className="grid grid-cols-2 gap-2">
           <Stat
-            icon={<CalendarClock size={16} />}
+            icon={<CalendarClock size={iconSize.sm} />}
             label="Pending requests"
             value={`${providerStats.pending}`}
           />
           <Stat
-            icon={<TrendingUp size={16} />}
+            icon={<TrendingUp size={iconSize.sm} />}
             label="Occupancy"
             value={`${providerStats.utilisation}%`}
           />
           <Stat
-            icon={<IndianRupee size={16} />}
+            icon={<IndianRupee size={iconSize.sm} />}
             label="This month"
             value={inr(providerStats.revenueMonth)}
           />
           <Stat
-            icon={<Star size={16} />}
+            icon={<Star size={iconSize.sm} />}
             label="Cancellations"
             value={`${providerStats.cancellations}`}
           />

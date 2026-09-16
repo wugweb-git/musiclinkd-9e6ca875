@@ -3,6 +3,7 @@ import { BarChart3, CalendarClock, Images, Inbox, ShieldCheck, Star, Wrench } fr
 import { Screen, TopBar } from "@/components/ml/ui";
 import { EmptyState, Row } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/$id/dashboard")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -51,42 +52,42 @@ function BusinessDashboard() {
         {/* Leads, views, enquiries and bookings are not stored yet: no card or figures. */}
         <div className="space-y-2">
           <Row
-            icon={<Inbox size={16} />}
+            icon={<Inbox size={iconSize.sm} />}
             title="Leads"
             subtitle=""
             to="/business/$id/leads"
             params={{ id: b.id }}
           />
           <Row
-            icon={<BarChart3 size={16} />}
+            icon={<BarChart3 size={iconSize.sm} />}
             title="Analytics"
             subtitle="Views, sources, room demand"
             to="/business/$id/analytics"
             params={{ id: b.id }}
           />
           <Row
-            icon={<Wrench size={16} />}
+            icon={<Wrench size={iconSize.sm} />}
             title="Services"
             subtitle="Rooms, sessions and pricing"
             to="/business/$id/services"
             params={{ id: b.id }}
           />
           <Row
-            icon={<CalendarClock size={16} />}
+            icon={<CalendarClock size={iconSize.sm} />}
             title="Availability"
             subtitle="Hours, notice and blackout dates"
             to="/business/$id/availability"
             params={{ id: b.id }}
           />
           <Row
-            icon={<Images size={16} />}
+            icon={<Images size={iconSize.sm} />}
             title="Portfolio"
             subtitle="Credits and gallery"
             to="/business/$id/portfolio"
             params={{ id: b.id }}
           />
           <Row
-            icon={<Star size={16} />}
+            icon={<Star size={iconSize.sm} />}
             title="Reviews"
             subtitle={
               b.rating != null && b.reviewCount != null
@@ -97,7 +98,7 @@ function BusinessDashboard() {
             params={{ id: b.id }}
           />
           <Row
-            icon={<ShieldCheck size={16} />}
+            icon={<ShieldCheck size={iconSize.sm} />}
             title="Verification"
             subtitle={b.verified ? "Verified business" : "Not verified yet"}
             to="/business/$id/verification"

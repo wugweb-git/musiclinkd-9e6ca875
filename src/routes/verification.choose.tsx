@@ -6,6 +6,7 @@ import { StateCard } from "@/components/ml/portfolio";
 import { gateFor, useMyVerification } from "@/hooks/use-my-verification";
 import { statusLabel, statusTone } from "@/data/verification";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/verification/choose")({
   head: () => ({
@@ -60,7 +61,7 @@ function ChooseType() {
                   <p className="mt-0.5 text-1 text-muted-foreground">{t.appliesTo}</p>
                 </div>
                 {locked ? (
-                  <StatusPill label="Locked" tone="neutral" icon={<Lock size={12} aria-hidden />} />
+                  <StatusPill label="Locked" tone="neutral" icon={<Lock size={iconSize.xs} aria-hidden />} />
                 ) : (
                   <StatusPill label={statusLabel[status]} tone={statusTone[status]} />
                 )}
@@ -92,7 +93,7 @@ function ChooseType() {
               ) : (
                 <p className="flex items-center gap-1 text-1 font-semibold text-foreground">
                   {status === "unverified" ? "See requirements" : "Open request"}
-                  <ChevronRight size={16} aria-hidden />
+                  <ChevronRight size={iconSize.sm} aria-hidden />
                 </p>
               )}
             </Card>

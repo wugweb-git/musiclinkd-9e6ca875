@@ -23,6 +23,7 @@ import { Screen, TopBar } from "@/components/ml/ui";
 import { MadeByWugweb, SoonBadge } from "@/components/ml/kit";
 import { SpotifyRow } from "@/components/ml/spotify";
 import { settingsGroups } from "@/data/settings";
+import { iconSize } from "@/lib/tokens";
 
 /** The icon name each settings row carries, resolved once here. */
 const rowIcons: Record<string, LucideIcon> = {
@@ -100,7 +101,7 @@ function SettingsScreen() {
                       <Link to={r.to} className="state-layer flex items-center gap-3 px-4 py-3.5">
                         {inner}
                         <ChevronRight
-                          size={20}
+                          size={iconSize.md}
                           className="shrink-0 text-muted-foreground"
                           aria-hidden
                         />

@@ -6,6 +6,7 @@ import { EmptyState, SortSheet } from "@/components/ml/market";
 import { EquipmentRow, RentalFilterSheet, rentalSortOptions } from "@/components/ml/rental";
 import { equipmentByCategory, rentalCategories } from "@/data/rentals";
 import { loadCatalogRentals } from "@/lib/market-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/c/$slug")({
   // Database rentals follow the static ones in their mapped category.
@@ -66,13 +67,13 @@ function RentCategory() {
             onClick={() => setSortOpen(true)}
             className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-1 font-semibold"
           >
-            <ArrowUpDown size={12} /> Sort
+            <ArrowUpDown size={iconSize.xs} /> Sort
           </button>
           <button
             onClick={() => setFilters(true)}
             className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-1 font-semibold"
           >
-            <SlidersHorizontal size={12} /> Filter
+            <SlidersHorizontal size={iconSize.xs} /> Filter
           </button>
         </div>
       </div>

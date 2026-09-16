@@ -10,6 +10,7 @@ import {
   type SpotifySharing,
   type SpotifyStatus,
 } from "@/lib/spotify.functions";
+import { iconSize } from "@/lib/tokens";
 
 const sharingOptions: { value: SpotifySharing; label: string }[] = [
   { value: "connections", label: "All connections" },
@@ -90,7 +91,7 @@ export function SpotifyRow() {
           <span className="block truncate text-2 font-semibold">Spotify</span>
           <span className="block truncate text-1 text-muted-foreground">{hint}</span>
         </span>
-        <ChevronRight size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+        <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
       </button>
 
       <Sheet open={open} onClose={() => setOpen(false)} title="Spotify">

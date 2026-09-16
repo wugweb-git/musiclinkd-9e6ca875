@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { privacyControls } from "@/data/settings";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/settings/privacy")({
   head: () => ({
@@ -70,7 +71,7 @@ function PrivacyScreen() {
                     <span className="block text-1 text-muted-foreground">{c.hint}</span>
                   </span>
                   <span className="shrink-0 text-1 font-semibold">{values[c.key] ?? c.value}</span>
-                  <ChevronRight size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+                  <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
                 </button>
               </li>
             );
@@ -81,7 +82,7 @@ function PrivacyScreen() {
           <h2 className="pill mb-2 px-1 text-muted-foreground">Blocked people</h2>
           <div className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3.5">
             <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-              <UserX size={24} strokeWidth={1.75} aria-hidden />
+              <UserX size={iconSize.lg} strokeWidth={1.75} aria-hidden />
             </span>
             <p className="min-w-0 flex-1 text-1 text-muted-foreground">
               Nobody blocked. Blocking hides your profile from them everywhere.
@@ -98,7 +99,7 @@ function PrivacyScreen() {
             <Btn
               variant="outline"
               className="min-w-0 flex-1 px-3"
-              icon={<Download size={16} aria-hidden />}
+              icon={<Download size={iconSize.sm} aria-hidden />}
             >
               Request Copy
             </Btn>
@@ -106,7 +107,7 @@ function PrivacyScreen() {
               to="/settings/delete-account"
               variant="outline"
               className="min-w-0 flex-1 px-3"
-              icon={<Trash2 size={16} aria-hidden />}
+              icon={<Trash2 size={iconSize.sm} aria-hidden />}
             >
               Delete Account
             </BtnLink>
@@ -136,7 +137,7 @@ function PrivacyScreen() {
                 >
                   {o}
                   {checked ? (
-                    <Check size={20} className="animate-pop text-pink-strong" aria-hidden />
+                    <Check size={iconSize.md} className="animate-pop text-pink-strong" aria-hidden />
                   ) : null}
                 </button>
               );

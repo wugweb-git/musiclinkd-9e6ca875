@@ -17,6 +17,7 @@ import {
 import { byId, listings, reviews, sellerById } from "@/data/market";
 import { loadCatalogListings } from "@/lib/market-view";
 import { priceText } from "@/lib/price";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
   // Static listings win; any other id is looked up as a database listing slug. Database listings
@@ -97,7 +98,7 @@ function ListingDetail() {
               aria-label="Share"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <Share2 size={16} />
+              <Share2 size={iconSize.sm} />
             </button>
             <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={40} />
           </div>
@@ -253,11 +254,11 @@ function ListingDetail() {
           onClick={() => setReport(true)}
           className="mx-auto mt-6 flex items-center gap-1.5 text-1 font-semibold text-muted-foreground"
         >
-          <Flag size={12} /> Report this listing
+          <Flag size={iconSize.xs} /> Report this listing
         </button>
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           <Btn variant="outline" className="flex-1" onClick={() => setOffer(true)}>
             {cta[0]}

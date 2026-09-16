@@ -101,7 +101,7 @@ function Cancel() {
               type="button"
               onClick={() => setReason(x)}
               aria-pressed={reason === x}
-              className={`flex min-h-12 w-full items-center justify-between rounded-lg border-2 bg-subtle px-4 text-left text-sm ${
+              className={`flex min-h-control w-full items-center justify-between rounded-lg border-2 bg-subtle px-4 text-left text-sm ${
                 reason === x ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
               }`}
             >

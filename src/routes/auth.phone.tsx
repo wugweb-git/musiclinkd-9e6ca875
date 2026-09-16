@@ -16,6 +16,7 @@ import {
   classifyAuthError,
   useFieldErrors,
 } from "@/components/ml/auth";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/auth/phone")({
   head: () => ({
@@ -103,7 +104,7 @@ function PhoneAuth() {
       <TrustNote>Your number is never shown on your public profile.</TrustNote>
 
       <p className="mt-6 flex justify-center text-sm">
-        <AuthLink to="/auth" icon={<Mail size={16} />}>
+        <AuthLink to="/auth" icon={<Mail size={iconSize.sm} />}>
           Sign in with Email
         </AuthLink>
       </p>

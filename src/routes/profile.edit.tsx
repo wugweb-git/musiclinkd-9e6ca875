@@ -8,6 +8,7 @@ import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
 import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/profile/edit")({
   head: () => ({
@@ -394,7 +395,7 @@ function EditProfile() {
                 <span className="block truncate text-1 text-muted-foreground">{o.hint}</span>
               </span>
               {form.visibility === o.key ? (
-                <Check size={16} className="shrink-0 text-primary" aria-hidden />
+                <Check size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
               ) : null}
             </button>
           ))}
@@ -431,7 +432,7 @@ function EditProfile() {
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-background text-foreground"}`}
                   >
                     {section.done ? (
-                      <Check size={16} aria-hidden />
+                      <Check size={iconSize.sm} aria-hidden />
                     ) : (
                       <span aria-hidden className="text-1 font-bold">
                         •
@@ -445,10 +446,10 @@ function EditProfile() {
                     </span>
                   </span>
                   {isOpen ? (
-                    <ChevronDown size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+                    <ChevronDown size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
                   ) : (
                     <ChevronRight
-                      size={16}
+                      size={iconSize.sm}
                       className="shrink-0 text-muted-foreground"
                       aria-hidden
                     />
@@ -465,7 +466,7 @@ function EditProfile() {
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         {status === "taken" || status === "reserved" || status === "invalid" ? (
           <p role="alert" className="text-1 text-destructive">
             {status === "taken"
@@ -488,7 +489,7 @@ function EditProfile() {
           </p>
         ) : null}
         <Btn className="w-full" onClick={() => void save()} disabled={status === "saving"}>
-          <Save size={16} aria-hidden />
+          <Save size={iconSize.sm} aria-hidden />
           {status === "saving" ? "Saving…" : "Save changes"}
         </Btn>
       </div>
@@ -526,7 +527,7 @@ function Field({
           value={value}
           readOnly={readOnly}
           onChange={(e) => onChange(e.target.value)}
-          className={`mt-1.5 min-h-12 w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-background text-muted-foreground" : "bg-card"}`}
+          className={`mt-1.5 min-h-control w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-background text-muted-foreground" : "bg-card"}`}
         />
       )}
       {hint ? <span className="mt-1 block text-1 text-muted-foreground">{hint}</span> : null}

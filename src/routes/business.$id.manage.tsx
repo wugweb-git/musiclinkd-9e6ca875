@@ -13,6 +13,7 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, EmptyState, Dialog, StatusPill, SoonBadge } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { joinParts } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/$id/manage")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -73,40 +74,40 @@ function ManageBusiness() {
 
         <div className="space-y-2">
           <Row
-            icon={<LayoutDashboard size={16} />}
+            icon={<LayoutDashboard size={iconSize.sm} />}
             title="Dashboard"
             subtitle="Leads, analytics, services, reviews"
             to="/business/$id/dashboard"
             params={{ id }}
           />
           <Row
-            icon={<Pencil size={16} />}
+            icon={<Pencil size={iconSize.sm} />}
             title="Details"
             subtitle="Name, about, contact, hours"
             to="/business/new"
           />
           <Row
-            icon={<Image size={16} />}
+            icon={<Image size={iconSize.sm} />}
             title="Photos & spaces"
             subtitle={`${b.spaces.length} bookable spaces`}
             to="/business/$id"
             params={{ id }}
           />
           <Row
-            icon={<Users size={16} />}
+            icon={<Users size={iconSize.sm} />}
             title="Team & roles"
             subtitle={`${b.members.filter((m) => !m.invited).length} active`}
             to="/business/$id/team"
             params={{ id }}
           />
           <Row
-            icon={<CalendarClock size={16} />}
+            icon={<CalendarClock size={iconSize.sm} />}
             title="Availability & bookings"
             subtitle="Calendar, requests, policies"
             to="/provider/bookings/calendar"
           />
           <Row
-            icon={<ShieldCheck size={16} />}
+            icon={<ShieldCheck size={iconSize.sm} />}
             title="Business verification"
             subtitle={b.verified ? "Verified — renews yearly" : "Get the verified badge"}
             right={<SoonBadge />}
@@ -115,7 +116,7 @@ function ManageBusiness() {
 
         <Card className="space-y-2">
           <p className="flex items-center gap-2 text-1 font-semibold">
-            <Trash2 size={16} /> Delete business
+            <Trash2 size={iconSize.sm} /> Delete business
           </p>
           <p className="text-1 text-muted-foreground">
             Removes the profile, spaces and team. Past bookings and reviews stay with the people

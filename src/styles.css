@@ -74,6 +74,32 @@
    * is one spacing system, not two. */
   --spacing-nav-clear: 96px;
 
+  /* Space: the four sanctioned steps, for exports and docs. Tailwind's numeric scale draws them
+   * (1 = 4px, 2 = 8px, 4 = 16px, 8 = 32px); other steps need a reason. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 32px;
+
+  /* Control heights: h-control / min-h-control and friends. 44 is the touch floor, not a size. */
+  --spacing-control-sm: 40px;
+  --spacing-touch: 44px;
+  --spacing-control: 48px;
+  --spacing-control-lg: 56px;
+
+  /* Icons: size-icon-* in CSS, iconSize.* (src/lib/tokens.ts) for lucide's size prop. */
+  --spacing-icon-xs: 12px;
+  --spacing-icon-sm: 16px;
+  --spacing-icon-md: 20px;
+  --spacing-icon-lg: 24px;
+  --spacing-icon-xl: 32px;
+
+  /* Avatars: size-avatar-*. xl is the profile photo at rest. */
+  --spacing-avatar-sm: 32px;
+  --spacing-avatar-md: 48px;
+  --spacing-avatar-lg: 64px;
+  --spacing-avatar-xl: 136px;
+
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
   --container-app: 640px;
 
@@ -718,4 +744,28 @@ html:active-view-transition-type(fade)::view-transition-new(root) {
   &:active {
     opacity: 0.6;
   }
+}
+
+/* Layers, lowest to highest. One name per job so two things never fight over a number. */
+:root {
+  --z-raised: 10;
+  --z-tabs: 20;
+  --z-bar: 30;
+  --z-nav: 40;
+  --z-sheet: 50;
+}
+@utility z-raised {
+  z-index: var(--z-raised);
+}
+@utility z-tabs {
+  z-index: var(--z-tabs);
+}
+@utility z-bar {
+  z-index: var(--z-bar);
+}
+@utility z-nav {
+  z-index: var(--z-nav);
+}
+@utility z-sheet {
+  z-index: var(--z-sheet);
 }

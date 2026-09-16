@@ -9,6 +9,7 @@ import { StateCard } from "@/components/ml/portfolio";
 import { serviceStatusTone } from "@/data/services";
 import { useRefreshServices, useService } from "@/hooks/use-services";
 import { deleteService, duplicateService, setServiceStatus } from "@/lib/services.functions";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/services/$id/manage")({
   head: () => ({
@@ -107,7 +108,7 @@ function ManageService() {
 
         <div className="space-y-2">
           <Row
-            icon={status === "active" ? <EyeOff size={16} /> : <Eye size={16} />}
+            icon={status === "active" ? <EyeOff size={iconSize.sm} /> : <Eye size={iconSize.sm} />}
             title={status === "active" ? "Pause this service" : "Make it live again"}
             subtitle={
               status === "active" ? "Hide it while you are full" : "Show it in Discover and search"
@@ -123,7 +124,7 @@ function ManageService() {
             }}
           />
           <Row
-            icon={<Copy size={16} />}
+            icon={<Copy size={iconSize.sm} />}
             title="Duplicate"
             subtitle={duplicated ? "Copy created as a draft" : "Start a new service from this one"}
             onClick={() => {
@@ -136,7 +137,7 @@ function ManageService() {
             }}
           />
           <Row
-            icon={<Trash2 size={16} />}
+            icon={<Trash2 size={iconSize.sm} />}
             title="Delete this service"
             subtitle="Permanent, and it cannot be restored"
             onClick={() => setConfirmDelete(true)}

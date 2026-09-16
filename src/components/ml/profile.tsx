@@ -53,6 +53,7 @@ import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-image
 import { AgentAudioVisualizerBar } from "@/components/agents-ui/agent-audio-visualizer-bar";
 import { MediaEmbed } from "./media-embed";
 import { recordPlay } from "@/lib/plays";
+import { iconSize } from "@/lib/tokens";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -132,7 +133,7 @@ export function StackSection({
         {action}
         {editTo ? (
           <IconBtnLink to={editTo} label={`Edit ${title}`} variant="ghost" className="h-10 w-10">
-            <Pencil size={16} aria-hidden />
+            <Pencil size={iconSize.sm} aria-hidden />
           </IconBtnLink>
         ) : null}
         {collapsible ? (
@@ -145,7 +146,7 @@ export function StackSection({
             aria-controls={bodyId}
           >
             <ChevronDown
-              size={20}
+              size={iconSize.md}
               aria-hidden
               className={cn(
                 "transition-transform duration-200 ease-standard motion-reduce:transition-none",
@@ -165,7 +166,7 @@ export function StackSection({
             className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
           >
             {showAll}
-            <ChevronRight size={16} aria-hidden />
+            <ChevronRight size={iconSize.sm} aria-hidden />
           </Link>
         ) : (
           <button
@@ -174,7 +175,7 @@ export function StackSection({
             className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
           >
             {showAll}
-            <ChevronRight size={16} aria-hidden />
+            <ChevronRight size={iconSize.sm} aria-hidden />
           </button>
         )
       ) : null}
@@ -229,7 +230,7 @@ export function ProfileEmpty({
             ? { to: cta.to, params: { kind: cta.kind } }
             : { to: cta.to })}
           variant="outline"
-          className="mt-3 min-h-11 text-1"
+          className="mt-3 min-h-touch text-1"
         >
           {cta.label}
         </BtnLink>
@@ -270,7 +271,7 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
       }`}
       title={tier}
     >
-      <BadgeCheck size={12} aria-hidden />
+      <BadgeCheck size={iconSize.xs} aria-hidden />
       {compact ? "Verified" : tier}
     </span>
   );
@@ -460,7 +461,7 @@ function ImagePickButton({
           e.target.value = "";
         }}
       />
-      {busy ? <Loader2 size={16} className="animate-spin" aria-hidden /> : children}
+      {busy ? <Loader2 size={iconSize.sm} className="animate-spin" aria-hidden /> : children}
     </label>
   );
 }
@@ -552,7 +553,7 @@ export function ProfileHero({
             aria-label="Back"
             className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
           >
-            <ArrowLeft size={20} aria-hidden />
+            <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
         ) : null}
         <div className="absolute right-5 top-5 flex gap-2">
@@ -564,18 +565,18 @@ export function ProfileHero({
               className="h-11 w-11 bg-card/90 text-foreground"
               onPick={onPickImage}
             >
-              <Pencil size={16} aria-hidden />
+              <Pencil size={iconSize.sm} aria-hidden />
             </ImagePickButton>
           ) : null}
           {/* The owner shares from the actions row, so the hero has no second Share. */}
           {onShare && !owner ? (
             <IconBtn label="Share Profile" variant="plain" className="bg-card/90" onClick={onShare}>
-              <Share2 size={16} aria-hidden />
+              <Share2 size={iconSize.sm} aria-hidden />
             </IconBtn>
           ) : null}
           {onMore ? (
             <IconBtn label="More Options" variant="plain" className="bg-card/90" onClick={onMore}>
-              <MoreHorizontal size={20} aria-hidden />
+              <MoreHorizontal size={iconSize.md} aria-hidden />
             </IconBtn>
           ) : null}
         </div>
@@ -591,7 +592,7 @@ export function ProfileHero({
             />
           ) : (
             <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-subtle bg-card text-muted-foreground">
-              <User size={32} aria-label={p.name} />
+              <User size={iconSize.xl} aria-label={p.name} />
             </span>
           )}
           {owner && onPickImage ? (
@@ -601,7 +602,7 @@ export function ProfileHero({
               className="absolute -bottom-1 -left-1 h-9 w-9 border border-border bg-card text-foreground"
               onPick={onPickImage}
             >
-              <Camera size={16} aria-hidden />
+              <Camera size={iconSize.sm} aria-hidden />
             </ImagePickButton>
           ) : null}
         </div>
@@ -629,13 +630,13 @@ export function ProfileHero({
           <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
             {p.location ? (
               <span className="flex items-center gap-1">
-                <MapPin size={12} className="shrink-0" aria-hidden />
+                <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
                 {p.location}
               </span>
             ) : null}
             {p.yearsActive ? (
               <span className="flex items-center gap-1">
-                <CalendarDays size={12} className="shrink-0" aria-hidden />
+                <CalendarDays size={iconSize.xs} className="shrink-0" aria-hidden />
                 {p.yearsActive.replace(/\s*active$/i, "")} active
               </span>
             ) : null}
@@ -749,7 +750,7 @@ export function AudioTrackCard({
           aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
         >
-          {playing ? <Pause size={16} aria-hidden /> : <Play size={16} aria-hidden />}
+          {playing ? <Pause size={iconSize.sm} aria-hidden /> : <Play size={iconSize.sm} aria-hidden />}
         </button>
       </div>
       {playing && track.media ? (
@@ -845,7 +846,7 @@ export function VideoCard({
           className="absolute inset-0 flex items-center justify-center"
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-card/90">
-            <Play size={16} aria-hidden />
+            <Play size={iconSize.sm} aria-hidden />
           </span>
         </button>
         {v.duration ? (
@@ -945,7 +946,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
           ))}
         </ul>
       ) : null}
-      <Btn variant="primary" className="mt-4 min-h-10 w-full text-sm" onClick={onEnquire}>
+      <Btn variant="primary" className="mt-4 min-h-control-sm w-full text-sm" onClick={onEnquire}>
         Enquire
       </Btn>
     </article>
@@ -1000,7 +1001,7 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
           <p className="truncate text-1 text-muted-foreground">{r.org}</p>
         </div>
         <span className="flex shrink-0 items-center gap-1 text-1 font-semibold text-warn">
-          <Star size={12} fill="currentColor" aria-hidden />
+          <Star size={iconSize.xs} fill="currentColor" aria-hidden />
           {r.stars.toFixed(1)}
         </span>
       </div>
@@ -1140,14 +1141,14 @@ export function ShareSheet({
             <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-sm object-cover" />
           ) : (
             <span className="flex h-14 w-14 items-center justify-center rounded-sm bg-background/15">
-              <User size={24} aria-hidden />
+              <User size={iconSize.lg} aria-hidden />
             </span>
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <h3 className="truncate text-2 text-background">{p.name}</h3>
               {isVerifiedTier(p.verification) ? (
-                <BadgeCheck size={16} aria-label="Verified" />
+                <BadgeCheck size={iconSize.sm} aria-label="Verified" />
               ) : null}
             </div>
             <p className="truncate text-1 opacity-80">{p.primaryRole}</p>
@@ -1229,13 +1230,13 @@ export function MoreSheet({
               }`}
             >
               {i}
-              <ChevronRight size={16} className="text-muted-foreground" aria-hidden />
+              <ChevronRight size={iconSize.sm} className="text-muted-foreground" aria-hidden />
             </button>
           );
         })}
       </div>
       <p className="mt-3 flex items-center gap-2 px-1 text-1 text-muted-foreground">
-        <ShieldCheck size={12} aria-hidden />
+        <ShieldCheck size={iconSize.xs} aria-hidden />
         Reports are reviewed by the MusicLinkd trust team.
       </p>
     </Sheet>
@@ -1274,16 +1275,16 @@ export function CompletionCard({
           <li key={m.id}>
             <Link
               to={m.to ?? "/profile/edit"}
-              className="state-layer flex min-h-10 items-center gap-2 rounded-sm text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-97"
+              className="state-layer flex min-h-control-sm items-center gap-2 rounded-sm text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-97"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
               {m.label}
-              <ChevronRight size={16} className="ml-auto shrink-0" aria-hidden />
+              <ChevronRight size={iconSize.sm} className="ml-auto shrink-0" aria-hidden />
             </Link>
           </li>
         ))}
       </ul>
-      <BtnLink to="/profile/edit" className="mt-3 min-h-11 w-full text-1">
+      <BtnLink to="/profile/edit" className="mt-3 min-h-touch w-full text-1">
         Complete Profile
       </BtnLink>
     </div>

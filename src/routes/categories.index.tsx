@@ -4,6 +4,7 @@ import { Screen, TopBar } from "@/components/ml/ui";
 import { categories } from "@/data/discover";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/categories/")({
   head: () => ({
@@ -51,7 +52,7 @@ function Categories() {
                   />
                 </span>
                 <span className="min-w-0 flex-1 truncate text-2">{c.label}</span>
-                <ChevronRight size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+                <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
               </Link>
             </li>
           );

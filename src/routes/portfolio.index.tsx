@@ -14,6 +14,7 @@ import { useState } from "react";
 import { demoPortfolio, roleSuggestions, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/portfolio/")({
   head: () => ({
@@ -62,7 +63,7 @@ function PortfolioOverview() {
         back="/profile"
         right={
           <IconBtnLink to="/portfolio/settings" label="Portfolio Settings" variant="plain">
-            <Settings size={20} aria-hidden />
+            <Settings size={iconSize.md} aria-hidden />
           </IconBtnLink>
         }
       />

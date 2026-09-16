@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { unreadCount, withStoredRead } from "@/data/notifications";
+import { iconSize } from "@/lib/tokens";
 
 /*
  * The notifications bell, sized and styled to sit beside SearchIconButton in a tab screen's
@@ -21,7 +22,7 @@ export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }
       aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
       className={`hit-area state-layer relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-transform duration-125 ease-standard active:scale-97 ${surface}`}
     >
-      <Bell size={20} aria-hidden />
+      <Bell size={iconSize.md} aria-hidden />
       {unread ? (
         <span
           aria-hidden
@@ -48,7 +49,7 @@ export function SearchIconButton({ open, onToggle }: { open: boolean; onToggle: 
       onClick={onToggle}
       className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-97"
     >
-      {open ? <X size={20} aria-hidden /> : <Search size={20} aria-hidden />}
+      {open ? <X size={iconSize.md} aria-hidden /> : <Search size={iconSize.md} aria-hidden />}
     </button>
   );
 }
@@ -77,7 +78,7 @@ export function SearchField({
       }}
     >
       <label className="flex h-14 items-center gap-3 rounded-full bg-subtle px-5 focus-within:ring-2 focus-within:ring-ring">
-        <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+        <Search size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
         <input
           ref={input}
           type="search"

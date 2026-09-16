@@ -4,6 +4,7 @@ import { Bell, BellOff, Search, Trash2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
 import { savedSearches, timeAgo } from "@/data/search-meta";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/search/saved")({
   head: () => ({
@@ -67,9 +68,9 @@ function SavedSearches() {
               <div className="flex items-center justify-between gap-3 rounded-lg bg-subtle px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   {alerts[s.id] ? (
-                    <Bell size={16} className="shrink-0 text-primary" aria-hidden />
+                    <Bell size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
                   ) : (
-                    <BellOff size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+                    <BellOff size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
                   )}
                   <p className="min-w-0 text-1 font-semibold">
                     {alerts[s.id] ? "Alerts on — weekly digest" : "Alerts off"}
@@ -87,7 +88,7 @@ function SavedSearches() {
               <div className="flex gap-2">
                 <BtnLink to="/search" className="flex-1 w-full">
                   <span className="inline-flex items-center gap-2">
-                    <Search size={16} aria-hidden /> Run Search
+                    <Search size={iconSize.sm} aria-hidden /> Run Search
                   </span>
                 </BtnLink>
                 <Btn
@@ -95,7 +96,7 @@ function SavedSearches() {
                   aria-label={`Delete ${s.label}`}
                   onClick={() => setRemoved((r) => [...r, s.id])}
                 >
-                  <Trash2 size={16} aria-hidden />
+                  <Trash2 size={iconSize.sm} aria-hidden />
                 </Btn>
               </div>
             </Card>

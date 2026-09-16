@@ -6,6 +6,7 @@ import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
 import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities, opportunityCategories, myApplications } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/")({
   // Stored opportunities follow the static ones; none when the database is unreachable.
@@ -69,7 +70,7 @@ function OpportunitiesHome() {
             className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
             aria-label="Post an opportunity"
           >
-            <Plus size={20} />
+            <Plus size={iconSize.md} />
           </button>
         }
       />
@@ -77,27 +78,27 @@ function OpportunitiesHome() {
       <div className="space-y-4 px-5 pt-4">
         <Link to="/opportunities/search" className="block">
           <div className="flex h-13 items-center gap-3 rounded-full bg-subtle px-5 py-3.5">
-            <Search size={16} className="text-muted-foreground" />
+            <Search size={iconSize.sm} className="text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Singer, mixing engineer, studio…</span>
           </div>
         </Link>
 
         <div className="grid grid-cols-2 gap-2">
           <Row
-            icon={<Briefcase size={16} />}
+            icon={<Briefcase size={iconSize.sm} />}
             title="My applications"
             subtitle={`${active} active`}
             to="/opportunities/applications"
           />
           <Row
-            icon={<Bookmark size={16} />}
+            icon={<Bookmark size={iconSize.sm} />}
             title="Saved"
             subtitle="Shortlist"
             to="/opportunities/saved"
           />
         </div>
         <Row
-          icon={<Users size={16} />}
+          icon={<Users size={iconSize.sm} />}
           title="Projects you can join"
           subtitle="Work in progress looking for collaborators"
           to="/discover/projects"

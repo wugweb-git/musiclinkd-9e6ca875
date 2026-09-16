@@ -21,6 +21,7 @@ import {
   Mic,
   Search,
 } from "lucide-react";
+import { iconSize } from "@/lib/tokens";
 
 /*
  * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
@@ -66,7 +67,7 @@ export const navItems = [
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-app border-t border-border bg-card/95 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app border-t border-border bg-card/95 backdrop-blur">
       <ul className="flex items-stretch justify-between px-2 pb-[env(safe-area-inset-bottom)]">
         {navItems.map((item) => {
           const active = path === item.to;
@@ -113,14 +114,14 @@ export function TopBar({
   right?: ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-5 py-4 backdrop-blur">
+    <header className="sticky top-0 z-bar flex items-center gap-3 border-b border-border bg-background/90 px-5 py-4 backdrop-blur">
       {back ? (
         <Link
           to={back}
           className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-97"
           aria-label="Back"
         >
-          <ArrowLeft size={20} aria-hidden />
+          <ArrowLeft size={iconSize.md} aria-hidden />
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
@@ -145,7 +146,7 @@ export function SearchBar({
 }) {
   return (
     <div className="flex h-14 items-center gap-3 rounded-full bg-subtle px-5">
-      <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+      <Search size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
       <input
         value={value}
         onFocus={onFocus}
@@ -155,7 +156,7 @@ export function SearchBar({
         className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
       />
       <span className="h-6 w-px bg-border" />
-      <Mic size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+      <Mic size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
     </div>
   );
 }
@@ -164,7 +165,7 @@ export function SearchBar({
  * Chip: the one pill chip. Filters, tabs, tags and every picker use it.
  *
  *   <Chip active={on} onClick={…}>Hindi</Chip>                       text
- *   <Chip media={<Mic size={16} />} active={on}>Singer</Chip>         icon in a circle
+ *   <Chip media={<Mic size={iconSize.sm} />} active={on}>Singer</Chip>         icon in a circle
  *   <Chip media="https://…/rock.jpg">Rock</Chip>                       image in a circle
  *
  * States: selected (pink text on a 20% pink tint, with a small spring when picked), pressed (state layer and a small scale),
@@ -210,7 +211,7 @@ export function Chip({
       disabled={disabled}
       aria-disabled={atLimit || undefined}
       aria-pressed={active === undefined ? undefined : active}
-      className={`state-layer hit-area inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
+      className={`state-layer hit-area inline-flex min-h-control-sm shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
         atLimit ? "opacity-50" : ""
       } ${refused ? "animate-shake" : picked && active ? "animate-select" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
@@ -254,7 +255,7 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
  *
  *   <Btn>Continue</Btn>                                          text
  *   <Btn icon={<Mail size={20} />}>Continue with email</Btn>      icon + text (icon leads)
- *   <IconBtn label="Back"><ArrowLeft size={20} /></IconBtn>        icon only, 48dp, label is the name
+ *   <IconBtn label="Back"><ArrowLeft size={iconSize.md} /></IconBtn>        icon only, 48dp, label is the name
  *   BtnLink and IconBtnLink are the same shapes as router links.
  *
  * States (Material 3): enabled; hovered (pointer devices only) and pressed, shown by a state layer of
@@ -286,7 +287,7 @@ const btnVariants: Record<BtnVariant, string> = {
 };
 
 const btnBase =
-  "state-layer press-brand relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-[transform,background-color,color] duration-200 ease-standard active:scale-97 disabled:pointer-events-none aria-disabled:pointer-events-none";
+  "state-layer press-brand relative inline-flex min-h-control select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-[transform,background-color,color] duration-200 ease-standard active:scale-97 disabled:pointer-events-none aria-disabled:pointer-events-none";
 
 function btnClass(variant: BtnVariant, className: string) {
   return `${btnBase} ${btnVariants[variant]} ${className}`;
@@ -333,7 +334,7 @@ function BtnContent({
   return (
     <span className="relative inline-flex items-center justify-center gap-2">
       {loading ? (
-        <LoaderCircle size={20} className="shrink-0 animate-spin" aria-hidden />
+        <LoaderCircle size={iconSize.md} className="shrink-0 animate-spin" aria-hidden />
       ) : icon ? (
         <span aria-hidden className="inline-flex shrink-0">
           {icon}
@@ -461,7 +462,7 @@ export function IconBtn({
     >
       {ripple.layer}
       <span className="relative inline-flex">
-        {loading ? <LoaderCircle size={20} className="animate-spin" aria-hidden /> : children}
+        {loading ? <LoaderCircle size={iconSize.md} className="animate-spin" aria-hidden /> : children}
       </span>
     </button>
   );
@@ -533,7 +534,7 @@ export function Sheet({
   if (!open) return null;
   const dy = drag?.dy ?? 0;
   return (
-    <div className="fixed inset-0 z-50 mx-auto flex w-full max-w-app flex-col justify-end">
+    <div className="fixed inset-0 z-sheet mx-auto flex w-full max-w-app flex-col justify-end">
       <button
         aria-label="Close"
         onClick={onClose}

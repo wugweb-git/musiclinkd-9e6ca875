@@ -83,7 +83,7 @@ function Availability() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setOpen((v) => (on ? v.filter((x) => x !== d) : [...v, d]))}
-                className={`min-h-11 min-w-[52px] rounded-full border px-3 text-sm font-semibold ${
+                className={`min-h-touch min-w-[52px] rounded-full border px-3 text-sm font-semibold ${
                   on
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-card text-muted-foreground"
@@ -115,13 +115,13 @@ function Availability() {
             {blocked.map((d) => (
               <li
                 key={d}
-                className="flex min-h-12 items-center justify-between rounded-lg bg-subtle px-4 text-sm"
+                className="flex min-h-control items-center justify-between rounded-lg bg-subtle px-4 text-sm"
               >
                 {formatDate(d)}
                 <button
                   type="button"
                   onClick={() => setBlocked((v) => v.filter((x) => x !== d))}
-                  className="min-h-10 text-1 font-bold text-foreground"
+                  className="min-h-control-sm text-1 font-bold text-foreground"
                 >
                   Unblock
                 </button>

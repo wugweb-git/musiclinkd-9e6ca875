@@ -12,6 +12,7 @@ import {
 import { equipmentById, inr, providerById } from "@/data/rentals";
 import { Price } from "@/components/ml/kit";
 import { rupeeParts } from "@/lib/price";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/request/$id")({
   head: ({ params }) => {
@@ -129,7 +130,7 @@ function RequestFlow() {
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-border"
                 >
-                  <Minus size={16} />
+                  <Minus size={iconSize.sm} />
                 </button>
                 <span className="w-5 text-center text-sm font-bold">{qty}</span>
                 <button
@@ -137,7 +138,7 @@ function RequestFlow() {
                   onClick={() => setQty((q) => Math.min(e.quantity, q + 1))}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-border"
                 >
-                  <Plus size={16} />
+                  <Plus size={iconSize.sm} />
                 </button>
               </div>
             </div>

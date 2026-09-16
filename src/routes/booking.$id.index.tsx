@@ -9,6 +9,7 @@ import { inr, lowestRate } from "@/data/booking";
 import { Price } from "@/components/ml/kit";
 import { TextLink } from "@/components/ml/links";
 import { shareLink } from "@/lib/booking-actions";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/booking/$id/")({
   head: () => ({
@@ -47,7 +48,7 @@ function BookingEntry() {
         <Link
           to="/discover"
           aria-label="Back"
-          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-2 backdrop-blur"
+          className="absolute left-4 top-4 z-raised flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-2 backdrop-blur"
         >
           ←
         </Link>
@@ -63,7 +64,7 @@ function BookingEntry() {
 
         <div className="mt-4 flex gap-2">
           <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
-            <MessageCircle size={16} className="mr-1.5" /> Message
+            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message
           </BtnLink>
           <IconBtn
             label={saved ? "Remove from saved" : "Save space"}
@@ -73,14 +74,14 @@ function BookingEntry() {
               toast.success(saved ? "Removed from saved" : "Saved");
             }}
           >
-            <Bookmark size={16} fill={saved ? "currentColor" : "none"} aria-hidden />
+            <Bookmark size={iconSize.sm} fill={saved ? "currentColor" : "none"} aria-hidden />
           </IconBtn>
           <IconBtn
             label="Share space"
             className="h-12 w-12"
             onClick={() => void shareLink({ title: b.name, url: window.location.href })}
           >
-            <Share2 size={16} aria-hidden />
+            <Share2 size={iconSize.sm} aria-hidden />
           </IconBtn>
         </div>
 

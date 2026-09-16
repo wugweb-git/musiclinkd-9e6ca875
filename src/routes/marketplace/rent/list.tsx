@@ -6,6 +6,7 @@ import { Price } from "@/components/ml/kit";
 import { ConditionBadge, LocationRow } from "@/components/ml/market";
 import { RentalAvailabilityBadge, RentalCalendar } from "@/components/ml/rental";
 import { equipment, rentalCategories } from "@/data/rentals";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/list")({
   head: () => ({
@@ -132,13 +133,13 @@ function ListForRent() {
                   />
                   {cover === i ? (
                     <span className="absolute left-1.5 top-1.5 rounded-full bg-primary p-1 text-primary-foreground">
-                      <Star size={12} fill="currentColor" />
+                      <Star size={iconSize.xs} fill="currentColor" />
                     </span>
                   ) : null}
                 </button>
               ))}
               <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-1 font-semibold text-muted-foreground">
-                <Camera size={16} /> Add
+                <Camera size={iconSize.sm} /> Add
               </button>
             </div>
             <button className="mt-3 w-full rounded-lg border border-dashed border-border py-5 text-1 font-semibold text-muted-foreground">

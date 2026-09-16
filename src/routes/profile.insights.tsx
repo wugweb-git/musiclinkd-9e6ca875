@@ -4,6 +4,7 @@ import { BtnLink, TopBar } from "@/components/ml/ui";
 import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
 import { SignalLine } from "@/components/charts/recharts/line-signal";
 import { useAuth } from "@/hooks/use-auth";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/profile/insights")({
   head: () => ({
@@ -59,7 +60,7 @@ function Insights() {
                     up ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  {up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                  {up ? <ArrowUpRight size={iconSize.xs} /> : <ArrowDownRight size={iconSize.xs} />}
                   {m.delta}
                 </p>
               </article>

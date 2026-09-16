@@ -23,6 +23,7 @@ import {
   type SortOption,
 } from "@/data/collab";
 import { showDemoControls } from "@/lib/dev";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/collab/")({
   head: () => ({
@@ -140,7 +141,7 @@ function CollabHome() {
           onClick={() => setFilters(true)}
           className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
         >
-          <SlidersHorizontal size={16} /> Filters
+          <SlidersHorizontal size={iconSize.sm} /> Filters
           {role.length + type.length ? ` · ${role.length + type.length}` : ""}
         </button>
         <button
@@ -148,7 +149,7 @@ function CollabHome() {
           onClick={() => setSortOpen(true)}
           className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
         >
-          <ArrowUpDown size={16} /> {sort}
+          <ArrowUpDown size={iconSize.sm} /> {sort}
         </button>
       </div>
 
@@ -228,9 +229,9 @@ function CollabHome() {
 
       <Link
         to="/collab/new"
-        className="fixed bottom-24 left-1/2 z-40 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground"
+        className="fixed bottom-24 left-1/2 z-nav inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground"
       >
-        <Plus size={16} /> Start a collaboration
+        <Plus size={iconSize.sm} /> Start a collaboration
       </Link>
 
       <Sheet open={filters} onClose={() => setFilters(false)} title="Filter collaborations">

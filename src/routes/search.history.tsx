@@ -4,6 +4,7 @@ import { Clock, X } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Dialog, EmptyState, Row, Segmented } from "@/components/ml/kit";
 import { searchHistory, scopeLabel, timeAgo } from "@/data/search-meta";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/search/history")({
   head: () => ({
@@ -66,7 +67,7 @@ function SearchHistory() {
                 key={e.id}
                 className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-0"
               >
-                <Clock size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+                <Clock size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
                 <Link to="/search" className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{e.query}</p>
                   <p className="truncate text-1 text-muted-foreground">
@@ -79,7 +80,7 @@ function SearchHistory() {
                   onClick={() => setRemoved((r) => [...r, e.id])}
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground"
                 >
-                  <X size={16} aria-hidden />
+                  <X size={iconSize.sm} aria-hidden />
                 </button>
               </div>
             ))}

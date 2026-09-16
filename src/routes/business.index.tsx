@@ -8,6 +8,7 @@ import { businessViewFromRecord, type BusinessView } from "@/lib/business-view";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { getMyBusiness } from "@/lib/profile-groups.functions";
 import { joinParts } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/")({
   head: () => ({
@@ -59,7 +60,7 @@ function BusinessHome() {
             aria-label="Add business"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
-            <Plus size={20} />
+            <Plus size={iconSize.md} />
           </Link>
         }
       />
@@ -124,7 +125,7 @@ function BusinessHome() {
 
         <Card className="space-y-1">
           <p className="flex items-center gap-2 text-1 font-semibold">
-            <Building2 size={16} /> Work at a studio you do not own?
+            <Building2 size={iconSize.sm} /> Work at a studio you do not own?
           </p>
           <p className="text-1 text-muted-foreground">
             Ask the owner to invite you as staff — you keep your own profile and appear on their

@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
 import { equipment, providers, rentalCategories } from "@/data/rentals";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/nearby")({
   head: () => ({
@@ -43,7 +44,7 @@ function NearbyRentals() {
         <div className="relative overflow-hidden rounded-lg border border-border bg-subtle">
           <div className="flex h-36 items-center justify-center">
             <div className="text-center">
-              <MapPin size={20} className="mx-auto text-primary" />
+              <MapPin size={iconSize.md} className="mx-auto text-primary" />
               <p className="mt-1.5 text-1 font-semibold">{shown.length} rentals on the map</p>
               <p className="text-1 text-muted-foreground">Tap to open map view</p>
             </div>

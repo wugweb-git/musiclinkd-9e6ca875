@@ -9,6 +9,7 @@ import { draftToProfile, type ProfileRow } from "@/lib/profile-map";
 import { mergeProfileRow, profileFromRow } from "@/lib/profile-view";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { AuthLink } from "@/components/ml/auth";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/onboarding/preview")({
   head: () => ({
@@ -49,7 +50,7 @@ function DetailRow({
     <button
       type="button"
       onClick={onEdit}
-      className="state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left"
+      className="state-layer flex min-h-control-lg w-full items-center gap-3 px-4 py-3 text-left"
     >
       <span className="w-28 shrink-0 text-sm font-medium">{label}</span>
       <span
@@ -57,7 +58,7 @@ function DetailRow({
       >
         {values.length ? values.join(", ") : "Add"}
       </span>
-      <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+      <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
     </button>
   );
 }
@@ -139,7 +140,7 @@ function Preview() {
         </p>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t border-border bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         <BtnLink to="/onboarding/complete" className="w-full">
           Publish My Profile
         </BtnLink>

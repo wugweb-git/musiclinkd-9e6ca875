@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import type { ProfileRow } from "@/lib/profile-map";
 import { cn } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export function initialsOf(name: string | null): string {
   if (!name) return "";
@@ -82,7 +83,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
       <Link to="/welcome" aria-label="Sign in">
         <Avatar className={shape}>
           <AvatarFallback className="bg-card text-muted-foreground">
-            <User size={20} aria-hidden />
+            <User size={iconSize.md} aria-hidden />
           </AvatarFallback>
         </Avatar>
       </Link>
@@ -94,7 +95,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
       <Avatar className={shape}>
         {photo ? <AvatarImage src={photo} alt="" /> : null}
         <AvatarFallback className="bg-card text-1 font-semibold text-muted-foreground">
-          {initials || <User size={20} aria-hidden />}
+          {initials || <User size={iconSize.md} aria-hidden />}
         </AvatarFallback>
       </Avatar>
     </Link>

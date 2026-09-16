@@ -5,6 +5,7 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Dialog, StatusPill, Row } from "@/components/ml/kit";
 import { getWhy } from "@/data/search-meta";
 import { feedbackOptions } from "@/data/recommendations";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/search/why/$id")({
   head: () => ({
@@ -42,7 +43,7 @@ function WhyThisResult() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-2">
           <div className="flex items-center gap-2">
-            <Info size={16} className="shrink-0 text-primary" aria-hidden />
+            <Info size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
             <h2 className="min-w-0 text-2 leading-tight">{why.headline}</h2>
           </div>
           <p className="text-1 text-muted-foreground">
@@ -65,7 +66,7 @@ function WhyThisResult() {
 
         <Card className="space-y-2">
           <div className="flex items-center gap-2">
-            <ShieldCheck size={16} className="shrink-0 text-primary" aria-hidden />
+            <ShieldCheck size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
             <h2 className="text-2">What is never used</h2>
           </div>
           <ul className="space-y-1.5">
@@ -88,7 +89,7 @@ function WhyThisResult() {
                 key={f}
                 type="button"
                 onClick={() => setSent(f)}
-                className="min-h-11 rounded-full border border-border bg-card px-4 text-1 font-semibold"
+                className="min-h-touch rounded-full border border-border bg-card px-4 text-1 font-semibold"
               >
                 {f}
               </button>

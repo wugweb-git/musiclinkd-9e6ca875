@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Dialog, EmptyState, StatusPill } from "@/components/ml/kit";
 import { pendingReviews, reviewPolicy } from "@/data/reviews";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/reviews/write/$id")({
   head: () => ({
@@ -77,7 +78,7 @@ function WriteReview() {
                     className="p-1"
                   >
                     <Star
-                      size={24}
+                      size={iconSize.lg}
                       className={n <= (scores[c] ?? 0) ? "text-primary" : "text-border"}
                       fill={n <= (scores[c] ?? 0) ? "currentColor" : "none"}
                       aria-hidden

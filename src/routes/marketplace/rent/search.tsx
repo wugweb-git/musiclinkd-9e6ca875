@@ -16,6 +16,7 @@ import {
   rentalCategories,
 } from "@/data/rentals";
 import { loadCatalogRentals } from "@/lib/market-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/search")({
   // Database rentals are searched after the static ones.
@@ -115,13 +116,13 @@ function RentSearch() {
                 onClick={() => setSortOpen(true)}
                 className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-1 font-semibold"
               >
-                <ArrowUpDown size={12} /> Sort
+                <ArrowUpDown size={iconSize.xs} /> Sort
               </button>
               <button
                 onClick={() => setFilters(true)}
                 className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-1 font-semibold"
               >
-                <SlidersHorizontal size={12} /> Filter
+                <SlidersHorizontal size={iconSize.xs} /> Filter
               </button>
             </div>
           </div>

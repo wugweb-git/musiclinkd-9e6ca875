@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { IconBtn } from "./ui";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 /* ---------------------------------------------------------------- shell */
 
@@ -69,7 +70,7 @@ function AuthBackButton({ back }: { back: AuthBack }) {
         else void navigate({ ...(back as { to: "/welcome" }), replace: true });
       }}
     >
-      <ArrowLeft size={20} aria-hidden />
+      <ArrowLeft size={iconSize.md} aria-hidden />
     </IconBtn>
   );
 }
@@ -302,7 +303,7 @@ export function TextField({
           role="alert"
           className="mt-1.5 flex animate-message items-start gap-1.5 text-1 text-destructive"
         >
-          <CircleAlert size={16} className="mt-px shrink-0" aria-hidden />
+          <CircleAlert size={iconSize.sm} className="mt-px shrink-0" aria-hidden />
           {error}
         </p>
       ) : hint ? (
@@ -359,7 +360,7 @@ export function PasswordInput({
             onClick={() => setShow((s) => !s)}
           >
             <span key={String(show)} className="inline-flex animate-pop">
-              {show ? <EyeOff size={20} aria-hidden /> : <Eye size={20} aria-hidden />}
+              {show ? <EyeOff size={iconSize.md} aria-hidden /> : <Eye size={iconSize.md} aria-hidden />}
             </span>
           </IconBtn>
         }
@@ -705,7 +706,7 @@ export function AuthStatus({
 export function TrustNote({ children }: { children: ReactNode }) {
   return (
     <p className="mt-5 flex items-start gap-2 text-1 leading-relaxed text-muted-foreground">
-      <ShieldCheck size={16} className="mt-0.5 shrink-0 text-primary" />
+      <ShieldCheck size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
       <span>{children}</span>
     </p>
   );

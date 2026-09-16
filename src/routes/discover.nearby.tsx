@@ -7,6 +7,7 @@ import { studios, talents } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/discover/nearby")({
   head: () => ({
@@ -47,7 +48,7 @@ function Nearby() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-background text-foreground">
-              <MapPin size={24} />
+              <MapPin size={iconSize.lg} />
             </span>
             <h2 className="mt-3 text-3 leading-tight">Show people near you</h2>
             <p className="mt-2 text-1 text-muted-foreground">

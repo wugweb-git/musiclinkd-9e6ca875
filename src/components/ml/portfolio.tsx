@@ -35,6 +35,7 @@ import {
   type WorkAnalyticsFigures,
 } from "@/data/portfolio";
 import { showDemoControls } from "@/lib/dev";
+import { iconSize } from "@/lib/tokens";
 
 export { analyticsFor };
 
@@ -150,7 +151,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
             ) : null}
           </div>
           <ChevronDown
-            size={20}
+            size={iconSize.md}
             aria-hidden
             className={`mt-0.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
           />
@@ -164,7 +165,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
               to="/portfolio/$id"
               params={{ id: item.id }}
               variant="outline"
-              className="min-h-10 flex-1"
+              className="min-h-control-sm flex-1"
             >
               Details
             </BtnLink>
@@ -458,7 +459,7 @@ export function AudioPlayer({
             className="flex h-14 w-14 items-center justify-center rounded-sm bg-background text-muted-foreground"
             aria-hidden
           >
-            <Headphones size={24} />
+            <Headphones size={iconSize.lg} />
           </div>
         )}
         <div className="min-w-0">
@@ -557,7 +558,7 @@ export function ContributorPicker({
               className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-1 font-semibold text-primary-foreground"
               aria-label={`Remove ${n}`}
             >
-              {n} <X size={12} aria-hidden />
+              {n} <X size={iconSize.xs} aria-hidden />
             </button>
           ))}
         </div>
@@ -615,7 +616,7 @@ export function FeaturedToggle({
       } ${disabled && !on ? "opacity-50" : ""}`}
     >
       <span className="inline-flex items-center gap-1">
-        <Star size={12} fill={on ? "currentColor" : "none"} aria-hidden />
+        <Star size={iconSize.xs} fill={on ? "currentColor" : "none"} aria-hidden />
         {on ? "Featured" : "Feature this"}
       </span>
     </button>
@@ -652,7 +653,7 @@ export function ReorderList({
                 aria-label={`Move ${item.title} up`}
                 className="hit-area flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
               >
-                <ArrowUp size={16} aria-hidden />
+                <ArrowUp size={iconSize.sm} aria-hidden />
               </button>
               <button
                 type="button"
@@ -661,7 +662,7 @@ export function ReorderList({
                 aria-label={`Move ${item.title} down`}
                 className="hit-area flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
               >
-                <ArrowDown size={16} aria-hidden />
+                <ArrowDown size={iconSize.sm} aria-hidden />
               </button>
             </div>
           </div>

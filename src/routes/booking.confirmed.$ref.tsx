@@ -4,6 +4,7 @@ import { Btn, BtnLink } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
 import { bookables, formatDate, formatTime, inr, isoDate } from "@/data/booking";
 import { addToCalendar, shareLink } from "@/lib/booking-actions";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/booking/confirmed/$ref")({
   head: () => ({
@@ -85,7 +86,7 @@ function Confirmed() {
                 })
               }
             >
-              <CalendarPlus size={16} className="mr-1.5" /> Add to Calendar
+              <CalendarPlus size={iconSize.sm} className="mr-1.5" /> Add to Calendar
             </Btn>
             <Btn
               variant="outline"
@@ -96,7 +97,7 @@ function Confirmed() {
                 })
               }
             >
-              <Share2 size={16} className="mr-1.5" /> Share
+              <Share2 size={iconSize.sm} className="mr-1.5" /> Share
             </Btn>
           </div>
         ) : null}
@@ -107,7 +108,7 @@ function Confirmed() {
           View Booking
         </BtnLink>
         <BtnLink to="/messages" variant="outline" className="w-full">
-          <MessageCircle size={16} className="mr-1.5" /> Message Provider
+          <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message Provider
         </BtnLink>
       </div>
     </div>

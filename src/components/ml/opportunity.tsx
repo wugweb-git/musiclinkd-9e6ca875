@@ -38,6 +38,7 @@ import {
   type Opportunity,
   type OpportunityStatus,
 } from "@/data/opportunities";
+import { iconSize } from "@/lib/tokens";
 
 /** One icon per requirement type, in place of the emoji the categories carried. */
 const categoryIcons: Record<string, LucideIcon> = {
@@ -126,7 +127,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
   if (o.poster.rating)
     meta.push(
       <>
-        <Star size={12} fill="currentColor" className="inline" aria-hidden /> {o.poster.rating}
+        <Star size={iconSize.xs} fill="currentColor" className="inline" aria-hidden /> {o.poster.rating}
       </>,
     );
   if (o.poster.hires) meta.push(`${o.poster.hires} hires`);
@@ -218,7 +219,7 @@ export function OpportunityCard({
           className="absolute right-2 top-2"
           onClick={onSave}
         >
-          <Bookmark size={20} fill={saved ? "currentColor" : "none"} aria-hidden />
+          <Bookmark size={iconSize.md} fill={saved ? "currentColor" : "none"} aria-hidden />
         </IconBtn>
       ) : null}
     </article>

@@ -7,6 +7,7 @@ import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChevronRight, Star } from "lucide-react";
 import { unitLabel, type PriceParts } from "@/lib/price";
+import { iconSize } from "@/lib/tokens";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
@@ -240,7 +241,7 @@ export function Row({
           <span className="block truncate text-1 text-muted-foreground">{subtitle}</span>
         ) : null}
       </span>
-      {right ?? <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />}
+      {right ?? <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />}
     </>
   );
   const cls = "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3";
@@ -421,7 +422,7 @@ export function Dialog({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-50 mx-auto flex w-full max-w-app items-center justify-center px-6"
+      className="fixed inset-0 z-sheet mx-auto flex w-full max-w-app items-center justify-center px-6"
       role="dialog"
       aria-modal
     >

@@ -6,6 +6,7 @@ import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { businessRoleLabel, rolePermissions, type BusinessRole } from "@/data/business";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { joinParts } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/$id/team")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -59,7 +60,7 @@ function TeamScreen() {
             aria-label="Invite member"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
-            <UserPlus size={16} />
+            <UserPlus size={iconSize.sm} />
           </button>
         }
       />
@@ -115,7 +116,7 @@ function TeamScreen() {
             <span className="pill bg-background text-muted-foreground">Email or @username</span>
             <input
               placeholder="@kabir"
-              className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
+              className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
             />
           </label>
           <p className="text-1 text-muted-foreground">

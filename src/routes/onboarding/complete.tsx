@@ -17,6 +17,7 @@ import { completionPercent, readiness } from "@/data/onboarding";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/onboarding/complete")({
   head: () => ({
@@ -78,7 +79,7 @@ function Complete() {
 
       <main className="px-5 pt-4">
         <section className={cn("rounded-lg bg-subtle p-5", rise)}>
-          <PartyPopper size={24} className="animate-pop text-primary" style={beat(2)} />
+          <PartyPopper size={iconSize.lg} className="animate-pop text-primary" style={beat(2)} />
           <h1 className="mt-3 text-3 leading-tight">
             {first ? `You're on MusicLinkd, ${first}` : "You're on MusicLinkd"}
           </h1>
@@ -158,7 +159,7 @@ function Complete() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border" : "border-transparent",
         )}
       >

@@ -6,6 +6,7 @@ import { Card, Row, StatusPill, EmptyState, Dialog, Loading } from "@/components
 import { statusTone } from "@/components/ml/opportunity";
 import { myOpportunities, closeReasons } from "@/data/opportunities";
 import { useMyDbOpportunities } from "@/hooks/use-my-opportunities";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/$id/manage")({
   head: () => ({
@@ -76,27 +77,27 @@ function ManageOpportunity() {
 
         <div className="space-y-2">
           <Row
-            icon={<Users size={16} />}
+            icon={<Users size={iconSize.sm} />}
             title="Applicants"
             {...(o.applicantSummary ? { subtitle: `${o.applicantSummary.new} new` } : {})}
             to="/opportunities/$id/applicants"
             params={{ id }}
           />
           <Row
-            icon={<BarChart3 size={16} />}
+            icon={<BarChart3 size={iconSize.sm} />}
             title="Analytics"
             subtitle="Views, saves, conversion"
             to="/opportunities/$id/analytics"
             params={{ id }}
           />
           <Row
-            icon={<Pencil size={16} />}
+            icon={<Pencil size={iconSize.sm} />}
             title="Edit details"
             subtitle="Title, budget, requirements"
             to="/opportunities/new"
           />
           <Row
-            icon={<PauseCircle size={16} />}
+            icon={<PauseCircle size={iconSize.sm} />}
             title={paused ? "Resume opportunity" : "Pause applications"}
             subtitle={
               paused
@@ -111,7 +112,7 @@ function ManageOpportunity() {
             }
           />
           <Row
-            icon={<XCircle size={16} />}
+            icon={<XCircle size={iconSize.sm} />}
             title="Close opportunity"
             subtitle="Tell applicants the outcome"
             onClick={() => setClose(true)}

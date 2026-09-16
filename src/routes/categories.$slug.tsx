@@ -8,6 +8,7 @@ import { StateCard } from "@/components/ml/portfolio";
 import { categories } from "@/data/discover";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
+import { iconSize } from "@/lib/tokens";
 
 /*
  * One category of people, e.g. /categories/singers. The list is the live profiles table filtered by
@@ -93,7 +94,7 @@ function CategoryDirectory() {
                     </span>
                     {p.city ? (
                       <span className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
-                        <MapPin size={12} className="shrink-0" aria-hidden />
+                        <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
                         {p.city}
                       </span>
                     ) : null}

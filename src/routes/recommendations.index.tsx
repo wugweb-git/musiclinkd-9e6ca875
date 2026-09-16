@@ -10,6 +10,7 @@ import {
   recEmptyCopy,
   type Recommendation,
 } from "@/data/recommendations";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/recommendations/")({
   head: () => ({
@@ -69,7 +70,7 @@ function Recs() {
             aria-label="Recommendation settings"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-background"
           >
-            <Settings2 size={20} aria-hidden />
+            <Settings2 size={iconSize.md} aria-hidden />
           </Link>
         }
       />
@@ -94,7 +95,7 @@ function Recs() {
             return (
               <section key={s.key}>
                 <div className="flex items-center gap-2">
-                  <Sparkles size={16} className="text-primary" aria-hidden />
+                  <Sparkles size={iconSize.sm} className="text-primary" aria-hidden />
                   <h2 className="text-sm">{s.title}</h2>
                 </div>
                 <p className="mt-0.5 text-1 text-muted-foreground">{s.blurb}</p>
@@ -125,7 +126,7 @@ function Recs() {
                               onClick={() => setFeedbackFor(r.id)}
                               className="shrink-0 p-1 text-muted-foreground"
                             >
-                              <MoreHorizontal size={20} aria-hidden />
+                              <MoreHorizontal size={iconSize.md} aria-hidden />
                             </button>
                           </div>
                           <div className="mt-2">

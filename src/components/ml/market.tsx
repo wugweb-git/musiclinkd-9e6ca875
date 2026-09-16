@@ -6,6 +6,7 @@ import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
 import { EmptyState as BaseEmptyState, Price } from "./kit";
 import type { PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 export function SaveButton({
   saved,
@@ -53,7 +54,7 @@ export function Rating({
   if (!value) return null;
   return (
     <span className="inline-flex items-center gap-1 text-1 font-semibold text-warn">
-      <Star size={12} fill="currentColor" strokeWidth={0} />
+      <Star size={iconSize.xs} fill="currentColor" strokeWidth={0} />
       {value}
       {count ? <span className="text-muted-foreground">({count})</span> : null}
     </span>
@@ -63,7 +64,7 @@ export function Rating({
 export function LocationRow({ text }: { text: string }) {
   return (
     <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
-      <MapPin size={12} strokeWidth={1.8} />
+      <MapPin size={iconSize.xs} strokeWidth={1.8} />
       <span className="truncate">{text}</span>
     </span>
   );
@@ -83,7 +84,7 @@ export function PriceBlock({ price, size = "md" }: { price: PriceParts; size?: "
 export function TrustPill({ label }: { label: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-status-category-bg px-2.5 py-1 text-1 font-semibold text-status-category-text">
-      <ShieldCheck size={12} strokeWidth={2.2} />
+      <ShieldCheck size={iconSize.xs} strokeWidth={2.2} />
       {label}
     </span>
   );
@@ -401,12 +402,12 @@ export function LocationSheet({
   return (
     <Sheet open={open} onClose={onClose} title="Choose a location">
       <p className="mb-4 flex items-center gap-2 text-sm font-semibold">
-        <MapPin size={16} aria-hidden /> {city}
+        <MapPin size={iconSize.sm} aria-hidden /> {city}
       </p>
       <div className="mb-5 flex gap-2">
         <Btn
           className="flex-1"
-          icon={<LocateFixed size={16} />}
+          icon={<LocateFixed size={iconSize.sm} />}
           loading={locating}
           onClick={locate}
         >
@@ -434,7 +435,7 @@ export function LocationSheet({
               onClick={() => pick(c)}
               className="state-layer flex w-full items-center gap-3 py-3 text-left text-sm"
             >
-              <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+              <Search size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
               <span className={c === city ? "font-semibold" : ""}>{c}</span>
             </button>
           </li>
@@ -607,7 +608,7 @@ export function SortSheet({
           >
             {o}
             {value === o ? (
-              <Check size={20} className="text-primary" aria-label="Selected" />
+              <Check size={iconSize.md} className="text-primary" aria-label="Selected" />
             ) : null}
           </button>
         ))}
@@ -639,7 +640,7 @@ export function OfferSheet({
       {sent ? (
         <div className="py-10 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success-strong">
-            <Check size={32} aria-hidden />
+            <Check size={iconSize.xl} aria-hidden />
           </div>
           <h2 className="text-3">Offer sent</h2>
           <p className="mx-auto mt-2 max-w-[260px] text-sm text-muted-foreground">
@@ -726,7 +727,7 @@ export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => v
           >
             {r}
             {reason === r ? (
-              <Check size={20} className="text-primary" aria-label="Selected" />
+              <Check size={iconSize.md} className="text-primary" aria-label="Selected" />
             ) : null}
           </button>
         ))}

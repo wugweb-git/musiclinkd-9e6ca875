@@ -13,6 +13,7 @@ import { Card, StatusPill, Row } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import { formatDay, gateFor, useMyVerification } from "@/hooks/use-my-verification";
 import { statusLabel, statusTone, trustSignals, overallStatus } from "@/data/verification";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/verification/")({
   head: () => ({
@@ -79,7 +80,7 @@ function VerificationHub() {
         <Card className="space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
-              <ShieldCheck size={20} className="shrink-0 text-primary" aria-hidden />
+              <ShieldCheck size={iconSize.md} className="shrink-0 text-primary" aria-hidden />
               <h2 className="min-w-0 text-2 leading-tight">{copy.title}</h2>
             </div>
             <StatusPill label={statusLabel[overall]} tone={statusTone[overall]} />
@@ -127,7 +128,7 @@ function VerificationHub() {
                           label={statusLabel[status]}
                           tone={statusTone[status]}
                           {...(!gate.allowed && status === "unverified"
-                            ? { icon: <Lock size={12} aria-hidden /> }
+                            ? { icon: <Lock size={iconSize.xs} aria-hidden /> }
                             : {})}
                         />
                       </div>

@@ -5,6 +5,7 @@ import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
 import { myOpportunities } from "@/data/opportunities";
 import { useMyDbOpportunities } from "@/hooks/use-my-opportunities";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/mine")({
   head: () => ({
@@ -40,7 +41,7 @@ function MyOpportunities() {
             className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
             aria-label="New opportunity"
           >
-            <Plus size={20} />
+            <Plus size={iconSize.md} />
           </Link>
         }
       />
@@ -64,15 +65,15 @@ function MyOpportunities() {
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-1 text-muted-foreground">
                 {o.applicantSummary ? (
                   <span className="inline-flex items-center gap-1">
-                    <Eye size={12} /> {o.views} views
+                    <Eye size={iconSize.xs} /> {o.views} views
                   </span>
                 ) : null}
                 <span className="inline-flex items-center gap-1">
-                  <Users size={12} /> {o.applicants} applicants
+                  <Users size={iconSize.xs} /> {o.applicants} applicants
                 </span>
                 {o.applicantSummary ? (
                   <span className="inline-flex items-center gap-1">
-                    <Bookmark size={12} /> {o.applicantSummary.shortlisted} shortlisted
+                    <Bookmark size={iconSize.xs} /> {o.applicantSummary.shortlisted} shortlisted
                   </span>
                 ) : null}
               </div>

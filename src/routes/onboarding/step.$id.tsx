@@ -67,6 +67,7 @@ import {
   type OnboardingDraft,
   type StepDef,
 } from "@/data/onboarding";
+import { iconSize } from "@/lib/tokens";
 
 function typeIcon(o: TaxonomyOption) {
   const Icon = roleIcon(o);
@@ -760,7 +761,7 @@ function StepBody({
 /* ------------------------------------------------------------------ contact */
 
 const linkIcons: Record<string, ReactNode> = {
-  website: <Globe size={20} strokeWidth={1.75} />,
+  website: <Globe size={iconSize.md} strokeWidth={1.75} />,
   instagram: <BrandIcon brand="instagram" />,
   youtube: <BrandIcon brand="youtube" />,
   spotify: <BrandIcon brand="spotify" />,
@@ -768,9 +769,9 @@ const linkIcons: Record<string, ReactNode> = {
 };
 
 const channelIcons: Record<string, ReactNode> = {
-  messages: <MessageCircle size={16} aria-hidden />,
-  email: <Mail size={16} aria-hidden />,
-  phone: <Phone size={16} aria-hidden />,
+  messages: <MessageCircle size={iconSize.sm} aria-hidden />,
+  email: <Mail size={iconSize.sm} aria-hidden />,
+  phone: <Phone size={iconSize.sm} aria-hidden />,
   whatsapp: <BrandIcon brand="whatsapp" size={16} />,
 };
 
@@ -846,7 +847,7 @@ function ContactStep({
             </div>
           ) : (
             <AuthTextButton
-              icon={<Plus size={16} />}
+              icon={<Plus size={iconSize.sm} />}
               onClick={() => setAdding(true)}
               className="text-sm"
             >

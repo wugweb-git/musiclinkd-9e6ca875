@@ -6,6 +6,7 @@ import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities, opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
+import { iconSize } from "@/lib/tokens";
 
 type Search = { q?: string };
 
@@ -78,7 +79,7 @@ function OpportunitySearch() {
             onClick={() => setFilters(true)}
             className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
           >
-            <SlidersHorizontal size={16} /> Filters{activeCount ? ` · ${activeCount}` : ""}
+            <SlidersHorizontal size={iconSize.sm} /> Filters{activeCount ? ` · ${activeCount}` : ""}
           </button>
           <div className="min-w-0 flex-1">
             <Segmented value={sort} options={sortOptions} onChange={setSort} />

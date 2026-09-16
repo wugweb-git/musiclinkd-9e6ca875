@@ -32,6 +32,7 @@ import { NoCover } from "@/components/ml/profile";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/discover/")({
   head: () => ({
@@ -182,7 +183,7 @@ function Discover() {
         <SectionHeader
           title="Recommended for you"
           action={
-            <SectionActionLink to="/recommendations" icon={<Sparkles size={16} />}>
+            <SectionActionLink to="/recommendations" icon={<Sparkles size={iconSize.sm} />}>
               For You
             </SectionActionLink>
           }
@@ -193,12 +194,12 @@ function Discover() {
             className="flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background"
           >
             <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm bg-background/10">
-              <Sparkles size={24} aria-hidden />
+              <Sparkles size={iconSize.lg} aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm text-background">Swipe through matches</h3>
             </div>
-            <ArrowRight size={20} className="shrink-0" aria-hidden />
+            <ArrowRight size={iconSize.md} className="shrink-0" aria-hidden />
           </Link>
           <div className="grid grid-cols-2 gap-3">
             <Link to="/recommendations" className="min-w-0 rounded-lg bg-subtle p-4">
@@ -224,7 +225,7 @@ function Discover() {
         <SectionHeader
           title="Nearby professionals"
           action={
-            <SectionActionLink to="/discover/nearby" icon={<MapPin size={16} />}>
+            <SectionActionLink to="/discover/nearby" icon={<MapPin size={iconSize.sm} />}>
               Mumbai
             </SectionActionLink>
           }
@@ -270,7 +271,7 @@ function Discover() {
                   <span aria-hidden>·</span>
                   <span className="inline-flex shrink-0 items-center gap-0.5">
                     {s.rating}
-                    <Star size={12} fill="currentColor" aria-hidden />
+                    <Star size={iconSize.xs} fill="currentColor" aria-hidden />
                   </span>
                 </p>
               </div>
@@ -348,7 +349,7 @@ function TrendingWorkRow({ item }: { item: TrendingItem }) {
           </span>
         </span>
         <ChevronDown
-          size={20}
+          size={iconSize.md}
           aria-hidden
           className={`shrink-0 text-muted-foreground transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
         />

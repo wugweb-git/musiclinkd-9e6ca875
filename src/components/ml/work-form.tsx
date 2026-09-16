@@ -12,6 +12,7 @@ import { haptic } from "@/lib/haptics";
 import { getLinkPreview, type LinkPreview } from "@/lib/link-preview.functions";
 import { savePortfolioItem } from "@/lib/portfolio.functions";
 import { cn } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 /*
  * Add or edit a piece of work, link first. Pasting a YouTube, Spotify, SoundCloud or any page link
@@ -40,7 +41,7 @@ function Row({
     <button
       type="button"
       onClick={onClick}
-      className="state-layer flex min-h-14 w-full items-center gap-3 px-4 text-left"
+      className="state-layer flex min-h-control-lg w-full items-center gap-3 px-4 text-left"
     >
       <span className="shrink-0 text-sm font-medium">{label}</span>
       <span
@@ -51,7 +52,7 @@ function Row({
       >
         {value ?? "Add"}
       </span>
-      <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+      <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
     </button>
   );
 }
@@ -187,9 +188,9 @@ export function WorkForm({
         inputId="work-link"
         leading={
           reading ? (
-            <LoaderCircle size={20} className="animate-spin text-muted-foreground" />
+            <LoaderCircle size={iconSize.md} className="animate-spin text-muted-foreground" />
           ) : (
-            <Link2 size={20} strokeWidth={1.75} />
+            <Link2 size={iconSize.md} strokeWidth={1.75} />
           )
         }
         value={link}
@@ -270,7 +271,7 @@ export function WorkForm({
           value={description.trim() || null}
           onClick={() => setPanel("description")}
         />
-        <label htmlFor="work-public" className="flex min-h-14 items-center gap-3 px-4">
+        <label htmlFor="work-public" className="flex min-h-control-lg items-center gap-3 px-4">
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-medium">Public</span>
             <span className="block text-1 text-muted-foreground">
@@ -332,7 +333,7 @@ export function WorkForm({
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-30 mx-auto flex w-full max-w-app gap-2 border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto flex w-full max-w-app gap-2 border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
           edges.bottom ? "border-border" : "border-transparent",
         )}
       >

@@ -49,6 +49,7 @@ import {
   type PersonaBucket,
   type TaxonomyOption,
 } from "@/lib/taxonomy";
+import { iconSize } from "@/lib/tokens";
 
 /* ------------------------------------------------------------------ */
 /* Draft store — the account is the source of truth                    */
@@ -455,14 +456,14 @@ export function StepShell({
     >
       {/* Material top app bar: flat at rest, the divider appears once content scrolls under it. */}
       <header
-        className={`vt-flow-header sticky top-0 z-30 border-b bg-background/95 px-5 pb-3 pt-4 backdrop-blur transition-colors duration-200 ease-standard ${
+        className={`vt-flow-header sticky top-0 z-bar border-b bg-background/95 px-5 pb-3 pt-4 backdrop-blur transition-colors duration-200 ease-standard ${
           edges.top ? "border-border" : "border-transparent"
         }`}
       >
         <div className="flex items-center gap-3">
           {onBack ? (
             <IconBtn label="Back" variant="plain" className="-ml-2" onClick={onBack}>
-              <ArrowLeft size={20} aria-hidden />
+              <ArrowLeft size={iconSize.md} aria-hidden />
             </IconBtn>
           ) : (
             <span className="h-10 w-8" />
@@ -528,7 +529,7 @@ export function StepShell({
         </div>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
         <p className="mt-2 flex items-start gap-1.5 text-1 leading-relaxed text-muted-foreground">
-          <Info size={16} className="mt-0.5 shrink-0" aria-hidden />
+          <Info size={iconSize.sm} className="mt-0.5 shrink-0" aria-hidden />
           {why}
         </p>
         <div className="mt-6">{children}</div>
@@ -536,7 +537,7 @@ export function StepShell({
 
       {/* Bottom bar on the page ground like the top bar; its divider shows only while content continues under it. */}
       <div
-        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard ${
+        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard ${
           edges.bottom ? "border-border" : "border-transparent"
         }`}
       >
@@ -662,7 +663,7 @@ export function OptionList({
                 } ${on ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}
               >
                 {on ? (
-                  <Check size={12} strokeWidth={3} className="animate-pop" aria-hidden />
+                  <Check size={iconSize.xs} strokeWidth={3} className="animate-pop" aria-hidden />
                 ) : null}
               </span>
               <span className="min-w-0">
@@ -816,7 +817,7 @@ export function InlineField({
             role="alert"
             className="flex animate-message items-start gap-1.5 text-1 text-destructive"
           >
-            <CircleAlert size={16} className="mt-px shrink-0" aria-hidden />
+            <CircleAlert size={iconSize.sm} className="mt-px shrink-0" aria-hidden />
             {error}
           </p>
         ) : ok ? (
@@ -825,7 +826,7 @@ export function InlineField({
             id={messageId}
             className="flex animate-message items-start gap-1.5 text-1 text-success"
           >
-            <CircleCheck size={16} className="mt-px shrink-0" aria-hidden />
+            <CircleCheck size={iconSize.sm} className="mt-px shrink-0" aria-hidden />
             {ok}
           </p>
         ) : (
@@ -908,7 +909,7 @@ export function PhotoPicker({
           ) : photo ? (
             <img src={photo} alt={`${label} preview`} className="h-full w-full object-cover" />
           ) : (
-            <Camera size={24} className="text-muted-foreground" />
+            <Camera size={iconSize.lg} className="text-muted-foreground" />
           )}
         </div>
         <div className="flex-1 space-y-2">
@@ -928,9 +929,9 @@ export function PhotoPicker({
                 onChange(null);
                 void deleteProfileImage("avatar", previous);
               }}
-              className="flex min-h-11 w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground"
+              className="flex min-h-touch w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground"
             >
-              <Trash2 size={16} /> Remove
+              <Trash2 size={iconSize.sm} /> Remove
             </button>
           ) : null}
         </div>
@@ -944,14 +945,14 @@ export function PhotoPicker({
       <Sheet open={open} onClose={() => setOpen(false)} title={label}>
         <ul className="space-y-2">
           {[
-            { icon: <Camera size={20} />, label: "Take photo", input: camera },
-            { icon: <ImageIcon size={20} />, label: "Choose from gallery", input: gallery },
+            { icon: <Camera size={iconSize.md} />, label: "Take photo", input: camera },
+            { icon: <ImageIcon size={iconSize.md} />, label: "Choose from gallery", input: gallery },
           ].map((o) => (
             <li key={o.label}>
               <button
                 type="button"
                 onClick={() => o.input.current?.click()}
-                className="flex min-h-14 w-full items-center gap-3 rounded-lg bg-subtle px-4 text-sm font-semibold"
+                className="flex min-h-control-lg w-full items-center gap-3 rounded-lg bg-subtle px-4 text-sm font-semibold"
               >
                 {o.icon}
                 {o.label}
@@ -1007,7 +1008,7 @@ export function SelectField({
           ))}
         </select>
         <ChevronDown
-          size={20}
+          size={iconSize.md}
           className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
           aria-hidden
         />
@@ -1043,7 +1044,7 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
 export function SavingBanner({ label = "Saving your answers…" }: { label?: string }) {
   return (
     <p role="status" className="mb-4 flex items-center gap-2 text-1 text-muted-foreground">
-      <LoaderCircle size={16} className="animate-spin" aria-hidden />
+      <LoaderCircle size={iconSize.sm} className="animate-spin" aria-hidden />
       {label}
     </p>
   );
@@ -1069,7 +1070,7 @@ export function SyncStatus({ state }: { state: SyncState }) {
   if (state === "saving") {
     return (
       <span role="status" className="flex shrink-0 items-center gap-1">
-        <LoaderCircle size={12} className="animate-spin" aria-hidden />
+        <LoaderCircle size={iconSize.xs} className="animate-spin" aria-hidden />
         Saving…
       </span>
     );
@@ -1077,7 +1078,7 @@ export function SyncStatus({ state }: { state: SyncState }) {
   if (state === "saved") {
     return (
       <span role="status" className="flex shrink-0 animate-message items-center gap-1">
-        <CircleCheck size={12} aria-hidden />
+        <CircleCheck size={iconSize.xs} aria-hidden />
         Saved
       </span>
     );
@@ -1098,7 +1099,7 @@ export function StepSkeleton() {
 export function LocationHint() {
   return (
     <p className="mt-3 flex items-start gap-2 text-1 text-muted-foreground">
-      <MapPin size={16} className="mt-0.5 shrink-0" />
+      <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" />
       City level is all we publish. Your exact address is never shown.
     </p>
   );
@@ -1138,7 +1139,7 @@ export function ReadinessCard({
         }`}
         aria-hidden
       >
-        {done ? <Check size={12} strokeWidth={3} /> : null}
+        {done ? <Check size={iconSize.xs} strokeWidth={3} /> : null}
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">

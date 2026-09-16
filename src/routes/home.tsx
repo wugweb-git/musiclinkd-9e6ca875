@@ -47,6 +47,7 @@ import { priceParts } from "@/lib/price";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 import { SectionActionLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -209,7 +210,7 @@ function Dashboard() {
       {status === "loading" ? <SkeletonBody /> : null}
       {status === "offline" ? (
         <StateBlock
-          icon={<WifiOff size={24} className="text-muted-foreground" />}
+          icon={<WifiOff size={iconSize.lg} className="text-muted-foreground" />}
           title="You're offline"
           body="Reconnect to refresh your activity. Saved profiles stay available."
           onRetry={retry}
@@ -217,7 +218,7 @@ function Dashboard() {
       ) : null}
       {status === "error" ? (
         <StateBlock
-          icon={<RefreshCw size={24} className="text-muted-foreground" />}
+          icon={<RefreshCw size={iconSize.lg} className="text-muted-foreground" />}
           title="Couldn't load your dashboard"
           body="Something went wrong on our side. Try again in a moment."
           onRetry={retry}
@@ -230,14 +231,14 @@ function Dashboard() {
 
 function Header() {
   return (
-    <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-end gap-2 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <header className="absolute inset-x-0 top-0 z-bar flex items-center justify-end gap-2 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
       <NotificationsBell tone="onInk" />
       <Link
         to="/settings"
         aria-label="Settings"
         className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10 text-background backdrop-blur"
       >
-        <Settings size={20} aria-hidden />
+        <Settings size={iconSize.md} aria-hidden />
       </Link>
       <ViewerAvatar className="h-12 w-12 ring-2 ring-background/30" />
     </header>
@@ -283,7 +284,7 @@ function Body({ home }: { home: Home }) {
                       <span className="block truncate text-1 text-background/70">{c.meta}</span>
                     ) : null}
                   </span>
-                  <ChevronRight size={16} className="shrink-0 text-background/70" aria-hidden />
+                  <ChevronRight size={iconSize.sm} className="shrink-0 text-background/70" aria-hidden />
                 </Link>
               </li>
             ))}
@@ -306,19 +307,19 @@ function Body({ home }: { home: Home }) {
       <section className="pt-7">
         <SectionHeader title="Your tools" />
         <div className="grid grid-cols-2 gap-2 px-5">
-          <ToolLink to="/portfolio/new" icon={<Plus size={16} />} label="Add track" />
+          <ToolLink to="/portfolio/new" icon={<Plus size={iconSize.sm} />} label="Add track" />
           <ToolLink
             onClick={() => setQrOpen(true)}
-            icon={<QrCode size={16} />}
+            icon={<QrCode size={iconSize.sm} />}
             label="QR & digital card"
           />
-          <ToolLink to="/search" icon={<Search size={16} />} label="Search talent" />
-          <ToolLink to="/studio" icon={<Building2 size={16} />} label="Find a studio" />
-          <ToolLink to="/bookings" icon={<Calendar size={16} />} label="My bookings" />
-          <ToolLink to="/recommendations" icon={<Sparkles size={16} />} label="For you" />
-          <ToolLink to="/help" icon={<LifeBuoy size={16} />} label="Help & guides" />
-          <ToolLink icon={<Users size={16} />} label="My bands" soon />
-          <ToolLink icon={<BadgeCheck size={16} />} label="Verification" soon />
+          <ToolLink to="/search" icon={<Search size={iconSize.sm} />} label="Search talent" />
+          <ToolLink to="/studio" icon={<Building2 size={iconSize.sm} />} label="Find a studio" />
+          <ToolLink to="/bookings" icon={<Calendar size={iconSize.sm} />} label="My bookings" />
+          <ToolLink to="/recommendations" icon={<Sparkles size={iconSize.sm} />} label="For you" />
+          <ToolLink to="/help" icon={<LifeBuoy size={iconSize.sm} />} label="Help & guides" />
+          <ToolLink icon={<Users size={iconSize.sm} />} label="My bands" soon />
+          <ToolLink icon={<BadgeCheck size={iconSize.sm} />} label="Verification" soon />
         </div>
       </section>
       <QrSheet open={qrOpen} onClose={() => setQrOpen(false)} />
@@ -348,7 +349,7 @@ function Body({ home }: { home: Home }) {
                   ) : null}
                   {o.location ? (
                     <span className="mt-0.5 flex items-center gap-1 truncate text-1 text-muted-foreground">
-                      <MapPin size={12} className="shrink-0" aria-hidden />
+                      <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
                       {o.location}
                     </span>
                   ) : null}
@@ -376,7 +377,7 @@ function Body({ home }: { home: Home }) {
         ) : (
           <div className="mx-5">
             <EmptyState
-              icon={<Megaphone size={20} className="text-muted-foreground" />}
+              icon={<Megaphone size={iconSize.md} className="text-muted-foreground" />}
               title="No open roles"
               body="New castings appear here as they are posted."
             />
@@ -445,7 +446,7 @@ function Body({ home }: { home: Home }) {
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-2 font-semibold">{st.name}</span>
                     <span className="mt-0.5 flex items-center gap-1 truncate text-1 text-muted-foreground">
-                      <MapPin size={12} className="shrink-0" aria-hidden />
+                      <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
                       {st.location}
                     </span>
                   </span>
@@ -484,11 +485,11 @@ function Body({ home }: { home: Home }) {
         ) : (
           <div className="mx-5">
             <EmptyState
-              icon={<Rss size={20} className="text-muted-foreground" />}
+              icon={<Rss size={iconSize.md} className="text-muted-foreground" />}
               title="No activity yet"
               body="Follow artists and studios, and their updates land here."
             >
-              <BtnLink to="/discover" variant="ink" icon={<Compass size={16} aria-hidden />}>
+              <BtnLink to="/discover" variant="ink" icon={<Compass size={iconSize.sm} aria-hidden />}>
                 Discover talent
               </BtnLink>
             </EmptyState>
@@ -581,7 +582,7 @@ function ToolLink({
       <button type="button" onClick={onClick} className={`state-layer text-left ${cls}`}>
         <span className="shrink-0 text-muted-foreground">{icon}</span>
         <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
-        <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+        <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
       </button>
     );
   }
@@ -600,7 +601,7 @@ function ToolLink({
     <Link to={to} className={`state-layer ${cls}`}>
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
-      <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+      <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
     </Link>
   );
 }

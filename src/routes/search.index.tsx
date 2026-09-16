@@ -7,6 +7,7 @@ import { StatusPill } from "@/components/ml/kit";
 import { availabilityTone, talents, type Talent } from "@/data/discover";
 import { FilterSheet } from "@/components/ml/filter-sheet";
 import { HireModal } from "@/components/ml/hire-modal";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/search/")({
   validateSearch: (search: Record<string, unknown>): { q?: string } =>
@@ -37,7 +38,7 @@ function SearchResults() {
 
   return (
     <Screen>
-      <div className="sticky top-0 z-30 border-b border-border bg-background/95 px-5 py-4 backdrop-blur">
+      <div className="sticky top-0 z-bar border-b border-border bg-background/95 px-5 py-4 backdrop-blur">
         <div className="mb-3 flex items-center gap-3">
           <Link
             to="/discover"
@@ -51,7 +52,7 @@ function SearchResults() {
             aria-label="Search history"
             className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
           >
-            <History size={20} aria-hidden />
+            <History size={iconSize.md} aria-hidden />
           </Link>
         </div>
         <SearchBar value={q} onChange={setQ} />
@@ -76,7 +77,7 @@ function SearchResults() {
 
       <button
         onClick={() => setFilters(true)}
-        className="fixed bottom-24 left-1/2 z-40 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-background"
+        className="fixed bottom-24 left-1/2 z-nav inline-flex min-h-control -translate-x-1/2 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-background"
       >
         ⚙ Filters <span className="rounded-full bg-primary px-2 py-0.5 text-1">3</span>
       </button>
@@ -169,7 +170,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         <Link
           to="/profile/$username"
           params={{ username: t.id }}
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-background"
+          className="inline-flex min-h-control items-center justify-center rounded-full bg-ink text-sm font-semibold text-background"
         >
           View full profile
         </Link>

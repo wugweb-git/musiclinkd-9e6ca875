@@ -11,6 +11,7 @@ import {
   reviewPolicy,
   type Review,
 } from "@/data/reviews";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/reviews/")({
   head: () => ({
@@ -130,7 +131,7 @@ function ReviewsHub() {
         <section className="space-y-2 pb-4">
           <Card className="space-y-2">
             <div className="flex items-center gap-2">
-              <ShieldCheck size={16} className="text-primary" aria-hidden />
+              <ShieldCheck size={iconSize.sm} className="text-primary" aria-hidden />
               <h2 className="text-sm">How reviews work</h2>
             </div>
             <ul className="space-y-1.5">
@@ -202,7 +203,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
             variant="outline"
             className="flex-1 gap-1 text-1"
           >
-            <Pencil size={12} aria-hidden />
+            <Pencil size={iconSize.xs} aria-hidden />
             Edit
           </BtnLink>
         ) : (
@@ -223,7 +224,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
               variant="ghost"
               className="flex-1 gap-1 text-1"
             >
-              <Flag size={12} aria-hidden />
+              <Flag size={iconSize.xs} aria-hidden />
               Report
             </BtnLink>
           </>

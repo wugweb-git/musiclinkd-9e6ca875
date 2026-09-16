@@ -35,6 +35,7 @@ import {
   type Slot,
 } from "@/data/booking";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 /* ------------------------------------------------------------------ */
 /* Status                                                            */
@@ -77,7 +78,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
                 }`}
                 aria-hidden
               >
-                {done ? <Check size={12} strokeWidth={3} /> : "·"}
+                {done ? <Check size={iconSize.xs} strokeWidth={3} /> : "·"}
               </span>
               {i < bookingTimeline.length - 1 ? (
                 <span className={`min-h-4.5 w-px flex-1 ${done ? "bg-primary" : "bg-border"}`} />
@@ -138,17 +139,17 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
       {b.rating ? (
         <span className="inline-flex items-center gap-1">
-          <Star size={12} className="text-primary" /> {b.rating} ({b.reviews})
+          <Star size={iconSize.xs} className="text-primary" /> {b.rating} ({b.reviews})
         </span>
       ) : null}
       {where ? (
         <span className="inline-flex items-center gap-1">
-          <MapPin size={12} /> {where}
+          <MapPin size={iconSize.xs} /> {where}
         </span>
       ) : null}
       {b.responseTime ? (
         <span className="inline-flex items-center gap-1">
-          <Clock size={12} /> {b.responseTime}
+          <Clock size={iconSize.xs} /> {b.responseTime}
         </span>
       ) : null}
     </div>
@@ -188,12 +189,12 @@ export function ResourceCard({
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-1 text-muted-foreground">
             {r.capacity ? (
               <span className="inline-flex items-center gap-1">
-                <Users size={12} /> Up to {r.capacity}
+                <Users size={iconSize.xs} /> Up to {r.capacity}
               </span>
             ) : null}
             {r.availabilityNote ? (
               <span className="inline-flex items-center gap-1">
-                <Calendar size={12} /> {r.availabilityNote}
+                <Calendar size={iconSize.xs} /> {r.availabilityNote}
               </span>
             ) : null}
           </div>
@@ -378,7 +379,7 @@ export function SlotPicker({
               onClick={() => onChange(s.start)}
               aria-pressed={active}
               aria-label={`${formatTime(s.start)} to ${formatTime(s.end)} — ${open ? "available" : s.state}`}
-              className={`min-h-12 rounded-lg border px-2 text-1 font-semibold ${
+              className={`min-h-control rounded-lg border px-2 text-1 font-semibold ${
                 active
                   ? "border-transparent bg-primary text-primary-foreground"
                   : open
@@ -421,7 +422,7 @@ export function DurationPicker({
               type="button"
               onClick={() => onChange(o.hours === 0 ? (customHours ?? 4) : o.hours)}
               aria-pressed={active}
-              className={`min-h-11 rounded-full border px-4 text-1 font-semibold ${
+              className={`min-h-touch rounded-full border px-4 text-1 font-semibold ${
                 active
                   ? "border-transparent bg-selected-bg text-selected-text"
                   : "border-border bg-card"
@@ -477,7 +478,7 @@ export function AddOnCard({
           />
           {a.rentalListingId ? (
             <TextLink to="/marketplace/rent" className="mt-1 gap-1">
-              Rental Marketplace <ChevronRight size={12} />
+              Rental Marketplace <ChevronRight size={iconSize.xs} />
             </TextLink>
           ) : null}
         </div>
@@ -556,9 +557,9 @@ export function PolicyCard({
     <div className="rounded-lg bg-subtle p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
         {critical ? (
-          <AlertTriangle size={16} className="text-primary" />
+          <AlertTriangle size={iconSize.sm} className="text-primary" />
         ) : (
-          <Info size={16} className="text-muted-foreground" />
+          <Info size={iconSize.sm} className="text-muted-foreground" />
         )}
         {title}
       </p>
@@ -672,17 +673,17 @@ export function BookingListCard({
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
         <span className="inline-flex items-center gap-1">
-          <Calendar size={12} /> {formatDate(booking.date)}
+          <Calendar size={iconSize.xs} /> {formatDate(booking.date)}
         </span>
         <span className="inline-flex items-center gap-1">
-          <Clock size={12} /> {formatTime(booking.start)} – {formatTime(booking.end)}
+          <Clock size={iconSize.xs} /> {formatTime(booking.start)} – {formatTime(booking.end)}
         </span>
         <span className="font-semibold text-price">{inr(booking.amount)}</span>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="text-1 text-muted-foreground">#{booking.ref}</span>
         <span className="inline-flex items-center gap-1 text-1 font-bold text-foreground">
-          View booking <ChevronRight size={16} />
+          View booking <ChevronRight size={iconSize.sm} />
         </span>
       </div>
     </Link>
@@ -727,7 +728,7 @@ export function ProviderRequestCard({
           params={{ ref: booking.ref }}
           className="gap-1 text-1 font-bold"
         >
-          Review Request <ChevronRight size={16} />
+          Review Request <ChevronRight size={iconSize.sm} />
         </TextLink>
       </div>
     </div>
@@ -744,7 +745,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
       role="status"
       className="mb-4 flex items-start gap-3 rounded-lg bg-subtle p-4"
     >
-      <WifiOff size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+      <WifiOff size={iconSize.sm} className="mt-0.5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">You're offline</p>
         <p className="mt-0.5 text-1 text-muted-foreground">
@@ -755,7 +756,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
         <button
           type="button"
           onClick={onRetry}
-          className="min-h-11 shrink-0 text-1 font-bold text-foreground"
+          className="min-h-touch shrink-0 text-1 font-bold text-foreground"
         >
           Retry
         </button>
@@ -775,7 +776,7 @@ export function ErrorState({
 }) {
   return (
     <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5 text-center">
-      <AlertTriangle size={24} className="mx-auto text-destructive" />
+      <AlertTriangle size={iconSize.lg} className="mx-auto text-destructive" />
       <p className="mt-2 font-semibold">{title}</p>
       <p className="mt-1 text-1 text-muted-foreground">{message}</p>
       <Btn className="mt-4 w-full" onClick={onRetry}>
@@ -798,7 +799,7 @@ export function EmptyState({
   return (
     <BaseEmptyState
       variant="bare"
-      icon={<Calendar size={24} className="mx-auto text-muted-foreground" />}
+      icon={<Calendar size={iconSize.lg} className="mx-auto text-muted-foreground" />}
       title={title}
       body={body}
       action={action}
@@ -849,7 +850,7 @@ export function StickyBar({
   secondary?: ReactNode | undefined;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+    <div className="fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
           {price ? <p className="truncate text-2 font-bold text-price">{price}</p> : null}

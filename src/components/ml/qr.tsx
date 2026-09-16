@@ -12,6 +12,7 @@ import { Btn, BtnLink, Sheet, VerifiedBadge } from "./ui";
 import { useViewer } from "./viewer";
 import { Price } from "./kit";
 import { canonicalUrl, styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 /* ------------------------------------------------------------------ */
 /* QR matrix — rendered client-side, high contrast, generous quiet zone */
@@ -212,14 +213,14 @@ export function ScannerControls({
           flash ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
         }`}
       >
-        <Zap size={20} />
+        <Zap size={iconSize.md} />
       </button>
       <button
         type="button"
         onClick={onGallery}
-        className="inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-semibold"
+        className="inline-flex min-h-control items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-semibold"
       >
-        <ImageIcon size={16} /> Choose from gallery
+        <ImageIcon size={iconSize.sm} /> Choose from gallery
       </button>
     </div>
   );
@@ -359,7 +360,7 @@ export function CopyLinkRow({ url }: { url: string }) {
         }}
         className="flex h-9 w-9 items-center justify-center rounded-full bg-background"
       >
-        {done ? <Check size={16} /> : <Copy size={16} />}
+        {done ? <Check size={iconSize.sm} /> : <Copy size={iconSize.sm} />}
       </button>
     </div>
   );
@@ -399,19 +400,19 @@ export function ShareActions({
   return (
     <div className="flex flex-col gap-2">
       <ActionRow
-        icon={<Share2 size={16} />}
+        icon={<Share2 size={iconSize.sm} />}
         label="Share QR"
         hint="Send the code image"
         onClick={() => void nativeShare({ title, url })}
       />
       <ActionRow
-        icon={<Camera size={16} />}
+        icon={<Camera size={iconSize.sm} />}
         label="Share profile"
         hint={url}
         onClick={() => void nativeShare({ title, url })}
       />
       <ActionRow
-        icon={<Copy size={16} />}
+        icon={<Copy size={iconSize.sm} />}
         label="Copy link"
         onClick={() => {
           void navigator.clipboard?.writeText(url);
@@ -419,16 +420,16 @@ export function ShareActions({
         }}
       />
       <ActionRow
-        icon={<Share2 size={16} />}
+        icon={<Share2 size={iconSize.sm} />}
         label="Send via MusicLinkd"
         hint="Opens Connections"
         to="/messages"
       />
       {onDownload ? (
-        <ActionRow icon={<Download size={16} />} label="Download image" onClick={onDownload} />
+        <ActionRow icon={<Download size={iconSize.sm} />} label="Download image" onClick={onDownload} />
       ) : null}
       {onSaveContact ? (
-        <ActionRow icon={<Check size={16} />} label="Add to contacts" onClick={onSaveContact} />
+        <ActionRow icon={<Check size={iconSize.sm} />} label="Add to contacts" onClick={onSaveContact} />
       ) : null}
     </div>
   );

@@ -4,6 +4,7 @@ import { ChevronRight, LogOut } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, StatusPill, Dialog } from "@/components/ml/kit";
 import { sessions as seed, securityRows } from "@/data/settings";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/settings/security")({
   head: () => ({
@@ -41,7 +42,7 @@ function SecurityScreen() {
                 <span className="block text-1 font-semibold">{r.label}</span>
                 <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
               </span>
-              <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
+              <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" />
             </Link>
           ))}
         </Card>
@@ -75,7 +76,7 @@ function SecurityScreen() {
           ))}
           <Btn variant="outline" className="mt-2 w-full" onClick={() => setConfirmAll(true)}>
             <span className="inline-flex items-center gap-2">
-              <LogOut size={16} /> Sign out everywhere else
+              <LogOut size={iconSize.sm} /> Sign out everywhere else
             </span>
           </Btn>
         </Card>

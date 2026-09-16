@@ -5,6 +5,7 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 const tabs = ["Overview", "Spaces", "Team", "Credits"] as const;
 
@@ -36,7 +37,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
             aria-label="Manage business"
             className="grid h-10 w-10 place-items-center rounded-full bg-background"
           >
-            <Settings2 size={16} />
+            <Settings2 size={iconSize.sm} />
           </Link>
         }
       />
@@ -150,7 +151,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
               <Card className="space-y-2">
                 <h2 className="text-sm">Find & contact</h2>
                 <p className="flex items-start gap-2 text-1">
-                  <MapPin size={16} className="mt-0.5 shrink-0" /> {b.address}
+                  <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" /> {b.address}
                 </p>
               </Card>
             ) : null}

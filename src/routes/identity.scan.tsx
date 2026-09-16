@@ -16,6 +16,7 @@ import {
 } from "@/components/ml/qr";
 import { destinations, scanHistory } from "@/data/identity";
 import { showDemoControls } from "@/lib/dev";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/scan")({
   head: () => ({
@@ -63,7 +64,7 @@ function Scanner() {
             body="MusicLinkd uses your camera only while this scanner is open, to read QR codes. Nothing is recorded or uploaded."
           >
             <Btn onClick={() => setPhase("ready")}>
-              <Camera size={16} className="mr-2" /> Allow camera
+              <Camera size={iconSize.sm} className="mr-2" /> Allow camera
             </Btn>
             <Btn variant="outline" onClick={() => setPhase("denied")}>
               Not now
@@ -104,7 +105,7 @@ function Scanner() {
             {showDemoControls ? (
               <div className="mt-4">
                 <Btn className="w-full" onClick={() => setPhase("scanning")}>
-                  <ScanLine size={16} className="mr-2" /> Simulate a scan
+                  <ScanLine size={iconSize.sm} className="mr-2" /> Simulate a scan
                 </Btn>
               </div>
             ) : null}
@@ -116,7 +117,7 @@ function Scanner() {
           {scanHistory.slice(0, 3).map((h) => (
             <ActionRow
               key={h.code}
-              icon={<ShieldQuestion size={16} />}
+              icon={<ShieldQuestion size={iconSize.sm} />}
               label={h.label}
               hint={h.when}
               onClick={() => void nav({ to: "/identity/q/$code", params: { code: h.code } })}

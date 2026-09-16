@@ -3,6 +3,7 @@ import { Heart, MapPin, Star } from "lucide-react";
 import { availabilityTone, type Talent } from "@/data/discover";
 import { Price, StatusPill } from "./kit";
 import { Btn, VerifiedBadge } from "./ui";
+import { iconSize } from "@/lib/tokens";
 
 /*
  * Message and Save are disabled until there is somewhere for them to go: there is no thread to
@@ -40,7 +41,7 @@ export function TalentRow({
           </div>
           <p className="truncate text-1 text-muted-foreground">{t.role}</p>
           <p className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
-            <MapPin size={12} className="shrink-0" aria-hidden />
+            <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
             <span className="truncate">{t.location}</span>
           </p>
         </div>
@@ -65,13 +66,13 @@ export function TalentRow({
         <Link
           to="/profile/$username"
           params={{ username: t.id }}
-          className="hit-area inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-ink text-1 font-semibold text-background"
+          className="hit-area inline-flex min-h-touch flex-1 items-center justify-center rounded-full bg-ink text-1 font-semibold text-background"
         >
           View profile
         </Link>
         <Btn
           variant="outline"
-          className="min-h-11 flex-1 text-1"
+          className="min-h-touch flex-1 text-1"
           disabled={!onMessage}
           {...(onMessage ? { onClick: () => onMessage(t) } : {})}
         >
@@ -84,7 +85,7 @@ export function TalentRow({
           {...(onSave ? { onClick: () => onSave(t) } : {})}
           className="hit-area flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card disabled:opacity-40"
         >
-          <Heart size={20} aria-hidden />
+          <Heart size={iconSize.md} aria-hidden />
         </button>
       </div>
     </article>
@@ -117,7 +118,7 @@ export function TalentCard({ t }: { t: Talent }) {
         <p className="truncate text-1 text-muted-foreground">{t.role}</p>
         <div className="mt-2 flex items-center justify-between text-1">
           <span className="inline-flex items-center gap-0.5 font-semibold text-warn">
-            {t.rating} <Star size={12} fill="currentColor" aria-hidden />
+            {t.rating} <Star size={iconSize.xs} fill="currentColor" aria-hidden />
           </span>
           <span className="text-muted-foreground">{t.followers}</span>
         </div>

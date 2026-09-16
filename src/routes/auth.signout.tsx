@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import { AuthHeading, AuthScreen, TrustNote } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/auth/signout")({
   head: () => ({
@@ -36,7 +37,7 @@ function SignOutScreen() {
         className="mb-6 flex h-14 w-14 items-center justify-center rounded-sm"
         style={{ background: "var(--surface-subtle)" }}
       >
-        <LogOut size={24} className="text-primary" />
+        <LogOut size={iconSize.lg} className="text-primary" />
       </div>
       <AuthHeading
         title="Sign out of MusicLinkd?"

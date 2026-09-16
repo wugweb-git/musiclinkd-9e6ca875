@@ -15,6 +15,7 @@ import {
   type RentalStatus,
 } from "@/data/rentals";
 import { TextLink } from "@/components/ml/links";
+import { iconSize } from "@/lib/tokens";
 
 export function RentalAvailabilityBadge({
   text,
@@ -286,7 +287,7 @@ export function RentalCalendar({
         <p className="text-2 font-semibold">
           {month.toLocaleString("en-IN", { month: "long", year: "numeric" })}
         </p>
-        <CalendarDays size={16} className="text-muted-foreground" />
+        <CalendarDays size={iconSize.sm} className="text-muted-foreground" />
       </div>
       <div className="grid grid-cols-7 gap-1 text-center">
         {DAY_LABELS.map((d, i) => (

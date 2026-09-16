@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Chip, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
 import { Price } from "@/components/ml/kit";
 import { talents, studios } from "@/data/discover";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/saved")({
   head: () => ({
@@ -101,7 +102,7 @@ function Actions() {
         type="button"
         disabled
         aria-label="Messaging isn't open yet"
-        className="hit-area min-h-11 flex-1 rounded-full bg-ink text-1 font-semibold text-background disabled:opacity-40"
+        className="hit-area min-h-touch flex-1 rounded-full bg-ink text-1 font-semibold text-background disabled:opacity-40"
       >
         Message
       </button>
@@ -109,7 +110,7 @@ function Actions() {
         type="button"
         disabled
         aria-label="Sharing isn't open yet"
-        className="hit-area min-h-11 flex-1 rounded-full border border-border text-1 font-semibold disabled:opacity-40"
+        className="hit-area min-h-touch flex-1 rounded-full border border-border text-1 font-semibold disabled:opacity-40"
       >
         Share
       </button>
@@ -117,9 +118,9 @@ function Actions() {
         type="button"
         disabled
         aria-label="Removing isn't open yet"
-        className="hit-area flex min-h-11 w-11 items-center justify-center rounded-full border border-border disabled:opacity-40"
+        className="hit-area flex min-h-touch w-11 items-center justify-center rounded-full border border-border disabled:opacity-40"
       >
-        <X size={16} aria-hidden />
+        <X size={iconSize.sm} aria-hidden />
       </button>
     </div>
   );

@@ -7,6 +7,7 @@ import { bandRoleCopy } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { joinParts } from "@/lib/utils";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/bands/$id/")({
   // The id is the band's slug. A band is a group of talent profiles, not an account.
@@ -66,7 +67,7 @@ function BandProfile() {
             aria-label="Band QR"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-background"
           >
-            <QrCode size={20} aria-hidden />
+            <QrCode size={iconSize.md} aria-hidden />
           </Link>
         }
       />
@@ -108,17 +109,17 @@ function BandProfile() {
               <Link
                 to="/bands/$id/manage"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-1 font-semibold text-primary-foreground"
+                className="inline-flex min-h-control min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-1 font-semibold text-primary-foreground"
               >
-                <Settings2 size={16} aria-hidden />
+                <Settings2 size={iconSize.sm} aria-hidden />
                 Manage
               </Link>
               <Link
                 to="/bands/$id/invite"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
+                className="inline-flex min-h-control min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
               >
-                <UserPlus size={16} aria-hidden />
+                <UserPlus size={iconSize.sm} aria-hidden />
                 Invite
               </Link>
             </>
@@ -128,25 +129,25 @@ function BandProfile() {
               <Link
                 to="/bands/$id/contact"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
+                className="inline-flex min-h-control min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
               >
-                <MessageSquare size={16} aria-hidden />
+                <MessageSquare size={iconSize.sm} aria-hidden />
                 Message
               </Link>
             </>
           )}
           <Link
             to="/bookings"
-            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-1 font-semibold text-background"
+            className="inline-flex min-h-control min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-1 font-semibold text-background"
           >
-            <CalendarDays size={16} aria-hidden />
+            <CalendarDays size={iconSize.sm} aria-hidden />
             Book
           </Link>
           <Link
             to="/identity/qr"
-            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
+            className="inline-flex min-h-control min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
           >
-            <Share2 size={16} aria-hidden />
+            <Share2 size={iconSize.sm} aria-hidden />
             Share
           </Link>
         </div>
@@ -188,7 +189,7 @@ function BandProfile() {
                 </Card>
               ) : null}
               <Row
-                icon={<CalendarDays size={16} />}
+                icon={<CalendarDays size={iconSize.sm} />}
                 title="Next show"
                 subtitle={band.nextShow}
                 onClick={() => setTab("Shows")}

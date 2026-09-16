@@ -5,6 +5,7 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Dialog, Price } from "@/components/ml/kit";
 import { getApplication, getOpportunity, applicationTone } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/applications/$aid")({
   head: ({ params }) => {
@@ -80,9 +81,9 @@ function ApplicationDetail() {
           {a.timeline.map((t) => (
             <div key={t.label} className="flex items-start gap-2">
               {t.done ? (
-                <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-primary" />
+                <CheckCircle2 size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
               ) : (
-                <Circle size={16} className="mt-0.5 shrink-0 text-border" />
+                <Circle size={iconSize.sm} className="mt-0.5 shrink-0 text-border" />
               )}
               <div className="min-w-0">
                 <p className="text-1 font-semibold">{t.label}</p>
@@ -120,7 +121,7 @@ function ApplicationDetail() {
         {a.threadId ? (
           <BtnLink to="/messages" className="w-full">
             <span className="inline-flex items-center gap-2">
-              <MessageCircle size={16} /> Open Conversation
+              <MessageCircle size={iconSize.sm} /> Open Conversation
             </span>
           </BtnLink>
         ) : null}

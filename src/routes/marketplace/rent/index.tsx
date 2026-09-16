@@ -10,6 +10,7 @@ import {
   RentalSkeleton,
 } from "@/components/ml/rental";
 import { equipment, rentalCategories } from "@/data/rentals";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/")({
   head: () => ({
@@ -48,7 +49,7 @@ function RentHome() {
 
   return (
     <Screen>
-      <header className="sticky top-0 z-30 bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
+      <header className="sticky top-0 z-bar bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h1 className="text-3 leading-tight">Rent Equipment</h1>
@@ -56,7 +57,7 @@ function RentHome() {
               Professional music equipment when you need it.
             </p>
             <button className="mt-1 inline-flex items-center gap-1 text-1 font-semibold text-foreground">
-              <MapPin size={12} /> Mumbai, Maharashtra · change
+              <MapPin size={iconSize.xs} /> Mumbai, Maharashtra · change
             </button>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -64,14 +65,14 @@ function RentHome() {
               to="/marketplace/rent/list"
               className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-3.5 text-1 font-semibold text-background"
             >
-              <Plus size={16} /> Rent out
+              <Plus size={iconSize.sm} /> Rent out
             </Link>
             <button
               aria-label="Filters"
               onClick={() => setFilters(true)}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <SlidersHorizontal size={16} />
+              <SlidersHorizontal size={iconSize.sm} />
             </button>
           </div>
         </div>

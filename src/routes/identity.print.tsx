@@ -9,6 +9,7 @@ import { Download } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { QrCode, DownloadNote } from "@/components/ml/qr";
 import { canonicalUrl, myBusiness, myIdentity, printFormats } from "@/data/identity";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/print")({
   head: () => ({
@@ -100,7 +101,7 @@ function PrintPreview() {
 
         <div className="mt-4">
           <Btn className="w-full" onClick={() => toast.success(`${active.label} preview saved`)}>
-            <Download size={16} className="mr-2" /> Download print file
+            <Download size={iconSize.sm} className="mr-2" /> Download print file
           </Btn>
         </div>
         <div className="mt-3">

@@ -32,6 +32,7 @@ import {
   type VerificationRequestInfo,
   type VerificationTypeInfo,
 } from "@/lib/verification.functions";
+import { iconSize } from "@/lib/tokens";
 
 type Search = { step: number; mode?: "new" };
 
@@ -196,7 +197,7 @@ function VerificationRequestScreen() {
         <div className="space-y-4 px-5 pt-4 pb-6">
           <Card className="space-y-3 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-background">
-              <ShieldCheck size={24} className="text-primary" aria-hidden />
+              <ShieldCheck size={iconSize.lg} className="text-primary" aria-hidden />
             </div>
             <h2 className="text-2 leading-tight">Verified</h2>
             <p className="text-1 text-muted-foreground">
@@ -249,7 +250,7 @@ function VerificationRequestScreen() {
             <h3 className="text-sm">What you sent</h3>
             {sent.map((name) => (
               <div key={name} className="flex items-center gap-2 text-1 text-muted-foreground">
-                <Check size={16} className="shrink-0 text-primary" aria-hidden />
+                <Check size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
                 <span className="min-w-0 break-words">{name}</span>
               </div>
             ))}
@@ -578,7 +579,7 @@ function Wizard({
               </div>
             </section>
             <Card className="flex gap-3 py-3">
-              <Lock size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <Lock size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" aria-hidden />
               <p className="text-1 text-muted-foreground">
                 Review time: {def.turnaround.toLowerCase()}.
               </p>
@@ -676,7 +677,7 @@ function Wizard({
               return (
                 <Card key={r.id} className="space-y-2 py-3">
                   <div className="flex items-start gap-3">
-                    <FileText size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+                    <FileText size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" aria-hidden />
                     <div className="min-w-0 flex-1">
                       <p className="text-1 font-semibold break-words">{r.label}</p>
                       <p className="mt-0.5 text-1 text-muted-foreground">{r.why}</p>
@@ -692,14 +693,14 @@ function Wizard({
                           onClick={() => setPreview(file)}
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-1 font-semibold"
                         >
-                          <Eye size={12} aria-hidden /> Preview
+                          <Eye size={iconSize.xs} aria-hidden /> Preview
                         </button>
                         <button
                           type="button"
                           onClick={() => pick(r.id)}
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-1 font-semibold"
                         >
-                          <RefreshCw size={12} aria-hidden /> Replace
+                          <RefreshCw size={iconSize.xs} aria-hidden /> Replace
                         </button>
                         <button
                           type="button"
@@ -712,7 +713,7 @@ function Wizard({
                           }
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-1 font-semibold text-danger"
                         >
-                          <Trash2 size={12} aria-hidden /> Remove
+                          <Trash2 size={iconSize.xs} aria-hidden /> Remove
                         </button>
                       </div>
                     </>
@@ -722,14 +723,14 @@ function Wizard({
                       onClick={() => pick(r.id)}
                       className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-2 text-1 font-semibold"
                     >
-                      <Paperclip size={12} aria-hidden /> Attach file
+                      <Paperclip size={iconSize.xs} aria-hidden /> Attach file
                     </button>
                   )}
                 </Card>
               );
             })}
             <Card className="flex gap-3 py-3">
-              <Lock size={16} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <Lock size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" aria-hidden />
               <p className="text-1 text-muted-foreground">
                 Documents are private. Only the Trust team can open them, and they are never shown
                 on your profile.
@@ -781,7 +782,7 @@ function Wizard({
               <h3 className="text-sm">Documents</h3>
               {docs.map((r) => (
                 <div key={r.id} className="flex items-center gap-2 text-1 text-muted-foreground">
-                  <Check size={16} className="shrink-0 text-primary" aria-hidden />
+                  <Check size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
                   <span className="min-w-0 break-words">{files[r.id]?.name ?? "Missing"}</span>
                 </div>
               ))}
@@ -822,7 +823,7 @@ function Wizard({
           <>
             <Card className="space-y-3 text-center">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-background">
-                <Check size={24} className="text-primary" aria-hidden />
+                <Check size={iconSize.lg} className="text-primary" aria-hidden />
               </div>
               <h2 className="text-2 leading-tight">Submitted for review</h2>
               <StatusPill label={statusLabel.in_review} tone={statusTone.in_review} />

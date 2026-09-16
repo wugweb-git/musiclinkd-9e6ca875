@@ -18,6 +18,7 @@ import {
 import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { deletePortfolioItem, getMyPortfolioItem } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { iconSize } from "@/lib/tokens";
 
 type FlowSearch = { from?: "onboarding" };
 
@@ -177,11 +178,11 @@ function WorkDetail() {
                   variant="ink"
                   className="h-11 w-11"
                 >
-                  <Pencil size={20} aria-hidden />
+                  <Pencil size={iconSize.md} aria-hidden />
                 </IconBtnLink>
               )}
               <IconBtn label="Share Work" variant="outline" className="h-11 w-11" onClick={share}>
-                <Share2 size={20} aria-hidden />
+                <Share2 size={iconSize.md} aria-hidden />
               </IconBtn>
               <IconBtnLink
                 to="/portfolio/new"
@@ -189,7 +190,7 @@ function WorkDetail() {
                 variant="outline"
                 className="h-11 w-11"
               >
-                <Plus size={20} aria-hidden />
+                <Plus size={iconSize.md} aria-hidden />
               </IconBtnLink>
               {demo ? null : (
                 <IconBtn
@@ -198,7 +199,7 @@ function WorkDetail() {
                   className="ml-auto h-11 w-11 text-destructive"
                   onClick={onDelete}
                 >
-                  <Trash2 size={20} aria-hidden />
+                  <Trash2 size={iconSize.md} aria-hidden />
                 </IconBtn>
               )}
             </div>
@@ -208,7 +209,7 @@ function WorkDetail() {
 
       {/* New user: the first work is published; the flow carries on to Review profile. */}
       {onboarding && item?.published ? (
-        <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
           <BtnLink to="/onboarding/preview" className="w-full">
             Continue to Review Profile
           </BtnLink>

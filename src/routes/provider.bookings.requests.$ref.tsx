@@ -13,6 +13,7 @@ import {
   priceFor,
   providerRequests,
 } from "@/data/booking";
+import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/provider/bookings/requests/$ref")({
   head: () => ({
@@ -100,7 +101,7 @@ function RequestReview() {
             </div>
           </div>
           <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-1 font-semibold text-muted-foreground">
-            <ShieldCheck size={12} /> Verified profile · 4 past sessions
+            <ShieldCheck size={iconSize.xs} /> Verified profile · 4 past sessions
           </p>
         </div>
 
@@ -126,7 +127,7 @@ function RequestReview() {
         </div>
 
         <BtnLink to="/messages" variant="outline" className="mt-3 w-full">
-          <MessageCircle size={16} className="mr-1.5" /> Ask a Question First
+          <MessageCircle size={iconSize.sm} className="mr-1.5" /> Ask a Question First
         </BtnLink>
 
         <Btn variant="ghost" className="mt-2 w-full" onClick={() => setDecision("declining")}>
@@ -142,7 +143,7 @@ function RequestReview() {
                   key={x}
                   type="button"
                   onClick={() => setDecision("declined")}
-                  className="min-h-10 rounded-full border border-border px-3 text-1 font-semibold"
+                  className="min-h-control-sm rounded-full border border-border px-3 text-1 font-semibold"
                 >
                   {x}
                 </button>
@@ -151,7 +152,7 @@ function RequestReview() {
             <button
               type="button"
               onClick={() => setDecision("none")}
-              className="mt-3 min-h-10 text-1 font-bold text-muted-foreground"
+              className="mt-3 min-h-control-sm text-1 font-bold text-muted-foreground"
             >
               Keep request
             </button>

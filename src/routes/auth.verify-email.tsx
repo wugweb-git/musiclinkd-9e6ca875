@@ -16,6 +16,7 @@ import {
 } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
+import { iconSize } from "@/lib/tokens";
 
 type Search = { email: string };
 
@@ -132,7 +133,7 @@ function VerifyEmail() {
             Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
           </span>
         ) : (
-          <AuthTextButton icon={<RotateCw size={16} />} onClick={() => void resend()}>
+          <AuthTextButton icon={<RotateCw size={iconSize.sm} />} onClick={() => void resend()}>
             Resend Code
           </AuthTextButton>
         )}
@@ -141,7 +142,7 @@ function VerifyEmail() {
       <TrustNote>Not there? Check spam and promotions.</TrustNote>
 
       <p className="mt-6 flex justify-center text-1">
-        <AuthLink to="/auth" icon={<Pencil size={16} />}>
+        <AuthLink to="/auth" icon={<Pencil size={iconSize.sm} />}>
           Use a Different Email
         </AuthLink>
       </p>
