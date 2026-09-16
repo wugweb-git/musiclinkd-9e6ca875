@@ -63,7 +63,7 @@ function RecSettings() {
             profile.
           </p>
           <Btn variant="outline" className="w-full">
-            Clear recommendation feedback
+            Clear Recommendation Feedback
           </Btn>
         </Card>
 
@@ -80,7 +80,7 @@ function RecSettings() {
             variant="ghost"
             className="w-full"
           >
-            How recommendations are built
+            How Recommendations Are Built
           </BtnLink>
         </div>
       </div>

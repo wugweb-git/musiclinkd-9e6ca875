@@ -141,11 +141,11 @@ function Preview() {
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         <BtnLink to="/onboarding/complete" className="w-full">
-          Publish my profile
+          Publish My Profile
         </BtnLink>
         <p className="flex justify-center text-1">
           <AuthLink to="/onboarding/skip" className="text-muted-foreground">
-            Finish later
+            Finish Later
           </AuthLink>
         </p>
       </div>

@@ -184,10 +184,10 @@ function Sell() {
         ) : (
           <>
             <BtnLink to="/marketplace/mine" className="w-full">
-              Publish listing
+              Publish Listing
             </BtnLink>
             <Btn variant="outline" className="mt-2 w-full">
-              Save draft
+              Save Draft
             </Btn>
           </>
         )}

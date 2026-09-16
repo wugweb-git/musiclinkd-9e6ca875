@@ -122,7 +122,7 @@ function OtpScreen() {
         disabled={code.length !== 6 || !phone}
         onClick={() => void verify(code)}
       >
-        Verify and continue
+        Verify and Continue
       </Btn>
 
       <p className="mt-5 flex justify-center text-1 text-muted-foreground">
@@ -139,10 +139,10 @@ function OtpScreen() {
 
       <p className="mt-4 flex items-center justify-center gap-6 text-1">
         <AuthLink to="/auth/phone" icon={<Pencil size={15} />}>
-          Change number
+          Change Number
         </AuthLink>
         <AuthLink to="/auth" icon={<Mail size={15} />}>
-          Use email
+          Use Email
         </AuthLink>
       </p>
     </AuthScreen>

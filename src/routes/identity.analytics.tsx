@@ -72,7 +72,7 @@ function QrAnalytics() {
 
         <div className="mt-4">
           <BtnLink to="/identity/print" variant="outline" className="w-full">
-            Print more of what works
+            Print More of What Works
           </BtnLink>
         </div>
       </main>

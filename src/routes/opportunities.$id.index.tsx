@@ -69,7 +69,7 @@ function OpportunityDetail() {
             body="It was closed, filled or removed by the poster."
           >
             <BtnLink to="/opportunities" className="w-full">
-              Browse open opportunities
+              Browse Open Opportunities
             </BtnLink>
           </EmptyState>
         </div>
@@ -223,7 +223,7 @@ function OpportunityDetail() {
             </BtnLink>
           ) : o.status === "closed" ? (
             <Btn className="min-w-0 flex-1" disabled>
-              Applications closed
+              Applications Closed
             </Btn>
           ) : (
             <BtnLink
@@ -241,13 +241,13 @@ function OpportunityDetail() {
       <Sheet open={share} onClose={() => setShare(false)} title="Share opportunity">
         <div className="space-y-2">
           <Btn variant="outline" className="w-full">
-            Copy link
+            Copy Link
           </Btn>
           <BtnLink to="/messages" variant="outline" className="w-full">
-            Send in a conversation
+            Send in a Conversation
           </BtnLink>
           <BtnLink to="/identity/qr" variant="ghost" className="w-full">
-            Show as QR
+            Show As QR
           </BtnLink>
         </div>
       </Sheet>

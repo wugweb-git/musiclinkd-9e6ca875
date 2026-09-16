@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Btn, Screen, TopBar, Chip } from "@/components/ml/ui";
 import { Card, Label, PermissionState, SwitchRow } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/collab/$id/share")({
   head: ({ params }) => {
@@ -56,7 +57,7 @@ function Share() {
           </p>
           <div className="flex gap-2">
             <Btn variant="outline" className="flex-1">
-              Copy link
+              Copy Link
             </Btn>
             <Btn className="flex-1">Share</Btn>
           </div>
@@ -83,13 +84,13 @@ function Share() {
           directly.
         </p>
 
-        <Link
+        <TextLink
           to="/collab/$id"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-foreground"
+          className="mb-8 block text-center text-[12px]"
         >
-          Back to workspace
-        </Link>
+          Back to Workspace
+        </TextLink>
       </main>
     </Screen>
   );

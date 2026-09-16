@@ -199,11 +199,11 @@ function OwnerActions({
   return (
     // Icon-only actions: the label is each button's accessible name and its tooltip.
     <div className="flex items-center gap-2">
-      <IconBtnLink to="/profile/edit" label="Edit profile" variant="ink" className="h-11 w-11">
+      <IconBtnLink to="/profile/edit" label="Edit Profile" variant="ink" className="h-11 w-11">
         <Pencil size={18} aria-hidden />
       </IconBtnLink>
       {onShare ? (
-        <IconBtn label="Share profile" variant="outline" className="h-11 w-11" onClick={onShare}>
+        <IconBtn label="Share Profile" variant="outline" className="h-11 w-11" onClick={onShare}>
           <Share2 size={18} aria-hidden />
         </IconBtn>
       ) : null}
@@ -215,7 +215,7 @@ function OwnerActions({
         {...(username
           ? { to: "/profile/$username" as const, params: { username } }
           : { to: "/profile/edit" as const })}
-        label="View public profile"
+        label="View Public Profile"
         variant="outline"
         className="h-11 w-11"
       >
@@ -277,7 +277,7 @@ function OwnerPanel({
             </div>
           ) : null}
           <BtnLink to="/profile/insights" variant="ghost" className="mt-3 w-full">
-            Full insights
+            Full Insights
           </BtnLink>
         </div>
       ) : null}
@@ -366,7 +366,7 @@ function Overview({
       {p.audio.length ? (
         <ProfileSection
           title="Audio portfolio"
-          action="View all"
+          action="View All"
           onAction={() => onTab("Portfolio")}
         >
           <div className="space-y-2">
@@ -392,7 +392,7 @@ function Overview({
       {p.projects.length ? (
         <ProfileSection
           title="Selected projects"
-          action="View all"
+          action="View All"
           onAction={() => onTab("Projects")}
         >
           <div className="space-y-2">

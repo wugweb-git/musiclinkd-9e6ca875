@@ -75,7 +75,7 @@ function Reschedule() {
               />
             </dl>
             <BtnLink to="/bookings/$ref" params={{ ref: bk.ref }} className="mt-4 w-full">
-              Back to booking
+              Back to Booking
             </BtnLink>
           </div>
         </main>

@@ -123,7 +123,7 @@ function VerifyEmail() {
         disabled={code.length !== 6 || !email}
         onClick={() => void verify(code)}
       >
-        Verify and continue
+        Verify and Continue
       </Btn>
 
       <p className="mt-5 flex justify-center text-1 text-muted-foreground">
@@ -142,7 +142,7 @@ function VerifyEmail() {
 
       <p className="mt-6 flex justify-center text-1">
         <AuthLink to="/auth" icon={<Pencil size={15} />}>
-          Use a different email
+          Use a Different Email
         </AuthLink>
       </p>
     </AuthScreen>

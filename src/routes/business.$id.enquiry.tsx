@@ -107,7 +107,7 @@ function BusinessEnquiry() {
         </Card>
 
         <Btn className="w-full" disabled={message.trim().length < 8} onClick={() => setSent(true)}>
-          Send enquiry
+          Send Enquiry
         </Btn>
       </div>
     </Screen>

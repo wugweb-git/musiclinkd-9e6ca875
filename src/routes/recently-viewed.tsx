@@ -35,7 +35,7 @@ function RecentlyViewed() {
             title="Nothing here yet"
             body="Profiles and studios you open will be listed here for a month."
           >
-            <BtnLink to="/discover">Start discovering</BtnLink>
+            <BtnLink to="/discover">Start Discovering</BtnLink>
           </EmptyState>
         ) : (
           <>
@@ -93,7 +93,7 @@ function RecentlyViewed() {
             </section>
 
             <Btn variant="ghost" className="w-full">
-              Clear history
+              Clear History
             </Btn>
           </>
         )}

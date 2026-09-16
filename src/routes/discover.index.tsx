@@ -9,6 +9,7 @@ import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
+import { SectionActionLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/discover/")({
   head: () => ({
@@ -89,7 +90,10 @@ function Discover() {
       </div>
 
       <section className="pb-6">
-        <SectionHeader title="Featured talent" action={<Link to="/search">See all</Link>} />
+        <SectionHeader
+          title="Featured talent"
+          action={<SectionActionLink to="/search">See All</SectionActionLink>}
+        />
         <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {talents.slice(0, 4).map((t) => (
             <TalentCard key={t.id} t={t} />
@@ -100,7 +104,7 @@ function Discover() {
       <section className="pb-6">
         <SectionHeader
           title="Trending this week"
-          action={<Link to="/discover/music">See all</Link>}
+          action={<SectionActionLink to="/discover/music">See All</SectionActionLink>}
         />
         <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
           {trending.map((t) => (
@@ -123,7 +127,7 @@ function Discover() {
       <section className="pb-6">
         <SectionHeader
           title="Recommended for you"
-          action={<Link to="/recommendations">For you</Link>}
+          action={<SectionActionLink to="/recommendations">For You</SectionActionLink>}
         />
         <div className="space-y-3 px-5">
           <Link
@@ -164,7 +168,7 @@ function Discover() {
       <section className="pb-8">
         <SectionHeader
           title="Nearby professionals"
-          action={<Link to="/discover/nearby">Mumbai</Link>}
+          action={<SectionActionLink to="/discover/nearby">Mumbai</SectionActionLink>}
         />
         <div className="space-y-3 px-5">
           {talents.slice(0, 2).map((t) => (

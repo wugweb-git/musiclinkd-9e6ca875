@@ -68,7 +68,7 @@ function Cancel() {
               <Detail label="Refund" value={inr(refund)} />
             </dl>
             <BtnLink to="/bookings" className="mt-4 w-full">
-              Back to bookings
+              Back to Bookings
             </BtnLink>
           </div>
         </main>

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { Card, Label, PermissionState, RowLink, SwitchRow } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/collab/$id/settings")({
   head: ({ params }) => {
@@ -94,7 +95,7 @@ function Settings() {
             value={showCredits}
             onChange={setShowCredits}
           />
-          <RowLink title="Manage sharing link" to="/collab/$id/share" params={{ id: project.id }} />
+          <RowLink title="Manage Sharing Link" to="/collab/$id/share" params={{ id: project.id }} />
         </div>
 
         <Label>Project</Label>
@@ -106,19 +107,19 @@ function Settings() {
             params={{ id: project.id }}
           />
           <RowLink
-            title="Working agreement"
+            title="Working Agreement"
             subtitle="Scope, timeline, compensation, credit"
             to="/collab/$id/agreement"
             params={{ id: project.id }}
           />
           <RowLink
-            title="Invite link"
+            title="Invite Link"
             subtitle="Create, share or disable a join link"
             to="/collab/$id/invite-link"
             params={{ id: project.id }}
           />
           <RowLink
-            title="Transfer ownership"
+            title="Transfer Ownership"
             subtitle={`Currently owned by ${project.owner}`}
             to="/collab/$id/transfer"
             params={{ id: project.id }}
@@ -163,44 +164,44 @@ function Settings() {
         <Label>Lifecycle</Label>
         <div className="mb-8 divide-y divide-border rounded-lg border border-border bg-card">
           <RowLink
-            title="Put project on hold"
+            title="Put Project on Hold"
             subtitle="Pause without losing anything"
             to="/collab/$id/lifecycle/$action"
             params={{ id: project.id, action: "hold" }}
           />
           <RowLink
-            title="Mark as completed"
+            title="Mark As Completed"
             subtitle="Locks the timeline and unlocks credits"
             to="/collab/$id/lifecycle/$action"
             params={{ id: project.id, action: "complete" }}
           />
           <RowLink
-            title="Archive project"
+            title="Archive Project"
             subtitle="Read-only, hidden from the active list"
             to="/collab/$id/lifecycle/$action"
             params={{ id: project.id, action: "archive" }}
           />
           <RowLink
-            title="Leave project"
+            title="Leave Project"
             danger
             to="/collab/$id/lifecycle/$action"
             params={{ id: project.id, action: "leave" }}
           />
           <RowLink
-            title="Cancel project"
+            title="Cancel Project"
             danger
             to="/collab/$id/lifecycle/$action"
             params={{ id: project.id, action: "cancel" }}
           />
         </div>
 
-        <Link
+        <TextLink
           to="/collab/$id"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-foreground"
+          className="mb-8 block text-center text-[12px]"
         >
-          Back to workspace
-        </Link>
+          Back to Workspace
+        </TextLink>
       </main>
     </Screen>
   );

@@ -217,7 +217,7 @@ function WelcomeScreen() {
             Continue with Google
           </Btn>
           <Btn className="w-full" onClick={() => void navigate({ to: "/auth/phone" })}>
-            Sign in
+            Sign In
           </Btn>
 
           <LegalNote />
@@ -225,7 +225,7 @@ function WelcomeScreen() {
           {showDemoControls ? (
             <p className="text-center text-1">
               <AuthLink to="/dev/new-user" className="text-muted-foreground">
-                Dev: test as a new user
+                Dev: Test As a New User
               </AuthLink>
             </p>
           ) : null}

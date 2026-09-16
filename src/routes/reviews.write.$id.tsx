@@ -40,7 +40,7 @@ function WriteReview() {
             body="Reviews are open for 14 days after a transaction completes."
           >
             <BtnLink to="/reviews" className="w-full">
-              Back to reviews
+              Back to Reviews
             </BtnLink>
           </EmptyState>
         </div>
@@ -126,7 +126,7 @@ function WriteReview() {
         onClose={() => setDone(false)}
       >
         <BtnLink to="/reviews" className="w-full">
-          Back to reviews
+          Back to Reviews
         </BtnLink>
       </Dialog>
     </Screen>

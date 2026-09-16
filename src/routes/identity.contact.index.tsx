@@ -79,20 +79,20 @@ function BusinessCard() {
 
         <div className="mt-4 flex gap-2">
           <BtnLink to="/identity/contact/save" className="flex-1 w-full">
-            <UserRoundPlus size={16} className="mr-2" /> Save contact
+            <UserRoundPlus size={16} className="mr-2" /> Save Contact
           </BtnLink>
           <Btn
             variant="outline"
             className="flex-1"
             onClick={() => void nativeShare({ title: myIdentity.name, url })}
           >
-            Share card
+            Share Card
           </Btn>
         </div>
 
         <div className="mt-3">
           <BtnLink to="/identity/settings" variant="ghost" className="w-full">
-            Manage shared details
+            Manage Shared Details
           </BtnLink>
         </div>
       </main>

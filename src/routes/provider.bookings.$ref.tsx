@@ -55,7 +55,7 @@ function ProviderBookingDetail() {
           <EmptyState
             title="Session not found"
             body="It may have been cancelled or moved."
-            action={<BtnLink to="/provider/bookings">Back to workspace</BtnLink>}
+            action={<BtnLink to="/provider/bookings">Back to Workspace</BtnLink>}
           />
         </div>
       </Screen>
@@ -119,7 +119,7 @@ function ProviderBookingDetail() {
             <MessageCircle size={15} className="mr-1.5" /> Message {bk.customer.split(" ")[0]}
           </BtnLink>
           <BtnLink to="/provider/availability" variant="ghost" className="w-full">
-            Block or adjust this room's calendar
+            Block or Adjust This Room's Calendar
           </BtnLink>
         </div>
       </main>

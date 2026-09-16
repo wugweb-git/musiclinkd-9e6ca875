@@ -4,6 +4,7 @@ import { MapPin, Settings2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
+import { TextLink } from "@/components/ml/links";
 
 const tabs = ["Overview", "Spaces", "Team", "Credits"] as const;
 
@@ -218,13 +219,9 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 {m.invited ? <StatusPill label="invited" tone="warn" /> : null}
               </div>
             ))}
-            <Link
-              to="/business/$id/team"
-              params={{ id: b.id }}
-              className="block text-[12px] font-semibold text-foreground"
-            >
-              Manage team →
-            </Link>
+            <TextLink to="/business/$id/team" params={{ id: b.id }} className="block text-[12px]">
+              Manage Team →
+            </TextLink>
           </Card>
         ) : null}
 

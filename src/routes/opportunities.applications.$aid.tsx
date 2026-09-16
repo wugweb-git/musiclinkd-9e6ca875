@@ -123,7 +123,7 @@ function ApplicationDetail() {
         {a.threadId ? (
           <BtnLink to="/messages" className="w-full">
             <span className="inline-flex items-center gap-2">
-              <MessageCircle size={16} /> Open conversation
+              <MessageCircle size={16} /> Open Conversation
             </span>
           </BtnLink>
         ) : null}
@@ -135,13 +135,13 @@ function ApplicationDetail() {
             variant="outline"
             className="w-full"
           >
-            View the opportunity
+            View the Opportunity
           </BtnLink>
         ) : null}
 
         {["submitted", "viewed", "shortlisted"].includes(a.status) ? (
           <Btn variant="ghost" className="w-full" onClick={() => setWithdraw(true)}>
-            Withdraw application
+            Withdraw Application
           </Btn>
         ) : null}
       </div>
@@ -161,7 +161,7 @@ function ApplicationDetail() {
           Withdraw
         </Btn>
         <Btn variant="ghost" onClick={() => setWithdraw(false)}>
-          Keep it
+          Keep It
         </Btn>
       </Dialog>
 
@@ -172,7 +172,7 @@ function ApplicationDetail() {
         onClose={() => setDone(false)}
       >
         <BtnLink to="/opportunities/applications" className="w-full">
-          Back to applications
+          Back to Applications
         </BtnLink>
       </Dialog>
     </Screen>

@@ -4,6 +4,7 @@ import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { BookingCard } from "@/components/ml/rental";
 import { bookings, equipmentById, providerById } from "@/data/rentals";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/marketplace/rent/mine")({
   head: () => ({
@@ -33,12 +34,9 @@ function MyRentals() {
         subtitle="1 active · 1 upcoming"
         back="/marketplace/rent"
         right={
-          <Link
-            to="/marketplace/rent/listings"
-            className="shrink-0 text-xs font-semibold text-foreground"
-          >
+          <TextLink to="/marketplace/rent/listings" className="shrink-0 text-xs">
             Listings
-          </Link>
+          </TextLink>
         }
       />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
@@ -93,7 +91,7 @@ function MyRentals() {
             emoji="📭"
             title={`No ${tab.toLowerCase()} rentals`}
             body="When you rent equipment through MusicLinkd, it will appear here with dates, deposits and return reminders."
-            action={<BtnLink to="/marketplace/rent">Explore equipment</BtnLink>}
+            action={<BtnLink to="/marketplace/rent">Explore Equipment</BtnLink>}
           />
         )}
       </div>

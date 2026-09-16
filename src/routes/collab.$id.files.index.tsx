@@ -71,7 +71,7 @@ function Files() {
           variant="outline"
           className="flex-1 w-full"
         >
-          Media gallery
+          Media Gallery
         </BtnLink>
       </div>
 
@@ -108,10 +108,10 @@ function Files() {
         {showDemoControls ? (
           <div className="mt-4 flex gap-2">
             <Btn variant="outline" className="flex-1" onClick={() => setState("done")}>
-              Simulate success
+              Simulate Success
             </Btn>
             <Btn variant="ghost" className="flex-1" onClick={() => setState("error")}>
-              Simulate failure
+              Simulate Failure
             </Btn>
           </div>
         ) : null}

@@ -203,7 +203,7 @@ function NewBusiness() {
             </Btn>
           ) : (
             <Btn className="flex-1" onClick={() => setCreated(true)}>
-              Create business
+              Create Business
             </Btn>
           )}
         </div>
@@ -217,10 +217,10 @@ function NewBusiness() {
       >
         <div className="space-y-2">
           <BtnLink to="/business" className="w-full">
-            Open business
+            Open Business
           </BtnLink>
           <BtnLink to="/verification/choose" variant="ghost" className="w-full">
-            Verify this business
+            Verify This Business
           </BtnLink>
         </div>
       </Dialog>

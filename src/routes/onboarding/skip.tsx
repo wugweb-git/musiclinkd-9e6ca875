@@ -62,11 +62,11 @@ function SkipLater() {
 
       <div className="mt-8 space-y-2">
         <BtnLink to="/onboarding/step/$id" params={{ id: target }} className="w-full">
-          Continue setup
+          Continue Setup
         </BtnLink>
         <p className="flex justify-center pt-2 text-sm">
           <AuthLink to="/feed" className="text-muted-foreground">
-            Explore MusicLinkd first
+            Explore MusicLinkd First
           </AuthLink>
         </p>
       </div>

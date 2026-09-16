@@ -73,7 +73,7 @@ function Applicants() {
               variant="outline"
               className="w-full"
             >
-              See performance
+              See Performance
             </BtnLink>
           </EmptyState>
         ) : (

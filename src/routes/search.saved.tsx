@@ -87,7 +87,7 @@ function SavedSearches() {
               <div className="flex gap-2">
                 <BtnLink to="/search" className="flex-1 w-full">
                   <span className="inline-flex items-center gap-2">
-                    <Search size={16} aria-hidden /> Run search
+                    <Search size={16} aria-hidden /> Run Search
                   </span>
                 </BtnLink>
                 <Btn
@@ -106,7 +106,7 @@ function SavedSearches() {
             body="Run a search, apply the filters that matter, then save it. We will tell you when something new matches."
           >
             <BtnLink to="/search" className="w-full">
-              Start a search
+              Start a Search
             </BtnLink>
           </EmptyState>
         )}

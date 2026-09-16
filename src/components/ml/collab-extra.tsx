@@ -13,7 +13,7 @@ export function DeletedState({ body }: { body?: string }) {
         {body ?? "It may have been deleted by the owner, or you no longer have access to it."}
       </p>
       <BtnLink to="/collab" variant="outline">
-        Back to collaborations
+        Back to Collaborations
       </BtnLink>
     </Card>
   );

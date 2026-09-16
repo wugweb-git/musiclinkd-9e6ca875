@@ -90,7 +90,7 @@ function SearchHistory() {
             body="Searches you run appear here so you can pick one back up. Nobody else can see them."
           >
             <BtnLink to="/search" className="w-full">
-              Start a search
+              Start a Search
             </BtnLink>
           </EmptyState>
         )}
@@ -115,10 +115,10 @@ function SearchHistory() {
             setConfirm(false);
           }}
         >
-          Clear history
+          Clear History
         </Btn>
         <Btn variant="ghost" onClick={() => setConfirm(false)}>
-          Keep it
+          Keep It
         </Btn>
       </Dialog>
     </Screen>

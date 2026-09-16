@@ -45,7 +45,7 @@ function InviteMembers() {
             Share a join link or your band QR with someone who is not on MusicLinkd yet.
           </p>
           <BtnLink to="/identity/qr" variant="outline" className="w-full">
-            Open band QR
+            Open Band QR
           </BtnLink>
         </Card>
 
@@ -101,7 +101,7 @@ function InviteMembers() {
         onClose={() => setSent(false)}
       >
         <BtnLink to="/bands/$id/manage" params={{ id }} className="w-full">
-          View invitations
+          View Invitations
         </BtnLink>
       </Dialog>
     </Screen>

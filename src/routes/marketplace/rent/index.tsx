@@ -164,7 +164,7 @@ function RentHome() {
             terms.
           </p>
           <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">
-            Rent out equipment
+            Rent Out Equipment
           </BtnLink>
           <div className="mt-2 flex justify-center gap-4 text-xs font-semibold text-foreground">
             <Link to="/marketplace/rent/mine">My rentals</Link>

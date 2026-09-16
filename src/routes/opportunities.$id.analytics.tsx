@@ -106,7 +106,7 @@ function OpportunityAnalytics() {
             variant="ghost"
             className="w-full"
           >
-            Edit the post
+            Edit the Post
           </BtnLink>
         </Card>
       </div>

@@ -149,10 +149,10 @@ function Availability() {
         </div>
 
         <Btn className="mt-6 w-full" onClick={() => undefined}>
-          Save availability
+          Save Availability
         </Btn>
         <BtnLink to="/provider/bookings" variant="ghost" className="mt-2 w-full">
-          Back to workspace
+          Back to Workspace
         </BtnLink>
       </main>
     </Screen>
