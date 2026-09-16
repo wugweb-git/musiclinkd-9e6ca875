@@ -7,7 +7,32 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  // Trial components copied from shadcn registries: third-party code kept as downloaded, used only
+  // by the Lab stories. They are excluded from tsconfig for the same reason.
+  {
+    ignores: [
+      "dist",
+      ".output",
+      ".vinxi",
+      "src/lab/**",
+      "src/components/agents-ui/**",
+      "src/components/animate-ui/**",
+      "src/components/animbits/**",
+      "src/components/billingsdk/**",
+      "src/components/charts/**",
+      "src/components/kibo-ui/**",
+      "src/components/spectrumui/**",
+      "src/components/waves-cn/**",
+      "src/components/ui/glasscn/**",
+      "src/components/ui/liquid-*.tsx",
+      "src/components/ui/{tour,stepper,media-player,phone-input,message,markdown,code-block,floating-dock,stateful-button,skeleton-loader}.tsx",
+      "src/components/{dropzone,file-upload-01,onboarding-01,command-menu-01,pricing-table-one-demo,tab-switcher,visually-hidden-input}.tsx",
+      "src/lib/{compose-refs,billingsdk-config,glass-variants,styles-prop,internal-glyphs,provider,wave-cn}.*",
+      "src/hooks/{use-as-ref,use-lazy-ref,use-isomorphic-layout-effect,use-liquid-glass,use-controlled-state,use-auto-height}.*",
+      "src/hooks/agents-ui/**",
+      "src/lib/get-strict-context.tsx",
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

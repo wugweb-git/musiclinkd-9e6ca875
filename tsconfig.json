@@ -1,17 +1,26 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "eslint.config.js"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "eslint.config.js"
+  ],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
-
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "vite/client"
+    ],
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": false,
     "noEmit": true,
-
     "skipLibCheck": true,
     "strict": true,
     "noUnusedLocals": false,
@@ -24,7 +33,50 @@
     "exactOptionalPropertyTypes": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
-  }
+  },
+  "exclude": [
+    "src/components/agents-ui/**",
+    "src/components/animate-ui/**",
+    "src/components/animbits/**",
+    "src/components/billingsdk/**",
+    "src/components/charts/**",
+    "src/components/command-menu-01.tsx",
+    "src/components/dropzone.tsx",
+    "src/components/file-upload-01.tsx",
+    "src/components/kibo-ui/**",
+    "src/components/onboarding-01.tsx",
+    "src/components/pricing-table-one-demo.tsx",
+    "src/components/spectrumui/**",
+    "src/components/tab-switcher.tsx",
+    "src/components/ui/code-block.tsx",
+    "src/components/ui/floating-dock.tsx",
+    "src/components/ui/glasscn/**",
+    "src/components/ui/liquid-*.tsx",
+    "src/components/ui/markdown.tsx",
+    "src/components/ui/media-player.tsx",
+    "src/components/ui/message.tsx",
+    "src/components/ui/phone-input.tsx",
+    "src/components/ui/skeleton-loader.tsx",
+    "src/components/ui/stateful-button.tsx",
+    "src/components/ui/stepper.tsx",
+    "src/components/ui/tour.tsx",
+    "src/components/visually-hidden-input.tsx",
+    "src/components/waves-cn/**",
+    "src/hooks/use-as-ref.ts",
+    "src/hooks/use-isomorphic-layout-effect.ts",
+    "src/hooks/use-lazy-ref.ts",
+    "src/hooks/use-liquid-glass.ts",
+    "src/lab/**",
+    "src/lib/billingsdk-config.ts",
+    "src/lib/compose-refs.ts",
+    "src/lib/glass-variants.ts",
+    "src/lib/internal-glyphs.tsx",
+    "src/lib/provider.tsx",
+    "src/lib/styles-prop.ts",
+    "src/lib/wave-cn.tsx"
+  ]
 }
