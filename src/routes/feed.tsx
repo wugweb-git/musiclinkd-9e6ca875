@@ -31,7 +31,12 @@ import {
   type ForYouTile,
 } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
-import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
+import { getMyProfile, listMyPortfolio, getTaxonomyLabels } from "@/lib/portfolio.functions";
+import type { TaxonomyLabels } from "@/lib/portfolio.functions";
+import { listOpportunities, listStudios } from "@/lib/catalog.functions";
+import { listPeopleByRole } from "@/lib/profile-groups.functions";
+import { discoverStudioFromRow } from "@/lib/studio-view";
+import { priceParts } from "@/lib/price";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 import { SectionActionLink } from "@/components/ml/links";
@@ -54,12 +59,25 @@ export const Route = createFileRoute("/feed")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  // Home's content is the network's: roles being cast, people, studios. All public reads.
+  loader: async () => {
+    const [opportunities, studios, labels] = await Promise.all([
+      listOpportunities().catch(() => []),
+      listStudios().catch(() => []),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+    ]);
+    return {
+      opportunities: opportunities.slice(0, 6),
+      studios: studios.map((row) => discoverStudioFromRow(row, labels)).slice(0, 6),
+      labels,
+    };
+  },
   component: Dashboard,
 });
 
 type Status = "loading" | "ready" | "error" | "offline";
 
-type Home = { data: DashboardData; cont: ContinueCard[] };
+type Home = { data: DashboardData; cont: ContinueCard[]; roleSlug: string | null };
 
 /*
  * Home is the signed-in person's own: their profile row, their portfolio and the open opportunities.
@@ -158,7 +176,7 @@ function buildHome(
     });
   }
 
-  return { data, cont };
+  return { data, cont, roleSlug: row?.roles?.[0] ?? null };
 }
 
 function greeting() {
@@ -226,112 +244,163 @@ function StatTile({ tile }: { tile: ForYouTile }) {
 function Body({ home }: { home: Home }) {
   const { data, cont } = home;
   const { user } = data;
+  const { opportunities, studios, labels } = Route.useLoaderData();
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
   const hello = useGreeting();
-  const headline = headlineUpdate(data);
+  const peers = usePeers(home.roleSlug);
 
   return (
     <div className="min-w-0 pb-4">
       {/*
-       * Who you are today: the greeting, what you do, whether you are taking work, and how much of
-       * the profile is filled. One band, no card — this is the page's own header, not an item in it.
+       * The stage: the one dark band on any screen. Who you are, whether you are taking work and
+       * how complete the profile is, in white on ink, so Home opens with weight instead of a list.
        */}
-      <section className="min-w-0 animate-rise px-5 pt-5">
-        <h1 className="break-words text-3 leading-tight">
-          {hello}
-          {viewerFirstName ? `, ${viewerFirstName}` : ""}
+      <section className="relative -mt-px overflow-hidden rounded-b-3xl bg-ink px-5 pb-6 pt-6 text-background">
+        <p className="text-1 text-background/70">{hello}</p>
+        <h1 className="mt-1 break-words text-4 font-bold leading-[1.05]">
+          {viewerFirstName || "Welcome"}
         </h1>
-        {user.role ? (
-          <p className="mt-1 truncate text-sm text-muted-foreground">{user.role}</p>
-        ) : null}
-        <div className="mt-3">
-          <StatusPill
-            label={user.available ? "Open to collaborations" : "Not taking work"}
-            tone={user.available ? "good" : "neutral"}
-          />
-        </div>
-        <Link
-          to="/profile/edit"
-          className="mt-4 flex items-center gap-3 rounded-md py-1 state-layer"
-          aria-label={`Profile ${user.profileCompletion}% complete. Edit your profile.`}
-        >
-          <span className="h-1 flex-1 overflow-hidden rounded-full bg-subtle">
+        {user.role ? <p className="mt-1 truncate text-sm text-background/70">{user.role}</p> : null}
+
+        <div className="mt-4 flex items-center gap-2">
+          <span className="pill bg-background/15 text-background">
             <span
-              className="block h-full rounded-full bg-primary transition-[width] duration-500 ease-standard"
-              // computed: how much of the profile is filled
-              style={{ width: `${user.profileCompletion}%` }}
+              aria-hidden
+              className={`h-1.5 w-1.5 rounded-full ${user.available ? "bg-success" : "bg-background/60"}`}
             />
+            {user.available ? "Open to collaborations" : "Not taking work"}
           </span>
-          <span className="shrink-0 text-1 text-muted-foreground">
-            Profile {user.profileCompletion}%
-          </span>
-          <ChevronRight size={14} className="shrink-0 text-muted-foreground" aria-hidden />
-        </Link>
-      </section>
-
-      {/*
-       * Needs you: the short list of things actually waiting, as rows. Only what the database can
-       * back — setup steps, a first work, applications — so nothing here is an invented count.
-       */}
-      <section className="pt-7">
-        <SectionHeader title="Needs you" />
-        <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
-          {cont.map((c) => (
-            <li key={c.id}>
-              <Row
-                title={c.title}
-                {...(c.meta ? { subtitle: c.meta } : {})}
-                to={c.to}
-                right={
-                  typeof c.progress === "number" ? (
-                    <span className="text-1 text-muted-foreground">{c.detail}</span>
-                  ) : undefined
-                }
-              />
-            </li>
-          ))}
-          <li>
-            <Row
-              title="Your applications"
-              subtitle="Nothing yet"
-              to="/opportunities/applications"
-            />
-          </li>
-          <li>
-            <Row title="Open opportunities" subtitle="Roles being cast now" to="/opportunities" />
-          </li>
-        </ul>
-      </section>
-
-      {headline ? (
-        <section className="px-5 pt-6">
           <Link
-            to={headline.to}
-            className="state-layer flex min-w-0 items-center gap-3 rounded-lg bg-subtle p-4"
+            to="/profile/edit"
+            className="pill state-layer bg-background/15 text-background"
+            aria-label={`Profile ${user.profileCompletion}% complete. Edit your profile.`}
           >
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-2 font-semibold leading-snug">
-                {headline.title}
-              </span>
-              <span className="mt-0.5 block line-clamp-2 text-1 text-muted-foreground">
-                {headline.body}
-              </span>
-            </span>
-            <ChevronRight size={18} className="shrink-0 text-muted-foreground" aria-hidden />
+            Profile {user.profileCompletion}%
           </Link>
-        </section>
-      ) : null}
+        </div>
 
-      {/* People to meet, when there are any; the strip is the app's own card, not a new pattern. */}
-      {data.forYou.length ? (
+        {cont.length ? (
+          <ul className="mt-5 space-y-2">
+            {cont.map((c) => (
+              <li key={c.id}>
+                <Link
+                  to={c.to ?? "/onboarding/resume"}
+                  className="state-layer flex items-center gap-3 rounded-lg bg-background/10 px-4 py-3"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{c.title}</span>
+                    {c.meta ? (
+                      <span className="block truncate text-1 text-background/70">{c.meta}</span>
+                    ) : null}
+                  </span>
+                  <ChevronRight size={16} className="shrink-0 text-background/70" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
+
+      {/* Roles being cast: the live opportunities table, newest first. */}
+      <section className="pt-7">
+        <SectionHeader title="Roles being cast" action={<Link to="/opportunities">See All</Link>} />
+        {opportunities.length ? (
+          <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
+            {opportunities.map((o) => (
+              <Link
+                key={o.id}
+                to="/opportunities/$id"
+                params={{ id: o.slug }}
+                className="state-layer flex w-[240px] shrink-0 flex-col justify-between rounded-lg border border-border bg-card p-4"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-2 font-semibold leading-snug">
+                    {o.title}
+                  </span>
+                  <span className="mt-1 block truncate text-1 text-muted-foreground">
+                    {[o.role_required, o.location].filter(Boolean).join(" · ")}
+                  </span>
+                </span>
+                <span className="mt-3 flex items-end justify-between gap-2">
+                  <Price price={priceParts(o.budget_paise, o.budget_unit, o.budget_note)} />
+                  <span className="pill shrink-0 bg-subtle text-muted-foreground">
+                    {o.applicant_count} applied
+                  </span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="mx-5">
+            <EmptyState title="No open roles" body="New castings appear here as they are posted." />
+          </div>
+        )}
+      </section>
+
+      {/* People in the same line of work, from the live profiles table. */}
+      {peers.length ? (
         <section className="pt-7">
           <SectionHeader title="People to meet" action={<Link to="/discover">See All</Link>} />
           <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
-            {data.forYou.map((t) => (
-              <TalentCard key={t.id} t={t} />
+            {peers.map((p) => (
+              <Link
+                key={p.username}
+                to="/profile/$username"
+                params={{ username: p.username }}
+                className="state-layer flex w-[150px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card p-4 text-center"
+              >
+                {p.avatarUrl ? (
+                  <img
+                    src={p.avatarUrl}
+                    alt=""
+                    loading="lazy"
+                    className="h-14 w-14 rounded-full object-cover"
+                  />
+                ) : (
+                  <span aria-hidden className="h-14 w-14 rounded-full bg-subtle" />
+                )}
+                <span className="min-w-0">
+                  <span className="block truncate text-1 font-semibold">{p.name}</span>
+                  <span className="block truncate text-1 text-muted-foreground">
+                    {p.city ?? p.roles[0] ?? ""}
+                  </span>
+                </span>
+              </Link>
             ))}
           </div>
+        </section>
+      ) : null}
+
+      {/* Studios, live from the studios table, with their real rate. */}
+      {studios.length ? (
+        <section className="pt-7">
+          <SectionHeader title="Studios to book" action={<Link to="/studio">See All</Link>} />
+          <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+            {studios.map((st) => (
+              <li key={st.slug}>
+                <Link to="/studio" className="state-layer flex items-center gap-3 px-4 py-3.5">
+                  {st.photo ? (
+                    <img
+                      src={st.photo}
+                      alt=""
+                      loading="lazy"
+                      className="h-11 w-11 shrink-0 rounded-md object-cover"
+                    />
+                  ) : (
+                    <span aria-hidden className="h-11 w-11 shrink-0 rounded-md bg-subtle" />
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{st.name}</span>
+                    <span className="block truncate text-1 text-muted-foreground">
+                      {st.location}
+                    </span>
+                  </span>
+                  <Price price={st.rate} align="end" />
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 
@@ -350,11 +419,6 @@ function Body({ home }: { home: Home }) {
                   <p className="truncate text-1 text-muted-foreground">
                     {a.meta} · {a.when}
                   </p>
-                  <Price
-                    price={a.price}
-                    className="mt-0.5"
-                    amountClassName="text-1 font-semibold"
-                  />
                 </div>
               </li>
             ))}
@@ -373,7 +437,6 @@ function Body({ home }: { home: Home }) {
         )}
       </section>
 
-      {/* Everything else you might want, kept quiet and scrollable. */}
       <section className="pt-7">
         <SectionHeader title="Shortcuts" />
         <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pb-1">
@@ -385,11 +448,28 @@ function Body({ home }: { home: Home }) {
           <QuietAction to="/reviews" icon={<Star size={14} />} label="Reviews" />
           <QuietAction to="/plans" icon={<CreditCard size={14} />} label="Plan" />
           <QuietAction to="/help" icon={<LifeBuoy size={14} />} label="Help" />
-          <QuietAction to="/messages" icon={<UserPlus size={14} />} label="Find contacts" />
         </div>
       </section>
     </div>
   );
+}
+
+/** People in the same line of work; falls back to anyone public when the viewer has no role yet. */
+function usePeers(roleSlug: string | null) {
+  const list = useServerFn(listPeopleByRole);
+  const [people, setPeople] = useState<Awaited<ReturnType<typeof listPeopleByRole>>>([]);
+  useEffect(() => {
+    let active = true;
+    void list({ data: { ...(roleSlug ? { role: roleSlug } : {}), limit: 8 } })
+      .then((rows) => {
+        if (active) setPeople(rows);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [list, roleSlug]);
+  return people;
 }
 
 function ContinueBlock({ c }: { c: ContinueCard }) {
