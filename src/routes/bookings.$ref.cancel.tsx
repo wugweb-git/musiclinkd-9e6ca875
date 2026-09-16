@@ -121,7 +121,7 @@ function Cancel() {
           <textarea
             rows={3}
             placeholder="Anything they should know…"
-            className="mt-2 w-full resize-none rounded-lg bg-subtle p-3 text-sm outline-none focus:border-primary"
+            className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-3 text-sm outline-none focus:border-primary"
           />
         </label>
       </main>

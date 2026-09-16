@@ -4,7 +4,29 @@
  */
 import { Link } from "@tanstack/react-router";
 import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
-import { Bookmark, MapPin, Clock, Users, Wallet, Star } from "lucide-react";
+import {
+  Bookmark,
+  CalendarDays,
+  Clapperboard,
+  Disc3,
+  Drum,
+  Guitar,
+  Handshake,
+  Headphones,
+  Mic,
+  MicVocal,
+  Music,
+  PenLine,
+  Piano,
+  Podcast,
+  SlidersHorizontal,
+  Sparkles,
+  Speaker,
+  Star,
+  Store,
+  Ticket,
+  type LucideIcon,
+} from "lucide-react";
 import { Card, Price, StatusPill, ReasonChip, type Tone } from "@/components/ml/kit";
 import { IconBtn, VerifiedBadge } from "@/components/ml/ui";
 import {
@@ -16,6 +38,32 @@ import {
   type Opportunity,
   type OpportunityStatus,
 } from "@/data/opportunities";
+
+/** One icon per requirement type, in place of the emoji the categories carried. */
+const categoryIcons: Record<string, LucideIcon> = {
+  singer: MicVocal,
+  guitarist: Guitar,
+  producer: SlidersHorizontal,
+  composer: Music,
+  lyricist: PenLine,
+  mixing: SlidersHorizontal,
+  mastering: Disc3,
+  session: Drum,
+  dj: Headphones,
+  sound: Speaker,
+  studio: Store,
+  venue: Ticket,
+  equipment: Piano,
+  bandmember: Handshake,
+  collab: Sparkles,
+  gig: Ticket,
+  recording: Mic,
+  film: Clapperboard,
+  podcast: Podcast,
+  event: CalendarDays,
+};
+
+export const categoryIcon = (key: string): LucideIcon => categoryIcons[key] ?? Music;
 
 export function statusTone(s: OpportunityStatus): Tone {
   if (s === "open") return "good";

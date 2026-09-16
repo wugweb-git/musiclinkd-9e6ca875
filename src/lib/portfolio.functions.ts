@@ -363,6 +363,7 @@ export type ProfileSections = {
     role: string | null;
     collaborators: string[];
     cover_url: string | null;
+    media_url: string | null;
     release_year: number | null;
   }[];
   trust_badges: string[];
@@ -438,7 +439,9 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
       .order("created_at", { ascending: false }),
     client
       .from("portfolio_items")
-      .select("id, title, kind, description, role, collaborators, cover_url, release_year")
+      .select(
+        "id, title, kind, description, role, collaborators, cover_url, media_url, release_year",
+      )
       .eq("user_id", profileId)
       .eq("published", true)
       .order("sort_order")

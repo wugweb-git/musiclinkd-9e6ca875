@@ -30,6 +30,8 @@ export type AudioTrack = {
   duration: string;
   artwork: string;
   featured?: boolean;
+  /** The work's link, played in place. */
+  media?: string;
 };
 
 export type VideoItem = {
@@ -38,6 +40,8 @@ export type VideoItem = {
   context: string;
   duration: string;
   thumb: string;
+  /** The work's link, played in place. */
+  media?: string;
 };
 
 export type ProjectItem = {

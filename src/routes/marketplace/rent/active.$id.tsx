@@ -208,7 +208,7 @@ function RentalBooking() {
         <textarea
           rows={3}
           placeholder="Notes for the provider"
-          className="mt-3 w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
+          className="mt-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
         <p className="mt-3 text-1 text-muted-foreground">
           The deposit is released by the provider once they have checked the equipment.
@@ -266,7 +266,7 @@ function RentalBooking() {
         <textarea
           rows={3}
           placeholder="Write a short review (optional)"
-          className="w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
+          className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
         <div className="mt-3 flex items-center justify-between rounded-lg bg-subtle px-4 py-3">
           <span className="text-1 font-semibold">Your rating</span>

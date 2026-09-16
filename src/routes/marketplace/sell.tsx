@@ -138,7 +138,7 @@ function Sell() {
               <textarea
                 rows={4}
                 placeholder="Condition, history, what's included..."
-                className="w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
+                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
               />
             </Field>
             <Field label="Location">

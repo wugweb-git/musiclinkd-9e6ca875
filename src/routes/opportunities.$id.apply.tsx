@@ -164,7 +164,7 @@ function ApplyFlow() {
               rows={7}
               maxLength={600}
               placeholder={`Why you're right for "${o.title}"…`}
-              className="w-full rounded-[20px] bg-subtle p-4 text-sm outline-none"
+              className="w-full rounded-[20px] border border-border bg-card p-4 text-sm outline-none"
             />
             <p className="text-right text-1 text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">

@@ -519,7 +519,7 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={4}
-          className="mt-1.5 w-full rounded-lg bg-subtle px-4 py-3 text-sm outline-none focus:border-primary"
+          className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
         />
       ) : (
         <input

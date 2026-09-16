@@ -422,7 +422,7 @@ export function LocationSheet({
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search"
           aria-label="Search places"
-          className="press-brand mb-3 h-12 w-full rounded-sm bg-subtle px-3.5 text-sm outline-none focus:border-foreground"
+          className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
         />
       ) : null}
       <p className="pill mb-1 text-muted-foreground">Suggested for you</p>
@@ -463,7 +463,7 @@ export function CategorySheet({
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search"
         aria-label="Search categories"
-        className="press-brand mb-3 h-12 w-full rounded-sm bg-subtle px-3.5 text-sm outline-none focus:border-foreground"
+        className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
       />
       <ul>
         {shown.map((c) => (
@@ -690,7 +690,7 @@ export function OfferSheet({
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
             placeholder="I can collect from Dadar this weekend."
-            className="mb-3 w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
+            className="mb-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
           />
           <p className="mb-5 text-1 text-muted-foreground">
             Offers expire after 48 hours. Payment is arranged directly with the seller.

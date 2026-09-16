@@ -176,6 +176,7 @@ function portfolioSections(items: ProfileSections["portfolio"]) {
         project: item.description ?? "",
         duration: "",
         artwork: item.cover_url ?? "",
+        ...(item.media_url ? { media: item.media_url } : {}),
       });
     } else if (item.kind === "video" || item.kind === "performance") {
       video.push({
@@ -184,6 +185,7 @@ function portfolioSections(items: ProfileSections["portfolio"]) {
         context: item.description ?? "",
         duration: "",
         thumb: item.cover_url ?? "",
+        ...(item.media_url ? { media: item.media_url } : {}),
       });
     } else if (item.kind === "album") {
       discography.push({

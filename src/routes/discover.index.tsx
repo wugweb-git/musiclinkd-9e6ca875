@@ -3,6 +3,7 @@ import {
   ArrowRight,
   Boxes,
   CalendarDays,
+  ChevronDown,
   Disc3,
   Drum,
   MapPin,
@@ -24,6 +25,10 @@ import { SectionActionLink } from "@/components/ml/links";
 import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
+import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import { recordPlay } from "@/lib/plays";
+import { MediaEmbed } from "@/components/ml/media-embed";
+import { NoCover } from "@/components/ml/profile";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
@@ -47,11 +52,12 @@ export const Route = createFileRoute("/discover/")({
   }),
   // Database studios follow the seeded ones; without them the lists show seed data only.
   loader: async () => {
-    const [rows, labels] = await Promise.all([
+    const [rows, labels, trendingWork] = await Promise.all([
       listStudios().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+      listTrendingWork().catch((): TrendingItem[] => []),
     ]);
-    return { dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)) };
+    return { dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)), trendingWork };
   },
   component: Discover,
 });
@@ -74,7 +80,7 @@ function categoryIcon(label: string) {
 }
 
 function Discover() {
-  const { dbStudios } = Route.useLoaderData();
+  const { dbStudios, trendingWork } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
   return (
     <Screen>
@@ -137,6 +143,17 @@ function Discover() {
           ))}
         </div>
       </section>
+
+      {trendingWork.length ? (
+        <section className="pb-6">
+          <SectionHeader title="Trending work" />
+          <div className="space-y-2 px-5">
+            {trendingWork.map((item) => (
+              <TrendingWorkRow key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="pb-6">
         <SectionHeader
@@ -294,5 +311,62 @@ function Discover() {
         </div>
       </section>
     </Screen>
+  );
+}
+
+/** A trending work: tap to play it in place, which also counts toward Trending. */
+function TrendingWorkRow({ item }: { item: TrendingItem }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <article className="rounded-lg bg-subtle p-3">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => {
+          if (!open) recordPlay(item.id);
+          setOpen((o) => !o);
+        }}
+        className="state-layer flex w-full items-center gap-3 rounded-lg text-left"
+      >
+        {item.cover_url ? (
+          <img
+            src={item.cover_url}
+            alt=""
+            loading="lazy"
+            className="h-14 w-14 shrink-0 rounded-sm object-cover"
+          />
+        ) : (
+          <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-2 font-semibold">{item.title}</span>
+          <span className="block truncate text-1 text-muted-foreground">
+            {joinParts(
+              item.display_name ?? "",
+              `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
+            )}
+          </span>
+        </span>
+        <ChevronDown
+          size={20}
+          aria-hidden
+          className={`shrink-0 text-muted-foreground transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open ? (
+        <div className="mt-3 space-y-2 animate-in fade-in duration-200">
+          {item.media_url ? <MediaEmbed url={item.media_url} title={item.title} /> : null}
+          {item.username ? (
+            <Link
+              to="/profile/$username"
+              params={{ username: item.username }}
+              className="link-action block text-center text-1 font-semibold"
+            >
+              View Profile
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+    </article>
   );
 }

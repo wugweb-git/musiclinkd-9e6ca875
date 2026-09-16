@@ -17,12 +17,12 @@ import {
   X,
   type LucideIcon,
   ChevronDown,
-  ExternalLink,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
 import { Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
 import { embedFor } from "@/lib/embed";
+import { MediaEmbed } from "./media-embed";
 import {
   analyticsFor,
   contributorDirectory,
@@ -108,7 +108,6 @@ export function WorkTypeSheet({ open, onClose }: { open: boolean; onClose: () =>
 export function WorkCard({ item }: { item: PortfolioItem }) {
   const t = workType(item.kind);
   const [open, setOpen] = useState(false);
-  const embed = item.media_url ? embedFor(item.media_url) : null;
   return (
     <div className="rounded-lg bg-subtle">
       <button
@@ -159,34 +158,8 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
       </button>
       {open ? (
         <div className="animate-in fade-in space-y-3 px-4 pb-4 duration-200">
-          {embed?.mode === "iframe" ? (
-            <iframe
-              src={embed.src}
-              title={item.title}
-              height={embed.height}
-              loading="lazy"
-              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
-              allowFullScreen
-              className="w-full rounded-lg border-0 bg-background"
-            />
-          ) : embed?.mode === "audio" ? (
-            // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied file; no caption track exists to attach
-            <audio src={embed.src} controls preload="none" className="w-full" />
-          ) : embed?.mode === "video" ? (
-            // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied file; no caption track exists to attach
-            <video src={embed.src} controls preload="none" className="w-full rounded-lg" />
-          ) : null}
+          {item.media_url ? <MediaEmbed url={item.media_url} title={item.title} /> : null}
           <div className="flex gap-2">
-            {embed?.mode === "external" ? (
-              <a
-                href={embed.src}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="state-layer press-brand inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-background"
-              >
-                <ExternalLink size={16} aria-hidden /> Open
-              </a>
-            ) : null}
             <BtnLink
               to="/portfolio/$id"
               params={{ id: item.id }}

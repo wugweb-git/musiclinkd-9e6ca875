@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Plus, Search, Bookmark, Briefcase, Users } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
-import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
+import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunities, opportunityCategories, myApplications } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 
@@ -106,18 +106,21 @@ function OpportunitiesHome() {
         <section>
           <h2 className="mb-2 text-sm">Browse by need</h2>
           <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
-            {opportunityCategories.slice(0, 10).map((c) => (
-              <Link
-                key={c.key}
-                to="/opportunities/search"
-                search={{ q: c.label }}
-                className="w-[116px] shrink-0 rounded-[20px] bg-subtle p-3"
-              >
-                <span className="text-2">{c.emoji}</span>
-                <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
-                <p className="text-1 text-muted-foreground">{openCount(c.key)} open</p>
-              </Link>
-            ))}
+            {opportunityCategories.slice(0, 10).map((c) => {
+              const Icon = categoryIcon(c.key);
+              return (
+                <Link
+                  key={c.key}
+                  to="/opportunities/search"
+                  search={{ q: c.label }}
+                  className="w-[116px] shrink-0 rounded-[20px] bg-subtle p-3"
+                >
+                  <Icon size={20} strokeWidth={1.75} aria-hidden />
+                  <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
+                  <p className="text-1 text-muted-foreground">{openCount(c.key)} open</p>
+                </Link>
+              );
+            })}
           </div>
         </section>
 

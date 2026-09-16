@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
+import { categoryIcon } from "@/components/ml/opportunity";
 
 type Step =
   | "basics"
@@ -134,16 +135,24 @@ function CreateOpportunity() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Female playback singer for indie-pop single"
-                className="w-full rounded-[16px] bg-subtle px-4 py-3 text-sm outline-none"
+                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Field label="Requirement type">
               <div className="flex flex-wrap gap-2">
-                {opportunityCategories.map((c) => (
-                  <Chip key={c.key} active={cat === c.key} onClick={() => setCat(c.key)}>
-                    {c.emoji} {c.label}
-                  </Chip>
-                ))}
+                {opportunityCategories.map((c) => {
+                  const Icon = categoryIcon(c.key);
+                  return (
+                    <Chip
+                      key={c.key}
+                      active={cat === c.key}
+                      media={<Icon size={16} aria-hidden />}
+                      onClick={() => setCat(c.key)}
+                    >
+                      {c.label}
+                    </Chip>
+                  );
+                })}
               </div>
             </Field>
             <Field label="Short summary" hint="Two lines. Detail comes later.">
@@ -151,7 +160,7 @@ function CreateOpportunity() {
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
                 rows={4}
-                className="w-full rounded-[20px] bg-subtle p-4 text-sm outline-none"
+                className="w-full rounded-[20px] border border-border bg-card p-4 text-sm outline-none"
               />
             </Field>
           </>
@@ -164,7 +173,7 @@ function CreateOpportunity() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="Mumbai"
-                className="w-full rounded-[16px] bg-subtle px-4 py-3 text-sm outline-none"
+                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Field label="Work mode">
@@ -186,7 +195,7 @@ function CreateOpportunity() {
                 value={dates}
                 onChange={(e) => setDates(e.target.value)}
                 placeholder="18–22 Sep 2026"
-                className="w-full rounded-[16px] bg-subtle px-4 py-3 text-sm outline-none"
+                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Card className="space-y-1">
@@ -219,7 +228,7 @@ function CreateOpportunity() {
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="₹25,000–₹40,000 per song"
-                  className="w-full rounded-[16px] bg-subtle px-4 py-3 text-sm outline-none"
+                  className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
                 />
               </Field>
             ) : (
@@ -241,7 +250,7 @@ function CreateOpportunity() {
                   value={req}
                   onChange={(e) => setReq(e.target.value)}
                   placeholder="Hindi + English diction"
-                  className="min-w-0 flex-1 rounded-[16px] bg-subtle px-4 py-3 text-sm outline-none"
+                  className="min-w-0 flex-1 rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
                 />
                 <Btn
                   onClick={() => {

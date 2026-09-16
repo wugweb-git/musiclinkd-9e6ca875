@@ -210,7 +210,7 @@ function ListForRent() {
                   id="description-included-accessories"
                   rows={4}
                   placeholder="Serviced between rentals. Includes windscreen, yoke mount, XLR cable and padded case."
-                  className="w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
+                  className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
                 />
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -222,7 +222,7 @@ function ListForRent() {
                     <input
                       inputMode="numeric"
                       placeholder="0"
-                      className="w-full rounded-lg bg-subtle px-3 py-3 text-sm outline-none focus:border-primary"
+                      className="w-full rounded-lg border border-border bg-card px-3 py-3 text-sm outline-none focus:border-primary"
                     />
                   </div>
                 ))}

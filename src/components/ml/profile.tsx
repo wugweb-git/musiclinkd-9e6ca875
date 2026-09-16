@@ -51,6 +51,8 @@ import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { AgentAudioVisualizerBar } from "@/components/agents-ui/agent-audio-visualizer-bar";
+import { MediaEmbed } from "./media-embed";
+import { recordPlay } from "@/lib/plays";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -706,45 +708,55 @@ export function AudioTrackCard({
   onToggle: () => void;
 }) {
   return (
-    <article className="flex items-center gap-3 rounded-lg bg-subtle p-3">
-      {track.artwork ? (
-        <img
-          src={track.artwork}
-          alt=""
-          aria-hidden
-          loading="lazy"
-          className="h-14 w-14 rounded-sm object-cover"
-        />
-      ) : (
-        <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
-      )}
-      <div className="min-w-0 flex-1">
-        <h3 className="truncate text-2">{track.title}</h3>
-        <p className="truncate text-1 text-muted-foreground">
-          {joinParts(track.role, track.project)}
-        </p>
-        {/* While a track plays, the bars stand in for the duration: the row shows it is running. */}
-        {playing ? (
-          <AgentAudioVisualizerBar
-            size="sm"
-            state="speaking"
-            barCount={5}
-            volumeBands={[0.5, 0.9, 0.35, 0.75, 0.55]}
-            className="mt-1 h-4 justify-start gap-0.5 text-foreground"
+    <article className="rounded-lg bg-subtle p-3">
+      <div className="flex items-center gap-3">
+        {track.artwork ? (
+          <img
+            src={track.artwork}
+            alt=""
             aria-hidden
+            loading="lazy"
+            className="h-14 w-14 rounded-sm object-cover"
           />
-        ) : track.duration ? (
-          <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
-        ) : null}
+        ) : (
+          <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
+        )}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-2">{track.title}</h3>
+          <p className="truncate text-1 text-muted-foreground">
+            {joinParts(track.role, track.project)}
+          </p>
+          {/* While a track plays, the bars stand in for the duration: the row shows it is running. */}
+          {playing ? (
+            <AgentAudioVisualizerBar
+              size="sm"
+              state="speaking"
+              barCount={5}
+              volumeBands={[0.5, 0.9, 0.35, 0.75, 0.55]}
+              className="mt-1 h-4 justify-start gap-0.5 text-foreground"
+              aria-hidden
+            />
+          ) : track.duration ? (
+            <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
+          ) : null}
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            if (!playing) recordPlay(track.id);
+            onToggle();
+          }}
+          aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
+        >
+          {playing ? <Pause size={16} aria-hidden /> : <Play size={16} aria-hidden />}
+        </button>
       </div>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
-      >
-        {playing ? <Pause size={16} aria-hidden /> : <Play size={16} aria-hidden />}
-      </button>
+      {playing && track.media ? (
+        <div className="mt-3 animate-in fade-in duration-200">
+          <MediaEmbed url={track.media} title={track.title} />
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -766,25 +778,48 @@ export function VideoCard({
   /** "card" is the rail tile, "grid" fills a cell, "row" is a wide thumbnail-left row. */
   layout?: "card" | "grid" | "row";
 }) {
+  const [open, setOpen] = useState(false);
+  const toggle = v.media
+    ? () => {
+        if (!open) recordPlay(v.id);
+        setOpen((o) => !o);
+      }
+    : undefined;
+  const player =
+    open && v.media ? (
+      <div className="mt-3 animate-in fade-in duration-200">
+        <MediaEmbed url={v.media} title={v.title} />
+      </div>
+    ) : null;
   if (layout === "row") {
     return (
-      <article className="flex gap-3">
-        <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-sm bg-background">
-          {v.thumb ? (
-            <img src={v.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
-          ) : (
-            <NoCover className="h-full w-full" />
-          )}
-          {v.duration ? (
-            <span className="absolute bottom-1 left-1 rounded-sm bg-ink/80 px-1.5 py-0.5 text-1 font-semibold text-background">
-              {v.duration}
-            </span>
-          ) : null}
+      <article>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={toggle}
+            disabled={!toggle}
+            aria-expanded={toggle ? open : undefined}
+            aria-label={`Play ${v.title}`}
+            className="relative h-20 w-32 shrink-0 overflow-hidden rounded-sm bg-background"
+          >
+            {v.thumb ? (
+              <img src={v.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
+            ) : (
+              <NoCover className="h-full w-full" />
+            )}
+            {v.duration ? (
+              <span className="absolute bottom-1 left-1 rounded-sm bg-ink/80 px-1.5 py-0.5 text-1 font-semibold text-background">
+                {v.duration}
+              </span>
+            ) : null}
+          </button>
+          <div className="min-w-0 flex-1 py-0.5">
+            <h3 className="line-clamp-2 text-2 font-semibold leading-snug">{v.title}</h3>
+            <p className="mt-1 truncate text-1 text-muted-foreground">{v.context}</p>
+          </div>
         </div>
-        <div className="min-w-0 flex-1 py-0.5">
-          <h3 className="line-clamp-2 text-2 font-semibold leading-snug">{v.title}</h3>
-          <p className="mt-1 truncate text-1 text-muted-foreground">{v.context}</p>
-        </div>
+        {player}
       </article>
     );
   }
@@ -801,11 +836,18 @@ export function VideoCard({
         ) : (
           <NoCover className="h-full w-full" />
         )}
-        <span className="absolute inset-0 flex items-center justify-center">
+        <button
+          type="button"
+          onClick={toggle}
+          disabled={!toggle}
+          aria-expanded={toggle ? open : undefined}
+          aria-label={`Play ${v.title}`}
+          className="absolute inset-0 flex items-center justify-center"
+        >
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-card/90">
             <Play size={16} aria-hidden />
           </span>
-        </span>
+        </button>
         {v.duration ? (
           <span className="absolute bottom-2 right-2 rounded-full bg-ink/80 px-2 py-0.5 text-1 font-semibold text-background">
             {v.duration}
@@ -815,6 +857,7 @@ export function VideoCard({
       <div className="p-3">
         <h3 className="truncate text-1">{v.title}</h3>
         <p className="truncate text-1 text-muted-foreground">{v.context}</p>
+        {player}
       </div>
     </article>
   );
