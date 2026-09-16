@@ -60,7 +60,7 @@ function Conflicts() {
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-subtle text-foreground">
               <AlertTriangle size={18} />
             </span>
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               Conflicts do not cancel anything on their own. Nothing changes until you pick an
               option below.
             </p>
@@ -74,7 +74,7 @@ function Conflicts() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold">{c.day}</p>
-                    <p className="mt-1 text-[13px] text-muted-foreground">{c.detail}</p>
+                    <p className="mt-1 text-1 text-muted-foreground">{c.detail}</p>
                   </div>
                   <StatusPill label={c.kind} tone={c.tone} />
                 </div>

@@ -75,8 +75,8 @@ function ApplyFlow() {
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Check size={26} />
             </span>
-            <h2 className="text-[20px] leading-tight">You're in for {o.title}</h2>
-            <p className="text-[13px] text-muted-foreground">
+            <h2 className="text-2.5 leading-tight">You're in for {o.title}</h2>
+            <p className="text-1 text-muted-foreground">
               {o.poster.name} usually responds within 2 days. You'll get a notification when your
               application is viewed.
             </p>
@@ -108,8 +108,8 @@ function ApplyFlow() {
         {step === "portfolio" ? (
           <>
             <div>
-              <h2 className="text-[19px] leading-tight">Prove the fit</h2>
-              <p className="mt-1 text-[13px] text-muted-foreground">
+              <h2 className="text-2.5 leading-tight">Prove the fit</h2>
+              <p className="mt-1 text-1 text-muted-foreground">
                 Attach up to 3 pieces of work. Posters review portfolios before messages.
               </p>
             </div>
@@ -131,12 +131,12 @@ function ApplyFlow() {
                     }
                     className={`overflow-hidden rounded-[20px] border text-left ${on ? "border-primary" : "border-border"} bg-card`}
                   >
-                    <span className="flex h-20 w-full items-center justify-center bg-subtle text-2xl">
+                    <span className="flex h-20 w-full items-center justify-center bg-subtle text-3">
                       {workType(p.kind).emoji}
                     </span>
                     <span className="block p-3">
-                      <span className="block truncate text-[13px] font-semibold">{p.title}</span>
-                      <span className="block text-[11px] text-muted-foreground">
+                      <span className="block truncate text-1 font-semibold">{p.title}</span>
+                      <span className="block text-0 text-muted-foreground">
                         {workType(p.kind).label}
                       </span>
                     </span>
@@ -153,8 +153,8 @@ function ApplyFlow() {
         {step === "message" ? (
           <>
             <div>
-              <h2 className="text-[19px] leading-tight">Your pitch</h2>
-              <p className="mt-1 text-[13px] text-muted-foreground">
+              <h2 className="text-2.5 leading-tight">Your pitch</h2>
+              <p className="mt-1 text-1 text-muted-foreground">
                 Three lines beats three paragraphs. Say why you fit this brief.
               </p>
             </div>
@@ -164,18 +164,18 @@ function ApplyFlow() {
               rows={7}
               maxLength={600}
               placeholder={`Why you're right for "${o.title}"…`}
-              className="w-full rounded-[20px] border border-border bg-card p-4 text-[14px] outline-none"
+              className="w-full rounded-[20px] border border-border bg-card p-4 text-sm outline-none"
             />
-            <p className="text-right text-[11px] text-muted-foreground">{message.length}/600</p>
+            <p className="text-right text-0 text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">
-              <p className="text-[13px] font-semibold">Your rate (optional)</p>
+              <p className="text-1 font-semibold">Your rate (optional)</p>
               {payParts(o) ? (
                 <div>
-                  <p className="text-[12px] text-muted-foreground">Budget listed</p>
+                  <p className="text-1 text-muted-foreground">Budget listed</p>
                   <Price
                     price={payParts(o)}
-                    amountClassName="text-[12px] font-semibold"
-                    unitClassName="text-[11px]"
+                    amountClassName="text-1 font-semibold"
+                    unitClassName="text-0"
                   />
                 </div>
               ) : null}
@@ -183,7 +183,7 @@ function ApplyFlow() {
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
                 placeholder="e.g. ₹32,000 per song"
-                className="w-full rounded-[16px] border border-border bg-background px-4 py-3 text-[14px] outline-none"
+                className="w-full rounded-[16px] border border-border bg-background px-4 py-3 text-sm outline-none"
               />
             </Card>
           </>
@@ -191,17 +191,17 @@ function ApplyFlow() {
 
         {step === "review" ? (
           <>
-            <h2 className="text-[19px] leading-tight">Review and send</h2>
+            <h2 className="text-2.5 leading-tight">Review and send</h2>
             <Card className="space-y-2">
               <StatusPill label="Attached work" tone="brand" />
               {picked.length === 0 ? (
-                <p className="text-[13px] text-muted-foreground">
+                <p className="text-1 text-muted-foreground">
                   No portfolio attached — applications with work are 4× more likely to be
                   shortlisted.
                 </p>
               ) : (
                 picked.map((pid) => (
-                  <p key={pid} className="text-[13px]">
+                  <p key={pid} className="text-1">
                     {demoPortfolio.find((p) => p.id === pid)?.title ?? pid}
                   </p>
                 ))
@@ -209,10 +209,10 @@ function ApplyFlow() {
             </Card>
             <Card className="space-y-2">
               <StatusPill label="Your pitch" />
-              <p className="text-[13px] text-muted-foreground">{message || "No message added."}</p>
-              {rate ? <p className="text-[12px] text-muted-foreground">Rate: {rate}</p> : null}
+              <p className="text-1 text-muted-foreground">{message || "No message added."}</p>
+              {rate ? <p className="text-1 text-muted-foreground">Rate: {rate}</p> : null}
             </Card>
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               Your public profile, verification badges and reviews are shared with {o.poster.name}{" "}
               when you apply.
             </p>

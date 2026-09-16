@@ -56,7 +56,7 @@ function ProposalDetail() {
         <ProposalSummary p={p} />
 
         <Card className="mt-5">
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             A proposal records what will be delivered and on what terms. It's a shared understanding
             between collaborators, not a legal contract.
           </p>
@@ -64,8 +64,8 @@ function ProposalDetail() {
 
         {sent ? (
           <Card className="mt-4">
-            <p className="text-[13px] font-semibold">Awaiting response</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">
+            <p className="text-1 font-semibold">Awaiting response</p>
+            <p className="mt-1 text-1 text-muted-foreground">
               You can withdraw or edit this proposal until it's accepted.
             </p>
           </Card>

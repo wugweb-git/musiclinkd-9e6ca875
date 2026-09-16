@@ -20,7 +20,8 @@
  * Radius scale is 8 / 16 / 32 / pill — nothing else is a step.
  * Cards lift with --elevation-2; the 1px border is the fallback for cards on white.
  * Purple is the category badge only — never a general accent.
- * Type is five fluid ramps (--type-1..5; --type-5 is hero-only); never an arbitrary px size.
+ * Type is eight fluid ramps (--type-0, 1, sm, 2, 2-5, 3, 4, 5; --type-5 is hero-only);
+ * never an arbitrary px size.
  */
 
 @theme inline {
@@ -46,31 +47,45 @@
   --radius-3xl: 32px;
 
   /*
-   * Type. Verbatim from frontend/guide/system/ml-tokens.css, which is generated
-   * from tokens/tokens.json. Canonical names are --type-1..4 (defined in :root);
-   * they are mapped here into Tailwind's --text-* namespace so the utilities read
-   * text-1..text-4. At the 412px target: 12.0 / 16.1 / 22.3 / 32.6px.
+   * Type. Based on frontend/guide/system/ml-tokens.css, which is generated
+   * from tokens/tokens.json. Canonical names are --type-0, --type-1, --type-sm,
+   * --type-2, --type-2-5, --type-3, --type-4, --type-5 (defined in :root); they are
+   * mapped here into Tailwind's --text-* namespace so the utilities read text-0,
+   * text-1, text-sm, text-2, text-2.5, text-3, text-4, text-5. At the 412px target:
+   * 11.0 / 12.0 / 14.0 / 16.1 / 19.1 / 22.3 / 32.6 / 40.8px.
    *
-   * FIVE steps as of 11 Sep 2026. Four was a stated constraint of the system; the
+   * EIGHT steps as of 16 Sep 2026. Four was a stated constraint of the system; the
    * cap was lifted deliberately at the brand owner's instruction, and --type-5 was
    * added for HERO headlines only — the pre-auth landing. Screen titles stay on
    * --type-4; if a second call site for --type-5 appears, question it before
    * adding, because one hero per product is the point of the step.
    *
-   * Ranges are fluid and continuous: 12-13 / 14-15 / 16-18 / 22-28 / 32-44 / 40-56.
+   * Ranges are fluid and continuous, every one on the same 360→1440 ramp:
+   * 11-12 / 12-13 / 14-15 / 16-18 / 19-22 / 22-28 / 32-44 / 40-56.
    *
    * text-sm is the 14px step (Material bodyMedium, 14sp), added 14 Sep. It keeps Tailwind's name
    * because 302 call sites use it, including the Btn label: the utility now resolves to a token
    * instead of Tailwind's default, with no call-site edits and no renumbering of text-1..5.
-   * Every other foundation group (space, radius, size, opacity, weight,
+   *
+   * text-0 and text-2.5 were added 16 Sep so that the 1,158 hand-set sizes the app was carrying
+   * could all land on a step. text-0 is the 11px LABEL step — eyebrows, unit lines, meta captions,
+   * the same 11px/16px that `pill` sets — and it also absorbs the old 10px micro-labels. text-2.5
+   * is the 19px SECTION-HEADING step that fills the old gap between text-2 (max 18) and text-3
+   * (min 22); it is named for where it sits on the ladder, not for a role, so `text-2.5` at a call
+   * site reads as "between text-2 and text-3" with no lookup. Both carry their own line height,
+   * like every other step. Every other foundation group (space, radius, size, opacity, weight,
    * elevation, zIndex, icon, avatar) is still exactly four.
    */
+  --text-0: var(--type-0);
+  --text-0--line-height: 1.45;
   --text-1: var(--type-1);
   --text-1--line-height: 1.45;
   --text-sm: var(--type-sm);
   --text-sm--line-height: 1.43;
   --text-2: var(--type-2);
   --text-2--line-height: 1.5;
+  --text-2\.5: var(--type-2-5);
+  --text-2\.5--line-height: 1.35;
   --text-3: var(--type-3);
   --text-3--line-height: 1.25;
   --text-4: var(--type-4);
@@ -333,10 +348,14 @@
   --elevation-4: 0 12px 32px rgba(13, 11, 38, 0.12);
 
   /* Type ramps, verbatim from the generated ml-tokens.css. */
+  /* 11px label step. Not in the generated ml-tokens.css yet; add it there too. */
+  --type-0: clamp(11px, calc(11px + 1 * (100vw - 360px) / 1080), 12px);
   --type-1: clamp(12px, calc(12px + 1 * (100vw - 360px) / 1080), 13px);
   /* 14px step. Not in the generated ml-tokens.css yet; add it there too. */
   --type-sm: clamp(14px, calc(14px + 1 * (100vw - 360px) / 1080), 15px);
   --type-2: clamp(16px, calc(16px + 2 * (100vw - 360px) / 1080), 18px);
+  /* 19px step, between --type-2 and --type-3. Not in the generated ml-tokens.css yet. */
+  --type-2-5: clamp(19px, calc(19px + 3 * (100vw - 360px) / 1080), 22px);
   --type-3: clamp(22px, calc(22px + 6 * (100vw - 360px) / 1080), 28px);
   --type-4: clamp(32px, calc(32px + 12 * (100vw - 360px) / 1080), 44px);
   /* Hero. 40.8px at the 412px target, 56px at 1440. */
@@ -477,9 +496,21 @@
 @utility brand-ground {
   background-color: var(--brand);
   background-image:
-    radial-gradient(120% 80% at 50% 28%, color-mix(in oklab, white 26%, transparent), transparent 62%),
-    radial-gradient(120% 90% at 50% 112%, color-mix(in oklab, black 34%, transparent), transparent 64%),
-    radial-gradient(150% 100% at 50% 50%, transparent 55%, color-mix(in oklab, black 18%, transparent));
+    radial-gradient(
+      120% 80% at 50% 28%,
+      color-mix(in oklab, white 26%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      120% 90% at 50% 112%,
+      color-mix(in oklab, black 34%, transparent),
+      transparent 64%
+    ),
+    radial-gradient(
+      150% 100% at 50% 50%,
+      transparent 55%,
+      color-mix(in oklab, black 18%, transparent)
+    );
 }
 
 @utility hairline {

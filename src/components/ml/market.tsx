@@ -74,7 +74,7 @@ export function PriceBlock({ price, size = "md" }: { price: PriceParts; size?: "
   return (
     <Price
       price={price}
-      amountClassName={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}
+      amountClassName={size === "lg" ? "text-3 font-bold" : "text-2 font-bold"}
     />
   );
 }
@@ -105,7 +105,7 @@ export function CategoryTile({
       params={{ slug }}
       className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg border border-border bg-card p-3"
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-lg">
+      <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-2">
         {emoji}
       </span>
       <span className="text-1 font-semibold leading-tight">{label}</span>
@@ -319,11 +319,11 @@ export function EmptyState({
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
-      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-md bg-subtle text-2xl">
+      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-md bg-subtle text-3">
         {emoji}
       </div>
       <h3 className="text-2">{title}</h3>
-      <p className="mx-auto mt-1 max-w-[260px] text-xs text-muted-foreground">{body}</p>
+      <p className="mx-auto mt-1 max-w-[260px] text-1 text-muted-foreground">{body}</p>
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
   );
@@ -371,8 +371,8 @@ export function MarketFilterSheet({
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl">Filters</h2>
-        <button onClick={() => setSelected([])} className="text-xs font-semibold text-foreground">
+        <h2 className="text-2.5">Filters</h2>
+        <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
           Clear all
         </button>
       </div>
@@ -495,7 +495,7 @@ export function OfferSheet({
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success-strong">
             <Check size={28} aria-hidden />
           </div>
-          <h2 className="text-xl">Offer sent</h2>
+          <h2 className="text-2.5">Offer sent</h2>
           <p className="mx-auto mt-2 max-w-[260px] text-sm text-muted-foreground">
             Your offer is pending. It expires in 48 hours and continues in Connections.
           </p>
@@ -505,7 +505,7 @@ export function OfferSheet({
         </div>
       ) : (
         <>
-          <h2 className="mb-4 text-xl">Make an offer</h2>
+          <h2 className="mb-4 text-2.5">Make an offer</h2>
           <div className="mb-5 flex items-center gap-3 rounded-lg border border-border p-3">
             {listing.photos[0] ? (
               <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-md object-cover" />
@@ -529,7 +529,7 @@ export function OfferSheet({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="₹1,70,000"
-            className="mb-4 h-14 w-full rounded-full border border-border bg-card px-5 text-base font-semibold outline-none focus:border-primary"
+            className="mb-4 h-14 w-full rounded-full border border-border bg-card px-5 text-2 font-semibold outline-none focus:border-primary"
           />
 
           <label
@@ -614,7 +614,7 @@ export function SectionRow({
           {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {to ? (
-          <SectionActionLink to={to} className="text-xs">
+          <SectionActionLink to={to} className="text-1">
             See All
           </SectionActionLink>
         ) : null}

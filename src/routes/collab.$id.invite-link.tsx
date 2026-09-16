@@ -56,7 +56,7 @@ function InviteLink() {
         <Card className="mb-5">
           <Label>Invite link</Label>
           <p
-            className={`mb-3 break-all rounded-lg border border-border px-3 py-2 text-[12px] ${
+            className={`mb-3 break-all rounded-lg border border-border px-3 py-2 text-1 ${
               active ? "text-muted-foreground" : "text-muted-foreground line-through"
             }`}
           >
@@ -84,7 +84,7 @@ function InviteLink() {
           <SwitchRow label="Owner approves each join" value={approve} onChange={setApprove} />
         </div>
 
-        <p className="mb-5 text-[11px] text-muted-foreground">
+        <p className="mb-5 text-0 text-muted-foreground">
           Invite links are not permanently open. Disable the link and anyone who hasn't already
           joined loses access immediately.
         </p>
@@ -96,7 +96,7 @@ function InviteLink() {
         <TextLink
           to="/collab/$id/participants"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px]"
+          className="mb-8 block text-center text-1"
         >
           Invite Someone from MusicLinkd Instead
         </TextLink>

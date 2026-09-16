@@ -69,12 +69,12 @@ function ListForRent() {
         {published ? (
           <div className="py-6 text-center">
             <div
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3"
               style={{ background: "var(--success-container)" }}
             >
               ✓
             </div>
-            <h2 className="text-xl">Your rental is live</h2>
+            <h2 className="text-2.5">Your rental is live</h2>
             <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">
               Renters near you can now check availability and send requests. You'll be notified for
               every enquiry.
@@ -90,8 +90,8 @@ function ListForRent() {
 
         {!published && step === 0 ? (
           <>
-            <h2 className="text-[17px]">What are you renting out?</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="text-2">What are you renting out?</h2>
+            <p className="mt-1 text-1 text-muted-foreground">
               We adapt the form to the kind of equipment you list.
             </p>
             <div className="mt-4 grid grid-cols-2 gap-3">
@@ -105,9 +105,9 @@ function ListForRent() {
                     background: cat === c.slug ? "var(--surface-subtle)" : "var(--card)",
                   }}
                 >
-                  <span className="text-xl">{c.emoji}</span>
-                  <p className="mt-2 text-[13px] font-semibold">{c.label}</p>
-                  <p className="text-[10px] text-muted-foreground">{c.count}</p>
+                  <span className="text-2.5">{c.emoji}</span>
+                  <p className="mt-2 text-1 font-semibold">{c.label}</p>
+                  <p className="text-0 text-muted-foreground">{c.count}</p>
                 </button>
               ))}
             </div>
@@ -116,8 +116,8 @@ function ListForRent() {
 
         {!published && step === 1 ? (
           <>
-            <h2 className="text-[17px]">Add photos</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="text-2">Add photos</h2>
+            <p className="mt-1 text-1 text-muted-foreground">
               Show the actual equipment you are renting — not stock images. First photo becomes the
               cover.
             </p>
@@ -137,11 +137,11 @@ function ListForRent() {
                   ) : null}
                 </button>
               ))}
-              <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-[10px] font-semibold text-muted-foreground">
+              <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-0 font-semibold text-muted-foreground">
                 <Camera size={16} /> Add
               </button>
             </div>
-            <button className="mt-3 w-full rounded-lg border border-dashed border-border py-5 text-[12px] font-semibold text-muted-foreground">
+            <button className="mt-3 w-full rounded-lg border border-dashed border-border py-5 text-1 font-semibold text-muted-foreground">
               + Add a short video (optional)
             </button>
           </>
@@ -149,7 +149,7 @@ function ListForRent() {
 
         {!published && step === 2 ? (
           <>
-            <h2 className="text-[17px]">Equipment details</h2>
+            <h2 className="text-2">Equipment details</h2>
             <div className="mt-4 space-y-3">
               {[
                 { label: "Equipment name", ph: "Shure SM7B" },
@@ -158,7 +158,7 @@ function ListForRent() {
                 { label: "Location", ph: "Andheri West, Mumbai" },
               ].map((f) => (
                 <div key={f.label}>
-                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                  <label className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground">
                     {f.label}
                   </label>
                   <input
@@ -170,7 +170,7 @@ function ListForRent() {
               <div>
                 <span
                   id="grp-subcategory"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
                 >
                   Sub-category
                 </span>
@@ -187,7 +187,7 @@ function ListForRent() {
               <div>
                 <span
                   id="grp-condition"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
                 >
                   Condition
                 </span>
@@ -202,7 +202,7 @@ function ListForRent() {
               <div>
                 <label
                   htmlFor="description-included-accessories"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
                 >
                   Description & included accessories
                 </label>
@@ -216,7 +216,7 @@ function ListForRent() {
               <div className="grid grid-cols-3 gap-2">
                 {["Daily ₹", "Weekly ₹", "Monthly ₹"].map((f) => (
                   <div key={f}>
-                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                    <label className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground">
                       {f}
                     </label>
                     <input
@@ -230,7 +230,7 @@ function ListForRent() {
               <div>
                 <label
                   htmlFor="security-deposit"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
                 >
                   Security deposit
                 </label>
@@ -244,7 +244,7 @@ function ListForRent() {
               <div>
                 <span
                   id="grp-fulfilment"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
                 >
                   Fulfilment
                 </span>
@@ -268,8 +268,8 @@ function ListForRent() {
 
         {!published && step === 3 ? (
           <>
-            <h2 className="text-[17px]">Availability</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="text-2">Availability</h2>
+            <p className="mt-1 text-1 text-muted-foreground">
               Tap dates to mark when the equipment is available. Blocked dates stay hidden from
               renters.
             </p>
@@ -290,7 +290,7 @@ function ListForRent() {
                 { label: "Notice period", options: ["Same day", "24 hours", "48 hours"] },
               ].map((f) => (
                 <div key={f.label}>
-                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                  <label className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground">
                     {f.label}
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -308,8 +308,8 @@ function ListForRent() {
 
         {!published && step === 4 ? (
           <>
-            <h2 className="text-[17px]">Preview your listing</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="text-2">Preview your listing</h2>
+            <p className="mt-1 text-1 text-muted-foreground">
               This is exactly what renters will see.
             </p>
             <article className="mt-4 overflow-hidden rounded-lg border border-border bg-card">
@@ -317,11 +317,11 @@ function ListForRent() {
               <div className="p-4">
                 <Price
                   price={{ amount: "₹900", unit: "day" }}
-                  amountClassName="text-[15px] font-bold"
-                  unitClassName="text-[11px]"
+                  amountClassName="text-sm font-bold"
+                  unitClassName="text-0"
                 />
-                <h3 className="mt-1 text-[15px] leading-snug">Shure SM7B</h3>
-                <p className="text-[11px] text-muted-foreground">Shure · SM7B</p>
+                <h3 className="mt-1 text-sm leading-snug">Shure SM7B</h3>
+                <p className="text-0 text-muted-foreground">Shure · SM7B</p>
                 <div className="mt-2.5 flex flex-wrap items-center gap-2">
                   <RentalAvailabilityBadge text="Available Aug 16–30" />
                   <ConditionBadge value={condition} />
@@ -329,7 +329,7 @@ function ListForRent() {
                 <div className="mt-2.5">
                   <LocationRow text="Andheri West, Mumbai · 6.8 km away" />
                 </div>
-                <p className="mt-2 text-[11px] text-muted-foreground">
+                <p className="mt-2 text-0 text-muted-foreground">
                   Deposit ₹15,000 · {fulfilment.join(" or ") || "Pickup"} · min 1 day
                 </p>
               </div>

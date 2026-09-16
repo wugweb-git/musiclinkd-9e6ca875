@@ -81,7 +81,7 @@ function NotificationsScreen() {
         <button
           type="button"
           onClick={() => setItems((all) => all.map((n) => ({ ...n, read: true })))}
-          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-foreground"
+          className="inline-flex items-center gap-1.5 text-1 font-semibold text-foreground"
         >
           <CheckCheck size={14} /> Mark all as read
         </button>
@@ -107,23 +107,21 @@ function NotificationsScreen() {
                 ) : (
                   <span
                     aria-hidden
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-subtle text-[16px]"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-subtle text-2"
                   >
                     {categoryMeta[n.category].emoji}
                   </span>
                 )}
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
-                    <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">
-                      {n.title}
-                    </span>
-                    <span className="shrink-0 text-[11px] text-muted-foreground">{n.when}</span>
+                    <span className="min-w-0 flex-1 truncate text-1 font-semibold">{n.title}</span>
+                    <span className="shrink-0 text-0 text-muted-foreground">{n.when}</span>
                   </span>
-                  <span className="mt-0.5 block text-[12px] leading-snug text-muted-foreground">
+                  <span className="mt-0.5 block text-1 leading-snug text-muted-foreground">
                     {n.body}
                   </span>
                   {n.cta ? (
-                    <span className="mt-1.5 block text-[12px] font-semibold text-foreground">
+                    <span className="mt-1.5 block text-1 font-semibold text-foreground">
                       {n.cta} →
                     </span>
                   ) : null}

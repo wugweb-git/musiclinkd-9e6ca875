@@ -45,7 +45,7 @@ function Availability() {
 
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-3">
-          <h2 className="text-[15px]">Right now you are</h2>
+          <h2 className="text-sm">Right now you are</h2>
           <div className="flex flex-wrap gap-2">
             {availabilityStates.map((s) => (
               <Chip key={s} active={state === s} onClick={() => setState(s)}>
@@ -53,21 +53,21 @@ function Availability() {
               </Chip>
             ))}
           </div>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             This shows as a badge on your profile, in Discover and on every service you offer.
           </p>
         </Card>
 
         <Card className="space-y-3">
-          <h2 className="text-[15px]">Weekly hours</h2>
+          <h2 className="text-sm">Weekly hours</h2>
           {days.map((d) => (
             <div
               key={d.day}
               className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0"
             >
               <div className="min-w-0">
-                <p className="text-[13px] font-semibold">{d.day}</p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-1 font-semibold">{d.day}</p>
+                <p className="text-0 text-muted-foreground">
                   {d.enabled ? `${d.from} – ${d.to}` : "Unavailable"}
                 </p>
               </div>
@@ -88,7 +88,7 @@ function Availability() {
         </Card>
 
         <Card className="space-y-3">
-          <h2 className="text-[15px]">Notice needed</h2>
+          <h2 className="text-sm">Notice needed</h2>
           <div className="flex flex-wrap gap-2">
             {bookingWindows.map((w) => (
               <Chip key={w} active={notice === w} onClick={() => setNotice(w)}>
@@ -100,11 +100,11 @@ function Availability() {
 
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-[15px]">Time off</h2>
+            <h2 className="text-sm">Time off</h2>
             <button
               type="button"
               onClick={() => setAddOff(true)}
-              className="inline-flex items-center gap-1 text-[12px] font-semibold text-foreground"
+              className="inline-flex items-center gap-1 text-1 font-semibold text-foreground"
             >
               <Plus size={14} /> Add
             </button>
@@ -116,13 +116,13 @@ function Availability() {
                 className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold">{o.label}</p>
-                  <p className="text-[11px] text-muted-foreground">{o.range}</p>
+                  <p className="truncate text-1 font-semibold">{o.label}</p>
+                  <p className="text-0 text-muted-foreground">{o.range}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setOff((list) => list.filter((x) => x.id !== o.id))}
-                  className="text-[12px] font-semibold text-muted-foreground"
+                  className="text-1 font-semibold text-muted-foreground"
                 >
                   Remove
                 </button>
@@ -137,10 +137,10 @@ function Availability() {
         </Card>
 
         <Card className="space-y-1">
-          <p className="flex items-center gap-2 text-[13px] font-semibold">
+          <p className="flex items-center gap-2 text-1 font-semibold">
             <CalendarOff size={15} /> Bookings already confirmed
           </p>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             Changing hours never cancels a confirmed booking — manage those in your provider
             calendar.
           </p>

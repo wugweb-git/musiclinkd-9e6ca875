@@ -46,8 +46,8 @@ function ReportReview() {
         <TopBar title="Reported" back="/reviews" />
         <div className="space-y-4 px-5 pt-6">
           <Card>
-            <h2 className="text-[19px] leading-tight">Thanks — the team will look at it</h2>
-            <p className="mt-2 text-[13px] text-muted-foreground">
+            <h2 className="text-2.5 leading-tight">Thanks — the team will look at it</h2>
+            <p className="mt-2 text-1 text-muted-foreground">
               The review stays visible while it is checked. You will hear back either way, usually
               within two days.
             </p>
@@ -66,7 +66,7 @@ function ReportReview() {
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
-          <p className="text-[13px] text-muted-foreground">"{r.body}"</p>
+          <p className="text-1 text-muted-foreground">"{r.body}"</p>
         </Card>
 
         <Card>
@@ -96,7 +96,7 @@ function ReportReview() {
         <Btn className="w-full" disabled={!reason} onClick={() => setSent(true)}>
           Send report
         </Btn>
-        <p className="text-center text-[12px] text-muted-foreground">
+        <p className="text-center text-1 text-muted-foreground">
           Disagreeing with a rating is not a reason on its own — use a public reply instead.
         </p>
       </div>

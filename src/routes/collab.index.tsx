@@ -109,7 +109,7 @@ function CollabHome() {
                           : "ok",
                 )
               }
-              className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+              className="text-0 font-bold uppercase tracking-wide text-muted-foreground"
             >
               States
             </button>
@@ -138,7 +138,7 @@ function CollabHome() {
         <button
           type="button"
           onClick={() => setFilters(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold"
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
         >
           <SlidersHorizontal size={14} /> Filters
           {role.length + type.length ? ` · ${role.length + type.length}` : ""}
@@ -146,7 +146,7 @@ function CollabHome() {
         <button
           type="button"
           onClick={() => setSortOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold"
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
         >
           <ArrowUpDown size={14} /> {sort}
         </button>
@@ -175,11 +175,11 @@ function CollabHome() {
                     <div className="flex gap-3">
                       <img src={inv.artwork} alt="" className="h-16 w-16 rounded-lg object-cover" />
                       <div className="min-w-0 flex-1">
-                        <h3 className="truncate text-[15px]">{inv.projectName}</h3>
-                        <p className="truncate text-[11px] text-muted-foreground">
+                        <h3 className="truncate text-sm">{inv.projectName}</h3>
+                        <p className="truncate text-0 text-muted-foreground">
                           {inv.type} · proposed role: {inv.proposedRole}
                         </p>
-                        <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                        <p className="mt-1 truncate text-0 text-muted-foreground">
                           From {inv.inviter} · {inv.sentAt}
                         </p>
                       </div>
@@ -197,12 +197,12 @@ function CollabHome() {
                 className="mb-3 block"
               >
                 <Card>
-                  <p className="text-[14px] font-semibold">
+                  <p className="text-sm font-semibold">
                     {p.status === "sent"
                       ? `You — ${p.role} proposal`
                       : `${p.from} — ${p.role} proposal`}
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-0 text-muted-foreground">
                     {p.projectName} · {p.compensation} · {p.status === "sent" ? "sent" : "received"}{" "}
                     {p.sentAt.toLowerCase()}
                   </p>

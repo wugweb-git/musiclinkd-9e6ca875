@@ -51,9 +51,9 @@ function HelpPage() {
       <article className="space-y-4 px-5 pt-4 pb-10">
         <header className="space-y-2">
           <StatusPill label={page.kind} tone={page.kind === "policy" ? "warn" : "brand"} />
-          <h1 className="text-[26px] font-bold leading-tight">{page.title}</h1>
-          <p className="text-[13px] text-muted-foreground">{page.summary}</p>
-          <p className="text-[11px] text-muted-foreground">
+          <h1 className="text-3 font-bold leading-tight">{page.title}</h1>
+          <p className="text-1 text-muted-foreground">{page.summary}</p>
+          <p className="text-0 text-muted-foreground">
             {page.readTime} · {page.updated}
           </p>
         </header>
@@ -62,13 +62,13 @@ function HelpPage() {
           {page.blocks.map((b, i) => {
             if (b.type === "heading")
               return (
-                <h2 key={i} className="pt-1 text-[17px]">
+                <h2 key={i} className="pt-1 text-2">
                   {b.text}
                 </h2>
               );
             if (b.type === "para")
               return (
-                <p key={i} className="text-[14px] leading-relaxed text-muted-foreground">
+                <p key={i} className="text-sm leading-relaxed text-muted-foreground">
                   {b.text}
                 </p>
               );
@@ -78,7 +78,7 @@ function HelpPage() {
                   {b.items.map((it) => (
                     <li
                       key={it}
-                      className="flex gap-2.5 text-[14px] leading-relaxed text-muted-foreground"
+                      className="flex gap-2.5 text-sm leading-relaxed text-muted-foreground"
                     >
                       <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                       <span className="min-w-0">{it}</span>
@@ -89,7 +89,7 @@ function HelpPage() {
             if (b.type === "callout")
               return (
                 <Card key={i} className="bg-subtle">
-                  <p className="text-[13px] leading-relaxed">{b.text}</p>
+                  <p className="text-1 leading-relaxed">{b.text}</p>
                 </Card>
               );
             return (
@@ -102,7 +102,7 @@ function HelpPage() {
 
         {page.related.length ? (
           <section className="pt-2">
-            <h2 className="text-[15px]">Related</h2>
+            <h2 className="text-sm">Related</h2>
             <div className="mt-3 space-y-2">
               {page.related.map((r) => {
                 const rel = getPage(r);

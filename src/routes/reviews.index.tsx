@@ -40,10 +40,10 @@ function ReviewsHub() {
       <div className="space-y-4 px-5 pt-4">
         <Card className="space-y-3">
           <div className="flex items-end gap-3">
-            <p className="text-[34px] font-bold leading-none">{ratingSummary.average}</p>
+            <p className="text-4 font-bold leading-none">{ratingSummary.average}</p>
             <div className="min-w-0 flex-1 pb-1">
               <Stars value={ratingSummary.average} />
-              <p className="mt-1 truncate text-[12px] text-muted-foreground">
+              <p className="mt-1 truncate text-1 text-muted-foreground">
                 {ratingSummary.total} reviews · verified transactions only
               </p>
             </div>
@@ -62,8 +62,8 @@ function ReviewsHub() {
           <div className="grid grid-cols-3 gap-2 pt-1">
             {ratingSummary.criteria.map((c) => (
               <div key={c.label} className="rounded-lg bg-subtle p-3">
-                <p className="truncate text-[11px] text-muted-foreground">{c.label}</p>
-                <p className="mt-1 text-[17px] font-bold">{c.value}</p>
+                <p className="truncate text-0 text-muted-foreground">{c.label}</p>
+                <p className="mt-1 text-2 font-bold">{c.value}</p>
               </div>
             ))}
           </div>
@@ -95,7 +95,7 @@ function ReviewsHub() {
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{p.title}</p>
-                    <p className="truncate text-[12px] text-muted-foreground">{p.subtitle}</p>
+                    <p className="truncate text-1 text-muted-foreground">{p.subtitle}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -131,11 +131,11 @@ function ReviewsHub() {
           <Card className="space-y-2">
             <div className="flex items-center gap-2">
               <ShieldCheck size={16} className="text-primary" aria-hidden />
-              <h2 className="text-[15px]">How reviews work</h2>
+              <h2 className="text-sm">How reviews work</h2>
             </div>
             <ul className="space-y-1.5">
               {reviewPolicy.map((p) => (
-                <li key={p} className="text-[12px] text-muted-foreground">
+                <li key={p} className="text-1 text-muted-foreground">
                   · {p}
                 </li>
               ))}
@@ -170,19 +170,19 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{r.authorName}</p>
-          <p className="truncate text-[12px] text-muted-foreground">
+          <p className="truncate text-1 text-muted-foreground">
             {r.sourceLabel} · {r.createdAt}
           </p>
         </div>
         <Stars value={r.rating} />
       </div>
       <StatusPill label="Verified transaction" tone="good" />
-      <p className="text-[13px] text-muted-foreground">{r.body}</p>
+      <p className="text-1 text-muted-foreground">{r.body}</p>
       <div className="flex flex-wrap gap-2">
         {r.criteria.map((c) => (
           <span
             key={c.key}
-            className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold text-muted-foreground"
+            className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold text-muted-foreground"
           >
             {c.label} {c.value}
           </span>
@@ -190,10 +190,10 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
       </div>
       {r.response ? (
         <div className="rounded-lg bg-subtle p-3">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <p className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
             Your response · {r.response.at}
           </p>
-          <p className="mt-1 text-[13px] text-muted-foreground">{r.response.body}</p>
+          <p className="mt-1 text-1 text-muted-foreground">{r.response.body}</p>
         </div>
       ) : null}
       <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
             to="/reviews/$id/edit"
             params={{ id: r.id }}
             variant="outline"
-            className="flex-1 gap-1 text-xs"
+            className="flex-1 gap-1 text-1"
           >
             <Pencil size={13} aria-hidden />
             Edit
@@ -214,7 +214,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
                 to="/reviews/$id/reply"
                 params={{ id: r.id }}
                 variant="outline"
-                className="flex-1 text-xs"
+                className="flex-1 text-1"
               >
                 Respond
               </BtnLink>
@@ -223,7 +223,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
               to="/reviews/$id/report"
               params={{ id: r.id }}
               variant="ghost"
-              className="flex-1 gap-1 text-xs"
+              className="flex-1 gap-1 text-1"
             >
               <Flag size={13} aria-hidden />
               Report

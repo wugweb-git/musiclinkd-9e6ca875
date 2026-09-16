@@ -55,7 +55,7 @@ function BusinessAvailability() {
               {b.hours.map((h) => (
                 <div
                   key={`${h.day}${h.hours}`}
-                  className="flex items-center justify-between text-[13px]"
+                  className="flex items-center justify-between text-1"
                 >
                   <span className="font-semibold">{h.day}</span>
                   <span className="text-muted-foreground">{h.hours}</span>
@@ -78,7 +78,7 @@ function BusinessAvailability() {
 
         <Card>
           <p className="text-sm font-semibold">Blackout dates</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             Days the rooms are closed, whatever the calendar says.
           </p>
           {/* Blackout dates are not stored yet. */}

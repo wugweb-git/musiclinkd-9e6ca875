@@ -33,8 +33,8 @@ function PrivacyScreen() {
         {privacyControls.map((c) => (
           <Card key={c.key} className="space-y-2.5">
             <div>
-              <p className="text-[14px] font-semibold">{c.label}</p>
-              <p className="text-[12px] text-muted-foreground">{c.hint}</p>
+              <p className="text-sm font-semibold">{c.label}</p>
+              <p className="text-1 text-muted-foreground">{c.hint}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               {c.options.map((o) => (
@@ -51,15 +51,15 @@ function PrivacyScreen() {
         ))}
 
         <Card className="space-y-2">
-          <p className="text-[13px] font-semibold">Blocked people</p>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">Blocked people</p>
+          <p className="text-1 text-muted-foreground">
             Nobody blocked. Blocking hides your profile from them everywhere.
           </p>
         </Card>
 
         <Card className="space-y-2">
-          <p className="text-[13px] font-semibold">Your data</p>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">Your data</p>
+          <p className="text-1 text-muted-foreground">
             Request a copy of your profile, portfolio and bookings.
           </p>
           <Btn variant="outline" className="w-full">

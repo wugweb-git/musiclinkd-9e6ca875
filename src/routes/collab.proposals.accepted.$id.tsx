@@ -55,19 +55,19 @@ function ProposalAccepted() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label>Role</Label>
-              <p className="text-[13px]">{proposal.role}</p>
+              <p className="text-1">{proposal.role}</p>
             </div>
             <div>
               <Label>Timeline</Label>
-              <p className="text-[13px]">{proposal.timeline}</p>
+              <p className="text-1">{proposal.timeline}</p>
             </div>
             <div>
               <Label>Compensation</Label>
-              <p className="text-[13px]">{proposal.compensation}</p>
+              <p className="text-1">{proposal.compensation}</p>
             </div>
             <div>
               <Label>Participants</Label>
-              <p className="text-[13px]">
+              <p className="text-1">
                 {project ? `${project.participants.length} people` : "2 people"}
               </p>
             </div>

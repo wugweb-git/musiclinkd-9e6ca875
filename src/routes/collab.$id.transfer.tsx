@@ -65,13 +65,13 @@ function Transfer() {
           <>
             <Card className="mb-5">
               <Label>Current owner</Label>
-              <p className="text-[14px] font-semibold">{project.owner}</p>
+              <p className="text-sm font-semibold">{project.owner}</p>
             </Card>
 
             <Label>New owner</Label>
             {eligible.length === 0 ? (
               <Card className="mb-5">
-                <p className="text-[12px] text-muted-foreground">
+                <p className="text-1 text-muted-foreground">
                   Ownership can only move to an active participant. Add someone to the project
                   first.
                 </p>

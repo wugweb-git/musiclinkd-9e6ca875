@@ -98,7 +98,7 @@ function ManageService() {
         {status === "paused" ? (
           <Card>
             <p className="text-sm font-semibold">This service is paused</p>
-            <p className="mt-1 text-[13px] text-muted-foreground">
+            <p className="mt-1 text-1 text-muted-foreground">
               It is hidden from Discover and search, and no new enquiries can come in. Bookings
               already confirmed still stand.
             </p>
@@ -145,7 +145,7 @@ function ManageService() {
 
         <Card>
           <p className="text-sm font-semibold">Before you delete</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             Deleting removes the listing and its reviews' link to it. Confirmed bookings are
             unaffected and stay in your calendar.
           </p>

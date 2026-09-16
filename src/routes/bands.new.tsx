@@ -73,7 +73,7 @@ function CreateBand() {
               onChange={setTagline}
               placeholder="Indie-folk quartet with a brass habit"
             />
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               The band name appears in Discover, Search and on shared QR cards.
             </p>
           </Card>
@@ -83,7 +83,7 @@ function CreateBand() {
           <Card className="space-y-4">
             <Field label="Base city" value={city} onChange={setCity} placeholder="Mumbai" />
             <div>
-              <p className="text-[13px] font-semibold">Genres</p>
+              <p className="text-1 font-semibold">Genres</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {genreOptions.map((g) => (
                   <Chip
@@ -128,15 +128,13 @@ function CreateBand() {
                     title={i}
                     subtitle="Invitation will be sent on publish"
                     right={
-                      <span className="text-[11px] font-semibold text-muted-foreground">
-                        Pending
-                      </span>
+                      <span className="text-0 font-semibold text-muted-foreground">Pending</span>
                     }
                   />
                 ))}
               </div>
             ) : (
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 You can skip this and invite people later from Manage band.
               </p>
             )}
@@ -145,12 +143,12 @@ function CreateBand() {
 
         {current === "Preview" ? (
           <Card className="space-y-3">
-            <h2 className="text-[19px] leading-tight">{name || "Untitled band"}</h2>
-            <p className="text-[13px] text-muted-foreground">{tagline || "No description yet"}</p>
-            <p className="text-[12px] text-muted-foreground">
+            <h2 className="text-2.5 leading-tight">{name || "Untitled band"}</h2>
+            <p className="text-1 text-muted-foreground">{tagline || "No description yet"}</p>
+            <p className="text-1 text-muted-foreground">
               {[genres.join(" · "), city].filter(Boolean).join(" · ") || "No genre or city set"}
             </p>
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               {invites.length} invitation{invites.length === 1 ? "" : "s"} will be sent
             </p>
           </Card>
@@ -204,7 +202,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[13px] font-semibold">{label}</span>
+      <span className="text-1 font-semibold">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}

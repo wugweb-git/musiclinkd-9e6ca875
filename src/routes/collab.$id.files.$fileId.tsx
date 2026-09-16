@@ -51,7 +51,7 @@ function FileDetail() {
       <main className="px-5 pt-5">
         {!file.available ? (
           <div
-            className="mb-4 rounded-lg px-4 py-3 text-[12px] font-semibold"
+            className="mb-4 rounded-lg px-4 py-3 text-1 font-semibold"
             style={{ background: "var(--warn-container)", color: "var(--warn)" }}
           >
             This file is unavailable — it was removed by the uploader.
@@ -75,7 +75,7 @@ function FileDetail() {
         </div>
 
         <Card className="mb-5">
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             Uploaded by <span className="font-semibold text-foreground">{file.uploadedBy}</span> ·{" "}
             {file.date}
           </p>
@@ -88,20 +88,17 @@ function FileDetail() {
               {file.versions.map((v, i) => (
                 <div key={v.id} className="py-4">
                   <div className="flex items-center justify-between">
-                    <p className="text-[13px] font-semibold">
+                    <p className="text-1 font-semibold">
                       {v.label} {i === 0 ? "· latest" : ""}
                     </p>
-                    <span className="text-[11px] text-muted-foreground">{v.duration}</span>
+                    <span className="text-0 text-muted-foreground">{v.duration}</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-0 text-muted-foreground">
                     {v.createdBy} · {v.date}
                   </p>
-                  <p className="mt-1 text-[12px]">{v.notes}</p>
+                  <p className="mt-1 text-1">{v.notes}</p>
                   {i !== 0 ? (
-                    <button
-                      type="button"
-                      className="mt-2 text-[11px] font-semibold text-foreground"
-                    >
+                    <button type="button" className="mt-2 text-0 font-semibold text-foreground">
                       Compare with latest
                     </button>
                   ) : null}

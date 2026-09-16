@@ -49,16 +49,14 @@ function BusinessCard() {
           <div className="flex items-center gap-4 bg-ink px-5 py-5 text-background">
             <img src={myIdentity.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
             <div className="min-w-0">
-              <h2 className="truncate text-[19px] leading-tight text-background">
-                {myIdentity.name}
-              </h2>
-              <p className="truncate text-[13px] text-background/70">{myIdentity.role}</p>
-              <p className="truncate text-[12px] text-background/50">{myIdentity.location}</p>
+              <h2 className="truncate text-2.5 leading-tight text-background">{myIdentity.name}</h2>
+              <p className="truncate text-1 text-background/70">{myIdentity.role}</p>
+              <p className="truncate text-1 text-background/50">{myIdentity.location}</p>
             </div>
           </div>
           <div className="flex items-center gap-4 px-5 py-5">
             <QrCode value={url} size={96} label="MusicLinkd QR" />
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               Scanning opens the live profile — portfolio, services and availability stay up to date
               without a reprint.
             </p>
@@ -66,13 +64,13 @@ function BusinessCard() {
         </section>
 
         <div className="mt-4 flex flex-col gap-2">
-          <p className="px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="px-1 text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Shared details
           </p>
           {shared.map((s) => (
             <ActionRow key={s.label} icon={s.icon} label={s.label} hint={s.hint} />
           ))}
-          <p className="px-1 text-[12px] text-muted-foreground">
+          <p className="px-1 text-1 text-muted-foreground">
             Hidden fields are never included in shares. Change what's shared in QR settings.
           </p>
         </div>

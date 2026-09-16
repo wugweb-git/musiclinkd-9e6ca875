@@ -52,7 +52,7 @@ function SaveContact() {
         ) : (
           <>
             <section className="rounded-[24px] border border-border bg-card p-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
                 Will be saved
               </p>
               <div className="mt-3 flex flex-col gap-2">
@@ -78,7 +78,7 @@ function SaveContact() {
               </div>
             </section>
 
-            <p className="mt-3 px-1 text-[12px] text-muted-foreground">
+            <p className="mt-3 px-1 text-1 text-muted-foreground">
               Details the owner keeps private are not included.
             </p>
 

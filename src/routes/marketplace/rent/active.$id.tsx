@@ -61,15 +61,15 @@ function RentalBooking() {
           <img src={e.photos[0]} alt={e.name} className="h-40 w-full object-cover" />
           <div className="p-4">
             <div className="flex items-start justify-between gap-2">
-              <h1 className="text-[17px] leading-tight">{e.name}</h1>
+              <h1 className="text-2 leading-tight">{e.name}</h1>
               <RentalStatusPill status={returned ? "Completed" : b.status} />
             </div>
-            <p className="mt-1 text-[12px] text-muted-foreground">
+            <p className="mt-1 text-1 text-muted-foreground">
               {b.start} → {b.end} · {b.days} days · {b.quantity} unit{b.quantity > 1 ? "s" : ""}
             </p>
             {b.timeRemaining && !isCompleted ? (
               <div
-                className="mt-3 rounded-lg px-3 py-2 text-[12px] font-bold"
+                className="mt-3 rounded-lg px-3 py-2 text-1 font-bold"
                 style={{ background: "var(--success-container)", color: "var(--success)" }}
               >
                 {b.timeRemaining} · return by {b.returnBy}
@@ -88,13 +88,13 @@ function RentalBooking() {
             ...(b.note ? [{ k: "Instructions", v: b.note }] : []),
           ].map((r) => (
             <div key={r.k} className="flex items-start justify-between gap-3 px-4 py-3">
-              <dt className="shrink-0 text-xs text-muted-foreground">{r.k}</dt>
-              <dd className="text-right text-xs font-semibold">{r.v}</dd>
+              <dt className="shrink-0 text-1 text-muted-foreground">{r.k}</dt>
+              <dd className="text-right text-1 font-semibold">{r.v}</dd>
             </div>
           ))}
         </dl>
 
-        <h2 className="mt-6 text-[16px]">Provider</h2>
+        <h2 className="mt-6 text-2">Provider</h2>
         <div className="mt-2 rounded-lg border border-border bg-card p-4">
           <ProviderSummary p={p} />
           <div className="mt-3 grid grid-cols-2 gap-2">
@@ -112,7 +112,7 @@ function RentalBooking() {
           </div>
         </div>
 
-        <h2 className="mt-6 text-[16px]">Actions</h2>
+        <h2 className="mt-6 text-2">Actions</h2>
         <div className="mt-2 space-y-2">
           {!isCompleted && b.bucket === "Active" ? (
             <>
@@ -147,29 +147,29 @@ function RentalBooking() {
               </BtnLink>
             </>
           ) : null}
-          <button className="w-full py-2 text-[11px] font-semibold text-muted-foreground">
+          <button className="w-full py-2 text-0 font-semibold text-muted-foreground">
             Report an issue with this rental
           </button>
         </div>
       </div>
 
       <Sheet open={extend} onClose={() => setExtend(false)} title="Extend rental">
-        <p className="mb-3 text-[12px] text-muted-foreground">
+        <p className="mb-3 text-1 text-muted-foreground">
           Current end date {b.end}. Pick a new end date — the provider confirms availability.
         </p>
         <RentalCalendar e={e} start={18} end={newEnd} onSelect={(d) => setNewEnd(d)} />
         <dl className="mt-4 divide-y divide-border rounded-lg border border-border">
           <div className="flex items-center justify-between px-4 py-3">
-            <dt className="text-xs text-muted-foreground">Additional days</dt>
-            <dd className="text-xs font-semibold">{extraDays}</dd>
+            <dt className="text-1 text-muted-foreground">Additional days</dt>
+            <dd className="text-1 font-semibold">{extraDays}</dd>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
-            <dt className="text-xs text-muted-foreground">Additional cost</dt>
-            <dd className="text-xs font-semibold">{inr(extraDays * e.daily * b.quantity)}</dd>
+            <dt className="text-1 text-muted-foreground">Additional cost</dt>
+            <dd className="text-1 font-semibold">{inr(extraDays * e.daily * b.quantity)}</dd>
           </div>
         </dl>
         {e.unavailableDates.length ? (
-          <p className="mt-3 text-[11px] text-muted-foreground">
+          <p className="mt-3 text-0 text-muted-foreground">
             Some dates are already reserved by another renter and cannot be selected.
           </p>
         ) : null}
@@ -189,12 +189,12 @@ function RentalBooking() {
             },
           ].map((r) => (
             <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
-              <dt className="text-xs text-muted-foreground">{r.k}</dt>
-              <dd className="text-right text-xs font-semibold">{r.v}</dd>
+              <dt className="text-1 text-muted-foreground">{r.k}</dt>
+              <dd className="text-right text-1 font-semibold">{r.v}</dd>
             </div>
           ))}
         </dl>
-        <p className="mb-2 mt-4 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <p className="mb-2 mt-4 text-0 font-bold uppercase tracking-wide text-muted-foreground">
           Condition confirmation
         </p>
         <div className="flex flex-wrap gap-2">
@@ -204,7 +204,7 @@ function RentalBooking() {
             </Chip>
           ))}
         </div>
-        <button className="mt-4 w-full rounded-lg border border-dashed border-border py-6 text-[12px] font-semibold text-muted-foreground">
+        <button className="mt-4 w-full rounded-lg border border-dashed border-border py-6 text-1 font-semibold text-muted-foreground">
           + Add return photos (optional)
         </button>
         <textarea
@@ -212,7 +212,7 @@ function RentalBooking() {
           placeholder="Notes for the provider"
           className="mt-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
-        <p className="mt-3 text-[11px] text-muted-foreground">
+        <p className="mt-3 text-0 text-muted-foreground">
           The deposit is released by the provider once they have checked the equipment.
         </p>
         <Btn
@@ -231,11 +231,11 @@ function RentalBooking() {
         <div className="mb-4 flex items-center gap-3 rounded-lg border border-border p-3">
           <img src={e.photos[0]} alt="" className="h-12 w-12 rounded-md object-cover" />
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-semibold">{e.name}</p>
-            <p className="truncate text-[11px] text-muted-foreground">{p.name}</p>
+            <p className="truncate text-1 font-semibold">{e.name}</p>
+            <p className="truncate text-0 text-muted-foreground">{p.name}</p>
           </div>
         </div>
-        <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <p className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
           Overall experience
         </p>
         <div className="mb-4 flex gap-2">
@@ -243,7 +243,7 @@ function RentalBooking() {
             <button
               key={n}
               onClick={() => setStars(n)}
-              className="text-2xl"
+              className="text-3"
               aria-label={`${n} stars`}
               style={{ opacity: n <= stars ? 1 : 0.25 }}
             >
@@ -251,7 +251,7 @@ function RentalBooking() {
             </button>
           ))}
         </div>
-        <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <p className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
           What went well
         </p>
         <div className="mb-4 flex flex-wrap gap-2">
@@ -275,7 +275,7 @@ function RentalBooking() {
           className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
         <div className="mt-3 flex items-center justify-between rounded-lg bg-subtle px-4 py-3">
-          <span className="text-[12px] font-semibold">Your rating</span>
+          <span className="text-1 font-semibold">Your rating</span>
           <Rating value={stars} />
         </div>
         <Btn className="mt-4 w-full" onClick={() => setReview(false)}>

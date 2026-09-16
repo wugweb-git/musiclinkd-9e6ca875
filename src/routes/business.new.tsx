@@ -67,7 +67,7 @@ function NewBusiness() {
       <div className="space-y-4 px-5 pt-5 pb-8">
         {step === "type" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">What kind of business?</h1>
+            <h1 className="text-2 font-bold">What kind of business?</h1>
             <div className="space-y-2">
               {businessTypes.map((t) => (
                 <button
@@ -78,12 +78,12 @@ function NewBusiness() {
                     type === t.key ? "border-primary bg-subtle" : "border-border bg-background"
                   }`}
                 >
-                  <span aria-hidden className="text-[20px]">
+                  <span aria-hidden className="text-2.5">
                     {t.emoji}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[13px] font-semibold">{t.label}</span>
-                    <span className="block text-[11px] text-muted-foreground">{t.blurb}</span>
+                    <span className="block text-1 font-semibold">{t.label}</span>
+                    <span className="block text-0 text-muted-foreground">{t.blurb}</span>
                   </span>
                 </button>
               ))}
@@ -93,7 +93,7 @@ function NewBusiness() {
 
         {step === "basics" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">Name and one line</h1>
+            <h1 className="text-2 font-bold">Name and one line</h1>
             <Field
               label="Business name"
               value={name}
@@ -106,7 +106,7 @@ function NewBusiness() {
               onChange={setTagline}
               placeholder="Two rooms, one tape machine."
             />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-0 text-muted-foreground">
               This is a separate profile — your personal profile stays exactly as it is.
             </p>
           </Card>
@@ -114,7 +114,7 @@ function NewBusiness() {
 
         {step === "location" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">Where is it?</h1>
+            <h1 className="text-2 font-bold">Where is it?</h1>
             <div className="flex flex-wrap gap-2">
               {["Mumbai", "Delhi", "Bengaluru", "Chennai", "Pune", "Kolkata"].map((c) => (
                 <Chip key={c} active={city === c} onClick={() => setCity(c)}>
@@ -128,7 +128,7 @@ function NewBusiness() {
               onChange={setAddress}
               placeholder="Street, area, pin code"
             />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-0 text-muted-foreground">
               The exact address is only shown once a booking is confirmed.
             </p>
           </Card>
@@ -136,14 +136,14 @@ function NewBusiness() {
 
         {step === "spaces" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">Rooms or spaces</h1>
+            <h1 className="text-2 font-bold">Rooms or spaces</h1>
             <Field
               label="How many bookable spaces?"
               value={spaces}
               onChange={setSpaces}
               placeholder="2"
             />
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               You can add photos, gear lists and hourly rates for each space after creating the
               business.
             </p>
@@ -152,14 +152,14 @@ function NewBusiness() {
 
         {step === "team" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">Invite your team</h1>
+            <h1 className="text-2 font-bold">Invite your team</h1>
             <Field
               label="Emails or @usernames"
               value={invites}
               onChange={setInvites}
               placeholder="@kabir, farah@studio.in"
             />
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               Managers can edit and accept bookings. Engineers only see sessions assigned to them.
             </p>
           </Card>
@@ -167,7 +167,7 @@ function NewBusiness() {
 
         {step === "review" ? (
           <Card className="space-y-2">
-            <h1 className="text-[16px] font-bold">Review</h1>
+            <h1 className="text-2 font-bold">Review</h1>
             {[
               ["Type", businessTypes.find((t) => t.key === type)?.label ?? ""],
               ["Name", name || "Untitled business"],
@@ -179,13 +179,13 @@ function NewBusiness() {
                 key={k}
                 className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
               >
-                <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
                   {k}
                 </span>
-                <span className="max-w-[60%] text-right text-[13px] font-semibold">{v}</span>
+                <span className="max-w-[60%] text-right text-1 font-semibold">{v}</span>
               </div>
             ))}
-            <p className="pt-1 text-[12px] text-muted-foreground">
+            <p className="pt-1 text-1 text-muted-foreground">
               Business verification is a separate step and unlocks the verified badge.
             </p>
           </Card>
@@ -241,14 +241,14 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? ""}
-        className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
+        className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
       />
     </label>
   );

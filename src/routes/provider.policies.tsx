@@ -83,13 +83,13 @@ function Policies() {
       <TopBar title="Policies" subtitle={entity?.name ?? "Your space"} back="/provider/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
-        <p className="rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
+        <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
           Customers see these before they request a session and must accept them to book. Keep them
           short and specific.
         </p>
 
         <section>
-          <h2 className="text-[17px]">Cancellation window</h2>
+          <h2 className="text-2">Cancellation window</h2>
           <div className="rail no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1">
             {cancellationWindows.map((w) => (
               <Chip key={w} active={window === w} onClick={() => setWindow(w)}>
@@ -97,14 +97,14 @@ function Policies() {
               </Chip>
             ))}
           </div>
-          <p className="mt-2 text-[11px] text-muted-foreground">
+          <p className="mt-2 text-0 text-muted-foreground">
             Cancellations inside this window keep the deposit.
           </p>
         </section>
 
         {sections.map((s) => (
           <section key={s.id} className="min-w-0">
-            <label htmlFor={s.id} className="text-[17px]">
+            <label htmlFor={s.id} className="text-2">
               {s.title}
             </label>
             <textarea
@@ -113,7 +113,7 @@ function Policies() {
               value={text[s.id] ?? ""}
               placeholder={s.placeholder}
               onChange={(e) => setText((t) => ({ ...t, [s.id]: e.target.value }))}
-              className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-4 text-[13px] leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
+              className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
             />
           </section>
         ))}

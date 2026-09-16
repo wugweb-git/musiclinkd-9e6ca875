@@ -41,9 +41,9 @@ function NotificationSettings() {
 
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-1">
-          <h2 className="text-[15px]">How we reach you</h2>
+          <h2 className="text-sm">How we reach you</h2>
           {channels.map((c) => (
-            <p key={c.key} className="text-[12px] text-muted-foreground">
+            <p key={c.key} className="text-1 text-muted-foreground">
               <span className="font-semibold text-foreground">{c.label}</span> — {c.hint}
             </p>
           ))}
@@ -51,7 +51,7 @@ function NotificationSettings() {
 
         {prefs.map((p) => (
           <Card key={p.category} className="space-y-3">
-            <p className="text-[14px] font-semibold">
+            <p className="text-sm font-semibold">
               <span aria-hidden className="mr-1.5">
                 {categoryMeta[p.category].emoji}
               </span>
@@ -64,7 +64,7 @@ function NotificationSettings() {
                   type="button"
                   aria-pressed={p[c.key]}
                   onClick={() => toggle(p.category, c.key)}
-                  className={`min-h-9 rounded-full px-3.5 text-[12px] font-semibold ${
+                  className={`min-h-9 rounded-full px-3.5 text-1 font-semibold ${
                     p[c.key]
                       ? "bg-primary text-primary-foreground"
                       : "bg-subtle text-muted-foreground"
@@ -79,7 +79,7 @@ function NotificationSettings() {
 
         <Card className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <p className="flex items-center gap-2 text-[14px] font-semibold">
+            <p className="flex items-center gap-2 text-sm font-semibold">
               <MoonStar size={15} /> Quiet hours
             </p>
             <button
@@ -95,7 +95,7 @@ function NotificationSettings() {
               />
             </button>
           </div>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             {quiet
               ? `Silent from ${quietHours.from} to ${quietHours.to}. Confirmed booking changes still come through.`
               : "Notifications arrive at any hour."}

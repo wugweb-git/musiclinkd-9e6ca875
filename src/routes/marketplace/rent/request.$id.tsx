@@ -105,13 +105,13 @@ function RequestFlow() {
         <div className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[13px] font-semibold">{e.name}</p>
+            <p className="truncate text-1 font-semibold">{e.name}</p>
             <Price
               price={rupeeParts(e.daily, "day")}
-              amountClassName="text-[11px] font-semibold"
-              unitClassName="text-[10px]"
+              amountClassName="text-0 font-semibold"
+              unitClassName="text-0"
             />
-            <p className="truncate text-[11px] text-muted-foreground">Deposit {inr(e.deposit)}</p>
+            <p className="truncate text-0 text-muted-foreground">Deposit {inr(e.deposit)}</p>
           </div>
         </div>
 
@@ -120,8 +120,8 @@ function RequestFlow() {
             <RentalCalendar e={e} start={start} end={end} onSelect={pick} />
             <div className="mt-4 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
               <div>
-                <p className="text-[13px] font-semibold">Quantity</p>
-                <p className="text-[11px] text-muted-foreground">{e.quantity} available</p>
+                <p className="text-1 font-semibold">Quantity</p>
+                <p className="text-0 text-muted-foreground">{e.quantity} available</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -131,7 +131,7 @@ function RequestFlow() {
                 >
                   <Minus size={14} />
                 </button>
-                <span className="w-5 text-center text-[15px] font-bold">{qty}</span>
+                <span className="w-5 text-center text-sm font-bold">{qty}</span>
                 <button
                   aria-label="Increase"
                   onClick={() => setQty((q) => Math.min(e.quantity, q + 1))}
@@ -147,7 +147,7 @@ function RequestFlow() {
               ) : (
                 <RentalAvailabilityBadge text={`Available · ${days} days`} />
               )}
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-0 text-muted-foreground">
                 Aug {start ?? "–"} → Aug {end ?? "–"}
               </span>
             </div>
@@ -159,9 +159,9 @@ function RequestFlow() {
 
         {step === "summary" ? (
           <>
-            <h2 className="mb-2 text-[15px]">Delivery or pickup</h2>
+            <h2 className="mb-2 text-sm">Delivery or pickup</h2>
             <FulfilmentPicker e={e} value={fulfilment} onChange={setFulfilment} />
-            <h2 className="mb-2 mt-5 text-[15px]">Price breakdown</h2>
+            <h2 className="mb-2 mt-5 text-sm">Price breakdown</h2>
             <PriceBreakdown e={e} days={days} quantity={qty} delivery={delivery} />
             <Btn className="mt-5 w-full" onClick={() => setStep("request")}>
               Request Rental
@@ -185,14 +185,14 @@ function RequestFlow() {
                 { k: "Location", v: e.location },
               ].map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <dt className="text-xs text-muted-foreground">{r.k}</dt>
-                  <dd className="text-right text-xs font-semibold">{r.v}</dd>
+                  <dt className="text-1 text-muted-foreground">{r.k}</dt>
+                  <dd className="text-right text-1 font-semibold">{r.v}</dd>
                 </div>
               ))}
             </dl>
             <label
               htmlFor="message-to-provider-optional"
-              className="mb-1.5 mt-4 block text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+              className="mb-1.5 mt-4 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
             >
               Message to provider (optional)
             </label>
@@ -204,7 +204,7 @@ function RequestFlow() {
               placeholder="Recording at Famous Studios, need it from 10 am on the 18th."
               className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
             />
-            <p className="mt-3 text-[11px] text-muted-foreground">
+            <p className="mt-3 text-0 text-muted-foreground">
               No payment is taken now. The provider confirms availability and the final amount in
               your conversation.
             </p>
@@ -220,12 +220,12 @@ function RequestFlow() {
         {step === "confirmed" ? (
           <div className="py-6 text-center">
             <div
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3"
               style={{ background: "var(--success-container)" }}
             >
               ✓
             </div>
-            <h2 className="text-xl">Request sent</h2>
+            <h2 className="text-2.5">Request sent</h2>
             <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">
               {p.name} usually replies {p.responseTime.toLowerCase()}. You'll get a notification
               when they accept, decline or counter.
@@ -239,8 +239,8 @@ function RequestFlow() {
                 { k: "Deposit", v: inr(e.deposit * qty) },
               ].map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <dt className="text-xs text-muted-foreground">{r.k}</dt>
-                  <dd className="text-right text-xs font-semibold">{r.v}</dd>
+                  <dt className="text-1 text-muted-foreground">{r.k}</dt>
+                  <dd className="text-right text-1 font-semibold">{r.v}</dd>
                 </div>
               ))}
             </dl>

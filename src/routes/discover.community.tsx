@@ -59,7 +59,7 @@ function DiscoverCommunity() {
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">{b.name}</p>
-                        <p className="truncate text-[12px] text-muted-foreground">
+                        <p className="truncate text-1 text-muted-foreground">
                           {joinParts(b.genres.join(" · "), b.city)}
                         </p>
                       </div>

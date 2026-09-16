@@ -38,10 +38,10 @@ function Insights() {
             const up = m.delta.startsWith("+");
             return (
               <article key={m.label} className="rounded-lg border border-border bg-card p-4">
-                <p className="text-[11px] text-muted-foreground">{m.label}</p>
-                <p className="mt-1 text-2xl tabular-nums">{m.value}</p>
+                <p className="text-0 text-muted-foreground">{m.label}</p>
+                <p className="mt-1 text-3 tabular-nums">{m.value}</p>
                 <p
-                  className={`mt-1 inline-flex items-center gap-1 text-[11px] font-bold ${
+                  className={`mt-1 inline-flex items-center gap-1 text-0 font-bold ${
                     up ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
@@ -54,7 +54,7 @@ function Insights() {
         </div>
 
         <section className="mt-6">
-          <h2 className="text-[17px]">Engagement</h2>
+          <h2 className="text-2">Engagement</h2>
           <div className="mt-3 divide-y divide-border rounded-lg border border-border bg-card">
             {i.secondary.map((s) => (
               <div key={s.label} className="flex items-center justify-between px-4 py-3">
@@ -66,11 +66,11 @@ function Insights() {
         </section>
 
         <section className="mt-6">
-          <h2 className="text-[17px]">Where your audience is</h2>
+          <h2 className="text-2">Where your audience is</h2>
           <div className="mt-3 space-y-3 rounded-lg border border-border bg-card p-4">
             {i.audience.map((a) => (
               <div key={a.city}>
-                <div className="flex items-baseline justify-between text-xs">
+                <div className="flex items-baseline justify-between text-1">
                   <span className="font-semibold">{a.city}</span>
                   <span className="tabular-nums text-muted-foreground">{a.share}%</span>
                 </div>
@@ -87,13 +87,13 @@ function Insights() {
 
         <section className="mt-6 rounded-lg border border-border bg-card p-5">
           <p className="text-sm font-semibold">Get seen more</p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             {me.name.split(" ")[0]}, your profile is {profileCompletion.percent}% complete.
             Finishing these lifts search ranking.
           </p>
           <ul className="mt-3 space-y-1.5">
             {profileCompletion.missing.map((m) => (
-              <li key={m.id} className="text-xs text-muted-foreground">
+              <li key={m.id} className="text-1 text-muted-foreground">
                 · {m.label}
               </li>
             ))}

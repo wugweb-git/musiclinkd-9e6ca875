@@ -32,7 +32,7 @@ function DiscoverMusic() {
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
           <p className="text-sm font-semibold">Fresh this week</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             Work published by people you can actually hire, not a chart.
           </p>
         </Card>
@@ -43,12 +43,12 @@ function DiscoverMusic() {
               <Link key={t.id} to="/portfolio/$id" params={{ id: t.id }} className="block">
                 <Card>
                   <div className="flex items-center gap-3">
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-subtle text-lg">
+                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-subtle text-2">
                       {workType(t.kind).emoji}
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.title}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">
+                      <p className="truncate text-1 text-muted-foreground">
                         {workType(t.kind).label} · {t.release_year}
                       </p>
                     </div>
@@ -70,7 +70,7 @@ function DiscoverMusic() {
             {trending.map((t) => (
               <span
                 key={t.name}
-                className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold"
+                className="rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold"
               >
                 {t.name}
               </span>

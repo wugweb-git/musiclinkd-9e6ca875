@@ -44,15 +44,15 @@ function Pricing() {
       <TopBar title="Pricing" subtitle={entity.name} back="/provider/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
-        <p className="rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
+        <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
           Rates shown here are what customers see on the booking screens. Changes apply to new
           bookings only.
         </p>
 
         {entity.resources.map((r) => (
           <section key={r.id} className="min-w-0">
-            <h2 className="truncate text-[17px]">{r.name}</h2>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">{r.description}</p>
+            <h2 className="truncate text-2">{r.name}</h2>
+            <p className="mt-0.5 truncate text-1 text-muted-foreground">{r.description}</p>
             <div className="mt-3 space-y-2">
               {r.tiers.map((t) => (
                 <MoneyRow
@@ -68,8 +68,8 @@ function Pricing() {
         ))}
 
         <section className="min-w-0">
-          <h2 className="text-[17px]">Add-ons</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <h2 className="text-2">Add-ons</h2>
+          <p className="mt-0.5 text-1 text-muted-foreground">
             Optional extras customers can add to a session.
           </p>
           <div className="mt-3 space-y-2">
@@ -86,13 +86,13 @@ function Pricing() {
         </section>
 
         <section className="min-w-0">
-          <h2 className="text-[17px]">Deposit</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <h2 className="text-2">Deposit</h2>
+          <p className="mt-0.5 text-1 text-muted-foreground">
             Share of the total collected when a booking is confirmed. The balance is due at the
             studio.
           </p>
           <div className="mt-3 rounded-lg border border-border bg-card p-4">
-            <label htmlFor="deposit" className="text-[12px] font-semibold">
+            <label htmlFor="deposit" className="text-1 font-semibold">
               Deposit percentage
             </label>
             <input
@@ -105,7 +105,7 @@ function Pricing() {
               onChange={(e) => setDeposit(Number(e.target.value))}
               className="mt-3 w-full accent-[var(--primary)]"
             />
-            <div className="mt-2 flex items-center justify-between text-[12px]">
+            <div className="mt-2 flex items-center justify-between text-1">
               <span className="font-bold">{deposit}%</span>
               <span className="text-muted-foreground">
                 On a {inr(10000)} session that's {inr(Math.round(10000 * (deposit / 100)))} upfront
@@ -114,7 +114,7 @@ function Pricing() {
           </div>
         </section>
 
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-0 text-muted-foreground">
           Taxes are applied at {entity.taxPct}% on top of the session total.
         </p>
       </main>
@@ -143,20 +143,20 @@ function MoneyRow({
   return (
     <div className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-3">
       <div className="min-w-0 flex-1">
-        <label htmlFor={id} className="block truncate text-[13px] font-semibold">
+        <label htmlFor={id} className="block truncate text-1 font-semibold">
           {label}
         </label>
-        {hint ? <p className="truncate text-[11px] text-muted-foreground">{hint}</p> : null}
+        {hint ? <p className="truncate text-0 text-muted-foreground">{hint}</p> : null}
       </div>
       <div className="flex shrink-0 items-center gap-1 rounded-full bg-subtle px-3 py-2">
-        <span className="text-[12px] font-semibold text-muted-foreground">₹</span>
+        <span className="text-1 font-semibold text-muted-foreground">₹</span>
         <input
           id={id}
           type="number"
           inputMode="numeric"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-20 bg-transparent text-right text-[13px] font-bold outline-none"
+          className="w-20 bg-transparent text-right text-1 font-bold outline-none"
         />
       </div>
     </div>

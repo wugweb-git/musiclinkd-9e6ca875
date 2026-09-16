@@ -94,7 +94,7 @@ export function BookingDraftProvider({
     return (
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-app items-center justify-center bg-background px-8 text-center">
         <div>
-          <p className="text-lg font-semibold">This space is unavailable</p>
+          <p className="text-2 font-semibold">This space is unavailable</p>
           <p className="mt-1 text-sm text-muted-foreground">
             It may have been removed or is no longer taking bookings.
           </p>

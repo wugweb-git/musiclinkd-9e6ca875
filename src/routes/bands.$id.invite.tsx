@@ -40,8 +40,8 @@ function InviteMembers() {
       <div className="space-y-4 px-5 pt-4 pb-28">
         <SearchBar value={q} onChange={setQ} placeholder="Search people by name, role or city" />
         <Card className="space-y-2">
-          <h2 className="text-[15px]">Invite by link</h2>
-          <p className="text-[12px] text-muted-foreground">
+          <h2 className="text-sm">Invite by link</h2>
+          <p className="text-1 text-muted-foreground">
             Share a join link or your band QR with someone who is not on MusicLinkd yet.
           </p>
           <BtnLink to="/identity/qr" variant="outline" className="w-full">
@@ -67,7 +67,7 @@ function InviteMembers() {
                 <span className="flex shrink-0 items-center gap-2">
                   {t.verified ? <VerifiedBadge size={14} /> : null}
                   <span
-                    className={`rounded-full px-3 py-1.5 text-[11px] font-bold ${invited.includes(t.id) ? "bg-subtle text-muted-foreground" : "bg-primary text-primary-foreground"}`}
+                    className={`rounded-full px-3 py-1.5 text-0 font-bold ${invited.includes(t.id) ? "bg-subtle text-muted-foreground" : "bg-primary text-primary-foreground"}`}
                   >
                     {invited.includes(t.id) ? "Invited" : "Invite"}
                   </span>

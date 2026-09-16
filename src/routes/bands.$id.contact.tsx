@@ -55,8 +55,8 @@ function BandContact() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
-            <h2 className="mt-3 text-[19px] leading-tight">{band.name} has your message</h2>
-            <p className="mt-2 text-[13px] text-muted-foreground">
+            <h2 className="mt-3 text-2.5 leading-tight">{band.name} has your message</h2>
+            <p className="mt-2 text-1 text-muted-foreground">
               It goes to whoever handles bookings for the band. Replies land in Connections.
             </p>
           </Card>

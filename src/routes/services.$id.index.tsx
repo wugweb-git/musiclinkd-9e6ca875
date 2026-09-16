@@ -97,7 +97,7 @@ function ServiceDetail() {
             <button
               type="button"
               onClick={() => setManage(true)}
-              className="text-[12px] font-semibold text-foreground"
+              className="text-1 font-semibold text-foreground"
             >
               Manage
             </button>
@@ -111,13 +111,13 @@ function ServiceDetail() {
             <div className="flex items-start gap-3">
               <span
                 aria-hidden
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-subtle text-[22px]"
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-subtle text-3"
               >
                 {categoryEmoji(s.category)}
               </span>
               <div className="min-w-0 flex-1">
-                <h1 className="text-[17px] font-bold leading-snug">{s.name}</h1>
-                <p className="mt-1 text-[12px] text-muted-foreground">
+                <h1 className="text-2 font-bold leading-snug">{s.name}</h1>
+                <p className="mt-1 text-1 text-muted-foreground">
                   {joinParts(
                     optionLabel(options?.pricingModels, s.pricing_model),
                     workModesText(options, s.work_modes) || s.mode,
@@ -128,21 +128,21 @@ function ServiceDetail() {
             <div className="flex items-start justify-between gap-2">
               <Price
                 price={priceParts(s.price_paise, s.price_unit, s.price_note)}
-                amountClassName="text-[18px] font-bold"
+                amountClassName="text-2 font-bold"
               />
               {owner ? <StatusPill label={s.status} tone={serviceStatusTone[s.status]} /> : null}
             </div>
             {s.description ? (
-              <p className="text-[13px] leading-relaxed text-muted-foreground">{s.description}</p>
+              <p className="text-1 leading-relaxed text-muted-foreground">{s.description}</p>
             ) : null}
           </Card>
 
           {s.deliverables.length || s.turnaround ? (
             <Card className="space-y-2">
-              <h2 className="text-[15px]">What you get</h2>
+              <h2 className="text-sm">What you get</h2>
               <ul className="space-y-1.5">
                 {s.deliverables.map((d) => (
-                  <li key={d} className="flex gap-2 text-[13px]">
+                  <li key={d} className="flex gap-2 text-1">
                     <span
                       aria-hidden
                       className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
@@ -152,33 +152,33 @@ function ServiceDetail() {
                 ))}
               </ul>
               {s.turnaround ? (
-                <p className="pt-1 text-[12px] text-muted-foreground">Turnaround {s.turnaround}</p>
+                <p className="pt-1 text-1 text-muted-foreground">Turnaround {s.turnaround}</p>
               ) : null}
             </Card>
           ) : null}
 
           {s.packages.length ? (
             <section className="space-y-3">
-              <h2 className="text-[15px] font-semibold">Packages</h2>
+              <h2 className="text-sm font-semibold">Packages</h2>
               {s.packages.map((p) => (
                 <Card key={p.id} className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-[14px] font-semibold">{p.name}</p>
+                    <p className="text-sm font-semibold">{p.name}</p>
                     {p.is_popular ? <StatusPill label="popular" tone="brand" /> : null}
                   </div>
                   <Price
                     price={priceParts(p.price_paise, p.price_unit)}
-                    amountClassName="text-[16px] font-bold"
+                    amountClassName="text-2 font-bold"
                   />
                   <ul className="space-y-1">
                     {p.includes.map((i) => (
-                      <li key={i} className="text-[12px] text-muted-foreground">
+                      <li key={i} className="text-1 text-muted-foreground">
                         · {i}
                       </li>
                     ))}
                   </ul>
                   {p.turnaround || p.revisions ? (
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-0 text-muted-foreground">
                       {joinParts(p.turnaround, p.revisions)}
                     </p>
                   ) : null}
@@ -189,18 +189,18 @@ function ServiceDetail() {
 
           {s.addons.length ? (
             <Card className="space-y-2">
-              <h2 className="text-[15px]">Add-ons</h2>
+              <h2 className="text-sm">Add-ons</h2>
               {s.addons.map((a) => (
                 <div
                   key={a.id}
                   className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
                 >
-                  <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
+                  <span className="min-w-0 flex-1 truncate text-1">{a.label}</span>
                   <Price
                     price={priceParts(a.price_paise, a.price_unit)}
                     align="end"
                     className="shrink-0"
-                    amountClassName="text-[13px] font-semibold"
+                    amountClassName="text-1 font-semibold"
                   />
                 </div>
               ))}
@@ -209,9 +209,9 @@ function ServiceDetail() {
 
           {s.requirements.length ? (
             <Card className="space-y-2">
-              <h2 className="text-[15px]">What the client should send</h2>
+              <h2 className="text-sm">What the client should send</h2>
               {s.requirements.map((r) => (
-                <p key={r} className="text-[13px] text-muted-foreground">
+                <p key={r} className="text-1 text-muted-foreground">
                   · {r}
                 </p>
               ))}

@@ -25,8 +25,8 @@ export const Route = createFileRoute("/identity/analytics")({
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-[20px] border border-border bg-card px-4 py-3">
-      <p className="text-[20px] leading-tight">{value}</p>
-      <p className="text-[12px] text-muted-foreground">{label}</p>
+      <p className="text-2.5 leading-tight">{value}</p>
+      <p className="text-1 text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -47,11 +47,11 @@ function QrAnalytics() {
         </div>
 
         <section className="mt-4 rounded-[24px] border border-border bg-card p-4">
-          <h2 className="text-[17px]">Where scans come from</h2>
+          <h2 className="text-2">Where scans come from</h2>
           <div className="mt-3 flex flex-col gap-3">
             {qrAnalytics.bySource.map((s) => (
               <div key={s.label}>
-                <div className="flex items-baseline justify-between text-[13px]">
+                <div className="flex items-baseline justify-between text-1">
                   <span className="font-semibold">{s.label}</span>
                   <span className="text-muted-foreground">{s.value}</span>
                 </div>
@@ -66,7 +66,7 @@ function QrAnalytics() {
           </div>
         </section>
 
-        <p className="mt-3 px-1 text-[12px] text-muted-foreground">
+        <p className="mt-3 px-1 text-1 text-muted-foreground">
           Counts are aggregate. MusicLinkd never shows who scanned your code.
         </p>
 

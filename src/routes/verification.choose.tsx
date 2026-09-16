@@ -33,7 +33,7 @@ function ChooseType() {
     <Screen>
       <TopBar title="Get verified" subtitle="Pick the badge that fits you" back="/verification" />
       <div className="space-y-3 px-5 pt-4 pb-6">
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-1 text-muted-foreground">
           Every badge is reviewed by a person. We only ask for what the badge actually proves.
         </p>
 
@@ -56,8 +56,8 @@ function ChooseType() {
             <Card className="space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h2 className="text-[16px] leading-tight">{t.title}</h2>
-                  <p className="mt-0.5 text-[12px] text-muted-foreground">{t.appliesTo}</p>
+                  <h2 className="text-2 leading-tight">{t.title}</h2>
+                  <p className="mt-0.5 text-1 text-muted-foreground">{t.appliesTo}</p>
                 </div>
                 {locked ? (
                   <StatusPill label="Locked" tone="neutral" icon={<Lock size={11} aria-hidden />} />
@@ -66,23 +66,19 @@ function ChooseType() {
                 )}
               </div>
 
-              <dl className="space-y-2 text-[13px]">
+              <dl className="space-y-2 text-1">
                 <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    Verifies
-                  </dt>
+                  <dt className="text-0 uppercase tracking-wide text-muted-foreground">Verifies</dt>
                   <dd className="text-muted-foreground">{t.verifies}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-0 uppercase tracking-wide text-muted-foreground">
                     People see
                   </dt>
                   <dd className="text-muted-foreground">{t.whatOthersSee}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    You need
-                  </dt>
+                  <dt className="text-0 uppercase tracking-wide text-muted-foreground">You need</dt>
                   <dd className="text-muted-foreground">
                     {t.requirements.map((r) => r.label).join(" · ")}
                   </dd>
@@ -90,11 +86,11 @@ function ChooseType() {
               </dl>
 
               {locked ? (
-                <p className="rounded-[16px] bg-subtle px-3 py-2 text-[12px] text-muted-foreground">
+                <p className="rounded-[16px] bg-subtle px-3 py-2 text-1 text-muted-foreground">
                   {gate.reason}
                 </p>
               ) : (
-                <p className="flex items-center gap-1 text-[13px] font-semibold text-foreground">
+                <p className="flex items-center gap-1 text-1 font-semibold text-foreground">
                   {status === "unverified" ? "See requirements" : "Open request"}
                   <ChevronRight size={15} aria-hidden />
                 </p>
@@ -117,8 +113,8 @@ function ChooseType() {
         })}
 
         <Card className="py-3">
-          <p className="text-[13px] font-semibold">Not sure which one?</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">Not sure which one?</p>
+          <p className="mt-1 text-1 text-muted-foreground">
             Read{" "}
             <TextLink to="/help/$slug" params={{ slug: "how-verification-works" }}>
               how verification works

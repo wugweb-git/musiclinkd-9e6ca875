@@ -58,7 +58,7 @@ function ProviderBookings() {
         right={
           <TextLink
             to="/provider/availability"
-            className="text-[11px] font-bold uppercase tracking-wide"
+            className="text-0 font-bold uppercase tracking-wide"
           >
             Availability
           </TextLink>
@@ -169,8 +169,8 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <span className="text-foreground">{icon}</span>
-      <p className="mt-2 text-lg font-semibold leading-none">{value}</p>
-      <p className="mt-1 text-[11px] text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2 font-semibold leading-none">{value}</p>
+      <p className="mt-1 text-0 text-muted-foreground">{label}</p>
     </div>
   );
 }
@@ -190,7 +190,7 @@ function WorkspaceLink({
   return (
     <Link
       to={to}
-      className="inline-flex shrink-0 items-center rounded-full border border-border bg-card px-4 py-2.5 text-[12px] font-semibold"
+      className="inline-flex shrink-0 items-center rounded-full border border-border bg-card px-4 py-2.5 text-1 font-semibold"
     >
       {label}
     </Link>

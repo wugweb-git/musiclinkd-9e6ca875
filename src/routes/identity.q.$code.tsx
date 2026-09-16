@@ -109,8 +109,8 @@ function QrResult() {
             ) : null}
 
             <div className="mt-6 rounded-[24px] border border-border bg-card p-4">
-              <p className="text-[13px] font-semibold">Why you can trust this</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">
+              <p className="text-1 font-semibold">Why you can trust this</p>
+              <p className="mt-1 text-1 text-muted-foreground">
                 The code carries only a MusicLinkd address. Nothing personal is stored inside it,
                 and the destination always shows here before it opens.
               </p>

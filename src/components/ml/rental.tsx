@@ -44,7 +44,7 @@ export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md
       {e.daily != null ? (
         <Price
           price={rupeeParts(e.daily, "day")}
-          amountClassName={size === "lg" ? "text-2xl font-bold" : "text-2 font-bold"}
+          amountClassName={size === "lg" ? "text-3 font-bold" : "text-2 font-bold"}
         />
       ) : null}
       {size === "lg" && e.weekly != null && e.monthly != null ? (
@@ -367,7 +367,7 @@ export function PriceBreakdown({
       </div>
       <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
         <span className="text-1 font-semibold">Estimated total</span>
-        <span className="text-xl font-bold text-price">{inr(total)}</span>
+        <span className="text-2.5 font-bold text-price">{inr(total)}</span>
       </div>
       <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
         <div className="min-w-0">
@@ -548,8 +548,8 @@ export function RentalFilterSheet({
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl">Filters</h2>
-        <button onClick={() => setSelected([])} className="text-xs font-semibold text-foreground">
+        <h2 className="text-2.5">Filters</h2>
+        <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
           Clear all
         </button>
       </div>
@@ -581,10 +581,7 @@ export function RentalFilterSheet({
       ))}
 
       {!more ? (
-        <button
-          onClick={() => setMore(true)}
-          className="mb-5 text-xs font-semibold text-foreground"
-        >
+        <button onClick={() => setMore(true)} className="mb-5 text-1 font-semibold text-foreground">
           More filters
         </button>
       ) : null}

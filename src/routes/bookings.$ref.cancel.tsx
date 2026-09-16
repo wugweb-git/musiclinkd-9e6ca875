@@ -63,7 +63,7 @@ function Cancel() {
               {b.name} has been notified. Any refund reaches your original payment method in 5–7
               working days.
             </p>
-            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
               <Detail label="Reference" value={bk.ref} />
               <Detail label="Refund" value={inr(refund)} />
             </dl>
@@ -82,8 +82,8 @@ function Cancel() {
       <main className="px-5 pt-4">
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="font-semibold">{b.name}</p>
-          <p className="text-xs text-muted-foreground">{r.name}</p>
-          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+          <p className="text-1 text-muted-foreground">{r.name}</p>
+          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
             <Detail label="Date" value={formatDate(bk.date)} />
             <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
             <Detail label="Paid" value={inr(bk.amount)} />
@@ -99,7 +99,7 @@ function Cancel() {
           />
         </div>
 
-        <h2 className="mt-6 text-[17px]">Why are you cancelling?</h2>
+        <h2 className="mt-6 text-2">Why are you cancelling?</h2>
         <div className="mt-3 space-y-2">
           {reasons.map((x) => (
             <button
@@ -121,7 +121,7 @@ function Cancel() {
         </div>
 
         <label className="mt-4 block">
-          <span className="text-xs font-semibold text-muted-foreground">
+          <span className="text-1 font-semibold text-muted-foreground">
             Message to the provider (optional)
           </span>
           <textarea

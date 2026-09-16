@@ -70,7 +70,7 @@ function BusinessQr() {
           </BtnLink>
         </div>
 
-        <p className="mt-5 px-1 text-[12px] text-muted-foreground">
+        <p className="mt-5 px-1 text-1 text-muted-foreground">
           Scans land on your public business profile, where visitors can check availability and
           request a booking. Nothing private is encoded in the code itself.
         </p>

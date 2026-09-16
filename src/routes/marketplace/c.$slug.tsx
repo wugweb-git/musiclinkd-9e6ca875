@@ -55,7 +55,7 @@ function CategoryScreen() {
         ))}
       </div>
       <div className="flex items-center justify-between px-5">
-        <p className="text-xs text-muted-foreground">{items.length} results · Mumbai</p>
+        <p className="text-1 text-muted-foreground">{items.length} results · Mumbai</p>
         <div className="flex gap-2">
           <Chip onClick={() => setSortOpen(true)}>{sort}</Chip>
           <Chip active onClick={() => setFilters(true)}>

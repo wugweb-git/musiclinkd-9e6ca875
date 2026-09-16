@@ -36,10 +36,10 @@ function AccountScreen() {
               className="flex items-center gap-3 border-b border-border p-4 last:border-0"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <p className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
                   {f.label}
                 </p>
-                <p className="mt-0.5 flex items-center gap-2 truncate text-[13px] font-semibold">
+                <p className="mt-0.5 flex items-center gap-2 truncate text-1 font-semibold">
                   {f.value}
                   {f.verified ? <StatusPill label="verified" tone="good" /> : null}
                 </p>
@@ -47,14 +47,14 @@ function AccountScreen() {
               <button
                 type="button"
                 onClick={() => setEditing(f.key)}
-                className="shrink-0 text-[12px] font-semibold text-foreground"
+                className="shrink-0 text-1 font-semibold text-foreground"
               >
                 {f.action}
               </button>
             </div>
           ))}
         </Card>
-        <p className="px-1 text-[12px] text-muted-foreground">
+        <p className="px-1 text-1 text-muted-foreground">
           Changing your email or phone asks you to confirm the new one before it becomes your
           sign-in.
         </p>
@@ -67,15 +67,15 @@ function AccountScreen() {
       >
         <div className="space-y-3">
           <label className="block">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+            <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
               New {field?.label.toLowerCase()}
             </span>
             <input
               defaultValue={field?.value ?? ""}
-              className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
+              className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
             />
           </label>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             We send a confirmation before anything changes.
           </p>
           <Btn className="w-full" onClick={() => setEditing(null)}>

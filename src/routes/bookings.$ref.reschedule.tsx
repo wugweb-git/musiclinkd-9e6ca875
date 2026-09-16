@@ -67,7 +67,7 @@ function Reschedule() {
             <p className="mt-1 text-sm text-muted-foreground">
               {b.name} will confirm the new slot. Your original time stays held until they respond.
             </p>
-            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
               <Detail label="Original" value={`${formatDate(bk.date)} · ${formatTime(bk.start)}`} />
               <Detail
                 label="Requested"
@@ -87,7 +87,7 @@ function Reschedule() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Reschedule" subtitle={`#${bk.ref} · ${b.name}`} back={`/bookings/${bk.ref}`} />
       <main className="px-5 pt-4">
-        <div className="rounded-lg bg-subtle p-4 text-xs">
+        <div className="rounded-lg bg-subtle p-4 text-1">
           <p className="font-semibold text-text1">
             Current: {formatDate(bk.date)} · {formatTime(bk.start)} – {formatTime(bk.end)}
           </p>
@@ -97,7 +97,7 @@ function Reschedule() {
           </p>
         </div>
 
-        <h2 className="mt-6 text-[17px]">Pick a new date</h2>
+        <h2 className="mt-6 text-2">Pick a new date</h2>
         <div className="mt-3">
           <AvailabilityCalendar
             resourceId={r.id}
@@ -113,7 +113,7 @@ function Reschedule() {
 
         {day ? (
           <>
-            <h2 className="mt-6 text-[17px]">New start time</h2>
+            <h2 className="mt-6 text-2">New start time</h2>
             <div className="mt-3">
               <SlotPicker
                 slots={day.slots}

@@ -58,15 +58,15 @@ function WriteReview() {
           <img src={item.photo} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{item.title}</p>
-            <p className="truncate text-[12px] text-muted-foreground">{item.subtitle}</p>
+            <p className="truncate text-1 text-muted-foreground">{item.subtitle}</p>
           </div>
         </Card>
 
         <Card className="space-y-4">
-          <h2 className="text-[15px]">Rate the experience</h2>
+          <h2 className="text-sm">Rate the experience</h2>
           {item.criteria.map((c) => (
             <div key={c}>
-              <p className="text-[13px] font-semibold">{c}</p>
+              <p className="text-1 font-semibold">{c}</p>
               <div className="mt-2 flex gap-2">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
@@ -90,15 +90,15 @@ function WriteReview() {
         </Card>
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">What happened</h2>
+          <h2 className="text-sm">What happened</h2>
           <textarea
             rows={5}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Describe the work, communication and whether you would book again."
-            className="w-full rounded-lg border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
+            className="w-full rounded-lg border border-border bg-background p-3 text-1 outline-none focus:border-primary"
           />
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             {body.trim().length}/1000 · contact details are removed automatically.
           </p>
         </Card>
@@ -107,7 +107,7 @@ function WriteReview() {
           <StatusPill label="Blind review" tone="warn" />
           <ul className="space-y-1.5">
             {reviewPolicy.map((p) => (
-              <li key={p} className="text-[12px] text-muted-foreground">
+              <li key={p} className="text-1 text-muted-foreground">
                 · {p}
               </li>
             ))}

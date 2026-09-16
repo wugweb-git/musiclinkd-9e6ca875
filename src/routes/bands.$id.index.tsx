@@ -91,18 +91,16 @@ function BandProfile() {
           )}
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex items-center gap-1.5">
-              <h1 className="truncate text-[22px] leading-tight">{band.name}</h1>
+              <h1 className="truncate text-3 leading-tight">{band.name}</h1>
               {band.verified ? <VerifiedBadge /> : null}
             </div>
             {band.subtitle ? (
-              <p className="truncate text-[12px] text-muted-foreground">{band.subtitle}</p>
+              <p className="truncate text-1 text-muted-foreground">{band.subtitle}</p>
             ) : null}
           </div>
         </div>
 
-        {band.tagline ? (
-          <p className="mt-3 text-[13px] text-muted-foreground">{band.tagline}</p>
-        ) : null}
+        {band.tagline ? <p className="mt-3 text-1 text-muted-foreground">{band.tagline}</p> : null}
 
         <div className="mt-4 grid grid-cols-4 gap-2">
           {owner ? (
@@ -110,7 +108,7 @@ function BandProfile() {
               <Link
                 to="/bands/$id/manage"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-xs font-semibold text-primary-foreground"
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-1 font-semibold text-primary-foreground"
               >
                 <Settings2 size={14} aria-hidden />
                 Manage
@@ -118,7 +116,7 @@ function BandProfile() {
               <Link
                 to="/bands/$id/invite"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
               >
                 <UserPlus size={14} aria-hidden />
                 Invite
@@ -126,11 +124,11 @@ function BandProfile() {
             </>
           ) : (
             <>
-              <Btn className="col-span-1 min-w-0 gap-1 px-2 text-xs">Follow</Btn>
+              <Btn className="col-span-1 min-w-0 gap-1 px-2 text-1">Follow</Btn>
               <Link
                 to="/bands/$id/contact"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
               >
                 <MessageSquare size={14} aria-hidden />
                 Message
@@ -139,14 +137,14 @@ function BandProfile() {
           )}
           <Link
             to="/bookings"
-            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-xs font-semibold text-background"
+            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-1 font-semibold text-background"
           >
             <CalendarDays size={14} aria-hidden />
             Book
           </Link>
           <Link
             to="/identity/card"
-            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-xs font-semibold text-muted-foreground"
+            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
           >
             <Share2 size={14} aria-hidden />
             Share
@@ -162,9 +160,9 @@ function BandProfile() {
             <>
               {band.bio || band.availability || band.rate ? (
                 <Card>
-                  <h2 className="text-[15px]">About</h2>
+                  <h2 className="text-sm">About</h2>
                   {band.bio ? (
-                    <p className="mt-2 text-[13px] text-muted-foreground">{band.bio}</p>
+                    <p className="mt-2 text-1 text-muted-foreground">{band.bio}</p>
                   ) : null}
                   {band.availability || band.rate ? (
                     <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -181,7 +179,7 @@ function BandProfile() {
               ) : null}
               {band.lookingFor.length ? (
                 <Card>
-                  <h2 className="text-[15px]">Open seats</h2>
+                  <h2 className="text-sm">Open seats</h2>
                   <div className="mt-3 space-y-2">
                     {band.lookingFor.map((l) => (
                       <Row key={l} title={l} subtitle="Apply through Messaging" to="/messages" />
@@ -228,7 +226,7 @@ function BandProfile() {
                         {m.verified ? <VerifiedBadge size={13} /> : null}
                       </div>
                       {m.detail ? (
-                        <p className="truncate text-[12px] text-muted-foreground">{m.detail}</p>
+                        <p className="truncate text-1 text-muted-foreground">{m.detail}</p>
                       ) : null}
                     </div>
                     <StatusPill
@@ -268,12 +266,12 @@ function BandProfile() {
                 <Card key={e.id}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="truncate text-[15px]">{e.title}</h3>
+                      <h3 className="truncate text-sm">{e.title}</h3>
                       {e.place ? (
-                        <p className="mt-1 truncate text-[12px] text-muted-foreground">{e.place}</p>
+                        <p className="mt-1 truncate text-1 text-muted-foreground">{e.place}</p>
                       ) : null}
                       {e.date ? (
-                        <p className="mt-1 text-[12px] font-semibold text-foreground">{e.date}</p>
+                        <p className="mt-1 text-1 font-semibold text-foreground">{e.date}</p>
                       ) : null}
                     </div>
                     {e.status ? (
@@ -296,7 +294,7 @@ function BandProfile() {
                     ) : null}
                   </div>
                   {e.ticketNote ? (
-                    <p className="mt-3 text-[12px] text-muted-foreground">{e.ticketNote}</p>
+                    <p className="mt-3 text-1 text-muted-foreground">{e.ticketNote}</p>
                   ) : null}
                 </Card>
               ))
@@ -324,8 +322,8 @@ function BandProfile() {
                       <div aria-hidden className="aspect-square w-full bg-subtle" />
                     )}
                     <div className="p-3">
-                      <h3 className="truncate text-[13px]">{r.title}</h3>
-                      <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                      <h3 className="truncate text-1">{r.title}</h3>
+                      <p className="mt-1 truncate text-0 text-muted-foreground">
                         {joinParts(r.kind, r.year ? String(r.year) : "")}
                       </p>
                     </div>

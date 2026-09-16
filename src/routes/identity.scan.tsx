@@ -90,7 +90,7 @@ function Scanner() {
           <>
             <CameraSurface>
               <ScanFrame scanning={phase === "scanning"} />
-              <p className="mt-6 text-center text-[13px] text-background/80">
+              <p className="mt-6 text-center text-1 text-background/80">
                 {phase === "scanning" ? "Reading code…" : "Line the QR up inside the frame"}
               </p>
             </CameraSurface>
@@ -112,7 +112,7 @@ function Scanner() {
         )}
 
         <div className="mt-6 flex flex-col gap-2">
-          <p className="px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="px-1 text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
             Recently scanned
           </p>
           {scanHistory.slice(0, 3).map((h) => (

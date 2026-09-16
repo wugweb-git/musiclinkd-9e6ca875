@@ -30,7 +30,7 @@ function PortfolioSettings() {
     <Screen bottomNav={false} className="pb-24">
       <TopBar title="Portfolio settings" back="/portfolio" />
       <main className="px-5 pt-4">
-        <h2 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <h2 className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
           Portfolio visibility
         </h2>
         <div className="mt-2 space-y-2">
@@ -45,12 +45,12 @@ function PortfolioSettings() {
               }`}
             >
               <span className="block text-sm font-semibold">{v.label}</span>
-              <span className="block text-xs text-muted-foreground">{v.blurb}</span>
+              <span className="block text-1 text-muted-foreground">{v.blurb}</span>
             </button>
           ))}
         </div>
 
-        <h2 className="mt-7 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <h2 className="mt-7 text-0 font-bold uppercase tracking-wide text-muted-foreground">
           Default ordering
         </h2>
         <div className="mt-2 space-y-2">
@@ -73,18 +73,18 @@ function PortfolioSettings() {
               }`}
             >
               <span className="block text-sm font-semibold">{o.label}</span>
-              <span className="block text-xs text-muted-foreground">{o.blurb}</span>
+              <span className="block text-1 text-muted-foreground">{o.blurb}</span>
             </button>
           ))}
         </div>
 
-        <h2 className="mt-7 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <h2 className="mt-7 text-0 font-bold uppercase tracking-wide text-muted-foreground">
           Media
         </h2>
         <div className="mt-2 flex items-center justify-between rounded-lg border border-border bg-card p-4">
           <div className="pr-4">
             <p className="text-sm font-semibold">Preview audio automatically</p>
-            <p className="text-xs text-muted-foreground">Off by default to save mobile data.</p>
+            <p className="text-1 text-muted-foreground">Off by default to save mobile data.</p>
           </div>
           <button
             type="button"

@@ -29,7 +29,7 @@ function RecSettings() {
       <TopBar title="Recommendation settings" back="/recommendations" />
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card className="space-y-3">
-          <h2 className="text-[15px]">What we use</h2>
+          <h2 className="text-sm">What we use</h2>
           {prefs.map((p) => (
             <button
               key={p.key}
@@ -42,8 +42,8 @@ function RecSettings() {
               className="flex w-full items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-left"
             >
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-semibold">{p.label}</span>
-                <span className="block truncate text-[12px] text-muted-foreground">{p.hint}</span>
+                <span className="block truncate text-1 font-semibold">{p.label}</span>
+                <span className="block truncate text-1 text-muted-foreground">{p.hint}</span>
               </span>
               <span
                 className={`flex h-6 w-11 shrink-0 items-center rounded-full px-0.5 ${p.on ? "bg-primary" : "bg-subtle"}`}
@@ -57,8 +57,8 @@ function RecSettings() {
         </Card>
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">Reset</h2>
-          <p className="text-[12px] text-muted-foreground">
+          <h2 className="text-sm">Reset</h2>
+          <p className="text-1 text-muted-foreground">
             Clearing feedback brings back everything you hid and rebuilds your suggestions from your
             profile.
           </p>

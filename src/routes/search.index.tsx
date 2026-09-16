@@ -45,7 +45,7 @@ function SearchResults() {
           >
             ←
           </Link>
-          <h1 className="text-[20px]">Search results</h1>
+          <h1 className="text-2.5">Search results</h1>
           <Link
             to="/search/history"
             aria-label="Search history"
@@ -64,7 +64,7 @@ function SearchResults() {
         </div>
       </div>
 
-      <p className="px-5 pt-4 text-xs text-muted-foreground">
+      <p className="px-5 pt-4 text-1 text-muted-foreground">
         <strong className="text-foreground">248 results</strong> · sorted by most relevant
       </p>
 
@@ -78,7 +78,7 @@ function SearchResults() {
         onClick={() => setFilters(true)}
         className="fixed bottom-24 left-1/2 z-40 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-background"
       >
-        ⚙ Filters <span className="rounded-full bg-primary px-2 py-0.5 text-[10px]">3</span>
+        ⚙ Filters <span className="rounded-full bg-primary px-2 py-0.5 text-0">3</span>
       </button>
 
       <FilterSheet open={filters} onClose={() => setFilters(false)} />
@@ -112,10 +112,10 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4 text-background">
           <div className="flex items-center gap-1.5">
-            <h2 className="text-[22px] text-background">{t.name}</h2>
+            <h2 className="text-3 text-background">{t.name}</h2>
             {t.verified ? <VerifiedBadge /> : null}
           </div>
-          <p className="text-xs opacity-85">
+          <p className="text-1 opacity-85">
             {t.role} · {t.location}
           </p>
         </div>
@@ -126,16 +126,16 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
 
       <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
         <div>
-          <p className="text-[15px] font-bold">{t.followers}</p>
-          <p className="text-[10px] uppercase text-muted-foreground">Followers</p>
+          <p className="text-sm font-bold">{t.followers}</p>
+          <p className="text-0 uppercase text-muted-foreground">Followers</p>
         </div>
         <div>
-          <p className="text-[15px] font-bold">{t.credits}</p>
-          <p className="text-[10px] uppercase text-muted-foreground">Credits</p>
+          <p className="text-sm font-bold">{t.credits}</p>
+          <p className="text-0 uppercase text-muted-foreground">Credits</p>
         </div>
         <div>
-          <p className="text-[15px] font-bold text-warn">{t.rating} ★</p>
-          <p className="text-[10px] uppercase text-muted-foreground">Rating</p>
+          <p className="text-sm font-bold text-warn">{t.rating} ★</p>
+          <p className="text-0 uppercase text-muted-foreground">Rating</p>
         </div>
       </div>
 
@@ -143,14 +143,14 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         {[...t.genres, ...t.languages].map((x) => (
           <span
             key={x}
-            className="rounded-full bg-subtle px-3 py-1.5 text-[11px] font-semibold text-muted-foreground"
+            className="rounded-full bg-subtle px-3 py-1.5 text-0 font-semibold text-muted-foreground"
           >
             {x}
           </span>
         ))}
       </div>
 
-      <h3 className="mb-2 mt-5 text-[15px]">Top projects</h3>
+      <h3 className="mb-2 mt-5 text-sm">Top projects</h3>
       <div className="space-y-2">
         {["Rangreza — T-Series (2025)", "Neon Monsoon — Indie EP", "Kabir Sessions Vol. 2"].map(
           (p) => (
@@ -161,8 +161,8 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
               <span className="flex h-9 w-9 items-center justify-center rounded-md bg-subtle">
                 ▶
               </span>
-              <p className="flex-1 text-xs font-semibold">{p}</p>
-              <span className="text-[10px] text-muted-foreground">Spotify</span>
+              <p className="flex-1 text-1 font-semibold">{p}</p>
+              <span className="text-0 text-muted-foreground">Spotify</span>
             </div>
           ),
         )}

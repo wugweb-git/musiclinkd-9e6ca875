@@ -58,20 +58,20 @@ function Overview() {
     <WorkspaceShell project={project} tab="overview">
       {project.status === "onHold" && project.holdReason ? (
         <div
-          className="mb-4 rounded-lg px-4 py-3 text-[12px] font-semibold"
+          className="mb-4 rounded-lg px-4 py-3 text-1 font-semibold"
           style={{ background: "var(--warn-container)", color: "var(--warn)" }}
         >
           On hold — {project.holdReason}
         </div>
       ) : null}
       {project.status === "cancelled" && project.cancelledReason ? (
-        <div className="mb-4 rounded-lg border border-border px-4 py-3 text-[12px] text-muted-foreground">
+        <div className="mb-4 rounded-lg border border-border px-4 py-3 text-1 text-muted-foreground">
           Cancelled — {project.cancelledReason}
         </div>
       ) : null}
       {project.status === "completed" && project.completedOn ? (
         <div
-          className="mb-4 rounded-lg px-4 py-3 text-[12px] font-semibold"
+          className="mb-4 rounded-lg px-4 py-3 text-1 font-semibold"
           style={{ background: "var(--success-container)", color: "var(--success)" }}
         >
           Completed on {project.completedOn}
@@ -87,9 +87,7 @@ function Overview() {
         {project.budget ? <Tag tone="ok">{project.budget}</Tag> : null}
       </div>
 
-      <p className="mb-5 text-[13px] leading-relaxed text-muted-foreground">
-        {project.description}
-      </p>
+      <p className="mb-5 text-1 leading-relaxed text-muted-foreground">{project.description}</p>
 
       {pinned ? (
         <PinnedNote>
@@ -99,8 +97,8 @@ function Overview() {
 
       <Card className="mb-5">
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-[13px] font-semibold">Progress</p>
-          <span className="text-[12px] font-bold text-foreground">{project.progress}%</span>
+          <p className="text-1 font-semibold">Progress</p>
+          <span className="text-1 font-bold text-foreground">{project.progress}%</span>
         </div>
         <div className="h-2 w-full overflow-hidden rounded-full bg-border">
           <div
@@ -108,7 +106,7 @@ function Overview() {
             style={{ width: `${project.progress}%` }}
           />
         </div>
-        <p className="mt-2 text-[11px] text-muted-foreground">
+        <p className="mt-2 text-0 text-muted-foreground">
           {nextMilestone
             ? `Next: ${nextMilestone.name} · due ${nextMilestone.due}`
             : "All milestones done"}
@@ -120,7 +118,7 @@ function Overview() {
         <Card className="mb-5">
           <div className="flex items-center justify-between">
             <ParticipantStack people={project.participants} />
-            <span className="text-[11px] font-semibold text-foreground">
+            <span className="text-0 font-semibold text-foreground">
               {project.participants.length} collaborators
             </span>
           </div>

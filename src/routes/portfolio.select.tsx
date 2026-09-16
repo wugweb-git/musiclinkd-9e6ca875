@@ -74,7 +74,7 @@ function PortfolioSelect() {
                 } bg-card`}
               >
                 <span
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-xl"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-2.5"
                   style={{ background: "var(--surface-subtle)" }}
                   aria-hidden
                 >
@@ -82,7 +82,7 @@ function PortfolioSelect() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold">{item.title}</span>
-                  <span className="block text-xs text-muted-foreground">
+                  <span className="block text-1 text-muted-foreground">
                     {workType(item.kind).label}
                     {item.release_year ? ` · ${item.release_year}` : ""}
                   </span>
@@ -95,8 +95,8 @@ function PortfolioSelect() {
 
         {selected.length ? (
           <section className="mt-6 rounded-lg border border-border bg-card p-4">
-            <h2 className="text-[15px]">Preview</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="text-sm">Preview</h2>
+            <p className="mt-1 text-1 text-muted-foreground">
               {selected.map((s) => s.title).join(" · ")}
             </p>
           </section>

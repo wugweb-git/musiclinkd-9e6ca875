@@ -58,10 +58,10 @@ function MyOpportunities() {
           list.map((o) => (
             <Card key={o.id} className="space-y-3">
               <div className="flex items-start justify-between gap-2">
-                <h2 className="min-w-0 flex-1 text-[16px] leading-snug">{o.title}</h2>
+                <h2 className="min-w-0 flex-1 text-2 leading-snug">{o.title}</h2>
                 <StatusPill label={o.status} tone={statusTone(o.status)} />
               </div>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-muted-foreground">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-1 text-muted-foreground">
                 {o.applicantSummary ? (
                   <span className="inline-flex items-center gap-1">
                     <Eye size={13} /> {o.views} views

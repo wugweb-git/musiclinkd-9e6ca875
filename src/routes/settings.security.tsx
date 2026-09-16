@@ -38,8 +38,8 @@ function SecurityScreen() {
               className="flex items-center gap-3 border-b border-border p-4 last:border-0"
             >
               <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-semibold">{r.label}</span>
-                <span className="block truncate text-[11px] text-muted-foreground">{r.hint}</span>
+                <span className="block text-1 font-semibold">{r.label}</span>
+                <span className="block truncate text-0 text-muted-foreground">{r.hint}</span>
               </span>
               <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
             </Link>
@@ -47,18 +47,18 @@ function SecurityScreen() {
         </Card>
 
         <Card className="space-y-1">
-          <h2 className="text-[15px]">Where you are signed in</h2>
+          <h2 className="text-sm">Where you are signed in</h2>
           {sessions.map((s) => (
             <div
               key={s.id}
               className="flex items-center gap-3 border-b border-border py-2.5 last:border-0"
             >
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-2 truncate text-[13px] font-semibold">
+                <p className="flex items-center gap-2 truncate text-1 font-semibold">
                   {s.device}
                   {s.current ? <StatusPill label="this device" tone="good" /> : null}
                 </p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-0 text-muted-foreground">
                   {s.place} · {s.when}
                 </p>
               </div>
@@ -66,7 +66,7 @@ function SecurityScreen() {
                 <button
                   type="button"
                   onClick={() => setSessions((list) => list.filter((x) => x.id !== s.id))}
-                  className="shrink-0 text-[12px] font-semibold text-foreground"
+                  className="shrink-0 text-1 font-semibold text-foreground"
                 >
                   Sign out
                 </button>

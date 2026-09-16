@@ -89,8 +89,8 @@ function BusinessHome() {
                       <div aria-hidden className="h-11 w-11 shrink-0 rounded-md bg-subtle" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] font-bold">{b.name}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">
+                      <p className="truncate text-sm font-bold">{b.name}</p>
+                      <p className="truncate text-1 text-muted-foreground">
                         {joinParts(b.typeLabel, b.city)}
                       </p>
                     </div>
@@ -101,7 +101,7 @@ function BusinessHome() {
                     )}
                   </div>
                   {b.rating != null && b.reviewCount != null ? (
-                    <div className="flex gap-4 text-[11px] text-muted-foreground">
+                    <div className="flex gap-4 text-0 text-muted-foreground">
                       <span>
                         ★ {b.rating} ({b.reviewCount})
                       </span>
@@ -123,10 +123,10 @@ function BusinessHome() {
         )}
 
         <Card className="space-y-1">
-          <p className="flex items-center gap-2 text-[13px] font-semibold">
+          <p className="flex items-center gap-2 text-1 font-semibold">
             <Building2 size={15} /> Work at a studio you do not own?
           </p>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             Ask the owner to invite you as staff — you keep your own profile and appear on their
             team.
           </p>

@@ -51,8 +51,8 @@ function Roles() {
       <Label>Roles on this project</Label>
       {project.participants.length === 0 ? (
         <Card className="mb-5 text-center">
-          <p className="text-[13px] font-semibold">No roles assigned yet</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">No roles assigned yet</p>
+          <p className="mt-1 text-1 text-muted-foreground">
             Add collaborators and give each of them a role so credits stay accurate.
           </p>
         </Card>
@@ -63,7 +63,7 @@ function Roles() {
               <img src={p.photo} alt="" className="h-10 w-10 rounded-full object-cover" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-[14px] font-semibold">{p.role}</p>
+                  <p className="text-sm font-semibold">{p.role}</p>
                   <Tag
                     tone={
                       p.status === "invited"
@@ -78,15 +78,15 @@ function Roles() {
                     {p.status === "owner" ? "Owner" : p.status === "invited" ? "Invited" : "Active"}
                   </Tag>
                 </div>
-                <p className="text-[12px] text-muted-foreground">{p.name}</p>
-                <p className="mt-1 text-[11px] text-muted-foreground">{p.responsibility}</p>
+                <p className="text-1 text-muted-foreground">{p.name}</p>
+                <p className="mt-1 text-0 text-muted-foreground">{p.responsibility}</p>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      <p className="mb-5 text-[11px] text-muted-foreground">
+      <p className="mb-5 text-0 text-muted-foreground">
         Roles come from the shared MusicLinkd taxonomy, so completed work carries the same credit
         across profiles, portfolios and search.
       </p>

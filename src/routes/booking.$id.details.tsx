@@ -80,20 +80,20 @@ function Details() {
                 type="button"
                 aria-label="Fewer people"
                 onClick={() => set({ people: Math.max(1, draft.people - 1) })}
-                className="h-12 w-12 rounded-full border border-border bg-card text-lg"
+                className="h-12 w-12 rounded-full border border-border bg-card text-2"
               >
                 −
               </button>
-              <span className="min-w-8 text-center text-lg font-semibold">{draft.people}</span>
+              <span className="min-w-8 text-center text-2 font-semibold">{draft.people}</span>
               <button
                 type="button"
                 aria-label="More people"
                 onClick={() => set({ people: Math.min(r.capacity, draft.people + 1) })}
-                className="h-12 w-12 rounded-full border border-border bg-card text-lg"
+                className="h-12 w-12 rounded-full border border-border bg-card text-2"
               >
                 +
               </button>
-              <span className="text-xs text-muted-foreground">Room capacity {r.capacity}</span>
+              <span className="text-1 text-muted-foreground">Room capacity {r.capacity}</span>
             </div>
           </Field>
 
@@ -131,7 +131,7 @@ function Field({
   return (
     <label className="block">
       <span className="text-sm font-semibold">{label}</span>
-      {hint ? <span className="mt-0.5 block text-xs text-muted-foreground">{hint}</span> : null}
+      {hint ? <span className="mt-0.5 block text-1 text-muted-foreground">{hint}</span> : null}
       <span className="mt-2 block">{children}</span>
     </label>
   );

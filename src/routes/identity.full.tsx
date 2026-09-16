@@ -60,8 +60,8 @@ function FullscreenQr() {
           label={`Fullscreen MusicLinkd QR for ${myIdentity.name}`}
         />
         <div className="text-center">
-          <p className="text-[18px]">{myIdentity.name}</p>
-          <p className="text-[13px]" style={{ opacity: 0.6 }}>
+          <p className="text-2">{myIdentity.name}</p>
+          <p className="text-1" style={{ opacity: 0.6 }}>
             musiclinkd.app/q/{myIdentity.code}
           </p>
         </div>

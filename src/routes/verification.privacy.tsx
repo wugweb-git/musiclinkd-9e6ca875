@@ -36,7 +36,7 @@ function VerificationPrivacy() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="flex gap-3">
           <ShieldCheck size={18} className="mt-0.5 shrink-0 text-primary" aria-hidden />
-          <p className="text-[13px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             Verification documents are private. Other members only ever see the badge and its
             status.
           </p>
@@ -45,26 +45,26 @@ function VerificationPrivacy() {
         <div className="space-y-2">
           {privacyPoints.map((p) => (
             <Card key={p.title} className="py-3">
-              <h2 className="text-[14px]">{p.title}</h2>
-              <p className="mt-1 text-[12px] text-muted-foreground">{p.body}</p>
+              <h2 className="text-sm">{p.title}</h2>
+              <p className="mt-1 text-1 text-muted-foreground">{p.body}</p>
             </Card>
           ))}
         </div>
 
         <section>
-          <h2 className="text-[15px]">Common questions</h2>
+          <h2 className="text-sm">Common questions</h2>
           <div className="mt-3 space-y-2">
             {verificationFaq.map((f) => (
               <Card key={f.q} className="py-3">
-                <p className="text-[13px] font-semibold">{f.q}</p>
-                <p className="mt-1 text-[12px] text-muted-foreground">{f.a}</p>
+                <p className="text-1 font-semibold">{f.q}</p>
+                <p className="mt-1 text-1 text-muted-foreground">{f.a}</p>
               </Card>
             ))}
           </div>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-[15px]">Related</h2>
+          <h2 className="text-sm">Related</h2>
           <Row
             title="How verification works"
             subtitle="Full guide"

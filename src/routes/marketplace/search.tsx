@@ -64,7 +64,7 @@ function MarketSearch() {
 
       {!q.trim() ? (
         <div className="px-5">
-          <h2 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <h2 className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
             Recent searches
           </h2>
           <div className="mb-6 flex flex-wrap gap-2">
@@ -74,7 +74,7 @@ function MarketSearch() {
               </Chip>
             ))}
           </div>
-          <h2 className="mb-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <h2 className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
             Popular in Mumbai
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -88,7 +88,7 @@ function MarketSearch() {
       ) : (
         <>
           <div className="flex items-center justify-between px-5">
-            <p className="text-xs text-muted-foreground">{results.length} results · Mumbai</p>
+            <p className="text-1 text-muted-foreground">{results.length} results · Mumbai</p>
             <div className="flex gap-2">
               <Chip onClick={() => setSortOpen(true)}>{sort}</Chip>
               <Chip active onClick={() => setFilters(true)}>

@@ -172,7 +172,7 @@ function RentalDetail() {
             <Rating value={e.rating} count={e.reviews} />
           </div>
         </div>
-        <h1 className="mt-2 text-[22px] leading-tight">{e.name}</h1>
+        <h1 className="mt-2 text-3 leading-tight">{e.name}</h1>
         {byline ? <p className="mt-1 text-sm text-muted-foreground">{byline}</p> : null}
         {e.availability || where ? (
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -187,32 +187,32 @@ function RentalDetail() {
             style={{ background: "var(--warn-container)" }}
           >
             <div className="min-w-0">
-              <p className="text-[12px] font-bold" style={{ color: "var(--warn)" }}>
+              <p className="text-1 font-bold" style={{ color: "var(--warn)" }}>
                 Refundable security deposit
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-0 text-muted-foreground">
                 Held by the provider for the rental period.
               </p>
             </div>
-            <span className="shrink-0 text-[15px] font-bold">{inr(e.deposit)}</span>
+            <span className="shrink-0 text-sm font-bold">{inr(e.deposit)}</span>
           </div>
         ) : null}
 
         {e.description ? (
           <>
-            <h2 className="mt-6 text-[16px]">Description</h2>
+            <h2 className="mt-6 text-2">Description</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{e.description}</p>
           </>
         ) : null}
 
         {e.specs?.length ? (
           <>
-            <h2 className="mt-6 text-[16px]">Specifications</h2>
+            <h2 className="mt-6 text-2">Specifications</h2>
             <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
               {e.specs.map((s) => (
                 <div key={s.label} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <dt className="text-xs text-muted-foreground">{s.label}</dt>
-                  <dd className="text-right text-xs font-semibold">{s.value}</dd>
+                  <dt className="text-1 text-muted-foreground">{s.label}</dt>
+                  <dd className="text-right text-1 font-semibold">{s.value}</dd>
                 </div>
               ))}
             </dl>
@@ -221,10 +221,10 @@ function RentalDetail() {
 
         {e.included?.length ? (
           <>
-            <h2 className="mt-6 text-[16px]">What's included</h2>
+            <h2 className="mt-6 text-2">What's included</h2>
             <ul className="mt-2 space-y-2 rounded-lg border border-border p-4">
               {e.included.map((x) => (
-                <li key={x} className="flex items-center gap-2 text-[13px]">
+                <li key={x} className="flex items-center gap-2 text-1">
                   <Check size={14} className="shrink-0 text-primary" /> {x}
                 </li>
               ))}
@@ -234,19 +234,19 @@ function RentalDetail() {
 
         {terms.length ? (
           <>
-            <h2 className="mt-6 text-[16px]">Rental terms</h2>
+            <h2 className="mt-6 text-2">Rental terms</h2>
             <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
               {terms.map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <dt className="text-xs text-muted-foreground">{r.k}</dt>
-                  <dd className="text-xs font-semibold">{r.v}</dd>
+                  <dt className="text-1 text-muted-foreground">{r.k}</dt>
+                  <dd className="text-1 font-semibold">{r.v}</dd>
                 </div>
               ))}
             </dl>
           </>
         ) : null}
 
-        {p || e.owner ? <h2 className="mt-6 text-[16px]">Provider</h2> : null}
+        {p || e.owner ? <h2 className="mt-6 text-2">Provider</h2> : null}
         {e.owner && !p ? (
           <div className="mt-2 rounded-lg border border-border bg-card p-4">
             <SellerSummary seller={e.owner} compact />
@@ -277,8 +277,8 @@ function RentalDetail() {
                 { k: "Rentals", v: `${p.completedRentals}` },
               ].map((x) => (
                 <div key={x.k} className="rounded-lg bg-subtle py-2">
-                  <p className="truncate text-[12px] font-bold">{x.v}</p>
-                  <p className="text-[10px] text-muted-foreground">{x.k}</p>
+                  <p className="truncate text-1 font-bold">{x.v}</p>
+                  <p className="text-0 text-muted-foreground">{x.k}</p>
                 </div>
               ))}
             </div>
@@ -300,23 +300,23 @@ function RentalDetail() {
 
         {fromCatalog ? null : (
           <>
-            <h2 className="mt-6 text-[16px]">Reviews</h2>
+            <h2 className="mt-6 text-2">Reviews</h2>
             <div className="mt-2 space-y-3">
               {rentalReviews.slice(0, 2).map((r) => (
                 <article key={r.id} className="rounded-lg border border-border bg-card p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="truncate text-[13px] font-semibold">{r.name}</p>
-                      <p className="truncate text-[11px] text-muted-foreground">{r.context}</p>
+                      <p className="truncate text-1 font-semibold">{r.name}</p>
+                      <p className="truncate text-0 text-muted-foreground">{r.context}</p>
                     </div>
                     <Rating value={r.rating} />
                   </div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{r.body}</p>
+                  <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {r.tags.map((t) => (
                       <span
                         key={t}
-                        className="rounded-full bg-subtle px-2 py-1 text-[10px] font-semibold text-muted-foreground"
+                        className="rounded-full bg-subtle px-2 py-1 text-0 font-semibold text-muted-foreground"
                       >
                         {t}
                       </span>
@@ -328,7 +328,7 @@ function RentalDetail() {
           </>
         )}
 
-        <h2 className="mt-6 text-[16px]">Related equipment</h2>
+        <h2 className="mt-6 text-2">Related equipment</h2>
       </div>
 
       <div className="rail flex gap-3 overflow-x-auto px-5 pb-5 no-scrollbar">
@@ -340,7 +340,7 @@ function RentalDetail() {
       <div className="px-5 pb-6">
         <button
           onClick={() => setReport(true)}
-          className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground"
+          className="inline-flex items-center gap-1.5 text-0 font-semibold text-muted-foreground"
         >
           <Flag size={12} /> Report this listing
         </button>
@@ -352,13 +352,11 @@ function RentalDetail() {
             {e.daily != null ? (
               <Price
                 price={rupeeParts(e.daily, "day")}
-                amountClassName="text-[15px] font-bold"
-                unitClassName="text-[11px]"
+                amountClassName="text-sm font-bold"
+                unitClassName="text-0"
               />
             ) : null}
-            {barNote ? (
-              <p className="truncate text-[10px] text-muted-foreground">{barNote}</p>
-            ) : null}
+            {barNote ? <p className="truncate text-0 text-muted-foreground">{barNote}</p> : null}
           </div>
           {fromCatalog ? (
             // The request flow needs dates, rates and a deposit a database rental does not store.

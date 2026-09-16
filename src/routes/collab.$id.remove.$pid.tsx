@@ -55,8 +55,8 @@ function RemoveCollaborator() {
           <div className="flex items-center gap-3">
             <img src={person.photo} alt="" className="h-12 w-12 rounded-full object-cover" />
             <div className="min-w-0">
-              <p className="truncate text-[15px] font-semibold">{person.name}</p>
-              <p className="truncate text-[12px] text-muted-foreground">
+              <p className="truncate text-sm font-semibold">{person.name}</p>
+              <p className="truncate text-1 text-muted-foreground">
                 {person.role} · {person.responsibility}
               </p>
             </div>
@@ -65,8 +65,8 @@ function RemoveCollaborator() {
 
         {!canManage ? (
           <Card className="mb-5">
-            <p className="text-[13px] font-semibold">The project owner can't be removed</p>
-            <p className="mt-1 text-[12px] text-muted-foreground">
+            <p className="text-1 font-semibold">The project owner can't be removed</p>
+            <p className="mt-1 text-1 text-muted-foreground">
               Transfer ownership first if the owner needs to step away.
             </p>
             <BtnLink

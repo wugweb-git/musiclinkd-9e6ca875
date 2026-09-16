@@ -56,8 +56,8 @@ function BusinessEnquiry() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
-            <h2 className="mt-3 text-[19px] leading-tight">Your enquiry is with {b.name}</h2>
-            <p className="mt-2 text-[13px] text-muted-foreground">
+            <h2 className="mt-3 text-2.5 leading-tight">Your enquiry is with {b.name}</h2>
+            <p className="mt-2 text-1 text-muted-foreground">
               They usually reply within a couple of hours. You will get a notification and the
               thread appears in Connections.
             </p>
@@ -101,7 +101,7 @@ function BusinessEnquiry() {
             placeholder="Dates, how many people, what you need from the room."
             className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
           />
-          <p className="mt-2 text-[12px] text-muted-foreground">
+          <p className="mt-2 text-1 text-muted-foreground">
             Sharing rough dates gets a faster answer than "are you free?".
           </p>
         </Card>

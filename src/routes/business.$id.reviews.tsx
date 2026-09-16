@@ -65,12 +65,12 @@ function BusinessReviews() {
                   </div>
                   <Stars value={r.rating} />
                 </div>
-                <p className="mt-3 text-[13px]">{r.body}</p>
+                <p className="mt-3 text-1">{r.body}</p>
 
                 {response ? (
                   <div className="mt-3 rounded-[16px] bg-subtle p-3">
-                    <p className="text-[12px] font-semibold">{b.name} replied</p>
-                    <p className="mt-1 text-[13px] text-muted-foreground">{response}</p>
+                    <p className="text-1 font-semibold">{b.name} replied</p>
+                    <p className="mt-1 text-1 text-muted-foreground">{response}</p>
                   </div>
                 ) : replyTo === r.id ? (
                   <div className="mt-3">

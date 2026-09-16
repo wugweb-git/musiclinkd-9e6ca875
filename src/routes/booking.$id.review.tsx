@@ -76,7 +76,7 @@ function Review() {
             </div>
 
             <section className="mt-5 rounded-lg border border-border bg-card p-4">
-              <dl className="grid grid-cols-2 gap-3 text-xs">
+              <dl className="grid grid-cols-2 gap-3 text-1">
                 <Detail label="Duration" value={`${draft.hours} hr${draft.hours > 1 ? "s" : ""}`} />
                 <Detail label="Purpose" value={draft.purpose || "Not specified"} />
                 <Detail label="Project" value={draft.notes || "—"} />
@@ -86,25 +86,25 @@ function Review() {
                 />
               </dl>
               {draft.requirements ? (
-                <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+                <p className="mt-3 border-t border-border pt-3 text-1 text-muted-foreground">
                   {draft.requirements}
                 </p>
               ) : null}
               <button
                 type="button"
                 onClick={() => navigate({ to: "/booking/$id/details", params: { id: b.id } })}
-                className="mt-3 min-h-11 text-xs font-bold text-foreground"
+                className="mt-3 min-h-11 text-1 font-bold text-foreground"
               >
                 Edit details
               </button>
             </section>
 
-            <h2 className="mt-6 text-[17px]">Price</h2>
+            <h2 className="mt-6 text-2">Price</h2>
             <div className="mt-3">
               <PriceBreakdownCard p={price} />
             </div>
 
-            <h2 className="mt-6 text-[17px]">Provider terms</h2>
+            <h2 className="mt-6 text-2">Provider terms</h2>
             <div className="mt-3 space-y-2">
               {b.policies.map((p) => (
                 <PolicyCard

@@ -83,13 +83,13 @@ function ProviderBookingDetail() {
             />
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold">{bk.customer}</p>
-              <p className="truncate text-xs text-muted-foreground">{bk.customerRole}</p>
+              <p className="truncate text-1 text-muted-foreground">{bk.customerRole}</p>
             </div>
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
               <Users size={13} /> {bk.people}
             </span>
           </div>
-          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
             <Detail label="Date" value={formatDate(bk.date)} />
             <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
             <Detail label="Duration" value={`${bk.hours} hrs`} />
@@ -98,18 +98,18 @@ function ProviderBookingDetail() {
             <Detail label="Value" value={inr(bk.amount)} />
           </dl>
           {bk.notes ? (
-            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+            <p className="mt-3 border-t border-border pt-3 text-1 text-muted-foreground">
               {bk.notes}
             </p>
           ) : null}
         </div>
 
-        <h2 className="mt-6 text-[17px]">Progress</h2>
+        <h2 className="mt-6 text-2">Progress</h2>
         <div className="mt-3 rounded-lg border border-border bg-card p-4">
           <BookingTimeline status={bk.status} />
         </div>
 
-        <h2 className="mt-6 text-[17px]">Payout</h2>
+        <h2 className="mt-6 text-2">Payout</h2>
         <div className="mt-3">
           <PriceBreakdownCard p={price} compact />
         </div>

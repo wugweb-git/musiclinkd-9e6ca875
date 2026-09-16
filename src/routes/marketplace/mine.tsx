@@ -34,7 +34,7 @@ function Mine() {
         subtitle="4 active · 2 pending review"
         back="/marketplace"
         right={
-          <TextLink to="/marketplace/sell" className="text-xs">
+          <TextLink to="/marketplace/sell" className="text-1">
             New
           </TextLink>
         }
@@ -52,7 +52,7 @@ function Mine() {
           ? listings.slice(0, 3).map((l) => (
               <div key={l.id}>
                 <ListingRow l={l} />
-                <div className="mt-1.5 flex gap-2 px-1 text-[10px] font-semibold text-muted-foreground">
+                <div className="mt-1.5 flex gap-2 px-1 text-0 font-semibold text-muted-foreground">
                   <span
                     className="rounded-full px-2 py-1"
                     style={{ background: "var(--success-container)", color: "var(--success)" }}
@@ -81,8 +81,8 @@ function Mine() {
                 className="flex items-center justify-between rounded-lg border border-border bg-card p-4"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold">{o.listing}</p>
-                  <p className="text-[11px] text-muted-foreground">Offer {o.amount}</p>
+                  <p className="truncate text-1 font-semibold">{o.listing}</p>
+                  <p className="text-0 text-muted-foreground">Offer {o.amount}</p>
                 </div>
                 <span className="rounded-full bg-subtle pill text-muted-foreground">
                   {o.status}

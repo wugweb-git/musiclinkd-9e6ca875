@@ -55,8 +55,8 @@ function SavedRentals() {
                 className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold">{s}</p>
-                  <p className="text-[11px] text-muted-foreground">Alerts on · 4 new available</p>
+                  <p className="truncate text-1 font-semibold">{s}</p>
+                  <p className="text-0 text-muted-foreground">Alerts on · 4 new available</p>
                 </div>
                 <Link to="/marketplace/rent/search" className="shrink-0">
                   <Chip>View</Chip>

@@ -69,7 +69,7 @@ function Settings() {
             </Chip>
           ))}
         </div>
-        <p className="mb-5 text-[11px] text-muted-foreground">
+        <p className="mb-5 text-0 text-muted-foreground">
           {visibilities.find((v) => v.key === visibility)?.hint}
         </p>
 
@@ -130,31 +130,31 @@ function Settings() {
           <>
             <Label>Agreement</Label>
             <Card className="mb-5">
-              <p className="text-[13px] font-semibold">Scope</p>
-              <p className="mb-3 text-[12px] text-muted-foreground">{project.agreement.scope}</p>
-              <p className="text-[13px] font-semibold">Deliverables</p>
-              <ul className="mb-3 list-disc pl-5 text-[12px] text-muted-foreground">
+              <p className="text-1 font-semibold">Scope</p>
+              <p className="mb-3 text-1 text-muted-foreground">{project.agreement.scope}</p>
+              <p className="text-1 font-semibold">Deliverables</p>
+              <ul className="mb-3 list-disc pl-5 text-1 text-muted-foreground">
                 {project.agreement.deliverables.map((d) => (
                   <li key={d}>{d}</li>
                 ))}
               </ul>
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 <span className="font-semibold text-foreground">Timeline:</span>{" "}
                 {project.agreement.timeline}
               </p>
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 <span className="font-semibold text-foreground">Compensation:</span>{" "}
                 {project.agreement.compensation}
               </p>
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 <span className="font-semibold text-foreground">Ownership:</span>{" "}
                 {project.agreement.ownership}
               </p>
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 <span className="font-semibold text-foreground">Credit:</span>{" "}
                 {project.agreement.credit}
               </p>
-              <p className="mt-3 text-[11px] text-muted-foreground">
+              <p className="mt-3 text-0 text-muted-foreground">
                 This is a working agreement between collaborators, not a legal contract.
               </p>
             </Card>
@@ -198,7 +198,7 @@ function Settings() {
         <TextLink
           to="/collab/$id"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px]"
+          className="mb-8 block text-center text-1"
         >
           Back to Workspace
         </TextLink>

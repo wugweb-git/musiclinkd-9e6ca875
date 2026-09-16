@@ -99,8 +99,8 @@ function BandsIndex() {
                         />
                       )}
                       <div className="min-w-0 flex-1">
-                        <h2 className="truncate text-[17px] leading-tight">{b.name}</h2>
-                        <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
+                        <h2 className="truncate text-2 leading-tight">{b.name}</h2>
+                        <p className="mt-0.5 truncate text-1 text-muted-foreground">
                           {joinParts(b.genres.join(" · "), b.city)}
                         </p>
                       </div>
@@ -118,11 +118,9 @@ function BandsIndex() {
                       ) : null}
                     </div>
                     {b.tagline ? (
-                      <p className="mt-3 line-clamp-2 text-[13px] text-muted-foreground">
-                        {b.tagline}
-                      </p>
+                      <p className="mt-3 line-clamp-2 text-1 text-muted-foreground">{b.tagline}</p>
                     ) : null}
-                    <div className="mt-3 flex items-center gap-2 text-[12px] text-muted-foreground">
+                    <div className="mt-3 flex items-center gap-2 text-1 text-muted-foreground">
                       <Users size={14} aria-hidden />
                       <span className="truncate">{b.members.length} members</span>
                     </div>
@@ -131,7 +129,7 @@ function BandsIndex() {
                         {b.lookingFor.map((l) => (
                           <span
                             key={l}
-                            className="shrink-0 rounded-full bg-subtle px-3 py-1 text-[11px] font-semibold text-muted-foreground"
+                            className="shrink-0 rounded-full bg-subtle px-3 py-1 text-0 font-semibold text-muted-foreground"
                           >
                             Looking for: {l}
                           </span>

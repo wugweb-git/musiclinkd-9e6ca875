@@ -25,7 +25,7 @@ function Messages() {
         title="Messages"
         subtitle="3 unread"
         right={
-          <TextLink to="/collab" className="text-[11px] font-bold uppercase tracking-wide">
+          <TextLink to="/collab" className="text-0 font-bold uppercase tracking-wide">
             Collabs
           </TextLink>
         }
@@ -36,8 +36,8 @@ function Messages() {
           className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-4"
         >
           <span className="min-w-0">
-            <span className="block text-[14px] font-semibold">Collaborations</span>
-            <span className="block text-[11px] text-muted-foreground">
+            <span className="block text-sm font-semibold">Collaborations</span>
+            <span className="block text-0 text-muted-foreground">
               2 invitations · 1 proposal · 3 active projects
             </span>
           </span>
@@ -48,8 +48,8 @@ function Messages() {
           className="mt-3 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-4"
         >
           <span className="min-w-0">
-            <span className="block text-[14px] font-semibold">Share work</span>
-            <span className="block text-[11px] text-muted-foreground">
+            <span className="block text-sm font-semibold">Share work</span>
+            <span className="block text-0 text-muted-foreground">
               Attach a track, project or performance to a conversation
             </span>
           </span>
@@ -61,8 +61,8 @@ function Messages() {
           <div key={t.id} className="flex items-center gap-3 py-4">
             <img src={t.photo} alt={t.name} className="h-12 w-12 rounded-full object-cover" />
             <div className="min-w-0 flex-1">
-              <h3 className="truncate text-[14px]">{t.name}</h3>
-              <p className="truncate text-[11px] text-muted-foreground">
+              <h3 className="truncate text-sm">{t.name}</h3>
+              <p className="truncate text-0 text-muted-foreground">
                 {i === 0
                   ? "Sending the reference track tonight."
                   : "Sounds good — let's lock dates."}
@@ -71,7 +71,7 @@ function Messages() {
             {i < 3 ? (
               <span className="h-2.5 w-2.5 rounded-full bg-brand" />
             ) : (
-              <span className="text-[10px] text-muted-foreground">2d</span>
+              <span className="text-0 text-muted-foreground">2d</span>
             )}
           </div>
         ))}

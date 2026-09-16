@@ -135,24 +135,24 @@ function ListingDetail() {
             <Rating value={l.rating} count={l.reviews} />
           )}
         </div>
-        <h1 className="mt-2 text-[22px] leading-tight">{l.title}</h1>
+        <h1 className="mt-2 text-3 leading-tight">{l.title}</h1>
         {l.subtitle ? <p className="mt-1 text-sm text-muted-foreground">{l.subtitle}</p> : null}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {where ? <LocationRow text={where} /> : null}
           {!fromCatalog || l.owner?.verified ? <TrustPill label="Industry verified" /> : null}
-          <span className="text-[11px] text-muted-foreground">Listed {l.postedAt}</span>
+          <span className="text-0 text-muted-foreground">Listed {l.postedAt}</span>
         </div>
 
         {l.description ? (
           <>
-            <h2 className="mt-6 text-[16px]">Description</h2>
+            <h2 className="mt-6 text-2">Description</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{l.description}</p>
           </>
         ) : null}
 
         {l.specs.length ? (
           <>
-            <h2 className="mt-6 text-[16px]">
+            <h2 className="mt-6 text-2">
               {l.type === "service"
                 ? "Service details"
                 : l.type === "rental"
@@ -162,8 +162,8 @@ function ListingDetail() {
             <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
               {l.specs.map((s) => (
                 <div key={s.label} className="flex items-center justify-between px-4 py-3">
-                  <dt className="text-xs text-muted-foreground">{s.label}</dt>
-                  <dd className="text-xs font-semibold">{s.value}</dd>
+                  <dt className="text-1 text-muted-foreground">{s.label}</dt>
+                  <dd className="text-1 font-semibold">{s.value}</dd>
                 </div>
               ))}
             </dl>
@@ -171,7 +171,7 @@ function ListingDetail() {
         ) : null}
 
         {seller || l.owner ? (
-          <h2 className="mt-6 text-[16px]">{l.type === "product" ? "Seller" : "Provider"}</h2>
+          <h2 className="mt-6 text-2">{l.type === "product" ? "Seller" : "Provider"}</h2>
         ) : null}
         {l.owner && !seller ? (
           <div className="mt-2 rounded-lg border border-border bg-card p-4">
@@ -198,8 +198,8 @@ function ListingDetail() {
                 { k: "On MusicLinkd", v: `${seller.years} yrs` },
               ].map((x) => (
                 <div key={x.k} className="rounded-lg bg-subtle py-2">
-                  <p className="text-[12px] font-bold">{x.v}</p>
-                  <p className="text-[10px] text-muted-foreground">{x.k}</p>
+                  <p className="text-1 font-bold">{x.v}</p>
+                  <p className="text-0 text-muted-foreground">{x.k}</p>
                 </div>
               ))}
             </div>
@@ -216,20 +216,20 @@ function ListingDetail() {
 
         {fromCatalog ? null : (
           <>
-            <h2 className="mt-6 text-[16px]">Reviews</h2>
+            <h2 className="mt-6 text-2">Reviews</h2>
             <div className="mt-2 space-y-3">
               {reviews.slice(0, 2).map((r) => (
                 <article key={r.id} className="rounded-lg border border-border bg-card p-4">
                   <div className="flex items-center justify-between">
-                    <p className="text-[13px] font-semibold">{r.name}</p>
+                    <p className="text-1 font-semibold">{r.name}</p>
                     <Rating value={r.rating} />
                   </div>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-0 text-muted-foreground">
                     {r.role} · {r.context} · {r.date}
                   </p>
                   <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
                   {r.response ? (
-                    <p className="mt-2 rounded-lg bg-subtle p-3 text-xs text-muted-foreground">
+                    <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
                       Seller: {r.response}
                     </p>
                   ) : null}
@@ -239,7 +239,7 @@ function ListingDetail() {
           </>
         )}
 
-        <h2 className="mt-6 text-[16px]">Related listings</h2>
+        <h2 className="mt-6 text-2">Related listings</h2>
         <div className="rail mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
           {[
             ...listings.filter((x) => x.id !== l.id).slice(0, 4),
@@ -251,7 +251,7 @@ function ListingDetail() {
 
         <button
           onClick={() => setReport(true)}
-          className="mx-auto mt-6 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground"
+          className="mx-auto mt-6 flex items-center gap-1.5 text-0 font-semibold text-muted-foreground"
         >
           <Flag size={12} /> Report this listing
         </button>

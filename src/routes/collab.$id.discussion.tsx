@@ -81,12 +81,12 @@ function Discussion() {
             <div className="mb-2 flex items-center gap-2">
               <img src={d.photo} alt="" className="h-8 w-8 rounded-full object-cover" />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-semibold">{d.author}</p>
-                <p className="text-[10px] text-muted-foreground">{d.time}</p>
+                <p className="truncate text-1 font-semibold">{d.author}</p>
+                <p className="text-0 text-muted-foreground">{d.time}</p>
               </div>
               {d.decision ? (
                 <span
-                  className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+                  className="rounded-full px-2.5 py-1 text-0 font-bold uppercase"
                   style={{ background: "var(--success-container)", color: "var(--success)" }}
                 >
                   Decision
@@ -94,16 +94,16 @@ function Discussion() {
               ) : null}
               {d.pinned ? (
                 <span
-                  className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+                  className="rounded-full px-2.5 py-1 text-0 font-bold uppercase"
                   style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
                 >
                   Pinned
                 </span>
               ) : null}
             </div>
-            <p className="text-[13px] leading-relaxed">{d.body}</p>
+            <p className="text-1 leading-relaxed">{d.body}</p>
             {d.attachment ? (
-              <p className="mt-2 rounded-lg border border-border px-3 py-2 text-[11px] text-muted-foreground">
+              <p className="mt-2 rounded-lg border border-border px-3 py-2 text-0 text-muted-foreground">
                 Attached · {d.attachment}
               </p>
             ) : null}
@@ -111,11 +111,11 @@ function Discussion() {
               <div className="mt-3 space-y-2 border-l border-border pl-3">
                 {d.replies.map((r) => (
                   <div key={`${r.author}-${r.time}`}>
-                    <p className="text-[11px] font-semibold">
+                    <p className="text-0 font-semibold">
                       {r.author}{" "}
                       <span className="font-normal text-muted-foreground">· {r.time}</span>
                     </p>
-                    <p className="text-[12px] text-muted-foreground">{r.body}</p>
+                    <p className="text-1 text-muted-foreground">{r.body}</p>
                   </div>
                 ))}
               </div>

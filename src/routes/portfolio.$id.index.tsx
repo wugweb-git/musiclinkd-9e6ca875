@@ -151,7 +151,7 @@ function WorkDetail() {
 
             {item.collaborators.length ? (
               <section className="mt-4 rounded-lg border border-border bg-card p-4">
-                <h2 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <h2 className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
                   Credits
                 </h2>
                 <div className="mt-2 space-y-2">
@@ -163,7 +163,7 @@ function WorkDetail() {
             ) : null}
 
             <section className="mt-6">
-              <h2 className="text-[17px]">Performance</h2>
+              <h2 className="text-2">Performance</h2>
               <div className="mt-3">
                 <WorkAnalytics figures={analyticsFor(item.id)} />
               </div>

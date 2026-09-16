@@ -59,7 +59,7 @@ function RecentlyViewed() {
                         />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-semibold">{t.name}</p>
-                          <p className="truncate text-[12px] text-muted-foreground">
+                          <p className="truncate text-1 text-muted-foreground">
                             {t.role} · {t.location}
                           </p>
                         </div>
@@ -84,7 +84,7 @@ function RecentlyViewed() {
                       />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">{s.name}</p>
-                        <p className="truncate text-[12px] text-muted-foreground">{s.location}</p>
+                        <p className="truncate text-1 text-muted-foreground">{s.location}</p>
                       </div>
                     </div>
                   </Card>

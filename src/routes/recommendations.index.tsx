@@ -95,9 +95,9 @@ function Recs() {
               <section key={s.key}>
                 <div className="flex items-center gap-2">
                   <Sparkles size={15} className="text-primary" aria-hidden />
-                  <h2 className="text-[15px]">{s.title}</h2>
+                  <h2 className="text-sm">{s.title}</h2>
                 </div>
-                <p className="mt-0.5 text-[12px] text-muted-foreground">{s.blurb}</p>
+                <p className="mt-0.5 text-1 text-muted-foreground">{s.blurb}</p>
                 <div className="mt-3 space-y-3">
                   {items.map((r) => (
                     <Card key={r.id} className="p-0 overflow-hidden">
@@ -112,10 +112,10 @@ function Recs() {
                           <div className="flex items-start gap-2">
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-1.5">
-                                <h3 className="truncate text-[15px] leading-tight">{r.title}</h3>
+                                <h3 className="truncate text-sm leading-tight">{r.title}</h3>
                                 {r.verified ? <VerifiedBadge size={13} /> : null}
                               </div>
-                              <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
+                              <p className="mt-0.5 truncate text-1 text-muted-foreground">
                                 {r.subtitle} · {r.meta}
                               </p>
                             </div>
@@ -141,15 +141,15 @@ function Recs() {
                         </div>
                       </div>
                       <div className="flex gap-2 border-t border-border p-3">
-                        <BtnLink {...r.link} className="flex-1 w-full text-xs">
+                        <BtnLink {...r.link} className="flex-1 w-full text-1">
                           Open
                         </BtnLink>
-                        <Btn variant="outline" className="flex-1 text-xs">
+                        <Btn variant="outline" className="flex-1 text-1">
                           Save
                         </Btn>
                         <Btn
                           variant="ghost"
-                          className="flex-1 text-xs"
+                          className="flex-1 text-1"
                           onClick={() => setHidden((p) => [...p, r.id])}
                         >
                           Hide
@@ -164,8 +164,8 @@ function Recs() {
         )}
 
         <Card className="mb-4 space-y-2">
-          <h2 className="text-[15px]">Recommendations you control</h2>
-          <p className="text-[12px] text-muted-foreground">
+          <h2 className="text-sm">Recommendations you control</h2>
+          <p className="text-1 text-muted-foreground">
             Every card shows why it is here. Hide anything and it stops influencing future
             suggestions.
           </p>
@@ -185,7 +185,7 @@ function Recs() {
                 if (feedbackFor) setHidden((p) => [...p, feedbackFor]);
                 setFeedbackFor(null);
               }}
-              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
+              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-1 font-semibold"
             >
               {f}
             </button>

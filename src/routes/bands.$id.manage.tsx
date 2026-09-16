@@ -76,7 +76,7 @@ function ManageBand() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{m.name}</p>
                     {m.instrument ? (
-                      <p className="truncate text-[12px] text-muted-foreground">{m.instrument}</p>
+                      <p className="truncate text-1 text-muted-foreground">{m.instrument}</p>
                     ) : null}
                   </div>
                   <StatusPill
@@ -84,15 +84,15 @@ function ManageBand() {
                     tone={m.role === "owner" ? "brand" : "neutral"}
                   />
                 </div>
-                <p className="text-[12px] text-muted-foreground">{bandRoleCopy[m.role].blurb}</p>
+                <p className="text-1 text-muted-foreground">{bandRoleCopy[m.role].blurb}</p>
                 {m.role !== "owner" ? (
                   <div className="flex gap-2">
-                    <Btn variant="outline" className="flex-1 text-xs">
+                    <Btn variant="outline" className="flex-1 text-1">
                       {m.role === "admin" ? "Make member" : "Make admin"}
                     </Btn>
                     <Btn
                       variant="ghost"
-                      className="flex-1 text-xs"
+                      className="flex-1 text-1"
                       onClick={() => setRemoving(m.key)}
                     >
                       Remove
@@ -141,8 +141,8 @@ function ManageBand() {
               to="/provider/availability"
             />
             <Card className="space-y-3">
-              <h2 className="text-[15px]">Ownership</h2>
-              <p className="text-[12px] text-muted-foreground">
+              <h2 className="text-sm">Ownership</h2>
+              <p className="text-1 text-muted-foreground">
                 Only the owner can transfer ownership or delete the band.
               </p>
               <Btn variant="outline" className="w-full" onClick={() => setTransfer(true)}>
@@ -196,12 +196,12 @@ function ManageBand() {
 function RolesCard() {
   return (
     <Card>
-      <h2 className="text-[15px]">Roles & permissions</h2>
+      <h2 className="text-sm">Roles & permissions</h2>
       <div className="mt-3 space-y-3">
         {(Object.keys(bandRoleCopy) as BandRole[]).map((r) => (
           <div key={r}>
-            <p className="text-[13px] font-semibold">{bandRoleCopy[r].label}</p>
-            <p className="text-[12px] text-muted-foreground">{bandRoleCopy[r].blurb}</p>
+            <p className="text-1 font-semibold">{bandRoleCopy[r].label}</p>
+            <p className="text-1 text-muted-foreground">{bandRoleCopy[r].blurb}</p>
           </div>
         ))}
       </div>

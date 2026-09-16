@@ -236,7 +236,7 @@ function NewService() {
 
         {step === "category" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">What are you offering?</h1>
+            <h1 className="text-2 font-bold">What are you offering?</h1>
             {optionsPending ? (
               <Loading rows={2} />
             ) : (
@@ -257,7 +257,7 @@ function NewService() {
 
         {step === "basics" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">Describe it plainly</h1>
+            <h1 className="text-2 font-bold">Describe it plainly</h1>
             <Field
               label="Title"
               value={title}
@@ -265,7 +265,7 @@ function NewService() {
               placeholder="Session vocals — lead & harmonies"
             />
             <label className="block">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
                 Description
               </span>
               <textarea
@@ -273,12 +273,12 @@ function NewService() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 placeholder="What the client gets, how you work, what makes it yours."
-                className="mt-1.5 w-full rounded-lg border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
+                className="mt-1.5 w-full rounded-lg border border-border bg-background p-3 text-1 outline-none focus:border-primary"
               />
             </label>
             <Lines label="Deliverables" value={deliverables} onChange={setDeliverables} />
             <Lines label="Requirements" value={requirements} onChange={setRequirements} />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-0 text-muted-foreground">
               Services with a clear deliverable list get roughly twice the enquiries.
             </p>
           </Card>
@@ -286,7 +286,7 @@ function NewService() {
 
         {step === "pricing" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">How do you charge?</h1>
+            <h1 className="text-2 font-bold">How do you charge?</h1>
             {optionsPending ? (
               <Loading rows={1} />
             ) : (
@@ -314,7 +314,7 @@ function NewService() {
                 inputMode="numeric"
               />
             ) : null}
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-0 text-muted-foreground">
               You can still send a custom quote from a booking request.
             </p>
           </Card>
@@ -322,7 +322,7 @@ function NewService() {
 
         {step === "delivery" ? (
           <Card className="space-y-3">
-            <h1 className="text-[16px] font-bold">Delivery & notice</h1>
+            <h1 className="text-2 font-bold">Delivery & notice</h1>
             <Field
               label="Turnaround"
               value={turnaround}
@@ -330,7 +330,7 @@ function NewService() {
               placeholder="3–4 days"
             />
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+              <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
                 Notice needed
               </span>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -343,7 +343,7 @@ function NewService() {
             </div>
             {options?.workModes.length ? (
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
                   Mode
                 </span>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -366,7 +366,7 @@ function NewService() {
                 </div>
               </div>
             ) : null}
-            <TextLink to="/services/availability" className="block text-[12px]">
+            <TextLink to="/services/availability" className="block text-1">
               Set Your Weekly Availability →
             </TextLink>
           </Card>
@@ -374,7 +374,7 @@ function NewService() {
 
         {step === "review" ? (
           <Card className="space-y-2">
-            <h1 className="text-[16px] font-bold">Review</h1>
+            <h1 className="text-2 font-bold">Review</h1>
             {(
               [
                 ["Category", categoryLabel || "—"],
@@ -388,23 +388,23 @@ function NewService() {
                 key={k}
                 className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
               >
-                <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
                   {k}
                 </span>
                 {typeof v === "string" ? (
-                  <span className="max-w-[60%] text-right text-[13px] font-semibold">{v}</span>
+                  <span className="max-w-[60%] text-right text-1 font-semibold">{v}</span>
                 ) : (
                   <Price
                     price={v}
                     align="end"
                     className="max-w-[60%]"
-                    amountClassName="text-[13px] font-semibold"
+                    amountClassName="text-1 font-semibold"
                   />
                 )}
               </div>
             ))}
             {categoryLabel ? (
-              <p className="pt-1 text-[12px] text-muted-foreground">
+              <p className="pt-1 text-1 text-muted-foreground">
                 Publishing adds this to your profile and to Discover results for{" "}
                 {categoryLabel.toLowerCase()}.
               </p>
@@ -474,7 +474,7 @@ function Lines({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <textarea
@@ -482,7 +482,7 @@ function Lines({
         onChange={(e) => onChange(e.target.value)}
         rows={3}
         placeholder="One per line"
-        className="mt-1.5 w-full rounded-lg border border-border bg-background p-3 text-[13px] outline-none focus:border-primary"
+        className="mt-1.5 w-full rounded-lg border border-border bg-background p-3 text-1 outline-none focus:border-primary"
       />
     </label>
   );
@@ -503,7 +503,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <input
@@ -511,7 +511,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? ""}
         {...(inputMode ? { inputMode } : {})}
-        className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
+        className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
       />
     </label>
   );

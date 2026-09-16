@@ -105,7 +105,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
         );
       })}
       {terminal ? (
-        <li className="mt-1 rounded-lg bg-subtle px-3 py-2 text-xs text-muted-foreground">
+        <li className="mt-1 rounded-lg bg-subtle px-3 py-2 text-1 text-muted-foreground">
           This booking ended as <span className="font-semibold">{statusMeta[status].label}</span>.
         </li>
       ) : null}
@@ -147,7 +147,7 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
   const place = [b.area, b.city].filter(Boolean).join(", ");
   const where = [place, b.distanceKm ? `${b.distanceKm} km` : ""].filter(Boolean).join(" · ");
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
       {b.rating ? (
         <span className="inline-flex items-center gap-1">
           <Star size={13} className="text-primary" /> {b.rating} ({b.reviews})
@@ -195,7 +195,7 @@ export function ResourceCard({
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{r.name}</p>
           {r.description ? (
-            <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>
+            <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{r.description}</p>
           ) : null}
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-1 text-muted-foreground">
             {r.capacity ? (
@@ -390,7 +390,7 @@ export function SlotPicker({
               onClick={() => onChange(s.start)}
               aria-pressed={active}
               aria-label={`${formatTime(s.start)} to ${formatTime(s.end)} — ${open ? "available" : s.state}`}
-              className={`min-h-12 rounded-lg border px-2 text-xs font-semibold ${
+              className={`min-h-12 rounded-lg border px-2 text-1 font-semibold ${
                 active
                   ? "border-transparent bg-primary text-primary-foreground"
                   : open
@@ -433,7 +433,7 @@ export function DurationPicker({
               type="button"
               onClick={() => onChange(o.hours === 0 ? (customHours ?? 4) : o.hours)}
               aria-pressed={active}
-              className={`min-h-11 rounded-full border px-4 text-xs font-semibold ${
+              className={`min-h-11 rounded-full border px-4 text-1 font-semibold ${
                 active
                   ? "border-transparent bg-selected-bg text-selected-text"
                   : "border-border bg-card"
@@ -446,7 +446,7 @@ export function DurationPicker({
       </div>
       {isCustom && onCustomHours ? (
         <label className="mt-3 flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
-          <span className="text-xs font-semibold">Custom hours</span>
+          <span className="text-1 font-semibold">Custom hours</span>
           <input
             type="number"
             min={1}
@@ -481,7 +481,7 @@ export function AddOnCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{a.name}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">{a.description}</p>
+          <p className="mt-0.5 text-1 text-muted-foreground">{a.description}</p>
           <Price
             price={{ amount: inr(a.price), unit: a.perHour ? "hour" : undefined }}
             className="mt-1.5"
@@ -556,7 +556,7 @@ function Row({
         {label}
       </span>
       <span
-        className={`shrink-0 text-sm text-price ${strong ? "text-base font-bold" : "font-semibold"}`}
+        className={`shrink-0 text-sm text-price ${strong ? "text-2 font-bold" : "font-semibold"}`}
       >
         {value}
       </span>
@@ -583,7 +583,7 @@ export function PolicyCard({
         )}
         {title}
       </p>
-      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{body}</p>
+      <p className="mt-1 text-1 leading-relaxed text-muted-foreground">{body}</p>
     </div>
   );
 }
@@ -605,7 +605,7 @@ export function AcknowledgeRow({
         onChange={(e) => onChange(e.target.checked)}
         className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--primary)]"
       />
-      <span className="text-xs leading-relaxed text-muted-foreground">{label}</span>
+      <span className="text-1 leading-relaxed text-muted-foreground">{label}</span>
     </label>
   );
 }
@@ -640,13 +640,13 @@ export function BookingSummaryCard({
         />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{b.name}</p>
-          <p className="truncate text-xs text-muted-foreground">{r.name}</p>
-          <p className="mt-1 truncate text-xs text-muted-foreground">
+          <p className="truncate text-1 text-muted-foreground">{r.name}</p>
+          <p className="mt-1 truncate text-1 text-muted-foreground">
             {b.area}, {b.city}
           </p>
         </div>
       </div>
-      <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+      <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
         <Detail label="Date" value={formatDate(date)} />
         <Detail label="Time" value={`${formatTime(start)} – ${formatTime(end)}`} />
         <Detail label="Timezone" value={b.timezone} />
@@ -685,13 +685,13 @@ export function BookingListCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-semibold">{provider ? booking.customer : entityName}</p>
-          <p className="truncate text-xs text-muted-foreground">
+          <p className="truncate text-1 text-muted-foreground">
             {resourceName} · {booking.purpose}
           </p>
         </div>
         <BookingStatusPill status={booking.status} />
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
         <span className="inline-flex items-center gap-1">
           <Calendar size={13} /> {formatDate(booking.date)}
         </span>
@@ -702,7 +702,7 @@ export function BookingListCard({
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="text-1 text-muted-foreground">#{booking.ref}</span>
-        <span className="inline-flex items-center gap-1 text-xs font-bold text-foreground">
+        <span className="inline-flex items-center gap-1 text-1 font-bold text-foreground">
           View booking <ChevronRight size={14} />
         </span>
       </div>
@@ -727,11 +727,11 @@ export function ProviderRequestCard({
         />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold">{booking.customer}</p>
-          <p className="truncate text-xs text-muted-foreground">{booking.customerRole}</p>
+          <p className="truncate text-1 text-muted-foreground">{booking.customerRole}</p>
         </div>
         <BookingStatusPill status={booking.status} />
       </div>
-      <div className="mt-3 rounded-lg bg-subtle px-3 py-2 text-xs text-muted-foreground">
+      <div className="mt-3 rounded-lg bg-subtle px-3 py-2 text-1 text-muted-foreground">
         <p className="font-semibold text-foreground">{entityResource}</p>
         <p className="mt-0.5">
           {formatDate(booking.date)} · {formatTime(booking.start)} – {formatTime(booking.end)} ·{" "}
@@ -746,7 +746,7 @@ export function ProviderRequestCard({
         <TextLink
           to="/provider/bookings/requests/$ref"
           params={{ ref: booking.ref }}
-          className="gap-1 text-xs font-bold"
+          className="gap-1 text-1 font-bold"
         >
           Review Request <ChevronRight size={14} />
         </TextLink>
@@ -787,7 +787,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
       <WifiOff size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">You're offline</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+        <p className="mt-0.5 text-1 text-muted-foreground">
           Availability may have changed. We won't confirm a booking until you're back online.
         </p>
       </div>
@@ -795,7 +795,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
         <button
           type="button"
           onClick={onRetry}
-          className="min-h-11 shrink-0 text-xs font-bold text-foreground"
+          className="min-h-11 shrink-0 text-1 font-bold text-foreground"
         >
           Retry
         </button>
@@ -817,7 +817,7 @@ export function ErrorState({
     <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5 text-center">
       <AlertTriangle size={22} className="mx-auto text-destructive" />
       <p className="mt-2 font-semibold">{title}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{message}</p>
+      <p className="mt-1 text-1 text-muted-foreground">{message}</p>
       <Btn className="mt-4 w-full" onClick={onRetry}>
         Try Again
       </Btn>
@@ -838,7 +838,7 @@ export function EmptyState({
     <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center">
       <Calendar size={22} className="mx-auto text-muted-foreground" />
       <p className="mt-2 font-semibold">{title}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{body}</p>
+      <p className="mt-1 text-1 text-muted-foreground">{body}</p>
       {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );
@@ -890,7 +890,7 @@ export function StickyBar({
     <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
-          {price ? <p className="truncate text-base font-bold text-price">{price}</p> : null}
+          {price ? <p className="truncate text-2 font-bold text-price">{price}</p> : null}
           {hint ? <p className="truncate text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {secondary}

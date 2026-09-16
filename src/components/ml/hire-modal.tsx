@@ -42,7 +42,7 @@ export function HireModal({
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success">
             <Check size={28} aria-hidden />
           </div>
-          <h2 className="text-xl">Request sent</h2>
+          <h2 className="text-2.5">Request sent</h2>
           <Btn
             className="mt-6 w-full"
             onClick={() => {
@@ -55,8 +55,8 @@ export function HireModal({
         </div>
       ) : (
         <>
-          <h2 className="text-xl">Contact professional</h2>
-          <p className="mb-4 text-xs text-muted-foreground">
+          <h2 className="text-2.5">Contact professional</h2>
+          <p className="mb-4 text-1 text-muted-foreground">
             {subject ? [subject.name, subject.detail].filter(Boolean).join(" · ") : null}
           </p>
 

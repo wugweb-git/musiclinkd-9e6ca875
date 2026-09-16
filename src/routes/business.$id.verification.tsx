@@ -79,7 +79,7 @@ function BusinessVerification() {
                 {b.verified ? "Verified business" : "Not verified yet"}
               </p>
               {type ? (
-                <p className="text-[12px] text-muted-foreground">
+                <p className="text-1 text-muted-foreground">
                   {done} of {checks.length} checks complete
                 </p>
               ) : null}
@@ -112,7 +112,7 @@ function BusinessVerification() {
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold">{c.label}</p>
-                    <p className="mt-1 text-[13px] text-muted-foreground">{c.detail}</p>
+                    <p className="mt-1 text-1 text-muted-foreground">{c.detail}</p>
                     {owner && !c.done && status === "unverified" ? (
                       <BtnLink
                         to="/verification/$type"
@@ -133,7 +133,7 @@ function BusinessVerification() {
 
         <Card>
           <p className="text-sm font-semibold">What reviewers see</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             Documents are only read by the review team, never shown on your public page. The page
             only ever shows a badge.
           </p>

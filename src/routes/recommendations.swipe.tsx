@@ -57,7 +57,7 @@ function Recommended() {
         {["Singers", "Studios", "Collaborators", "Opportunities"].map((c, idx) => (
           <span
             key={c}
-            className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold ${
+            className={`shrink-0 rounded-full px-4 py-2 text-1 font-semibold ${
               idx === 0 ? "bg-ink text-background" : "border border-border bg-card"
             }`}
           >
@@ -84,27 +84,27 @@ function Recommended() {
       <div className="mt-6 flex items-center justify-center gap-4">
         <button
           onClick={() => swipe("left")}
-          className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-xl"
+          className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-2.5"
           aria-label="Skip"
         >
           ✕
         </button>
         <button
           onClick={() => swipe("right")}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-xl"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-2.5"
           aria-label="Save"
         >
           ♡
         </button>
         <button
           onClick={() => swipe("right")}
-          className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl text-primary-foreground"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-2.5 text-primary-foreground"
           aria-label="Connect"
         >
           ⚡
         </button>
       </div>
-      <p className="mt-3 text-center text-[11px] text-muted-foreground">
+      <p className="mt-3 text-center text-0 text-muted-foreground">
         Swipe right to shortlist · left to skip
       </p>
     </Screen>
@@ -126,24 +126,24 @@ function Card({
     >
       <img src={t.photo} alt={t.name} className="h-[300px] w-full object-cover" />
       <div className="absolute left-4 top-4">
-        <span className="rounded-full bg-card/90 px-3 py-1.5 text-[10px] font-bold">{why}</span>
+        <span className="rounded-full bg-card/90 px-3 py-1.5 text-0 font-bold">{why}</span>
       </div>
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <h3 className="text-[18px]">{t.name}</h3>
+            <h3 className="text-2">{t.name}</h3>
             {t.verified ? <VerifiedBadge /> : null}
           </div>
           <StatusPill label={t.availability} tone={availabilityTone(t.availability)} />
         </div>
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-0 text-muted-foreground">
           {t.role} · {t.location}
         </p>
         <div className="mt-3 flex flex-wrap gap-1.5">
           {t.genres.map((g) => (
             <span
               key={g}
-              className="rounded-full bg-subtle px-2.5 py-1 text-[10px] font-semibold text-muted-foreground"
+              className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold text-muted-foreground"
             >
               {g}
             </span>

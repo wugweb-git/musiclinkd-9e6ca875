@@ -46,8 +46,8 @@ function Timeline() {
   return (
     <WorkspaceShell project={project} tab="timeline">
       <Card className="mb-4">
-        <p className="text-[12px] text-muted-foreground">Project window</p>
-        <p className="text-[15px] font-semibold">
+        <p className="text-1 text-muted-foreground">Project window</p>
+        <p className="text-sm font-semibold">
           {project.startDate} → {project.targetDate}
         </p>
       </Card>
@@ -103,7 +103,7 @@ function Timeline() {
                   className="flex w-full items-center gap-3 py-4 text-left"
                 >
                   <span
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-[11px] text-background"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-0 text-background"
                     style={
                       checked
                         ? { background: "var(--success)", borderColor: "transparent" }
@@ -114,11 +114,11 @@ function Timeline() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span
-                      className={`block truncate text-[14px] ${checked ? "text-muted-foreground line-through" : ""}`}
+                      className={`block truncate text-sm ${checked ? "text-muted-foreground line-through" : ""}`}
                     >
                       {t.name}
                     </span>
-                    <span className="block text-[11px] text-muted-foreground">
+                    <span className="block text-0 text-muted-foreground">
                       {t.owner} · due {t.due}
                     </span>
                   </span>

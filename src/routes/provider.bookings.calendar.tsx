@@ -96,7 +96,7 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
       >
         ← Prev
       </button>
-      <p className="min-w-0 truncate text-[15px] font-bold">{formatDate(date)}</p>
+      <p className="min-w-0 truncate text-sm font-bold">{formatDate(date)}</p>
       <button
         type="button"
         onClick={() => shift(1)}
@@ -117,16 +117,16 @@ function BlockRow({ b }: { b: Booking }) {
         : { to: "/provider/bookings/$ref" as const, params: { ref: b.ref } })}
       className="flex min-w-0 items-start gap-3 rounded-lg border border-border bg-card p-3"
     >
-      <span className="w-[62px] shrink-0 text-[12px] font-bold leading-tight">
+      <span className="w-[62px] shrink-0 text-1 font-bold leading-tight">
         {formatTime(b.start)}
-        <span className="block text-[10px] font-semibold text-muted-foreground">
+        <span className="block text-0 font-semibold text-muted-foreground">
           {formatTime(b.end)}
         </span>
       </span>
       <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-primary" aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[13px] font-semibold">{label(b)}</p>
-        <p className="truncate text-[11px] text-muted-foreground">
+        <p className="truncate text-1 font-semibold">{label(b)}</p>
+        <p className="truncate text-0 text-muted-foreground">
           {b.people} people · {b.purpose}
         </p>
       </div>
@@ -142,13 +142,13 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
       <DayNav date={date} onDate={onDate} />
       {items.length === 0 ? (
         <div className="rounded-lg border border-border bg-card p-5 text-center">
-          <p className="text-[14px] font-semibold">Nothing booked</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="text-sm font-semibold">Nothing booked</p>
+          <p className="mt-1 text-1 text-muted-foreground">
             This day is completely open. Block it off in Availability if you're not taking sessions.
           </p>
           <Link
             to="/provider/availability"
-            className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-xs font-semibold text-background"
+            className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
           >
             Edit availability
           </Link>
@@ -179,10 +179,10 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
               onClick={() => onPick(d)}
               className="flex w-full min-w-0 items-center justify-between gap-3 py-1 text-left"
             >
-              <span className="min-w-0 truncate text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
+              <span className="min-w-0 truncate text-1 font-bold uppercase tracking-wide text-muted-foreground">
                 {formatDate(d)}
               </span>
-              <span className="shrink-0 text-[11px] font-semibold text-muted-foreground">
+              <span className="shrink-0 text-0 font-semibold text-muted-foreground">
                 {items.length} session{items.length === 1 ? "" : "s"}
               </span>
             </button>
@@ -193,7 +193,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
                 ))}
               </div>
             ) : (
-              <p className="rounded-lg bg-subtle px-4 py-2.5 text-[11px] text-muted-foreground">
+              <p className="rounded-lg bg-subtle px-4 py-2.5 text-0 text-muted-foreground">
                 Open all day
               </p>
             )}
@@ -209,7 +209,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
   const cells = monthGrid(now.getFullYear(), now.getMonth());
   return (
     <div>
-      <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+      <div className="grid grid-cols-7 gap-1 text-center text-0 font-bold uppercase tracking-wide text-muted-foreground">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={`${d}-${i}`}>{d}</span>
         ))}
@@ -225,7 +225,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
               type="button"
               onClick={() => onPick(iso)}
               aria-label={`${formatDate(iso)}, ${count} session${count === 1 ? "" : "s"}`}
-              className={`flex aspect-square min-w-0 flex-col items-center justify-center rounded-lg border border-border text-[12px] font-semibold ${
+              className={`flex aspect-square min-w-0 flex-col items-center justify-center rounded-lg border border-border text-1 font-semibold ${
                 inMonth ? "bg-card" : "bg-subtle text-muted-foreground"
               }`}
             >
@@ -238,7 +238,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
           );
         })}
       </div>
-      <p className="mt-3 text-[11px] text-muted-foreground">
+      <p className="mt-3 text-0 text-muted-foreground">
         A dot marks a day with sessions. Tap a day to open it.
       </p>
     </div>

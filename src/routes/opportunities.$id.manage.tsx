@@ -55,9 +55,7 @@ function ManageOpportunity() {
               label={paused ? "paused" : o.status}
               tone={paused ? "warn" : statusTone(o.status)}
             />
-            {o.closesAt ? (
-              <span className="text-[12px] text-muted-foreground">{o.closesAt}</span>
-            ) : null}
+            {o.closesAt ? <span className="text-1 text-muted-foreground">{o.closesAt}</span> : null}
           </div>
           <div className="grid grid-cols-3 gap-2 pt-1">
             {/* Stored opportunities record no views or shortlist; only their applicant count shows. */}
@@ -69,8 +67,8 @@ function ManageOpportunity() {
                 : []),
             ].map((s) => (
               <div key={s.label} className="rounded-lg bg-subtle p-3">
-                <p className="text-[11px] text-muted-foreground">{s.label}</p>
-                <p className="mt-1 text-[17px] font-bold">{s.value}</p>
+                <p className="text-0 text-muted-foreground">{s.label}</p>
+                <p className="mt-1 text-2 font-bold">{s.value}</p>
               </div>
             ))}
           </div>
@@ -107,7 +105,7 @@ function ManageOpportunity() {
             }
             onClick={() => setPaused((p) => !p)}
             right={
-              <span className="text-[12px] font-semibold text-foreground">
+              <span className="text-1 font-semibold text-foreground">
                 {paused ? "Resume" : "Pause"}
               </span>
             }
@@ -117,13 +115,13 @@ function ManageOpportunity() {
             title="Close opportunity"
             subtitle="Tell applicants the outcome"
             onClick={() => setClose(true)}
-            right={<span className="text-[12px] font-semibold text-foreground">Close</span>}
+            right={<span className="text-1 font-semibold text-foreground">Close</span>}
           />
         </div>
 
         <Card className="space-y-1">
-          <p className="text-[13px] font-semibold">Hired someone?</p>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">Hired someone?</p>
+          <p className="text-1 text-muted-foreground">
             Convert the shortlist into a booking or a collaboration — reviews only come from
             completed work.
           </p>

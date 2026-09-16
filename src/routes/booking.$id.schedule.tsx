@@ -84,7 +84,7 @@ function Schedule() {
             <button
               type="button"
               onClick={() => setSim(sim === "ok" ? "offline" : "ok")}
-              className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+              className="text-0 font-bold uppercase tracking-wide text-muted-foreground"
             >
               {sim === "ok" ? "Demo states" : "Reset"}
             </button>
@@ -120,11 +120,11 @@ function Schedule() {
         {sim === "ok" && draft.date ? (
           <section className="mt-6">
             <div className="flex items-baseline justify-between">
-              <h2 className="text-[17px]">{formatDate(draft.date)}</h2>
+              <h2 className="text-2">{formatDate(draft.date)}</h2>
               <button
                 type="button"
                 onClick={() => set({ date: undefined, start: undefined })}
-                className="text-xs font-semibold text-foreground"
+                className="text-1 font-semibold text-foreground"
               >
                 Clear date
               </button>
@@ -178,8 +178,8 @@ function Schedule() {
 
         {sim === "ok" && draft.start ? (
           <section className="mt-6">
-            <h2 className="text-[17px]">How long do you need?</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="text-2">How long do you need?</h2>
+            <p className="mt-1 text-1 text-muted-foreground">
               Only durations this room supports are shown.
             </p>
             <div className="mt-3">
@@ -194,7 +194,7 @@ function Schedule() {
                 }}
               />
             </div>
-            <p className="mt-3 rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
+            <p className="mt-3 rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
               {formatTime(draft.start)} – {formatTime(endTime)} · {draft.hours} hr
               {draft.hours > 1 ? "s" : ""} · {b.timezone}
             </p>

@@ -42,7 +42,7 @@ function BookingEntry() {
         <Link
           to="/discover"
           aria-label="Back"
-          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-lg backdrop-blur"
+          className="absolute left-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-2 backdrop-blur"
         >
           ←
         </Link>
@@ -69,7 +69,7 @@ function BookingEntry() {
         </div>
 
         <section className="mt-6">
-          <h3 className="text-[17px]">Rooms &amp; services</h3>
+          <h3 className="text-2">Rooms &amp; services</h3>
           <div className="mt-3 space-y-2">
             {b.resources.map((r) => (
               <div
@@ -86,7 +86,7 @@ function BookingEntry() {
                 ) : null}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{r.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">
+                  <p className="truncate text-1 text-muted-foreground">
                     {[r.capacity ? `Up to ${r.capacity}` : "", r.availabilityNote]
                       .filter(Boolean)
                       .join(" · ")}
@@ -105,12 +105,12 @@ function BookingEntry() {
 
         {b.facilities.length ? (
           <section className="mt-6">
-            <h3 className="text-[17px]">Facilities</h3>
+            <h3 className="text-2">Facilities</h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {b.facilities.map((f) => (
                 <span
                   key={f}
-                  className="rounded-full bg-subtle px-3 py-1.5 text-xs text-muted-foreground"
+                  className="rounded-full bg-subtle px-3 py-1.5 text-1 text-muted-foreground"
                 >
                   {f}
                 </span>
@@ -121,12 +121,12 @@ function BookingEntry() {
 
         {equipment.length ? (
           <section className="mt-6">
-            <h3 className="text-[17px]">Equipment highlights</h3>
+            <h3 className="text-2">Equipment highlights</h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {equipment.map((e) => (
                 <span
                   key={e}
-                  className="rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground"
+                  className="rounded-full border border-border px-3 py-1.5 text-1 text-muted-foreground"
                 >
                   {e}
                 </span>
@@ -137,7 +137,7 @@ function BookingEntry() {
 
         {b.policies.length ? (
           <section className="mt-6">
-            <h3 className="text-[17px]">Booking policies</h3>
+            <h3 className="text-2">Booking policies</h3>
             <div className="mt-3 space-y-2">
               {b.policies.slice(0, 3).map((p) => (
                 <PolicyCard
@@ -153,7 +153,7 @@ function BookingEntry() {
               <TextLink
                 to="/booking/$id/review"
                 params={{ id: b.id }}
-                className="mt-2 inline-block text-xs font-bold"
+                className="mt-2 inline-block text-1 font-bold"
               >
                 See All Terms at Review
               </TextLink>
@@ -163,7 +163,7 @@ function BookingEntry() {
 
         {b.gallery.length ? (
           <section className="mt-6">
-            <h3 className="text-[17px]">Gallery</h3>
+            <h3 className="text-2">Gallery</h3>
             <div className="rail mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {b.gallery.map((g) => (
                 <img

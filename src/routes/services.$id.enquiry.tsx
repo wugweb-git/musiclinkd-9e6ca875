@@ -69,10 +69,10 @@ function ServiceEnquiry() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
-            <h2 className="mt-3 text-[19px] leading-tight">
+            <h2 className="mt-3 text-2.5 leading-tight">
               {mode === "Custom quote" ? "Quote request sent" : "Question sent"}
             </h2>
-            <p className="mt-2 text-[13px] text-muted-foreground">
+            <p className="mt-2 text-1 text-muted-foreground">
               {mode === "Custom quote"
                 ? "You will get a priced answer, usually within a day. Nothing is committed until you accept it."
                 : "Replies land in Connections and as a notification."}
@@ -101,10 +101,10 @@ function ServiceEnquiry() {
           <Price
             price={priceParts(s.price_paise, s.price_unit, s.price_note)}
             className="mt-1"
-            amountClassName="text-[13px] font-semibold"
+            amountClassName="text-1 font-semibold"
           />
           {s.turnaround ? (
-            <p className="mt-1 text-[13px] text-muted-foreground">Turnaround {s.turnaround}</p>
+            <p className="mt-1 text-1 text-muted-foreground">Turnaround {s.turnaround}</p>
           ) : null}
         </Card>
 
@@ -157,7 +157,7 @@ function ServiceEnquiry() {
                 className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
               />
             </div>
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               A range gets a real number back. "Best price" usually gets ignored.
             </p>
           </Card>
