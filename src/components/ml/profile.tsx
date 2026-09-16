@@ -86,6 +86,10 @@ export function ProfileSection({
   );
 }
 
+/** Where a stacked section's footer link can go. */
+export type StackDestination =
+  "/portfolio" | "/services" | "/reviews" | "/profile/edit" | "/verification";
+
 /**
  * A stacked profile section: full-bleed block, thick divider under it, the title with the owner's
  * edit pencil on the same row, and an optional collapse for the sections people skip past.
@@ -97,6 +101,8 @@ export function StackSection({
   defaultOpen = true,
   showAll,
   onShowAll,
+  showAllTo,
+  action,
   children,
 }: {
   title: string;
@@ -107,6 +113,10 @@ export function StackSection({
   /** Footer link label, e.g. "Show all tracks". */
   showAll?: string | undefined;
   onShowAll?: (() => void) | undefined;
+  /** Where the footer link goes, when it is navigation rather than a tab switch. */
+  showAllTo?: StackDestination | undefined;
+  /** An extra control on the heading row, left of the edit pencil. */
+  action?: ReactNode;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -115,6 +125,7 @@ export function StackSection({
     <section className="-mx-5 border-b-8 border-subtle bg-card px-5 py-5">
       <div className="flex items-center gap-1">
         <h2 className="min-w-0 flex-1 text-3 font-bold">{title}</h2>
+        {action}
         {editTo ? (
           <IconBtnLink to={editTo} label={`Edit ${title}`} variant="ghost" className="h-10 w-10">
             <Pencil size={16} aria-hidden />
@@ -144,14 +155,24 @@ export function StackSection({
         {children}
       </div>
       {open && showAll ? (
-        <button
-          type="button"
-          onClick={onShowAll}
-          className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
-        >
-          {showAll}
-          <ChevronRight size={16} aria-hidden />
-        </button>
+        showAllTo ? (
+          <Link
+            to={showAllTo}
+            className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
+          >
+            {showAll}
+            <ChevronRight size={16} aria-hidden />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={onShowAll}
+            className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
+          >
+            {showAll}
+            <ChevronRight size={16} aria-hidden />
+          </button>
+        )
       ) : null}
     </section>
   );

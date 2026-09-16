@@ -146,53 +146,53 @@ export function PersonProfileExperience({
         <OwnerPanel completion={completion} insights={insights} insightsOpen={insightsOpen} />
       ) : null}
 
-      <nav
-        aria-label="Profile sections"
-        className="sticky top-0 z-20 mt-5 border-b border-border bg-background/95 px-2 backdrop-blur"
-      >
-        <div role="tablist" aria-label="Profile sections" className="flex items-stretch">
-          {tabs.map(({ key, icon: Icon }) => {
-            const active = tab === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                aria-label={key}
-                onClick={() => setTab(key)}
-                className={cn(
-                  "state-layer relative flex items-center justify-center gap-1.5 rounded-t-md py-3.5 transition-[flex,color] duration-200 ease-standard",
-                  active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
-                )}
-              >
-                <Icon size={20} aria-hidden />
-                <span
+      {owner ? null : (
+        <nav
+          aria-label="Profile sections"
+          className="sticky top-0 z-20 mt-5 border-b border-border bg-background/95 px-2 backdrop-blur"
+        >
+          <div role="tablist" aria-label="Profile sections" className="flex items-stretch">
+            {tabs.map(({ key, icon: Icon }) => {
+              const active = tab === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  aria-label={key}
+                  onClick={() => setTab(key)}
                   className={cn(
-                    "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
-                    active ? "max-w-40 opacity-100" : "max-w-0 opacity-0",
+                    "state-layer relative flex items-center justify-center gap-1.5 rounded-t-md py-3.5 transition-[flex,color] duration-200 ease-standard",
+                    active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
                   )}
                 >
-                  {key}
-                </span>
-                {active ? (
-                  <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground" />
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
+                  <Icon size={20} aria-hidden />
+                  <span
+                    className={cn(
+                      "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
+                      active ? "max-w-40 opacity-100" : "max-w-0 opacity-0",
+                    )}
+                  >
+                    {key}
+                  </span>
+                  {active ? (
+                    <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground" />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      )}
 
       <main className="px-5 pb-8">
-        {tab === "Overview" && owner ? (
-          <OwnerOverview
+        {owner ? (
+          <OwnerStack
             p={p}
             playingId={playingId}
             onToggleTrack={toggleTrack}
             onHire={() => setHireOpen(true)}
-            owner={owner}
-            onTab={setTab}
           />
         ) : null}
         {tab === "Overview" && !owner ? (
@@ -205,13 +205,13 @@ export function PersonProfileExperience({
             onTab={setTab}
           />
         ) : null}
-        {tab === "Portfolio" ? (
+        {!owner && tab === "Portfolio" ? (
           <Portfolio p={p} playingId={playingId} onToggleTrack={toggleTrack} owner={owner} />
         ) : null}
-        {tab === "Projects" ? <Projects p={p} owner={owner} /> : null}
-        {tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
-        {tab === "About" ? <About p={p} /> : null}
-        {tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
+        {!owner && tab === "Projects" ? <Projects p={p} owner={owner} /> : null}
+        {!owner && tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
+        {!owner && tab === "About" ? <About p={p} /> : null}
+        {!owner && tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
       </main>
 
       {share ? <ShareSheet p={p} open={shareOpen} onClose={() => setShareOpen(false)} /> : null}
@@ -489,42 +489,34 @@ function Overview({
   );
 }
 
-function OwnerOverview({
+/**
+ * The owner's own profile: every section stacked, each editable from its own heading row, the way
+ * LinkedIn lays out a profile you own. No tabs — tabs are for the public profile, where a visitor
+ * is choosing what to look at rather than working through their own record.
+ */
+function OwnerStack({
   p,
   playingId,
   onToggleTrack,
   onHire,
-  owner,
-  onTab,
 }: {
   p: PersonProfile;
   playingId: string | null;
   onToggleTrack: (id: string) => void;
   onHire: () => void;
-  owner: boolean;
-  onTab: (tab: ProfileTab) => void;
 }) {
-  // The owner's own profile: stacked sections, each editable from its heading row.
   const edit = "/profile/edit" as const;
+  const bio = p.longBio || p.shortBio;
   return (
     <>
-      <StackSection
-        title="About"
-        editTo={edit}
-        showAll="Read full profile"
-        onShowAll={() => onTab("About")}
-      >
-        {p.shortBio ? (
-          <ClampedText text={p.shortBio} />
+      <StackSection title="About" editTo={edit}>
+        {bio ? (
+          <ClampedText text={bio} />
         ) : (
           <ProfileEmpty
             title="No summary yet"
-            body={
-              owner
-                ? "Say what you do and who you do it for."
-                : "This professional has not written a summary yet."
-            }
-            cta={owner ? { label: "Write a summary", to: "/profile/edit" } : undefined}
+            body="Say what you do and who you do it for."
+            cta={{ label: "Write a summary", to: "/profile/edit" }}
           />
         )}
       </StackSection>
@@ -535,76 +527,170 @@ function OwnerOverview({
         </StackSection>
       ) : null}
 
+      <StackSection
+        title="Services"
+        editTo={edit}
+        collapsible
+        showAll="Manage services"
+        showAllTo="/services"
+      >
+        {p.services.length ? (
+          <div className="space-y-2">
+            {p.services.slice(0, 2).map((service) => (
+              <ServiceCard key={service.id} s={service} onEnquire={onHire} />
+            ))}
+          </div>
+        ) : (
+          <ProfileEmpty
+            title="No services yet"
+            body="List what you offer and what it costs, so people can book it."
+            cta={{ label: "Add a service", to: "/profile/edit" }}
+          />
+        )}
+      </StackSection>
+
       {p.genres.length || p.instruments.length || p.languages.length ? (
         <StackSection title="Music identity" editTo={edit} collapsible>
           <ChipGroupList>
             <ChipGroup label="Genres" icon={Music} items={p.genres} />
             <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
             <ChipGroup label="Languages" icon={Languages} items={p.languages} />
+            <ChipGroup label="Specialisations" icon={Sparkles} items={p.specialisations} />
+            <ChipGroup label="Influences" icon={Heart} items={p.influences} />
           </ChipGroupList>
         </StackSection>
       ) : null}
 
       <StackSection
-        title="Audio"
+        title="Portfolio"
         editTo={edit}
-        {...(p.audio.length > 2
-          ? { showAll: `Show all ${p.audio.length} tracks`, onShowAll: () => onTab("Portfolio") }
-          : {})}
+        showAll="Manage portfolio"
+        showAllTo="/portfolio"
       >
-        {p.audio.length ? (
-          <div className="space-y-2">
-            {p.audio.slice(0, 2).map((track) => (
-              <AudioTrackCard
-                key={track.id}
-                track={track}
-                playing={playingId === track.id}
-                onToggle={() => onToggleTrack(track.id)}
-              />
-            ))}
+        {p.audio.length || p.video.length || p.gallery.length ? (
+          <div className="space-y-4">
+            {p.audio.length ? (
+              <div className="space-y-2">
+                {p.audio.slice(0, 2).map((track) => (
+                  <AudioTrackCard
+                    key={track.id}
+                    track={track}
+                    playing={playingId === track.id}
+                    onToggle={() => onToggleTrack(track.id)}
+                  />
+                ))}
+              </div>
+            ) : null}
+            {p.video.length ? (
+              <div className="space-y-3">
+                {p.video.slice(0, 2).map((video) => (
+                  <VideoCard key={video.id} v={video} layout="row" />
+                ))}
+              </div>
+            ) : null}
+            {p.gallery.length ? <GalleryGrid images={p.gallery} /> : null}
           </div>
         ) : (
           <ProfileEmpty
-            title="No audio yet"
-            body="This professional has not added audio samples yet."
-            cta={owner ? addWork("Add audio", "track") : undefined}
+            title="No work yet"
+            body="Tracks, videos and credits are what turn a profile view into an enquiry."
+            cta={addWork("Add work", "track")}
           />
         )}
       </StackSection>
 
       {p.projects.length ? (
-        <StackSection
-          title="Projects"
-          editTo={edit}
-          collapsible
-          {...(p.projects.length > 2
-            ? {
-                showAll: `Show all ${p.projects.length} projects`,
-                onShowAll: () => onTab("Projects"),
-              }
-            : {})}
-        >
+        <StackSection title="Projects" editTo={edit} collapsible>
           <div className="space-y-2">
-            {p.projects.slice(0, 2).map((project) => (
+            {p.projects.slice(0, 3).map((project) => (
               <ProjectCard key={project.id} p={project} />
             ))}
           </div>
         </StackSection>
       ) : null}
 
-      {p.services.length ? (
-        <StackSection
-          title="Services"
-          editTo={edit}
-          collapsible
-          showAll="All services"
-          onShowAll={() => onTab("Services")}
-        >
-          <ServiceCard s={p.services[0]!} onEnquire={onHire} />
+      {p.experience.length ? (
+        <StackSection title="Experience" editTo={edit} collapsible>
+          <div className="space-y-2">
+            {p.experience.map((item) => (
+              <ExperienceCard key={item.id} e={item} />
+            ))}
+          </div>
         </StackSection>
       ) : null}
 
-      <RelationshipSections p={p} />
+      <StackSection title="Professional details" editTo={edit} collapsible defaultOpen={false}>
+        {p.professional.length ? (
+          <div className="divide-y divide-border rounded-lg border border-border bg-card">
+            {p.professional.map((item) => (
+              <InfoRow key={item.label} label={item.label} value={item.value} />
+            ))}
+          </div>
+        ) : (
+          <ProfileEmpty
+            title="No details yet"
+            body="Setup, tools and working details will appear here."
+            cta={{ label: "Add details", to: "/profile/edit" }}
+          />
+        )}
+      </StackSection>
+
+      <StackSection title="Links" editTo={edit} collapsible defaultOpen={false}>
+        {p.links.length ? (
+          <SocialLinks links={p.links} />
+        ) : (
+          <ProfileEmpty
+            title="No links yet"
+            body="Streaming and social links will appear here."
+            cta={{ label: "Add links", to: "/profile/edit" }}
+          />
+        )}
+      </StackSection>
+
+      <StackSection title="Reviews" showAll="Request a review" showAllTo="/reviews">
+        {p.reviews.length ? (
+          <div className="space-y-3">
+            {p.reviews.slice(0, 2).map((review) => (
+              <ReviewCard key={review.id} r={review} />
+            ))}
+          </div>
+        ) : (
+          <ProfileEmpty
+            title="No reviews yet"
+            body="Reviews appear here once work booked through MusicLinkd is complete."
+          />
+        )}
+      </StackSection>
+
+      {p.collaborators.length ? (
+        <StackSection title="Works with" collapsible>
+          <div className="rail flex gap-4 overflow-x-auto pb-1 no-scrollbar">
+            {p.collaborators.map((collaborator) => (
+              <CollaboratorCard key={collaborator.id} c={collaborator} />
+            ))}
+          </div>
+        </StackSection>
+      ) : null}
+
+      {p.opportunities.length ? (
+        <StackSection title="Opportunities" collapsible>
+          <div className="space-y-2">
+            {p.opportunities.map((opportunity) => (
+              <OpportunityCard key={opportunity.id} o={opportunity} />
+            ))}
+          </div>
+        </StackSection>
+      ) : null}
+
+      {p.market.length ? (
+        <StackSection title="Marketplace" collapsible>
+          <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
+            {p.market.map((entry) => (
+              <MarketEntryCard key={entry.id} m={entry} />
+            ))}
+          </div>
+        </StackSection>
+      ) : null}
     </>
   );
 }
