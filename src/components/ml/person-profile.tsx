@@ -258,9 +258,7 @@ function OwnerPanel({
         <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
-                Profile insights
-              </p>
+              <p className="pill bg-subtle text-muted-foreground">Profile insights</p>
               {insights ? <h2 className="mt-1 text-2">{insights.range}</h2> : null}
             </div>
             <BarChart3 size={18} className="text-primary" aria-hidden />
@@ -657,7 +655,7 @@ function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; 
       <span className="flex h-8 w-8 items-center justify-center rounded-md bg-subtle text-foreground">
         {icon}
       </span>
-      <p className="mt-3 text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="pill mt-3 bg-subtle text-muted-foreground">{label}</p>
       <p className="mt-1 truncate text-1 font-semibold">{value}</p>
     </div>
   );

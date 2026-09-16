@@ -97,9 +97,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
               className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-muted-foreground" : "text-muted-foreground"}`}
             >
               {s.label}
-              {current ? (
-                <span className="ml-2 text-1 font-bold uppercase text-foreground">Now</span>
-              ) : null}
+              {current ? <span className="pill ml-2 bg-subtle text-foreground">Now</span> : null}
             </p>
           </li>
         );
@@ -296,7 +294,7 @@ export function AvailabilityCalendar({
         </button>
       </div>
 
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-1 font-bold uppercase text-muted-foreground">
+      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-1 font-medium uppercase text-muted-foreground">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={`${d}-${i}`}>{d}</span>
         ))}
@@ -488,10 +486,7 @@ export function AddOnCard({
             amountClassName="text-sm font-semibold"
           />
           {a.rentalListingId ? (
-            <TextLink
-              to="/marketplace/rent"
-              className="mt-1 gap-1 text-1 font-bold uppercase tracking-wide"
-            >
+            <TextLink to="/marketplace/rent" className="mt-1 gap-1">
               Rental Marketplace <ChevronRight size={12} />
             </TextLink>
           ) : null}
@@ -659,7 +654,7 @@ export function BookingSummaryCard({
 export function Detail({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dt className="pill bg-subtle text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 truncate text-sm font-semibold">{value}</dd>
     </div>
   );
@@ -758,7 +753,7 @@ export function ProviderRequestCard({
 export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean }) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Payment</p>
+      <p className="pill bg-subtle text-muted-foreground">Payment</p>
       <Row label="Total booking value" value={inr(p.total)} />
       <Row
         label={paid ? "Deposit paid" : "Deposit due now"}

@@ -30,9 +30,7 @@ function PortfolioSettings() {
     <Screen bottomNav={false} className="pb-24">
       <TopBar title="Portfolio settings" back="/portfolio" />
       <main className="px-5 pt-4">
-        <h2 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-          Portfolio visibility
-        </h2>
+        <h2 className="pill bg-subtle text-muted-foreground">Portfolio visibility</h2>
         <div className="mt-2 space-y-2">
           {visibilityOptions.map((v) => (
             <button
@@ -50,9 +48,7 @@ function PortfolioSettings() {
           ))}
         </div>
 
-        <h2 className="mt-7 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-          Default ordering
-        </h2>
+        <h2 className="mt-7 pill bg-subtle text-muted-foreground">Default ordering</h2>
         <div className="mt-2 space-y-2">
           {[
             { key: "custom", label: "My custom order", blurb: "Use the order you set in Reorder." },
@@ -78,9 +74,7 @@ function PortfolioSettings() {
           ))}
         </div>
 
-        <h2 className="mt-7 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-          Media
-        </h2>
+        <h2 className="mt-7 pill bg-subtle text-muted-foreground">Media</h2>
         <div className="mt-2 flex items-center justify-between rounded-lg border border-border bg-card p-4">
           <div className="pr-4">
             <p className="text-sm font-semibold">Preview audio automatically</p>
