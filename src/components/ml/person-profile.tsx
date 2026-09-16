@@ -163,7 +163,7 @@ export function PersonProfileExperience({
                   aria-label={key}
                   onClick={() => setTab(key)}
                   className={cn(
-                    "state-layer relative flex items-center justify-center gap-1.5 rounded-t-md py-3.5 transition-[flex,color] duration-200 ease-standard",
+                    "state-layer relative flex items-center justify-center gap-1.5 rounded-t-sm py-3.5 transition-[flex,color] duration-200 ease-standard",
                     active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
                   )}
                 >

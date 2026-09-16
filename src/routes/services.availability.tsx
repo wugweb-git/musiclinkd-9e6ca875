@@ -2,7 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarOff, Plus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
-import { Card, EmptyState, Row } from "@/components/ml/kit";
+import { Card, EmptyState, Row, SegmentedField } from "@/components/ml/kit";
+import {
+  MiniCalendar,
+  MiniCalendarDay,
+  MiniCalendarDays,
+  MiniCalendarNavigation,
+} from "@/components/kibo-ui/mini-calendar";
+
+/** "14 Sep" — the shape every date on this screen takes. */
+const dayLabel = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 import {
   weeklyAvailability,
   timeOff,
@@ -35,6 +44,9 @@ function Availability() {
   const [days, setDays] = useState(weeklyAvailability);
   const [off, setOff] = useState(timeOff);
   const [addOff, setAddOff] = useState(false);
+  const [offStart, setOffStart] = useState<Date | undefined>(undefined);
+  const [offEnd, setOffEnd] = useState<Date | undefined>(undefined);
+  const [offLength, setOffLength] = useState("1 day");
 
   const toggleDay = (day: string) =>
     setDays((list) => list.map((d) => (d.day === day ? { ...d, enabled: !d.enabled } : d)));
@@ -89,13 +101,12 @@ function Availability() {
 
         <Card className="space-y-3">
           <h2 className="text-sm">Notice needed</h2>
-          <div className="flex flex-wrap gap-2">
-            {bookingWindows.map((w) => (
-              <Chip key={w} active={notice === w} onClick={() => setNotice(w)}>
-                {w}
-              </Chip>
-            ))}
-          </div>
+          <SegmentedField
+            label="Notice needed"
+            value={notice}
+            options={bookingWindows}
+            onChange={setNotice}
+          />
         </Card>
 
         <Card className="space-y-3">
@@ -158,25 +169,58 @@ function Availability() {
       </div>
 
       <Sheet open={addOff} onClose={() => setAddOff(false)} title="Add time off">
-        <div className="space-y-2">
-          {[
-            { id: "off-n1", label: "This weekend", range: "6–7 Sep" },
-            { id: "off-n2", label: "Next week", range: "8–14 Sep" },
-            { id: "off-n3", label: "Rest of the month", range: "8–30 Sep" },
-          ].map((o) => (
-            <Btn
-              key={o.id}
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                setOff((list) => [...list, o]);
-                setAddOff(false);
-              }}
-            >
-              {o.label} · {o.range}
-            </Btn>
-          ))}
+        {/* Pick the days you are away rather than choosing between three canned ranges. */}
+        <MiniCalendar
+          value={offStart}
+          onValueChange={(d) => {
+            setOffStart(d);
+            if (offEnd && d && d > offEnd) setOffEnd(undefined);
+          }}
+          days={5}
+          className="w-full justify-between"
+        >
+          <MiniCalendarNavigation direction="prev" />
+          <MiniCalendarDays className="flex-1 justify-between">
+            {(date) => <MiniCalendarDay date={date} key={date.toISOString()} />}
+          </MiniCalendarDays>
+          <MiniCalendarNavigation direction="next" />
+        </MiniCalendar>
+
+        <p className="mt-3 text-1 text-muted-foreground">
+          {offStart ? `Away from ${dayLabel(offStart)}` : "Pick the first day you are away."}
+        </p>
+
+        <div className="mt-2">
+          <SegmentedField
+            label="How long"
+            value={offLength}
+            options={["1 day", "2 days", "A week"]}
+            onChange={setOffLength}
+          />
         </div>
+
+        <Btn
+          className="mt-4 w-full"
+          disabled={!offStart}
+          onClick={() => {
+            if (!offStart) return;
+            const span = offLength === "1 day" ? 0 : offLength === "2 days" ? 1 : 6;
+            const end = new Date(offStart);
+            end.setDate(end.getDate() + span);
+            setOff((list) => [
+              ...list,
+              {
+                id: `off-${offStart.toISOString().slice(0, 10)}`,
+                label: "Time off",
+                range: span === 0 ? dayLabel(offStart) : `${dayLabel(offStart)} – ${dayLabel(end)}`,
+              },
+            ]);
+            setOffStart(undefined);
+            setAddOff(false);
+          }}
+        >
+          Block these days
+        </Btn>
       </Sheet>
     </Screen>
   );

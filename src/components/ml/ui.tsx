@@ -509,7 +509,7 @@ export function Sheet({
         onClick={onClose}
         className="absolute inset-0 animate-in fade-in bg-ink/50 backdrop-blur-[2px] duration-200"
       />
-      <div className="relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-2xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar duration-300 ease-enter">
+      <div className="relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-3xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar duration-300 ease-enter">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
         {title ? <h2 className="mb-4 text-3">{title}</h2> : null}
         {children}

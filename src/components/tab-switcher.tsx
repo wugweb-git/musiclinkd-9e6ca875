@@ -46,7 +46,7 @@ export function TabSwitcher({ tabs, defaultTab, className, variant = "pill" }: T
             className={cn(
               "relative px-4 py-2 text-sm font-semibold outline-none transition-colors duration-200 z-10 flex items-center gap-2",
               variant === "pill" && "rounded-full",
-              variant === "underline" && "rounded-t-md pb-3",
+              variant === "underline" && "rounded-t-sm pb-3",
               variant === "segmented" && "rounded-sm flex-1",
               activeTab === tab.id
                 ? "text-zinc-900 dark:text-zinc-100"
