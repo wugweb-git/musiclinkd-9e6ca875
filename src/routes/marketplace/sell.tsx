@@ -66,7 +66,7 @@ function Sell() {
               <button
                 key={t.label}
                 onClick={() => setType(t.label)}
-                className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left ${type === t.label ? "border-primary" : "border-border"} bg-card`}
+                className={`flex w-full items-center gap-3 rounded-lg border-2 p-4 text-left ${type === t.label ? "border-foreground" : "border-transparent"} bg-subtle`}
               >
                 <span
                   className="flex h-11 w-11 items-center justify-center rounded-sm text-2"

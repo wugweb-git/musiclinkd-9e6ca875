@@ -61,7 +61,7 @@ export function SearchField({
         void navigate({ to, search: q.trim() ? { q: q.trim() } : {} });
       }}
     >
-      <label className="flex h-14 items-center gap-3 rounded-full border border-border bg-card px-5 focus-within:ring-2 focus-within:ring-ring">
+      <label className="flex h-14 items-center gap-3 rounded-full bg-subtle px-5 focus-within:ring-2 focus-within:ring-ring">
         <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
         <input
           ref={input}

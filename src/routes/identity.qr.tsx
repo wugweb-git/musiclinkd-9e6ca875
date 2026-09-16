@@ -304,8 +304,8 @@ function DigitalId() {
                 setLook(false);
               }}
               aria-pressed={style === s.value}
-              className={`state-layer flex items-center gap-3 rounded-lg border px-4 py-3 text-left ${
-                style === s.value ? "border-foreground bg-subtle" : "border-border bg-card"
+              className={`state-layer flex items-center gap-3 rounded-lg border-2 px-4 py-3 text-left ${
+                style === s.value ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
               }`}
             >
               <span

@@ -652,9 +652,9 @@ export function OptionList({
                 haptic("select");
                 onToggle(o.key);
               }}
-              className={`state-layer flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
-                on ? "border-primary" : "border-border"
-              } bg-card`}
+              className={`state-layer flex w-full items-start gap-3 rounded-lg border-2 p-4 text-left transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
+                on ? "border-foreground" : "border-transparent"
+              } bg-subtle`}
             >
               <span
                 className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border ${

@@ -85,8 +85,8 @@ function PrintPreview() {
               type="button"
               onClick={() => setFormat(f.id)}
               aria-pressed={format === f.id}
-              className={`flex items-center justify-between gap-3 rounded-[20px] border px-4 py-3 text-left ${
-                format === f.id ? "border-primary bg-pinkc" : "border-border bg-card"
+              className={`flex items-center justify-between gap-3 rounded-[20px] border-2 px-4 py-3 text-left ${
+                format === f.id ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
               }`}
             >
               <span className="min-w-0">

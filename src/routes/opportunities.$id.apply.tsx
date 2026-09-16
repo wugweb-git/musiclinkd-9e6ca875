@@ -129,7 +129,7 @@ function ApplyFlow() {
                             : prev,
                       )
                     }
-                    className={`overflow-hidden rounded-[20px] border text-left ${on ? "border-primary" : "border-border"} bg-card`}
+                    className={`overflow-hidden rounded-[20px] border-2 text-left ${on ? "border-foreground" : "border-transparent"} bg-subtle`}
                   >
                     <span className="flex h-20 w-full items-center justify-center bg-background text-3">
                       {workType(p.kind).emoji}

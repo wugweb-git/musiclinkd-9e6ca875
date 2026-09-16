@@ -364,7 +364,7 @@ function EditProfile() {
               key={o.key}
               type="button"
               onClick={() => update({ visibility: o.key })}
-              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.key ? "border-primary bg-background" : "border-border bg-card"}`}
+              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border-2 px-4 text-left ${form.visibility === o.key ? "border-foreground bg-subtle" : "border-transparent bg-subtle"}`}
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold">{o.label}</span>

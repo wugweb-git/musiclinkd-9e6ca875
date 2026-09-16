@@ -66,8 +66,8 @@ export function HireModal({
                 key={o.label}
                 type="button"
                 onClick={() => setChoice(o.label)}
-                className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left ${
-                  choice === o.label ? "border-primary bg-card" : "border-border bg-card"
+                className={`flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left ${
+                  choice === o.label ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
                 }`}
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
@@ -79,7 +79,7 @@ export function HireModal({
                 </span>
                 <span
                   className={`h-5 w-5 rounded-full border-2 ${
-                    choice === o.label ? "border-primary bg-primary" : "border-border"
+                    choice === o.label ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
                   }`}
                 />
               </button>

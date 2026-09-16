@@ -177,8 +177,8 @@ export function ResourceCard({
   const from = lowestRate(r.tiers);
   return (
     <div
-      className={`overflow-hidden rounded-lg border bg-card ${
-        selected ? "border-primary" : "border-border"
+      className={`overflow-hidden rounded-lg border-2 bg-subtle ${
+        selected ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
       }`}
     >
       <div className="flex gap-3 p-3">
@@ -474,7 +474,7 @@ export function AddOnCard({
 }) {
   return (
     <div
-      className={`rounded-lg border bg-card p-4 ${selected ? "border-primary" : "border-border"}`}
+      className={`rounded-lg border-2 bg-subtle p-4 ${selected ? "border-foreground bg-subtle" : "border-transparent bg-subtle"}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

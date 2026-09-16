@@ -38,8 +38,8 @@ function PortfolioSettings() {
               type="button"
               aria-pressed={visibility === v.value}
               onClick={() => setVisibility(v.value)}
-              className={`w-full rounded-lg border p-4 text-left ${
-                visibility === v.value ? "border-primary bg-card" : "border-border bg-card"
+              className={`w-full rounded-lg border-2 p-4 text-left ${
+                visibility === v.value ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
               }`}
             >
               <span className="block text-sm font-semibold">{v.label}</span>
@@ -64,8 +64,8 @@ function PortfolioSettings() {
               type="button"
               aria-pressed={ordering === o.key}
               onClick={() => setOrdering(o.key)}
-              className={`w-full rounded-lg border p-4 text-left ${
-                ordering === o.key ? "border-primary bg-card" : "border-border bg-card"
+              className={`w-full rounded-lg border-2 p-4 text-left ${
+                ordering === o.key ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
               }`}
             >
               <span className="block text-sm font-semibold">{o.label}</span>

@@ -69,9 +69,9 @@ function PortfolioSelect() {
                     p.includes(item.id) ? p.filter((x) => x !== item.id) : [...p, item.id],
                   )
                 }
-                className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left ${
-                  on ? "border-primary" : "border-border"
-                } bg-card`}
+                className={`flex w-full items-center gap-3 rounded-lg border-2 p-4 text-left ${
+                  on ? "border-foreground" : "border-transparent"
+                } bg-subtle`}
               >
                 <span
                   className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm text-3"

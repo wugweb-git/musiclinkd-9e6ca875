@@ -136,7 +136,7 @@ export function SearchBar({
   onFocus?: () => void;
 }) {
   return (
-    <div className="flex h-14 items-center gap-3 rounded-full border border-border bg-card px-5">
+    <div className="flex h-14 items-center gap-3 rounded-full bg-subtle px-5">
       <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
       <input
         value={value}

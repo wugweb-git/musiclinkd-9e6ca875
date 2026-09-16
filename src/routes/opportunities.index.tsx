@@ -76,7 +76,7 @@ function OpportunitiesHome() {
 
       <div className="space-y-4 px-5 pt-4">
         <Link to="/opportunities/search" className="block">
-          <div className="flex h-13 items-center gap-3 rounded-full border border-border bg-card px-5 py-3.5">
+          <div className="flex h-13 items-center gap-3 rounded-full bg-subtle px-5 py-3.5">
             <Search size={16} className="text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Singer, mixing engineer, studio…</span>
           </div>
