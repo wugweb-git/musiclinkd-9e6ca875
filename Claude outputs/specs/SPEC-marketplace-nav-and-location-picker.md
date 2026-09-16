@@ -18,6 +18,12 @@ originally: new
 
 # Issue 3 — top nav, category drawer, location picker
 
+**Reference screenshots (also in `screenshots/`, full size):**
+
+| Top nav + category row | Category drawer (grey-circle icons) | Location picker (bottom sheet) |
+|---|---|---|
+| ![Marketplace top nav](screenshots/issue3-facebook-marketplace-topnav.png) | ![Category drawer](screenshots/issue3-facebook-category-drawer.png) | ![Location picker](screenshots/issue3-facebook-location-picker.png) |
+
 ## 1 · Top nav bar
 
 Three zones, fixed row:

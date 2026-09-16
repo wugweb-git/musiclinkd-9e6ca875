@@ -15,6 +15,12 @@ originally: new
 
 # Why MusicLinkd's settings icons read weaker than Facebook's
 
+**Reference screenshots (also in `screenshots/`, full size):**
+
+| MusicLinkd — Settings | Facebook — Settings & Privacy | Facebook — Friends (avatar chip) |
+|---|---|---|
+| ![MusicLinkd Settings](screenshots/issue2-musiclinkd-settings.png) | ![Facebook Settings](screenshots/issue2-facebook-settings.png) | ![Facebook Friends](screenshots/issue2-facebook-friends.png) |
+
 ## 1 · The glyphs themselves are ~35–45% smaller
 
 Measured the drawn icon (ignoring the container box) in both screenshots, same device width
