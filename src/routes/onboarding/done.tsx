@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
-import { BtnLink, TopBar } from "@/components/ml/ui";
+import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding, useScrollEdges } from "@/components/ml/onboarding";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
@@ -54,7 +54,7 @@ function Done() {
   ].filter(Boolean) as string[];
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-40">
+    <Screen bottomNav={false} className="pb-40">
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
@@ -110,6 +110,6 @@ function Done() {
           Go to my home
         </BtnLink>
       </div>
-    </div>
+    </Screen>
   );
 }

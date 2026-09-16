@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { BtnLink, TopBar } from "@/components/ml/ui";
+import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
 import { ProfileHero } from "@/components/ml/profile";
 import { linkPlatforms, visibilityOptions, visibleSteps } from "@/data/onboarding";
@@ -84,7 +84,7 @@ function Preview() {
   const visibility = visibilityOptions.find((v) => v.key === d.visibility)?.label;
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-36">
+    <Screen bottomNav={false} className="pb-36">
       <TopBar
         title="Review profile"
         subtitle="This is what others see"
@@ -149,6 +149,6 @@ function Preview() {
           </AuthLink>
         </p>
       </div>
-    </div>
+    </Screen>
   );
 }

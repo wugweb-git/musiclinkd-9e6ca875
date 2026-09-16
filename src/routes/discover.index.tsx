@@ -3,6 +3,7 @@ import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
+import { Rate } from "@/components/ml/kit";
 import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
@@ -181,7 +182,7 @@ function Discover() {
                 </div>
                 <p className="truncate text-[11px] text-muted-foreground">{t.role} · 2.4 km away</p>
               </div>
-              <span className="text-[11px] font-semibold text-price">{t.rate}</span>
+              <Rate {...t.rate} size="sm" />
             </Link>
           ))}
           {studios.slice(0, 1).map((s) => (
@@ -197,7 +198,7 @@ function Discover() {
                   {s.location} · {s.rating} ★
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-price">{s.rate}</span>
+              <Rate {...s.rate} size="sm" />
             </Link>
           ))}
           {dbStudios.map((s) => (
@@ -218,9 +219,7 @@ function Discover() {
                     .join(" · ")}
                 </p>
               </div>
-              {s.rate ? (
-                <span className="text-[11px] font-semibold text-price">{s.rate}</span>
-              ) : null}
+              {s.rate ? <Rate {...s.rate} size="sm" /> : null}
             </Link>
           ))}
         </div>

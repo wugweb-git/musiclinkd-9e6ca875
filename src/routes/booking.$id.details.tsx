@@ -38,7 +38,7 @@ function Details() {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Session details" subtitle={r.name} back={`/booking/${b.id}/schedule`} />
       <main className="px-5 pt-4">
         <StepDots step={3} total={5} />

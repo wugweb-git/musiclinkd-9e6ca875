@@ -29,7 +29,7 @@ function SelectService() {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Select a space" subtitle={b.name} back={`/booking/${b.id}`} />
       <main className="px-5 pt-4">
         <StepDots step={1} total={5} />

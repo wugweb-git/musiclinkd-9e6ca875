@@ -29,7 +29,7 @@ function Insights() {
   const i = profileInsights;
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-28">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-28">
       <TopBar title="Profile insights" subtitle={i.range} back="/me" />
 
       <main className="px-5 pt-4">

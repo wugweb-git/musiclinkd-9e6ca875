@@ -35,7 +35,7 @@ function AddOns() {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Equipment & add-ons" subtitle="Optional" back={`/booking/${b.id}/details`} />
       <main className="px-5 pt-4">
         <StepDots step={4} total={5} />

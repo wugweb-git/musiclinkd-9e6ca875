@@ -1,10 +1,25 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, MapPin, Star } from "lucide-react";
 import { availabilityTone, type Talent } from "@/data/discover";
-import { StatusPill } from "./kit";
+import { Rate, StatusPill } from "./kit";
 import { Btn, VerifiedBadge } from "./ui";
 
-export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent) => void }) {
+/*
+ * Message and Save are disabled until there is somewhere for them to go: there is no thread to
+ * open and no saved-talent table yet. A control that takes the tap and does nothing is worse
+ * than one that says it isn't ready, so both carry a reason instead of a silent handler.
+ */
+export function TalentRow({
+  t,
+  onPreview,
+  onMessage,
+  onSave,
+}: {
+  t: Talent;
+  onPreview?: ((t: Talent) => void) | undefined;
+  onMessage?: ((t: Talent) => void) | undefined;
+  onSave?: ((t: Talent) => void) | undefined;
+}) {
   return (
     <article className="rounded-lg border border-border bg-card p-4">
       <button
@@ -23,7 +38,7 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
             <h3 className="truncate text-2">{t.name}</h3>
             {t.verified ? <VerifiedBadge /> : null}
           </div>
-          <p className="truncate text-xs text-muted-foreground">{t.role}</p>
+          <p className="truncate text-1 text-muted-foreground">{t.role}</p>
           <p className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-muted-foreground">
             <MapPin size={12} className="shrink-0" aria-hidden />
             <span className="truncate">{t.location}</span>
@@ -50,17 +65,24 @@ export function TalentRow({ t, onPreview }: { t: Talent; onPreview?: (t: Talent)
         <Link
           to="/profile/$username"
           params={{ username: t.id }}
-          className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-ink text-xs font-semibold text-background"
+          className="hit-area inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-ink text-1 font-semibold text-background"
         >
           View profile
         </Link>
-        <Btn variant="outline" className="min-h-11 flex-1 text-xs">
+        <Btn
+          variant="outline"
+          className="min-h-11 flex-1 text-1"
+          disabled={!onMessage}
+          {...(onMessage ? { onClick: () => onMessage(t) } : {})}
+        >
           Message
         </Btn>
         <button
           type="button"
-          aria-label="Save"
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card"
+          aria-label={onSave ? `Save ${t.name}` : "Saving isn't open yet"}
+          disabled={!onSave}
+          {...(onSave ? { onClick: () => onSave(t) } : {})}
+          className="hit-area flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card disabled:opacity-40"
         >
           <Heart size={18} aria-hidden />
         </button>
@@ -123,7 +145,9 @@ export function TalentGridCard({ t }: { t: Talent }) {
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.location}</p>
-        <p className="mt-1 text-1 font-semibold text-price">{t.rate}</p>
+        <div className="mt-1">
+          <Rate {...t.rate} size="sm" />
+        </div>
       </div>
     </Link>
   );

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, StateCard, WorkAnalytics } from "@/components/ml/portfolio";
 import { analyticsFor, demoPortfolio, portfolioTotals, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -40,7 +40,7 @@ function PortfolioAnalytics() {
   const totals = portfolioTotals(items.map((i) => i.id));
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-28">
+    <Screen bottomNav={false} className="pb-28">
       <TopBar title="Portfolio performance" subtitle="Last 30 days" back="/portfolio" />
       <main className="px-5 pt-4">
         {signedIn && q.isLoading ? <PortfolioSkeleton /> : null}
@@ -91,6 +91,6 @@ function PortfolioAnalytics() {
           </>
         ) : null}
       </main>
-    </div>
+    </Screen>
   );
 }

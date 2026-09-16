@@ -67,7 +67,7 @@ export function Segmented<T extends string>({
           role="tab"
           aria-selected={value === o}
           onClick={() => onChange(o)}
-          className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold ${
+          className={`shrink-0 rounded-full border px-4 py-2 text-1 font-semibold ${
             value === o
               ? "border-transparent bg-selected-bg text-selected-text"
               : "border-border bg-card text-foreground"
@@ -193,6 +193,35 @@ export function Meter({
       <div className="mt-1 h-2 rounded-full bg-subtle">
         <div className="h-2 rounded-full bg-primary" style={{ width: `${pct}%` }} />
       </div>
+    </div>
+  );
+}
+
+/*
+ * A rate is two values, never one joined string. The amount carries the price colour; the unit
+ * sits under it as a small grey line ("₹4,500" / "per hour"), because the database stores the
+ * amount and the unit separately and they are read as two pieces, not as "₹4,500 / hr".
+ * An amount with no unit ("On request") renders the amount alone.
+ */
+export function Rate({
+  amount,
+  unit,
+  size = "md",
+}: {
+  amount: string;
+  unit?: string | undefined;
+  size?: "sm" | "md" | "lg";
+}) {
+  const amountSize =
+    size === "lg"
+      ? "text-4 font-bold"
+      : size === "sm"
+        ? "text-1 font-semibold"
+        : "text-2 font-bold";
+  return (
+    <div className="min-w-0">
+      <p className={`truncate text-price ${amountSize}`}>{amount}</p>
+      {unit ? <p className="truncate text-1 text-muted-foreground">{unit}</p> : null}
     </div>
   );
 }

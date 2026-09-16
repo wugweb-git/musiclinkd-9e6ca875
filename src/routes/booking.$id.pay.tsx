@@ -94,7 +94,7 @@ function Pay() {
   }
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Payment" subtitle={`Deposit for ${b.name}`} back={`/booking/${b.id}/review`} />
       <main className="px-5 pt-4">
         <PaymentSummaryCard p={price} />
@@ -207,7 +207,7 @@ function Result({
   primary: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
       <div>
         {tone === "ok" ? (
           <CheckCircle2 size={44} className="text-primary" />

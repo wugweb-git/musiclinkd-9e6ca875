@@ -19,7 +19,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
-import { StatusPill } from "@/components/ml/kit";
+import { Row, StatusPill } from "@/components/ml/kit";
 import { LogoMark } from "@/components/ml/logo";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
@@ -27,12 +27,10 @@ import {
   emptyDashboard,
   forYouTiles,
   headlineUpdate,
-  openOpportunities,
   type ContinueCard,
   type DashboardData,
   type ForYouTile,
 } from "@/data/dashboard";
-import { categoryLabel } from "@/data/opportunities";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
@@ -61,7 +59,7 @@ export const Route = createFileRoute("/feed")({
 
 type Status = "loading" | "ready" | "error" | "offline";
 
-type Home = { data: DashboardData; cont: ContinueCard[]; opportunityStats: ForYouTile[] };
+type Home = { data: DashboardData; cont: ContinueCard[] };
 
 /*
  * Home is the signed-in person's own: their profile row, their portfolio and the open opportunities.
@@ -160,28 +158,7 @@ function buildHome(
     });
   }
 
-  const open = openOpportunities();
-  const opportunityStats: ForYouTile[] = [
-    {
-      id: "open",
-      value: `${open.length}`,
-      label: "Open opportunities",
-      hint: open
-        .slice(0, 3)
-        .map((o) => categoryLabel(o.categoryKey))
-        .join(", "),
-      to: "/opportunities",
-    },
-    {
-      id: "applications",
-      value: "0",
-      label: "Your applications",
-      hint: "Nothing yet",
-      to: "/opportunities/applications",
-    },
-  ];
-
-  return { data, cont, opportunityStats };
+  return { data, cont };
 }
 
 function greeting() {
@@ -260,7 +237,7 @@ function StatTile({ tile }: { tile: ForYouTile }) {
 }
 
 function Body({ home }: { home: Home }) {
-  const { data, cont, opportunityStats } = home;
+  const { data, cont } = home;
   const { user } = data;
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
@@ -324,13 +301,14 @@ function Body({ home }: { home: Home }) {
         </section>
       ) : null}
 
-      {/* 3b — Opportunities */}
+      {/*
+       * 3b — Opportunities. No table backs an open-roles count for this person yet, so Home links
+       * to the list rather than quoting a number taken from seed content.
+       */}
       <section className="pt-6">
         <SectionHeader title="Opportunities" action={<Link to="/opportunities">See all</Link>} />
-        <div className="grid grid-cols-2 gap-3 px-5">
-          {opportunityStats.map((t) => (
-            <StatTile key={t.id} tile={t} />
-          ))}
+        <div className="px-5">
+          <Row title="Your applications" subtitle="Nothing yet" to="/opportunities/applications" />
         </div>
       </section>
 
@@ -389,7 +367,7 @@ function Body({ home }: { home: Home }) {
             </p>
             <Link
               to="/discover"
-              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
+              className="hit-area mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
             >
               Discover talent
             </Link>

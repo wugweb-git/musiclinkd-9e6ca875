@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Settings } from "lucide-react";
-import { Btn, BtnLink, IconBtnLink, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { PortfolioHeader, PortfolioSkeleton, StateCard, WorkCard } from "@/components/ml/portfolio";
 import { demoPortfolio, roleSuggestions, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -47,7 +47,7 @@ function PortfolioOverview() {
   const showTools = !empty && !(signedIn && (q.isLoading || authLoading));
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen bottomNav={false} className="pb-32">
       <TopBar
         title="Your portfolio"
         subtitle="Show the work you're proud of"
@@ -124,6 +124,6 @@ function PortfolioOverview() {
           ))}
         </div>
       </main>
-    </div>
+    </Screen>
   );
 }

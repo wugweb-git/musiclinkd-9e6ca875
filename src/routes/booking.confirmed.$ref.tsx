@@ -35,7 +35,7 @@ function Confirmed() {
   const date = isoDate(soon);
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-14">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-14">
       <div>
         {requested ? (
           <Clock size={44} className="text-primary" />

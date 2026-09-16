@@ -83,7 +83,7 @@ function InviteMembers() {
       </div>
 
       {invited.length ? (
-        <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-[430px] border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-app border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
           <Btn className="w-full" onClick={() => setSent(true)}>
             Send {invited.length} invitation{invited.length === 1 ? "" : "s"}
           </Btn>

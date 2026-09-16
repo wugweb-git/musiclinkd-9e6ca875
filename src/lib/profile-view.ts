@@ -253,7 +253,7 @@ function professionalRows(sections: ProfileSections, labels: TaxonomyLabels | un
   if (sections.budget_tier) add("budget_type", [sections.budget_tier]);
   const out = [...rows].map(([label, values]) => ({ label, value: values.join(" · ") }));
   if (sections.hourly_rate_paise != null) {
-    out.push({ label: "Hourly rate", value: formatPaise(sections.hourly_rate_paise, "hr") });
+    out.push({ label: "Hourly rate", value: formatPaise(sections.hourly_rate_paise) });
   }
   const persona = names["persona_badges"];
   const badges = sections.persona_badges

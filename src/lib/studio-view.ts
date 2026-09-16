@@ -1,6 +1,7 @@
 import type { Bookable, Resource } from "@/data/booking";
 import { formatPaise, taxonomyLabel, type StudioRow } from "@/lib/catalog.functions";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
+import { paiseRate, type RateValue } from "@/lib/utils";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
@@ -13,7 +14,7 @@ export type DiscoverStudio = {
   name: string;
   location: string;
   rating: number | null;
-  rate: string;
+  rate: RateValue | null;
   photo: string;
   gear: string[];
 };
@@ -24,7 +25,7 @@ export function discoverStudioFromRow(row: StudioRow, labels: TaxonomyLabels): D
     name: row.name,
     location: row.location ?? "",
     rating: row.rating == null ? null : Number(row.rating),
-    rate: formatPaise(row.hourly_rate_paise, "hr"),
+    rate: paiseRate(row.hourly_rate_paise, "hr"),
     photo: row.image_url ?? "",
     gear: row.equipment.length
       ? row.equipment.map((e) => e.name)

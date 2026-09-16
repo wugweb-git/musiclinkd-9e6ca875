@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { BtnLink, TopBar } from "@/components/ml/ui";
+import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { visibilityOptions } from "@/data/portfolio";
 
 export const Route = createFileRoute("/portfolio/settings")({
@@ -27,7 +27,7 @@ function PortfolioSettings() {
   const [autoplay, setAutoplay] = useState(false);
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-24">
+    <Screen bottomNav={false} className="pb-24">
       <TopBar title="Portfolio settings" back="/portfolio" />
       <main className="px-5 pt-4">
         <h2 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
@@ -108,6 +108,6 @@ function PortfolioSettings() {
           </BtnLink>
         </div>
       </main>
-    </div>
+    </Screen>
   );
 }

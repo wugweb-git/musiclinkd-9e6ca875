@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { listMyPortfolio, saveMyProfile } from "@/lib/portfolio.functions";
 import { draftToProfile } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
-import { BtnLink, TopBar } from "@/components/ml/ui";
+import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import {
   HandoffCard,
   OnboardingProvider,
@@ -73,7 +73,7 @@ function Complete() {
   const edges = useScrollEdges();
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen bottomNav={false} className="pb-32">
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
@@ -166,6 +166,6 @@ function Complete() {
           Finish
         </BtnLink>
       </div>
-    </div>
+    </Screen>
   );
 }
