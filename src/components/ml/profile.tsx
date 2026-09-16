@@ -67,7 +67,7 @@ export function ProfileSection({
           <button
             type="button"
             onClick={onAction}
-            className="state-layer hit-area rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-98"
+            className="link-action hit-area rounded-full text-sm font-semibold text-pink-strong"
           >
             {action}
           </button>
@@ -139,7 +139,7 @@ export function StackSection({
         <button
           type="button"
           onClick={onShowAll}
-          className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-primary"
+          className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
         >
           {showAll}
           <ChevronRight size={15} aria-hidden />

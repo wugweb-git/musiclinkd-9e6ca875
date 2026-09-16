@@ -64,7 +64,7 @@ function SectionActionAnchor({
   ...props
 }: AnchorHTMLAttributes<HTMLAnchorElement> & { icon?: ReactNode; ref?: Ref<HTMLAnchorElement> }) {
   return (
-    <a {...props} className={cn(textLinkBase, "text-primary", className)}>
+    <a {...props} className={cn(textLinkBase, "text-pink-strong", className)}>
       {icon ? (
         <span aria-hidden className="inline-flex shrink-0">
           {icon}
