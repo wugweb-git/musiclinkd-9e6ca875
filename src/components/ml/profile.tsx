@@ -127,7 +127,7 @@ export function StackSection({
   const [open, setOpen] = useState(defaultOpen);
   const bodyId = `${title.replace(/\s+/g, "-").toLowerCase()}-body`;
   return (
-    <section className="-mx-5 border-b-8 border-subtle bg-card px-5 py-5">
+    <section className="mt-4 rounded-lg bg-card px-4 py-5">
       <div className="flex items-center gap-1">
         <h2 className="min-w-0 flex-1 text-3 font-bold">{title}</h2>
         {action}
@@ -545,7 +545,7 @@ export function ProfileHero({
             <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
           </>
         ) : (
-          <div className="h-full w-full bg-subtle" />
+          <div className="h-full w-full bg-icon-chip" />
         )}
         {back ? (
           <Link
@@ -588,10 +588,10 @@ export function ProfileHero({
             <img
               src={p.photo}
               alt={p.name}
-              className="aspect-square w-full rounded-full border-4 border-subtle object-cover motion-reduce:!h-34"
+              className="aspect-square w-full rounded-full border-4 border-background object-cover motion-reduce:!h-34"
             />
           ) : (
-            <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-subtle bg-card text-muted-foreground">
+            <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-background bg-card text-muted-foreground">
               <User size={iconSize.xl} aria-label={p.name} />
             </span>
           )}

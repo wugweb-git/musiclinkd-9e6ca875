@@ -129,7 +129,12 @@ function MarketHome() {
       >
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {marketCategories.map((c) => (
-            <CategoryTile key={c.slug} {...c} />
+            <CategoryTile
+              key={c.slug}
+              slug={c.slug}
+              label={c.label}
+              onOpen={() => setCategoriesOpen(true)}
+            />
           ))}
         </div>
       </SectionRow>

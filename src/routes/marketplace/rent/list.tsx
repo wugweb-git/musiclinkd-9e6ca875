@@ -108,7 +108,6 @@ function ListForRent() {
                 >
                   <MarketCategoryIcon slug={c.slug} />
                   <p className="mt-2 text-1 font-semibold text-foreground">{c.label}</p>
-                  <p className="text-1 text-foreground">{c.count}</p>
                 </button>
               ))}
             </div>

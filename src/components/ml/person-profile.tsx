@@ -123,9 +123,8 @@ export function PersonProfileExperience({
 
   return (
     <Screen>
-      {/* Two greys: who this is (hero, actions, tabs) on the light band; what they have done on the
-          darker ground below, in light cards. */}
-      <div className="bg-subtle pb-4">
+      {/* One grey ground; everything that holds content sits on it in white cards. */}
+      <div className="pb-4">
         <ProfileHero
           p={p}
           owner={owner}
@@ -157,7 +156,7 @@ export function PersonProfileExperience({
       {owner ? null : (
         <nav
           aria-label="Profile sections"
-          className="sticky top-0 z-tabs border-b border-border bg-subtle/95 px-2 backdrop-blur"
+          className="sticky top-0 z-tabs border-b border-border bg-background/95 px-2 backdrop-blur"
         >
           <div role="tablist" aria-label="Profile sections" className="flex items-stretch">
             {tabs.map(({ key, icon: Icon }) => {

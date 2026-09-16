@@ -324,8 +324,8 @@
   --purple: oklch(0.6056 0.2189 292.72);
   --success: oklch(0.7227 0.192 149.58);
   --warn: oklch(0.7686 0.1647 70.08);
-  /* tokens.json `surface` — the sunken step between paper and a white card. */
-  --surface-subtle: #f8f8fb;
+  /* Card and tile surface: white on the #ECECF1 page (owner, 17 Sep; was #F8F8FB). */
+  --surface-subtle: #ffffff;
 
   --pink-container: #fce7f3;
   --purple-container: color-mix(in oklab, var(--purple) 10%, transparent);

@@ -49,7 +49,7 @@ export function Screen({
   bottomNav ??= isTabRoot(path);
   const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background">
+    <div className="mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
       <div className={`flex-1 ${clearance}`}>{children}</div>
       {bottomNav ? <BottomNav /> : null}
     </div>

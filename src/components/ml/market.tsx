@@ -126,27 +126,27 @@ export function MarketCategoryIcon({ slug, size = iconSize.lg }: { slug: string;
   return <Icon size={size} strokeWidth={1.75} className="text-foreground" aria-hidden />;
 }
 
+/** A category tile: opens the full category drawer. */
 export function CategoryTile({
   slug,
   label,
-  count,
+  onOpen,
 }: {
   slug: string;
   label: string;
-  count: string;
+  onOpen: () => void;
 }) {
   return (
-    <Link
-      to="/marketplace/c/$slug"
-      params={{ slug }}
-      className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3"
+    <button
+      type="button"
+      onClick={onOpen}
+      className="state-layer flex w-[104px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3 text-left"
     >
       <span className="flex h-8 items-center">
         <MarketCategoryIcon slug={slug} />
       </span>
       <span className="text-1 font-semibold leading-tight text-foreground">{label}</span>
-      <span className="text-1 text-foreground">{count}</span>
-    </Link>
+    </button>
   );
 }
 
@@ -484,10 +484,13 @@ export function CategorySheet({
   open,
   onClose,
   categories,
+  rental = false,
 }: {
   open: boolean;
   onClose: () => void;
-  categories: readonly { slug: string; label: string; count: string }[];
+  categories: readonly { slug: string; label: string }[];
+  /** Rental categories open under /marketplace/rent. */
+  rental?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const shown = categories.filter((c) => c.label.toLowerCase().includes(query.toLowerCase()));
@@ -504,7 +507,7 @@ export function CategorySheet({
         {shown.map((c) => (
           <li key={c.slug}>
             <Link
-              to="/marketplace/c/$slug"
+              to={rental ? "/marketplace/rent/c/$slug" : "/marketplace/c/$slug"}
               params={{ slug: c.slug }}
               onClick={onClose}
               className="state-layer flex items-center gap-3 py-2.5"
@@ -518,7 +521,6 @@ export function CategorySheet({
               <span className="min-w-0 flex-1 text-sm font-semibold text-foreground">
                 {c.label}
               </span>
-              <span className="text-1 text-foreground">{c.count}</span>
             </Link>
           </li>
         ))}

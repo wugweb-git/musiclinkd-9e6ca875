@@ -2,7 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
-import { MarketCategoryIcon, SectionRow } from "@/components/ml/market";
+import {
+  CategorySheet,
+  CategoryTile,
+  LocationSheet,
+  SectionRow,
+  useMarketCity,
+} from "@/components/ml/market";
 import {
   EquipmentCard,
   EquipmentTile,
@@ -35,6 +41,9 @@ export const Route = createFileRoute("/marketplace/rent/")({
 
 function RentHome() {
   const [filters, setFilters] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [city, setCity] = useMarketCity();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 450);
@@ -56,8 +65,12 @@ function RentHome() {
             <p className="mt-0.5 text-1 text-muted-foreground">
               Professional music equipment when you need it.
             </p>
-            <button className="mt-1 inline-flex items-center gap-1 text-1 font-semibold text-foreground">
-              <MapPin size={iconSize.xs} /> Mumbai, Maharashtra · change
+            <button
+              type="button"
+              onClick={() => setLocationOpen(true)}
+              className="mt-1 inline-flex items-center gap-1 text-1 font-semibold text-foreground"
+            >
+              <MapPin size={iconSize.xs} /> {city} · change
             </button>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -91,21 +104,26 @@ function RentHome() {
         ))}
       </div>
 
-      <SectionRow title="Browse categories">
+      <SectionRow
+        title="Browse categories"
+        action={
+          <button
+            type="button"
+            onClick={() => setCategoriesOpen(true)}
+            className="link-action text-1 font-semibold text-foreground"
+          >
+            See All
+          </button>
+        }
+      >
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {rentalCategories.map((c) => (
-            <Link
+            <CategoryTile
               key={c.slug}
-              to="/marketplace/rent/c/$slug"
-              params={{ slug: c.slug }}
-              className="flex w-[108px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3"
-            >
-              <span className="flex h-8 items-center">
-                <MarketCategoryIcon slug={c.slug} />
-              </span>
-              <span className="text-1 font-semibold leading-tight text-foreground">{c.label}</span>
-              <span className="text-1 text-foreground">{c.count}</span>
-            </Link>
+              slug={c.slug}
+              label={c.label}
+              onOpen={() => setCategoriesOpen(true)}
+            />
           ))}
         </div>
       </SectionRow>
@@ -175,6 +193,18 @@ function RentHome() {
         open={filters}
         onClose={() => setFilters(false)}
         results={equipment.length}
+      />
+      <LocationSheet
+        open={locationOpen}
+        onClose={() => setLocationOpen(false)}
+        city={city}
+        onChoose={setCity}
+      />
+      <CategorySheet
+        open={categoriesOpen}
+        onClose={() => setCategoriesOpen(false)}
+        categories={rentalCategories}
+        rental
       />
     </Screen>
   );
