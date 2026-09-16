@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, StateCard } from "@/components/ml/portfolio";
 import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -43,7 +43,7 @@ function PortfolioSelect() {
   const selected = items.filter((i) => picked.includes(i.id));
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-40">
+    <Screen bottomNav={false} className="pb-40">
       <TopBar title="Share work" subtitle="Pick what to attach" back="/messages" />
       <main className="px-5 pt-4">
         {signedIn && q.isLoading ? <PortfolioSkeleton /> : null}
@@ -103,7 +103,7 @@ function PortfolioSelect() {
         ) : null}
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         <Btn
           className="w-full"
           onClick={() => {
@@ -117,6 +117,6 @@ function PortfolioSelect() {
           Attach {selected.length ? `${selected.length} work` : "work"}
         </Btn>
       </div>
-    </div>
+    </Screen>
   );
 }

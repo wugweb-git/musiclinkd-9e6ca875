@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { TopBar } from "@/components/ml/ui";
+import { Screen, TopBar } from "@/components/ml/ui";
 import { WorkTypeIcon } from "@/components/ml/portfolio";
 import { workTypes } from "@/data/portfolio";
 import { beat, useArrival } from "@/lib/flow-motion";
@@ -34,7 +34,7 @@ function AddWork() {
   const onboarding = from === "onboarding";
   const rise = useArrival("add-work") ? "animate-rise" : "";
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-24">
+    <Screen bottomNav={false} className="pb-24">
       <TopBar
         title={onboarding ? "Your first work" : "Add work"}
         subtitle="Step 1 of 3 · Choose a type"
@@ -69,6 +69,6 @@ function AddWork() {
           ))}
         </div>
       </main>
-    </div>
+    </Screen>
   );
 }

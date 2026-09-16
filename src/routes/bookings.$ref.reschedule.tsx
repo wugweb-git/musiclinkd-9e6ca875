@@ -84,7 +84,7 @@ function Reschedule() {
   }
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title="Reschedule" subtitle={`#${bk.ref} · ${b.name}`} back={`/bookings/${bk.ref}`} />
       <main className="px-5 pt-4">
         <div className="rounded-lg bg-subtle p-4 text-xs">

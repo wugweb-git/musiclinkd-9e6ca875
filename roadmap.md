@@ -15,6 +15,10 @@
   - [x] `/auth` email+password and Google sign-in, `useAuth` hook
   - [x] `src/lib/portfolio.functions.ts` server functions (portfolio + profile CRUD)
   - [x] onboarding completion writes profile to the database
+  - [ ] Business accounts and bands read the database (15 Sep): migrations
+        `20260915120000_business_accounts.sql` and `20260915130000_bands.sql` written, not applied;
+        every `/business/$id/*` and `/bands/*` screen, `/business`, `/discover/community` and
+        `/profile/$username` for a business account read them
 - FLOW 03 — Add Portfolio (UI per latest spec, DB-backed when signed in)
   - [x] overview (header stats, featured, all work), type picker, work form, draft/publish
   - [x] work detail (audio/video player, credits, performance), edit, reorder + featured,

@@ -57,7 +57,7 @@ export const Route = createFileRoute("/opportunities/new")({
 });
 
 const modes = ["On-site", "Remote", "Hybrid"] as const;
-const payTypes = ["Paid", "Revenue share", "Unpaid / credit"] as const;
+const payTypes = ["Paid", "Revenue share", "Unpaid"] as const;
 
 function CreateOpportunity() {
   const { step } = Route.useSearch();
@@ -316,7 +316,7 @@ function CreateOpportunity() {
         ) : null}
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           {idx > 0 ? (
             <Btn variant="outline" className="flex-1" onClick={() => go(order[idx - 1]!)}>

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Pencil, Plus, Share2, Trash2 } from "lucide-react";
-import { Btn, BtnLink, IconBtn, IconBtnLink, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, IconBtn, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
 import {
   analyticsFor,
   AudioPlayer,
@@ -84,7 +84,7 @@ function WorkDetail() {
   }
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen bottomNav={false} className="pb-32">
       <TopBar title={onboarding ? "Your first work" : "Work"} back="/portfolio" />
       <main className="px-5 pt-4">
         {signedIn && !demo && q.isLoading ? <PortfolioSkeleton /> : null}
@@ -216,6 +216,6 @@ function WorkDetail() {
           </BtnLink>
         </div>
       ) : null}
-    </div>
+    </Screen>
   );
 }

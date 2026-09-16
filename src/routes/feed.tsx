@@ -3,7 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import type { ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
-  Bell,
   ChevronRight,
   WifiOff,
   RefreshCw,
@@ -18,21 +17,19 @@ import {
   CreditCard,
   LifeBuoy,
 } from "lucide-react";
-import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
-import { StatusPill } from "@/components/ml/kit";
-import { LogoMark } from "@/components/ml/logo";
+import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
+import { EmptyState, Loading, Price, Row, StatusPill } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
+import { NotificationsBell } from "@/components/ml/tab-header";
 import {
   emptyDashboard,
   forYouTiles,
   headlineUpdate,
-  openOpportunities,
   type ContinueCard,
   type DashboardData,
   type ForYouTile,
 } from "@/data/dashboard";
-import { categoryLabel } from "@/data/opportunities";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
@@ -61,7 +58,7 @@ export const Route = createFileRoute("/feed")({
 
 type Status = "loading" | "ready" | "error" | "offline";
 
-type Home = { data: DashboardData; cont: ContinueCard[]; opportunityStats: ForYouTile[] };
+type Home = { data: DashboardData; cont: ContinueCard[] };
 
 /*
  * Home is the signed-in person's own: their profile row, their portfolio and the open opportunities.
@@ -160,28 +157,7 @@ function buildHome(
     });
   }
 
-  const open = openOpportunities();
-  const opportunityStats: ForYouTile[] = [
-    {
-      id: "open",
-      value: `${open.length}`,
-      label: "Open opportunities",
-      hint: open
-        .slice(0, 3)
-        .map((o) => categoryLabel(o.categoryKey))
-        .join(", "),
-      to: "/opportunities",
-    },
-    {
-      id: "applications",
-      value: "0",
-      label: "Your applications",
-      hint: "Nothing yet",
-      to: "/opportunities/applications",
-    },
-  ];
-
-  return { data, cont, opportunityStats };
+  return { data, cont };
 }
 
 function greeting() {
@@ -228,23 +204,10 @@ function Dashboard() {
 
 function Header() {
   return (
-    <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
-      <p className="flex min-w-0 items-center gap-2 text-2 font-semibold text-foreground">
-        <span aria-hidden className="shrink-0 text-brand">
-          <LogoMark className="w-6" />
-        </span>
-        <span className="truncate">MusicLinkd</span>
-      </p>
-      <div className="flex shrink-0 items-center gap-2">
-        <Link
-          to="/notifications"
-          aria-label="Notifications"
-          className="hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
-        >
-          <Bell size={18} />
-        </Link>
-        <ViewerAvatar className="h-10 w-10" />
-      </div>
+    // No brand mark here: the splash carries it, and Home is already the app's own screen.
+    <header className="sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
+      <NotificationsBell />
+      <ViewerAvatar className="h-10 w-10" />
     </header>
   );
 }
@@ -260,104 +223,118 @@ function StatTile({ tile }: { tile: ForYouTile }) {
 }
 
 function Body({ home }: { home: Home }) {
-  const { data, cont, opportunityStats } = home;
+  const { data, cont } = home;
   const { user } = data;
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
   const hello = useGreeting();
   const headline = headlineUpdate(data);
-  const tiles = forYouTiles(data);
-  const isEmpty = !headline && cont.length === 0 && data.activity.length === 0;
 
   return (
     <div className="min-w-0 pb-4">
-      {/* 1 — Greeting */}
-      <section className="min-w-0 px-5 pt-5">
+      {/*
+       * Who you are today: the greeting, what you do, whether you are taking work, and how much of
+       * the profile is filled. One band, no card — this is the page's own header, not an item in it.
+       */}
+      <section className="min-w-0 animate-rise px-5 pt-5">
         <h1 className="break-words text-3 leading-tight">
           {hello}
           {viewerFirstName ? `, ${viewerFirstName}` : ""}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {isEmpty ? "Your network is quiet today." : "Here's your MusicLinkd today."}
-        </p>
-        <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2">
+        {user.role ? (
+          <p className="mt-1 truncate text-sm text-muted-foreground">{user.role}</p>
+        ) : null}
+        <div className="mt-3">
           <StatusPill
             label={user.available ? "Open to collaborations" : "Not taking work"}
             tone={user.available ? "good" : "neutral"}
           />
-          {user.role ? (
-            <span className="pill max-w-full truncate bg-subtle text-muted-foreground">
-              {user.role}
-            </span>
-          ) : null}
         </div>
+        <Link
+          to="/profile/edit"
+          className="mt-4 flex items-center gap-3 rounded-md py-1 state-layer"
+          aria-label={`Profile ${user.profileCompletion}% complete. Edit your profile.`}
+        >
+          <span className="h-1 flex-1 overflow-hidden rounded-full bg-subtle">
+            <span
+              className="block h-full rounded-full bg-primary transition-[width] duration-500 ease-standard"
+              // computed: how much of the profile is filled
+              style={{ width: `${user.profileCompletion}%` }}
+            />
+          </span>
+          <span className="shrink-0 text-1 text-muted-foreground">
+            Profile {user.profileCompletion}%
+          </span>
+          <ChevronRight size={14} className="shrink-0 text-muted-foreground" aria-hidden />
+        </Link>
       </section>
 
-      {/* 2 — Single highest-value update */}
+      {/*
+       * Needs you: the short list of things actually waiting, as rows. Only what the database can
+       * back — setup steps, a first work, applications — so nothing here is an invented count.
+       */}
+      <section className="pt-7">
+        <SectionHeader title="Needs you" />
+        <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          {cont.map((c) => (
+            <li key={c.id}>
+              <Row
+                title={c.title}
+                {...(c.meta ? { subtitle: c.meta } : {})}
+                to={c.to}
+                right={
+                  typeof c.progress === "number" ? (
+                    <span className="text-1 text-muted-foreground">{c.detail}</span>
+                  ) : undefined
+                }
+              />
+            </li>
+          ))}
+          <li>
+            <Row
+              title="Your applications"
+              subtitle="Nothing yet"
+              to="/opportunities/applications"
+            />
+          </li>
+          <li>
+            <Row title="Open opportunities" subtitle="Roles being cast now" to="/opportunities" />
+          </li>
+        </ul>
+      </section>
+
       {headline ? (
-        <section className="px-5 pt-4">
+        <section className="px-5 pt-6">
           <Link
             to={headline.to}
-            className="flex min-w-0 items-center gap-3 rounded-lg border border-border p-4 bg-subtle"
+            className="state-layer flex min-w-0 items-center gap-3 rounded-lg bg-subtle p-4"
           >
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-2 font-bold leading-snug">{headline.title}</p>
-              <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{headline.body}</p>
-              <span className="mt-2 inline-flex items-center gap-1 text-1 font-semibold text-foreground">
-                {headline.cta} <ArrowRight size={13} />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-2 font-semibold leading-snug">
+                {headline.title}
               </span>
-            </div>
-            <ChevronRight size={18} className="shrink-0 text-primary" />
+              <span className="mt-0.5 block line-clamp-2 text-1 text-muted-foreground">
+                {headline.body}
+              </span>
+            </span>
+            <ChevronRight size={18} className="shrink-0 text-muted-foreground" aria-hidden />
           </Link>
         </section>
       ) : null}
 
-      {/* 3 — Continue */}
-      {cont.length ? (
-        <section className="pt-6">
-          <SectionHeader title="Continue" />
-          <div className="space-y-3 px-5">
-            {cont.map((c) => (
-              <ContinueBlock key={c.id} c={c} />
+      {/* People to meet, when there are any; the strip is the app's own card, not a new pattern. */}
+      {data.forYou.length ? (
+        <section className="pt-7">
+          <SectionHeader title="People to meet" action={<Link to="/discover">See All</Link>} />
+          <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
+            {data.forYou.map((t) => (
+              <TalentCard key={t.id} t={t} />
             ))}
           </div>
         </section>
       ) : null}
 
-      {/* 3b — Opportunities */}
-      <section className="pt-6">
-        <SectionHeader title="Opportunities" action={<Link to="/opportunities">See all</Link>} />
-        <div className="grid grid-cols-2 gap-3 px-5">
-          {opportunityStats.map((t) => (
-            <StatTile key={t.id} tile={t} />
-          ))}
-        </div>
-      </section>
-
-      {/* 4 — For you */}
-
-      {tiles.length || data.forYou.length ? (
-        <section className="pt-6">
-          <SectionHeader title="For you" action={<Link to="/recommendations">See all</Link>} />
-          {tiles.length ? (
-            <div className="grid grid-cols-2 gap-3 px-5">
-              {tiles.map((t) => (
-                <StatTile key={t.id} tile={t} />
-              ))}
-            </div>
-          ) : null}
-          {data.forYou.length ? (
-            <div className="rail no-scrollbar mt-3 flex gap-3 overflow-x-auto px-5 pb-1">
-              {data.forYou.map((t) => (
-                <TalentCard key={t.id} t={t} />
-              ))}
-            </div>
-          ) : null}
-        </section>
-      ) : null}
-
-      {/* 5 — Activity */}
-      <section className="pt-6">
+      <section className="pt-7">
         <SectionHeader title="Activity" />
         {data.activity.length ? (
           <ul className="space-y-1 px-5">
@@ -365,62 +342,41 @@ function Body({ home }: { home: Home }) {
               <li key={a.id} className="flex min-w-0 items-start gap-3 py-2.5">
                 <span
                   aria-hidden
-                  className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${a.kind === "view" ? "bg-border" : "bg-primary"}`}
+                  className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${a.kind === "view" ? "bg-border" : "bg-brand"}`}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="line-clamp-2 text-1 font-semibold leading-snug">{a.title}</p>
                   <p className="truncate text-1 text-muted-foreground">
                     {a.meta} · {a.when}
                   </p>
+                  <Price
+                    price={a.price}
+                    className="mt-0.5"
+                    amountClassName="text-1 font-semibold"
+                  />
                 </div>
-                {a.kind === "request" ? (
-                  <Btn variant="primary" className="min-h-9 shrink-0 px-4 text-1">
-                    Accept
-                  </Btn>
-                ) : null}
               </li>
             ))}
           </ul>
         ) : (
-          <div className="mx-5 rounded-lg border border-border bg-card p-5 text-center">
-            <p className="text-2 font-semibold">No activity yet</p>
-            <p className="mt-1 text-1 text-muted-foreground">
-              Connect with artists and studios to see updates here.
-            </p>
-            <Link
-              to="/discover"
-              className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
+          <div className="mx-5">
+            <EmptyState
+              title="Nothing yet"
+              body="Follow artists and studios, and their updates land here."
             >
-              Discover talent
-            </Link>
+              <BtnLink to="/discover" variant="ink">
+                Discover talent
+              </BtnLink>
+            </EmptyState>
           </div>
         )}
       </section>
 
-      {/* 6 — Secondary, demoted */}
-      <section className="pt-6">
-        <SectionHeader title="Manage" />
-        <div className="px-5">
-          <Link
-            to="/profile/edit"
-            className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-4"
-          >
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-1 font-semibold">
-                Profile {data.user.profileCompletion}% complete
-              </p>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-subtle">
-                <div
-                  className="h-full rounded-full bg-primary"
-                  style={{ width: `${data.user.profileCompletion}%` }}
-                />
-              </div>
-            </div>
-            <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
-          </Link>
-        </div>
-        <div className="rail no-scrollbar mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
-          <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track / EP" />
+      {/* Everything else you might want, kept quiet and scrollable. */}
+      <section className="pt-7">
+        <SectionHeader title="Shortcuts" />
+        <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pb-1">
+          <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track" />
           <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
           <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />
           <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />
@@ -511,36 +467,29 @@ function StateBlock({
 }) {
   return (
     <div className="px-5 py-16">
-      <div className="rounded-lg border border-border bg-card p-6 text-center">
-        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-subtle">
-          {icon}
-        </span>
-        <h2 className="text-2">{title}</h2>
-        <p className="mt-1 text-1 text-muted-foreground">{body}</p>
-        <Btn variant="ink" className="mt-4 w-full" onClick={onRetry}>
+      <EmptyState icon={icon} title={title} body={body}>
+        <Btn variant="ink" className="w-full" onClick={onRetry}>
           Try again
         </Btn>
-      </div>
+      </EmptyState>
     </div>
   );
 }
 
 function SkeletonBody() {
   return (
-    <div className="animate-pulse space-y-4 px-5 pt-6">
-      <div className="h-8 w-2/3 rounded-full bg-subtle" />
-      <div className="h-4 w-1/2 rounded-full bg-subtle" />
-      <div className="h-24 rounded-lg bg-subtle" />
-      <div className="h-28 rounded-lg bg-subtle" />
-      <div className="grid grid-cols-2 gap-3">
+    <div className="space-y-4 px-5 pt-6" aria-busy aria-label="Loading your dashboard">
+      <div className="animate-pulse space-y-4">
+        <div className="h-8 w-2/3 rounded-full bg-subtle" />
+        <div className="h-4 w-1/2 rounded-full bg-subtle" />
         <div className="h-24 rounded-lg bg-subtle" />
-        <div className="h-24 rounded-lg bg-subtle" />
+        <div className="h-28 rounded-lg bg-subtle" />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="h-24 rounded-lg bg-subtle" />
+          <div className="h-24 rounded-lg bg-subtle" />
+        </div>
       </div>
-      <div className="space-y-3">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="h-10 rounded-md bg-subtle" />
-        ))}
-      </div>
+      <Loading rows={3} />
     </div>
   );
 }

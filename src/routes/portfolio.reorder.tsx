@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Btn, BtnLink, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, ReorderList, StateCard } from "@/components/ml/portfolio";
 import { demoPortfolio, FEATURED_LIMIT, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -70,7 +70,7 @@ function Reorder() {
   }
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <Screen bottomNav={false} className="pb-32">
       <TopBar title="Reorder work" subtitle="What people see first" back="/portfolio" />
       <main className="px-5 pt-4">
         {signedIn && q.isLoading ? <PortfolioSkeleton /> : null}
@@ -102,6 +102,6 @@ function Reorder() {
           </div>
         ) : null}
       </main>
-    </div>
+    </Screen>
   );
 }

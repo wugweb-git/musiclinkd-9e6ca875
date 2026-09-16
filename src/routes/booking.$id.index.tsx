@@ -3,7 +3,8 @@ import { Bookmark, MessageCircle, Share2 } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { BookableHero, EntityMetaRow, PolicyCard, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
-import { inr } from "@/data/booking";
+import { inr, lowestRate } from "@/data/booking";
+import { Price } from "@/components/ml/kit";
 
 export const Route = createFileRoute("/booking/$id/")({
   head: () => ({
@@ -35,7 +36,7 @@ function BookingEntry() {
   ];
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <div className="relative">
         <Link
           to="/discover"
@@ -90,9 +91,12 @@ function BookingEntry() {
                       .join(" · ")}
                   </p>
                 </div>
-                <span className="shrink-0 text-sm font-semibold text-price">
-                  {inr(Math.min(...r.tiers.map((t) => t.price)))}
-                </span>
+                <Price
+                  price={lowestRate(r.tiers)}
+                  align="end"
+                  className="shrink-0"
+                  amountClassName="text-sm font-semibold"
+                />
               </div>
             ))}
           </div>

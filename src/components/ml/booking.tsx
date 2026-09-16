@@ -14,12 +14,14 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Btn, VerifiedBadge } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import {
   availabilityFor,
   formatDate,
   formatTime,
   inr,
   isoDate,
+  lowestRate,
   monthGrid,
   paymentMeta,
   statusMeta,
@@ -173,7 +175,7 @@ export function ResourceCard({
   selected?: boolean;
   onSelect?: () => void;
 }) {
-  const from = Math.min(...r.tiers.map((t) => t.price));
+  const from = lowestRate(r.tiers);
   return (
     <div
       className={`overflow-hidden rounded-lg border bg-card ${
@@ -222,7 +224,7 @@ export function ResourceCard({
       ) : null}
       <div className="flex items-center justify-between border-t border-border px-4 py-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-price">{inr(from)}</p>
+          <Price price={from} amountClassName="text-sm font-semibold" />
           <p className="text-1 text-muted-foreground">
             {r.model === "instant" ? "Instant booking" : "Request to book"}
           </p>
@@ -343,7 +345,7 @@ export function AvailabilityCalendar({
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-1 text-muted-foreground">
         <Legend dot="bg-success" label="Available" />
         <Legend dot="bg-warn" label="Limited" />
-        <Legend dot="bg-border" label="Unavailable / closed" />
+        <Legend dot="bg-border" label="Unavailable" />
       </div>
       <p className="mt-2 text-1 text-muted-foreground">All times shown in {timezone}.</p>
     </div>
@@ -479,12 +481,11 @@ export function AddOnCard({
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{a.name}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">{a.description}</p>
-          <p className="mt-1.5 text-sm font-semibold text-price">
-            {inr(a.price)}
-            {a.perHour ? (
-              <span className="text-xs font-normal text-muted-foreground"> / hour</span>
-            ) : null}
-          </p>
+          <Price
+            price={{ amount: inr(a.price), unit: a.perHour ? "hour" : undefined }}
+            className="mt-1.5"
+            amountClassName="text-sm font-semibold"
+          />
           {a.rentalListingId ? (
             <Link
               to="/marketplace/rent"

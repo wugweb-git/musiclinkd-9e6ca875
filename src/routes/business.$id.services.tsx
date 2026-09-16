@@ -1,10 +1,23 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { CalendarClock, Plus } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
-import { getBusiness } from "@/data/business";
+import { toast } from "sonner";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Card, EmptyState, Price, Row, StatusPill } from "@/components/ml/kit";
+import { useAuth } from "@/hooks/use-auth";
+import { useRefreshServices } from "@/hooks/use-services";
+import { businessView, loadBusiness } from "@/lib/business-view";
+import { setServiceStatus } from "@/lib/services.functions";
+
+const statusPill = {
+  active: { label: "Live", tone: "good" },
+  paused: { label: "Paused", tone: "warn" },
+  draft: { label: "Draft", tone: "neutral" },
+} as const;
 
 export const Route = createFileRoute("/business/$id/services")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Business services | MusicLinkd" },
@@ -23,8 +36,26 @@ export const Route = createFileRoute("/business/$id/services")({
 });
 
 function BusinessServices() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
+  const router = useRouter();
+  const { user } = useAuth();
+  const updateStatus = useServerFn(setServiceStatus);
+  const refresh = useRefreshServices();
+  const [busy, setBusy] = useState<string | null>(null);
+  // Only the signed-in owner edits or pauses; imported business accounts cannot sign in yet.
+  const owner = Boolean(b && user && user.id === b.profileId);
+
+  async function toggle(id: string, status: "active" | "paused" | "draft") {
+    setBusy(id);
+    try {
+      await updateStatus({ data: { id, status: status === "active" ? "paused" : "active" } });
+      await Promise.all([router.invalidate(), refresh()]);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update this service");
+    } finally {
+      setBusy(null);
+    }
+  }
 
   if (!b) {
     return (
@@ -73,18 +104,33 @@ function BusinessServices() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{s.label}</p>
-                  <p className="mt-1 text-[13px] text-muted-foreground">{s.price}</p>
+                  {s.category ? (
+                    <p className="truncate text-[12px] text-muted-foreground">{s.category}</p>
+                  ) : null}
+                  <Price price={s.price} className="mt-1" amountClassName="text-[13px]" />
                 </div>
-                <StatusPill label="Live" tone="good" />
+                <StatusPill label={statusPill[s.status].label} tone={statusPill[s.status].tone} />
               </div>
-              <div className="mt-3 flex gap-2">
-                <Btn variant="outline" className="flex-1">
-                  Edit
-                </Btn>
-                <Btn variant="ghost" className="flex-1">
-                  Pause
-                </Btn>
-              </div>
+              {owner ? (
+                <div className="mt-3 flex gap-2">
+                  <BtnLink
+                    to="/services/new"
+                    search={{ step: "category" as const, id: s.id }}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Edit
+                  </BtnLink>
+                  <Btn
+                    variant="ghost"
+                    className="flex-1"
+                    loading={busy === s.id}
+                    onClick={() => void toggle(s.id, s.status)}
+                  >
+                    {s.status === "active" ? "Pause" : "Publish"}
+                  </Btn>
+                </div>
+              ) : null}
             </Card>
           ))}
         </div>
@@ -103,9 +149,10 @@ function BusinessServices() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-semibold">{sp.name}</p>
-                  <p className="truncate text-[12px] text-muted-foreground">
-                    {sp.rate} · {sp.capacity}
-                  </p>
+                  {sp.capacity ? (
+                    <p className="truncate text-[12px] text-muted-foreground">{sp.capacity}</p>
+                  ) : null}
+                  <Price price={sp.rate} amountClassName="text-[12px] font-semibold" />
                 </div>
                 <StatusPill label="Bookable" tone="brand" />
               </div>

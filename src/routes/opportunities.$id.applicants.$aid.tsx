@@ -116,7 +116,7 @@ function ApplicantDetail() {
         </BtnLink>
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           <Btn variant="outline" className="flex-1" onClick={() => setDecision("reject")}>
             Not a fit

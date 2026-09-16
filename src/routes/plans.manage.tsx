@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, Row, StatusPill, Meter, Dialog } from "@/components/ml/kit";
+import { Card, Row, StatusPill, Meter, Dialog, Price } from "@/components/ml/kit";
 import {
   plans,
   currentSubscription,
@@ -41,9 +41,18 @@ function ManagePlan() {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="text-[19px] leading-tight">{plan.name}</h2>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                {currentSubscription.amount} {currentSubscription.billingCycle} · renews{" "}
-                {currentSubscription.renewsOn}
+              <Price
+                price={{
+                  amount: currentSubscription.amount,
+                  unit: currentSubscription.billingCycle === "monthly" ? "month" : "year",
+                }}
+                tone="inherit"
+                className="mt-1"
+                amountClassName="text-[12px] font-semibold"
+                unitClassName="text-[11px]"
+              />
+              <p className="text-[12px] text-muted-foreground">
+                Renews {currentSubscription.renewsOn}
               </p>
             </div>
             <StatusPill

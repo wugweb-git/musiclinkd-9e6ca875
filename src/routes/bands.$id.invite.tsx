@@ -2,10 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink, SearchBar, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Row, Dialog, EmptyState } from "@/components/ml/kit";
-import { getBand } from "@/data/band";
+import { useAuth } from "@/hooks/use-auth";
+import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { talents } from "@/data/discover";
 
 export const Route = createFileRoute("/bands/$id/invite")({
+  loader: ({ params }) => loadBand(params.id),
   head: () => ({
     meta: [
       { title: "Invite Band Members | MusicLinkd" },
@@ -21,7 +23,9 @@ export const Route = createFileRoute("/bands/$id/invite")({
 
 function InviteMembers() {
   const { id } = Route.useParams();
-  const band = getBand(id);
+  const { band: row, labels } = Route.useLoaderData();
+  const { user } = useAuth();
+  const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [q, setQ] = useState("");
   const [invited, setInvited] = useState<string[]>([]);
   const [sent, setSent] = useState(false);
@@ -83,7 +87,7 @@ function InviteMembers() {
       </div>
 
       {invited.length ? (
-        <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-[430px] border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-app border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
           <Btn className="w-full" onClick={() => setSent(true)}>
             Send {invited.length} invitation{invited.length === 1 ? "" : "s"}
           </Btn>

@@ -9,7 +9,7 @@ const groups: { label: string; options: string[] }[] = [
   { label: "Language", options: ["Hindi", "Tamil", "Punjabi", "Marathi", "Telugu", "English"] },
   { label: "Genre", options: ["Hindi Film", "Indie", "Hip-Hop", "Carnatic", "Sufi", "Electronic"] },
   {
-    label: "City / area",
+    label: "City",
     options: ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Kolkata", "Goa"],
   },
   { label: "Availability", options: ["Available now", "Within 2 weeks", "Selective"] },
@@ -54,7 +54,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
 
       <div className="mb-5 divide-y divide-border rounded-lg border border-border">
         <Toggle label="Verified professionals only" value={verified} onChange={setVerified} />
-        <Toggle label="Remote / online available" value={remote} onChange={setRemote} />
+        <Toggle label="Remote available" value={remote} onChange={setRemote} />
         <Toggle label="Session musician available" value={session} onChange={setSession} />
       </div>
 

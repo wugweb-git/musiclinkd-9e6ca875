@@ -83,7 +83,7 @@ function RequestReview() {
   }
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-[430px] bg-background pb-32">
+    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title={`Request #${bk.ref}`} subtitle={r.name} back="/provider/bookings" />
       <main className="px-5 pt-4">
         <div className="rounded-lg border border-border bg-card p-4">

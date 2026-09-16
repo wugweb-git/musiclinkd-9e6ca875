@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { TopBar } from "@/components/ml/ui";
+import { Screen, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, StateCard } from "@/components/ml/portfolio";
 import { WorkForm } from "@/components/ml/work-form";
 import { getMyPortfolioItem } from "@/lib/portfolio.functions";
@@ -37,7 +37,7 @@ function EditWork() {
   });
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen bottomNav={false} className="pb-32">
       <TopBar title="Edit work" back="/portfolio" />
       <main className="px-5 pt-4">
         {q.isLoading ? <PortfolioSkeleton /> : null}
@@ -49,6 +49,6 @@ function EditWork() {
         ) : null}
         {q.data ? <WorkForm kind={q.data.kind} initial={q.data} signedIn={signedIn} /> : null}
       </main>
-    </div>
+    </Screen>
   );
 }

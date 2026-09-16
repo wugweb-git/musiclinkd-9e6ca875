@@ -38,7 +38,7 @@ function FullscreenQr() {
 
   return (
     <div
-      className="mx-auto flex min-h-[100dvh] w-full max-w-[430px] flex-col px-5 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-[calc(env(safe-area-inset-top)+16px)]"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col px-5 pb-[calc(env(safe-area-inset-bottom)+24px)] pt-[calc(env(safe-area-inset-top)+16px)]"
       style={{ background: s.light, color: s.dark }}
     >
       <div className="flex justify-end">

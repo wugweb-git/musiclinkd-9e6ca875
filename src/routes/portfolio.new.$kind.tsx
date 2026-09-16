@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TopBar } from "@/components/ml/ui";
+import { Screen, TopBar } from "@/components/ml/ui";
 import { WorkForm } from "@/components/ml/work-form";
 import { workType } from "@/data/portfolio";
 import { useAuth } from "@/hooks/use-auth";
@@ -34,7 +34,7 @@ function NewWork() {
   const t = workType(kind);
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen bottomNav={false} className="pb-32">
       <TopBar
         title={`New ${t.label.toLowerCase()}`}
         subtitle="Step 2 of 3 · Details"
@@ -43,6 +43,6 @@ function NewWork() {
       <main className="px-5 pt-4">
         <WorkForm kind={kind} signedIn={signedIn} fromOnboarding={from === "onboarding"} />
       </main>
-    </div>
+    </Screen>
   );
 }

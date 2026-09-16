@@ -51,6 +51,7 @@ import {
   BIO_LIMIT,
   availabilityFor,
   citiesByState,
+  cityAliases,
   contactChannels,
   discoveryPrefs,
   experienceLevels,
@@ -117,18 +118,6 @@ export const Route = createFileRoute("/onboarding/step/$id")({
     </OnboardingProvider>
   ),
 });
-
-/** Older names the edge may report for listed cities. */
-const CITY_ALIASES: Record<string, string> = {
-  bangalore: "bengaluru",
-  bombay: "mumbai",
-  gurgaon: "gurugram",
-  mysore: "mysuru",
-  mangalore: "mangaluru",
-  calcutta: "kolkata",
-  madras: "chennai",
-  delhi: "new delhi",
-};
 
 type Banner = "none" | "error" | "claim";
 type RoleStage = "primary" | "secondary";
@@ -205,7 +194,7 @@ function StepRoute() {
         const lower = (v: string | null) => (v ?? "").toLowerCase();
         const state = states.find((s) => lower(region).includes(s.toLowerCase()));
         if (!state) return;
-        const wanted = CITY_ALIASES[lower(city)] ?? lower(city);
+        const wanted = cityAliases[lower(city)] ?? lower(city);
         const match = (citiesByState[state] ?? []).find((c) => c.toLowerCase() === wanted);
         set({ state, city: match ?? "" });
       })

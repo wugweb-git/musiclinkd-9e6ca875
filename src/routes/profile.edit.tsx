@@ -12,6 +12,7 @@ import {
   languages as languageOptions,
   linkPlatforms,
   roles as roleDefs,
+  visibilityOptions,
   workModes as workModeOptions,
 } from "@/data/onboarding";
 
@@ -202,7 +203,7 @@ function EditProfile() {
         <main className="px-5 py-6">
           <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5">
             <p className="text-sm font-semibold text-destructive">We couldn't load your profile</p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-1 text-muted-foreground">
               Check your connection and try again.
             </p>
             <Btn variant="outline" className="mt-4" onClick={fetchProfile}>
@@ -355,26 +356,18 @@ function EditProfile() {
       done: true,
       body: (
         <div className="space-y-2">
-          {[
-            { value: "public", label: "Public", hint: "Anyone on MusicLinkd can find you" },
-            {
-              value: "connections",
-              label: "Connections only",
-              hint: "Only people you're connected with",
-            },
-            { value: "private", label: "Private", hint: "Hidden from discovery" },
-          ].map((o) => (
+          {visibilityOptions.map((o) => (
             <button
-              key={o.value}
+              key={o.key}
               type="button"
-              onClick={() => update({ visibility: o.value })}
-              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.value ? "border-primary bg-subtle" : "border-border bg-card"}`}
+              onClick={() => update({ visibility: o.key })}
+              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.key ? "border-primary bg-subtle" : "border-border bg-card"}`}
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold">{o.label}</span>
-                <span className="block truncate text-[11px] text-muted-foreground">{o.hint}</span>
+                <span className="block truncate text-1 text-muted-foreground">{o.hint}</span>
               </span>
-              {form.visibility === o.value ? (
+              {form.visibility === o.key ? (
                 <Check size={16} className="shrink-0 text-primary" aria-hidden />
               ) : null}
             </button>
@@ -390,8 +383,8 @@ function EditProfile() {
       <main className="px-5 pb-40 pt-5">
         {gaps.missing.length ? (
           <div className="mb-4 rounded-lg border border-border bg-card p-4">
-            <p className="text-xs font-semibold">Finish your profile</p>
-            <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="text-1 font-semibold">Finish your profile</p>
+            <p className="mt-1 text-1 leading-relaxed text-muted-foreground">
               Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
             </p>
           </div>
@@ -417,12 +410,14 @@ function EditProfile() {
                     {section.done ? (
                       <Check size={16} aria-hidden />
                     ) : (
-                      <span className="text-xs font-bold">•</span>
+                      <span aria-hidden className="text-1 font-bold">
+                        •
+                      </span>
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold">{section.label}</span>
-                    <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
+                    <span className="mt-0.5 block truncate text-1 text-muted-foreground">
                       {section.detail}
                     </span>
                   </span>
@@ -447,9 +442,9 @@ function EditProfile() {
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         {status === "taken" || status === "reserved" || status === "invalid" ? (
-          <p role="alert" className="text-[11px] text-destructive">
+          <p role="alert" className="text-1 text-destructive">
             {status === "taken"
               ? "That username is taken. Try another."
               : status === "reserved"
@@ -457,15 +452,15 @@ function EditProfile() {
                 : "Usernames use lowercase letters, numbers, dots and underscores (3–30)."}
           </p>
         ) : status === "error" ? (
-          <p role="alert" className="text-[11px] text-destructive">
+          <p role="alert" className="text-1 text-destructive">
             Couldn't save. Your edits are still here — try again.
           </p>
         ) : status === "offline" ? (
-          <p role="status" className="text-[11px] text-warn">
+          <p role="status" className="text-1 text-warn">
             You're offline. Reconnect to save these changes.
           </p>
         ) : status === "saved" ? (
-          <p role="status" className="text-[11px] text-success">
+          <p role="status" className="text-1 text-success">
             Saved to your account.
           </p>
         ) : null}
@@ -495,7 +490,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="block text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       {multiline ? (
@@ -513,7 +508,7 @@ function Field({
           className={`mt-1.5 min-h-12 w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-subtle text-muted-foreground" : "bg-card"}`}
         />
       )}
-      {hint ? <span className="mt-1 block text-[11px] text-muted-foreground">{hint}</span> : null}
+      {hint ? <span className="mt-1 block text-1 text-muted-foreground">{hint}</span> : null}
     </label>
   );
 }
@@ -533,7 +528,7 @@ function Chips({
 }) {
   return (
     <div>
-      <span className="block text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="block text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
       <div className="mt-2 flex flex-wrap gap-2">

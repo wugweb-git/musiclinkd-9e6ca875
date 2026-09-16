@@ -6,6 +6,7 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChevronRight, Star } from "lucide-react";
+import { unitLabel, type PriceParts } from "@/lib/price";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
@@ -41,6 +42,56 @@ export function StatusPill({
   );
 }
 
+/**
+ * A rate as two values: the amount in brand pink, and under it the unit line ("per hour") in small
+ * muted type. Price text that is not a unit ("+ ₹5,000 deposit") is its own muted line. A price with
+ * no unit shows only the amount. `amountClassName` keeps each place's size and weight; `align="end"`
+ * right-aligns both lines in rows where the amount sits on the right.
+ */
+export function Price({
+  price,
+  align = "start",
+  tone = "price",
+  className = "",
+  amountClassName = "",
+  unitClassName = "text-1",
+}: {
+  price: PriceParts | null | undefined;
+  align?: "start" | "center" | "end" | undefined;
+  /** "inherit" leaves the amount in the surrounding colour where prices were never pink (plans). */
+  tone?: "price" | "inherit" | undefined;
+  className?: string | undefined;
+  amountClassName?: string | undefined;
+  /** Size of the unit and note lines; never larger than the amount. */
+  unitClassName?: string | undefined;
+}) {
+  if (!price?.amount) return null;
+  const unit = unitLabel(price.unit);
+  const alignment =
+    align === "end"
+      ? "items-end text-right"
+      : align === "center"
+        ? "items-center text-center"
+        : "items-start";
+  return (
+    <span className={`inline-flex min-w-0 flex-col ${alignment} ${className}`}>
+      <span className={`${tone === "price" ? "text-price" : ""} ${amountClassName}`}>
+        {price.amount}
+      </span>
+      {unit ? (
+        <span className={`${unitClassName} font-normal leading-tight text-muted-foreground`}>
+          {unit}
+        </span>
+      ) : null}
+      {price.note ? (
+        <span className={`${unitClassName} font-normal leading-tight text-muted-foreground`}>
+          {price.note}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <section className={`rounded-lg border border-border bg-card p-4 ${className}`}>
@@ -67,7 +118,7 @@ export function Segmented<T extends string>({
           role="tab"
           aria-selected={value === o}
           onClick={() => onChange(o)}
-          className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold ${
+          className={`shrink-0 rounded-full border px-4 py-2 text-1 font-semibold ${
             value === o
               ? "border-transparent bg-selected-bg text-selected-text"
               : "border-border bg-card text-foreground"
@@ -128,17 +179,25 @@ export function Row({
   );
 }
 
+/** `icon` is for states that carry a meaning the words alone don't — offline, failed to load. */
 export function EmptyState({
+  icon,
   title,
   body,
   children,
 }: {
+  icon?: ReactNode;
   title: string;
   body: string;
   children?: ReactNode;
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
+      {icon ? (
+        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-subtle">
+          {icon}
+        </span>
+      ) : null}
       <h3 className="text-2 leading-tight">{title}</h3>
       <p className="mx-auto mt-2 max-w-[280px] text-1 text-muted-foreground">{body}</p>
       {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}

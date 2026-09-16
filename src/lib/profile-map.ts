@@ -53,7 +53,11 @@ export function draftToProfile(d: OnboardingDraft, step?: string) {
   return {
     // No username: it is claimed once, on Continue from About you (claimMyUsername), then locked.
     display_name: d.displayName || null,
-    headline: d.primaryRole ?? null,
+    // Headline is a person's own line about themselves, not their role. Onboarding used to write
+    // the primary role slug here, which surfaced raw slugs like "violinist" in profile edit; the
+    // role lives in `roles` and is labelled from the taxonomy (owner, 16 Sep).
+    // Onboarding does not ask for one, so it never writes here; profile edit owns this field.
+    headline: undefined,
     bio: d.bio || null,
     city: d.city || null,
     state: d.state || null,

@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, EmptyState, Dialog, StatusPill } from "@/components/ml/kit";
-import { getBusiness, businessTypeLabel } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/business/$id/manage")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Manage business | MusicLinkd" },
@@ -32,7 +34,7 @@ export const Route = createFileRoute("/business/$id/manage")({
 
 function ManageBusiness() {
   const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleted, setDeleted] = useState(false);
 
@@ -52,11 +54,15 @@ function ManageBusiness() {
       <TopBar title="Manage" subtitle={b.name} back={`/business/${id}`} />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="flex items-center gap-3">
-          <img src={b.logo} alt="" className="h-12 w-12 rounded-md object-cover" loading="lazy" />
+          {b.logo ? (
+            <img src={b.logo} alt="" className="h-12 w-12 rounded-md object-cover" loading="lazy" />
+          ) : (
+            <div aria-hidden className="h-12 w-12 shrink-0 rounded-md bg-subtle" />
+          )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-[14px] font-semibold">{b.name}</p>
             <p className="truncate text-[12px] text-muted-foreground">
-              {businessTypeLabel(b.type)} · {b.city}
+              {joinParts(b.typeLabel, b.city)}
             </p>
           </div>
           <StatusPill
@@ -89,7 +95,7 @@ function ManageBusiness() {
           <Row
             icon={<Users size={16} />}
             title="Team & roles"
-            subtitle={`${b.members.filter((m) => m.status === "active").length} active`}
+            subtitle={`${b.members.filter((m) => !m.invited).length} active`}
             to="/business/$id/team"
             params={{ id }}
           />

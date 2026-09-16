@@ -16,6 +16,7 @@ import {
 } from "@/components/ml/market";
 import { byId, listings, reviews, sellerById } from "@/data/market";
 import { loadCatalogListings } from "@/lib/market-view";
+import { priceText } from "@/lib/price";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
   // Static listings win; any other id is looked up as a database listing slug. Database listings
@@ -29,7 +30,10 @@ export const Route = createFileRoute("/marketplace/l/$id")({
   },
   head: ({ params, loaderData }) => {
     const l = byId(params.id) ?? loaderData?.catalog ?? undefined;
-    const title = l ? `${l.title} — ${l.price} | MusicLinkd Market` : "Listing | MusicLinkd Market";
+    const price = l ? priceText({ amount: l.price.amount, unit: l.price.unit }) : "";
+    const title = l
+      ? `${l.title}${price ? ` — ${price}` : ""} | MusicLinkd Market`
+      : "Listing | MusicLinkd Market";
     const desc = l?.subtitle || "Listing details on the MusicLinkd marketplace.";
     const image = l?.photos[0];
     return {
@@ -124,7 +128,7 @@ function ListingDetail() {
 
       <div className="px-5 py-5">
         <div className="flex items-start justify-between gap-3">
-          <PriceBlock price={l.price} note={l.priceNote} size="lg" />
+          <PriceBlock price={l.price} size="lg" />
           {l.condition ? (
             <ConditionBadge value={l.condition} />
           ) : (
@@ -253,7 +257,7 @@ function ListingDetail() {
         </button>
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           <Btn variant="outline" className="flex-1" onClick={() => setOffer(true)}>
             {cta[0]}

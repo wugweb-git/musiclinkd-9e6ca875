@@ -1,11 +1,28 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  Boxes,
+  CalendarDays,
+  Disc3,
+  Drum,
+  Mic2,
+  SlidersVertical,
+  Sparkles,
+  Star,
+  Store,
+  Ticket,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
-import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
+import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
+import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
 
@@ -37,6 +54,23 @@ export const Route = createFileRoute("/discover/")({
   component: Discover,
 });
 
+/** One line icon per quick category. No emoji: they render as empty boxes on real devices. */
+function categoryIcon(label: string) {
+  const icons: Record<string, LucideIcon> = {
+    Talent: Mic2,
+    Bands: Drum,
+    Studios: SlidersVertical,
+    Events: CalendarDays,
+    Marketplace: Store,
+    Rentals: Boxes,
+    Labels: Disc3,
+    Venues: Ticket,
+    Communities: Users,
+  };
+  const Icon = icons[label] ?? Mic2;
+  return <Icon size={20} strokeWidth={1.75} className="text-muted-foreground" aria-hidden />;
+}
+
 function Discover() {
   const { dbStudios } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -45,15 +79,13 @@ function Discover() {
       <header className="px-5 pb-4 pt-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-1 font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               MusicLinkd
             </p>
-            <h1 className="text-[30px] leading-tight">Discover</h1>
+            <h1 className="text-4 leading-tight">Discover</h1>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card">
-              🔔
-            </button>
+            <NotificationsBell />
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
             <ViewerAvatar />
           </div>
@@ -76,13 +108,10 @@ function Discover() {
             to={c.to}
             className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3"
           >
-            <span
-              className="flex h-11 w-11 items-center justify-center rounded-md text-lg"
-              style={{ background: "var(--surface-subtle)" }}
-            >
-              {c.emoji}
+            <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle">
+              {categoryIcon(c.label)}
             </span>
-            <span className="text-[11px] font-semibold">{c.label}</span>
+            <span className="text-1 font-semibold">{c.label}</span>
           </Link>
         ))}
       </div>
@@ -111,8 +140,8 @@ function Discover() {
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
               <span className="pill absolute left-3 top-3 pill-glass">{t.tag}</span>
               <div className="absolute bottom-3 left-3 right-3 text-background">
-                <h3 className="text-[15px] text-background">{t.name}</h3>
-                <p className="text-[11px] opacity-80">{t.meta}</p>
+                <h3 className="text-sm text-background">{t.name}</h3>
+                <p className="text-1 opacity-80">{t.meta}</p>
               </div>
             </article>
           ))}
@@ -129,30 +158,27 @@ function Discover() {
             to="/recommendations/swipe"
             className="flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background"
           >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-background/10 text-2xl">
-              ✨
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-background/10">
+              <Sparkles size={22} aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-              <h3 className="text-[15px] text-background">24 new matches</h3>
-              <p className="text-[11px] opacity-75">
-                Based on Hindi film, indie &amp; your Mumbai activity
-              </p>
+              <h3 className="text-sm text-background">Swipe through matches</h3>
             </div>
-            <span className="shrink-0 text-lg">→</span>
+            <ArrowRight size={18} className="shrink-0" aria-hidden />
           </Link>
           <div className="grid grid-cols-2 gap-3">
             <Link
               to="/recommendations"
               className="min-w-0 rounded-lg border border-border bg-card p-4"
             >
-              <p className="truncate text-[13px] font-semibold">Why you see this</p>
-              <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
+              <p className="truncate text-1 font-semibold">Why you see this</p>
+              <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
                 Explainable picks across people, spaces, gear and work
               </p>
             </Link>
             <Link to="/bands" className="min-w-0 rounded-lg border border-border bg-card p-4">
-              <p className="truncate text-[13px] font-semibold">Bands near you</p>
-              <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">
+              <p className="truncate text-1 font-semibold">Bands near you</p>
+              <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
                 Line-ups looking for members and shows
               </p>
             </Link>
@@ -176,12 +202,20 @@ function Discover() {
               <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1">
-                  <h3 className="truncate text-[14px]">{t.name}</h3>
+                  <h3 className="truncate text-sm">{t.name}</h3>
                   {t.verified ? <VerifiedBadge size={14} /> : null}
                 </div>
-                <p className="truncate text-[11px] text-muted-foreground">{t.role} · 2.4 km away</p>
+                <p className="truncate text-1 text-muted-foreground">
+                  {t.role} · {t.location}
+                </p>
               </div>
-              <span className="text-[11px] font-semibold text-price">{t.rate}</span>
+              <Price
+                price={t.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-1"
+              />
             </Link>
           ))}
           {studios.slice(0, 1).map((s) => (
@@ -192,12 +226,23 @@ function Discover() {
             >
               <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
-                <h3 className="truncate text-[14px]">{s.name}</h3>
-                <p className="truncate text-[11px] text-muted-foreground">
-                  {s.location} · {s.rating} ★
+                <h3 className="truncate text-sm">{s.name}</h3>
+                <p className="flex min-w-0 items-center gap-1 truncate text-1 text-muted-foreground">
+                  <span className="truncate">{s.location}</span>
+                  <span aria-hidden>·</span>
+                  <span className="inline-flex shrink-0 items-center gap-0.5">
+                    {s.rating}
+                    <Star size={11} fill="currentColor" aria-hidden />
+                  </span>
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-price">{s.rate}</span>
+              <Price
+                price={s.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-1"
+              />
             </Link>
           ))}
           {dbStudios.map((s) => (
@@ -211,16 +256,18 @@ function Discover() {
                 <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
               ) : null}
               <div className="min-w-0 flex-1">
-                <h3 className="truncate text-[14px]">{s.name}</h3>
-                <p className="truncate text-[11px] text-muted-foreground">
-                  {[s.location, s.rating == null ? "" : `${s.rating} ★`]
-                    .filter(Boolean)
-                    .join(" · ")}
+                <h3 className="truncate text-sm">{s.name}</h3>
+                <p className="truncate text-1 text-muted-foreground">
+                  {joinParts(s.location, s.rating == null ? "" : `${s.rating} out of 5`)}
                 </p>
               </div>
-              {s.rate ? (
-                <span className="text-[11px] font-semibold text-price">{s.rate}</span>
-              ) : null}
+              <Price
+                price={s.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-1"
+              />
             </Link>
           ))}
         </div>

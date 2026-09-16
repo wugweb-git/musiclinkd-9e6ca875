@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Camera, Star } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import { ConditionBadge, LocationRow } from "@/components/ml/market";
 import { RentalAvailabilityBadge, RentalCalendar } from "@/components/ml/rental";
 import { equipment, rentalCategories } from "@/data/rentals";
@@ -314,9 +315,11 @@ function ListForRent() {
             <article className="mt-4 overflow-hidden rounded-lg border border-border bg-card">
               <img src={sample.photos[cover]} alt="" className="h-44 w-full object-cover" />
               <div className="p-4">
-                <p className="text-[15px] font-bold">
-                  ₹900 <span className="text-[11px] font-normal text-muted-foreground">/ day</span>
-                </p>
+                <Price
+                  price={{ amount: "₹900", unit: "day" }}
+                  amountClassName="text-[15px] font-bold"
+                  unitClassName="text-[11px]"
+                />
                 <h3 className="mt-1 text-[15px] leading-snug">Shure SM7B</h3>
                 <p className="text-[11px] text-muted-foreground">Shure · SM7B</p>
                 <div className="mt-2.5 flex flex-wrap items-center gap-2">
@@ -327,7 +330,7 @@ function ListForRent() {
                   <LocationRow text="Andheri West, Mumbai · 6.8 km away" />
                 </div>
                 <p className="mt-2 text-[11px] text-muted-foreground">
-                  Deposit ₹15,000 · {fulfilment.join(" / ") || "Pickup"} · min 1 day
+                  Deposit ₹15,000 · {fulfilment.join(" or ") || "Pickup"} · min 1 day
                 </p>
               </div>
             </article>

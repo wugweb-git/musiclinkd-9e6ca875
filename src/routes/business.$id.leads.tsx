@@ -2,9 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
-import { businessLeads, getBusiness, leadStatusTone, type BusinessLead } from "@/data/business";
+import { leadStatusTone, type BusinessLead } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
 
 export const Route = createFileRoute("/business/$id/leads")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Leads inbox | MusicLinkd" },
@@ -25,8 +27,7 @@ export const Route = createFileRoute("/business/$id/leads")({
 const filters = ["All", "New", "Replied", "Booked"] as const;
 
 function BusinessLeads() {
-  const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
 
   if (!b) {
@@ -43,7 +44,9 @@ function BusinessLeads() {
     );
   }
 
-  const list = businessLeads.filter(
+  // Enquiries are not stored yet, so the queue is empty.
+  const leads: BusinessLead[] = [];
+  const list = leads.filter(
     (l) => filter === "All" || l.status === (filter.toLowerCase() as BusinessLead["status"]),
   );
 

@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Registry/Design guide" />
+
+# Design guide
+
+The guide is served alongside these stories at **`/guide`** — the same path it has in production at
+[musiclinkd.com/guide](https://musiclinkd.com/guide), so its own absolute links resolve here the
+way they do there.
+
+| Page | Opens |
+| --- | --- |
+| Styleguide | [`/guide/styleguide.html`](/guide/styleguide.html) |
+| Guide home | [`/guide/index.html`](/guide/index.html) |
+| Tokens (source) | [`/guide/tokens/tokens.json`](/guide/tokens/tokens.json) |
+| Token CSS | [`/guide/system/ml-tokens.css`](/guide/system/ml-tokens.css) |
+| Rules | [`/guide/rules/`](/guide/rules/) |
+
+## Why the guide is not in this repository
+
+`guide/` is kept on the owner's machine and is git-ignored, so it is never pushed. Storybook mounts
+it only when the folder is present; a checkout without it still builds and every story still runs.
+If the links above 404, the folder is not there.
+
+Two of its folders are deliberately **not** mounted: `guide/musiclinkd-system` (147M) and
+`guide/gestalt` (33M). Both build against Pinterest Gestalt. This app is Tailwind and Radix, so
+they document components the product does not ship, and nothing in the two pages above references
+them.
+
+## What belongs where
+
+The guide holds what Storybook cannot show: the token source, the brand and icon assets, and the
+written rules. Storybook holds the components as they actually are, with their real states. Where a
+component is documented by hand in `styleguide.html`, the story is the one that is true — nothing
+checks the hand-written page against the code.

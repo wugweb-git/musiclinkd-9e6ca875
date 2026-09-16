@@ -1,13 +1,29 @@
-import { useNavigate } from "@tanstack/react-router";
-import { Search, X } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Bell, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
+/*
+ * The notifications bell, sized and styled to sit beside SearchIconButton in a tab screen's
+ * header. Home and Discover both had their own; Discover's was a bare 🔔 with no label and
+ * nothing behind it.
+ */
+export function NotificationsBell() {
+  return (
+    <Link
+      to="/notifications"
+      aria-label="Notifications"
+      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-95"
+    >
+      <Bell size={18} aria-hidden />
+    </Link>
+  );
+}
 
 /*
  * Search as an icon: the button sits with a screen header's other actions; tapping it opens the
  * search field in the row below, focused. Submitting opens the screen's search page with the query;
  * ✕ or Escape closes the field.
  */
-
 export function SearchIconButton({ open, onToggle }: { open: boolean; onToggle: () => void }) {
   return (
     <button

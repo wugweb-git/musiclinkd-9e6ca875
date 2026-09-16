@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { X } from "lucide-react";
 import { Chip, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import { talents, studios } from "@/data/discover";
 
 export const Route = createFileRoute("/saved")({
@@ -28,7 +30,7 @@ function Saved() {
   const [tab, setTab] = useState("Talent");
   return (
     <Screen>
-      <TopBar title="Saved profiles" subtitle="18 shortlisted · 4 lists" back="/discover" />
+      <TopBar title="Saved profiles" back="/discover" />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {tabs.map((t) => (
           <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
@@ -44,13 +46,17 @@ function Saved() {
                 <div className="flex items-center gap-3">
                   <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
                   <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-[14px]">{s.name}</h3>
-                    <p className="truncate text-[11px] text-muted-foreground">
-                      {s.location} · {s.rate}
-                    </p>
+                    <h3 className="truncate text-sm">{s.name}</h3>
+                    <p className="truncate text-1 text-muted-foreground">{s.location}</p>
                   </div>
+                  <Price
+                    price={s.rate}
+                    align="end"
+                    className="shrink-0"
+                    amountClassName="text-1 font-semibold"
+                    unitClassName="text-1"
+                  />
                 </div>
-                <Notes note="Hold 3 days in Sept for album tracking." tags={["Album", "Mumbai"]} />
                 <Actions />
               </article>
             ))
@@ -60,19 +66,21 @@ function Saved() {
                   <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-md object-cover" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
-                      <h3 className="truncate text-[14px]">{t.name}</h3>
+                      <h3 className="truncate text-sm">{t.name}</h3>
                       {t.verified ? <VerifiedBadge size={13} /> : null}
                     </div>
-                    <p className="truncate text-[11px] text-muted-foreground">
+                    <p className="truncate text-1 text-muted-foreground">
                       {t.role} · {t.location.split(",").pop()}
                     </p>
                   </div>
-                  <span className="text-[11px] font-semibold text-price">{t.rate}</span>
+                  <Price
+                    price={t.rate}
+                    align="end"
+                    className="shrink-0"
+                    amountClassName="text-1 font-semibold"
+                    unitClassName="text-1"
+                  />
                 </div>
-                <Notes
-                  note="Shortlisted for the Sufi title track — great upper register."
-                  tags={["Title track", "Hindi", "Priority"]}
-                />
                 <Actions />
               </article>
             ))}
@@ -81,38 +89,38 @@ function Saved() {
   );
 }
 
-function Notes({ note, tags }: { note: string; tags: string[] }) {
-  return (
-    <div className="mt-3 rounded-lg bg-subtle p-3">
-      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-        Your note
-      </p>
-      <p className="mt-1 text-xs text-muted-foreground">{note}</p>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        {tags.map((tg) => (
-          <span
-            key={tg}
-            className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
-            style={{ background: "var(--purple-container)", color: "var(--purple)" }}
-          >
-            #{tg}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
+/*
+ * Nothing is wired to these yet: there is no thread to open, no share target and no saved-talent
+ * table to remove from. They are disabled with the reason in the accessible name rather than
+ * taking the tap and doing nothing.
+ */
 function Actions() {
   return (
     <div className="mt-3 flex gap-2">
-      <button className="min-h-11 flex-1 rounded-full bg-ink text-xs font-semibold text-background">
+      <button
+        type="button"
+        disabled
+        aria-label="Messaging isn't open yet"
+        className="hit-area min-h-11 flex-1 rounded-full bg-ink text-1 font-semibold text-background disabled:opacity-40"
+      >
         Message
       </button>
-      <button className="min-h-11 flex-1 rounded-full border border-border text-xs font-semibold">
+      <button
+        type="button"
+        disabled
+        aria-label="Sharing isn't open yet"
+        className="hit-area min-h-11 flex-1 rounded-full border border-border text-1 font-semibold disabled:opacity-40"
+      >
         Share
       </button>
-      <button className="min-h-11 w-11 rounded-full border border-border text-xs">✕</button>
+      <button
+        type="button"
+        disabled
+        aria-label="Removing isn't open yet"
+        className="hit-area flex min-h-11 w-11 items-center justify-center rounded-full border border-border disabled:opacity-40"
+      >
+        <X size={16} aria-hidden />
+      </button>
     </div>
   );
 }

@@ -2,8 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
-import { getOpportunity, payLabel } from "@/data/opportunities";
+import { Card, EmptyState, Price, StatusPill } from "@/components/ml/kit";
+import { getOpportunity, payParts } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
 
@@ -169,8 +169,15 @@ function ApplyFlow() {
             <p className="text-right text-[11px] text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">
               <p className="text-[13px] font-semibold">Your rate (optional)</p>
-              {payLabel(o) ? (
-                <p className="text-[12px] text-muted-foreground">Budget listed: {payLabel(o)}</p>
+              {payParts(o) ? (
+                <div>
+                  <p className="text-[12px] text-muted-foreground">Budget listed</p>
+                  <Price
+                    price={payParts(o)}
+                    amountClassName="text-[12px] font-semibold"
+                    unitClassName="text-[11px]"
+                  />
+                </div>
               ) : null}
               <input
                 value={rate}
@@ -213,7 +220,7 @@ function ApplyFlow() {
         ) : null}
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-[430px] border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           {idx > 0 ? (
             <Btn variant="outline" className="flex-1" onClick={() => go(order[idx - 1]!)}>

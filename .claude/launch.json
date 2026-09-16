@@ -4,8 +4,20 @@
     {
       "name": "musiclinkd-dev",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 8080
+    },
+    {
+      "name": "storybook",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": [
+        "run",
+        "storybook"
+      ],
+      "port": 6006
     }
   ]
 }

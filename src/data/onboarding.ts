@@ -278,7 +278,14 @@ export const businessTypes = [
   "Other",
 ];
 
-/* Location master data (city-level is enough for discovery). */
+/*
+ * Location master data (city-level is enough for discovery).
+ *
+ * Unlike roles, instruments, genres and languages, this is NOT in `taxonomy_options` — there is no
+ * location category in the database, and `profiles.city/state/country` are free text. So this list
+ * is the only source, and everything that reasons about Indian cities belongs here rather than in a
+ * screen: see `cityAliases` below, which the identity step uses to match what the edge reports.
+ */
 export const countries = ["India"];
 export const statesByCountry: Record<string, string[]> = {
   India: [
@@ -304,6 +311,21 @@ export const citiesByState: Record<string, string[]> = {
 };
 
 /* Role-adaptive specialisation sets. */
+/*
+ * Older names the location edge still reports, mapped to the spelling `citiesByState` lists.
+ * Lives here so the city list and the names for it are one thing to keep in step.
+ */
+export const cityAliases: Record<string, string> = {
+  bangalore: "bengaluru",
+  bombay: "mumbai",
+  gurgaon: "gurugram",
+  mysore: "mysuru",
+  mangalore: "mangaluru",
+  calcutta: "kolkata",
+  madras: "chennai",
+  delhi: "new delhi",
+};
+
 export const specialisationByRole: Record<
   string,
   { title: string; groups: { label: string; options: string[] }[] }

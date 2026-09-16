@@ -20,16 +20,28 @@ import {
   Search,
 } from "lucide-react";
 
+/*
+ * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
+ * `100vh` so the browser's own chrome doesn't push the page end off screen on a phone.
+ *
+ * Tab screens keep the default bottom nav. A flow screen (onboarding, add work, booking) passes
+ * `bottomNav={false}`, and `className` carries its own bottom clearance when something is fixed
+ * over the page end — `pb-32` for a footer action bar, and so on. That clearance is the only thing
+ * these screens ever differed on, so nothing needs to rebuild the shell by hand.
+ */
 export function Screen({
   children,
   bottomNav = true,
+  className = "",
 }: {
   children: ReactNode;
   bottomNav?: boolean;
+  className?: string;
 }) {
+  const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-app flex-col bg-background">
-      <div className={bottomNav ? "flex-1 pb-nav-clear" : "flex-1 pb-8"}>{children}</div>
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background">
+      <div className={`flex-1 ${clearance}`}>{children}</div>
       {bottomNav ? <BottomNav /> : null}
     </div>
   );
@@ -105,7 +117,7 @@ export function TopBar({
       ) : null}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-3 leading-tight">{title}</h1>
-        {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? <p className="truncate text-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
       {right}
     </header>

@@ -91,7 +91,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
     <Link to="/me" aria-label={displayName ? `Your profile — ${displayName}` : "Your profile"}>
       <Avatar className={shape}>
         {photo ? <AvatarImage src={photo} alt="" /> : null}
-        <AvatarFallback className="bg-card text-xs font-semibold text-muted-foreground">
+        <AvatarFallback className="bg-card text-1 font-semibold text-muted-foreground">
           {initials || <User size={18} aria-hidden />}
         </AvatarFallback>
       </Avatar>

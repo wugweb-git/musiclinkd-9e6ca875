@@ -3,14 +3,12 @@ import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
-import {
-  getBusiness,
-  businessRoleLabel,
-  rolePermissions,
-  type BusinessRole,
-} from "@/data/business";
+import { businessRoleLabel, rolePermissions, type BusinessRole } from "@/data/business";
+import { businessView, loadBusiness } from "@/lib/business-view";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/business/$id/team")({
+  loader: ({ params }) => loadBusiness(params.id),
   head: () => ({
     meta: [
       { title: "Team & roles | MusicLinkd" },
@@ -29,7 +27,7 @@ export const Route = createFileRoute("/business/$id/team")({
 
 function TeamScreen() {
   const { id } = Route.useParams();
-  const b = getBusiness(id);
+  const b = businessView(Route.useLoaderData());
   const [members, setMembers] = useState(b?.members ?? []);
   const [invite, setInvite] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -45,7 +43,7 @@ function TeamScreen() {
     );
   }
 
-  const active = members.filter((m) => m.status !== "removed");
+  const active = members;
   const current = members.find((m) => m.id === editing);
 
   return (
@@ -76,19 +74,23 @@ function TeamScreen() {
                 onClick={() => setEditing(m.id)}
                 className="flex w-full items-center gap-3 border-b border-border py-2.5 text-left last:border-0"
               >
-                <img
-                  src={m.photo}
-                  alt=""
-                  className="h-10 w-10 shrink-0 rounded-full object-cover"
-                  loading="lazy"
-                />
+                {m.photo ? (
+                  <img
+                    src={m.photo}
+                    alt=""
+                    className="h-10 w-10 shrink-0 rounded-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-subtle" />
+                )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-semibold">{m.name}</span>
-                  <span className="block text-[11px] text-muted-foreground">
-                    {businessRoleLabel[m.role]} · since {m.since}
-                  </span>
+                  {m.detail ? (
+                    <span className="block text-[11px] text-muted-foreground">{m.detail}</span>
+                  ) : null}
                 </span>
-                {m.status === "invited" ? <StatusPill label="invited" tone="warn" /> : null}
+                {m.invited ? <StatusPill label="invited" tone="warn" /> : null}
               </button>
             ))}
           </Card>
@@ -132,10 +134,23 @@ function TeamScreen() {
           {(Object.keys(businessRoleLabel) as BusinessRole[]).map((r) => (
             <Btn
               key={r}
-              variant={current?.role === r ? "primary" : "outline"}
+              variant={current?.role === businessRoleLabel[r] ? "primary" : "outline"}
               className="w-full"
               onClick={() => {
-                setMembers((list) => list.map((m) => (m.id === editing ? { ...m, role: r } : m)));
+                setMembers((list) =>
+                  list.map((m) =>
+                    m.id === editing
+                      ? {
+                          ...m,
+                          role: businessRoleLabel[r],
+                          detail: joinParts(
+                            businessRoleLabel[r],
+                            m.since ? `since ${m.since}` : "",
+                          ),
+                        }
+                      : m,
+                  ),
+                );
                 setEditing(null);
               }}
             >
@@ -146,9 +161,7 @@ function TeamScreen() {
             variant="ghost"
             className="w-full"
             onClick={() => {
-              setMembers((list) =>
-                list.map((m) => (m.id === editing ? { ...m, status: "removed" as const } : m)),
-              );
+              setMembers((list) => list.filter((m) => m.id !== editing));
               setEditing(null);
             }}
           >
