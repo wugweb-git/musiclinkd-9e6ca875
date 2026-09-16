@@ -18,7 +18,6 @@ export default tseslint.config(
       "src/components/agents-ui/**",
       "src/components/animate-ui/**",
       "src/components/animbits/**",
-      "src/components/billingsdk/**",
       "src/components/spectrumui/**",
       "src/components/waves-cn/**",
       "src/components/ui/glasscn/**",
