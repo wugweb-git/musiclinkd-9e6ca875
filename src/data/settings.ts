@@ -6,7 +6,8 @@
 export type SettingsGroup = {
   key: string;
   title: string;
-  rows: { key: string; label: string; hint: string; to: string }[];
+  /** `icon` names a lucide icon the settings screen maps; keep it to one word. */
+  rows: { key: string; label: string; hint: string; to: string; icon: string }[];
 };
 
 export const settingsGroups: SettingsGroup[] = [
@@ -19,24 +20,28 @@ export const settingsGroups: SettingsGroup[] = [
         label: "Edit profile",
         hint: "Name, headline, roles, links",
         to: "/profile/edit",
+        icon: "user",
       },
       {
         key: "account",
         label: "Account details",
         hint: "Email, phone, username",
         to: "/settings/account",
+        icon: "at-sign",
       },
       {
         key: "verification",
         label: "Verification",
         hint: "Identity and professional badges",
         to: "/verification",
+        icon: "badge-check",
       },
       {
         key: "plans",
         label: "Plan & billing",
         hint: "Your subscription and invoices",
         to: "/plans/manage",
+        icon: "credit-card",
       },
     ],
   },
@@ -49,20 +54,29 @@ export const settingsGroups: SettingsGroup[] = [
         label: "Services & availability",
         hint: "Pricing, packages, calendar",
         to: "/services",
+        icon: "briefcase",
       },
       {
         key: "business",
         label: "Business profiles",
         hint: "Studios, labels, venues",
         to: "/business",
+        icon: "building",
       },
       {
         key: "portfolio",
         label: "Portfolio settings",
         hint: "Visibility and ordering",
         to: "/portfolio/settings",
+        icon: "folder",
       },
-      { key: "earnings", label: "Earnings", hint: "Payouts and history", to: "/plans/earnings" },
+      {
+        key: "earnings",
+        label: "Earnings",
+        hint: "Payouts and history",
+        to: "/plans/earnings",
+        icon: "wallet",
+      },
     ],
   },
   {
@@ -74,24 +88,28 @@ export const settingsGroups: SettingsGroup[] = [
         label: "Privacy",
         hint: "Who can see and contact you",
         to: "/settings/privacy",
+        icon: "lock",
       },
       {
         key: "security",
         label: "Security",
         hint: "Password, sessions, 2-step",
         to: "/settings/security",
+        icon: "shield",
       },
       {
         key: "notifications",
         label: "Notifications",
         hint: "Channels and quiet hours",
         to: "/notifications/settings",
+        icon: "bell",
       },
       {
         key: "discovery",
         label: "Discovery preferences",
         hint: "What you get recommended",
         to: "/recommendations/settings",
+        icon: "compass",
       },
     ],
   },
@@ -99,15 +117,34 @@ export const settingsGroups: SettingsGroup[] = [
     key: "support",
     title: "Support",
     rows: [
-      { key: "help", label: "Help centre", hint: "Guides and answers", to: "/help" },
-      { key: "terms", label: "Terms of use", hint: "Last updated Jul 2026", to: "/legal/terms" },
+      {
+        key: "help",
+        label: "Help centre",
+        hint: "Guides and answers",
+        to: "/help",
+        icon: "life-buoy",
+      },
+      {
+        key: "terms",
+        label: "Terms of use",
+        hint: "Last updated Jul 2026",
+        to: "/legal/terms",
+        icon: "scroll",
+      },
       {
         key: "privacy-policy",
         label: "Privacy policy",
         hint: "How we handle your data",
         to: "/legal/privacy",
+        icon: "file-text",
       },
-      { key: "signout", label: "Sign out", hint: "On this device", to: "/auth/signout" },
+      {
+        key: "signout",
+        label: "Sign out",
+        hint: "On this device",
+        to: "/auth/signout",
+        icon: "log-out",
+      },
     ],
   },
 ];
@@ -135,27 +172,31 @@ export const accountFields = [
 export const privacyControls = [
   {
     key: "visibility",
+    icon: "eye",
     label: "Profile visibility",
     hint: "Who can open your full profile",
     value: "Public",
-    options: ["Public", "MusicLinkd members", "Limited"],
+    options: ["Public", "Members", "Limited"],
   },
   {
     key: "contact",
+    icon: "message",
     label: "Who can message you",
     hint: "Direct messages from strangers",
     value: "Anyone",
-    options: ["Anyone", "Connections only", "Nobody"],
+    options: ["Anyone", "Connections", "Nobody"],
   },
   {
     key: "phone",
+    icon: "phone",
     label: "Show phone number",
     hint: "Only after a booking is confirmed",
-    value: "After booking",
-    options: ["Never", "After booking", "Always"],
+    value: "Booked",
+    options: ["Never", "Booked", "Always"],
   },
   {
     key: "discovery",
+    icon: "compass",
     label: "Appear in Discover",
     hint: "Swipe cards and search results",
     value: "Yes",

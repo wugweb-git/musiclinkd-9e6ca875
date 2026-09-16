@@ -11,6 +11,9 @@ import {
   Search,
   Building2,
   Calendar,
+  Compass,
+  Megaphone,
+  Rss,
   Users,
   Star,
   CreditCard,
@@ -343,7 +346,11 @@ function Body({ home }: { home: Home }) {
           </div>
         ) : (
           <div className="mx-5">
-            <EmptyState title="No open roles" body="New castings appear here as they are posted." />
+            <EmptyState
+              icon={<Megaphone size={20} className="text-muted-foreground" />}
+              title="No open roles"
+              body="New castings appear here as they are posted."
+            />
           </div>
         )}
       </section>
@@ -448,10 +455,11 @@ function Body({ home }: { home: Home }) {
         ) : (
           <div className="mx-5">
             <EmptyState
-              title="Nothing yet"
+              icon={<Rss size={20} className="text-muted-foreground" />}
+              title="No activity yet"
               body="Follow artists and studios, and their updates land here."
             >
-              <BtnLink to="/discover" variant="ink">
+              <BtnLink to="/discover" variant="ink" icon={<Compass size={16} aria-hidden />}>
                 Discover talent
               </BtnLink>
             </EmptyState>

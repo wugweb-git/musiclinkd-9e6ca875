@@ -100,6 +100,47 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
   );
 }
 
+/**
+ * A choice between a handful of options, as one row of equal segments. Use it wherever the options
+ * are alternatives to each other — privacy, visibility, who can message you. `Chip` stays for
+ * multi-select and for filters that wrap.
+ */
+export function SegmentedField<T extends string>({
+  value,
+  options,
+  onChange,
+  label,
+}: {
+  value: T;
+  options: readonly T[];
+  onChange: (v: T) => void;
+  /** Names the group for screen readers when there is no visible label beside it. */
+  label?: string;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label ?? ""}
+      className="flex w-full items-stretch gap-1 rounded-full border border-border bg-subtle p-1"
+    >
+      {options.map((o) => (
+        <button
+          key={o}
+          type="button"
+          role="radio"
+          aria-checked={value === o}
+          onClick={() => onChange(o)}
+          className={`min-w-0 flex-1 truncate rounded-full px-2 py-2 text-1 font-semibold transition-colors ${
+            value === o ? "bg-ink text-background" : "text-muted-foreground"
+          }`}
+        >
+          {o}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function Segmented<T extends string>({
   value,
   options,
@@ -192,7 +233,7 @@ export function EmptyState({
   children?: ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
+    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-8 text-center">
       {icon ? (
         <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-subtle">
           {icon}
@@ -200,7 +241,9 @@ export function EmptyState({
       ) : null}
       <h3 className="text-2 leading-tight">{title}</h3>
       <p className="mx-auto mt-2 max-w-[280px] text-1 text-muted-foreground">{body}</p>
-      {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
+      {children ? (
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">{children}</div>
+      ) : null}
     </div>
   );
 }

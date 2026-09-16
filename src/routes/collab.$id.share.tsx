@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Btn, Screen, TopBar, Chip } from "@/components/ml/ui";
+import { Btn, Screen, TopBar } from "@/components/ml/ui";
+import { SegmentedField } from "@/components/ml/kit";
 import { Card, Label, PermissionState, SwitchRow } from "@/components/ml/collab";
 import { getProject } from "@/data/collab";
 import { TextLink } from "@/components/ml/links";
@@ -33,7 +34,7 @@ function Share() {
   const [enabled, setEnabled] = useState(true);
   const [showFiles, setShowFiles] = useState(false);
   const [showPeople, setShowPeople] = useState(true);
-  const [access, setAccess] = useState("Anyone with the link");
+  const [access, setAccess] = useState("Anyone");
 
   if (!project) {
     return (
@@ -64,12 +65,13 @@ function Share() {
         </Card>
 
         <Label>Who can open it</Label>
-        <div className="mb-5 flex flex-wrap gap-2">
-          {["Anyone with the link", "Participants only", "Request to view"].map((a) => (
-            <Chip key={a} active={a === access} onClick={() => setAccess(a)}>
-              {a}
-            </Chip>
-          ))}
+        <div className="mb-5">
+          <SegmentedField
+            label="Who can open it"
+            value={access}
+            options={["Anyone", "Participants", "On request"]}
+            onChange={setAccess}
+          />
         </div>
 
         <Label>What they see</Label>
