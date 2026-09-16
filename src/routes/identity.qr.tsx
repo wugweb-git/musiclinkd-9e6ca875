@@ -23,7 +23,12 @@ import {
   Settings2,
   Share2,
 } from "lucide-react";
-import { Screen, Btn, Sheet } from "@/components/ml/ui";
+import { useServerFn } from "@tanstack/react-start";
+import { useAuth } from "@/hooks/use-auth";
+import { getMyProfile, getTaxonomyLabels } from "@/lib/portfolio.functions";
+import type { TaxonomyLabels } from "@/lib/portfolio.functions";
+import type { ProfileRow } from "@/lib/profile-map";
+import { Screen, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import {
   QrCode,
   CopyLinkRow,
@@ -34,7 +39,7 @@ import {
   DownloadNote,
   nativeShare,
 } from "@/components/ml/qr";
-import { canonicalUrl, myIdentity, qrStyles, type QrStyle } from "@/data/identity";
+import { canonicalUrl, myIdentity, qrStyles, SHORT_HOST, type QrStyle } from "@/data/identity";
 
 export const Route = createFileRoute("/identity/qr")({
   head: () => ({
@@ -57,12 +62,71 @@ export const Route = createFileRoute("/identity/qr")({
   component: DigitalId,
 });
 
+/**
+ * Who the code is for. Signed in, that is the person's own profile row — the code points at their
+ * real public profile URL. Signed out, the seed identity stands in, as it does on /profile.
+ */
+function useIdentity() {
+  const { signedIn, loading } = useAuth();
+  const load = useServerFn(getMyProfile);
+  const loadLabels = useServerFn(getTaxonomyLabels);
+  const [row, setRow] = useState<ProfileRow | null>(null);
+  const [labels, setLabels] = useState<TaxonomyLabels>({});
+  const [read, setRead] = useState(false);
+
+  useEffect(() => {
+    if (loading || !signedIn) return;
+    Promise.all([load(), loadLabels().catch((): TaxonomyLabels => ({}))])
+      .then(([r, l]) => {
+        setRow((r ?? null) as ProfileRow | null);
+        setLabels(l);
+      })
+      .catch(() => null)
+      .finally(() => setRead(true));
+  }, [loading, signedIn, load, loadLabels]);
+
+  if (!signedIn) {
+    return {
+      ready: !loading,
+      username: myIdentity.username,
+      name: myIdentity.name,
+      role: myIdentity.role,
+      photo: myIdentity.photo,
+      verified: myIdentity.verified,
+      url: canonicalUrl(myIdentity.code),
+    };
+  }
+
+  const username = row?.username ?? null;
+  const role = (row?.roles ?? [])
+    .slice(0, 2)
+    .map((slug) => labels["person_types"]?.[slug] ?? slug)
+    .join(" · ");
+  return {
+    ready: read,
+    username,
+    name: row?.display_name ?? "",
+    role,
+    photo: row?.avatar_url ?? "",
+    verified: false,
+    // The real, working address for this profile — not a code that resolves to nothing.
+    url: username ? profileUrl(username) : "",
+  };
+}
+
+/** The public profile link people reach by scanning. Absolute, so it works off the phone. */
+function profileUrl(username: string) {
+  const origin = typeof window === "undefined" ? `https://${SHORT_HOST}` : window.location.origin;
+  return `${origin}/profile/${username}`;
+}
+
 function DigitalId() {
   const [phase, setPhase] = useState<"loading" | "ready" | "offline">("loading");
   const [style, setStyle] = useState<QrStyle>("light");
   const [share, setShare] = useState(false);
   const [look, setLook] = useState(false);
-  const url = canonicalUrl(myIdentity.code);
+  const me = useIdentity();
+  const url = me.url;
 
   useEffect(() => {
     const online = typeof navigator === "undefined" || navigator.onLine;
@@ -91,7 +155,7 @@ function DigitalId() {
           </Link>
         </div>
 
-        {phase === "loading" ? (
+        {phase === "loading" || !me.ready ? (
           <div className="mt-6 flex justify-center" aria-busy>
             <Skeleton className="h-[260px] w-[260px] rounded-3xl" />
           </div>
@@ -106,31 +170,50 @@ function DigitalId() {
           </div>
         ) : (
           <>
-            <div className="mt-6 flex justify-center">
-              <div className="rounded-3xl bg-background p-4">
-                <QrCode
-                  value={url}
-                  size={232}
-                  style={style}
-                  overlay={myIdentity.photo}
-                  label={`MusicLinkd QR for ${myIdentity.name}`}
-                />
+            {url ? (
+              <div className="mt-6 flex justify-center">
+                <div className="rounded-3xl bg-background p-4">
+                  <QrCode
+                    value={url}
+                    size={232}
+                    style={style}
+                    overlay={me.photo || undefined}
+                    label={`MusicLinkd QR for ${me.name || "your profile"}`}
+                  />
+                </div>
               </div>
-            </div>
+            ) : (
+              // No username, no public address: there is nothing honest to put in a code yet.
+              <div className="mt-6 rounded-3xl bg-background/10 p-5 text-center">
+                <h1 className="text-2 font-semibold">Claim your username first</h1>
+                <p className="mt-1 text-1 text-background/70">
+                  Your code points at your public profile, and that needs a username.
+                </p>
+                <BtnLink
+                  to="/profile/edit"
+                  variant="ghost"
+                  className="mt-4 w-full bg-background text-foreground"
+                >
+                  Set Username
+                </BtnLink>
+              </div>
+            )}
 
             <div className="mt-5 text-center">
               <h1 className="flex items-center justify-center gap-1.5 text-3 leading-tight">
-                {myIdentity.name}
-                {myIdentity.verified ? (
+                {me.name}
+                {me.verified ? (
                   <BadgeCheck size={20} aria-label="Verified" className="shrink-0" />
                 ) : null}
               </h1>
-              <p className="mt-1 text-sm text-background/70">
-                @{myIdentity.username} · {myIdentity.role}
-              </p>
+              {me.username || me.role ? (
+                <p className="mt-1 text-sm text-background/70">
+                  {[me.username ? `@${me.username}` : "", me.role].filter(Boolean).join(" · ")}
+                </p>
+              ) : null}
             </div>
 
-            <div className="mt-5 flex items-center justify-center gap-2">
+            <div className={`mt-5 flex items-center justify-center gap-2 ${url ? "" : "hidden"}`}>
               <Btn
                 variant="ghost"
                 className="min-w-0 flex-1 bg-background px-3 text-foreground"
@@ -154,7 +237,7 @@ function DigitalId() {
 
       {phase === "ready" ? (
         <main className="px-5 pt-5 pb-8">
-          <CopyLinkRow url={url} />
+          {url ? <CopyLinkRow url={url} /> : null}
 
           <div className="mt-4 flex flex-col gap-2">
             <ActionRow
@@ -172,7 +255,7 @@ function DigitalId() {
             <ActionRow
               icon={<Building2 size={16} />}
               label="Business QR"
-              hint="Octave Sound Labs"
+              hint="A code for a studio, label or venue you run"
               to="/identity/business"
             />
             <ActionRow
@@ -200,9 +283,9 @@ function DigitalId() {
       <Sheet open={share} onClose={() => setShare(false)} title="Share your MusicLinkd ID">
         <ShareActions
           url={url}
-          title={`${myIdentity.name} on MusicLinkd`}
+          title={`${me.name || "My profile"} on MusicLinkd`}
           onDownload={() => toast.success("QR image saved")}
-          onSaveContact={() => void nativeShare({ title: myIdentity.name, url })}
+          onSaveContact={() => void nativeShare({ title: me.name || "MusicLinkd", url })}
         />
         <div className="mt-3">
           <DownloadNote />

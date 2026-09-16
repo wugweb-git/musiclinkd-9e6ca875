@@ -30,6 +30,7 @@ import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { Switch } from "@/components/ui/switch";
 import { EmptyState, Loading, Price } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
+import { StatRow } from "@/components/ml/profile";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
@@ -295,6 +296,14 @@ function Body({ home }: { home: Home }) {
             ))}
           </ul>
         ) : null}
+      </section>
+
+      {/*
+       * The four counts. They live here, not on the profile: they are the owner's own numbers, and
+       * an em-dash until the tables behind them exist — never a made-up zero.
+       */}
+      <section className="px-5 pt-6">
+        <StatRow stats={{ connections: "", followers: "", plays: "", credits: 0 }} />
       </section>
 
       {/*

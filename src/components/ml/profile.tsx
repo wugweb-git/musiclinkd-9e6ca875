@@ -617,16 +617,27 @@ export function ProfileHero({
   );
 }
 
-export function StatRow({ p }: { p: PersonProfile }) {
+/** The four counts. An empty count reads "—", never a fabricated 0. */
+export function StatRow({
+  stats: s,
+  className,
+}: {
+  stats: PersonProfile["stats"];
+  className?: string;
+}) {
   const stats = [
-    { label: "Connections", value: p.stats.connections },
-    { label: "Followers", value: p.stats.followers },
-    { label: "Plays", value: p.stats.plays },
-    // No credits reads "—", like the other empty stats, not "0".
-    { label: "Credits", value: p.stats.credits ? String(p.stats.credits) : "—" },
+    { label: "Connections", value: s.connections || "—" },
+    { label: "Followers", value: s.followers || "—" },
+    { label: "Plays", value: s.plays || "—" },
+    { label: "Credits", value: s.credits ? String(s.credits) : "—" },
   ];
   return (
-    <div className="mt-4 grid grid-cols-4 gap-2 rounded-lg border border-border bg-card p-3">
+    <div
+      className={cn(
+        "grid grid-cols-4 gap-2 rounded-lg border border-border bg-card p-3",
+        className,
+      )}
+    >
       {stats.map((s) => (
         <div key={s.label} className="text-center">
           <p className="text-2 font-bold leading-tight">{s.value}</p>
