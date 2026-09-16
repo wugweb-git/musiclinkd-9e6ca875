@@ -25,6 +25,7 @@ import { roleIcon } from "@/lib/role-icons";
 import {
   GENDERS,
   getMyPrivateDetails,
+  readDeviceContext,
   saveMyPrivateDetails,
 } from "@/lib/profile-private.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -957,6 +958,8 @@ function PrivateDetailsFields() {
         data: {
           dateOfBirth: dob || null,
           gender: (gender as (typeof GENDERS)[number]["value"] | null) ?? null,
+          // Time zone and device come from the browser, with no permission prompt.
+          ...readDeviceContext(),
         },
       }).catch(() => {});
     }, 600);
