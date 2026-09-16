@@ -34,3 +34,10 @@ dist-ssr
 # Storybook build output
 storybook-static
 *storybook.log
+
+# The design guide is kept locally and never pushed (owner, 16 Sep 2026). Storybook mounts it at
+# /guide when it is present; see .storybook/main.ts. It lives at https://musiclinkd.com/guide.
+guide/
+
+# Storybook's built output
+storybook-static/
