@@ -44,7 +44,7 @@ function Saved() {
           ? studios.map((s) => (
               <article key={s.name} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center gap-3">
-                  <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
+                  <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-sm">{s.name}</h3>
                     <p className="truncate text-1 text-muted-foreground">{s.location}</p>
@@ -63,11 +63,11 @@ function Saved() {
           : talents.slice(0, 3).map((t) => (
               <article key={t.id} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center gap-3">
-                  <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-md object-cover" />
+                  <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-sm object-cover" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1">
                       <h3 className="truncate text-sm">{t.name}</h3>
-                      {t.verified ? <VerifiedBadge size={13} /> : null}
+                      {t.verified ? <VerifiedBadge size={12} /> : null}
                     </div>
                     <p className="truncate text-1 text-muted-foreground">
                       {t.role} · {t.location.split(",").pop()}

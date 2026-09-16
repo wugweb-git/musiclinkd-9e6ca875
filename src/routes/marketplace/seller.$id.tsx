@@ -67,7 +67,7 @@ function SellerProfile() {
                 <p className="text-1 font-semibold">{r.name}</p>
                 <Rating value={r.rating} />
               </div>
-              <p className="text-0 text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 {r.role} · {r.context} · {r.date}
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>

@@ -172,7 +172,7 @@ function WelcomeScreen() {
           </p>
 
           {/* The headline lands a word per beat. */}
-          <h1 className="mt-3 text-5 font-bold">
+          <h1 className="mt-3 text-4 font-bold">
             {["Connect.", "Collaborate.", "Create."].map((word, i) => (
               <span key={word} className={cn("block", rise)} style={beat(2 + i)}>
                 {word}

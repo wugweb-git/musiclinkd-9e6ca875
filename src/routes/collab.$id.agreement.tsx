@@ -99,7 +99,7 @@ function AgreementScreen() {
         </>
       )}
 
-      <p className="mb-6 text-0 text-muted-foreground">
+      <p className="mb-6 text-1 text-muted-foreground">
         This is a working agreement between collaborators on MusicLinkd, not a legal contract.
       </p>
 

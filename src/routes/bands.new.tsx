@@ -128,7 +128,7 @@ function CreateBand() {
                     title={i}
                     subtitle="Invitation will be sent on publish"
                     right={
-                      <span className="text-0 font-semibold text-muted-foreground">Pending</span>
+                      <span className="text-1 font-semibold text-muted-foreground">Pending</span>
                     }
                   />
                 ))}
@@ -143,7 +143,7 @@ function CreateBand() {
 
         {current === "Preview" ? (
           <Card className="space-y-3">
-            <h2 className="text-2.5 leading-tight">{name || "Untitled band"}</h2>
+            <h2 className="text-3 leading-tight">{name || "Untitled band"}</h2>
             <p className="text-1 text-muted-foreground">{tagline || "No description yet"}</p>
             <p className="text-1 text-muted-foreground">
               {[genres.join(" · "), city].filter(Boolean).join(" · ") || "No genre or city set"}
@@ -207,7 +207,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-2 h-12 w-full rounded-md border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+        className="mt-2 h-12 w-full rounded-sm border border-border bg-background px-4 text-sm outline-none focus:border-primary"
       />
     </label>
   );

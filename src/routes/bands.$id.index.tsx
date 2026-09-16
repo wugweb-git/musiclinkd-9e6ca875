@@ -66,7 +66,7 @@ function BandProfile() {
             aria-label="Band QR"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-subtle"
           >
-            <QrCode size={18} aria-hidden />
+            <QrCode size={20} aria-hidden />
           </Link>
         }
       />
@@ -110,7 +110,7 @@ function BandProfile() {
                 params={{ id: band.id }}
                 className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-primary px-2 text-1 font-semibold text-primary-foreground"
               >
-                <Settings2 size={14} aria-hidden />
+                <Settings2 size={16} aria-hidden />
                 Manage
               </Link>
               <Link
@@ -118,7 +118,7 @@ function BandProfile() {
                 params={{ id: band.id }}
                 className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
               >
-                <UserPlus size={14} aria-hidden />
+                <UserPlus size={16} aria-hidden />
                 Invite
               </Link>
             </>
@@ -130,7 +130,7 @@ function BandProfile() {
                 params={{ id: band.id }}
                 className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
               >
-                <MessageSquare size={14} aria-hidden />
+                <MessageSquare size={16} aria-hidden />
                 Message
               </Link>
             </>
@@ -139,14 +139,14 @@ function BandProfile() {
             to="/bookings"
             className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-ink px-2 text-1 font-semibold text-background"
           >
-            <CalendarDays size={14} aria-hidden />
+            <CalendarDays size={16} aria-hidden />
             Book
           </Link>
           <Link
             to="/identity/qr"
             className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
           >
-            <Share2 size={14} aria-hidden />
+            <Share2 size={16} aria-hidden />
             Share
           </Link>
         </div>
@@ -223,7 +223,7 @@ function BandProfile() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <p className="truncate text-sm font-semibold">{m.name}</p>
-                        {m.verified ? <VerifiedBadge size={13} /> : null}
+                        {m.verified ? <VerifiedBadge size={12} /> : null}
                       </div>
                       {m.detail ? (
                         <p className="truncate text-1 text-muted-foreground">{m.detail}</p>
@@ -323,7 +323,7 @@ function BandProfile() {
                     )}
                     <div className="p-3">
                       <h3 className="truncate text-1">{r.title}</h3>
-                      <p className="mt-1 truncate text-0 text-muted-foreground">
+                      <p className="mt-1 truncate text-1 text-muted-foreground">
                         {joinParts(r.kind, r.year ? String(r.year) : "")}
                       </p>
                     </div>

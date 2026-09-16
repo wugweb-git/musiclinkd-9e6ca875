@@ -114,10 +114,10 @@ export function StackSection({
   return (
     <section className="-mx-5 border-b-8 border-subtle bg-card px-5 py-5">
       <div className="flex items-center gap-1">
-        <h2 className="min-w-0 flex-1 text-2.5 font-bold">{title}</h2>
+        <h2 className="min-w-0 flex-1 text-3 font-bold">{title}</h2>
         {editTo ? (
           <IconBtnLink to={editTo} label={`Edit ${title}`} variant="ghost" className="h-10 w-10">
-            <Pencil size={17} aria-hidden />
+            <Pencil size={16} aria-hidden />
           </IconBtnLink>
         ) : null}
         {collapsible ? (
@@ -130,7 +130,7 @@ export function StackSection({
             aria-controls={bodyId}
           >
             <ChevronDown
-              size={18}
+              size={20}
               aria-hidden
               className={cn(
                 "transition-transform duration-200 ease-standard motion-reduce:transition-none",
@@ -150,7 +150,7 @@ export function StackSection({
           className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-pink-strong"
         >
           {showAll}
-          <ChevronRight size={15} aria-hidden />
+          <ChevronRight size={16} aria-hidden />
         </button>
       ) : null}
     </section>
@@ -428,7 +428,7 @@ function ImagePickButton({
           e.target.value = "";
         }}
       />
-      {busy ? <Loader2 size={15} className="animate-spin" aria-hidden /> : children}
+      {busy ? <Loader2 size={16} className="animate-spin" aria-hidden /> : children}
     </label>
   );
 }
@@ -447,7 +447,7 @@ function RoleLine({ p }: { p: PersonProfile }) {
         const Icon = slug ? roleIcon(option ?? { slug, metadata: null }) : null;
         return (
           <li key={role} className="flex items-center gap-1.5">
-            {Icon ? <Icon size={14} strokeWidth={1.75} aria-hidden /> : null}
+            {Icon ? <Icon size={16} strokeWidth={1.75} aria-hidden /> : null}
             {role}
           </li>
         );
@@ -520,7 +520,7 @@ export function ProfileHero({
             aria-label="Back"
             className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
           >
-            <ArrowLeft size={18} aria-hidden />
+            <ArrowLeft size={20} aria-hidden />
           </Link>
         ) : null}
         <div className="absolute right-5 top-5 flex gap-2">
@@ -543,7 +543,7 @@ export function ProfileHero({
           ) : null}
           {onMore ? (
             <IconBtn label="More Options" variant="plain" className="bg-card/90" onClick={onMore}>
-              <MoreHorizontal size={18} aria-hidden />
+              <MoreHorizontal size={20} aria-hidden />
             </IconBtn>
           ) : null}
         </div>
@@ -559,7 +559,7 @@ export function ProfileHero({
             />
           ) : (
             <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-background bg-card text-muted-foreground">
-              <User size={36} aria-label={p.name} />
+              <User size={32} aria-label={p.name} />
             </span>
           )}
           {owner && onImageChanged ? (
@@ -569,12 +569,12 @@ export function ProfileHero({
               className="absolute -bottom-1 -left-1 h-9 w-9 border border-border bg-card text-foreground"
               onChanged={(url) => onImageChanged("avatar", url)}
             >
-              <Camera size={15} aria-hidden />
+              <Camera size={16} aria-hidden />
             </ImagePickButton>
           ) : null}
           {isVerifiedTier(p.verification) ? (
             <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
-              <BadgeCheck size={13} aria-label="Verified" />
+              <BadgeCheck size={12} aria-label="Verified" />
             </span>
           ) : null}
         </div>
@@ -597,13 +597,13 @@ export function ProfileHero({
           <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
             {p.location ? (
               <span className="flex items-center gap-1">
-                <MapPin size={13} className="shrink-0" aria-hidden />
+                <MapPin size={12} className="shrink-0" aria-hidden />
                 {p.location}
               </span>
             ) : null}
             {p.yearsActive ? (
               <span className="flex items-center gap-1">
-                <CalendarDays size={13} className="shrink-0" aria-hidden />
+                <CalendarDays size={12} className="shrink-0" aria-hidden />
                 {p.yearsActive} active
               </span>
             ) : null}
@@ -677,10 +677,10 @@ export function AudioTrackCard({
           alt=""
           aria-hidden
           loading="lazy"
-          className="h-14 w-14 rounded-md object-cover"
+          className="h-14 w-14 rounded-sm object-cover"
         />
       ) : (
-        <NoCover className="h-14 w-14 shrink-0 rounded-md" />
+        <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
       )}
       <div className="min-w-0 flex-1">
         <h3 className="truncate text-2">{track.title}</h3>
@@ -723,14 +723,14 @@ export function VideoCard({
   if (layout === "row") {
     return (
       <article className="flex gap-3">
-        <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-md bg-subtle">
+        <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-sm bg-subtle">
           {v.thumb ? (
             <img src={v.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
           ) : (
             <NoCover className="h-full w-full" />
           )}
           {v.duration ? (
-            <span className="absolute bottom-1 left-1 rounded-sm bg-ink/80 px-1.5 py-0.5 text-0 font-semibold text-background">
+            <span className="absolute bottom-1 left-1 rounded-sm bg-ink/80 px-1.5 py-0.5 text-1 font-semibold text-background">
               {v.duration}
             </span>
           ) : null}
@@ -953,10 +953,10 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
           alt=""
           aria-hidden
           loading="lazy"
-          className="h-12 w-12 rounded-md object-cover"
+          className="h-12 w-12 rounded-sm object-cover"
         />
       ) : (
-        <div aria-hidden className="h-12 w-12 shrink-0 rounded-md bg-subtle" />
+        <div aria-hidden className="h-12 w-12 shrink-0 rounded-sm bg-subtle" />
       )}
       <div className="min-w-0">
         <h3 className="truncate text-1">{m.title}</h3>
@@ -1024,17 +1024,17 @@ export function ShareSheet({
       <div className="ink-gradient overflow-hidden rounded-lg border border-border">
         <div className="flex items-center gap-3 p-4 text-background">
           {p.photo ? (
-            <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-md object-cover" />
+            <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-sm object-cover" />
           ) : (
-            <span className="flex h-14 w-14 items-center justify-center rounded-md bg-background/15">
-              <User size={22} aria-hidden />
+            <span className="flex h-14 w-14 items-center justify-center rounded-sm bg-background/15">
+              <User size={24} aria-hidden />
             </span>
           )}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <h3 className="truncate text-2 text-background">{p.name}</h3>
               {isVerifiedTier(p.verification) ? (
-                <BadgeCheck size={14} aria-label="Verified" />
+                <BadgeCheck size={16} aria-label="Verified" />
               ) : null}
             </div>
             <p className="truncate text-1 opacity-80">{p.primaryRole}</p>
@@ -1122,7 +1122,7 @@ export function MoreSheet({
         })}
       </div>
       <p className="mt-3 flex items-center gap-2 px-1 text-1 text-muted-foreground">
-        <ShieldCheck size={13} aria-hidden />
+        <ShieldCheck size={12} aria-hidden />
         Reports are reviewed by the MusicLinkd trust team.
       </p>
     </Sheet>
@@ -1161,11 +1161,11 @@ export function CompletionCard({
           <li key={m.id}>
             <Link
               to={m.to ?? "/profile/edit"}
-              className="state-layer flex min-h-10 items-center gap-2 rounded-md text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-98"
+              className="state-layer flex min-h-10 items-center gap-2 rounded-sm text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-98"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
               {m.label}
-              <ChevronRight size={14} className="ml-auto shrink-0" aria-hidden />
+              <ChevronRight size={16} className="ml-auto shrink-0" aria-hidden />
             </Link>
           </li>
         ))}

@@ -33,7 +33,7 @@ export const Story = ({ className, ...props }: StoryProps) => (
   <CarouselItem className={cn("basis-auto pl-2 md:pl-4", className)}>
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl bg-muted/40",
+        "group relative overflow-hidden rounded-3xl bg-muted/40",
         "cursor-pointer transition-all duration-200",
         "hover:scale-[1.02] hover:shadow-lg",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",

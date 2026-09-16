@@ -40,7 +40,7 @@ function MyOpportunities() {
             className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
             aria-label="New opportunity"
           >
-            <Plus size={18} />
+            <Plus size={20} />
           </Link>
         }
       />
@@ -64,15 +64,15 @@ function MyOpportunities() {
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-1 text-muted-foreground">
                 {o.applicantSummary ? (
                   <span className="inline-flex items-center gap-1">
-                    <Eye size={13} /> {o.views} views
+                    <Eye size={12} /> {o.views} views
                   </span>
                 ) : null}
                 <span className="inline-flex items-center gap-1">
-                  <Users size={13} /> {o.applicants} applicants
+                  <Users size={12} /> {o.applicants} applicants
                 </span>
                 {o.applicantSummary ? (
                   <span className="inline-flex items-center gap-1">
-                    <Bookmark size={13} /> {o.applicantSummary.shortlisted} shortlisted
+                    <Bookmark size={12} /> {o.applicantSummary.shortlisted} shortlisted
                   </span>
                 ) : null}
               </div>

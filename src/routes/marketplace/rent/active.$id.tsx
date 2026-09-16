@@ -147,7 +147,7 @@ function RentalBooking() {
               </BtnLink>
             </>
           ) : null}
-          <button className="w-full py-2 text-0 font-semibold text-muted-foreground">
+          <button className="w-full py-2 text-1 font-semibold text-muted-foreground">
             Report an issue with this rental
           </button>
         </div>
@@ -169,7 +169,7 @@ function RentalBooking() {
           </div>
         </dl>
         {e.unavailableDates.length ? (
-          <p className="mt-3 text-0 text-muted-foreground">
+          <p className="mt-3 text-1 text-muted-foreground">
             Some dates are already reserved by another renter and cannot be selected.
           </p>
         ) : null}
@@ -210,7 +210,7 @@ function RentalBooking() {
           placeholder="Notes for the provider"
           className="mt-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
-        <p className="mt-3 text-0 text-muted-foreground">
+        <p className="mt-3 text-1 text-muted-foreground">
           The deposit is released by the provider once they have checked the equipment.
         </p>
         <Btn
@@ -227,10 +227,10 @@ function RentalBooking() {
 
       <Sheet open={review} onClose={() => setReview(false)} title="Rate this rental">
         <div className="mb-4 flex items-center gap-3 rounded-lg border border-border p-3">
-          <img src={e.photos[0]} alt="" className="h-12 w-12 rounded-md object-cover" />
+          <img src={e.photos[0]} alt="" className="h-12 w-12 rounded-sm object-cover" />
           <div className="min-w-0">
             <p className="truncate text-1 font-semibold">{e.name}</p>
-            <p className="truncate text-0 text-muted-foreground">{p.name}</p>
+            <p className="truncate text-1 text-muted-foreground">{p.name}</p>
           </div>
         </div>
         <p className="pill mb-2 bg-subtle text-muted-foreground">Overall experience</p>

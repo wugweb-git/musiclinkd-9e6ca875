@@ -61,7 +61,7 @@ function ScanHistory() {
             {items.map((h) => (
               <Link key={h.code} to="/identity/q/$code" params={{ code: h.code }}>
                 <ActionRow
-                  icon={<ScanLine size={17} />}
+                  icon={<ScanLine size={16} />}
                   label={h.label}
                   hint={`${h.kind} · ${h.when}`}
                 />

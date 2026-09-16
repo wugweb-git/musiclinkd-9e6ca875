@@ -46,7 +46,7 @@ export default function MediaDropzone({
 					{files.map((file) => (
 						<li
 							key={file.id}
-							className="rounded-md border border-border px-3 py-2 text-sm"
+							className="rounded-sm border border-border px-3 py-2 text-sm"
 						>
 							<div className="flex items-center justify-between gap-2">
 								<span className="truncate">{file.name}</span>

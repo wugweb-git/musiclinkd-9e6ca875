@@ -114,7 +114,7 @@ function Pricing() {
           </div>
         </section>
 
-        <p className="text-0 text-muted-foreground">
+        <p className="text-1 text-muted-foreground">
           Taxes are applied at {entity.taxPct}% on top of the session total.
         </p>
       </main>
@@ -146,7 +146,7 @@ function MoneyRow({
         <label htmlFor={id} className="block truncate text-1 font-semibold">
           {label}
         </label>
-        {hint ? <p className="truncate text-0 text-muted-foreground">{hint}</p> : null}
+        {hint ? <p className="truncate text-1 text-muted-foreground">{hint}</p> : null}
       </div>
       <div className="flex shrink-0 items-center gap-1 rounded-full bg-subtle px-3 py-2">
         <span className="text-1 font-semibold text-muted-foreground">₹</span>

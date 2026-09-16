@@ -177,11 +177,11 @@ function WorkDetail() {
                   variant="ink"
                   className="h-11 w-11"
                 >
-                  <Pencil size={18} aria-hidden />
+                  <Pencil size={20} aria-hidden />
                 </IconBtnLink>
               )}
               <IconBtn label="Share Work" variant="outline" className="h-11 w-11" onClick={share}>
-                <Share2 size={18} aria-hidden />
+                <Share2 size={20} aria-hidden />
               </IconBtn>
               <IconBtnLink
                 to="/portfolio/new"
@@ -189,7 +189,7 @@ function WorkDetail() {
                 variant="outline"
                 className="h-11 w-11"
               >
-                <Plus size={18} aria-hidden />
+                <Plus size={20} aria-hidden />
               </IconBtnLink>
               {demo ? null : (
                 <IconBtn
@@ -198,7 +198,7 @@ function WorkDetail() {
                   className="ml-auto h-11 w-11 text-destructive"
                   onClick={onDelete}
                 >
-                  <Trash2 size={18} aria-hidden />
+                  <Trash2 size={20} aria-hidden />
                 </IconBtn>
               )}
             </div>

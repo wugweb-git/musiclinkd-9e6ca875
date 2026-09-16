@@ -462,7 +462,7 @@ export function StepShell({
         <div className="flex items-center gap-3">
           {onBack ? (
             <IconBtn label="Back" variant="plain" className="-ml-2" onClick={onBack}>
-              <ArrowLeft size={18} aria-hidden />
+              <ArrowLeft size={20} aria-hidden />
             </IconBtn>
           ) : (
             <span className="h-10 w-8" />
@@ -528,7 +528,7 @@ export function StepShell({
         </div>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
         <p className="mt-2 flex items-start gap-1.5 text-1 leading-relaxed text-muted-foreground">
-          <Info size={14} className="mt-0.5 shrink-0" aria-hidden />
+          <Info size={16} className="mt-0.5 shrink-0" aria-hidden />
           {why}
         </p>
         <div className="mt-6">{children}</div>
@@ -740,7 +740,7 @@ export function InlineField({
       </label>
       <div
         className={cn(
-          "flex items-center gap-1 rounded-md border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
+          "flex items-center gap-1 rounded-sm border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
           multiline ? "py-3" : "h-12",
           readOnly && "bg-subtle",
           error
@@ -816,7 +816,7 @@ export function InlineField({
             role="alert"
             className="flex animate-message items-start gap-1.5 text-1 text-destructive"
           >
-            <CircleAlert size={14} className="mt-px shrink-0" aria-hidden />
+            <CircleAlert size={16} className="mt-px shrink-0" aria-hidden />
             {error}
           </p>
         ) : ok ? (
@@ -825,7 +825,7 @@ export function InlineField({
             id={messageId}
             className="flex animate-message items-start gap-1.5 text-1 text-success"
           >
-            <CircleCheck size={14} className="mt-px shrink-0" aria-hidden />
+            <CircleCheck size={16} className="mt-px shrink-0" aria-hidden />
             {ok}
           </p>
         ) : (
@@ -908,7 +908,7 @@ export function PhotoPicker({
           ) : photo ? (
             <img src={photo} alt={`${label} preview`} className="h-full w-full object-cover" />
           ) : (
-            <Camera size={22} className="text-muted-foreground" />
+            <Camera size={24} className="text-muted-foreground" />
           )}
         </div>
         <div className="flex-1 space-y-2">
@@ -930,7 +930,7 @@ export function PhotoPicker({
               }}
               className="flex min-h-11 w-full items-center justify-center gap-2 text-1 font-semibold text-muted-foreground"
             >
-              <Trash2 size={14} /> Remove
+              <Trash2 size={16} /> Remove
             </button>
           ) : null}
         </div>
@@ -944,8 +944,8 @@ export function PhotoPicker({
       <Sheet open={open} onClose={() => setOpen(false)} title={label}>
         <ul className="space-y-2">
           {[
-            { icon: <Camera size={18} />, label: "Take photo", input: camera },
-            { icon: <ImageIcon size={18} />, label: "Choose from gallery", input: gallery },
+            { icon: <Camera size={20} />, label: "Take photo", input: camera },
+            { icon: <ImageIcon size={20} />, label: "Choose from gallery", input: gallery },
           ].map((o) => (
             <li key={o.label}>
               <button
@@ -995,7 +995,7 @@ export function SelectField({
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
           className={cn(
-            "h-12 w-full appearance-none rounded-md border border-border bg-card pl-3.5 pr-10 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground disabled:bg-subtle disabled:opacity-60 [@media(hover:hover)]:hover:border-muted-foreground",
+            "h-12 w-full appearance-none rounded-sm border border-border bg-card pl-3.5 pr-10 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground disabled:bg-subtle disabled:opacity-60 [@media(hover:hover)]:hover:border-muted-foreground",
             value ? "text-foreground" : "text-muted-foreground",
           )}
         >
@@ -1007,7 +1007,7 @@ export function SelectField({
           ))}
         </select>
         <ChevronDown
-          size={18}
+          size={20}
           className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
           aria-hidden
         />
@@ -1043,7 +1043,7 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
 export function SavingBanner({ label = "Saving your answers…" }: { label?: string }) {
   return (
     <p role="status" className="mb-4 flex items-center gap-2 text-1 text-muted-foreground">
-      <LoaderCircle size={14} className="animate-spin" aria-hidden />
+      <LoaderCircle size={16} className="animate-spin" aria-hidden />
       {label}
     </p>
   );
@@ -1089,7 +1089,7 @@ export function StepSkeleton() {
   return (
     <div className="space-y-3" aria-hidden>
       {[0, 1, 2, 3, 4].map((i) => (
-        <div key={i} className="h-14 animate-pulse rounded-md bg-subtle" />
+        <div key={i} className="h-14 animate-pulse rounded-sm bg-subtle" />
       ))}
     </div>
   );
@@ -1098,7 +1098,7 @@ export function StepSkeleton() {
 export function LocationHint() {
   return (
     <p className="mt-3 flex items-start gap-2 text-1 text-muted-foreground">
-      <MapPin size={14} className="mt-0.5 shrink-0" />
+      <MapPin size={16} className="mt-0.5 shrink-0" />
       City level is all we publish. Your exact address is never shown.
     </p>
   );
@@ -1138,7 +1138,7 @@ export function ReadinessCard({
         }`}
         aria-hidden
       >
-        {done ? <Check size={13} strokeWidth={3} /> : null}
+        {done ? <Check size={12} strokeWidth={3} /> : null}
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">

@@ -111,7 +111,7 @@ function ServiceDetail() {
             <div className="flex items-start gap-3">
               <span
                 aria-hidden
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-subtle text-3"
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-subtle text-3"
               >
                 {categoryEmoji(s.category)}
               </span>
@@ -178,7 +178,7 @@ function ServiceDetail() {
                     ))}
                   </ul>
                   {p.turnaround || p.revisions ? (
-                    <p className="text-0 text-muted-foreground">
+                    <p className="text-1 text-muted-foreground">
                       {joinParts(p.turnaround, p.revisions)}
                     </p>
                   ) : null}

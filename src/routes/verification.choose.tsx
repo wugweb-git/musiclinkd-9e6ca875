@@ -60,7 +60,7 @@ function ChooseType() {
                   <p className="mt-0.5 text-1 text-muted-foreground">{t.appliesTo}</p>
                 </div>
                 {locked ? (
-                  <StatusPill label="Locked" tone="neutral" icon={<Lock size={11} aria-hidden />} />
+                  <StatusPill label="Locked" tone="neutral" icon={<Lock size={12} aria-hidden />} />
                 ) : (
                   <StatusPill label={statusLabel[status]} tone={statusTone[status]} />
                 )}
@@ -68,17 +68,17 @@ function ChooseType() {
 
               <dl className="space-y-2 text-1">
                 <div>
-                  <dt className="text-0 uppercase tracking-wide text-muted-foreground">Verifies</dt>
+                  <dt className="text-1 uppercase tracking-wide text-muted-foreground">Verifies</dt>
                   <dd className="text-muted-foreground">{t.verifies}</dd>
                 </div>
                 <div>
-                  <dt className="text-0 uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-1 uppercase tracking-wide text-muted-foreground">
                     People see
                   </dt>
                   <dd className="text-muted-foreground">{t.whatOthersSee}</dd>
                 </div>
                 <div>
-                  <dt className="text-0 uppercase tracking-wide text-muted-foreground">You need</dt>
+                  <dt className="text-1 uppercase tracking-wide text-muted-foreground">You need</dt>
                   <dd className="text-muted-foreground">
                     {t.requirements.map((r) => r.label).join(" · ")}
                   </dd>
@@ -92,7 +92,7 @@ function ChooseType() {
               ) : (
                 <p className="flex items-center gap-1 text-1 font-semibold text-foreground">
                   {status === "unverified" ? "See requirements" : "Open request"}
-                  <ChevronRight size={15} aria-hidden />
+                  <ChevronRight size={16} aria-hidden />
                 </p>
               )}
             </Card>

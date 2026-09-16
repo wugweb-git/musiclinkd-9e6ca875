@@ -102,14 +102,14 @@ function Pay() {
         <h2 className="mt-6 text-2">Payment method</h2>
         <div className="mt-3 space-y-2">
           <MethodRow
-            icon={<Smartphone size={18} />}
+            icon={<Smartphone size={20} />}
             title="UPI"
             body="Pay with any UPI app"
             active={method === "upi"}
             onSelect={() => setMethod("upi")}
           />
           <MethodRow
-            icon={<CreditCard size={18} />}
+            icon={<CreditCard size={20} />}
             title="Card"
             body="Credit or debit card"
             active={method === "card"}
@@ -118,7 +118,7 @@ function Pay() {
         </div>
 
         <p className="mt-4 flex items-start gap-2 rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
-          <Lock size={14} className="mt-0.5 shrink-0" />
+          <Lock size={16} className="mt-0.5 shrink-0" />
           You'll finish the payment in the provider's secure payment window. MusicLinkd never stores
           card details.
         </p>

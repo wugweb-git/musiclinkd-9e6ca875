@@ -92,7 +92,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
             {b.stats.map(([k, v]) => (
               <div key={k}>
                 <p className="text-sm font-bold leading-tight">{v}</p>
-                <p className="mt-0.5 text-0 text-muted-foreground">{k}</p>
+                <p className="mt-0.5 text-1 text-muted-foreground">{k}</p>
               </div>
             ))}
           </div>
@@ -150,7 +150,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
               <Card className="space-y-2">
                 <h2 className="text-sm">Find & contact</h2>
                 <p className="flex items-start gap-2 text-1">
-                  <MapPin size={15} className="mt-0.5 shrink-0" /> {b.address}
+                  <MapPin size={16} className="mt-0.5 shrink-0" /> {b.address}
                 </p>
               </Card>
             ) : null}
@@ -177,7 +177,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                   {sp.detail ? <p className="text-1 text-muted-foreground">{sp.detail}</p> : null}
                   <div className="flex flex-wrap gap-1.5">
                     {sp.gear.map((g) => (
-                      <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-0">
+                      <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-1">
                         {g}
                       </span>
                     ))}
@@ -207,7 +207,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-1 font-semibold">{m.name}</p>
-                  {m.detail ? <p className="text-0 text-muted-foreground">{m.detail}</p> : null}
+                  {m.detail ? <p className="text-1 text-muted-foreground">{m.detail}</p> : null}
                 </div>
                 {m.invited ? <StatusPill label="invited" tone="warn" /> : null}
               </div>
@@ -223,7 +223,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
             {b.credits.map((c) => (
               <div key={c.id} className="border-b border-border py-2 last:border-0">
                 <p className="text-1 font-semibold">{c.title}</p>
-                {c.meta ? <p className="text-0 text-muted-foreground">{c.meta}</p> : null}
+                {c.meta ? <p className="text-1 text-muted-foreground">{c.meta}</p> : null}
               </div>
             ))}
           </Card>

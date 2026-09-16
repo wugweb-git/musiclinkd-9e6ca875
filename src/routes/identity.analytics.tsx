@@ -25,7 +25,7 @@ export const Route = createFileRoute("/identity/analytics")({
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-[20px] border border-border bg-card px-4 py-3">
-      <p className="text-2.5 leading-tight">{value}</p>
+      <p className="text-3 leading-tight">{value}</p>
       <p className="text-1 text-muted-foreground">{label}</p>
     </div>
   );

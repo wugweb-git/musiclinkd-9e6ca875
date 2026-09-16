@@ -406,7 +406,7 @@ export function SignalLine<TData extends Record<string, unknown> = Record<string
       onKeyDown={handleKeyDown}
       onBlur={() => setActiveIndex(null)}
       className={cn(
-        "group relative flex flex-col w-full outline-none focus-visible:ring-2 focus-visible:ring-[var(--chart-focus)] rounded-xl transition-all",
+        "group relative flex flex-col w-full outline-none focus-visible:ring-2 focus-visible:ring-[var(--chart-focus)] rounded-3xl transition-all",
         className
       )}
       style={{ height }}

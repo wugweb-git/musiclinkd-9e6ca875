@@ -65,9 +65,9 @@ function InviteMembers() {
               subtitle={`${t.role} · ${t.location}`}
               right={
                 <span className="flex shrink-0 items-center gap-2">
-                  {t.verified ? <VerifiedBadge size={14} /> : null}
+                  {t.verified ? <VerifiedBadge size={16} /> : null}
                   <span
-                    className={`rounded-full px-3 py-1.5 text-0 font-bold ${invited.includes(t.id) ? "bg-subtle text-muted-foreground" : "bg-primary text-primary-foreground"}`}
+                    className={`rounded-full px-3 py-1.5 text-1 font-bold ${invited.includes(t.id) ? "bg-subtle text-muted-foreground" : "bg-primary text-primary-foreground"}`}
                   >
                     {invited.includes(t.id) ? "Invited" : "Invite"}
                   </span>

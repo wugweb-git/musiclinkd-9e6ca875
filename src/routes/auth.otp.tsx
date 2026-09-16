@@ -131,17 +131,17 @@ function OtpScreen() {
             Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
           </span>
         ) : (
-          <AuthTextButton icon={<RotateCw size={15} />} onClick={() => void resend()}>
+          <AuthTextButton icon={<RotateCw size={16} />} onClick={() => void resend()}>
             Resend Code
           </AuthTextButton>
         )}
       </p>
 
       <p className="mt-4 flex items-center justify-center gap-6 text-1">
-        <AuthLink to="/auth/phone" icon={<Pencil size={15} />}>
+        <AuthLink to="/auth/phone" icon={<Pencil size={16} />}>
           Change Number
         </AuthLink>
-        <AuthLink to="/auth" icon={<Mail size={15} />}>
+        <AuthLink to="/auth" icon={<Mail size={16} />}>
           Use Email
         </AuthLink>
       </p>

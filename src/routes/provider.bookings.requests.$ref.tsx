@@ -99,7 +99,7 @@ function RequestReview() {
               <p className="truncate text-1 text-muted-foreground">{bk.customerRole}</p>
             </div>
           </div>
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-0 font-semibold text-muted-foreground">
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground">
             <ShieldCheck size={12} /> Verified profile · 4 past sessions
           </p>
         </div>
@@ -126,7 +126,7 @@ function RequestReview() {
         </div>
 
         <BtnLink to="/messages" variant="outline" className="mt-3 w-full">
-          <MessageCircle size={15} className="mr-1.5" /> Ask a Question First
+          <MessageCircle size={16} className="mr-1.5" /> Ask a Question First
         </BtnLink>
 
         <Btn variant="ghost" className="mt-2 w-full" onClick={() => setDecision("declining")}>

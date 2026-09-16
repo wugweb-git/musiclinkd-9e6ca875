@@ -222,7 +222,7 @@ export function WavePlayer({
               onClick={restart}
               aria-label="Restart"
             >
-              <RotateCcw size={15} />
+              <RotateCcw size={16} />
             </Button>
             <Button
               size="icon"
@@ -232,7 +232,7 @@ export function WavePlayer({
               onClick={togglePlay}
               aria-label={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? <Pause size={17} /> : <Play size={17} />}
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
             </Button>
           </div>
 
@@ -244,7 +244,7 @@ export function WavePlayer({
               onClick={toggleMute}
               aria-label={isMuted ? "Unmute" : "Mute"}
             >
-              {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </Button>
             <Slider
               value={[isMuted ? 0 : volume]}

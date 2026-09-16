@@ -112,18 +112,18 @@ function OpportunityDetail() {
 
         <div className="grid grid-cols-3 gap-2">
           {[
-            { icon: <Wallet size={14} />, label: "Pay", value: payParts(o) },
+            { icon: <Wallet size={16} />, label: "Pay", value: payParts(o) },
             {
-              icon: <MapPin size={14} />,
+              icon: <MapPin size={16} />,
               label: "Where",
               value: [o.city, o.workMode].filter(Boolean).join(" · "),
             },
-            { icon: <CalendarDays size={14} />, label: "When", value: o.dates },
+            { icon: <CalendarDays size={16} />, label: "When", value: o.dates },
           ]
             .filter((s) => s.value)
             .map((s) => (
               <div key={s.label} className="rounded-[20px] bg-subtle p-3">
-                <span className="flex items-center gap-1 text-0 text-muted-foreground">
+                <span className="flex items-center gap-1 text-1 text-muted-foreground">
                   {s.icon} {s.label}
                 </span>
                 {typeof s.value === "string" ? (
@@ -164,7 +164,7 @@ function OpportunityDetail() {
                 )}
                 <p className="text-1">
                   {r.label}
-                  <span className="ml-1 text-0 uppercase tracking-wide text-muted-foreground">
+                  <span className="ml-1 text-1 uppercase tracking-wide text-muted-foreground">
                     {r.must ? "must have" : "nice to have"}
                   </span>
                 </p>
@@ -173,7 +173,7 @@ function OpportunityDetail() {
             {tags.length ? (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {tags.map((g) => (
-                  <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold">
+                  <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold">
                     {g}
                   </span>
                 ))}
@@ -192,7 +192,7 @@ function OpportunityDetail() {
           onClick={() => setReport(true)}
           className="inline-flex items-center gap-2 text-1 font-semibold text-muted-foreground"
         >
-          <Flag size={13} /> Report this opportunity
+          <Flag size={12} /> Report this opportunity
         </button>
       </div>
 
@@ -205,7 +205,7 @@ function OpportunityDetail() {
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-background"
           >
             <Bookmark
-              size={18}
+              size={20}
               className={saved ? "text-primary" : "text-muted-foreground"}
               fill={saved ? "currentColor" : "none"}
             />

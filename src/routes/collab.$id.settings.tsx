@@ -69,7 +69,7 @@ function Settings() {
             </Chip>
           ))}
         </div>
-        <p className="mb-5 text-0 text-muted-foreground">
+        <p className="mb-5 text-1 text-muted-foreground">
           {visibilities.find((v) => v.key === visibility)?.hint}
         </p>
 
@@ -154,7 +154,7 @@ function Settings() {
                 <span className="font-semibold text-foreground">Credit:</span>{" "}
                 {project.agreement.credit}
               </p>
-              <p className="mt-3 text-0 text-muted-foreground">
+              <p className="mt-3 text-1 text-muted-foreground">
                 This is a working agreement between collaborators, not a legal contract.
               </p>
             </Card>

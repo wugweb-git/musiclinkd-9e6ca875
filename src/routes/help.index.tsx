@@ -78,7 +78,7 @@ function HelpIndex() {
                           />
                         </div>
                         <p className="line-clamp-2 text-1 text-muted-foreground">{p.summary}</p>
-                        <p className="text-0 text-muted-foreground">
+                        <p className="text-1 text-muted-foreground">
                           {p.readTime} · {p.updated}
                         </p>
                       </Card>
@@ -102,7 +102,7 @@ function HelpIndex() {
                     className="rounded-[20px] border border-border bg-card p-4"
                   >
                     <p className="truncate text-1 font-semibold">{c.label}</p>
-                    <p className="mt-1 line-clamp-2 text-0 text-muted-foreground">{c.blurb}</p>
+                    <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{c.blurb}</p>
                   </Link>
                 ))}
               </div>

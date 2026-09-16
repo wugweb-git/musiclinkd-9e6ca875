@@ -82,7 +82,7 @@ export function PriceBlock({ price, size = "md" }: { price: PriceParts; size?: "
 export function TrustPill({ label }: { label: string }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-status-category-bg px-2.5 py-1 text-1 font-semibold text-status-category-text">
-      <ShieldCheck size={11} strokeWidth={2.2} />
+      <ShieldCheck size={12} strokeWidth={2.2} />
       {label}
     </span>
   );
@@ -105,7 +105,7 @@ export function CategoryTile({
       params={{ slug }}
       className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg border border-border bg-card p-3"
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-2">
+      <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-subtle text-2">
         {emoji}
       </span>
       <span className="text-1 font-semibold leading-tight">{label}</span>
@@ -212,7 +212,7 @@ export function ListingTile({ l }: { l: Listing }) {
           <div className="h-full w-full bg-subtle" />
         )}
         <div className="absolute right-1.5 top-1.5">
-          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={30} />
+          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
         </div>
       </div>
       <div className="p-3">
@@ -283,12 +283,12 @@ export function SellerSummary({
   return (
     <div className="flex items-center gap-3">
       {seller.photo ? (
-        <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-md object-cover" />
+        <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-sm object-cover" />
       ) : null}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate text-2 font-semibold">{seller.name}</p>
-          {seller.verified ? <VerifiedBadge size={14} /> : null}
+          {seller.verified ? <VerifiedBadge size={16} /> : null}
         </div>
         {seller.role ? (
           <p className="truncate text-1 text-muted-foreground">{seller.role}</p>
@@ -319,7 +319,7 @@ export function EmptyState({
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
-      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-md bg-subtle text-3">
+      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-sm bg-subtle text-3">
         {emoji}
       </div>
       <h3 className="text-2">{title}</h3>
@@ -371,7 +371,7 @@ export function MarketFilterSheet({
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2.5">Filters</h2>
+        <h2 className="text-3">Filters</h2>
         <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
           Clear all
         </button>
@@ -459,7 +459,7 @@ export function SortSheet({
           >
             {o}
             {value === o ? (
-              <Check size={18} className="text-primary" aria-label="Selected" />
+              <Check size={20} className="text-primary" aria-label="Selected" />
             ) : null}
           </button>
         ))}
@@ -491,9 +491,9 @@ export function OfferSheet({
       {sent ? (
         <div className="py-10 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success-strong">
-            <Check size={28} aria-hidden />
+            <Check size={32} aria-hidden />
           </div>
-          <h2 className="text-2.5">Offer sent</h2>
+          <h2 className="text-3">Offer sent</h2>
           <p className="mx-auto mt-2 max-w-[260px] text-sm text-muted-foreground">
             Your offer is pending. It expires in 48 hours and continues in Connections.
           </p>
@@ -503,10 +503,10 @@ export function OfferSheet({
         </div>
       ) : (
         <>
-          <h2 className="mb-4 text-2.5">Make an offer</h2>
+          <h2 className="mb-4 text-3">Make an offer</h2>
           <div className="mb-5 flex items-center gap-3 rounded-lg border border-border p-3">
             {listing.photos[0] ? (
-              <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-md object-cover" />
+              <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-sm object-cover" />
             ) : null}
             <div className="min-w-0 flex-1">
               <p className="truncate text-1 font-semibold">{listing.title}</p>
@@ -578,7 +578,7 @@ export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => v
           >
             {r}
             {reason === r ? (
-              <Check size={18} className="text-primary" aria-label="Selected" />
+              <Check size={20} className="text-primary" aria-label="Selected" />
             ) : null}
           </button>
         ))}

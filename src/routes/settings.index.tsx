@@ -74,8 +74,8 @@ function SettingsScreen() {
                 return (
                   <li key={r.key}>
                     <Link to={r.to} className="state-layer flex items-center gap-3 px-4 py-3.5">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-subtle">
-                        <Icon size={18} strokeWidth={1.75} aria-hidden />
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
+                        <Icon size={20} strokeWidth={1.75} aria-hidden />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-2 font-semibold">{r.label}</span>
@@ -84,7 +84,7 @@ function SettingsScreen() {
                         </span>
                       </span>
                       <ChevronRight
-                        size={18}
+                        size={20}
                         className="shrink-0 text-muted-foreground"
                         aria-hidden
                       />
@@ -95,7 +95,7 @@ function SettingsScreen() {
             </ul>
           </section>
         ))}
-        <p className="px-1 text-center text-0 text-muted-foreground">MusicLinkd · v1.0 preview</p>
+        <p className="px-1 text-center text-1 text-muted-foreground">MusicLinkd · v1.0 preview</p>
       </div>
     </Screen>
   );

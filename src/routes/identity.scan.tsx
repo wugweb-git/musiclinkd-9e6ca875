@@ -116,7 +116,7 @@ function Scanner() {
           {scanHistory.slice(0, 3).map((h) => (
             <ActionRow
               key={h.code}
-              icon={<ShieldQuestion size={17} />}
+              icon={<ShieldQuestion size={16} />}
               label={h.label}
               hint={h.when}
               onClick={() => void nav({ to: "/identity/q/$code", params: { code: h.code } })}

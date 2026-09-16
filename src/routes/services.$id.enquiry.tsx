@@ -69,7 +69,7 @@ function ServiceEnquiry() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
-            <h2 className="mt-3 text-2.5 leading-tight">
+            <h2 className="mt-3 text-3 leading-tight">
               {mode === "Custom quote" ? "Quote request sent" : "Question sent"}
             </h2>
             <p className="mt-2 text-1 text-muted-foreground">

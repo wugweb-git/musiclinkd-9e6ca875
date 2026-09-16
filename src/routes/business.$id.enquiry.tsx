@@ -56,7 +56,7 @@ function BusinessEnquiry() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
-            <h2 className="mt-3 text-2.5 leading-tight">Your enquiry is with {b.name}</h2>
+            <h2 className="mt-3 text-3 leading-tight">Your enquiry is with {b.name}</h2>
             <p className="mt-2 text-1 text-muted-foreground">
               They usually reply within a couple of hours. You will get a notification and the
               thread appears in Connections.

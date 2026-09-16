@@ -84,9 +84,9 @@ function CreateOpportunity() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="space-y-3 text-center">
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Check size={26} />
+              <Check size={24} />
             </span>
-            <h2 className="text-2.5 leading-tight">Your opportunity is live</h2>
+            <h2 className="text-3 leading-tight">Your opportunity is live</h2>
             <p className="text-1 text-muted-foreground">
               It's now in Discover and in recommendations for matching professionals. You'll be
               notified on every application.
@@ -281,7 +281,7 @@ function CreateOpportunity() {
 
         {step === "preview" ? (
           <>
-            <h2 className="text-2.5 leading-tight">This is what applicants see</h2>
+            <h2 className="text-3 leading-tight">This is what applicants see</h2>
             <Card className="space-y-2">
               <div className="flex flex-wrap gap-2">
                 <StatusPill

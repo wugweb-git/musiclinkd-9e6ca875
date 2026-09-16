@@ -33,10 +33,10 @@ function SignOutScreen() {
   return (
     <AuthScreen back={{ to: "/profile" }}>
       <div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
+        className="mb-6 flex h-14 w-14 items-center justify-center rounded-sm"
         style={{ background: "var(--surface-subtle)" }}
       >
-        <LogOut size={22} className="text-primary" />
+        <LogOut size={24} className="text-primary" />
       </div>
       <AuthHeading
         title="Sign out of MusicLinkd?"

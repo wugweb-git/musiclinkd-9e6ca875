@@ -62,7 +62,7 @@ function ReviewsHub() {
           <div className="grid grid-cols-3 gap-2 pt-1">
             {ratingSummary.criteria.map((c) => (
               <div key={c.label} className="rounded-lg bg-subtle p-3">
-                <p className="truncate text-0 text-muted-foreground">{c.label}</p>
+                <p className="truncate text-1 text-muted-foreground">{c.label}</p>
                 <p className="mt-1 text-2 font-bold">{c.value}</p>
               </div>
             ))}
@@ -91,7 +91,7 @@ function ReviewsHub() {
                     src={p.photo}
                     alt=""
                     loading="lazy"
-                    className="h-12 w-12 shrink-0 rounded-md object-cover"
+                    className="h-12 w-12 shrink-0 rounded-sm object-cover"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{p.title}</p>
@@ -182,7 +182,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
         {r.criteria.map((c) => (
           <span
             key={c.key}
-            className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold text-muted-foreground"
+            className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground"
           >
             {c.label} {c.value}
           </span>
@@ -202,7 +202,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
             variant="outline"
             className="flex-1 gap-1 text-1"
           >
-            <Pencil size={13} aria-hidden />
+            <Pencil size={12} aria-hidden />
             Edit
           </BtnLink>
         ) : (
@@ -223,7 +223,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
               variant="ghost"
               className="flex-1 gap-1 text-1"
             >
-              <Flag size={13} aria-hidden />
+              <Flag size={12} aria-hidden />
               Report
             </BtnLink>
           </>

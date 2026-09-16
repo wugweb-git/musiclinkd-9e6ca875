@@ -97,7 +97,7 @@ function ListingDetail() {
               aria-label="Share"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <Share2 size={15} />
+              <Share2 size={16} />
             </button>
             <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={40} />
           </div>
@@ -140,7 +140,7 @@ function ListingDetail() {
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {where ? <LocationRow text={where} /> : null}
           {!fromCatalog || l.owner?.verified ? <TrustPill label="Industry verified" /> : null}
-          <span className="text-0 text-muted-foreground">Listed {l.postedAt}</span>
+          <span className="text-1 text-muted-foreground">Listed {l.postedAt}</span>
         </div>
 
         {l.description ? (
@@ -199,7 +199,7 @@ function ListingDetail() {
               ].map((x) => (
                 <div key={x.k} className="rounded-lg bg-subtle py-2">
                   <p className="text-1 font-bold">{x.v}</p>
-                  <p className="text-0 text-muted-foreground">{x.k}</p>
+                  <p className="text-1 text-muted-foreground">{x.k}</p>
                 </div>
               ))}
             </div>
@@ -224,7 +224,7 @@ function ListingDetail() {
                     <p className="text-1 font-semibold">{r.name}</p>
                     <Rating value={r.rating} />
                   </div>
-                  <p className="text-0 text-muted-foreground">
+                  <p className="text-1 text-muted-foreground">
                     {r.role} · {r.context} · {r.date}
                   </p>
                   <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
@@ -251,7 +251,7 @@ function ListingDetail() {
 
         <button
           onClick={() => setReport(true)}
-          className="mx-auto mt-6 flex items-center gap-1.5 text-0 font-semibold text-muted-foreground"
+          className="mx-auto mt-6 flex items-center gap-1.5 text-1 font-semibold text-muted-foreground"
         >
           <Flag size={12} /> Report this listing
         </button>

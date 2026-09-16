@@ -37,7 +37,7 @@ function Messages() {
         >
           <span className="min-w-0">
             <span className="block text-sm font-semibold">Collaborations</span>
-            <span className="block text-0 text-muted-foreground">
+            <span className="block text-1 text-muted-foreground">
               2 invitations · 1 proposal · 3 active projects
             </span>
           </span>
@@ -49,7 +49,7 @@ function Messages() {
         >
           <span className="min-w-0">
             <span className="block text-sm font-semibold">Share work</span>
-            <span className="block text-0 text-muted-foreground">
+            <span className="block text-1 text-muted-foreground">
               Attach a track, project or performance to a conversation
             </span>
           </span>
@@ -62,7 +62,7 @@ function Messages() {
             <img src={t.photo} alt={t.name} className="h-12 w-12 rounded-full object-cover" />
             <div className="min-w-0 flex-1">
               <h3 className="truncate text-sm">{t.name}</h3>
-              <p className="truncate text-0 text-muted-foreground">
+              <p className="truncate text-1 text-muted-foreground">
                 {i === 0
                   ? "Sending the reference track tonight."
                   : "Sounds good — let's lock dates."}
@@ -71,7 +71,7 @@ function Messages() {
             {i < 3 ? (
               <span className="h-2.5 w-2.5 rounded-full bg-brand" />
             ) : (
-              <span className="text-0 text-muted-foreground">2d</span>
+              <span className="text-1 text-muted-foreground">2d</span>
             )}
           </div>
         ))}

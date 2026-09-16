@@ -55,7 +55,7 @@ export function WorkTypeIcon({ kind, size = "md" }: { kind: string; size?: "md" 
     <span
       aria-hidden
       className={`flex shrink-0 items-center justify-center bg-subtle text-foreground ${
-        size === "lg" ? "h-16 w-16 rounded-lg" : "h-12 w-12 rounded-md"
+        size === "lg" ? "h-16 w-16 rounded-lg" : "h-12 w-12 rounded-sm"
       }`}
     >
       <Icon size={size === "lg" ? 24 : 20} strokeWidth={1.75} />
@@ -225,7 +225,7 @@ export function PortfolioHeader({
 
 /** The input box of the shared fields (TextField, InlineField), for inputs inside portfolio controls. */
 const fieldBox =
-  "h-12 w-full rounded-md border border-border bg-card px-3.5 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-1 focus:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground";
+  "h-12 w-full rounded-sm border border-border bg-card px-3.5 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-1 focus:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground";
 
 export function MediaStatePill({ state }: { state: MediaState }) {
   const c = mediaStateCopy[state];
@@ -368,14 +368,14 @@ export function AudioPlayer({
           <img
             src={artwork}
             alt={`Artwork for ${title}`}
-            className="h-14 w-14 rounded-md object-cover"
+            className="h-14 w-14 rounded-sm object-cover"
           />
         ) : (
           <div
-            className="flex h-14 w-14 items-center justify-center rounded-md bg-subtle text-muted-foreground"
+            className="flex h-14 w-14 items-center justify-center rounded-sm bg-subtle text-muted-foreground"
             aria-hidden
           >
-            <Headphones size={22} />
+            <Headphones size={24} />
           </div>
         )}
         <div className="min-w-0">
@@ -519,7 +519,7 @@ export function FeaturedToggle({
       } ${disabled && !on ? "opacity-50" : ""}`}
     >
       <span className="inline-flex items-center gap-1">
-        <Star size={13} fill={on ? "currentColor" : "none"} aria-hidden />
+        <Star size={12} fill={on ? "currentColor" : "none"} aria-hidden />
         {on ? "Featured" : "Feature this"}
       </span>
     </button>

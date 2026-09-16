@@ -132,7 +132,7 @@ function VerifyEmail() {
             Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
           </span>
         ) : (
-          <AuthTextButton icon={<RotateCw size={15} />} onClick={() => void resend()}>
+          <AuthTextButton icon={<RotateCw size={16} />} onClick={() => void resend()}>
             Resend Code
           </AuthTextButton>
         )}
@@ -141,7 +141,7 @@ function VerifyEmail() {
       <TrustNote>Not there? Check spam and promotions.</TrustNote>
 
       <p className="mt-6 flex justify-center text-1">
-        <AuthLink to="/auth" icon={<Pencil size={15} />}>
+        <AuthLink to="/auth" icon={<Pencil size={16} />}>
           Use a Different Email
         </AuthLink>
       </p>

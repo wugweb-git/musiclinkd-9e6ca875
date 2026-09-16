@@ -78,7 +78,7 @@ function Complete() {
 
       <main className="px-5 pt-4">
         <section className={cn("rounded-lg border border-border bg-card p-5", rise)}>
-          <PartyPopper size={26} className="animate-pop text-primary" style={beat(2)} />
+          <PartyPopper size={24} className="animate-pop text-primary" style={beat(2)} />
           <h1 className="mt-3 text-3 leading-tight">
             {first ? `You're on MusicLinkd, ${first}` : "You're on MusicLinkd"}
           </h1>

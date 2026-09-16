@@ -39,7 +39,7 @@ export function ChatEmptyState({
     >
       <style dangerouslySetInnerHTML={{ __html: KEYFRAMES }} />
 
-      <div className="grid size-9 place-items-center rounded-xl border border-black/[0.07] bg-black/[0.02] dark:border-white/[0.08] dark:bg-white/[0.04]">
+      <div className="grid size-9 place-items-center rounded-3xl border border-black/[0.07] bg-black/[0.02] dark:border-white/[0.08] dark:bg-white/[0.04]">
         <Sparkles className="size-4 text-neutral-500 dark:text-neutral-400" />
       </div>
 

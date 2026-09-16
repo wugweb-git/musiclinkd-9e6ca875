@@ -90,7 +90,7 @@ function MilestoneDetail() {
           </BtnLink>
         </div>
 
-        <p className="mb-5 text-0 text-muted-foreground">
+        <p className="mb-5 text-1 text-muted-foreground">
           Only the project owner and the milestone owner can edit or complete this milestone.
         </p>
 

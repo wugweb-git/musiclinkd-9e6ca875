@@ -31,13 +31,13 @@ function BusinessCard() {
   const c = myIdentity.contact;
   const url = canonicalUrl(myIdentity.code);
   const shared = [
-    c.phone.shared ? { icon: <Phone size={17} />, label: c.phone.value, hint: "Mobile" } : null,
-    c.email.shared ? { icon: <Mail size={17} />, label: c.email.value, hint: "Email" } : null,
+    c.phone.shared ? { icon: <Phone size={16} />, label: c.phone.value, hint: "Mobile" } : null,
+    c.email.shared ? { icon: <Mail size={16} />, label: c.email.value, hint: "Email" } : null,
     c.company.shared
-      ? { icon: <Building2 size={17} />, label: c.company.value, hint: "Studio" }
+      ? { icon: <Building2 size={16} />, label: c.company.value, hint: "Studio" }
       : null,
     c.website.shared
-      ? { icon: <Globe size={17} />, label: c.website.value, hint: "Website" }
+      ? { icon: <Globe size={16} />, label: c.website.value, hint: "Website" }
       : null,
   ].filter(Boolean) as { icon: React.ReactNode; label: string; hint: string }[];
 
@@ -49,7 +49,7 @@ function BusinessCard() {
           <div className="flex items-center gap-4 bg-ink px-5 py-5 text-background">
             <img src={myIdentity.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
             <div className="min-w-0">
-              <h2 className="truncate text-2.5 leading-tight text-background">{myIdentity.name}</h2>
+              <h2 className="truncate text-3 leading-tight text-background">{myIdentity.name}</h2>
               <p className="truncate text-1 text-background/70">{myIdentity.role}</p>
               <p className="truncate text-1 text-background/50">{myIdentity.location}</p>
             </div>

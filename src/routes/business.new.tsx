@@ -78,12 +78,12 @@ function NewBusiness() {
                     type === t.key ? "border-primary bg-subtle" : "border-border bg-background"
                   }`}
                 >
-                  <span aria-hidden className="text-2.5">
+                  <span aria-hidden className="text-3">
                     {t.emoji}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-1 font-semibold">{t.label}</span>
-                    <span className="block text-0 text-muted-foreground">{t.blurb}</span>
+                    <span className="block text-1 text-muted-foreground">{t.blurb}</span>
                   </span>
                 </button>
               ))}
@@ -106,7 +106,7 @@ function NewBusiness() {
               onChange={setTagline}
               placeholder="Two rooms, one tape machine."
             />
-            <p className="text-0 text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               This is a separate profile — your personal profile stays exactly as it is.
             </p>
           </Card>
@@ -128,7 +128,7 @@ function NewBusiness() {
               onChange={setAddress}
               placeholder="Street, area, pin code"
             />
-            <p className="text-0 text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               The exact address is only shown once a booking is confirmed.
             </p>
           </Card>

@@ -58,7 +58,7 @@ function Conflicts() {
         <Card>
           <div className="flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-subtle text-foreground">
-              <AlertTriangle size={18} />
+              <AlertTriangle size={20} />
             </span>
             <p className="text-1 text-muted-foreground">
               Conflicts do not cancel anything on their own. Nothing changes until you pick an

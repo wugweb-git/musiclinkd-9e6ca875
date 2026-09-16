@@ -51,7 +51,7 @@ function ServicesHome() {
             aria-label="Add service"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
-            <Plus size={18} />
+            <Plus size={20} />
           </Link>
         }
       />
@@ -60,8 +60,8 @@ function ServicesHome() {
         {items.length ? (
           <div className="grid grid-cols-3 gap-2">
             <Card>
-              <p className="text-0 text-muted-foreground">Live services</p>
-              <p className="mt-1 text-2.5 font-bold leading-none">
+              <p className="text-1 text-muted-foreground">Live services</p>
+              <p className="mt-1 text-3 font-bold leading-none">
                 {items.filter((s) => s.status === "active").length}
               </p>
             </Card>
@@ -108,7 +108,7 @@ function ServicesHome() {
                   <div className="flex items-start gap-3">
                     <span
                       aria-hidden
-                      className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-subtle text-2"
+                      className="grid h-10 w-10 shrink-0 place-items-center rounded-sm bg-subtle text-2"
                     >
                       {categoryEmoji(s.category)}
                     </span>
@@ -122,7 +122,7 @@ function ServicesHome() {
                       <Price
                         price={priceParts(s.price_paise, s.price_unit, s.price_note)}
                         amountClassName="text-1 font-semibold"
-                        unitClassName="text-0"
+                        unitClassName="text-1"
                       />
                     </div>
                     <StatusPill label={s.status} tone={serviceStatusTone[s.status]} />

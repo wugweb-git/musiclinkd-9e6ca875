@@ -69,7 +69,7 @@ function Recs() {
             aria-label="Recommendation settings"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-subtle"
           >
-            <Settings2 size={18} aria-hidden />
+            <Settings2 size={20} aria-hidden />
           </Link>
         }
       />
@@ -94,7 +94,7 @@ function Recs() {
             return (
               <section key={s.key}>
                 <div className="flex items-center gap-2">
-                  <Sparkles size={15} className="text-primary" aria-hidden />
+                  <Sparkles size={16} className="text-primary" aria-hidden />
                   <h2 className="text-sm">{s.title}</h2>
                 </div>
                 <p className="mt-0.5 text-1 text-muted-foreground">{s.blurb}</p>
@@ -113,7 +113,7 @@ function Recs() {
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-1.5">
                                 <h3 className="truncate text-sm leading-tight">{r.title}</h3>
-                                {r.verified ? <VerifiedBadge size={13} /> : null}
+                                {r.verified ? <VerifiedBadge size={12} /> : null}
                               </div>
                               <p className="mt-0.5 truncate text-1 text-muted-foreground">
                                 {r.subtitle} · {r.meta}
@@ -125,7 +125,7 @@ function Recs() {
                               onClick={() => setFeedbackFor(r.id)}
                               className="shrink-0 p-1 text-muted-foreground"
                             >
-                              <MoreHorizontal size={18} aria-hidden />
+                              <MoreHorizontal size={20} aria-hidden />
                             </button>
                           </div>
                           <div className="mt-2">

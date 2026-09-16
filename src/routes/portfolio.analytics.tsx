@@ -85,7 +85,7 @@ function PortfolioAnalytics() {
                 );
               })}
             </div>
-            <p className="mt-6 text-0 text-muted-foreground">
+            <p className="mt-6 text-1 text-muted-foreground">
               Figures are canonical MusicLinkd analytics. This screen only reads them.
             </p>
           </>

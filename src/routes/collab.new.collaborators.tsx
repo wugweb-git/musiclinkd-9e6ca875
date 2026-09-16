@@ -90,16 +90,16 @@ function AddCollaborators() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <h3 className="truncate text-sm">{c.name}</h3>
-                      {c.verified ? <VerifiedBadge size={14} /> : null}
+                      {c.verified ? <VerifiedBadge size={16} /> : null}
                     </div>
-                    <p className="truncate text-0 text-muted-foreground">
+                    <p className="truncate text-1 text-muted-foreground">
                       {c.username} · {c.role} · {c.location}
                     </p>
                     {role ? (
                       <button
                         type="button"
                         onClick={() => setRolePickerFor(c.id)}
-                        className="mt-1 text-0 font-semibold text-foreground"
+                        className="mt-1 text-1 font-semibold text-foreground"
                       >
                         Role: {role} · change
                       </button>
@@ -130,7 +130,7 @@ function AddCollaborators() {
           <Label>Prefer a link?</Label>
           <Card>
             <p className="text-1 font-semibold">Invite by link</p>
-            <p className="mb-3 text-0 text-muted-foreground">
+            <p className="mb-3 text-1 text-muted-foreground">
               Anyone with the link can request to join. You approve every request, and you can
               disable the link at any time.
             </p>

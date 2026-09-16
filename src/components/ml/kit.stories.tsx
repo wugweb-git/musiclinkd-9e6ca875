@@ -64,12 +64,12 @@ export const Rows: Story = {
   render: () => (
     <div className="space-y-2">
       <Row
-        icon={<Music2 size={18} />}
+        icon={<Music2 size={20} />}
         title="Your applications"
         subtitle="Nothing yet"
         to="/profile"
       />
-      <Row icon={<CalendarDays size={18} />} title="Availability" onClick={() => {}} />
+      <Row icon={<CalendarDays size={20} />} title="Availability" onClick={() => {}} />
       <Row title="No icon, no subtitle" onClick={() => {}} />
     </div>
   ),

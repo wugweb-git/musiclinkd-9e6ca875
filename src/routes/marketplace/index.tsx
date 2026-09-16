@@ -48,7 +48,7 @@ function MarketHome() {
         <div className="mb-3 flex items-center justify-between">
           <div>
             <h1 className="text-3 leading-tight">Market</h1>
-            <button className="mt-0.5 inline-flex items-center gap-1 text-0 font-semibold text-muted-foreground">
+            <button className="mt-0.5 inline-flex items-center gap-1 text-1 font-semibold text-muted-foreground">
               <MapPin size={12} /> Mumbai, Maharashtra · change
             </button>
           </div>
@@ -57,7 +57,7 @@ function MarketHome() {
               to="/marketplace/sell"
               className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
             >
-              <Plus size={14} /> Sell
+              <Plus size={16} /> Sell
             </Link>
             <button
               aria-label="Filters"

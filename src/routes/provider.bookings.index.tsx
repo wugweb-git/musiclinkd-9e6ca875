@@ -65,22 +65,22 @@ function ProviderBookings() {
       <main className="px-5 pt-2">
         <div className="grid grid-cols-2 gap-2">
           <Stat
-            icon={<CalendarClock size={15} />}
+            icon={<CalendarClock size={16} />}
             label="Pending requests"
             value={`${providerStats.pending}`}
           />
           <Stat
-            icon={<TrendingUp size={15} />}
+            icon={<TrendingUp size={16} />}
             label="Occupancy"
             value={`${providerStats.utilisation}%`}
           />
           <Stat
-            icon={<IndianRupee size={15} />}
+            icon={<IndianRupee size={16} />}
             label="This month"
             value={inr(providerStats.revenueMonth)}
           />
           <Stat
-            icon={<Star size={15} />}
+            icon={<Star size={16} />}
             label="Cancellations"
             value={`${providerStats.cancellations}`}
           />
@@ -167,7 +167,7 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
     <div className="rounded-lg border border-border bg-card p-4">
       <span className="text-foreground">{icon}</span>
       <p className="mt-2 text-2 font-semibold leading-none">{value}</p>
-      <p className="mt-1 text-0 text-muted-foreground">{label}</p>
+      <p className="mt-1 text-1 text-muted-foreground">{label}</p>
     </div>
   );
 }

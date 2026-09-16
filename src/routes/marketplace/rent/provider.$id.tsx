@@ -54,14 +54,14 @@ function ProviderProfile() {
           <img src={p.photo} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg object-cover" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <h1 className="truncate text-2.5 leading-tight">{p.name}</h1>
+              <h1 className="truncate text-3 leading-tight">{p.name}</h1>
               {p.verified ? <VerifiedBadge size={16} /> : null}
             </div>
             <p className="mt-0.5 text-1 text-muted-foreground">{p.role}</p>
-            {p.business ? <p className="text-0 text-muted-foreground">{p.business}</p> : null}
+            {p.business ? <p className="text-1 text-muted-foreground">{p.business}</p> : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               <Rating value={p.rating} count={p.reviews} />
-              <span className="text-0 text-muted-foreground">{p.location}</span>
+              <span className="text-1 text-muted-foreground">{p.location}</span>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@ function ProviderProfile() {
           {p.badges.map((b) => (
             <span
               key={b}
-              className="rounded-full px-2.5 py-1 text-0 font-semibold"
+              className="rounded-full px-2.5 py-1 text-1 font-semibold"
               style={{ background: "var(--purple-container)", color: "var(--purple)" }}
             >
               {b}
@@ -87,7 +87,7 @@ function ProviderProfile() {
           ].map((x) => (
             <div key={x.k} className="rounded-lg bg-subtle px-1 py-2">
               <p className="truncate text-1 font-bold">{x.v}</p>
-              <p className="text-0 text-muted-foreground">{x.k}</p>
+              <p className="text-1 text-muted-foreground">{x.k}</p>
             </div>
           ))}
         </div>
@@ -129,7 +129,7 @@ function ProviderProfile() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-1 font-semibold">{r.name}</p>
-                    <p className="truncate text-0 text-muted-foreground">
+                    <p className="truncate text-1 text-muted-foreground">
                       {r.context} · {r.date}
                     </p>
                   </div>
@@ -165,7 +165,7 @@ function ProviderProfile() {
             </dl>
             <button
               onClick={() => setReport(true)}
-              className="text-0 font-semibold text-muted-foreground"
+              className="text-1 font-semibold text-muted-foreground"
             >
               Report or block this provider
             </button>

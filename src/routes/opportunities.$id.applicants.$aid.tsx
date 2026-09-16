@@ -57,8 +57,8 @@ function ApplicantDetail() {
             <img src={a.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <h1 className="truncate text-2.5 leading-tight">{a.name}</h1>
-                {a.verified ? <VerifiedBadge size={15} /> : null}
+                <h1 className="truncate text-3 leading-tight">{a.name}</h1>
+                {a.verified ? <VerifiedBadge size={16} /> : null}
               </div>
               <p className="truncate text-1 text-muted-foreground">{a.headline}</p>
               <p className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
@@ -102,7 +102,7 @@ function ApplicantDetail() {
                 <img src={p.cover} alt="" className="h-24 w-full object-cover" />
                 <div className="p-3">
                   <p className="truncate text-1 font-semibold">{p.title}</p>
-                  <p className="text-0 text-muted-foreground">{p.kind}</p>
+                  <p className="text-1 text-muted-foreground">{p.kind}</p>
                 </div>
               </div>
             ))}

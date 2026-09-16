@@ -59,7 +59,7 @@ function Done() {
 
       <main className="px-5 pt-4">
         <section className={cn("rounded-lg border border-border bg-card p-6 text-center", rise)}>
-          <Sparkles size={28} className="mx-auto animate-pop text-primary" style={beat(2)} />
+          <Sparkles size={32} className="mx-auto animate-pop text-primary" style={beat(2)} />
           <h1 className="mt-3 text-3 leading-tight">
             {first ? `Welcome aboard, ${first}` : "Welcome aboard"}
           </h1>

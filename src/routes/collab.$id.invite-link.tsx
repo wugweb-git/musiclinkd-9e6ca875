@@ -84,7 +84,7 @@ function InviteLink() {
           <SwitchRow label="Owner approves each join" value={approve} onChange={setApprove} />
         </div>
 
-        <p className="mb-5 text-0 text-muted-foreground">
+        <p className="mb-5 text-1 text-muted-foreground">
           Invite links are not permanently open. Disable the link and anyone who hasn't already
           joined loses access immediately.
         </p>

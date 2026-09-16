@@ -21,10 +21,10 @@ export type LiquidAlertProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> &
   };
 
 const severityGlyphs = {
-  danger: <DangerGlyph size={19} />,
-  info: <InfoGlyph size={19} />,
-  success: <SuccessGlyph size={19} />,
-  warning: <WarningGlyph size={19} />,
+  danger: <DangerGlyph size={20} />,
+  info: <InfoGlyph size={20} />,
+  success: <SuccessGlyph size={20} />,
+  warning: <WarningGlyph size={20} />,
 } as const;
 
 export const LiquidAlert = forwardRef<HTMLDivElement, LiquidAlertProps>(
@@ -68,7 +68,7 @@ export const LiquidAlert = forwardRef<HTMLDivElement, LiquidAlertProps>(
             onClick={onClose}
             type="button"
           >
-            <XGlyph size={13} />
+            <XGlyph size={12} />
           </button>
         )}
       </div>

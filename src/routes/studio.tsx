@@ -64,17 +64,17 @@ function Studio() {
             price={{ amount: "₹1,800", unit: "hour" }}
             align="center"
             amountClassName="text-sm font-bold"
-            unitClassName="text-0 uppercase"
+            unitClassName="text-1 uppercase"
           />
           <Price
             price={{ amount: "₹12,000", unit: "day" }}
             align="center"
             amountClassName="text-sm font-bold"
-            unitClassName="text-0 uppercase"
+            unitClassName="text-1 uppercase"
           />
           <div>
             <p className="text-sm font-bold">312</p>
-            <p className="text-0 uppercase text-muted-foreground">Sessions</p>
+            <p className="text-1 uppercase text-muted-foreground">Sessions</p>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ function Studio() {
           ].map((g) => (
             <span
               key={g}
-              className="rounded-full border border-border bg-card px-3 py-2 text-0 font-semibold"
+              className="rounded-full border border-border bg-card px-3 py-2 text-1 font-semibold"
             >
               {g}
             </span>
@@ -119,7 +119,7 @@ function Studio() {
         <div className="rounded-lg border border-border bg-card p-4">
           <div className="grid grid-cols-7 gap-1.5 text-center">
             {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-              <span key={i} className="text-0 font-bold text-muted-foreground">
+              <span key={i} className="text-1 font-bold text-muted-foreground">
                 {d}
               </span>
             ))}
@@ -129,7 +129,7 @@ function Studio() {
               return (
                 <span
                   key={i}
-                  className={`flex h-9 items-center justify-center rounded-md text-0 font-semibold ${
+                  className={`flex h-9 items-center justify-center rounded-sm text-1 font-semibold ${
                     sel
                       ? "bg-primary text-primary-foreground"
                       : busy
@@ -142,7 +142,7 @@ function Studio() {
               );
             })}
           </div>
-          <p className="mt-3 text-0 text-muted-foreground">
+          <p className="mt-3 text-1 text-muted-foreground">
             12 Aug · North Room · 10:00–18:00 available
           </p>
         </div>

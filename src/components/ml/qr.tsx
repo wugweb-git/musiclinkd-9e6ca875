@@ -137,7 +137,7 @@ export function QrIdentityCard({
           <h2 className="text-2 leading-tight" style={{ color: s.dark }}>
             {name}
           </h2>
-          {verified ? <VerifiedBadge size={15} /> : null}
+          {verified ? <VerifiedBadge size={16} /> : null}
         </div>
         <p className="text-1 opacity-70">{role}</p>
         {tagline && !compact ? <p className="max-w-[240px] text-1 opacity-60">{tagline}</p> : null}
@@ -211,7 +211,7 @@ export function ScannerControls({
           flash ? "bg-primary text-primary-foreground" : "bg-card text-foreground"
         }`}
       >
-        <Zap size={18} />
+        <Zap size={20} />
       </button>
       <button
         type="button"
@@ -256,7 +256,7 @@ export function DestinationPreviewCard({ preview }: { preview: DestinationPrevie
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-1.5">
             <h2 className="min-w-0 text-2 leading-tight">{preview.title}</h2>
-            {preview.verified ? <VerifiedBadge size={15} /> : null}
+            {preview.verified ? <VerifiedBadge size={16} /> : null}
           </div>
           {preview.subtitle ? (
             <p className="mt-1 text-1 text-muted-foreground">{preview.subtitle}</p>
@@ -399,19 +399,19 @@ export function ShareActions({
   return (
     <div className="flex flex-col gap-2">
       <ActionRow
-        icon={<Share2 size={17} />}
+        icon={<Share2 size={16} />}
         label="Share QR"
         hint="Send the code image"
         onClick={() => void nativeShare({ title, url })}
       />
       <ActionRow
-        icon={<Camera size={17} />}
+        icon={<Camera size={16} />}
         label="Share profile"
         hint={url}
         onClick={() => void nativeShare({ title, url })}
       />
       <ActionRow
-        icon={<Copy size={17} />}
+        icon={<Copy size={16} />}
         label="Copy link"
         onClick={() => {
           void navigator.clipboard?.writeText(url);
@@ -419,16 +419,16 @@ export function ShareActions({
         }}
       />
       <ActionRow
-        icon={<Share2 size={17} />}
+        icon={<Share2 size={16} />}
         label="Send via MusicLinkd"
         hint="Opens Connections"
         to="/messages"
       />
       {onDownload ? (
-        <ActionRow icon={<Download size={17} />} label="Download image" onClick={onDownload} />
+        <ActionRow icon={<Download size={16} />} label="Download image" onClick={onDownload} />
       ) : null}
       {onSaveContact ? (
-        <ActionRow icon={<Check size={17} />} label="Add to contacts" onClick={onSaveContact} />
+        <ActionRow icon={<Check size={16} />} label="Add to contacts" onClick={onSaveContact} />
       ) : null}
     </div>
   );

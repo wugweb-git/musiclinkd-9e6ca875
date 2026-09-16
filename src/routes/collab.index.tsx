@@ -140,7 +140,7 @@ function CollabHome() {
           onClick={() => setFilters(true)}
           className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
         >
-          <SlidersHorizontal size={14} /> Filters
+          <SlidersHorizontal size={16} /> Filters
           {role.length + type.length ? ` · ${role.length + type.length}` : ""}
         </button>
         <button
@@ -148,7 +148,7 @@ function CollabHome() {
           onClick={() => setSortOpen(true)}
           className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
         >
-          <ArrowUpDown size={14} /> {sort}
+          <ArrowUpDown size={16} /> {sort}
         </button>
       </div>
 
@@ -176,10 +176,10 @@ function CollabHome() {
                       <img src={inv.artwork} alt="" className="h-16 w-16 rounded-lg object-cover" />
                       <div className="min-w-0 flex-1">
                         <h3 className="truncate text-sm">{inv.projectName}</h3>
-                        <p className="truncate text-0 text-muted-foreground">
+                        <p className="truncate text-1 text-muted-foreground">
                           {inv.type} · proposed role: {inv.proposedRole}
                         </p>
-                        <p className="mt-1 truncate text-0 text-muted-foreground">
+                        <p className="mt-1 truncate text-1 text-muted-foreground">
                           From {inv.inviter} · {inv.sentAt}
                         </p>
                       </div>
@@ -202,7 +202,7 @@ function CollabHome() {
                       ? `You — ${p.role} proposal`
                       : `${p.from} — ${p.role} proposal`}
                   </p>
-                  <p className="text-0 text-muted-foreground">
+                  <p className="text-1 text-muted-foreground">
                     {p.projectName} · {p.compensation} · {p.status === "sent" ? "sent" : "received"}{" "}
                     {p.sentAt.toLowerCase()}
                   </p>

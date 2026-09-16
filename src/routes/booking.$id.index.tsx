@@ -58,7 +58,7 @@ function BookingEntry() {
 
         <div className="mt-4 flex gap-2">
           <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
-            <MessageCircle size={15} className="mr-1.5" /> Message
+            <MessageCircle size={16} className="mr-1.5" /> Message
           </BtnLink>
           <Btn variant="outline" className="px-4" onClick={() => undefined}>
             <Bookmark size={16} />
@@ -80,7 +80,7 @@ function BookingEntry() {
                   <img
                     src={r.photo}
                     alt=""
-                    className="h-14 w-14 shrink-0 rounded-md object-cover"
+                    className="h-14 w-14 shrink-0 rounded-sm object-cover"
                     loading="lazy"
                   />
                 ) : null}

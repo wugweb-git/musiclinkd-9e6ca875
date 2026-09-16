@@ -103,7 +103,7 @@ function Timeline() {
                   className="flex w-full items-center gap-3 py-4 text-left"
                 >
                   <span
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-0 text-background"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-1 text-background"
                     style={
                       checked
                         ? { background: "var(--success)", borderColor: "transparent" }
@@ -118,7 +118,7 @@ function Timeline() {
                     >
                       {t.name}
                     </span>
-                    <span className="block text-0 text-muted-foreground">
+                    <span className="block text-1 text-muted-foreground">
                       {t.owner} · due {t.due}
                     </span>
                   </span>

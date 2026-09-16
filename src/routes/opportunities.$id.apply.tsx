@@ -73,9 +73,9 @@ function ApplyFlow() {
         <div className="space-y-4 px-5 pt-6">
           <Card className="space-y-3 text-center">
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Check size={26} />
+              <Check size={24} />
             </span>
-            <h2 className="text-2.5 leading-tight">You're in for {o.title}</h2>
+            <h2 className="text-3 leading-tight">You're in for {o.title}</h2>
             <p className="text-1 text-muted-foreground">
               {o.poster.name} usually responds within 2 days. You'll get a notification when your
               application is viewed.
@@ -108,7 +108,7 @@ function ApplyFlow() {
         {step === "portfolio" ? (
           <>
             <div>
-              <h2 className="text-2.5 leading-tight">Prove the fit</h2>
+              <h2 className="text-3 leading-tight">Prove the fit</h2>
               <p className="mt-1 text-1 text-muted-foreground">
                 Attach up to 3 pieces of work. Posters review portfolios before messages.
               </p>
@@ -136,7 +136,7 @@ function ApplyFlow() {
                     </span>
                     <span className="block p-3">
                       <span className="block truncate text-1 font-semibold">{p.title}</span>
-                      <span className="block text-0 text-muted-foreground">
+                      <span className="block text-1 text-muted-foreground">
                         {workType(p.kind).label}
                       </span>
                     </span>
@@ -153,7 +153,7 @@ function ApplyFlow() {
         {step === "message" ? (
           <>
             <div>
-              <h2 className="text-2.5 leading-tight">Your pitch</h2>
+              <h2 className="text-3 leading-tight">Your pitch</h2>
               <p className="mt-1 text-1 text-muted-foreground">
                 Three lines beats three paragraphs. Say why you fit this brief.
               </p>
@@ -166,7 +166,7 @@ function ApplyFlow() {
               placeholder={`Why you're right for "${o.title}"…`}
               className="w-full rounded-[20px] border border-border bg-card p-4 text-sm outline-none"
             />
-            <p className="text-right text-0 text-muted-foreground">{message.length}/600</p>
+            <p className="text-right text-1 text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">
               <p className="text-1 font-semibold">Your rate (optional)</p>
               {payParts(o) ? (
@@ -175,7 +175,7 @@ function ApplyFlow() {
                   <Price
                     price={payParts(o)}
                     amountClassName="text-1 font-semibold"
-                    unitClassName="text-0"
+                    unitClassName="text-1"
                   />
                 </div>
               ) : null}
@@ -191,7 +191,7 @@ function ApplyFlow() {
 
         {step === "review" ? (
           <>
-            <h2 className="text-2.5 leading-tight">Review and send</h2>
+            <h2 className="text-3 leading-tight">Review and send</h2>
             <Card className="space-y-2">
               <StatusPill label="Attached work" tone="brand" />
               {picked.length === 0 ? (

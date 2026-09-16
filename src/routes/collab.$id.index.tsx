@@ -106,7 +106,7 @@ function Overview() {
             style={{ width: `${project.progress}%` }}
           />
         </div>
-        <p className="mt-2 text-0 text-muted-foreground">
+        <p className="mt-2 text-1 text-muted-foreground">
           {nextMilestone
             ? `Next: ${nextMilestone.name} · due ${nextMilestone.due}`
             : "All milestones done"}
@@ -118,7 +118,7 @@ function Overview() {
         <Card className="mb-5">
           <div className="flex items-center justify-between">
             <ParticipantStack people={project.participants} />
-            <span className="text-0 font-semibold text-foreground">
+            <span className="text-1 font-semibold text-foreground">
               {project.participants.length} collaborators
             </span>
           </div>

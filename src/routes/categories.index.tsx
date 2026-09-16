@@ -42,16 +42,16 @@ function Categories() {
                 params={{ slug: c.slug }}
                 className="state-layer flex items-center gap-3 px-4 py-3.5"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-subtle">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
                   <Icon
-                    size={18}
+                    size={20}
                     strokeWidth={1.75}
                     className="text-muted-foreground"
                     aria-hidden
                   />
                 </span>
                 <span className="min-w-0 flex-1 truncate text-2">{c.label}</span>
-                <ChevronRight size={18} className="shrink-0 text-muted-foreground" aria-hidden />
+                <ChevronRight size={20} className="shrink-0 text-muted-foreground" aria-hidden />
               </Link>
             </li>
           );

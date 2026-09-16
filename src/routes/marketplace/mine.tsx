@@ -52,7 +52,7 @@ function Mine() {
           ? listings.slice(0, 3).map((l) => (
               <div key={l.id}>
                 <ListingRow l={l} />
-                <div className="mt-1.5 flex gap-2 px-1 text-0 font-semibold text-muted-foreground">
+                <div className="mt-1.5 flex gap-2 px-1 text-1 font-semibold text-muted-foreground">
                   <span
                     className="rounded-full px-2 py-1"
                     style={{ background: "var(--success-container)", color: "var(--success)" }}
@@ -82,7 +82,7 @@ function Mine() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-1 font-semibold">{o.listing}</p>
-                  <p className="text-0 text-muted-foreground">Offer {o.amount}</p>
+                  <p className="text-1 text-muted-foreground">Offer {o.amount}</p>
                 </div>
                 <span className="rounded-full bg-subtle pill text-muted-foreground">
                   {o.status}

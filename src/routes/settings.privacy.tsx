@@ -55,8 +55,8 @@ function PrivacyScreen() {
             return (
               <li key={c.key} className="px-4 py-4">
                 <div className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-subtle">
-                    <Icon size={18} strokeWidth={1.75} aria-hidden />
+                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
+                    <Icon size={20} strokeWidth={1.75} aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-2 font-semibold">{c.label}</p>
@@ -79,8 +79,8 @@ function PrivacyScreen() {
         <section>
           <h2 className="pill mb-2 px-1 text-muted-foreground">Blocked people</h2>
           <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3.5">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-subtle">
-              <UserX size={18} strokeWidth={1.75} aria-hidden />
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
+              <UserX size={20} strokeWidth={1.75} aria-hidden />
             </span>
             <p className="min-w-0 flex-1 text-1 text-muted-foreground">
               Nobody blocked. Blocking hides your profile from them everywhere.

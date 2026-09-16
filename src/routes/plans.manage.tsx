@@ -40,7 +40,7 @@ function ManagePlan() {
         <Card className="space-y-2">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-2.5 leading-tight">{plan.name}</h2>
+              <h2 className="text-3 leading-tight">{plan.name}</h2>
               <Price
                 price={{
                   amount: currentSubscription.amount,
@@ -49,7 +49,7 @@ function ManagePlan() {
                 tone="inherit"
                 className="mt-1"
                 amountClassName="text-1 font-semibold"
-                unitClassName="text-0"
+                unitClassName="text-1"
               />
               <p className="text-1 text-muted-foreground">Renews {currentSubscription.renewsOn}</p>
             </div>

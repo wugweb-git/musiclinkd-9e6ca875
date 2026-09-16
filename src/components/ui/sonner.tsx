@@ -19,7 +19,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         unstyled: true,
         classNames: {
           toast:
-            "flex w-full items-center gap-3 rounded-md bg-ink px-4 py-3 text-sm text-primary-foreground shadow-elevation-3",
+            "flex w-full items-center gap-3 rounded-sm bg-ink px-4 py-3 text-sm text-primary-foreground shadow-elevation-3",
           title: "font-medium leading-snug",
           description: "mt-0.5 text-1 text-primary-foreground/70",
           success: "[&_[data-icon]]:text-success",

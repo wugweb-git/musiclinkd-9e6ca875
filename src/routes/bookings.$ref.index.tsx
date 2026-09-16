@@ -143,16 +143,16 @@ function BookingDetail() {
 
         <div className="mt-6 space-y-2">
           <BtnLink to="/messages" variant="outline" className="w-full">
-            <MessageCircle size={15} className="mr-1.5" /> Message Provider
+            <MessageCircle size={16} className="mr-1.5" /> Message Provider
           </BtnLink>
 
           {upcoming ? (
             <>
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
-                <CalendarPlus size={15} className="mr-1.5" /> Add to Calendar
+                <CalendarPlus size={16} className="mr-1.5" /> Add to Calendar
               </Btn>
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
-                <Navigation size={15} className="mr-1.5" /> Get Directions
+                <Navigation size={16} className="mr-1.5" /> Get Directions
               </Btn>
               <BtnLink
                 to="/bookings/$ref/reschedule"
@@ -181,7 +181,7 @@ function BookingDetail() {
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
                 Leave a Review
               </Btn>
-              <p className="text-center text-0 text-muted-foreground">
+              <p className="text-center text-1 text-muted-foreground">
                 Reviews are handled in your MusicLinkd reviews flow.
               </p>
             </>

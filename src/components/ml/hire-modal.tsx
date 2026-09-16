@@ -40,9 +40,9 @@ export function HireModal({
       {sent ? (
         <div className="py-10 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-success">
-            <Check size={28} aria-hidden />
+            <Check size={32} aria-hidden />
           </div>
-          <h2 className="text-2.5">Request sent</h2>
+          <h2 className="text-3">Request sent</h2>
           <Btn
             className="mt-6 w-full"
             onClick={() => {
@@ -55,7 +55,7 @@ export function HireModal({
         </div>
       ) : (
         <>
-          <h2 className="text-2.5">Contact professional</h2>
+          <h2 className="text-3">Contact professional</h2>
           <p className="mb-4 text-1 text-muted-foreground">
             {subject ? [subject.name, subject.detail].filter(Boolean).join(" · ") : null}
           </p>
@@ -70,8 +70,8 @@ export function HireModal({
                   choice === o.label ? "border-primary bg-card" : "border-border bg-card"
                 }`}
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-md bg-subtle">
-                  <o.Icon size={18} aria-hidden />
+                <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
+                  <o.Icon size={20} aria-hidden />
                 </span>
                 <span className="flex-1">
                   <span className="block text-sm font-semibold">{o.label}</span>
@@ -122,7 +122,7 @@ function Field({ label, placeholder }: { label: string; placeholder: string }) {
       <label className="mb-1.5 block text-1 font-medium text-muted-foreground">{label}</label>
       <input
         placeholder={placeholder}
-        className="h-12 w-full rounded-md border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+        className="h-12 w-full rounded-sm border border-border bg-card px-4 text-sm outline-none focus:border-primary"
       />
     </div>
   );

@@ -59,7 +59,7 @@ function BusinessHome() {
             aria-label="Add business"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
-            <Plus size={18} />
+            <Plus size={20} />
           </Link>
         }
       />
@@ -82,11 +82,11 @@ function BusinessHome() {
                       <img
                         src={b.logo}
                         alt=""
-                        className="h-11 w-11 shrink-0 rounded-md object-cover"
+                        className="h-11 w-11 shrink-0 rounded-sm object-cover"
                         loading="lazy"
                       />
                     ) : (
-                      <div aria-hidden className="h-11 w-11 shrink-0 rounded-md bg-subtle" />
+                      <div aria-hidden className="h-11 w-11 shrink-0 rounded-sm bg-subtle" />
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-bold">{b.name}</p>
@@ -101,7 +101,7 @@ function BusinessHome() {
                     )}
                   </div>
                   {b.rating != null && b.reviewCount != null ? (
-                    <div className="flex gap-4 text-0 text-muted-foreground">
+                    <div className="flex gap-4 text-1 text-muted-foreground">
                       <span>
                         ★ {b.rating} ({b.reviewCount})
                       </span>
@@ -124,7 +124,7 @@ function BusinessHome() {
 
         <Card className="space-y-1">
           <p className="flex items-center gap-2 text-1 font-semibold">
-            <Building2 size={15} /> Work at a studio you do not own?
+            <Building2 size={16} /> Work at a studio you do not own?
           </p>
           <p className="text-1 text-muted-foreground">
             Ask the owner to invite you as staff — you keep your own profile and appear on their

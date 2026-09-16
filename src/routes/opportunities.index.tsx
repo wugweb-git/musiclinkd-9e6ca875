@@ -69,7 +69,7 @@ function OpportunitiesHome() {
             className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
             aria-label="Post an opportunity"
           >
-            <Plus size={18} />
+            <Plus size={20} />
           </button>
         }
       />
@@ -115,7 +115,7 @@ function OpportunitiesHome() {
               >
                 <span className="text-2">{c.emoji}</span>
                 <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
-                <p className="text-0 text-muted-foreground">{openCount(c.key)} open</p>
+                <p className="text-1 text-muted-foreground">{openCount(c.key)} open</p>
               </Link>
             ))}
           </div>

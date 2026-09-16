@@ -82,7 +82,7 @@ function CategoryDirectory() {
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1">
                       <span className="truncate text-2 font-semibold">{p.name}</span>
-                      {p.verified ? <VerifiedBadge size={14} /> : null}
+                      {p.verified ? <VerifiedBadge size={16} /> : null}
                     </span>
                     <span className="block truncate text-1 text-muted-foreground">
                       {p.headline ??

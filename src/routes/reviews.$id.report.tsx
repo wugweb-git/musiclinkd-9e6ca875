@@ -46,7 +46,7 @@ function ReportReview() {
         <TopBar title="Reported" back="/reviews" />
         <div className="space-y-4 px-5 pt-6">
           <Card>
-            <h2 className="text-2.5 leading-tight">Thanks — the team will look at it</h2>
+            <h2 className="text-3 leading-tight">Thanks — the team will look at it</h2>
             <p className="mt-2 text-1 text-muted-foreground">
               The review stays visible while it is checked. You will hear back either way, usually
               within two days.

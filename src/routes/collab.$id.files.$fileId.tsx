@@ -91,14 +91,14 @@ function FileDetail() {
                     <p className="text-1 font-semibold">
                       {v.label} {i === 0 ? "· latest" : ""}
                     </p>
-                    <span className="text-0 text-muted-foreground">{v.duration}</span>
+                    <span className="text-1 text-muted-foreground">{v.duration}</span>
                   </div>
-                  <p className="text-0 text-muted-foreground">
+                  <p className="text-1 text-muted-foreground">
                     {v.createdBy} · {v.date}
                   </p>
                   <p className="mt-1 text-1">{v.notes}</p>
                   {i !== 0 ? (
-                    <button type="button" className="mt-2 text-0 font-semibold text-foreground">
+                    <button type="button" className="mt-2 text-1 font-semibold text-foreground">
                       Compare with latest
                     </button>
                   ) : null}

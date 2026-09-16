@@ -125,7 +125,7 @@ function RentalDetail() {
               aria-label="Share"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
             >
-              <Share2 size={15} />
+              <Share2 size={16} />
             </button>
             <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={40} />
           </div>
@@ -157,7 +157,7 @@ function RentalDetail() {
             <img
               src={src}
               alt=""
-              className="h-14 w-16 rounded-md object-cover"
+              className="h-14 w-16 rounded-sm object-cover"
               style={{ outline: i === shot ? "2px solid var(--primary)" : "none" }}
             />
           </button>
@@ -190,7 +190,7 @@ function RentalDetail() {
               <p className="text-1 font-bold" style={{ color: "var(--warn)" }}>
                 Refundable security deposit
               </p>
-              <p className="text-0 text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 Held by the provider for the rental period.
               </p>
             </div>
@@ -225,7 +225,7 @@ function RentalDetail() {
             <ul className="mt-2 space-y-2 rounded-lg border border-border p-4">
               {e.included.map((x) => (
                 <li key={x} className="flex items-center gap-2 text-1">
-                  <Check size={14} className="shrink-0 text-primary" /> {x}
+                  <Check size={16} className="shrink-0 text-primary" /> {x}
                 </li>
               ))}
             </ul>
@@ -278,7 +278,7 @@ function RentalDetail() {
               ].map((x) => (
                 <div key={x.k} className="rounded-lg bg-subtle py-2">
                   <p className="truncate text-1 font-bold">{x.v}</p>
-                  <p className="text-0 text-muted-foreground">{x.k}</p>
+                  <p className="text-1 text-muted-foreground">{x.k}</p>
                 </div>
               ))}
             </div>
@@ -307,7 +307,7 @@ function RentalDetail() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate text-1 font-semibold">{r.name}</p>
-                      <p className="truncate text-0 text-muted-foreground">{r.context}</p>
+                      <p className="truncate text-1 text-muted-foreground">{r.context}</p>
                     </div>
                     <Rating value={r.rating} />
                   </div>
@@ -316,7 +316,7 @@ function RentalDetail() {
                     {r.tags.map((t) => (
                       <span
                         key={t}
-                        className="rounded-full bg-subtle px-2 py-1 text-0 font-semibold text-muted-foreground"
+                        className="rounded-full bg-subtle px-2 py-1 text-1 font-semibold text-muted-foreground"
                       >
                         {t}
                       </span>
@@ -340,7 +340,7 @@ function RentalDetail() {
       <div className="px-5 pb-6">
         <button
           onClick={() => setReport(true)}
-          className="inline-flex items-center gap-1.5 text-0 font-semibold text-muted-foreground"
+          className="inline-flex items-center gap-1.5 text-1 font-semibold text-muted-foreground"
         >
           <Flag size={12} /> Report this listing
         </button>
@@ -353,10 +353,10 @@ function RentalDetail() {
               <Price
                 price={rupeeParts(e.daily, "day")}
                 amountClassName="text-sm font-bold"
-                unitClassName="text-0"
+                unitClassName="text-1"
               />
             ) : null}
-            {barNote ? <p className="truncate text-0 text-muted-foreground">{barNote}</p> : null}
+            {barNote ? <p className="truncate text-1 text-muted-foreground">{barNote}</p> : null}
           </div>
           {fromCatalog ? (
             // The request flow needs dates, rates and a deposit a database rental does not store.

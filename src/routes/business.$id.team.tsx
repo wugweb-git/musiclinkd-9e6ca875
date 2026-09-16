@@ -87,7 +87,7 @@ function TeamScreen() {
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-1 font-semibold">{m.name}</span>
                   {m.detail ? (
-                    <span className="block text-0 text-muted-foreground">{m.detail}</span>
+                    <span className="block text-1 text-muted-foreground">{m.detail}</span>
                   ) : null}
                 </span>
                 {m.invited ? <StatusPill label="invited" tone="warn" /> : null}
@@ -103,7 +103,7 @@ function TeamScreen() {
           {rolePermissions.map((r) => (
             <div key={r.role} className="border-b border-border py-2 last:border-0">
               <p className="text-1 font-semibold">{businessRoleLabel[r.role]}</p>
-              <p className="text-0 text-muted-foreground">{r.can.join(" · ")}</p>
+              <p className="text-1 text-muted-foreground">{r.can.join(" · ")}</p>
             </div>
           ))}
         </Card>

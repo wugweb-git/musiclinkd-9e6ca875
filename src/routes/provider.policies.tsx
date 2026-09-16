@@ -97,7 +97,7 @@ function Policies() {
               </Chip>
             ))}
           </div>
-          <p className="mt-2 text-0 text-muted-foreground">
+          <p className="mt-2 text-1 text-muted-foreground">
             Cancellations inside this window keep the deposit.
           </p>
         </section>

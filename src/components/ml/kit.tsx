@@ -235,7 +235,7 @@ export function EmptyState({
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-8 text-center">
       {icon ? (
-        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-subtle">
+        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sm bg-subtle">
           {icon}
         </span>
       ) : null}
@@ -333,7 +333,7 @@ export function Dialog({
         onClick={onClose}
         className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
       />
-      <div className="relative w-full rounded-2xl border border-border bg-card p-5">
+      <div className="relative w-full rounded-3xl border border-border bg-card p-5">
         <h2 className="text-2 leading-tight">{title}</h2>
         {body ? <p className="mt-2 text-1 text-muted-foreground">{body}</p> : null}
         {children ? <div className="mt-4 flex flex-col gap-2">{children}</div> : null}

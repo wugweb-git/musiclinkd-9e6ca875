@@ -90,7 +90,7 @@ function Reorder() {
           onFeature={toggleFeatured}
         />
 
-        <p className="mt-4 text-0 text-muted-foreground">
+        <p className="mt-4 text-1 text-muted-foreground">
           Featured work leads your profile — up to {FEATURED_LIMIT} items.
         </p>
 

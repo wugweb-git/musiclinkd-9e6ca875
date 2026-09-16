@@ -80,7 +80,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
       <Link to="/welcome" aria-label="Sign in">
         <Avatar className={shape}>
           <AvatarFallback className="bg-card text-muted-foreground">
-            <User size={18} aria-hidden />
+            <User size={20} aria-hidden />
           </AvatarFallback>
         </Avatar>
       </Link>
@@ -92,7 +92,7 @@ export function ViewerAvatar({ className }: { className?: string | undefined }) 
       <Avatar className={shape}>
         {photo ? <AvatarImage src={photo} alt="" /> : null}
         <AvatarFallback className="bg-card text-1 font-semibold text-muted-foreground">
-          {initials || <User size={18} aria-hidden />}
+          {initials || <User size={20} aria-hidden />}
         </AvatarFallback>
       </Avatar>
     </Link>

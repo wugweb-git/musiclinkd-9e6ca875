@@ -45,13 +45,13 @@ function SearchResults() {
           >
             ←
           </Link>
-          <h1 className="text-2.5">Search results</h1>
+          <h1 className="text-3">Search results</h1>
           <Link
             to="/search/history"
             aria-label="Search history"
             className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
           >
-            <History size={18} aria-hidden />
+            <History size={20} aria-hidden />
           </Link>
         </div>
         <SearchBar value={q} onChange={setQ} />
@@ -78,7 +78,7 @@ function SearchResults() {
         onClick={() => setFilters(true)}
         className="fixed bottom-24 left-1/2 z-40 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-background"
       >
-        ⚙ Filters <span className="rounded-full bg-primary px-2 py-0.5 text-0">3</span>
+        ⚙ Filters <span className="rounded-full bg-primary px-2 py-0.5 text-1">3</span>
       </button>
 
       <FilterSheet open={filters} onClose={() => setFilters(false)} />
@@ -127,15 +127,15 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
       <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
         <div>
           <p className="text-sm font-bold">{t.followers}</p>
-          <p className="text-0 uppercase text-muted-foreground">Followers</p>
+          <p className="text-1 uppercase text-muted-foreground">Followers</p>
         </div>
         <div>
           <p className="text-sm font-bold">{t.credits}</p>
-          <p className="text-0 uppercase text-muted-foreground">Credits</p>
+          <p className="text-1 uppercase text-muted-foreground">Credits</p>
         </div>
         <div>
           <p className="text-sm font-bold text-warn">{t.rating} ★</p>
-          <p className="text-0 uppercase text-muted-foreground">Rating</p>
+          <p className="text-1 uppercase text-muted-foreground">Rating</p>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         {[...t.genres, ...t.languages].map((x) => (
           <span
             key={x}
-            className="rounded-full bg-subtle px-3 py-1.5 text-0 font-semibold text-muted-foreground"
+            className="rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold text-muted-foreground"
           >
             {x}
           </span>
@@ -158,11 +158,11 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
               key={p}
               className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-subtle">
+              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-subtle">
                 ▶
               </span>
               <p className="flex-1 text-1 font-semibold">{p}</p>
-              <span className="text-0 text-muted-foreground">Spotify</span>
+              <span className="text-1 text-muted-foreground">Spotify</span>
             </div>
           ),
         )}

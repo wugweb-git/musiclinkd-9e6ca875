@@ -56,7 +56,7 @@ function SavedRentals() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-1 font-semibold">{s}</p>
-                  <p className="text-0 text-muted-foreground">Alerts on · 4 new available</p>
+                  <p className="text-1 text-muted-foreground">Alerts on · 4 new available</p>
                 </div>
                 <Link to="/marketplace/rent/search" className="shrink-0">
                   <Chip>View</Chip>

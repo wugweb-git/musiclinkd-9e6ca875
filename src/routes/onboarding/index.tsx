@@ -59,17 +59,17 @@ function Welcome() {
         <ul className="mt-8 space-y-5">
           {[
             {
-              icon: <Compass size={18} />,
+              icon: <Compass size={20} />,
               title: "Get found for the right work",
               body: "Role, genres, languages and city power discovery.",
             },
             {
-              icon: <Sparkles size={18} />,
+              icon: <Sparkles size={20} />,
               title: "A feed that fits you",
               body: "We shape recommendations around what you're here for.",
             },
             {
-              icon: <ShieldCheck size={18} />,
+              icon: <ShieldCheck size={20} />,
               title: "Private by default",
               body: "Contact details stay hidden until you share them.",
             },

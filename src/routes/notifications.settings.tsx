@@ -82,7 +82,7 @@ function NotificationSettings() {
         <Card className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <p className="flex items-center gap-2 text-sm font-semibold">
-              <MoonStar size={15} /> Quiet hours
+              <MoonStar size={16} /> Quiet hours
             </p>
             <button
               type="button"

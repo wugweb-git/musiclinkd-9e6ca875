@@ -213,11 +213,11 @@ function providerName(e: RentalItem) {
 export function ProviderSummary({ p, compact }: { p: Provider; compact?: boolean }) {
   return (
     <div className="flex items-center gap-3">
-      <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-md object-cover" />
+      <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-sm object-cover" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate text-2 font-semibold">{p.name}</p>
-          {p.verified ? <VerifiedBadge size={14} /> : null}
+          {p.verified ? <VerifiedBadge size={16} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{p.role}</p>
         {compact ? null : (
@@ -308,7 +308,7 @@ export function RentalCalendar({
               type="button"
               disabled={isBlocked}
               onClick={() => onSelect(day)}
-              className={`flex h-9 items-center justify-center rounded-md text-1 font-semibold transition-colors ${
+              className={`flex h-9 items-center justify-center rounded-sm text-1 font-semibold transition-colors ${
                 isBlocked ? "text-muted-foreground line-through opacity-50" : ""
               } ${isEdge ? "bg-primary text-primary-foreground" : inRange ? "bg-subtle text-foreground" : ""}`}
             >
@@ -367,7 +367,7 @@ export function PriceBreakdown({
       </div>
       <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
         <span className="text-1 font-semibold">Estimated total</span>
-        <span className="text-2.5 font-bold text-price">{inr(total)}</span>
+        <span className="text-3 font-bold text-price">{inr(total)}</span>
       </div>
       <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
         <div className="min-w-0">
@@ -438,7 +438,7 @@ export function FulfilmentPicker({
             onClick={() => onChange(o.id)}
             className="flex w-full items-center gap-3 px-4 py-4 text-left"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-subtle">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
               <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
             </span>
             <span className="min-w-0 flex-1">
@@ -548,7 +548,7 @@ export function RentalFilterSheet({
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2.5">Filters</h2>
+        <h2 className="text-3">Filters</h2>
         <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
           Clear all
         </button>

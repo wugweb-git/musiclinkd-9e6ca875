@@ -122,7 +122,7 @@ export function ParticipantRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <h3 className="truncate text-2">{p.name}</h3>
-          {p.verified ? <VerifiedBadge size={14} /> : null}
+          {p.verified ? <VerifiedBadge size={16} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">
           {p.role} · {p.responsibility}
@@ -231,9 +231,9 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
   const body = (
     <>
       {file.cover ? (
-        <img src={file.cover} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" />
+        <img src={file.cover} alt="" className="h-12 w-12 shrink-0 rounded-sm object-cover" />
       ) : (
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-subtle text-muted-foreground">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-subtle text-muted-foreground">
           {meta.icon}
         </span>
       )}
@@ -297,7 +297,7 @@ export function AudioPlayer({ title, meta }: { title: string; meta: string }) {
           aria-label={playing ? "Pause" : "Play"}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground"
         >
-          {playing ? <Pause size={18} /> : <Play size={18} />}
+          {playing ? <Pause size={20} /> : <Play size={20} />}
         </button>
         <span className="text-1 text-muted-foreground">
           {playing ? "1:28" : "0:00"} / {meta.split("·").pop()?.trim() ?? "—"}
@@ -331,7 +331,7 @@ export function MilestoneRow({
           m.status === "done" ? "border-transparent bg-success" : "border-border"
         }`}
       >
-        {m.status === "done" ? <Check size={14} className="text-background" /> : null}
+        {m.status === "done" ? <Check size={16} className="text-background" /> : null}
       </button>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
@@ -366,7 +366,7 @@ const activityIcon: Record<ActivityEntry["kind"], LucideIcon> = {
 
 function ActivityGlyph({ kind }: { kind: ActivityEntry["kind"] }) {
   const Icon = activityIcon[kind];
-  return <Icon size={14} aria-hidden />;
+  return <Icon size={16} aria-hidden />;
 }
 
 export function ActivityItem({ a }: { a: ActivityEntry }) {
@@ -394,7 +394,7 @@ export function ProposalSummary({ p }: { p: Proposal }) {
       <ul className="mb-4 space-y-1.5">
         {p.deliverables.map((d) => (
           <li key={d} className="flex items-start gap-2 text-1">
-            <Check size={14} className="mt-0.5 shrink-0 text-primary" />
+            <Check size={16} className="mt-0.5 shrink-0 text-primary" />
             {d}
           </li>
         ))}
@@ -476,12 +476,12 @@ export function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center rounded-lg border border-border bg-card px-6 py-12 text-center">
-      <AlertTriangle size={26} className="mb-3 text-destructive" />
+      <AlertTriangle size={24} className="mb-3 text-destructive" />
       <h3 className="text-2">{title}</h3>
       <p className="mt-1 mb-5 text-1 text-muted-foreground">{body}</p>
       {onRetry ? (
         <Btn onClick={onRetry}>
-          <RefreshCw size={15} className="mr-2" /> Retry
+          <RefreshCw size={16} className="mr-2" /> Retry
         </Btn>
       ) : null}
     </div>
@@ -516,7 +516,7 @@ export function PermissionState() {
 export function PinnedNote({ children }: { children: ReactNode }) {
   return (
     <div className="mb-3 flex items-start gap-2 rounded-lg bg-subtle px-4 py-3 text-foreground">
-      <Pin size={14} className="mt-0.5 shrink-0" />
+      <Pin size={16} className="mt-0.5 shrink-0" />
       <p className="text-1 font-semibold">{children}</p>
     </div>
   );
@@ -572,7 +572,7 @@ export function UploadPanel({
     return (
       <Card>
         <div className="flex items-start gap-3">
-          <AlertTriangle size={18} className="mt-0.5 shrink-0 text-destructive" />
+          <AlertTriangle size={20} className="mt-0.5 shrink-0 text-destructive" />
           <div className="flex-1">
             <p className="text-1 font-semibold">Upload failed</p>
             <p className="text-1 text-muted-foreground">
@@ -589,7 +589,7 @@ export function UploadPanel({
   return (
     <Card>
       <div className="flex items-center gap-3">
-        <Check size={18} className="text-[color:var(--success)]" />
+        <Check size={20} className="text-[color:var(--success)]" />
         <p className="text-1 font-semibold">Mix v4.wav uploaded to the project</p>
       </div>
     </Card>

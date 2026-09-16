@@ -160,7 +160,7 @@ export default function FileUpload01() {
 
           <div className="px-6">
             <div
-              className="flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-border border-dashed p-8 text-center"
+              className="flex cursor-pointer flex-col items-center justify-center rounded-sm border-2 border-border border-dashed p-8 text-center"
               onClick={handleBoxClick}
               onDragOver={handleDragOver}
               onDrop={handleDrop}

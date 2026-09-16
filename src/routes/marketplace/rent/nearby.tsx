@@ -45,11 +45,11 @@ function NearbyRentals() {
             <div className="text-center">
               <MapPin size={20} className="mx-auto text-primary" />
               <p className="mt-1.5 text-1 font-semibold">{shown.length} rentals on the map</p>
-              <p className="text-0 text-muted-foreground">Tap to open map view</p>
+              <p className="text-1 text-muted-foreground">Tap to open map view</p>
             </div>
           </div>
         </div>
-        <button className="mt-2 w-full text-center text-0 font-semibold text-foreground">
+        <button className="mt-2 w-full text-center text-1 font-semibold text-foreground">
           Use my current location
         </button>
       </div>

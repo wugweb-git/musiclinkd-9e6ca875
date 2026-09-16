@@ -210,7 +210,7 @@ function Dashboard() {
       {status === "loading" ? <SkeletonBody /> : null}
       {status === "offline" ? (
         <StateBlock
-          icon={<WifiOff size={22} className="text-muted-foreground" />}
+          icon={<WifiOff size={24} className="text-muted-foreground" />}
           title="You're offline"
           body="Reconnect to refresh your activity. Saved profiles stay available."
           onRetry={retry}
@@ -218,7 +218,7 @@ function Dashboard() {
       ) : null}
       {status === "error" ? (
         <StateBlock
-          icon={<RefreshCw size={22} className="text-muted-foreground" />}
+          icon={<RefreshCw size={24} className="text-muted-foreground" />}
           title="Couldn't load your dashboard"
           body="Something went wrong on our side. Try again in a moment."
           onRetry={retry}
@@ -237,14 +237,14 @@ function Header() {
         aria-label="Notifications"
         className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10 text-background backdrop-blur"
       >
-        <Bell size={18} aria-hidden />
+        <Bell size={20} aria-hidden />
       </Link>
       <Link
         to="/settings"
         aria-label="Settings"
         className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10 text-background backdrop-blur"
       >
-        <Settings size={18} aria-hidden />
+        <Settings size={20} aria-hidden />
       </Link>
       <ViewerAvatar className="h-12 w-12 ring-2 ring-background/30" />
     </header>
@@ -352,7 +352,7 @@ function Body({ home }: { home: Home }) {
                       <Price
                         price={budget}
                         amountClassName="text-sm font-semibold"
-                        unitClassName="text-0"
+                        unitClassName="text-1"
                       />
                     )}
                     <span className="pill shrink-0 bg-subtle text-muted-foreground">
@@ -427,10 +427,10 @@ function Body({ home }: { home: Home }) {
                       src={st.photo}
                       alt=""
                       loading="lazy"
-                      className="h-11 w-11 shrink-0 rounded-md object-cover"
+                      className="h-11 w-11 shrink-0 rounded-sm object-cover"
                     />
                   ) : (
-                    <span aria-hidden className="h-11 w-11 shrink-0 rounded-md bg-subtle" />
+                    <span aria-hidden className="h-11 w-11 shrink-0 rounded-sm bg-subtle" />
                   )}
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-2 font-semibold">{st.name}</span>
@@ -443,7 +443,7 @@ function Body({ home }: { home: Home }) {
                     price={st.rate}
                     align="end"
                     amountClassName="text-sm font-semibold"
-                    unitClassName="text-0"
+                    unitClassName="text-1"
                   />
                 </Link>
               </li>
@@ -489,11 +489,11 @@ function Body({ home }: { home: Home }) {
       <section className="pt-7">
         <SectionHeader title="Shortcuts" />
         <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pb-1">
-          <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track" />
-          <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
-          <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />
-          <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />
-          <QuietAction to="/messages" icon={<MessageCircle size={14} />} label="Messages" />
+          <QuietAction to="/portfolio/new" icon={<Plus size={16} />} label="Add track" />
+          <QuietAction to="/search" icon={<Search size={16} />} label="Search talent" />
+          <QuietAction to="/studio" icon={<Building2 size={16} />} label="Find a studio" />
+          <QuietAction to="/bookings" icon={<Calendar size={16} />} label="My bookings" />
+          <QuietAction to="/messages" icon={<MessageCircle size={16} />} label="Messages" />
         </div>
       </section>
     </div>
@@ -570,7 +570,7 @@ function ToolLink({ to, icon, label }: { to: ToolDestination; icon: ReactNode; l
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
-      <ChevronRight size={14} className="shrink-0 text-muted-foreground" aria-hidden />
+      <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
     </Link>
   );
 }

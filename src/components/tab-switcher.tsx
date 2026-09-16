@@ -23,7 +23,7 @@ export function TabSwitcher({ tabs, defaultTab, className, variant = "pill" }: T
     const id = useId();
 
     return (
-        <div className={cn("flex flex-col items-center justify-start p-8 bg-zinc-50 dark:bg-zinc-900 rounded-xl min-h-[400px] w-full", className)}>
+        <div className={cn("flex flex-col items-center justify-start p-8 bg-zinc-50 dark:bg-zinc-900 rounded-3xl min-h-[400px] w-full", className)}>
             <div className={cn(
                 "flex items-center",
                 variant === "pill" && "space-x-1 bg-white dark:bg-zinc-950 p-1.5 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-800",
@@ -38,7 +38,7 @@ export function TabSwitcher({ tabs, defaultTab, className, variant = "pill" }: T
                             "relative px-4 py-2 text-sm font-semibold outline-none transition-colors duration-200 z-10 flex items-center gap-2",
                             variant === "pill" && "rounded-full",
                             variant === "underline" && "rounded-t-md pb-3",
-                            variant === "segmented" && "rounded-md flex-1",
+                            variant === "segmented" && "rounded-sm flex-1",
                             activeTab === tab.id
                                 ? "text-zinc-900 dark:text-zinc-100"
                                 : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
@@ -64,7 +64,7 @@ export function TabSwitcher({ tabs, defaultTab, className, variant = "pill" }: T
                         {activeTab === tab.id && variant === "segmented" && (
                             <motion.div
                                 layoutId={`${id}-segmented`}
-                                className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-md -z-10 shadow-sm"
+                                className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-sm -z-10 shadow-sm"
                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                             />
                         )}
@@ -76,7 +76,7 @@ export function TabSwitcher({ tabs, defaultTab, className, variant = "pill" }: T
 
             <motion.div
                 layout
-                className="mt-8 w-full max-w-md bg-white dark:bg-zinc-950 rounded-2xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800 overflow-hidden"
+                className="mt-8 w-full max-w-md bg-white dark:bg-zinc-950 rounded-3xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-800 overflow-hidden"
                 transition={{ duration: 0.3 }}
             >
                 <AnimatePresence mode="wait">

@@ -55,9 +55,9 @@ function ManageBusiness() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="flex items-center gap-3">
           {b.logo ? (
-            <img src={b.logo} alt="" className="h-12 w-12 rounded-md object-cover" loading="lazy" />
+            <img src={b.logo} alt="" className="h-12 w-12 rounded-sm object-cover" loading="lazy" />
           ) : (
-            <div aria-hidden className="h-12 w-12 shrink-0 rounded-md bg-subtle" />
+            <div aria-hidden className="h-12 w-12 shrink-0 rounded-sm bg-subtle" />
           )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">{b.name}</p>
@@ -116,7 +116,7 @@ function ManageBusiness() {
 
         <Card className="space-y-2">
           <p className="flex items-center gap-2 text-1 font-semibold">
-            <Trash2 size={15} /> Delete business
+            <Trash2 size={16} /> Delete business
           </p>
           <p className="text-1 text-muted-foreground">
             Removes the profile, spaces and team. Past bookings and reviews stay with the people

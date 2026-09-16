@@ -108,7 +108,7 @@ function BusinessVerification() {
                   <span
                     className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full ${c.done ? "bg-primary text-primary-foreground" : "border border-border"}`}
                   >
-                    {c.done ? <Check size={14} /> : null}
+                    {c.done ? <Check size={16} /> : null}
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold">{c.label}</p>

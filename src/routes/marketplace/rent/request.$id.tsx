@@ -103,15 +103,15 @@ function RequestFlow() {
         </div>
 
         <div className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card p-3">
-          <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
+          <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-sm object-cover" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-1 font-semibold">{e.name}</p>
             <Price
               price={rupeeParts(e.daily, "day")}
-              amountClassName="text-0 font-semibold"
-              unitClassName="text-0"
+              amountClassName="text-1 font-semibold"
+              unitClassName="text-1"
             />
-            <p className="truncate text-0 text-muted-foreground">Deposit {inr(e.deposit)}</p>
+            <p className="truncate text-1 text-muted-foreground">Deposit {inr(e.deposit)}</p>
           </div>
         </div>
 
@@ -121,7 +121,7 @@ function RequestFlow() {
             <div className="mt-4 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
               <div>
                 <p className="text-1 font-semibold">Quantity</p>
-                <p className="text-0 text-muted-foreground">{e.quantity} available</p>
+                <p className="text-1 text-muted-foreground">{e.quantity} available</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -129,7 +129,7 @@ function RequestFlow() {
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-border"
                 >
-                  <Minus size={14} />
+                  <Minus size={16} />
                 </button>
                 <span className="w-5 text-center text-sm font-bold">{qty}</span>
                 <button
@@ -137,7 +137,7 @@ function RequestFlow() {
                   onClick={() => setQty((q) => Math.min(e.quantity, q + 1))}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-border"
                 >
-                  <Plus size={14} />
+                  <Plus size={16} />
                 </button>
               </div>
             </div>
@@ -147,7 +147,7 @@ function RequestFlow() {
               ) : (
                 <RentalAvailabilityBadge text={`Available · ${days} days`} />
               )}
-              <span className="text-0 text-muted-foreground">
+              <span className="text-1 text-muted-foreground">
                 Aug {start ?? "–"} → Aug {end ?? "–"}
               </span>
             </div>
@@ -204,7 +204,7 @@ function RequestFlow() {
               placeholder="Recording at Famous Studios, need it from 10 am on the 18th."
               className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
             />
-            <p className="mt-3 text-0 text-muted-foreground">
+            <p className="mt-3 text-1 text-muted-foreground">
               No payment is taken now. The provider confirms availability and the final amount in
               your conversation.
             </p>
@@ -225,7 +225,7 @@ function RequestFlow() {
             >
               ✓
             </div>
-            <h2 className="text-2.5">Request sent</h2>
+            <h2 className="text-3">Request sent</h2>
             <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">
               {p.name} usually replies {p.responseTime.toLowerCase()}. You'll get a notification
               when they accept, decline or counter.

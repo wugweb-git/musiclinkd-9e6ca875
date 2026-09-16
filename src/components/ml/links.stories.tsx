@@ -77,7 +77,7 @@ export const LinkAsButton: Story = {
       <BtnLink to="/" variant="ghost">
         Ghost
       </BtnLink>
-      <BtnLink to="/" variant="outline" icon={<Plus size={18} />}>
+      <BtnLink to="/" variant="outline" icon={<Plus size={20} />}>
         With icon
       </BtnLink>
     </div>
@@ -89,16 +89,16 @@ export const IconLinkAsButton: Story = {
   render: () => (
     <div className="flex items-center gap-3">
       <IconBtnLink to="/" label="Edit" variant="ink">
-        <Pencil size={18} />
+        <Pencil size={20} />
       </IconBtnLink>
       <IconBtnLink to="/" label="Share" variant="outline">
-        <Share2 size={18} />
+        <Share2 size={20} />
       </IconBtnLink>
       <IconBtnLink to="/" label="Open" variant="ghost">
-        <ExternalLink size={18} />
+        <ExternalLink size={20} />
       </IconBtnLink>
       <IconBtnLink to="/" label="Add" variant="plain">
-        <Plus size={18} />
+        <Plus size={20} />
       </IconBtnLink>
     </div>
   ),

@@ -72,7 +72,7 @@ function Notes() {
                 ) : null}
               </div>
               <p className="text-1 leading-relaxed text-muted-foreground">{n.body}</p>
-              <p className="mt-2 text-0 text-muted-foreground">
+              <p className="mt-2 text-1 text-muted-foreground">
                 {n.author} · updated {n.updated}
               </p>
             </Card>

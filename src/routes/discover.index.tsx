@@ -110,7 +110,7 @@ function Discover() {
             to={c.to}
             className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle">
+            <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-subtle">
               {categoryIcon(c.label)}
             </span>
             <span className="text-1 font-semibold">{c.label}</span>
@@ -157,7 +157,7 @@ function Discover() {
         <SectionHeader
           title="Recommended for you"
           action={
-            <SectionActionLink to="/recommendations" icon={<Sparkles size={14} />}>
+            <SectionActionLink to="/recommendations" icon={<Sparkles size={16} />}>
               For You
             </SectionActionLink>
           }
@@ -167,13 +167,13 @@ function Discover() {
             to="/recommendations/swipe"
             className="flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background"
           >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-background/10">
-              <Sparkles size={22} aria-hidden />
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm bg-background/10">
+              <Sparkles size={24} aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm text-background">Swipe through matches</h3>
             </div>
-            <ArrowRight size={18} className="shrink-0" aria-hidden />
+            <ArrowRight size={20} className="shrink-0" aria-hidden />
           </Link>
           <div className="grid grid-cols-2 gap-3">
             <Link
@@ -199,7 +199,7 @@ function Discover() {
         <SectionHeader
           title="Nearby professionals"
           action={
-            <SectionActionLink to="/discover/nearby" icon={<MapPin size={14} />}>
+            <SectionActionLink to="/discover/nearby" icon={<MapPin size={16} />}>
               Mumbai
             </SectionActionLink>
           }
@@ -212,11 +212,11 @@ function Discover() {
               params={{ username: t.id }}
               className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
-              <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-md object-cover" />
+              <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-sm object-cover" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1">
                   <h3 className="truncate text-sm">{t.name}</h3>
-                  {t.verified ? <VerifiedBadge size={14} /> : null}
+                  {t.verified ? <VerifiedBadge size={16} /> : null}
                 </div>
                 <p className="truncate text-1 text-muted-foreground">
                   {t.role} · {t.location}
@@ -237,7 +237,7 @@ function Discover() {
               to="/studio"
               className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
-              <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
+              <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-sm">{s.name}</h3>
                 <p className="flex min-w-0 items-center gap-1 truncate text-1 text-muted-foreground">
@@ -245,7 +245,7 @@ function Discover() {
                   <span aria-hidden>·</span>
                   <span className="inline-flex shrink-0 items-center gap-0.5">
                     {s.rating}
-                    <Star size={11} fill="currentColor" aria-hidden />
+                    <Star size={12} fill="currentColor" aria-hidden />
                   </span>
                 </p>
               </div>
@@ -266,7 +266,7 @@ function Discover() {
               className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
               {s.photo ? (
-                <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
+                <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
               ) : null}
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-sm">{s.name}</h3>

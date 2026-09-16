@@ -276,7 +276,7 @@ function NewService() {
             </label>
             <Lines label="Deliverables" value={deliverables} onChange={setDeliverables} />
             <Lines label="Requirements" value={requirements} onChange={setRequirements} />
-            <p className="text-0 text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               Services with a clear deliverable list get roughly twice the enquiries.
             </p>
           </Card>
@@ -312,7 +312,7 @@ function NewService() {
                 inputMode="numeric"
               />
             ) : null}
-            <p className="text-0 text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               You can still send a custom quote from a booking request.
             </p>
           </Card>

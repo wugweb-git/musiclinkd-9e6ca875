@@ -98,7 +98,7 @@ function Lifecycle() {
           >
             ✓
           </span>
-          <h2 className="text-2.5">{c.cta} — done</h2>
+          <h2 className="text-3">{c.cta} — done</h2>
           <p className="mx-auto mt-2 mb-6 max-w-[280px] text-1 text-muted-foreground">
             {project.name} has been updated and collaborators have been notified.
           </p>
@@ -123,7 +123,7 @@ function Lifecycle() {
     <Screen bottomNav={false}>
       <TopBar title="Change status" subtitle={project.name} back="/collab" />
       <main className="px-5 pt-6">
-        <h2 className="text-2.5">{c.title}</h2>
+        <h2 className="text-3">{c.title}</h2>
         <p className="mt-2 mb-5 text-1 leading-relaxed text-muted-foreground">{c.body}</p>
 
         <Field label={c.ask} optional>

@@ -39,7 +39,7 @@ function SecurityScreen() {
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-1 font-semibold">{r.label}</span>
-                <span className="block truncate text-0 text-muted-foreground">{r.hint}</span>
+                <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
               </span>
               <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
             </Link>
@@ -58,7 +58,7 @@ function SecurityScreen() {
                   {s.device}
                   {s.current ? <StatusPill label="this device" tone="good" /> : null}
                 </p>
-                <p className="text-0 text-muted-foreground">
+                <p className="text-1 text-muted-foreground">
                   {s.place} · {s.when}
                 </p>
               </div>
@@ -75,7 +75,7 @@ function SecurityScreen() {
           ))}
           <Btn variant="outline" className="mt-2 w-full" onClick={() => setConfirmAll(true)}>
             <span className="inline-flex items-center gap-2">
-              <LogOut size={15} /> Sign out everywhere else
+              <LogOut size={16} /> Sign out everywhere else
             </span>
           </Btn>
         </Card>

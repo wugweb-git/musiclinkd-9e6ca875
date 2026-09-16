@@ -45,7 +45,7 @@ function SavedMarket() {
               >
                 <div>
                   <p className="text-1 font-semibold">{s}</p>
-                  <p className="text-0 text-muted-foreground">Alerts on · 4 new this week</p>
+                  <p className="text-1 text-muted-foreground">Alerts on · 4 new this week</p>
                 </div>
                 <Chip>View</Chip>
               </article>
@@ -59,10 +59,10 @@ function SavedMarket() {
                 params={{ id: s.id }}
                 className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
               >
-                <img src={s.photo} alt={s.name} className="h-12 w-12 rounded-md object-cover" />
+                <img src={s.photo} alt={s.name} className="h-12 w-12 rounded-sm object-cover" />
                 <div className="min-w-0">
                   <p className="truncate text-1 font-semibold">{s.name}</p>
-                  <p className="truncate text-0 text-muted-foreground">{s.role}</p>
+                  <p className="truncate text-1 text-muted-foreground">{s.role}</p>
                 </div>
               </Link>
             ))

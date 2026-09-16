@@ -71,7 +71,7 @@ function PrintPreview() {
               <p className="pill bg-subtle text-muted-foreground">MusicLinkd</p>
               <p className="truncate text-2 leading-tight">{name}</p>
               <p className="truncate text-1 text-muted-foreground">{line}</p>
-              <p className="mt-1 truncate text-0 text-muted-foreground">
+              <p className="mt-1 truncate text-1 text-muted-foreground">
                 musiclinkd.app/q/{who.code}
               </p>
             </div>
@@ -93,7 +93,7 @@ function PrintPreview() {
                 <span className="block text-sm font-semibold">{f.label}</span>
                 <span className="block truncate text-1 text-muted-foreground">{f.blurb}</span>
               </span>
-              <span className="shrink-0 text-0 font-semibold text-muted-foreground">{f.size}</span>
+              <span className="shrink-0 text-1 font-semibold text-muted-foreground">{f.size}</span>
             </button>
           ))}
         </div>

@@ -114,18 +114,18 @@ function Participants() {
 
       <Card className="mb-5">
         <p className="text-1 font-semibold">Roles and permissions</p>
-        <p className="mt-1 text-0 text-muted-foreground">
+        <p className="mt-1 text-1 text-muted-foreground">
           Owners manage everything. Collaborators upload and comment. Viewers can only read the
           project.
         </p>
         <button
           type="button"
           onClick={() => setRoleSheet(true)}
-          className="mt-2 text-0 font-semibold text-foreground"
+          className="mt-2 text-1 font-semibold text-foreground"
         >
           See the role taxonomy
         </button>
-        <TextLink to="/collab/$id/roles" params={{ id: project.id }} className="mt-2 block text-0">
+        <TextLink to="/collab/$id/roles" params={{ id: project.id }} className="mt-2 block text-1">
           Open Project Roles
         </TextLink>
       </Card>

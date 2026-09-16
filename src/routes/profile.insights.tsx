@@ -38,10 +38,10 @@ function Insights() {
             const up = m.delta.startsWith("+");
             return (
               <article key={m.label} className="rounded-lg border border-border bg-card p-4">
-                <p className="text-0 text-muted-foreground">{m.label}</p>
+                <p className="text-1 text-muted-foreground">{m.label}</p>
                 <p className="mt-1 text-3 tabular-nums">{m.value}</p>
                 <p
-                  className={`mt-1 inline-flex items-center gap-1 text-0 font-bold ${
+                  className={`mt-1 inline-flex items-center gap-1 text-1 font-bold ${
                     up ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >

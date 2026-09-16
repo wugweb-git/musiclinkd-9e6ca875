@@ -159,7 +159,7 @@ const highlightBadgeVariants = cva("mb-8 block w-fit", {
 });
 
 const toggleVariants = cva(
-  "flex h-11 w-fit shrink-0 items-center rounded-md p-1 text-lg",
+  "flex h-11 w-fit shrink-0 items-center rounded-sm p-1 text-lg",
   {
     variants: {
       theme: {
@@ -180,7 +180,7 @@ const buttonVariants = cva(
     variants: {
       theme: {
         minimal:
-          "shadow hover:bg-primary/90 h-9 py-2 group bg-primary text-primary-foreground ring-primary before:from-primary-foreground/20 after:from-primary-foreground/10 relative isolate inline-flex w-full items-center justify-center overflow-hidden rounded-md px-3 text-left text-sm font-medium ring-1 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-md before:bg-gradient-to-b before:opacity-80 before:transition-opacity before:duration-300 before:ease-[cubic-bezier(0.4,0.36,0,1)] after:pointer-events-none after:absolute after:inset-0 after:-z-10 after:rounded-md after:bg-gradient-to-b after:to-transparent after:mix-blend-overlay hover:cursor-pointer",
+          "shadow hover:bg-primary/90 h-9 py-2 group bg-primary text-primary-foreground ring-primary before:from-primary-foreground/20 after:from-primary-foreground/10 relative isolate inline-flex w-full items-center justify-center overflow-hidden rounded-sm px-3 text-left text-sm font-medium ring-1 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-sm before:bg-gradient-to-b before:opacity-80 before:transition-opacity before:duration-300 before:ease-[cubic-bezier(0.4,0.36,0,1)] after:pointer-events-none after:absolute after:inset-0 after:-z-10 after:rounded-sm after:bg-gradient-to-b after:to-transparent after:mix-blend-overlay hover:cursor-pointer",
         classic:
           "relative overflow-hidden bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold py-3 px-6 rounded-lg hover:shadow-xl active:scale-95 border border-primary/20",
       },
@@ -291,7 +291,7 @@ export function PricingTableOne({
                   setIsAnnually(value === "annually");
                 }}
               >
-                <div className='has-[button[data-state="checked"]]:bg-background h-full rounded-md transition-all'>
+                <div className='has-[button[data-state="checked"]]:bg-background h-full rounded-sm transition-all'>
                   <RadioGroupItem
                     value="monthly"
                     id={`${uniqueId}-monthly`}
@@ -304,7 +304,7 @@ export function PricingTableOne({
                     Monthly
                   </Label>
                 </div>
-                <div className='has-[button[data-state="checked"]]:bg-background h-full rounded-md transition-all'>
+                <div className='has-[button[data-state="checked"]]:bg-background h-full rounded-sm transition-all'>
                   <RadioGroupItem
                     value="annually"
                     id={`${uniqueId}-annually`}

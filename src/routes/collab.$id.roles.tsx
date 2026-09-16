@@ -79,14 +79,14 @@ function Roles() {
                   </Tag>
                 </div>
                 <p className="text-1 text-muted-foreground">{p.name}</p>
-                <p className="mt-1 text-0 text-muted-foreground">{p.responsibility}</p>
+                <p className="mt-1 text-1 text-muted-foreground">{p.responsibility}</p>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      <p className="mb-5 text-0 text-muted-foreground">
+      <p className="mb-5 text-1 text-muted-foreground">
         Roles come from the shared MusicLinkd taxonomy, so completed work carries the same credit
         across profiles, portfolios and search.
       </p>

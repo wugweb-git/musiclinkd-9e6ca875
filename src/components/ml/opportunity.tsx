@@ -78,7 +78,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
   if (o.poster.rating)
     meta.push(
       <>
-        <Star size={10} fill="currentColor" className="inline" aria-hidden /> {o.poster.rating}
+        <Star size={12} fill="currentColor" className="inline" aria-hidden /> {o.poster.rating}
       </>,
     );
   if (o.poster.hires) meta.push(`${o.poster.hires} hires`);
@@ -91,7 +91,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
           <span className="truncate text-sm font-semibold">{o.poster.name}</span>
-          {o.poster.verified ? <VerifiedBadge size={14} /> : null}
+          {o.poster.verified ? <VerifiedBadge size={16} /> : null}
         </span>
         {meta.length ? (
           <span className="block truncate text-1 text-muted-foreground">
@@ -153,22 +153,22 @@ export function OpportunityCard({
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
           {pay ? (
             <span className="inline-flex items-start gap-1">
-              <Wallet size={13} className="mt-0.5 shrink-0" />
+              <Wallet size={12} className="mt-0.5 shrink-0" />
               <Price price={pay} amountClassName="text-1 font-semibold" />
             </span>
           ) : null}
           {o.city ? (
             <span className="inline-flex items-center gap-1">
-              <MapPin size={13} /> {o.city}
+              <MapPin size={12} /> {o.city}
             </span>
           ) : null}
           {o.postedAt ? (
             <span className="inline-flex items-center gap-1">
-              <Clock size={13} /> {o.postedAt}
+              <Clock size={12} /> {o.postedAt}
             </span>
           ) : null}
           <span className="inline-flex items-center gap-1">
-            <Users size={13} /> {o.applicants} applied
+            <Users size={12} /> {o.applicants} applied
           </span>
         </div>
         <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
@@ -228,7 +228,7 @@ export function ApplicantCard({ a }: { a: Applicant }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <span className="truncate text-sm font-semibold">{a.name}</span>
-              {a.verified ? <VerifiedBadge size={14} /> : null}
+              {a.verified ? <VerifiedBadge size={16} /> : null}
             </div>
             <p className="truncate text-1 text-muted-foreground">
               {a.headline} · {a.city}

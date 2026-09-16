@@ -760,7 +760,7 @@ function StepBody({
 /* ------------------------------------------------------------------ contact */
 
 const linkIcons: Record<string, ReactNode> = {
-  website: <Globe size={18} strokeWidth={1.75} />,
+  website: <Globe size={20} strokeWidth={1.75} />,
   instagram: <BrandIcon brand="instagram" />,
   youtube: <BrandIcon brand="youtube" />,
   spotify: <BrandIcon brand="spotify" />,
@@ -893,7 +893,7 @@ function ContactStep({
                     : "border-border bg-card text-foreground"
                 }`}
               >
-                <Icon size={18} strokeWidth={1.75} aria-hidden />
+                <Icon size={20} strokeWidth={1.75} aria-hidden />
                 {v.label}
               </button>
             );

@@ -67,7 +67,7 @@ function Availability() {
             >
               <div className="min-w-0">
                 <p className="text-1 font-semibold">{d.day}</p>
-                <p className="text-0 text-muted-foreground">
+                <p className="text-1 text-muted-foreground">
                   {d.enabled ? `${d.from} – ${d.to}` : "Unavailable"}
                 </p>
               </div>
@@ -106,7 +106,7 @@ function Availability() {
               onClick={() => setAddOff(true)}
               className="inline-flex items-center gap-1 text-1 font-semibold text-foreground"
             >
-              <Plus size={14} /> Add
+              <Plus size={16} /> Add
             </button>
           </div>
           {off.length ? (
@@ -117,7 +117,7 @@ function Availability() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-1 font-semibold">{o.label}</p>
-                  <p className="text-0 text-muted-foreground">{o.range}</p>
+                  <p className="text-1 text-muted-foreground">{o.range}</p>
                 </div>
                 <button
                   type="button"
@@ -138,7 +138,7 @@ function Availability() {
 
         <Card className="space-y-1">
           <p className="flex items-center gap-2 text-1 font-semibold">
-            <CalendarOff size={15} /> Bookings already confirmed
+            <CalendarOff size={16} /> Bookings already confirmed
           </p>
           <p className="text-1 text-muted-foreground">
             Changing hours never cancels a confirmed booking — manage those in your provider

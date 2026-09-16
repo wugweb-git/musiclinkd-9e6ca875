@@ -187,9 +187,9 @@ export function WorkForm({
         inputId="work-link"
         leading={
           reading ? (
-            <LoaderCircle size={18} className="animate-spin text-muted-foreground" />
+            <LoaderCircle size={20} className="animate-spin text-muted-foreground" />
           ) : (
-            <Link2 size={18} strokeWidth={1.75} />
+            <Link2 size={20} strokeWidth={1.75} />
           )
         }
         value={link}

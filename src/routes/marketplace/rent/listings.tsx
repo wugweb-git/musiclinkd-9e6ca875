@@ -77,7 +77,7 @@ function MyListings() {
               shown.map((e) => (
                 <div key={e.id}>
                   <EquipmentRow e={e} />
-                  <div className="mt-1.5 flex flex-wrap gap-2 px-1 text-0 font-semibold text-muted-foreground">
+                  <div className="mt-1.5 flex flex-wrap gap-2 px-1 text-1 font-semibold text-muted-foreground">
                     <span
                       className="rounded-full px-2 py-1"
                       style={{ background: "var(--success-container)", color: "var(--success)" }}
@@ -109,14 +109,14 @@ function MyListings() {
                     <img
                       src={e.photos[0]}
                       alt=""
-                      className="h-14 w-14 shrink-0 rounded-md object-cover"
+                      className="h-14 w-14 shrink-0 rounded-sm object-cover"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-1 font-semibold">{e.name}</p>
-                      <p className="truncate text-0 text-muted-foreground">
+                      <p className="truncate text-1 text-muted-foreground">
                         {r.renter} · {r.dates} · {r.quantity} unit
                       </p>
-                      <p className="mt-1 text-0">
+                      <p className="mt-1 text-1">
                         <span className="font-semibold">{inr(r.offered)}</span>
                         {r.offered !== r.asking ? (
                           <span className="text-muted-foreground">
@@ -174,9 +174,9 @@ function MyListings() {
                 />
                 <div className="min-w-0 flex-1">
                   <p className="text-1 font-semibold">{n.title}</p>
-                  <p className="text-0 text-muted-foreground">{n.body}</p>
+                  <p className="text-1 text-muted-foreground">{n.body}</p>
                 </div>
-                <span className="shrink-0 text-0 text-muted-foreground">{n.time}</span>
+                <span className="shrink-0 text-1 text-muted-foreground">{n.time}</span>
               </article>
             ))
           : null}

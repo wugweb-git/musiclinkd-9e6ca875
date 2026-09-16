@@ -48,7 +48,7 @@ function BadgeGuide() {
             {badgePlacements.map((p) => (
               <Card key={p.surface} className="py-3">
                 <div className="flex items-center gap-2">
-                  <VerifiedBadge size={14} />
+                  <VerifiedBadge size={16} />
                   <p className="text-1 font-semibold">{p.surface}</p>
                 </div>
                 <p className="mt-1 text-1 text-muted-foreground">{p.detail}</p>

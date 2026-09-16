@@ -80,14 +80,14 @@ function DigitalId() {
             aria-label="Back to your profile"
             className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10"
           >
-            <ArrowLeft size={18} aria-hidden />
+            <ArrowLeft size={20} aria-hidden />
           </Link>
           <Link
             to="/identity/settings"
             aria-label="QR settings"
             className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10"
           >
-            <Settings2 size={17} aria-hidden />
+            <Settings2 size={16} aria-hidden />
           </Link>
         </div>
 
@@ -122,7 +122,7 @@ function DigitalId() {
               <h1 className="flex items-center justify-center gap-1.5 text-3 leading-tight">
                 {myIdentity.name}
                 {myIdentity.verified ? (
-                  <BadgeCheck size={18} aria-label="Verified" className="shrink-0" />
+                  <BadgeCheck size={20} aria-label="Verified" className="shrink-0" />
                 ) : null}
               </h1>
               <p className="mt-1 text-sm text-background/70">
@@ -158,32 +158,32 @@ function DigitalId() {
 
           <div className="mt-4 flex flex-col gap-2">
             <ActionRow
-              icon={<ScanLine size={17} />}
+              icon={<ScanLine size={16} />}
               label="Scan a MusicLinkd QR"
               hint="Point the camera at someone's code"
               to="/identity/scan"
             />
             <ActionRow
-              icon={<IdCard size={17} />}
+              icon={<IdCard size={16} />}
               label="Digital business card"
               hint="Name, role, the contact details you choose to share"
               to="/identity/contact"
             />
             <ActionRow
-              icon={<Building2 size={17} />}
+              icon={<Building2 size={16} />}
               label="Business QR"
               hint="Octave Sound Labs"
               to="/identity/business"
             />
             <ActionRow
-              icon={<Printer size={17} />}
+              icon={<Printer size={16} />}
               label="Print preview"
               hint="Card, poster, studio sign, badge"
               to="/identity/print"
             />
-            <ActionRow icon={<History size={17} />} label="Scan history" to="/identity/history" />
+            <ActionRow icon={<History size={16} />} label="Scan history" to="/identity/history" />
             <ActionRow
-              icon={<BarChart3 size={17} />}
+              icon={<BarChart3 size={16} />}
               label="QR analytics"
               hint="Scans, visits, conversions"
               to="/identity/analytics"
@@ -227,7 +227,7 @@ function DigitalId() {
             >
               <span
                 aria-hidden
-                className="h-10 w-10 shrink-0 rounded-md border border-border"
+                className="h-10 w-10 shrink-0 rounded-sm border border-border"
                 style={{ background: s.light, boxShadow: `inset 0 0 0 6px ${s.dark}` }}
               />
               <span className="min-w-0">

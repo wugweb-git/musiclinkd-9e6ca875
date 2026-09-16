@@ -82,7 +82,7 @@ function Discussion() {
               <img src={d.photo} alt="" className="h-8 w-8 rounded-full object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-1 font-semibold">{d.author}</p>
-                <p className="text-0 text-muted-foreground">{d.time}</p>
+                <p className="text-1 text-muted-foreground">{d.time}</p>
               </div>
               {d.decision ? (
                 <span
@@ -103,7 +103,7 @@ function Discussion() {
             </div>
             <p className="text-1 leading-relaxed">{d.body}</p>
             {d.attachment ? (
-              <p className="mt-2 rounded-lg border border-border px-3 py-2 text-0 text-muted-foreground">
+              <p className="mt-2 rounded-lg border border-border px-3 py-2 text-1 text-muted-foreground">
                 Attached · {d.attachment}
               </p>
             ) : null}
@@ -111,7 +111,7 @@ function Discussion() {
               <div className="mt-3 space-y-2 border-l border-border pl-3">
                 {d.replies.map((r) => (
                   <div key={`${r.author}-${r.time}`}>
-                    <p className="text-0 font-semibold">
+                    <p className="text-1 font-semibold">
                       {r.author}{" "}
                       <span className="font-normal text-muted-foreground">· {r.time}</span>
                     </p>

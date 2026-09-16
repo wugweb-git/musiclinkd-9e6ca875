@@ -74,7 +74,7 @@ function PortfolioSelect() {
                 } bg-card`}
               >
                 <span
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md text-2.5"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm text-3"
                   style={{ background: "var(--surface-subtle)" }}
                   aria-hidden
                 >

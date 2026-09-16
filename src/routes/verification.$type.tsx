@@ -206,7 +206,7 @@ function VerificationRequestScreen() {
             {v.name ? (
               <div className="flex items-center justify-center gap-2 rounded-[16px] bg-subtle px-3 py-2">
                 <span className="text-sm font-semibold">{v.name}</span>
-                <VerifiedBadge size={14} />
+                <VerifiedBadge size={16} />
               </div>
             ) : null}
           </Card>
@@ -249,7 +249,7 @@ function VerificationRequestScreen() {
             <h3 className="text-sm">What you sent</h3>
             {sent.map((name) => (
               <div key={name} className="flex items-center gap-2 text-1 text-muted-foreground">
-                <Check size={14} className="shrink-0 text-primary" aria-hidden />
+                <Check size={16} className="shrink-0 text-primary" aria-hidden />
                 <span className="min-w-0 break-words">{name}</span>
               </div>
             ))}
@@ -692,14 +692,14 @@ function Wizard({
                           onClick={() => setPreview(file)}
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-1 font-semibold"
                         >
-                          <Eye size={13} aria-hidden /> Preview
+                          <Eye size={12} aria-hidden /> Preview
                         </button>
                         <button
                           type="button"
                           onClick={() => pick(r.id)}
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-1 font-semibold"
                         >
-                          <RefreshCw size={13} aria-hidden /> Replace
+                          <RefreshCw size={12} aria-hidden /> Replace
                         </button>
                         <button
                           type="button"
@@ -712,7 +712,7 @@ function Wizard({
                           }
                           className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-1 font-semibold text-danger"
                         >
-                          <Trash2 size={13} aria-hidden /> Remove
+                          <Trash2 size={12} aria-hidden /> Remove
                         </button>
                       </div>
                     </>
@@ -722,7 +722,7 @@ function Wizard({
                       onClick={() => pick(r.id)}
                       className="inline-flex items-center gap-1 rounded-full bg-subtle px-3 py-2 text-1 font-semibold"
                     >
-                      <Paperclip size={13} aria-hidden /> Attach file
+                      <Paperclip size={12} aria-hidden /> Attach file
                     </button>
                   )}
                 </Card>
@@ -781,7 +781,7 @@ function Wizard({
               <h3 className="text-sm">Documents</h3>
               {docs.map((r) => (
                 <div key={r.id} className="flex items-center gap-2 text-1 text-muted-foreground">
-                  <Check size={14} className="shrink-0 text-primary" aria-hidden />
+                  <Check size={16} className="shrink-0 text-primary" aria-hidden />
                   <span className="min-w-0 break-words">{files[r.id]?.name ?? "Missing"}</span>
                 </div>
               ))}

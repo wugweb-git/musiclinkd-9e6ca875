@@ -166,7 +166,7 @@ export function PersonProfileExperience({
                   active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
                 )}
               >
-                <Icon size={18} aria-hidden />
+                <Icon size={20} aria-hidden />
                 <span
                   className={cn(
                     "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
@@ -264,7 +264,7 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         className="h-12 w-12"
         onClick={() => setFollowing((f) => !f)}
       >
-        {following ? <Check size={18} aria-hidden /> : <Plus size={18} aria-hidden />}
+        {following ? <Check size={20} aria-hidden /> : <Plus size={20} aria-hidden />}
       </IconBtn>
     </div>
   );
@@ -283,15 +283,15 @@ function OwnerActions({
     // Icon-only actions: the label is each button's accessible name and its tooltip.
     <div className="flex items-center gap-2">
       <IconBtnLink to="/profile/edit" label="Edit Profile" variant="ink" className="h-11 w-11">
-        <Pencil size={18} aria-hidden />
+        <Pencil size={20} aria-hidden />
       </IconBtnLink>
       {onShare ? (
         <IconBtn label="Share Profile" variant="outline" className="h-11 w-11" onClick={onShare}>
-          <Share2 size={18} aria-hidden />
+          <Share2 size={20} aria-hidden />
         </IconBtn>
       ) : null}
       <IconBtn label="Stats" variant="outline" className="h-11 w-11" onClick={onInsights}>
-        <BarChart3 size={18} aria-hidden />
+        <BarChart3 size={20} aria-hidden />
       </IconBtn>
       {/* The public page needs a username; without one, set it in profile edit. */}
       <IconBtnLink
@@ -302,7 +302,7 @@ function OwnerActions({
         variant="outline"
         className="h-11 w-11"
       >
-        <ExternalLink size={18} aria-hidden />
+        <ExternalLink size={20} aria-hidden />
       </IconBtnLink>
     </div>
   );
@@ -336,7 +336,7 @@ function OwnerPanel({
               <p className="pill bg-subtle text-muted-foreground">Profile insights</p>
               {insights ? <h2 className="mt-1 text-2">{insights.range}</h2> : null}
             </div>
-            <BarChart3 size={18} className="text-primary" aria-hidden />
+            <BarChart3 size={20} className="text-primary" aria-hidden />
           </div>
           {insights ? (
             <div className="mt-4 grid grid-cols-2 gap-3">
@@ -380,7 +380,7 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
-      <ChevronRight size={14} className="ml-auto shrink-0 text-muted-foreground" aria-hidden />
+      <ChevronRight size={16} className="ml-auto shrink-0 text-muted-foreground" aria-hidden />
     </Link>
   );
 }
@@ -411,7 +411,7 @@ function Overview({
               className="state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-98"
               onClick={() => onTab("About")}
             >
-              Read full profile <ChevronRight size={14} aria-hidden />
+              Read full profile <ChevronRight size={16} aria-hidden />
             </button>
           </div>
         ) : (
@@ -875,7 +875,7 @@ function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
       <ProfileSection title="Reviews">
         {p.reviewCount ? (
           <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
-            <Star size={15} className="fill-foreground" aria-hidden />
+            <Star size={16} className="fill-foreground" aria-hidden />
             {p.rating.toFixed(1)}
             <span className="font-normal text-muted-foreground">
               · {p.reviewCount} {p.reviewCount === 1 ? "review" : "reviews"}
@@ -913,7 +913,7 @@ function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
 function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-lg border border-border bg-card p-3">
-      <span className="flex h-8 w-8 items-center justify-center rounded-md bg-subtle text-foreground">
+      <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-subtle text-foreground">
         {icon}
       </span>
       <p className="pill mt-3 bg-subtle text-muted-foreground">{label}</p>
@@ -958,7 +958,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
             to={p.studio.to}
             className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-md bg-subtle text-foreground">
+            <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-subtle text-foreground">
               <Mic2 size={20} aria-hidden />
             </span>
             <span className="min-w-0 flex-1">

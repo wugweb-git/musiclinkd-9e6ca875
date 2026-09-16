@@ -112,7 +112,7 @@ export function TopBar({
           className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft size={18} aria-hidden />
+          <ArrowLeft size={20} aria-hidden />
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
@@ -137,7 +137,7 @@ export function SearchBar({
 }) {
   return (
     <div className="flex h-14 items-center gap-3 rounded-full border border-border bg-card px-5">
-      <Search size={18} className="shrink-0 text-muted-foreground" aria-hidden />
+      <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
       <input
         value={value}
         onFocus={onFocus}
@@ -147,7 +147,7 @@ export function SearchBar({
         className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
       />
       <span className="h-6 w-px bg-border" />
-      <Mic size={18} className="shrink-0 text-muted-foreground" aria-hidden />
+      <Mic size={20} className="shrink-0 text-muted-foreground" aria-hidden />
     </div>
   );
 }
@@ -245,8 +245,8 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
  * Buttons. Three shapes, one set of states.
  *
  *   <Btn>Continue</Btn>                                          text
- *   <Btn icon={<Mail size={18} />}>Continue with email</Btn>      icon + text (icon leads)
- *   <IconBtn label="Back"><ArrowLeft size={18} /></IconBtn>        icon only, 48dp, label is the name
+ *   <Btn icon={<Mail size={20} />}>Continue with email</Btn>      icon + text (icon leads)
+ *   <IconBtn label="Back"><ArrowLeft size={20} /></IconBtn>        icon only, 48dp, label is the name
  *   BtnLink and IconBtnLink are the same shapes as router links.
  *
  * States (Material 3): enabled; hovered (pointer devices only) and pressed, shown by a state layer of
@@ -323,7 +323,7 @@ function BtnContent({
   return (
     <span className="relative inline-flex items-center justify-center gap-2">
       {loading ? (
-        <LoaderCircle size={18} className="shrink-0 animate-spin" aria-hidden />
+        <LoaderCircle size={20} className="shrink-0 animate-spin" aria-hidden />
       ) : icon ? (
         <span aria-hidden className="inline-flex shrink-0">
           {icon}
@@ -451,7 +451,7 @@ export function IconBtn({
     >
       {ripple.layer}
       <span className="relative inline-flex">
-        {loading ? <LoaderCircle size={18} className="animate-spin" aria-hidden /> : children}
+        {loading ? <LoaderCircle size={20} className="animate-spin" aria-hidden /> : children}
       </span>
     </button>
   );
@@ -511,7 +511,7 @@ export function Sheet({
       />
       <div className="relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-2xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar duration-300 ease-enter">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
-        {title ? <h2 className="mb-4 text-2.5">{title}</h2> : null}
+        {title ? <h2 className="mb-4 text-3">{title}</h2> : null}
         {children}
       </div>
     </div>

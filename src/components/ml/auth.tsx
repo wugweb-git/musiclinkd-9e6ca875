@@ -69,7 +69,7 @@ function AuthBackButton({ back }: { back: AuthBack }) {
         else void navigate({ ...(back as { to: "/welcome" }), replace: true });
       }}
     >
-      <ArrowLeft size={18} aria-hidden />
+      <ArrowLeft size={20} aria-hidden />
     </IconBtn>
   );
 }
@@ -114,7 +114,7 @@ export function Brand({
         className,
       )}
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-md bg-pink-container">
+      <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-pink-container">
         <LogoMark className={`w-6 text-brand ${animated ? "animate-sound-check" : ""}`} />
       </span>
       <span className="text-2 font-semibold">MusicLinkd</span>
@@ -171,9 +171,9 @@ export function AuthNotice({
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className={cn("mb-5 flex animate-message gap-3 rounded-md px-3.5 py-3", s.box)}
+      className={cn("mb-5 flex animate-message gap-3 rounded-sm px-3.5 py-3", s.box)}
     >
-      <s.Icon size={18} className={cn("mt-px shrink-0", s.icon)} aria-hidden />
+      <s.Icon size={20} className={cn("mt-px shrink-0", s.icon)} aria-hidden />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold leading-snug">{title}</p>
         {children ? (
@@ -253,7 +253,7 @@ export function TextField({
       </label>
       <div
         className={cn(
-          "flex h-12 items-center gap-2 rounded-md border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
+          "flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
           invalid
             ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
             : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
@@ -302,7 +302,7 @@ export function TextField({
           role="alert"
           className="mt-1.5 flex animate-message items-start gap-1.5 text-1 text-destructive"
         >
-          <CircleAlert size={14} className="mt-px shrink-0" aria-hidden />
+          <CircleAlert size={16} className="mt-px shrink-0" aria-hidden />
           {error}
         </p>
       ) : hint ? (
@@ -359,7 +359,7 @@ export function PasswordInput({
             onClick={() => setShow((s) => !s)}
           >
             <span key={String(show)} className="inline-flex animate-pop">
-              {show ? <EyeOff size={18} aria-hidden /> : <Eye size={18} aria-hidden />}
+              {show ? <EyeOff size={20} aria-hidden /> : <Eye size={20} aria-hidden />}
             </span>
           </IconBtn>
         }
@@ -422,7 +422,7 @@ export function PasswordRequirements({ value }: { value: string }) {
 /** India's flag, drawn: emoji flags do not render on every Android build. */
 export function IndiaFlag({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 16" className={cn("h-4 w-6 shrink-0 rounded-xs", className)} aria-hidden>
+    <svg viewBox="0 0 24 16" className={cn("h-4 w-6 shrink-0 rounded-sm", className)} aria-hidden>
       <rect width="24" height="16" fill="#fff" />
       <rect width="24" height="5.33" fill="#FF9933" />
       <rect y="10.67" width="24" height="5.33" fill="#138808" />
@@ -530,7 +530,7 @@ export function CodeInput({
               style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
                 complete && "animate-meter",
-                "flex h-14 flex-1 items-center justify-center rounded-md border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard",
+                "flex h-14 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard",
                 invalid
                   ? "border-destructive"
                   : active || value.length === length
@@ -681,8 +681,8 @@ export function AuthStatus({
   const t = statusTone[tone];
   return (
     <AuthScreen back={back}>
-      <div className={cn("mb-6 flex h-14 w-14 items-center justify-center rounded-md", t.tile)}>
-        <Icon size={22} className={t.icon} aria-hidden />
+      <div className={cn("mb-6 flex h-14 w-14 items-center justify-center rounded-sm", t.tile)}>
+        <Icon size={24} className={t.icon} aria-hidden />
       </div>
       <AuthHeading title={title} sub={body} />
       {list?.length ? (
@@ -705,7 +705,7 @@ export function AuthStatus({
 export function TrustNote({ children }: { children: ReactNode }) {
   return (
     <p className="mt-5 flex items-start gap-2 text-1 leading-relaxed text-muted-foreground">
-      <ShieldCheck size={14} className="mt-0.5 shrink-0 text-primary" />
+      <ShieldCheck size={16} className="mt-0.5 shrink-0 text-primary" />
       <span>{children}</span>
     </p>
   );

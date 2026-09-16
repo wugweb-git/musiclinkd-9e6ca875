@@ -25,10 +25,10 @@ type ToastContextValue = {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const severityGlyphs = {
-  danger: <DangerGlyph size={17} />,
-  info: <InfoGlyph size={17} />,
-  success: <SuccessGlyph size={17} />,
-  warning: <WarningGlyph size={17} />,
+  danger: <DangerGlyph size={16} />,
+  info: <InfoGlyph size={16} />,
+  success: <SuccessGlyph size={16} />,
+  warning: <WarningGlyph size={16} />,
 } as const;
 
 /** How long a message sits there before it withdraws itself. */

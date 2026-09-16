@@ -84,7 +84,7 @@ export function TalentRow({
           {...(onSave ? { onClick: () => onSave(t) } : {})}
           className="hit-area flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card disabled:opacity-40"
         >
-          <Heart size={18} aria-hidden />
+          <Heart size={20} aria-hidden />
         </button>
       </div>
     </article>
@@ -112,12 +112,12 @@ export function TalentCard({ t }: { t: Talent }) {
       <div className="p-3">
         <div className="flex items-center gap-1">
           <h3 className="truncate text-1">{t.name}</h3>
-          {t.verified ? <VerifiedBadge size={13} /> : null}
+          {t.verified ? <VerifiedBadge size={12} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.role}</p>
         <div className="mt-2 flex items-center justify-between text-1">
           <span className="inline-flex items-center gap-0.5 font-semibold text-warn">
-            {t.rating} <Star size={11} fill="currentColor" aria-hidden />
+            {t.rating} <Star size={12} fill="currentColor" aria-hidden />
           </span>
           <span className="text-muted-foreground">{t.followers}</span>
         </div>
@@ -142,7 +142,7 @@ export function TalentGridCard({ t }: { t: Talent }) {
       <div className="p-3">
         <div className="flex items-center gap-1">
           <h3 className="truncate text-1">{t.name}</h3>
-          {t.verified ? <VerifiedBadge size={13} /> : null}
+          {t.verified ? <VerifiedBadge size={12} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.location}</p>
         <Price price={t.rate} className="mt-1" amountClassName="text-1 font-semibold" />

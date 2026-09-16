@@ -51,7 +51,7 @@ function Plans() {
             }}
             tone="inherit"
             amountClassName="text-1 font-semibold"
-            unitClassName="text-0"
+            unitClassName="text-1"
           />
           <BtnLink to="/plans/manage" variant="outline" className="w-full">
             Manage Subscription
@@ -73,7 +73,7 @@ function Plans() {
               <Card className={active ? "border-primary" : ""}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="truncate text-2.5 leading-tight">{p.name}</h3>
+                    <h3 className="truncate text-3 leading-tight">{p.name}</h3>
                     <p className="mt-1 text-1 text-muted-foreground">{p.tagline}</p>
                   </div>
                   {p.best ? (
@@ -100,10 +100,10 @@ function Plans() {
                   {p.features.map((f) => (
                     <li key={f.label} className="flex items-start gap-2 text-1">
                       {f.included ? (
-                        <Check size={15} className="mt-0.5 shrink-0 text-success" aria-hidden />
+                        <Check size={16} className="mt-0.5 shrink-0 text-success" aria-hidden />
                       ) : (
                         <Minus
-                          size={15}
+                          size={16}
                           className="mt-0.5 shrink-0 text-muted-foreground"
                           aria-hidden
                         />

@@ -67,7 +67,7 @@ function ManageOpportunity() {
                 : []),
             ].map((s) => (
               <div key={s.label} className="rounded-lg bg-subtle p-3">
-                <p className="text-0 text-muted-foreground">{s.label}</p>
+                <p className="text-1 text-muted-foreground">{s.label}</p>
                 <p className="mt-1 text-2 font-bold">{s.value}</p>
               </div>
             ))}

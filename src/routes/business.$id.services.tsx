@@ -84,7 +84,7 @@ function BusinessServices() {
             aria-label="Add service"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
-            <Plus size={18} />
+            <Plus size={20} />
           </Link>
         }
       />

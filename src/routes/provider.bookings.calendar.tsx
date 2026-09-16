@@ -119,14 +119,14 @@ function BlockRow({ b }: { b: Booking }) {
     >
       <span className="w-[62px] shrink-0 text-1 font-bold leading-tight">
         {formatTime(b.start)}
-        <span className="block text-0 font-semibold text-muted-foreground">
+        <span className="block text-1 font-semibold text-muted-foreground">
           {formatTime(b.end)}
         </span>
       </span>
       <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-primary" aria-hidden />
       <div className="min-w-0 flex-1">
         <p className="truncate text-1 font-semibold">{label(b)}</p>
-        <p className="truncate text-0 text-muted-foreground">
+        <p className="truncate text-1 text-muted-foreground">
           {b.people} people · {b.purpose}
         </p>
       </div>
@@ -182,7 +182,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
               <span className="pill min-w-0 truncate bg-subtle text-muted-foreground">
                 {formatDate(d)}
               </span>
-              <span className="shrink-0 text-0 font-semibold text-muted-foreground">
+              <span className="shrink-0 text-1 font-semibold text-muted-foreground">
                 {items.length} session{items.length === 1 ? "" : "s"}
               </span>
             </button>
@@ -193,7 +193,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
                 ))}
               </div>
             ) : (
-              <p className="rounded-lg bg-subtle px-4 py-2.5 text-0 text-muted-foreground">
+              <p className="rounded-lg bg-subtle px-4 py-2.5 text-1 text-muted-foreground">
                 Open all day
               </p>
             )}
@@ -238,7 +238,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
           );
         })}
       </div>
-      <p className="mt-3 text-0 text-muted-foreground">
+      <p className="mt-3 text-1 text-muted-foreground">
         A dot marks a day with sessions. Tap a day to open it.
       </p>
     </div>

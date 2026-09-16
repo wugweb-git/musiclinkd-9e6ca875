@@ -59,7 +59,7 @@ function InviteDetail() {
       <TopBar title="Collaboration invitation" subtitle={`Sent ${inv.sentAt}`} back="/collab" />
       <main className="px-5 pt-5">
         <img src={inv.artwork} alt="" className="mb-4 h-40 w-full rounded-lg object-cover" />
-        <h2 className="text-2.5">{inv.projectName}</h2>
+        <h2 className="text-3">{inv.projectName}</h2>
         <div className="mt-3 mb-4 flex flex-wrap gap-2">
           <Tag>{inv.type}</Tag>
           <Tag tone="info">Role: {inv.proposedRole}</Tag>
@@ -75,11 +75,11 @@ function InviteDetail() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <p className="truncate text-sm font-semibold">{inv.inviter}</p>
-                <VerifiedBadge size={14} />
+                <VerifiedBadge size={16} />
               </div>
-              <p className="truncate text-0 text-muted-foreground">{inv.inviterRole}</p>
+              <p className="truncate text-1 text-muted-foreground">{inv.inviterRole}</p>
             </div>
-            <TextLink to="/messages" className="text-0">
+            <TextLink to="/messages" className="text-1">
               Message
             </TextLink>
           </div>

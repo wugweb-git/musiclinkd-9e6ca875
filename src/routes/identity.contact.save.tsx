@@ -55,21 +55,21 @@ function SaveContact() {
               <p className="pill bg-subtle text-muted-foreground">Will be saved</p>
               <div className="mt-3 flex flex-col gap-2">
                 <ActionRow
-                  icon={<UserRoundPlus size={17} />}
+                  icon={<UserRoundPlus size={16} />}
                   label={myIdentity.name}
                   hint={myIdentity.role}
                 />
                 {c.phone.shared ? (
-                  <ActionRow icon={<Check size={17} />} label={c.phone.value} hint="Mobile" />
+                  <ActionRow icon={<Check size={16} />} label={c.phone.value} hint="Mobile" />
                 ) : null}
                 {c.email.shared ? (
-                  <ActionRow icon={<Check size={17} />} label={c.email.value} hint="Email" />
+                  <ActionRow icon={<Check size={16} />} label={c.email.value} hint="Email" />
                 ) : null}
                 {c.company.shared ? (
-                  <ActionRow icon={<Check size={17} />} label={c.company.value} hint="Company" />
+                  <ActionRow icon={<Check size={16} />} label={c.company.value} hint="Company" />
                 ) : null}
                 <ActionRow
-                  icon={<Check size={17} />}
+                  icon={<Check size={16} />}
                   label={`musiclinkd.app/q/${myIdentity.code}`}
                   hint="Profile link"
                 />

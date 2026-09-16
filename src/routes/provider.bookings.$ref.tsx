@@ -86,7 +86,7 @@ function ProviderBookingDetail() {
               <p className="truncate text-1 text-muted-foreground">{bk.customerRole}</p>
             </div>
             <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
-              <Users size={13} /> {bk.people}
+              <Users size={12} /> {bk.people}
             </span>
           </div>
           <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
@@ -116,7 +116,7 @@ function ProviderBookingDetail() {
 
         <div className="mt-6 space-y-2">
           <BtnLink to="/messages" variant="outline" className="w-full">
-            <MessageCircle size={15} className="mr-1.5" /> Message {bk.customer.split(" ")[0]}
+            <MessageCircle size={16} className="mr-1.5" /> Message {bk.customer.split(" ")[0]}
           </BtnLink>
           <BtnLink to="/provider/availability" variant="ghost" className="w-full">
             Block or Adjust This Room's Calendar

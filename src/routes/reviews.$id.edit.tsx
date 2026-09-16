@@ -47,7 +47,7 @@ function EditReview() {
         <Card>
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">Your rating</p>
-            <Stars value={r.rating} size={18} />
+            <Stars value={r.rating} size={20} />
           </div>
           <p className="mt-2 text-1 text-muted-foreground">
             Ratings are locked once published. You can still correct the written part.

@@ -14,7 +14,7 @@ export function NotificationsBell() {
       aria-label="Notifications"
       className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-95"
     >
-      <Bell size={18} aria-hidden />
+      <Bell size={20} aria-hidden />
     </Link>
   );
 }
@@ -33,7 +33,7 @@ export function SearchIconButton({ open, onToggle }: { open: boolean; onToggle: 
       onClick={onToggle}
       className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-95"
     >
-      {open ? <X size={18} aria-hidden /> : <Search size={18} aria-hidden />}
+      {open ? <X size={20} aria-hidden /> : <Search size={20} aria-hidden />}
     </button>
   );
 }
@@ -62,7 +62,7 @@ export function SearchField({
       }}
     >
       <label className="flex h-14 items-center gap-3 rounded-full border border-border bg-card px-5 focus-within:ring-2 focus-within:ring-ring">
-        <Search size={18} className="shrink-0 text-muted-foreground" aria-hidden />
+        <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
         <input
           ref={input}
           type="search"

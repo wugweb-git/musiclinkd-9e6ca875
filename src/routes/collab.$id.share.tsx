@@ -81,7 +81,7 @@ function Share() {
           <SwitchRow label="Show files" value={showFiles} onChange={setShowFiles} />
         </div>
 
-        <p className="mb-6 text-0 text-muted-foreground">
+        <p className="mb-6 text-1 text-muted-foreground">
           Turning the link off immediately revokes access for anyone who hasn't been invited
           directly.
         </p>

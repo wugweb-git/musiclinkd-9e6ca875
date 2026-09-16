@@ -74,7 +74,7 @@ function ListForRent() {
             >
               ✓
             </div>
-            <h2 className="text-2.5">Your rental is live</h2>
+            <h2 className="text-3">Your rental is live</h2>
             <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">
               Renters near you can now check availability and send requests. You'll be notified for
               every enquiry.
@@ -105,9 +105,9 @@ function ListForRent() {
                     background: cat === c.slug ? "var(--surface-subtle)" : "var(--card)",
                   }}
                 >
-                  <span className="text-2.5">{c.emoji}</span>
+                  <span className="text-3">{c.emoji}</span>
                   <p className="mt-2 text-1 font-semibold">{c.label}</p>
-                  <p className="text-0 text-muted-foreground">{c.count}</p>
+                  <p className="text-1 text-muted-foreground">{c.count}</p>
                 </button>
               ))}
             </div>
@@ -132,12 +132,12 @@ function ListForRent() {
                   />
                   {cover === i ? (
                     <span className="absolute left-1.5 top-1.5 rounded-full bg-primary p-1 text-primary-foreground">
-                      <Star size={10} fill="currentColor" />
+                      <Star size={12} fill="currentColor" />
                     </span>
                   ) : null}
                 </button>
               ))}
-              <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-0 font-semibold text-muted-foreground">
+              <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-1 font-semibold text-muted-foreground">
                 <Camera size={16} /> Add
               </button>
             </div>
@@ -318,10 +318,10 @@ function ListForRent() {
                 <Price
                   price={{ amount: "₹900", unit: "day" }}
                   amountClassName="text-sm font-bold"
-                  unitClassName="text-0"
+                  unitClassName="text-1"
                 />
                 <h3 className="mt-1 text-sm leading-snug">Shure SM7B</h3>
-                <p className="text-0 text-muted-foreground">Shure · SM7B</p>
+                <p className="text-1 text-muted-foreground">Shure · SM7B</p>
                 <div className="mt-2.5 flex flex-wrap items-center gap-2">
                   <RentalAvailabilityBadge text="Available Aug 16–30" />
                   <ConditionBadge value={condition} />
@@ -329,7 +329,7 @@ function ListForRent() {
                 <div className="mt-2.5">
                   <LocationRow text="Andheri West, Mumbai · 6.8 km away" />
                 </div>
-                <p className="mt-2 text-0 text-muted-foreground">
+                <p className="mt-2 text-1 text-muted-foreground">
                   Deposit ₹15,000 · {fulfilment.join(" or ") || "Pickup"} · min 1 day
                 </p>
               </div>

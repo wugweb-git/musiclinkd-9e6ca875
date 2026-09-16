@@ -69,7 +69,7 @@ function Sell() {
                 className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left ${type === t.label ? "border-primary" : "border-border"} bg-card`}
               >
                 <span
-                  className="flex h-11 w-11 items-center justify-center rounded-md text-2"
+                  className="flex h-11 w-11 items-center justify-center rounded-sm text-2"
                   style={{ background: "var(--surface-subtle)" }}
                 >
                   {t.emoji}
@@ -97,7 +97,7 @@ function Sell() {
                 </div>
               ))}
             </div>
-            <p className="mt-3 text-0 text-muted-foreground">
+            <p className="mt-3 text-1 text-muted-foreground">
               Drag to reorder. First photo becomes the cover. Video and audio previews are supported
               for services.
             </p>
@@ -158,14 +158,14 @@ function Sell() {
             <div className="p-4">
               <PriceBlock price={{ amount: price ? `₹${price}` : "₹1,84,000" }} size="lg" />
               <h2 className="mt-1 text-2">{title || "Fender Stratocaster, 2022"}</h2>
-              <p className="text-0 text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 {type} · {condition} · Dadar, Mumbai
               </p>
               <div className="mt-3 flex items-center gap-3 rounded-lg bg-subtle p-3">
-                <img src={seller.photo} alt="" className="h-10 w-10 rounded-md object-cover" />
+                <img src={seller.photo} alt="" className="h-10 w-10 rounded-sm object-cover" />
                 <div>
                   <p className="text-1 font-semibold">{seller.name}</p>
-                  <p className="text-0 text-muted-foreground">{seller.role}</p>
+                  <p className="text-1 text-muted-foreground">{seller.role}</p>
                 </div>
               </div>
               <div className="mt-3">

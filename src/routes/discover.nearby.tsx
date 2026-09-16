@@ -49,7 +49,7 @@ function Nearby() {
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-subtle text-foreground">
               <MapPin size={24} />
             </span>
-            <h2 className="mt-3 text-2.5 leading-tight">Show people near you</h2>
+            <h2 className="mt-3 text-3 leading-tight">Show people near you</h2>
             <p className="mt-2 text-1 text-muted-foreground">
               We only use your location to sort results by distance. It is never shown on your
               profile.

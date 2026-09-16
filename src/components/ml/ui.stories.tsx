@@ -20,7 +20,7 @@ type BtnStory = StoryObj<typeof btnMeta>;
 export const Primary: BtnStory = {};
 export const Outline: BtnStory = { args: { variant: "outline" } };
 export const Ghost: BtnStory = { args: { variant: "ghost" } };
-export const WithIcon: BtnStory = { args: { variant: "outline", icon: <Plus size={18} /> } };
+export const WithIcon: BtnStory = { args: { variant: "outline", icon: <Plus size={20} /> } };
 export const Loading: BtnStory = { args: { loading: true } };
 export const Pending: BtnStory = {
   args: { pending: true },
@@ -57,16 +57,16 @@ export const IconButtons: BtnStory = {
       {(["outline", "ink", "ghost", "plain"] as const).map((v) => (
         <div key={v} className="flex items-center gap-3">
           <IconBtn label="Edit" variant={v}>
-            <Pencil size={18} />
+            <Pencil size={20} />
           </IconBtn>
           <IconBtn label="Share" variant={v}>
-            <Share2 size={18} />
+            <Share2 size={20} />
           </IconBtn>
           <IconBtn label="Delete" variant={v} loading>
-            <Trash2 size={18} />
+            <Trash2 size={20} />
           </IconBtn>
           <IconBtn label="Add" variant={v} disabled>
-            <Plus size={18} />
+            <Plus size={20} />
           </IconBtn>
           <span className="text-1 text-muted-foreground">{v}</span>
         </div>

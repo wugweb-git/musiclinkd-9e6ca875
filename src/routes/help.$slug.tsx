@@ -53,7 +53,7 @@ function HelpPage() {
           <StatusPill label={page.kind} tone={page.kind === "policy" ? "warn" : "brand"} />
           <h1 className="text-3 font-bold leading-tight">{page.title}</h1>
           <p className="text-1 text-muted-foreground">{page.summary}</p>
-          <p className="text-0 text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             {page.readTime} · {page.updated}
           </p>
         </header>

@@ -86,7 +86,7 @@ function NotificationsScreen() {
           onClick={() => setItems((all) => all.map((n) => ({ ...n, read: true })))}
           className="inline-flex items-center gap-1.5 text-1 font-semibold text-foreground"
         >
-          <CheckCheck size={14} /> Mark all as read
+          <CheckCheck size={16} /> Mark all as read
         </button>
       </div>
 
@@ -165,7 +165,7 @@ function NotificationsScreen() {
                           aria-hidden
                           className="grid h-11 w-11 place-items-center rounded-full bg-subtle"
                         >
-                          <Icon size={18} strokeWidth={1.75} />
+                          <Icon size={20} strokeWidth={1.75} />
                         </span>
                       )}
                       {n.actor ? (
@@ -173,7 +173,7 @@ function NotificationsScreen() {
                           aria-hidden
                           className="absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-card bg-background"
                         >
-                          <Icon size={11} strokeWidth={2} />
+                          <Icon size={12} strokeWidth={2} />
                         </span>
                       ) : null}
                     </span>
@@ -182,7 +182,7 @@ function NotificationsScreen() {
                         <span className="min-w-0 flex-1 text-sm font-semibold leading-snug">
                           {n.title}
                         </span>
-                        <span className="shrink-0 text-0 text-muted-foreground">{n.when}</span>
+                        <span className="shrink-0 text-1 text-muted-foreground">{n.when}</span>
                       </span>
                       <span className="mt-0.5 block line-clamp-2 text-1 leading-snug text-muted-foreground">
                         {n.body}

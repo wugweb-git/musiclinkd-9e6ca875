@@ -99,7 +99,7 @@ export const LiquidChip = forwardRef<HTMLSpanElement, LiquidChipProps>(
             }}
             type="button"
           >
-            <XGlyph size={11} />
+            <XGlyph size={12} />
           </button>
         )}
       </Tag>

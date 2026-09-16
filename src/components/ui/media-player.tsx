@@ -2104,7 +2104,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
             >
               <div
                 className={cn(
-                  "flex flex-col items-center gap-1.5 rounded-md border bg-background text-foreground shadow-sm dark:bg-zinc-900",
+                  "flex flex-col items-center gap-1.5 rounded-sm border bg-background text-foreground shadow-sm dark:bg-zinc-900",
                   thumbnail && "min-h-10",
                   !thumbnail && currentChapterCue && "px-3 py-1.5",
                 )}
@@ -2112,7 +2112,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
                 {thumbnail?.src && (
                   <div
                     data-slot="media-player-seek-thumbnail"
-                    className="overflow-hidden rounded-md rounded-b-none"
+                    className="overflow-hidden rounded-sm rounded-b-none"
                     style={{
                       width: `${SPRITE_CONTAINER_WIDTH}px`,
                       height: `${SPRITE_CONTAINER_HEIGHT}px`,

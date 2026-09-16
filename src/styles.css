@@ -20,8 +20,8 @@
  * Radius scale is 8 / 16 / 32 / pill — nothing else is a step.
  * Cards lift with --elevation-2; the 1px border is the fallback for cards on white.
  * Purple is the category badge only — never a general accent.
- * Type is eight fluid ramps (--type-0, 1, sm, 2, 2-5, 3, 4, 5; --type-5 is hero-only);
- * never an arbitrary px size.
+ * Type is five fluid ramps (--type-1 12, --type-sm 14, --type-2 16, --type-3 22, --type-4 32);
+ * never an arbitrary px size. Icons are 12 / 16 / 20 / 24 / 32 — the same ladder.
  */
 
 @theme inline {
@@ -32,67 +32,42 @@
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /*
-   * Radius — the Material 3 shape scale (13 Sep 2026), the Android/mobile standard.
-   * Roles: sm 8 chips and small controls · md 12 small tiles, thumbnails, inputs ·
-   * lg 16 CARDS and list containers · xl 20 large tiles · 2xl 28 sheets and dialogs ·
-   * 3xl 32 hero / full-bleed only · full for buttons and pills. Cards were 32px before
-   * this change; every card now uses rounded-lg. Pick by role, never by look.
+   * Radius — four steps and nothing else (16 Sep 2026, down from seven): sm 8 for chips, small
+   * controls, thumbnails and inputs · lg 16 for CARDS and list containers · 3xl 32 for sheets,
+   * dialogs and full-bleed hero · full for buttons and pills. xs 4, md 12, xl 20 and 2xl 28 were
+   * retired into their neighbours. Pick by role, never by look.
    */
-  --radius-xs: 4px;
   --radius-sm: 8px;
-  --radius-md: 12px;
   --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 28px;
   --radius-3xl: 32px;
 
   /*
-   * Type. Based on frontend/guide/system/ml-tokens.css, which is generated
-   * from tokens/tokens.json. Canonical names are --type-0, --type-1, --type-sm,
-   * --type-2, --type-2-5, --type-3, --type-4, --type-5 (defined in :root); they are
-   * mapped here into Tailwind's --text-* namespace so the utilities read text-0,
-   * text-1, text-sm, text-2, text-2.5, text-3, text-4, text-5. At the 412px target:
-   * 11.0 / 12.0 / 14.0 / 16.1 / 19.1 / 22.3 / 32.6 / 40.8px.
+   * Type. Based on frontend/guide/system/ml-tokens.css, which is generated from tokens/tokens.json.
    *
-   * EIGHT steps as of 16 Sep 2026. Four was a stated constraint of the system; the
-   * cap was lifted deliberately at the brand owner's instruction, and --type-5 was
-   * added for HERO headlines only — the pre-auth landing. Screen titles stay on
-   * --type-4; if a second call site for --type-5 appears, question it before
-   * adding, because one hero per product is the point of the step.
+   * FIVE steps as of 16 Sep 2026, down from eight. --type-0 (11px), --type-2-5 (19px) and
+   * --type-5 (40px) were retired into their neighbours: eight steps averaged 1.15x apart, and four
+   * of them were within 20% of a neighbour, which is not a difference anyone can see. What remains
+   * is the owner's four-step ramp (12 / 16 / 22 / 32) plus --type-sm at 14, the step the app leans
+   * on hardest — body copy, buttons and list titles.
    *
-   * Ranges are fluid and continuous, every one on the same 360→1440 ramp:
-   * 11-12 / 12-13 / 14-15 / 16-18 / 19-22 / 22-28 / 32-44 / 40-56.
+   * At the 412px target: 12.0 / 14.0 / 16.1 / 22.3 / 32.6px.
+   * Ranges are fluid and continuous, every one on the same 360->1440 ramp:
+   * 12-13 / 14-15 / 16-18 / 22-28 / 32-44.
    *
-   * text-sm is the 14px step (Material bodyMedium, 14sp), added 14 Sep. It keeps Tailwind's name
-   * because 302 call sites use it, including the Btn label: the utility now resolves to a token
-   * instead of Tailwind's default, with no call-site edits and no renumbering of text-1..5.
-   *
-   * text-0 and text-2.5 were added 16 Sep so that the 1,158 hand-set sizes the app was carrying
-   * could all land on a step. text-0 is the 11px LABEL step — eyebrows, unit lines, meta captions,
-   * the same 11px/16px that `pill` sets — and it also absorbs the old 10px micro-labels. text-2.5
-   * is the 19px SECTION-HEADING step that fills the old gap between text-2 (max 18) and text-3
-   * (min 22); it is named for where it sits on the ladder, not for a role, so `text-2.5` at a call
-   * site reads as "between text-2 and text-3" with no lookup. Both carry their own line height,
-   * like every other step. Every other foundation group (space, radius, size, opacity, weight,
-   * elevation, zIndex, icon, avatar) is still exactly four.
+   * Roles: --text-1 labels, eyebrows, meta and captions (and what `pill` sets) · --text-sm body,
+   * buttons, list titles · --text-2 card titles and sub-headings · --text-3 section and screen
+   * headings, the profile name · --text-4 display, one per screen at most.
    */
-  --text-0: var(--type-0);
-  --text-0--line-height: 1.45;
   --text-1: var(--type-1);
   --text-1--line-height: 1.45;
   --text-sm: var(--type-sm);
   --text-sm--line-height: 1.43;
   --text-2: var(--type-2);
   --text-2--line-height: 1.5;
-  --text-2\.5: var(--type-2-5);
-  --text-2\.5--line-height: 1.35;
   --text-3: var(--type-3);
   --text-3--line-height: 1.25;
   --text-4: var(--type-4);
   --text-4--line-height: 1.1;
-  /* Hero only. See the note above before reaching for this. */
-  --text-5: var(--type-5);
-  --text-5--line-height: 1.04;
 
   /* Spacing uses Tailwind's numeric scale only (p-1 = 4px, p-2 = 8px, p-4 = 16px, p-8 = 32px).
    * The named duplicates --spacing-xs/sm/md/lg had zero uses and were removed 13 Sep so there
@@ -348,18 +323,12 @@
   --elevation-4: 0 12px 32px rgba(13, 11, 38, 0.12);
 
   /* Type ramps, verbatim from the generated ml-tokens.css. */
-  /* 11px label step. Not in the generated ml-tokens.css yet; add it there too. */
-  --type-0: clamp(11px, calc(11px + 1 * (100vw - 360px) / 1080), 12px);
   --type-1: clamp(12px, calc(12px + 1 * (100vw - 360px) / 1080), 13px);
   /* 14px step. Not in the generated ml-tokens.css yet; add it there too. */
   --type-sm: clamp(14px, calc(14px + 1 * (100vw - 360px) / 1080), 15px);
   --type-2: clamp(16px, calc(16px + 2 * (100vw - 360px) / 1080), 18px);
-  /* 19px step, between --type-2 and --type-3. Not in the generated ml-tokens.css yet. */
-  --type-2-5: clamp(19px, calc(19px + 3 * (100vw - 360px) / 1080), 22px);
   --type-3: clamp(22px, calc(22px + 6 * (100vw - 360px) / 1080), 28px);
   --type-4: clamp(32px, calc(32px + 12 * (100vw - 360px) / 1080), 44px);
-  /* Hero. 40.8px at the 412px target, 56px at 1440. */
-  --type-5: clamp(40px, calc(40px + 16 * (100vw - 360px) / 1080), 56px);
 
   /* Motion, verbatim from the generated ml-tokens.css. */
   --duration-1: 125ms;
@@ -460,8 +429,8 @@
   gap: 0.25rem;
   border-radius: 9999px;
   padding: 0.125rem 0.5rem;
-  /* Eyebrow size: 11px, Material labelSmall / iOS caption 2. Caps read larger than their px size. */
-  font-size: 11px;
+  /* Eyebrow size: the --type-1 step. Caps read larger than their px size. */
+  font-size: var(--type-1);
   line-height: 1rem;
   font-weight: 500;
   letter-spacing: 0.08em;

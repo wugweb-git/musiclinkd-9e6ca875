@@ -87,7 +87,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
                 }`}
                 aria-hidden
               >
-                {done ? <Check size={11} strokeWidth={3} /> : "·"}
+                {done ? <Check size={12} strokeWidth={3} /> : "·"}
               </span>
               {i < bookingTimeline.length - 1 ? (
                 <span className={`min-h-4.5 w-px flex-1 ${done ? "bg-primary" : "bg-border"}`} />
@@ -148,17 +148,17 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
       {b.rating ? (
         <span className="inline-flex items-center gap-1">
-          <Star size={13} className="text-primary" /> {b.rating} ({b.reviews})
+          <Star size={12} className="text-primary" /> {b.rating} ({b.reviews})
         </span>
       ) : null}
       {where ? (
         <span className="inline-flex items-center gap-1">
-          <MapPin size={13} /> {where}
+          <MapPin size={12} /> {where}
         </span>
       ) : null}
       {b.responseTime ? (
         <span className="inline-flex items-center gap-1">
-          <Clock size={13} /> {b.responseTime}
+          <Clock size={12} /> {b.responseTime}
         </span>
       ) : null}
     </div>
@@ -315,7 +315,7 @@ export function AvailabilityCalendar({
               onClick={() => onSelect(iso)}
               aria-label={`${formatDate(iso)} — ${a.state}`}
               aria-pressed={isSel}
-              className={`flex h-12 flex-col items-center justify-center rounded-md text-sm ${
+              className={`flex h-12 flex-col items-center justify-center rounded-sm text-sm ${
                 isSel
                   ? "bg-primary text-primary-foreground"
                   : disabled
@@ -451,7 +451,7 @@ export function DurationPicker({
             max={12}
             value={customHours ?? value}
             onChange={(e) => onCustomHours(Math.max(1, Math.min(12, Number(e.target.value) || 1)))}
-            className="w-16 rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="w-16 rounded-sm border border-border bg-background px-3 py-2 text-sm"
           />
         </label>
       ) : null}
@@ -572,9 +572,9 @@ export function PolicyCard({
     <div className="rounded-lg border border-border bg-card p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
         {critical ? (
-          <AlertTriangle size={14} className="text-primary" />
+          <AlertTriangle size={16} className="text-primary" />
         ) : (
-          <Info size={14} className="text-muted-foreground" />
+          <Info size={16} className="text-muted-foreground" />
         )}
         {title}
       </p>
@@ -688,17 +688,17 @@ export function BookingListCard({
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
         <span className="inline-flex items-center gap-1">
-          <Calendar size={13} /> {formatDate(booking.date)}
+          <Calendar size={12} /> {formatDate(booking.date)}
         </span>
         <span className="inline-flex items-center gap-1">
-          <Clock size={13} /> {formatTime(booking.start)} – {formatTime(booking.end)}
+          <Clock size={12} /> {formatTime(booking.start)} – {formatTime(booking.end)}
         </span>
         <span className="font-semibold text-price">{inr(booking.amount)}</span>
       </div>
       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
         <span className="text-1 text-muted-foreground">#{booking.ref}</span>
         <span className="inline-flex items-center gap-1 text-1 font-bold text-foreground">
-          View booking <ChevronRight size={14} />
+          View booking <ChevronRight size={16} />
         </span>
       </div>
     </Link>
@@ -743,7 +743,7 @@ export function ProviderRequestCard({
           params={{ ref: booking.ref }}
           className="gap-1 text-1 font-bold"
         >
-          Review Request <ChevronRight size={14} />
+          Review Request <ChevronRight size={16} />
         </TextLink>
       </div>
     </div>
@@ -810,7 +810,7 @@ export function ErrorState({
 }) {
   return (
     <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5 text-center">
-      <AlertTriangle size={22} className="mx-auto text-destructive" />
+      <AlertTriangle size={24} className="mx-auto text-destructive" />
       <p className="mt-2 font-semibold">{title}</p>
       <p className="mt-1 text-1 text-muted-foreground">{message}</p>
       <Btn className="mt-4 w-full" onClick={onRetry}>
@@ -831,7 +831,7 @@ export function EmptyState({
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center">
-      <Calendar size={22} className="mx-auto text-muted-foreground" />
+      <Calendar size={24} className="mx-auto text-muted-foreground" />
       <p className="mt-2 font-semibold">{title}</p>
       <p className="mt-1 text-1 text-muted-foreground">{body}</p>
       {action ? <div className="mt-4">{action}</div> : null}
@@ -855,7 +855,7 @@ export function CalendarSkeleton() {
       <div className="h-5 w-32 animate-pulse rounded-full bg-subtle" />
       <div className="mt-4 grid grid-cols-7 gap-1">
         {Array.from({ length: 28 }, (_, i) => (
-          <div key={i} className="h-12 animate-pulse rounded-md bg-subtle" />
+          <div key={i} className="h-12 animate-pulse rounded-sm bg-subtle" />
         ))}
       </div>
     </div>

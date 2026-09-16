@@ -16,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Empty: Story = {};
 export const Filled: Story = { args: { value: "asha@example.com" } };
-export const WithIcon: Story = { args: { leading: <Mail size={18} /> } };
+export const WithIcon: Story = { args: { leading: <Mail size={20} /> } };
 export const WithHint: Story = { args: { hint: "We'll send a 6-digit code." } };
 export const WithError: Story = {
   args: { value: "asha@", error: "Enter a valid email, like name@example.com" },

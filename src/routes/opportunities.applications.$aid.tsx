@@ -101,7 +101,7 @@ function ApplicationDetail() {
               <Price
                 price={a.rateQuoted}
                 amountClassName="text-1 font-semibold"
-                unitClassName="text-0"
+                unitClassName="text-1"
               />
             </div>
           ) : null}
