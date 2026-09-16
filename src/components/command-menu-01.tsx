@@ -1,30 +1,29 @@
 "use client";
 
 import {
-  IconBell,
-  IconBolt,
-  IconCalendar,
-  IconChartBar,
-  IconChartPie,
-  IconClock,
-  IconFileText,
-  IconHelp,
-  IconKeyboard,
-  IconLayoutDashboard,
-  IconLayoutKanban,
-  IconLogout,
-  IconMessage,
-  IconPalette,
-  IconSettings,
-  IconSquareCheck,
-  IconTarget,
-  IconTrendingUp,
-  IconUsers,
-} from "@tabler/icons-react";
+  Bell,
+  Zap,
+  Calendar,
+  ChartColumn,
+  ChartPie,
+  Clock,
+  FileText,
+  CircleHelp,
+  Keyboard,
+  LayoutDashboard,
+  SquareKanban,
+  LogOut,
+  MessageSquare,
+  Palette,
+  Settings,
+  SquareCheck,
+  Target,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -35,35 +34,37 @@ import {
 import { Kbd } from "@/components/ui/kbd";
 
 const workspaceItems = [
-  { icon: IconLayoutDashboard, label: "Dashboard" },
-  { icon: IconLayoutKanban, label: "Projects" },
-  { icon: IconSquareCheck, label: "Tasks" },
-  { icon: IconCalendar, label: "Calendar" },
-  { icon: IconUsers, label: "Team members" },
-  { icon: IconMessage, label: "Messages" },
-  { icon: IconFileText, label: "Documents" },
-  { icon: IconBell, label: "Notifications" },
-  { icon: IconClock, label: "Time tracking" },
-  { icon: IconTarget, label: "Goals" },
+  { icon: LayoutDashboard, label: "Dashboard" },
+  { icon: SquareKanban, label: "Projects" },
+  { icon: SquareCheck, label: "Tasks" },
+  { icon: Calendar, label: "Calendar" },
+  { icon: Users, label: "Team members" },
+  { icon: MessageSquare, label: "Messages" },
+  { icon: FileText, label: "Documents" },
+  { icon: Bell, label: "Notifications" },
+  { icon: Clock, label: "Time tracking" },
+  { icon: Target, label: "Goals" },
 ];
 
 const analyticsItems = [
-  { icon: IconChartBar, label: "Overview" },
-  { icon: IconTrendingUp, label: "Performance" },
-  { icon: IconChartPie, label: "Reports" },
-  { icon: IconBolt, label: "Insights" },
+  { icon: ChartColumn, label: "Overview" },
+  { icon: TrendingUp, label: "Performance" },
+  { icon: ChartPie, label: "Reports" },
+  { icon: Zap, label: "Insights" },
 ];
 
 const settingsItems = [
-  { icon: IconSettings, label: "Preferences" },
-  { icon: IconPalette, label: "Appearance" },
-  { icon: IconKeyboard, label: "Keyboard shortcuts" },
-  { icon: IconHelp, label: "Help & support" },
-  { icon: IconLogout, label: "Sign out" },
+  { icon: Settings, label: "Preferences" },
+  { icon: Palette, label: "Appearance" },
+  { icon: Keyboard, label: "Keyboard shortcuts" },
+  { icon: CircleHelp, label: "Help & support" },
+  { icon: LogOut, label: "Sign out" },
 ];
 
 export function CommandMenu01() {
-  const [open, setOpen] = useState(true);
+  // Closed on mount: a Radix dialog open during the first render trips its focus trap under
+  // Storybook's act() environment ("Should not already be working"). The button opens it.
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -83,52 +84,47 @@ export function CommandMenu01() {
         Open Command Menu
       </Button>
 
-      <CommandDialog
-        className="-translate-y-1/2 top-1/2"
-        onOpenChange={setOpen}
-        open={open}
-        showCloseButton={false}
-      >
-        <Command>
-          <CommandInput className="h-12" placeholder="Type a command or search..." />
-          <CommandList className="h-[320px] max-h-[320px]">
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Workspace">
-              {workspaceItems.map((item) => (
-                <CommandItem key={item.label}>
-                  <item.icon className="mr-2 h-5 w-5" />
-                  <span>{item.label}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandGroup heading="Analytics">
-              {analyticsItems.map((item) => (
-                <CommandItem key={item.label}>
-                  <item.icon className="mr-2 h-5 w-5" />
-                  <span>{item.label}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandGroup heading="Settings">
-              {settingsItems.map((item) => (
-                <CommandItem key={item.label}>
-                  <item.icon className="mr-2 h-5 w-5" />
-                  <span>{item.label}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-          <div className="flex h-12 items-center justify-end border-t px-3">
-            <button
-              className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
-              onClick={() => setOpen(false)}
-              type="button"
-            >
-              <span>Close</span>
-              <Kbd className="ml-1">Esc</Kbd>
-            </button>
-          </div>
-        </Command>
+      {/* Our CommandDialog already renders a Command; the vendor copy nested a second one, which cmdk
+          rejects at render ("Should not already be working"). */}
+      <CommandDialog onOpenChange={setOpen} open={open}>
+        <CommandInput className="h-12" placeholder="Type a command or search..." />
+        <CommandList className="h-[320px] max-h-[320px]">
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Workspace">
+            {workspaceItems.map((item) => (
+              <CommandItem key={item.label}>
+                <item.icon className="mr-2 h-5 w-5" />
+                <span>{item.label}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandGroup heading="Analytics">
+            {analyticsItems.map((item) => (
+              <CommandItem key={item.label}>
+                <item.icon className="mr-2 h-5 w-5" />
+                <span>{item.label}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandGroup heading="Settings">
+            {settingsItems.map((item) => (
+              <CommandItem key={item.label}>
+                <item.icon className="mr-2 h-5 w-5" />
+                <span>{item.label}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+        <div className="flex h-12 items-center justify-end border-t px-3">
+          <button
+            className="flex items-center gap-1 text-muted-foreground text-sm hover:text-foreground"
+            onClick={() => setOpen(false)}
+            type="button"
+          >
+            <span>Close</span>
+            <Kbd className="ml-1">Esc</Kbd>
+          </button>
+        </div>
       </CommandDialog>
     </>
   );

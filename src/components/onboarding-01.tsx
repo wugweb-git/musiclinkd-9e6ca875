@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  IconArchive,
-  IconChevronRight,
-  IconCircleCheckFilled,
-  IconCircleDashed,
-  IconDots,
-  IconMail,
-} from "@tabler/icons-react";
+  Archive,
+  ChevronRight,
+  CircleCheck,
+  CircleDashed,
+  Ellipsis,
+  Mail,
+} from "lucide-react";
 import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
@@ -113,11 +113,11 @@ function CircularProgress({ completed, total }: { completed: number; total: numb
 function StepIndicator({ completed }: { completed: boolean }) {
   if (completed) {
     return (
-      <IconCircleCheckFilled aria-hidden="true" className="mt-1 size-4.5 shrink-0 text-primary" />
+      <CircleCheck aria-hidden="true" className="mt-1 size-4.5 shrink-0 text-primary" />
     );
   }
   return (
-    <IconCircleDashed
+    <CircleDashed
       aria-hidden="true"
       className="mt-1 size-5 shrink-0 stroke-muted-foreground/40"
       strokeWidth={2}
@@ -182,18 +182,18 @@ export function Onboarding01() {
                 <DropdownMenuTrigger
                   render={<Button className="h-6 w-6" size="icon" variant="ghost" />}
                 >
-                  <IconDots aria-hidden="true" className="h-4 w-4 shrink-0" />
+                  <Ellipsis aria-hidden="true" className="h-4 w-4 shrink-0" />
                   <span className="sr-only">Options</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40">
                   <DropdownMenuItem onClick={() => setDismissed(true)}>
-                    <IconArchive aria-hidden="true" className="mr-2 h-4 w-4 shrink-0" />
+                    <Archive aria-hidden="true" className="mr-2 h-4 w-4 shrink-0" />
                     Dismiss
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => window.open("mailto:support@acme.com?subject=Feedback")}
                   >
-                    <IconMail aria-hidden="true" className="mr-2 h-4 w-4 shrink-0" />
+                    <Mail aria-hidden="true" className="mr-2 h-4 w-4 shrink-0" />
                     Give feedback
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -274,7 +274,7 @@ export function Onboarding01() {
                           </div>
                         </div>
                         {!isOpen && (
-                          <IconChevronRight
+                          <ChevronRight
                             aria-hidden="true"
                             className="h-4 w-4 shrink-0 text-muted-foreground"
                           />

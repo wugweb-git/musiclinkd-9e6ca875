@@ -1,11 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  AlertCircleIcon,
-  Database01Icon,
-  Loading03Icon,
-  UnavailableIcon,
-} from "@hugeicons/core-free-icons";
+import { CircleAlert, CircleSlash, Database, LoaderCircle } from "lucide-react";
 export interface ChartStateProps extends ComponentProps<"div"> {
   title?: string | undefined;
   description?: string | undefined;
@@ -55,7 +49,7 @@ export function ChartLoadingState(props: ChartStateProps) {
       role="status"
       title="Loading visualization…"
       description="Preparing the visualization."
-      icon={<HugeiconsIcon icon={Loading03Icon} size={20} className="motion-safe:animate-spin" />}
+      icon={<LoaderCircle size={20} className="motion-safe:animate-spin" />}
       {...props}
     />
   );
@@ -66,7 +60,7 @@ export function ChartEmptyState(props: ChartStateProps) {
       role="status"
       title="No data available"
       description="There are no records for this selection."
-      icon={<HugeiconsIcon icon={Database01Icon} size={20} />}
+      icon={<Database size={20} />}
       {...props}
     />
   );
@@ -77,7 +71,7 @@ export function ChartErrorState(props: ChartStateProps) {
       role="alert"
       title="Unable to load chart"
       description="Check the data or try again."
-      icon={<HugeiconsIcon icon={AlertCircleIcon} size={20} />}
+      icon={<CircleAlert size={20} />}
       {...props}
     />
   );
@@ -88,7 +82,7 @@ export function ChartUnavailableState(props: ChartStateProps) {
       role="status"
       title="Metric unavailable"
       description="This visualization is unavailable for this selection."
-      icon={<HugeiconsIcon icon={UnavailableIcon} size={20} />}
+      icon={<CircleSlash size={20} />}
       {...props}
     />
   );

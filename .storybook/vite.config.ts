@@ -15,6 +15,10 @@ export default defineConfig({
       "@tanstack/react-start": resolve(import.meta.dirname, "./stubs/tanstack-react-start.ts"),
       // Renders every story signed-out with no live Supabase call — see the stub file.
       "@/hooks/use-auth": resolve(import.meta.dirname, "./stubs/use-auth.ts"),
+      // vite-tsconfig-paths only resolves "@/" inside files the app tsconfig includes, so the kept
+      // registry components (excluded from type-checking) 404 without this. It sits after the
+      // use-auth stub: Vite matches aliases in order.
+      "@": resolve(import.meta.dirname, "../src"),
     },
   },
 });
