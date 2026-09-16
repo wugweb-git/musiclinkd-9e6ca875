@@ -146,10 +146,13 @@ export const TypeIcons: Story = {
 
 export const Credits: Story = {
   render: () => (
+    // CreditRow's `role` is the credit (Vocals, Guitar), not an ARIA role.
+    /* eslint-disable jsx-a11y/aria-role */
     <div className="rounded-lg border border-border bg-card">
       <CreditRow name="Aditi Rao" role="Vocals" />
       <CreditRow name="Rohan Mehta" role="Guitar" />
       <CreditRow name="Someone with no role recorded" />
     </div>
+    /* eslint-enable jsx-a11y/aria-role */
   ),
 };

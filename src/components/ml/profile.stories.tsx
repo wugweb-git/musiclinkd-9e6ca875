@@ -57,9 +57,7 @@ export const EmptyStates: Story = {
 
 /** A visitor's view of the same empty profile: no owner actions, so no call to action. */
 export const EmptyAsVisitor: Story = {
-  render: () => (
-    <ProfileEmpty title="No work yet" body="This profile hasn't published any work." />
-  ),
+  render: () => <ProfileEmpty title="No work yet" body="This profile hasn't published any work." />,
 };
 
 export const Badges: Story = {
@@ -98,11 +96,7 @@ export const FacetsLongLabels: Story = {
         icon={Globe}
         items={["हिन्दी", "मराठी", "தமிழ்", "മലയാളം", "ਪੰਜਾਬੀ", "ಕನ್ನಡ"]}
       />
-      <ChipGroup
-        label="வாத்தியங்கள்"
-        icon={Guitar}
-        items={["மிருதங்கம்", "வயலின்", "நாதஸ்வரம்"]}
-      />
+      <ChipGroup label="வாத்தியங்கள்" icon={Guitar} items={["மிருதங்கம்", "வயலின்", "நாதஸ்வரம்"]} />
     </ChipGroupList>
   ),
 };

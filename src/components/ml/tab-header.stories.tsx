@@ -45,7 +45,11 @@ export const SearchToggle: Story = {
 /** The field on its own. It focuses on mount, submits to the screen's search page, closes on Escape. */
 export const Field: Story = {
   render: () => (
-    <SearchField to="/search" placeholder="Search talent, studios, bands, labels" onClose={() => {}} />
+    <SearchField
+      to="/search"
+      placeholder="Search talent, studios, bands, labels"
+      onClose={() => {}}
+    />
   ),
 };
 

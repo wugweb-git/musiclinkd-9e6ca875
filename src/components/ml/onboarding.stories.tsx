@@ -79,19 +79,21 @@ export const AtSelectionLimit: Story = {
       subtitle="Pick up to three."
       footer={<Btn className="w-full">Continue</Btn>}
     >
-      <ChipPicker
-        options={[...genres]}
-        selected={genres.slice(0, 3)}
-        onToggle={() => {}}
-        max={3}
-      />
+      <ChipPicker options={[...genres]} selected={genres.slice(0, 3)} onToggle={() => {}} max={3} />
     </StepShell>
   ),
 };
 
 export const Loading: Story = {
   render: () => (
-    <StepShell {...shell} footer={<Btn className="w-full" disabled>Continue</Btn>}>
+    <StepShell
+      {...shell}
+      footer={
+        <Btn className="w-full" disabled>
+          Continue
+        </Btn>
+      }
+    >
       <StepSkeleton />
     </StepShell>
   ),
@@ -128,7 +130,11 @@ export const Saving: Story = {
     <StepShell
       {...shell}
       banner={<SavingBanner />}
-      footer={<Btn className="w-full" loading>Continue</Btn>}
+      footer={
+        <Btn className="w-full" loading>
+          Continue
+        </Btn>
+      }
       status="saving"
     >
       <ChipPicker options={[...instruments]} selected={["guitar"]} onToggle={() => {}} />
@@ -169,9 +175,7 @@ export const Options: Story = {
         <OptionList
           options={workModes}
           selected={picked}
-          onToggle={(k) =>
-            setPicked((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]))
-          }
+          onToggle={(k) => setPicked((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]))}
         />
         {/* Single-select: visibility is one choice, so `multi` is off. */}
         <OptionList
