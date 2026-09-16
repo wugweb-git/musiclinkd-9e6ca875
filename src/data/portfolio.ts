@@ -304,6 +304,19 @@ export const workAnalytics: Record<string, WorkAnalyticsFigures> = {
   "demo-3": { views: 396, plays: 88, shares: 9, saves: 19, profileClicks: 40, linkClicks: 11 },
 };
 
+/**
+ * Design-time trend for the performance screen: six readings across the same 30 days the totals
+ * cover. There is no analytics table yet, so these are sample numbers and the screen says so.
+ */
+export const portfolioTrend = [
+  { day: "20 Aug", views: 112, plays: 74 },
+  { day: "26 Aug", views: 148, plays: 96 },
+  { day: "1 Sep", views: 131, plays: 88 },
+  { day: "7 Sep", views: 176, plays: 121 },
+  { day: "13 Sep", views: 205, plays: 147 },
+  { day: "19 Sep", views: 232, plays: 168 },
+];
+
 export function analyticsFor(id: string): WorkAnalyticsFigures {
   return (
     workAnalytics[id] ?? {

@@ -245,7 +245,7 @@ function normalizeSignalData<TData extends Record<string, unknown>>(
   const normalized: Record<string, unknown>[] = [];
 
   for (let i = 0; i < data.length; i++) {
-    const raw = data[i];
+    const raw: Record<string, unknown> = data[i] ?? {};
     const rawVal = raw[valueKey];
     const xVal = raw[xKey] ?? `Point ${i + 1}`;
 
@@ -326,8 +326,8 @@ export function SignalLine<TData extends Record<string, unknown> = Record<string
     const count = validValues.length;
     const min = Math.min(...validValues);
     const max = Math.max(...validValues);
-    const start = validValues[0];
-    const end = validValues[validValues.length - 1];
+    const start = validValues[0] ?? 0;
+    const end = validValues[validValues.length - 1] ?? 0;
     const delta = end - start;
     const direction = delta > 0 ? "rose" : delta < 0 ? "declined" : "remained unchanged";
 
@@ -447,10 +447,12 @@ export function SignalLine<TData extends Record<string, unknown> = Record<string
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- the chart is a focusable region on purpose: arrow keys walk the series and announce each reading
     <figure
       role="region"
       aria-labelledby={titleId}
       aria-describedby={description ? descId : summaryId}
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- see the note above
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onBlur={() => setActiveIndex(null)}
@@ -484,7 +486,7 @@ export function SignalLine<TData extends Record<string, unknown> = Record<string
 
             <XAxis
               hide={!showXAxis}
-              dataKey={xKey as any}
+              dataKey={xKey as string}
               tickLine={false}
               axisLine={false}
               interval={tickInterval}
@@ -494,11 +496,13 @@ export function SignalLine<TData extends Record<string, unknown> = Record<string
 
             <YAxis
               hide={!showYAxis}
-              domain={safeDomain as any}
+              domain={safeDomain as [number, number]}
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 11, fill: "var(--chart-axis)" }}
-              tickFormatter={valueFormatter ? (v) => valueFormatter(Number(v)) : undefined}
+              {...(valueFormatter
+                ? { tickFormatter: (v: unknown) => valueFormatter(Number(v)) }
+                : {})}
               dx={-4}
             />
 

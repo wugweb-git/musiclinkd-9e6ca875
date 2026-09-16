@@ -343,6 +343,15 @@
   --focus-ring: 2px solid var(--primary);
   --focus-ring-offset: 2px;
 
+  /*
+   * Charts. The vendor chart components (components/charts/**) read these four; they are aliases of
+   * tokens the app already has, so a chart is ink on our own greys rather than a palette of its own.
+   */
+  --chart-1: var(--ink);
+  --chart-axis: var(--muted-foreground);
+  --chart-grid: var(--border);
+  --chart-crosshair: var(--muted-foreground);
+
   /* Opacity steps. */
   --opacity-1: 0.08;
   --opacity-2: 0.16;

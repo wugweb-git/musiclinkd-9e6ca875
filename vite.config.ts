@@ -29,17 +29,5 @@ export default defineConfig({
   },
   vite: {
     plugins: [serveGuidePlugin()],
-    server: {
-      proxy: {
-        // Dev-only: forwards /storybook to `npm run storybook` (port 6006) so both
-        // the app and Storybook are reachable from one dev URL. Run storybook separately.
-        "/storybook": {
-          target: "http://localhost:6006",
-          changeOrigin: true,
-          ws: true,
-          rewrite: (path) => path.replace(/^\/storybook/, ""),
-        },
-      },
-    },
   },
 });

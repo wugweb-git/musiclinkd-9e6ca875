@@ -7,12 +7,12 @@ import {
   UnavailableIcon,
 } from "@hugeicons/core-free-icons";
 export interface ChartStateProps extends ComponentProps<"div"> {
-  title?: string;
-  description?: string;
-  icon?: ReactNode;
-  action?: ReactNode;
-  onRetry?: () => void;
-  retryLabel?: string;
+  title?: string | undefined;
+  description?: string | undefined;
+  icon?: ReactNode | undefined;
+  action?: ReactNode | undefined;
+  onRetry?: (() => void) | undefined;
+  retryLabel?: string | undefined;
 }
 function State({
   title,

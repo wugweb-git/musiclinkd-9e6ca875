@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { BtnLink, TopBar } from "@/components/ml/ui";
 import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
+import { SignalLine } from "@/components/charts/recharts/line-signal";
 
 export const Route = createFileRoute("/profile/insights")({
   head: () => ({
@@ -52,6 +53,23 @@ function Insights() {
             );
           })}
         </div>
+
+        {/* The same 28 days the headline figures cover, drawn rather than listed. */}
+        <section className="mt-6">
+          <h2 className="text-2">Plays over time</h2>
+          <div className="mt-3 rounded-lg border border-border bg-card p-3">
+            <SignalLine
+              data={i.trend}
+              xKey="day"
+              seriesKey="plays"
+              series={{ key: "plays", label: "Audio plays" }}
+              height={200}
+              color="var(--color-ink)"
+              title="Audio plays over the last 28 days"
+              showGrid
+            />
+          </div>
+        </section>
 
         <section className="mt-6">
           <h2 className="text-2">Engagement</h2>

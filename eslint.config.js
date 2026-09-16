@@ -19,7 +19,6 @@ export default tseslint.config(
       "src/components/animate-ui/**",
       "src/components/animbits/**",
       "src/components/billingsdk/**",
-      "src/components/charts/**",
       "src/components/kibo-ui/**",
       "src/components/spectrumui/**",
       "src/components/waves-cn/**",

@@ -43,7 +43,6 @@
     "src/components/animate-ui/**",
     "src/components/animbits/**",
     "src/components/billingsdk/**",
-    "src/components/charts/**",
     "src/components/command-menu-01.tsx",
     "src/components/dropzone.tsx",
     "src/components/file-upload-01.tsx",

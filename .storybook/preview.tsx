@@ -1,4 +1,6 @@
+import { useState } from "react";
 import type { Decorator, Preview } from "@storybook/react-vite";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createMemoryHistory,
   createRootRoute,
@@ -24,6 +26,22 @@ const withRouter: Decorator = (Story) => {
   return <RouterProvider router={router} />;
 };
 
+/*
+ * Components like ViewerAvatar call useQuery (see src/components/ml/viewer.tsx) — without a
+ * client, React Query throws "No QueryClient set" the moment such a story renders. A fresh
+ * client per story avoids cache bleed between stories; retries are off so a failed fetch
+ * (e.g. the useServerFn stub throwing, see .storybook/stubs) settles immediately instead of
+ * retrying for several seconds.
+ */
+const withQueryClient: Decorator = (Story) => {
+  const [client] = useState(() => new QueryClient({ defaultOptions: { queries: { retry: false } } }));
+  return (
+    <QueryClientProvider client={client}>
+      <Story />
+    </QueryClientProvider>
+  );
+};
+
 /** Phone frame: the app is designed and tested at 412px. */
 const withPhone: Decorator = (Story, ctx) =>
   ctx.parameters.layout === "fullscreen" ? (
@@ -35,7 +53,7 @@ const withPhone: Decorator = (Story, ctx) =>
   );
 
 const preview: Preview = {
-  decorators: [withPhone, withRouter],
+  decorators: [withPhone, withRouter, withQueryClient],
   parameters: {
     layout: "padded",
     controls: { expanded: true },

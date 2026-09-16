@@ -665,8 +665,23 @@ export const profileCompletion = {
   ],
 };
 
+/*
+ * Design-time insight figures. There are no analytics tables yet, so these are sample numbers, and
+ * the screen that shows them says so. `trend` is the same 28-day window as `range`, four readings a
+ * week, so the chart and the headline figures describe one period rather than two.
+ */
 export const profileInsights = {
   range: "Last 28 days",
+  trend: [
+    { day: "28 Aug", views: 38, plays: 62 },
+    { day: "31 Aug", views: 44, plays: 71 },
+    { day: "3 Sep", views: 51, plays: 88 },
+    { day: "6 Sep", views: 47, plays: 96 },
+    { day: "9 Sep", views: 63, plays: 112 },
+    { day: "12 Sep", views: 72, plays: 134 },
+    { day: "15 Sep", views: 69, plays: 128 },
+    { day: "18 Sep", views: 84, plays: 151 },
+  ],
   headline: [
     { label: "Profile views", value: "1,842", delta: "+18%" },
     { label: "Portfolio views", value: "934", delta: "+12%" },
