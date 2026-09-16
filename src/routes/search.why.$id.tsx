@@ -115,10 +115,10 @@ function WhyThisResult() {
         onClose={() => setSent(null)}
       >
         <BtnLink to="/recommendations" className="w-full">
-          Back to recommendations
+          Back to Recommendations
         </BtnLink>
         <Btn variant="ghost" onClick={() => setSent(null)}>
-          Stay here
+          Stay Here
         </Btn>
       </Dialog>
     </Screen>

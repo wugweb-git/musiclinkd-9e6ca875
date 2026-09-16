@@ -113,10 +113,10 @@ function FileDetail() {
 
         <Label>Actions</Label>
         <div className="mb-8 divide-y divide-border rounded-lg border border-border bg-card">
-          <RowLink title="Upload a new version" subtitle="Keeps the history intact" />
-          <RowLink title="Change access" subtitle={file.access} />
-          <RowLink title="Add to portfolio" subtitle="Hands off to your portfolio flow" />
-          <RowLink title="Remove file" danger />
+          <RowLink title="Upload a New Version" subtitle="Keeps the history intact" />
+          <RowLink title="Change Access" subtitle={file.access} />
+          <RowLink title="Add to Portfolio" subtitle="Hands off to your portfolio flow" />
+          <RowLink title="Remove File" danger />
         </div>
 
         <BtnLink
@@ -125,7 +125,7 @@ function FileDetail() {
           variant="outline"
           className="mb-8 w-full"
         >
-          Back to files
+          Back to Files
         </BtnLink>
       </main>
     </Screen>

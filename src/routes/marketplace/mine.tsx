@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState, ListingRow } from "@/components/ml/market";
 import { listings, offers } from "@/data/market";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/marketplace/mine")({
   head: () => ({
@@ -33,9 +34,9 @@ function Mine() {
         subtitle="4 active · 2 pending review"
         back="/marketplace"
         right={
-          <Link to="/marketplace/sell" className="text-xs font-semibold text-foreground">
+          <TextLink to="/marketplace/sell" className="text-xs">
             New
-          </Link>
+          </TextLink>
         }
       />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
@@ -69,7 +70,7 @@ function Mine() {
             emoji="📝"
             title="No drafts"
             body="Start a listing and we'll keep it here until you publish."
-            action={<BtnLink to="/marketplace/sell">Create a listing</BtnLink>}
+            action={<BtnLink to="/marketplace/sell">Create a Listing</BtnLink>}
           />
         ) : null}
 

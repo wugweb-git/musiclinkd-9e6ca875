@@ -75,7 +75,7 @@ function RemoveCollaborator() {
               variant="outline"
               className="mt-3 w-full"
             >
-              Transfer ownership
+              Transfer Ownership
             </BtnLink>
           </Card>
         ) : removed ? (
@@ -85,7 +85,7 @@ function RemoveCollaborator() {
             body={`${person.name} no longer has access to ${project.name}.`}
           >
             <BtnLink to="/collab/$id/participants" params={{ id: project.id }} className="w-full">
-              Back to people
+              Back to People
             </BtnLink>
           </OutcomePanel>
         ) : (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { BtnLink, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
 import {
   Card,
@@ -11,6 +11,7 @@ import {
   TextInput,
 } from "@/components/ml/collab";
 import { getInvitation } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/collab/invites/$id")({
   head: ({ params }) => {
@@ -78,9 +79,9 @@ function InviteDetail() {
               </div>
               <p className="truncate text-[11px] text-muted-foreground">{inv.inviterRole}</p>
             </div>
-            <Link to="/messages" className="text-[11px] font-semibold text-foreground">
+            <TextLink to="/messages" className="text-[11px]">
               Message
-            </Link>
+            </TextLink>
           </div>
         </Card>
 
@@ -108,7 +109,7 @@ function InviteDetail() {
           />
         </Field>
         <BtnLink to="/messages" variant="ghost" className="mb-4 w-full">
-          Send question in Connections
+          Send Question in Connections
         </BtnLink>
       </main>
 

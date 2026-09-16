@@ -123,10 +123,10 @@ function ManagePlan() {
             to="/plans/earnings"
           />
           <BtnLink to="/plans" variant="outline" className="w-full">
-            Change plan
+            Change Plan
           </BtnLink>
           <Btn variant="ghost" className="w-full" onClick={() => setCancelOpen(true)}>
-            Cancel subscription
+            Cancel Subscription
           </Btn>
         </div>
       </div>
@@ -155,7 +155,7 @@ function ManagePlan() {
         body={`${plan.name} stays active until ${currentSubscription.renewsOn}. After that you move to Starter and keep your profile and portfolio.`}
         onClose={() => setCancelled(false)}
       >
-        <Btn onClick={() => setCancelled(false)}>Got it</Btn>
+        <Btn onClick={() => setCancelled(false)}>Got It</Btn>
       </Dialog>
     </Screen>
   );

@@ -71,7 +71,7 @@ function Confirmed() {
         {!requested ? (
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Btn variant="outline" onClick={() => undefined}>
-              <CalendarPlus size={15} className="mr-1.5" /> Add to calendar
+              <CalendarPlus size={15} className="mr-1.5" /> Add to Calendar
             </Btn>
             <Btn variant="outline" onClick={() => undefined}>
               <Share2 size={15} className="mr-1.5" /> Share
@@ -82,10 +82,10 @@ function Confirmed() {
 
       <div className="mt-8 space-y-2">
         <BtnLink to="/bookings" className="w-full">
-          View booking
+          View Booking
         </BtnLink>
         <BtnLink to="/messages" variant="outline" className="w-full">
-          <MessageCircle size={15} className="mr-1.5" /> Message provider
+          <MessageCircle size={15} className="mr-1.5" /> Message Provider
         </BtnLink>
       </div>
     </div>

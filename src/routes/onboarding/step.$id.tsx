@@ -414,7 +414,7 @@ function StepRoute() {
             onClick={() => navigate({ to: "/onboarding/skip" })}
             className="flex w-full justify-center text-1 text-muted-foreground"
           >
-            Finish later
+            Finish Later
           </AuthTextButton>
         </div>
       }
@@ -501,7 +501,7 @@ function StepBody({
     return (
       <AuthNotice
         title="We couldn't load the choices"
-        action={<AuthTextButton onClick={taxonomy.retry}>Try again</AuthTextButton>}
+        action={<AuthTextButton onClick={taxonomy.retry}>Try Again</AuthTextButton>}
       >
         Check your connection, then try again.
       </AuthNotice>
@@ -511,7 +511,7 @@ function StepBody({
     return (
       <AuthNotice
         title="We couldn't load the choices for your roles"
-        action={<AuthTextButton onClick={retryBucket}>Try again</AuthTextButton>}
+        action={<AuthTextButton onClick={retryBucket}>Try Again</AuthTextButton>}
       >
         Check your connection, then try again.
       </AuthNotice>
@@ -850,7 +850,7 @@ function ContactStep({
               onClick={() => setAdding(true)}
               className="text-sm"
             >
-              Add more
+              Add More
             </AuthTextButton>
           )
         ) : null}

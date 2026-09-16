@@ -93,10 +93,10 @@ function CreateOpportunity() {
             </p>
           </Card>
           <BtnLink to="/opportunities/mine" className="w-full">
-            Manage it
+            Manage It
           </BtnLink>
           <BtnLink to="/opportunities" variant="outline" className="w-full">
-            Back to opportunities
+            Back to Opportunities
           </BtnLink>
         </div>
       </Screen>
@@ -196,7 +196,7 @@ function CreateOpportunity() {
                 owned by Booking.
               </p>
               <BtnLink to="/provider/availability" variant="ghost" className="w-full">
-                Open availability
+                Open Availability
               </BtnLink>
             </Card>
           </>
@@ -324,7 +324,7 @@ function CreateOpportunity() {
             </Btn>
           ) : (
             <BtnLink to="/opportunities/mine" variant="outline" className="flex-1 w-full">
-              Save draft
+              Save Draft
             </BtnLink>
           )}
           <Btn className="flex-1" disabled={!canContinue} onClick={() => go(order[idx + 1]!)}>

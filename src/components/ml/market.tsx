@@ -5,6 +5,7 @@ import type { Listing } from "@/data/market";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
 import { Price } from "./kit";
 import type { PriceParts } from "@/lib/price";
+import { SectionActionLink } from "@/components/ml/links";
 
 export function SaveButton({
   saved,
@@ -497,7 +498,7 @@ export function OfferSheet({
             Your offer is pending. It expires in 48 hours and continues in Connections.
           </p>
           <Btn className="mt-6 w-full" onClick={close}>
-            Open conversation
+            Open Conversation
           </Btn>
         </div>
       ) : (
@@ -548,7 +549,7 @@ export function OfferSheet({
           </p>
 
           <Btn className="w-full" onClick={() => setSent(true)}>
-            Send offer
+            Send Offer
           </Btn>
         </>
       )}
@@ -583,10 +584,10 @@ export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => v
         ))}
       </div>
       <Btn className="w-full" onClick={onClose}>
-        Submit report
+        Submit Report
       </Btn>
       <Btn variant="ghost" className="mt-2 w-full" onClick={onClose}>
-        Block this seller
+        Block This Seller
       </Btn>
     </Sheet>
   );
@@ -611,9 +612,9 @@ export function SectionRow({
           {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
         </div>
         {to ? (
-          <Link to={to} className="text-xs font-semibold text-foreground">
-            See all
-          </Link>
+          <SectionActionLink to={to} className="text-xs">
+            See All
+          </SectionActionLink>
         ) : null}
       </div>
       {children}

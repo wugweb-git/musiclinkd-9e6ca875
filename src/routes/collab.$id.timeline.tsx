@@ -67,7 +67,7 @@ function Timeline() {
             body="Break the project into stages so everyone can see progress."
             action={
               <BtnLink to="/collab/$id/milestones/new" params={{ id: project.id }}>
-                Add milestone
+                Add Milestone
               </BtnLink>
             }
           />
@@ -130,7 +130,7 @@ function Timeline() {
       )}
 
       <BtnLink to="/collab/$id/milestones/new" params={{ id: project.id }} className="mb-8 w-full">
-        Add milestone
+        Add Milestone
       </BtnLink>
     </WorkspaceShell>
   );

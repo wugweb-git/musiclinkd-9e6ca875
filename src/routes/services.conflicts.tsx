@@ -80,10 +80,10 @@ function Conflicts() {
                 </div>
                 <div className="mt-3 flex gap-2">
                   <Btn variant="outline" className="flex-1">
-                    Offer another time
+                    Offer Another Time
                   </Btn>
                   <Btn variant="ghost" className="flex-1">
-                    Keep both
+                    Keep Both
                   </Btn>
                 </div>
               </Card>
@@ -95,7 +95,7 @@ function Conflicts() {
 
         <BtnLink to="/services/availability" variant="outline" className="w-full">
           <CalendarClock size={16} className="mr-2 inline" aria-hidden />
-          Adjust availability
+          Adjust Availability
         </BtnLink>
       </div>
     </Screen>

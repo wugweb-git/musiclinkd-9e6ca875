@@ -55,7 +55,7 @@ function BookingDetail() {
           <EmptyState
             title="This booking is unavailable"
             body="It may have been cancelled, expired, removed, or you no longer have access to it."
-            action={<BtnLink to="/bookings">Return to bookings</BtnLink>}
+            action={<BtnLink to="/bookings">Return to Bookings</BtnLink>}
           />
         </div>
       </Screen>
@@ -143,16 +143,16 @@ function BookingDetail() {
 
         <div className="mt-6 space-y-2">
           <BtnLink to="/messages" variant="outline" className="w-full">
-            <MessageCircle size={15} className="mr-1.5" /> Message provider
+            <MessageCircle size={15} className="mr-1.5" /> Message Provider
           </BtnLink>
 
           {upcoming ? (
             <>
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
-                <CalendarPlus size={15} className="mr-1.5" /> Add to calendar
+                <CalendarPlus size={15} className="mr-1.5" /> Add to Calendar
               </Btn>
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
-                <Navigation size={15} className="mr-1.5" /> Get directions
+                <Navigation size={15} className="mr-1.5" /> Get Directions
               </Btn>
               <BtnLink
                 to="/bookings/$ref/reschedule"
@@ -168,7 +168,7 @@ function BookingDetail() {
                 variant="ghost"
                 className="w-full"
               >
-                Cancel booking
+                Cancel Booking
               </BtnLink>
             </>
           ) : null}
@@ -176,10 +176,10 @@ function BookingDetail() {
           {completed ? (
             <>
               <BtnLink to="/booking/$id" params={{ id: b.id }} className="w-full">
-                Book again
+                Book Again
               </BtnLink>
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
-                Leave a review
+                Leave a Review
               </Btn>
               <p className="text-center text-[11px] text-muted-foreground">
                 Reviews are handled in your MusicLinkd reviews flow.

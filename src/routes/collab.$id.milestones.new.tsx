@@ -73,7 +73,7 @@ function NewMilestone() {
       </main>
       <StickyBar>
         <BtnLink to="/collab/$id/timeline" params={{ id: project.id }} className="w-full">
-          Save milestone
+          Save Milestone
         </BtnLink>
       </StickyBar>
     </Screen>

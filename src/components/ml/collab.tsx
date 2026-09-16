@@ -33,6 +33,7 @@ import {
   type Project,
   type Proposal,
 } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 /* ------------------------------------------------------------------ */
 /* Tone helpers                                                        */
@@ -149,16 +150,12 @@ export function ParticipantRow({
                     ? "Declined"
                     : "Active"}
           </Tag>
-          <Link
-            to="/profile/$username"
-            params={{ username: p.username }}
-            className="text-1 font-semibold text-foreground"
-          >
-            View profile
-          </Link>
-          <Link to="/messages" className="text-1 font-semibold text-foreground">
+          <TextLink to="/profile/$username" params={{ username: p.username }} className="text-1">
+            View Profile
+          </TextLink>
+          <TextLink to="/messages" className="text-1">
             Message
-          </Link>
+          </TextLink>
           {canManage && p.status !== "owner" ? (
             <button
               type="button"
@@ -346,13 +343,13 @@ export function MilestoneRow({
           {m.owner} · due {m.due}
         </p>
         {m.notes ? <p className="mt-1 text-1 text-muted-foreground">Note: {m.notes}</p> : null}
-        <Link
+        <TextLink
           to="/collab/$id/milestones/$mid"
           params={{ id: projectId, mid: m.id }}
-          className="mt-2 inline-block text-1 font-semibold text-foreground"
+          className="mt-2 inline-block text-1"
         >
-          Open milestone
-        </Link>
+          Open Milestone
+        </TextLink>
       </div>
     </div>
   );
@@ -584,7 +581,7 @@ export function UploadPanel({
           </div>
         </div>
         <Btn className="mt-3 w-full" onClick={onRetry}>
-          Retry upload
+          Retry Upload
         </Btn>
       </Card>
     );

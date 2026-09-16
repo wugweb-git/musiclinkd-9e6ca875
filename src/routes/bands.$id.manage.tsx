@@ -58,7 +58,7 @@ function ManageBand() {
         {tab === "Members" ? (
           <>
             <BtnLink to="/bands/$id/invite" params={{ id: band.id }} className="w-full">
-              Invite a member
+              Invite a Member
             </BtnLink>
             {band.members.map((m) => (
               <Card key={m.key} className="space-y-3">
@@ -112,7 +112,7 @@ function ManageBand() {
             body="Invite people you already play with — they keep their own profile."
           >
             <BtnLink to="/bands/$id/invite" params={{ id: band.id }} className="w-full">
-              Invite a member
+              Invite a Member
             </BtnLink>
           </EmptyState>
         ) : null}
@@ -146,10 +146,10 @@ function ManageBand() {
                 Only the owner can transfer ownership or delete the band.
               </p>
               <Btn variant="outline" className="w-full" onClick={() => setTransfer(true)}>
-                Transfer ownership
+                Transfer Ownership
               </Btn>
               <Btn variant="ghost" className="w-full" onClick={() => setDeleting(true)}>
-                Delete band
+                Delete Band
               </Btn>
             </Card>
           </>
@@ -162,9 +162,9 @@ function ManageBand() {
         body="They stay on MusicLinkd with their own profile, but will no longer appear in this line-up."
         onClose={() => setRemoving(null)}
       >
-        <Btn onClick={() => setRemoving(null)}>Remove member</Btn>
+        <Btn onClick={() => setRemoving(null)}>Remove Member</Btn>
         <Btn variant="outline" onClick={() => setRemoving(null)}>
-          Keep member
+          Keep Member
         </Btn>
       </Dialog>
       <Dialog
@@ -173,7 +173,7 @@ function ManageBand() {
         body="Pick an admin to become the new owner. You stay in the band as an admin."
         onClose={() => setTransfer(false)}
       >
-        <Btn onClick={() => setTransfer(false)}>Choose an admin</Btn>
+        <Btn onClick={() => setTransfer(false)}>Choose an Admin</Btn>
         <Btn variant="outline" onClick={() => setTransfer(false)}>
           Cancel
         </Btn>
@@ -184,7 +184,7 @@ function ManageBand() {
         body="The band profile, shows and shared work links are removed. Individual member profiles are untouched."
         onClose={() => setDeleting(false)}
       >
-        <Btn onClick={() => setDeleting(false)}>Delete band</Btn>
+        <Btn onClick={() => setDeleting(false)}>Delete Band</Btn>
         <Btn variant="outline" onClick={() => setDeleting(false)}>
           Cancel
         </Btn>

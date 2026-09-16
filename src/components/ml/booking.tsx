@@ -36,6 +36,7 @@ import {
   type Resource,
   type Slot,
 } from "@/data/booking";
+import { TextLink } from "@/components/ml/links";
 
 /* ------------------------------------------------------------------ */
 /* Status + payment                                                    */
@@ -96,7 +97,9 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
               className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-muted-foreground" : "text-muted-foreground"}`}
             >
               {s.label}
-              {current ? <span className="pill ml-2 bg-subtle text-foreground">Now</span> : null}
+              {current ? (
+                <span className="ml-2 text-1 font-bold uppercase text-foreground">Now</span>
+              ) : null}
             </p>
           </li>
         );
@@ -293,7 +296,7 @@ export function AvailabilityCalendar({
         </button>
       </div>
 
-      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-1 font-medium uppercase text-muted-foreground">
+      <div className="mt-3 grid grid-cols-7 gap-1 text-center text-1 font-bold uppercase text-muted-foreground">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={`${d}-${i}`}>{d}</span>
         ))}
@@ -485,9 +488,12 @@ export function AddOnCard({
             amountClassName="text-sm font-semibold"
           />
           {a.rentalListingId ? (
-            <Link to="/marketplace/rent" className="pill mt-1 bg-subtle text-foreground">
-              Rental marketplace <ChevronRight size={12} />
-            </Link>
+            <TextLink
+              to="/marketplace/rent"
+              className="mt-1 gap-1 text-1 font-bold uppercase tracking-wide"
+            >
+              Rental Marketplace <ChevronRight size={12} />
+            </TextLink>
           ) : null}
         </div>
         {a.available ? (
@@ -653,7 +659,7 @@ export function BookingSummaryCard({
 export function Detail({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="pill bg-subtle text-muted-foreground">{label}</dt>
+      <dt className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 truncate text-sm font-semibold">{value}</dd>
     </div>
   );
@@ -737,13 +743,13 @@ export function ProviderRequestCard({
       </div>
       <div className="mt-3 flex items-center justify-between">
         <span className="text-sm font-bold text-price">{inr(booking.amount)}</span>
-        <Link
+        <TextLink
           to="/provider/bookings/requests/$ref"
           params={{ ref: booking.ref }}
-          className="inline-flex items-center gap-1 text-xs font-bold text-foreground"
+          className="gap-1 text-xs font-bold"
         >
-          Review request <ChevronRight size={14} />
-        </Link>
+          Review Request <ChevronRight size={14} />
+        </TextLink>
       </div>
     </div>
   );
@@ -752,7 +758,7 @@ export function ProviderRequestCard({
 export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean }) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <p className="pill bg-subtle text-muted-foreground">Payment</p>
+      <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Payment</p>
       <Row label="Total booking value" value={inr(p.total)} />
       <Row
         label={paid ? "Deposit paid" : "Deposit due now"}
@@ -813,7 +819,7 @@ export function ErrorState({
       <p className="mt-2 font-semibold">{title}</p>
       <p className="mt-1 text-xs text-muted-foreground">{message}</p>
       <Btn className="mt-4 w-full" onClick={onRetry}>
-        Try again
+        Try Again
       </Btn>
     </div>
   );

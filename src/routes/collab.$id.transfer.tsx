@@ -58,7 +58,7 @@ function Transfer() {
             body={`${next} now owns ${project.name}. You stay on the project as a collaborator.`}
           >
             <BtnLink to="/collab/$id" params={{ id: project.id }} className="w-full">
-              Open project
+              Open Project
             </BtnLink>
           </OutcomePanel>
         ) : (

@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Btn } from "@/components/ml/ui";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
@@ -108,12 +109,10 @@ function ResetPassword() {
           sub="Reset links work once and expire after 60 minutes."
         />
         <Btn className="w-full" onClick={() => void navigate({ to: "/auth/forgot" })}>
-          Send a new link
+          Send a New Link
         </Btn>
         <p className="mt-6 text-center text-1 text-muted-foreground">
-          <Link to="/auth/phone" className="font-semibold text-foreground">
-            Back to sign in
-          </Link>
+          <TextLink to="/auth/phone">Back to Sign In</TextLink>
         </p>
       </AuthScreen>
     );
@@ -153,7 +152,7 @@ function ResetPassword() {
           autoComplete="new-password"
         />
         <Btn type="submit" className="mt-2 w-full" loading={busy}>
-          Save new password
+          Save New Password
         </Btn>
       </form>
     </AuthScreen>

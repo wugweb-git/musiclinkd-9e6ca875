@@ -115,7 +115,7 @@ function EmailSignIn() {
         />
 
         <Btn type="submit" className="mt-2 w-full" loading={busy}>
-          Send code
+          Send Code
         </Btn>
       </form>
 
@@ -123,7 +123,7 @@ function EmailSignIn() {
 
       <p className="mt-6 flex justify-center text-sm">
         <AuthLink to="/auth/phone" icon={<Smartphone size={16} />}>
-          Sign in with mobile
+          Sign in with Mobile
         </AuthLink>
       </p>
 

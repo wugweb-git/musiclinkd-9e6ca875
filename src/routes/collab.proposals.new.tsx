@@ -46,7 +46,7 @@ function NewProposal() {
             body={`Your proposal for ${project} is with them now. You'll be notified when they accept, decline or counter.`}
           >
             <BtnLink to="/collab" className="w-full">
-              Back to collaborations
+              Back to Collaborations
             </BtnLink>
           </OutcomePanel>
         </main>
@@ -122,10 +122,10 @@ function NewProposal() {
       <StickyBar>
         <div className="flex gap-3">
           <BtnLink to="/collab" variant="outline" className="flex-1 w-full">
-            Save draft
+            Save Draft
           </BtnLink>
           <Btn className="flex-1" onClick={() => setSent(true)}>
-            Send proposal
+            Send Proposal
           </Btn>
         </div>
       </StickyBar>

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { talents } from "@/data/discover";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/messages")({
   head: () => ({
@@ -23,11 +24,7 @@ function Messages() {
       <TopBar
         title="Messages"
         subtitle="3 unread"
-        right={
-          <Link to="/collab" className="pill bg-subtle text-foreground">
-            Collabs
-          </Link>
-        }
+        right={<TextLink to="/collab">Collabs</TextLink>}
       />
       <div className="px-5 pt-4">
         <Link

@@ -83,7 +83,7 @@ function ProposalDetail() {
               params={{ id: p.id }}
               className="flex-[2] w-full"
             >
-              Edit proposal
+              Edit Proposal
             </BtnLink>
           </div>
         ) : (
@@ -102,7 +102,7 @@ function ProposalDetail() {
                 params={{ id: p.id }}
                 className="flex-[2] w-full"
               >
-                Accept terms
+                Accept Terms
               </BtnLink>
             </div>
             <BtnLink
@@ -111,7 +111,7 @@ function ProposalDetail() {
               variant="ghost"
               className="w-full"
             >
-              Counter with different terms
+              Counter with Different Terms
             </BtnLink>
           </div>
         )}

@@ -55,7 +55,7 @@ function Pay() {
         ]}
         primary={
           <BtnLink to="/booking/confirmed/$ref" params={{ ref: "MLB-NEW-C" }} className="w-full">
-            View booking
+            View Booking
           </BtnLink>
         }
       />
@@ -75,17 +75,17 @@ function Pay() {
         primary={
           <div className="w-full space-y-2">
             <Btn className="w-full" onClick={() => setPhase("form")}>
-              Try again
+              Try Again
             </Btn>
             <Btn variant="outline" className="w-full" onClick={() => setPhase("form")}>
-              Change payment method
+              Change Payment Method
             </Btn>
             <Btn
               variant="ghost"
               className="w-full"
               onClick={() => navigate({ to: "/booking/$id/review", params: { id: b.id } })}
             >
-              Return to booking
+              Return to Booking
             </Btn>
           </div>
         }

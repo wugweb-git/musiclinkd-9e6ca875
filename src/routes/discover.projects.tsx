@@ -65,7 +65,7 @@ function DiscoverProjects() {
             title="No open projects"
             body="Projects looking for collaborators will appear here."
           >
-            <BtnLink to="/collab/new">Start your own</BtnLink>
+            <BtnLink to="/collab/new">Start Your Own</BtnLink>
           </EmptyState>
         )}
       </div>

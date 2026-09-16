@@ -44,7 +44,7 @@ function CategoryPage() {
         ) : (
           <EmptyState title="Nothing here yet" body="We are still writing guides for this topic.">
             <BtnLink to="/help" className="w-full">
-              Browse all guides
+              Browse All Guides
             </BtnLink>
           </EmptyState>
         )}

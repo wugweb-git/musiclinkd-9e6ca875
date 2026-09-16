@@ -275,12 +275,12 @@ export function ProfileHero({
         <div className="absolute right-5 top-5 flex gap-2">
           {/* The owner shares from the actions row, so the hero has no second Share. */}
           {onShare && !owner ? (
-            <IconBtn label="Share profile" variant="plain" className="bg-card/90" onClick={onShare}>
+            <IconBtn label="Share Profile" variant="plain" className="bg-card/90" onClick={onShare}>
               <Share2 size={16} aria-hidden />
             </IconBtn>
           ) : null}
           {onMore ? (
-            <IconBtn label="More options" variant="plain" className="bg-card/90" onClick={onMore}>
+            <IconBtn label="More Options" variant="plain" className="bg-card/90" onClick={onMore}>
               <MoreHorizontal size={18} aria-hidden />
             </IconBtn>
           ) : null}
@@ -747,7 +747,7 @@ export function ShareSheet({
               .catch(() => toast.error("Couldn't copy the link"));
           }}
         >
-          Copy link
+          Copy Link
         </Btn>
         {canShare ? (
           <Btn
@@ -855,7 +855,7 @@ export function CompletionCard({
         ))}
       </ul>
       <BtnLink to="/profile/edit" className="mt-3 min-h-11 w-full text-1">
-        Complete profile
+        Complete Profile
       </BtnLink>
     </div>
   );

@@ -112,7 +112,7 @@ function Lifecycle() {
             </Card>
           ) : null}
           <BtnLink to="/collab" className="w-full">
-            Back to collaborations
+            Back to Collaborations
           </BtnLink>
         </main>
       </Screen>
@@ -150,7 +150,7 @@ function Lifecycle() {
             variant="outline"
             className="flex-1 w-full"
           >
-            Keep as is
+            Keep as Is
           </BtnLink>
           <Btn
             variant={c.danger ? "ink" : "primary"}

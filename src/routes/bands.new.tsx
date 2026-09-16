@@ -118,7 +118,7 @@ function CreateBand() {
                 setInviteInput("");
               }}
             >
-              Add to invite list
+              Add to Invite List
             </Btn>
             {invites.length ? (
               <div className="space-y-2">
@@ -164,7 +164,7 @@ function CreateBand() {
           ) : null}
           {current === "Preview" ? (
             <Btn className="flex-1" onClick={() => setDone(true)}>
-              Publish band
+              Publish Band
             </Btn>
           ) : (
             <Btn className="flex-1" onClick={() => canContinue && setStep((s) => s + 1)}>
@@ -181,10 +181,10 @@ function CreateBand() {
         onClose={() => setDone(false)}
       >
         <Btn onClick={() => navigate({ to: "/bands/$id", params: { id: myBandId } })}>
-          Open band profile
+          Open Band Profile
         </Btn>
         <BtnLink to="/bands" variant="outline" className="w-full">
-          Back to bands
+          Back to Bands
         </BtnLink>
       </Dialog>
     </Screen>

@@ -1,7 +1,8 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { WifiOff } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import { AuthStatus } from "@/components/ml/auth";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/auth/offline")({
   head: () => ({
@@ -31,23 +32,19 @@ function OfflineScreen() {
       actions={
         <>
           <Btn className="w-full" onClick={() => window.location.reload()}>
-            Try again
+            Try Again
           </Btn>
           <Btn
             variant="outline"
             className="w-full"
             onClick={() => void navigate({ to: "/discover" })}
           >
-            Browse cached Discover
+            Browse Cached Discover
           </Btn>
         </>
       }
       note="Drafts you started are stored on this device until you're back online."
-      footer={
-        <Link to="/auth/phone" className="hit-area font-semibold text-foreground">
-          Back to sign in
-        </Link>
-      }
+      footer={<TextLink to="/auth/phone">Back to Sign In</TextLink>}
     />
   );
 }

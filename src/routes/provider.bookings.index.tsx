@@ -18,6 +18,7 @@ import {
   providerToday,
   type Booking,
 } from "@/data/booking";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/provider/bookings/")({
   head: () => ({
@@ -54,11 +55,7 @@ function ProviderBookings() {
       <TopBar
         title="Provider workspace"
         subtitle="Octave Sound Labs"
-        right={
-          <Link to="/provider/availability" className="pill bg-subtle text-foreground">
-            Availability
-          </Link>
-        }
+        right={<TextLink to="/provider/availability">Availability</TextLink>}
       />
 
       <main className="px-5 pt-2">

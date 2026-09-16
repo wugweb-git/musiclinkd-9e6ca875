@@ -142,10 +142,10 @@ function ManageBusiness() {
               setDeleted(true);
             }}
           >
-            Yes, delete
+            Yes, Delete
           </Btn>
           <Btn variant="ghost" className="w-full" onClick={() => setConfirmDelete(false)}>
-            Keep it
+            Keep It
           </Btn>
         </div>
       </Dialog>
@@ -157,7 +157,7 @@ function ManageBusiness() {
         onClose={() => setDeleted(false)}
       >
         <BtnLink to="/business" className="w-full">
-          Back to businesses
+          Back to Businesses
         </BtnLink>
       </Dialog>
     </Screen>

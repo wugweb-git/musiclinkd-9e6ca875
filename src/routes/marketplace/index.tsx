@@ -11,6 +11,7 @@ import {
   SectionRow,
 } from "@/components/ml/market";
 import { listings, marketCategories } from "@/data/market";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/marketplace/")({
   head: () => ({
@@ -136,14 +137,11 @@ function MarketHome() {
             List it to 72,000+ verified music professionals. Free while Market is in Beta.
           </p>
           <BtnLink to="/marketplace/sell" className="mt-4 w-full">
-            Create a listing
+            Create a Listing
           </BtnLink>
-          <Link
-            to="/marketplace/mine"
-            className="mt-2 block text-center text-xs font-semibold text-foreground"
-          >
+          <TextLink to="/marketplace/mine" className="mt-2 block text-center text-xs">
             My Marketplace
-          </Link>
+          </TextLink>
         </div>
       </div>
 

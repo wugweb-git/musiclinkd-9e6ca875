@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { EmptyState, Label } from "@/components/ml/collab";
 import { DeletedState, MediaTile } from "@/components/ml/collab-extra";
 import { getProject, type CollabFileKind } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/collab/$id/media")({
   head: ({ params }) => {
@@ -79,7 +80,7 @@ function Media() {
           body="Upload the first reference, stem or document and everyone on the project can see it."
           action={
             <BtnLink to="/collab/$id/files" params={{ id: project.id }}>
-              Go to files
+              Go to Files
             </BtnLink>
           }
         />
@@ -91,13 +92,13 @@ function Media() {
         </div>
       )}
 
-      <Link
+      <TextLink
         to="/collab/$id/files"
         params={{ id: project.id }}
-        className="mb-8 block text-center text-[12px] font-semibold text-foreground"
+        className="mb-8 block text-center text-[12px]"
       >
-        Open file list
-      </Link>
+        Open File List
+      </TextLink>
     </WorkspaceShell>
   );
 }

@@ -139,7 +139,7 @@ function Complete() {
               body="Add your team, services and location so clients can book the business, not just you."
               action={
                 <BtnLink to="/business/new" search={{ step: "type" }} className="w-full">
-                  Start business setup
+                  Start Business Setup
                 </BtnLink>
               }
             />
@@ -149,7 +149,7 @@ function Complete() {
             body="Verified profiles rank higher in discovery and get more replies."
             action={
               <BtnLink to="/verification" className="w-full">
-                Start verification
+                Start Verification
               </BtnLink>
             }
           />

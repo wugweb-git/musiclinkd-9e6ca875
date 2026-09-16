@@ -117,17 +117,17 @@ function RentalBooking() {
           {!isCompleted && b.bucket === "Active" ? (
             <>
               <Btn variant="outline" className="w-full" onClick={() => setExtend(true)}>
-                Request extension
+                Request Extension
               </Btn>
               <Btn className="w-full" onClick={() => setRet(true)}>
-                Return equipment
+                Return Equipment
               </Btn>
             </>
           ) : null}
           {isCompleted ? (
             <>
               <Btn className="w-full" onClick={() => setReview(true)}>
-                Rate provider & equipment
+                Rate Provider & Equipment
               </Btn>
               <BtnLink
                 to="/marketplace/rent/e/$id"
@@ -135,7 +135,7 @@ function RentalBooking() {
                 variant="outline"
                 className="w-full"
               >
-                Book again
+                Book Again
               </BtnLink>
               <BtnLink
                 to="/marketplace/rent/c/$slug"
@@ -143,7 +143,7 @@ function RentalBooking() {
                 variant="outline"
                 className="w-full"
               >
-                Browse similar equipment
+                Browse Similar Equipment
               </BtnLink>
             </>
           ) : null}
@@ -174,7 +174,7 @@ function RentalBooking() {
           </p>
         ) : null}
         <Btn className="mt-4 w-full" onClick={() => setExtend(false)}>
-          Request extension
+          Request Extension
         </Btn>
       </Sheet>
 
@@ -221,7 +221,7 @@ function RentalBooking() {
             setReview(true);
           }}
         >
-          Confirm return
+          Confirm Return
         </Btn>
       </Sheet>
 
@@ -273,7 +273,7 @@ function RentalBooking() {
           <Rating value={stars} />
         </div>
         <Btn className="mt-4 w-full" onClick={() => setReview(false)}>
-          Submit review
+          Submit Review
         </Btn>
       </Sheet>
     </Screen>

@@ -518,14 +518,16 @@ export function Sheet({
   );
 }
 
+/**
+ * Section title with an optional action beside it. The action brings its own colour — use
+ * `SectionActionLink` (brand pink) for the "See All" role; this header never forces one.
+ */
 export function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
   return (
     <div className="mb-3 flex items-baseline justify-between gap-3 px-5">
       <h2 className="min-w-0 truncate text-2">{title}</h2>
       {action ? (
-        <span className="hit-area shrink-0 whitespace-nowrap text-1 font-semibold text-foreground">
-          {action}
-        </span>
+        <span className="hit-area shrink-0 whitespace-nowrap text-1 font-semibold">{action}</span>
       ) : null}
     </div>
   );

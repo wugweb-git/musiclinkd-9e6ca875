@@ -80,10 +80,10 @@ function ListForRent() {
               every enquiry.
             </p>
             <BtnLink to="/marketplace/rent/listings" className="mt-6 w-full">
-              Go to my listings
+              Go to My Listings
             </BtnLink>
             <BtnLink to="/marketplace/rent" variant="outline" className="mt-2 w-full">
-              Back to rentals
+              Back to Rentals
             </BtnLink>
           </div>
         ) : null}
@@ -354,7 +354,7 @@ function ListForRent() {
                 </Btn>
               ) : null}
               <Btn variant="ghost" className="flex-1">
-                Save draft
+                Save Draft
               </Btn>
             </div>
           </div>

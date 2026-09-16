@@ -137,7 +137,7 @@ function ServicesHome() {
             body="Publish a service so people can book you without asking for a quote first."
           >
             <BtnLink to="/services/new" search={{ step: "category" as const }} className="w-full">
-              Add a service
+              Add a Service
             </BtnLink>
           </EmptyState>
         )}

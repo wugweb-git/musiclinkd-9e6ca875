@@ -5,6 +5,7 @@ import { Card, Loading, StatusPill } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import { gateFor, useMyVerification } from "@/hooks/use-my-verification";
 import { statusLabel, statusTone } from "@/data/verification";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/verification/choose")({
   head: () => ({
@@ -119,18 +120,10 @@ function ChooseType() {
           <p className="text-[13px] font-semibold">Not sure which one?</p>
           <p className="mt-1 text-[12px] text-muted-foreground">
             Read{" "}
-            <Link
-              to="/help/$slug"
-              params={{ slug: "how-verification-works" }}
-              className="font-semibold text-foreground"
-            >
+            <TextLink to="/help/$slug" params={{ slug: "how-verification-works" }}>
               how verification works
-            </Link>{" "}
-            or check{" "}
-            <Link to="/verification/privacy" className="font-semibold text-foreground">
-              how your documents are used
-            </Link>
-            .
+            </TextLink>{" "}
+            or check <TextLink to="/verification/privacy">how your documents are used</TextLink>.
           </p>
         </Card>
       </div>

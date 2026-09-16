@@ -258,7 +258,7 @@ function RentalDetail() {
                   variant="outline"
                   className="w-full"
                 >
-                  View profile
+                  View Profile
                 </BtnLink>
               ) : null}
               <BtnLink to="/messages" variant="outline" className="w-full">
@@ -289,7 +289,7 @@ function RentalDetail() {
                 variant="outline"
                 className="w-full"
               >
-                View profile
+                View Profile
               </BtnLink>
               <BtnLink to="/messages" variant="outline" className="w-full">
                 Message
@@ -363,11 +363,11 @@ function RentalDetail() {
           {fromCatalog ? (
             // The request flow needs dates, rates and a deposit a database rental does not store.
             <BtnLink to="/messages" className="shrink-0">
-              Check availability
+              Check Availability
             </BtnLink>
           ) : (
             <BtnLink to="/marketplace/rent/request/$id" params={{ id: e.id }} className="shrink-0">
-              Check availability
+              Check Availability
             </BtnLink>
           )}
         </div>

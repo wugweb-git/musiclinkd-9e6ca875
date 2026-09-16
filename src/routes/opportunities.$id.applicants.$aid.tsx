@@ -82,7 +82,7 @@ function ApplicantDetail() {
             variant="outline"
             className="w-full"
           >
-            View full profile
+            View Full Profile
           </BtnLink>
         </Card>
 
@@ -119,7 +119,7 @@ function ApplicantDetail() {
       <div className="fixed inset-x-0 bottom-16 z-30 mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
         <div className="flex gap-2">
           <Btn variant="outline" className="flex-1" onClick={() => setDecision("reject")}>
-            Not a fit
+            Not a Fit
           </Btn>
           {a.status === "shortlisted" ? (
             <Btn className="flex-1" onClick={() => setHire(true)}>
@@ -160,7 +160,7 @@ function ApplicantDetail() {
 
       <Dialog open={confirmed !== null} title={confirmed ?? ""} onClose={() => setConfirmed(null)}>
         <BtnLink to="/opportunities/$id/applicants" params={{ id }} className="w-full">
-          Back to applicants
+          Back to Applicants
         </BtnLink>
       </Dialog>
 
@@ -169,7 +169,7 @@ function ApplicantDetail() {
           {a?.serviceId ? (
             <BtnLink to="/services/$id/enquiry" params={{ id: a.serviceId }} className="w-full">
               <span className="inline-flex items-center gap-2">
-                <CalendarDays size={16} /> Enquire about their service
+                <CalendarDays size={16} /> Enquire About Their Service
               </span>
             </BtnLink>
           ) : null}
@@ -178,10 +178,10 @@ function ApplicantDetail() {
             variant={a?.serviceId ? "outline" : "primary"}
             className="w-full"
           >
-            Start a collaboration
+            Start a Collaboration
           </BtnLink>
           <BtnLink to="/messages" variant="ghost" className="w-full">
-            Keep talking first
+            Keep Talking First
           </BtnLink>
         </div>
       </Sheet>

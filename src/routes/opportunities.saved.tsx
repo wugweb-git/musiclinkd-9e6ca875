@@ -38,7 +38,7 @@ function SavedOpportunities() {
             body="Tap the bookmark on any opportunity to keep it here while you decide."
           >
             <BtnLink to="/opportunities" className="w-full">
-              Browse opportunities
+              Browse Opportunities
             </BtnLink>
           </EmptyState>
         ) : (

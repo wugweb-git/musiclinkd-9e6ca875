@@ -107,7 +107,7 @@ function Done() {
         )}
       >
         <BtnLink to="/feed" className="w-full">
-          Go to my home
+          Go to My Home
         </BtnLink>
       </div>
     </Screen>

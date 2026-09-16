@@ -76,11 +76,11 @@ function InvitationAccepted() {
           </BtnLink>
           {project ? (
             <BtnLink to="/collab/$id" params={{ id: project.id }} className="flex-1 w-full">
-              Open project
+              Open Project
             </BtnLink>
           ) : (
             <BtnLink to="/collab" className="flex-1 w-full">
-              Open collaborations
+              Open Collaborations
             </BtnLink>
           )}
         </div>

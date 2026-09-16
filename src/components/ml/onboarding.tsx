@@ -1033,7 +1033,7 @@ export function ErrorBanner({ message, onRetry }: { message: string; onRetry: ()
     <AuthNotice
       tone="error"
       title="That didn't save"
-      action={<AuthTextButton onClick={onRetry}>Try again</AuthTextButton>}
+      action={<AuthTextButton onClick={onRetry}>Try Again</AuthTextButton>}
     >
       {message}
     </AuthNotice>

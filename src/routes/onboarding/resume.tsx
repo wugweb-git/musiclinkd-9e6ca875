@@ -89,7 +89,7 @@ function Resume() {
               navigate({ to: "/onboarding" });
             }}
           >
-            Start over
+            Start Over
           </AuthTextButton>
         </p>
       </div>

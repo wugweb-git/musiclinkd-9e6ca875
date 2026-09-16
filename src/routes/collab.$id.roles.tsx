@@ -98,10 +98,10 @@ function Roles() {
           variant="outline"
           className="flex-1 w-full"
         >
-          Manage people
+          Manage People
         </BtnLink>
         <BtnLink to="/collab/$id/agreement" params={{ id: project.id }} className="flex-1 w-full">
-          View agreement
+          View Agreement
         </BtnLink>
       </div>
     </WorkspaceShell>
