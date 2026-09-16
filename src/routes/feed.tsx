@@ -19,7 +19,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
-import { Price } from "@/components/ml/kit";
+import { Price, StatusPill } from "@/components/ml/kit";
 import { LogoMark } from "@/components/ml/logo";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
@@ -281,12 +281,12 @@ function Body({ home }: { home: Home }) {
           {isEmpty ? "Your network is quiet today." : "Here's your MusicLinkd today."}
         </p>
         <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-container px-3 py-1.5 text-1 font-bold text-success">
-            <span className="h-1.5 w-1.5 rounded-full bg-success" />
-            {user.available ? "Open to collaborations" : "Not taking work"}
-          </span>
+          <StatusPill
+            label={user.available ? "Open to collaborations" : "Not taking work"}
+            tone={user.available ? "good" : "neutral"}
+          />
           {user.role ? (
-            <span className="max-w-full truncate rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold text-muted-foreground">
+            <span className="pill max-w-full truncate bg-subtle text-muted-foreground">
               {user.role}
             </span>
           ) : null}
