@@ -1,3 +1,5 @@
+import type { RateValue } from "@/lib/utils";
+
 export type Talent = {
   id: string;
   name: string;
@@ -11,7 +13,7 @@ export type Talent = {
   rating: number;
   credits: number;
   photo: string;
-  rate: string;
+  rate: RateValue;
 };
 
 /** Status-pill tone for a talent's availability. */
@@ -38,7 +40,7 @@ export const talents: Talent[] = [
     rating: 4.9,
     credits: 42,
     photo: u("photo-1534528741775-53994a69daeb"),
-    rate: "₹18,000/song",
+    rate: { amount: "₹18,000", unit: "per song" },
   },
   {
     id: "rahul-iyer",
@@ -53,7 +55,7 @@ export const talents: Talent[] = [
     rating: 4.8,
     credits: 67,
     photo: u("photo-1507003211169-0a1dd7228f2d"),
-    rate: "₹25,000/track",
+    rate: { amount: "₹25,000", unit: "per track" },
   },
   {
     id: "meher-kaur",
@@ -68,7 +70,7 @@ export const talents: Talent[] = [
     rating: 4.7,
     credits: 28,
     photo: u("photo-1516280440614-37939bbacd81"),
-    rate: "₹9,500/day",
+    rate: { amount: "₹9,500", unit: "per day" },
   },
   {
     id: "dj-noor",
@@ -83,7 +85,7 @@ export const talents: Talent[] = [
     rating: 4.9,
     credits: 190,
     photo: u("photo-1571019613454-1cb2f99b2d8b"),
-    rate: "₹65,000/night",
+    rate: { amount: "₹65,000", unit: "per night" },
   },
   {
     id: "arjun-menon",
@@ -98,7 +100,7 @@ export const talents: Talent[] = [
     rating: 5,
     credits: 84,
     photo: u("photo-1493225457124-a3eb161ffa5f"),
-    rate: "On request",
+    rate: { amount: "On request" },
   },
   {
     id: "tanvi-rao",
@@ -113,7 +115,7 @@ export const talents: Talent[] = [
     rating: 4.8,
     credits: 35,
     photo: u("photo-1524504388940-b1c1722653e1"),
-    rate: "₹14,000/show",
+    rate: { amount: "₹14,000", unit: "per show" },
   },
 ];
 
@@ -134,7 +136,7 @@ export const singers: Talent[] = [
     rating: 4.9,
     credits: 51,
     photo: u("photo-1499996860823-5214fcc65f8f"),
-    rate: "₹40,000/feature",
+    rate: { amount: "₹40,000", unit: "per feature" },
   },
   {
     id: "lisa-dsouza",
@@ -149,7 +151,7 @@ export const singers: Talent[] = [
     rating: 4.6,
     credits: 19,
     photo: u("photo-1529626455594-4ff0802cfb7e"),
-    rate: "₹12,000/song",
+    rate: { amount: "₹12,000", unit: "per song" },
   },
   {
     id: "harpreet-singh",
@@ -164,7 +166,7 @@ export const singers: Talent[] = [
     rating: 4.9,
     credits: 62,
     photo: u("photo-1506794778202-cad84cf45f1d"),
-    rate: "₹55,000/show",
+    rate: { amount: "₹55,000", unit: "per show" },
   },
   {
     id: "nithya-balan",
@@ -179,7 +181,7 @@ export const singers: Talent[] = [
     rating: 4.8,
     credits: 73,
     photo: u("photo-1502823403499-6ccfcf4fb453"),
-    rate: "₹22,000/song",
+    rate: { amount: "₹22,000", unit: "per song" },
   },
 ];
 
@@ -198,18 +200,23 @@ export const quickCategories: { label: string; emoji: string; to: QuickCategoryT
 type QuickCategoryTo =
   "/categories" | "/bands" | "/discover/community" | "/marketplace" | "/marketplace/rent";
 
+/*
+ * Browse categories. Each opens search for that kind of person; `role` is the taxonomy slug the
+ * search filters on. Counts were invented figures and are gone (owner rule: never fabricate counts);
+ * add them back only from a real query.
+ */
 export const categories = [
-  { label: "Singers", emoji: "🎤", count: "18,420", slug: "singers" },
-  { label: "Musicians", emoji: "🎸", count: "26,180", slug: "musicians" },
-  { label: "DJs", emoji: "🎧", count: "7,940", slug: "djs" },
-  { label: "Engineers", emoji: "🎚", count: "4,310", slug: "engineers" },
-  { label: "Composers", emoji: "🎼", count: "3,760", slug: "composers" },
-  { label: "Bands", emoji: "🥁", count: "5,205", slug: "bands" },
-  { label: "Studios", emoji: "🏢", count: "2,118", slug: "studios" },
-  { label: "Labels", emoji: "🏷", count: "860", slug: "labels" },
-  { label: "Event Organizers", emoji: "🎪", count: "1,472", slug: "organizers" },
-  { label: "Music Schools", emoji: "🎓", count: "1,038", slug: "schools" },
-  { label: "Venues", emoji: "🏟", count: "3,644", slug: "venues" },
+  { label: "Singers", role: "singer", slug: "singers" },
+  { label: "Musicians", role: "musician", slug: "musicians" },
+  { label: "DJs", role: "dj", slug: "djs" },
+  { label: "Engineers", role: "sound_engineer", slug: "engineers" },
+  { label: "Composers", role: "composer", slug: "composers" },
+  { label: "Bands", role: "band", slug: "bands" },
+  { label: "Studios", role: "studio", slug: "studios" },
+  { label: "Labels", role: "music_label", slug: "labels" },
+  { label: "Event Organizers", role: "event_organizer", slug: "organizers" },
+  { label: "Music Schools", role: "music_school", slug: "schools" },
+  { label: "Venues", role: "venue", slug: "venues" },
 ];
 
 export const trending = [
@@ -238,7 +245,7 @@ export const studios = [
     name: "Wugweb Studios",
     location: "Andheri West, Mumbai",
     rating: 4.9,
-    rate: "₹1,800/hr",
+    rate: { amount: "₹1,800", unit: "per hour" },
     photo: u("photo-1598488035139-bdbb2231ce04", 600),
     gear: ["SSL Duality", "Neumann U87", "Genelec 8351B"],
   },
@@ -246,7 +253,7 @@ export const studios = [
     name: "Krimson Avenue",
     location: "Koramangala, Bengaluru",
     rating: 4.7,
-    rate: "₹1,200/hr",
+    rate: { amount: "₹1,200", unit: "per hour" },
     photo: u("photo-1519508234439-4f23643125c1", 600),
     gear: ["API 1608", "Focal Trio", "Rhodes Mk1"],
   },

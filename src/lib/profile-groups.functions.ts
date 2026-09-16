@@ -152,3 +152,50 @@ export const getPublicBand = createServerFn({ method: "GET" })
       events: (events.data ?? []) as BandRecord["events"],
     };
   });
+
+export type DirectoryPerson = {
+  username: string;
+  name: string;
+  headline: string | null;
+  city: string | null;
+  roles: string[];
+  genres: string[];
+  avatarUrl: string | null;
+  verified: boolean;
+};
+
+/*
+ * Everyone in one category, for /categories/$slug. Public profiles only (RLS keeps the rest out of
+ * an anonymous read, and "limited" is filtered here too). No counts are invented: the screen shows
+ * what the query returns.
+ */
+export const listPeopleByRole = createServerFn({ method: "GET" })
+  .inputValidator((d) =>
+    z
+      .object({
+        role: z.string().min(1).max(60),
+        limit: z.number().int().min(1).max(60).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }): Promise<DirectoryPerson[]> => {
+    const client = await anonClient();
+    const { data: rows, error } = await client
+      .from("profiles")
+      .select(PROFILE)
+      .contains("roles", [data.role])
+      .eq("visibility", "public")
+      .order("is_verified", { ascending: false })
+      .limit(data.limit ?? 40);
+    if (error) throw new Error(error.message);
+    return ((rows ?? []) as ProfileBase[]).map((r) => ({
+      username: r.username ?? "",
+      name: r.display_name ?? r.username ?? "",
+      headline: r.headline,
+      city: r.city,
+      roles: r.roles ?? [],
+      genres: r.genres ?? [],
+      avatarUrl: r.avatar_url,
+      verified: Boolean(r.is_verified),
+    }));
+  });

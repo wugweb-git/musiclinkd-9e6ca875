@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BandRouteImport } from './routes/band'
-import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
@@ -38,6 +37,8 @@ import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
+import { Route as CategoriesIndexRouteImport } from './routes/categories.index'
+import { Route as CategoriesSlugRouteImport } from './routes/categories.$slug'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as DevNewUserRouteImport } from './routes/dev.new-user'
 import { Route as DiscoverIndexRouteImport } from './routes/discover.index'
@@ -230,11 +231,6 @@ const BandRoute = BandRouteImport.update({
   path: '/band',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriesRoute = CategoriesRouteImport.update({
-  id: '/categories',
-  path: '/categories',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FeedRoute = FeedRouteImport.update({
   id: '/feed',
   path: '/feed',
@@ -363,6 +359,16 @@ const BusinessIndexRoute = BusinessIndexRouteImport.update({
 const BusinessNewRoute = BusinessNewRouteImport.update({
   id: '/business/new',
   path: '/business/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesIndexRoute = CategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriesSlugRoute = CategoriesSlugRouteImport.update({
+  id: '/categories/$slug',
+  path: '/categories/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollabIndexRoute = CollabIndexRouteImport.update({
@@ -1287,7 +1293,6 @@ const ProviderBookingsRequestsRefRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
-  '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
@@ -1310,6 +1315,7 @@ export interface FileRoutesByFullPath {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
+  '/categories/$slug': typeof CategoriesSlugRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
@@ -1377,6 +1383,7 @@ export interface FileRoutesByFullPath {
   '/bands/': typeof BandsIndexRoute
   '/bookings/': typeof BookingsIndexRoute
   '/business/': typeof BusinessIndexRoute
+  '/categories/': typeof CategoriesIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/discover/': typeof DiscoverIndexRoute
   '/help/': typeof HelpIndexRoute
@@ -1499,7 +1506,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
-  '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
@@ -1521,6 +1527,7 @@ export interface FileRoutesByTo {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/new': typeof BandsNewRoute
   '/business/new': typeof BusinessNewRoute
+  '/categories/$slug': typeof CategoriesSlugRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
@@ -1588,6 +1595,7 @@ export interface FileRoutesByTo {
   '/bands': typeof BandsIndexRoute
   '/bookings': typeof BookingsIndexRoute
   '/business': typeof BusinessIndexRoute
+  '/categories': typeof CategoriesIndexRoute
   '/collab': typeof CollabIndexRoute
   '/discover': typeof DiscoverIndexRoute
   '/help': typeof HelpIndexRoute
@@ -1711,7 +1719,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/band': typeof BandRoute
-  '/categories': typeof CategoriesRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
@@ -1734,6 +1741,7 @@ export interface FileRoutesById {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
+  '/categories/$slug': typeof CategoriesSlugRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
@@ -1801,6 +1809,7 @@ export interface FileRoutesById {
   '/bands/': typeof BandsIndexRoute
   '/bookings/': typeof BookingsIndexRoute
   '/business/': typeof BusinessIndexRoute
+  '/categories/': typeof CategoriesIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/discover/': typeof DiscoverIndexRoute
   '/help/': typeof HelpIndexRoute
@@ -1925,7 +1934,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/band'
-    | '/categories'
     | '/feed'
     | '/me'
     | '/messages'
@@ -1948,6 +1956,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/new'
+    | '/categories/$slug'
     | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
@@ -2015,6 +2024,7 @@ export interface FileRouteTypes {
     | '/bands/'
     | '/bookings/'
     | '/business/'
+    | '/categories/'
     | '/collab/'
     | '/discover/'
     | '/help/'
@@ -2137,7 +2147,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/band'
-    | '/categories'
     | '/feed'
     | '/me'
     | '/messages'
@@ -2159,6 +2168,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/bands/new'
     | '/business/new'
+    | '/categories/$slug'
     | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
@@ -2226,6 +2236,7 @@ export interface FileRouteTypes {
     | '/bands'
     | '/bookings'
     | '/business'
+    | '/categories'
     | '/collab'
     | '/discover'
     | '/help'
@@ -2348,7 +2359,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/band'
-    | '/categories'
     | '/feed'
     | '/me'
     | '/messages'
@@ -2371,6 +2381,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/new'
+    | '/categories/$slug'
     | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
@@ -2438,6 +2449,7 @@ export interface FileRouteTypes {
     | '/bands/'
     | '/bookings/'
     | '/business/'
+    | '/categories/'
     | '/collab/'
     | '/discover/'
     | '/help/'
@@ -2561,7 +2573,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BandRoute: typeof BandRoute
-  CategoriesRoute: typeof CategoriesRoute
   FeedRoute: typeof FeedRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
@@ -2584,6 +2595,7 @@ export interface RootRouteChildren {
   BandsNewRoute: typeof BandsNewRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   BusinessNewRoute: typeof BusinessNewRoute
+  CategoriesSlugRoute: typeof CategoriesSlugRoute
   DevNewUserRoute: typeof DevNewUserRoute
   DiscoverCommunityRoute: typeof DiscoverCommunityRoute
   DiscoverMusicRoute: typeof DiscoverMusicRoute
@@ -2651,6 +2663,7 @@ export interface RootRouteChildren {
   BandsIndexRoute: typeof BandsIndexRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
   BusinessIndexRoute: typeof BusinessIndexRoute
+  CategoriesIndexRoute: typeof CategoriesIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
   DiscoverIndexRoute: typeof DiscoverIndexRoute
   HelpIndexRoute: typeof HelpIndexRoute
@@ -2778,13 +2791,6 @@ declare module '@tanstack/react-router' {
       path: '/band'
       fullPath: '/band'
       preLoaderRoute: typeof BandRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/categories': {
-      id: '/categories'
-      path: '/categories'
-      fullPath: '/categories'
-      preLoaderRoute: typeof CategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feed': {
@@ -2967,6 +2973,20 @@ declare module '@tanstack/react-router' {
       path: '/business/new'
       fullPath: '/business/new'
       preLoaderRoute: typeof BusinessNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories/': {
+      id: '/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof CategoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categories/$slug': {
+      id: '/categories/$slug'
+      path: '/categories/$slug'
+      fullPath: '/categories/$slug'
+      preLoaderRoute: typeof CategoriesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collab/': {
@@ -4266,7 +4286,6 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
-  CategoriesRoute: CategoriesRoute,
   FeedRoute: FeedRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
@@ -4289,6 +4308,7 @@ const rootRouteChildren: RootRouteChildren = {
   BandsNewRoute: BandsNewRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   BusinessNewRoute: BusinessNewRoute,
+  CategoriesSlugRoute: CategoriesSlugRoute,
   DevNewUserRoute: DevNewUserRoute,
   DiscoverCommunityRoute: DiscoverCommunityRoute,
   DiscoverMusicRoute: DiscoverMusicRoute,
@@ -4356,6 +4376,7 @@ const rootRouteChildren: RootRouteChildren = {
   BandsIndexRoute: BandsIndexRoute,
   BookingsIndexRoute: BookingsIndexRoute,
   BusinessIndexRoute: BusinessIndexRoute,
+  CategoriesIndexRoute: CategoriesIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
   DiscoverIndexRoute: DiscoverIndexRoute,
   HelpIndexRoute: HelpIndexRoute,

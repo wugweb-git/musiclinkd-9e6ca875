@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { AuthScreen, Brand } from "@/components/ml/auth";
+import { LogoMark } from "@/components/ml/logo";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { postAuthTarget } from "@/lib/post-auth";
@@ -32,9 +32,10 @@ function SessionCheck() {
   useEffect(() => {
     if (loading) return;
     let active = true;
-    // Hold until the 500ms sound check has played; a slow session read is not held further.
+    // Hold for the mark's entrance, never past 2 seconds (owner, 16 Sep); a slow session read is
+    // not held further.
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hold = reduced ? 0 : Math.max(0, 500 - (Date.now() - mountedAt.current));
+    const hold = reduced ? 0 : Math.min(2000, Math.max(0, 900 - (Date.now() - mountedAt.current)));
     const go = (to: "/welcome" | "/feed" | ReturnType<typeof postAuthTarget>) =>
       window.setTimeout(() => {
         if (active) void navigate({ to, replace: true });
@@ -55,14 +56,13 @@ function SessionCheck() {
   }, [loading, signedIn, navigate, loadProfile]);
 
   return (
-    <AuthScreen brand={false}>
-      <div
-        className="flex min-h-[calc(100dvh-64px)] items-center justify-center"
-        role="status"
-        aria-label="Checking your session"
-      >
-        <Brand animated className="vt-brand" />
-      </div>
-    </AuthScreen>
+    // Full-bleed brand ground with the mark in white: the one screen where pink carries everything.
+    <div
+      className="flex min-h-[100dvh] w-full items-center justify-center brand-ground px-10"
+      role="status"
+      aria-label="Checking your session"
+    >
+      <LogoMark className="vt-brand w-3/5 max-w-[320px] animate-splash-mark text-background [filter:drop-shadow(0_18px_40px_rgba(0,0,0,0.28))]" />
+    </div>
   );
 }
