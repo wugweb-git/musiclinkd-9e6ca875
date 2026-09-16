@@ -55,14 +55,7 @@ function ProviderBookings() {
       <TopBar
         title="Provider workspace"
         subtitle="Octave Sound Labs"
-        right={
-          <TextLink
-            to="/provider/availability"
-            className="text-0 font-bold uppercase tracking-wide"
-          >
-            Availability
-          </TextLink>
-        }
+        right={<TextLink to="/provider/availability">Availability</TextLink>}
       />
 
       <main className="px-5 pt-2">

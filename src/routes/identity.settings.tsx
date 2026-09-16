@@ -80,17 +80,13 @@ function QrSettings() {
           onChange={set("discoverable")}
         />
 
-        <p className="mt-3 px-1 text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
-          Shared on my digital card
-        </p>
+        <p className="mt-3 pill bg-subtle text-muted-foreground">Shared on my digital card</p>
         <Toggle label="Phone number" value={state.phone} onChange={set("phone")} />
         <Toggle label="Email address" value={state.email} onChange={set("email")} />
         <Toggle label="Company" value={state.company} onChange={set("company")} />
         <Toggle label="Website" value={state.website} onChange={set("website")} />
 
-        <p className="mt-3 px-1 text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
-          Insights
-        </p>
+        <p className="mt-3 pill bg-subtle text-muted-foreground">Insights</p>
         <Toggle
           label="Count scans of my QR"
           hint="Aggregate counts only — never who scanned it."

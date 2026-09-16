@@ -155,9 +155,7 @@ export function StateCard({
 export function AudioPreview({ src, title }: { src: string; title: string }) {
   return (
     <div className="rounded-lg border border-border bg-card p-4">
-      <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        Audio preview
-      </p>
+      <p className="pill bg-subtle text-muted-foreground">Audio preview</p>
       <p className="mt-1 truncate text-sm font-semibold">{title}</p>
       {/* eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied external link (YouTube/Spotify/SoundCloud); no caption track exists to attach, and an empty <track> would assert captions that are not there */}
       <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
@@ -401,7 +399,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
         rel="noreferrer"
         className="block rounded-lg border border-border bg-card p-4"
       >
-        <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Video</p>
+        <p className="pill bg-subtle text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
         <p className="mt-1 truncate text-1 text-foreground">{src}</p>
       </a>

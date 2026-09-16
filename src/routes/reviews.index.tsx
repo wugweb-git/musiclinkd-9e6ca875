@@ -190,9 +190,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
       </div>
       {r.response ? (
         <div className="rounded-lg bg-subtle p-3">
-          <p className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
-            Your response · {r.response.at}
-          </p>
+          <p className="pill bg-subtle text-muted-foreground">Your response · {r.response.at}</p>
           <p className="mt-1 text-1 text-muted-foreground">{r.response.body}</p>
         </div>
       ) : null}

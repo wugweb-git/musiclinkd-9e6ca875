@@ -64,9 +64,7 @@ function MarketSearch() {
 
       {!q.trim() ? (
         <div className="px-5">
-          <h2 className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
-            Recent searches
-          </h2>
+          <h2 className="mb-2 pill bg-subtle text-muted-foreground">Recent searches</h2>
           <div className="mb-6 flex flex-wrap gap-2">
             {recentSearches.map((s) => (
               <Chip key={s} onClick={() => setQ(s)}>
@@ -74,9 +72,7 @@ function MarketSearch() {
               </Chip>
             ))}
           </div>
-          <h2 className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
-            Popular in Mumbai
-          </h2>
+          <h2 className="mb-2 pill bg-subtle text-muted-foreground">Popular in Mumbai</h2>
           <div className="flex flex-wrap gap-2">
             {popularSearches.map((s) => (
               <Chip key={s} onClick={() => setQ(s)}>

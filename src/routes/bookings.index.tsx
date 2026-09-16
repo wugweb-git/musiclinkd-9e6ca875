@@ -57,7 +57,7 @@ function MyBookings() {
             <button
               type="button"
               onClick={() => setSim(sim === "ok" ? "empty" : "ok")}
-              className="text-0 font-bold uppercase tracking-wide text-muted-foreground"
+              className="pill bg-subtle text-muted-foreground"
             >
               {sim === "ok" ? "States" : "Reset"}
             </button>

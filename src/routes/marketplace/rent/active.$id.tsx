@@ -194,9 +194,7 @@ function RentalBooking() {
             </div>
           ))}
         </dl>
-        <p className="mb-2 mt-4 text-0 font-bold uppercase tracking-wide text-muted-foreground">
-          Condition confirmation
-        </p>
+        <p className="mb-2 mt-4 pill bg-subtle text-muted-foreground">Condition confirmation</p>
         <div className="flex flex-wrap gap-2">
           {["Same as received", "Minor wear", "Damage to report"].map((c) => (
             <Chip key={c} active={c === "Same as received"}>
@@ -235,9 +233,7 @@ function RentalBooking() {
             <p className="truncate text-0 text-muted-foreground">{p.name}</p>
           </div>
         </div>
-        <p className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
-          Overall experience
-        </p>
+        <p className="mb-2 pill bg-subtle text-muted-foreground">Overall experience</p>
         <div className="mb-4 flex gap-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -251,9 +247,7 @@ function RentalBooking() {
             </button>
           ))}
         </div>
-        <p className="mb-2 text-0 font-bold uppercase tracking-wide text-muted-foreground">
-          What went well
-        </p>
+        <p className="mb-2 pill bg-subtle text-muted-foreground">What went well</p>
         <div className="mb-4 flex flex-wrap gap-2">
           {["Equipment condition", "Accuracy", "Communication", "Pickup", "Delivery", "Value"].map(
             (t) => (

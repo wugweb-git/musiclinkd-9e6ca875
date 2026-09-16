@@ -137,7 +137,7 @@ function Pay() {
           <button
             type="button"
             onClick={() => setPhase("failed")}
-            className="mt-6 min-h-11 text-0 font-bold uppercase tracking-wide text-muted-foreground"
+            className="mt-6 min-h-11 pill bg-subtle text-muted-foreground"
           >
             Preview failure state
           </button>

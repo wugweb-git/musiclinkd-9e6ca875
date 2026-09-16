@@ -158,7 +158,7 @@ function ListForRent() {
                 { label: "Location", ph: "Andheri West, Mumbai" },
               ].map((f) => (
                 <div key={f.label}>
-                  <label className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground">
+                  <label className="mb-1.5 block pill bg-subtle text-muted-foreground">
                     {f.label}
                   </label>
                   <input
@@ -170,7 +170,7 @@ function ListForRent() {
               <div>
                 <span
                   id="grp-subcategory"
-                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block pill bg-subtle text-muted-foreground"
                 >
                   Sub-category
                 </span>
@@ -187,7 +187,7 @@ function ListForRent() {
               <div>
                 <span
                   id="grp-condition"
-                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block pill bg-subtle text-muted-foreground"
                 >
                   Condition
                 </span>
@@ -202,7 +202,7 @@ function ListForRent() {
               <div>
                 <label
                   htmlFor="description-included-accessories"
-                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block pill bg-subtle text-muted-foreground"
                 >
                   Description & included accessories
                 </label>
@@ -216,7 +216,7 @@ function ListForRent() {
               <div className="grid grid-cols-3 gap-2">
                 {["Daily ₹", "Weekly ₹", "Monthly ₹"].map((f) => (
                   <div key={f}>
-                    <label className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground">
+                    <label className="mb-1.5 block text-1 font-medium text-muted-foreground">
                       {f}
                     </label>
                     <input
@@ -230,7 +230,7 @@ function ListForRent() {
               <div>
                 <label
                   htmlFor="security-deposit"
-                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block pill bg-subtle text-muted-foreground"
                 >
                   Security deposit
                 </label>
@@ -244,7 +244,7 @@ function ListForRent() {
               <div>
                 <span
                   id="grp-fulfilment"
-                  className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
+                  className="mb-1.5 block pill bg-subtle text-muted-foreground"
                 >
                   Fulfilment
                 </span>
@@ -290,7 +290,7 @@ function ListForRent() {
                 { label: "Notice period", options: ["Same day", "24 hours", "48 hours"] },
               ].map((f) => (
                 <div key={f.label}>
-                  <label className="mb-1.5 block text-0 font-bold uppercase tracking-wide text-muted-foreground">
+                  <label className="mb-1.5 block pill bg-subtle text-muted-foreground">
                     {f.label}
                   </label>
                   <div className="flex flex-wrap gap-2">

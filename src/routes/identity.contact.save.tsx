@@ -52,9 +52,7 @@ function SaveContact() {
         ) : (
           <>
             <section className="rounded-[24px] border border-border bg-card p-4">
-              <p className="text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                Will be saved
-              </p>
+              <p className="pill bg-subtle text-muted-foreground">Will be saved</p>
               <div className="mt-3 flex flex-col gap-2">
                 <ActionRow
                   icon={<UserRoundPlus size={17} />}

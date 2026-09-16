@@ -151,9 +151,7 @@ function WorkDetail() {
 
             {item.collaborators.length ? (
               <section className="mt-4 rounded-lg border border-border bg-card p-4">
-                <h2 className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
-                  Credits
-                </h2>
+                <h2 className="pill bg-subtle text-muted-foreground">Credits</h2>
                 <div className="mt-2 space-y-2">
                   {item.collaborators.map((c) => (
                     <CreditRow key={c} name={c} />

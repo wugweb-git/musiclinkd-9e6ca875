@@ -192,7 +192,7 @@ function RequestFlow() {
             </dl>
             <label
               htmlFor="message-to-provider-optional"
-              className="mb-1.5 mt-4 block text-0 font-bold uppercase tracking-wide text-muted-foreground"
+              className="mb-1.5 mt-4 block pill bg-subtle text-muted-foreground"
             >
               Message to provider (optional)
             </label>

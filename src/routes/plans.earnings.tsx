@@ -27,9 +27,7 @@ function Earnings() {
       <TopBar title="Earnings" subtitle={earnings.range} back="/plans/manage" />
       <div className="space-y-4 px-5 pt-4">
         <Card>
-          <p className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
-            Net earnings
-          </p>
+          <p className="pill bg-subtle text-muted-foreground">Net earnings</p>
           <p className="mt-1 text-4 font-bold leading-none">{earnings.net}</p>
           <p className="mt-2 text-1 text-muted-foreground">{earnings.fees}</p>
           <div className="mt-4 space-y-2">

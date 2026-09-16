@@ -24,11 +24,7 @@ function Messages() {
       <TopBar
         title="Messages"
         subtitle="3 unread"
-        right={
-          <TextLink to="/collab" className="text-0 font-bold uppercase tracking-wide">
-            Collabs
-          </TextLink>
-        }
+        right={<TextLink to="/collab">Collabs</TextLink>}
       />
       <div className="px-5 pt-4">
         <Link

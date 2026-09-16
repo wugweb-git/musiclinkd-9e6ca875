@@ -112,9 +112,7 @@ function Scanner() {
         )}
 
         <div className="mt-6 flex flex-col gap-2">
-          <p className="px-1 text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            Recently scanned
-          </p>
+          <p className="pill bg-subtle text-muted-foreground">Recently scanned</p>
           {scanHistory.slice(0, 3).map((h) => (
             <ActionRow
               key={h.code}

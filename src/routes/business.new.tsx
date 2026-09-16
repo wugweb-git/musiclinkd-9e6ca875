@@ -179,9 +179,7 @@ function NewBusiness() {
                 key={k}
                 className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
               >
-                <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
-                  {k}
-                </span>
+                <span className="pill bg-subtle text-muted-foreground">{k}</span>
                 <span className="max-w-[60%] text-right text-1 font-semibold">{v}</span>
               </div>
             ))}
@@ -241,9 +239,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-0 font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
+      <span className="pill bg-subtle text-muted-foreground">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}

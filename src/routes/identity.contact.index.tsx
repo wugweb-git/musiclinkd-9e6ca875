@@ -64,9 +64,7 @@ function BusinessCard() {
         </section>
 
         <div className="mt-4 flex flex-col gap-2">
-          <p className="px-1 text-0 font-bold uppercase tracking-[0.14em] text-muted-foreground">
-            Shared details
-          </p>
+          <p className="pill bg-subtle text-muted-foreground">Shared details</p>
           {shared.map((s) => (
             <ActionRow key={s.label} icon={s.icon} label={s.label} hint={s.hint} />
           ))}

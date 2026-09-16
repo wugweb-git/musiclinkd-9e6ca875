@@ -65,7 +65,7 @@ function DeleteAccount() {
         </section>
 
         <label className="mt-6 block">
-          <span className="mb-2 block text-0 font-bold uppercase tracking-wide text-muted-foreground">
+          <span className="mb-2 block pill bg-subtle text-muted-foreground">
             Type DELETE to confirm
           </span>
           <input

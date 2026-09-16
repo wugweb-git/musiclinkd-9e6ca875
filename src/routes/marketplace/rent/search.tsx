@@ -64,9 +64,7 @@ function RentSearch() {
       {!q ? (
         <div className="space-y-6 px-5 pb-6">
           <section>
-            <h2 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-              Recent searches
-            </h2>
+            <h2 className="pill mb-2 bg-subtle text-muted-foreground">Recent searches</h2>
             <div className="flex flex-wrap gap-2">
               {recentRentalSearches.map((s) => (
                 <Chip key={s} onClick={() => setQ(s)}>
@@ -76,9 +74,7 @@ function RentSearch() {
             </div>
           </section>
           <section>
-            <h2 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-              Popular equipment
-            </h2>
+            <h2 className="pill mb-2 bg-subtle text-muted-foreground">Popular equipment</h2>
             <div className="flex flex-wrap gap-2">
               {popularRentalSearches.map((s) => (
                 <Chip key={s} onClick={() => setQ(s)}>
@@ -88,9 +84,7 @@ function RentSearch() {
             </div>
           </section>
           <section>
-            <h2 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-              Suggested categories
-            </h2>
+            <h2 className="pill mb-2 bg-subtle text-muted-foreground">Suggested categories</h2>
             <div className="flex flex-wrap gap-2">
               {rentalCategories.map((c) => (
                 <Link key={c.slug} to="/marketplace/rent/c/$slug" params={{ slug: c.slug }}>
@@ -102,9 +96,7 @@ function RentSearch() {
             </div>
           </section>
           <section>
-            <h2 className="mb-3 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-              Available nearby
-            </h2>
+            <h2 className="pill mb-3 bg-subtle text-muted-foreground">Available nearby</h2>
             <div className="space-y-3">
               {equipment.slice(0, 3).map((e) => (
                 <EquipmentRow key={e.id} e={e} />
