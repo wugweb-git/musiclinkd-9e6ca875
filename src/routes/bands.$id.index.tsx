@@ -143,7 +143,7 @@ function BandProfile() {
             Book
           </Link>
           <Link
-            to="/identity/card"
+            to="/identity/qr"
             className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
           >
             <Share2 size={14} aria-hidden />

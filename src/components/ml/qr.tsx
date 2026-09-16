@@ -22,12 +22,15 @@ export function QrCode({
   style = "light",
   className = "",
   label,
+  overlay,
 }: {
   value: string;
   size?: number;
   style?: QrStyle;
   className?: string;
   label?: string;
+  /** A photo set into the middle of the code. Raises error correction so it still scans. */
+  overlay?: string | undefined;
 }) {
   const s = styleFor(style);
   const [src, setSrc] = useState<string | null>(null);
@@ -35,7 +38,7 @@ export function QrCode({
   useEffect(() => {
     let alive = true;
     QRCode.toDataURL(value, {
-      errorCorrectionLevel: "M",
+      errorCorrectionLevel: overlay ? "H" : "M",
       margin: 2, // quiet zone
       width: size * 3,
       color: { dark: s.dark, light: s.light },
@@ -49,21 +52,36 @@ export function QrCode({
     return () => {
       alive = false;
     };
-  }, [value, size, s.dark, s.light]);
+  }, [value, size, s.dark, s.light, overlay]);
 
   return (
     <div
-      className={`flex items-center justify-center rounded-lg ${className}`}
+      className={`relative flex items-center justify-center rounded-lg ${className}`}
       style={{ background: s.light, width: size, height: size }}
     >
       {src ? (
-        <img
-          src={src}
-          alt={label ?? `QR code for ${value}`}
-          width={size}
-          height={size}
-          className="h-full w-full rounded-lg"
-        />
+        <>
+          <img
+            src={src}
+            alt={label ?? `QR code for ${value}`}
+            width={size}
+            height={size}
+            className="h-full w-full rounded-lg"
+          />
+          {overlay ? (
+            <img
+              src={overlay}
+              alt=""
+              aria-hidden
+              className="absolute rounded-full border-4 object-cover"
+              style={{
+                width: size * 0.26,
+                height: size * 0.26,
+                borderColor: s.light,
+              }}
+            />
+          ) : null}
+        </>
       ) : (
         <div
           className="h-full w-full animate-pulse rounded-lg bg-subtle"

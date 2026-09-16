@@ -51,9 +51,6 @@ import { Route as HelpIndexRouteImport } from './routes/help.index'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
 import { Route as IdentityAnalyticsRouteImport } from './routes/identity.analytics'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
-import { Route as IdentityCardRouteImport } from './routes/identity.card'
-import { Route as IdentityCustomizeRouteImport } from './routes/identity.customize'
-import { Route as IdentityFullRouteImport } from './routes/identity.full'
 import { Route as IdentityHistoryRouteImport } from './routes/identity.history'
 import { Route as IdentityPrintRouteImport } from './routes/identity.print'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
@@ -431,21 +428,6 @@ const IdentityAnalyticsRoute = IdentityAnalyticsRouteImport.update({
 const IdentityBusinessRoute = IdentityBusinessRouteImport.update({
   id: '/identity/business',
   path: '/identity/business',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentityCardRoute = IdentityCardRouteImport.update({
-  id: '/identity/card',
-  path: '/identity/card',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentityCustomizeRoute = IdentityCustomizeRouteImport.update({
-  id: '/identity/customize',
-  path: '/identity/customize',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentityFullRoute = IdentityFullRouteImport.update({
-  id: '/identity/full',
-  path: '/identity/full',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IdentityHistoryRoute = IdentityHistoryRouteImport.update({
@@ -1337,9 +1319,6 @@ export interface FileRoutesByFullPath {
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
-  '/identity/card': typeof IdentityCardRoute
-  '/identity/customize': typeof IdentityCustomizeRoute
-  '/identity/full': typeof IdentityFullRoute
   '/identity/history': typeof IdentityHistoryRoute
   '/identity/print': typeof IdentityPrintRoute
   '/identity/qr': typeof IdentityQrRoute
@@ -1551,9 +1530,6 @@ export interface FileRoutesByTo {
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
-  '/identity/card': typeof IdentityCardRoute
-  '/identity/customize': typeof IdentityCustomizeRoute
-  '/identity/full': typeof IdentityFullRoute
   '/identity/history': typeof IdentityHistoryRoute
   '/identity/print': typeof IdentityPrintRoute
   '/identity/qr': typeof IdentityQrRoute
@@ -1767,9 +1743,6 @@ export interface FileRoutesById {
   '/help/$slug': typeof HelpSlugRoute
   '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
-  '/identity/card': typeof IdentityCardRoute
-  '/identity/customize': typeof IdentityCustomizeRoute
-  '/identity/full': typeof IdentityFullRoute
   '/identity/history': typeof IdentityHistoryRoute
   '/identity/print': typeof IdentityPrintRoute
   '/identity/qr': typeof IdentityQrRoute
@@ -1984,9 +1957,6 @@ export interface FileRouteTypes {
     | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
-    | '/identity/card'
-    | '/identity/customize'
-    | '/identity/full'
     | '/identity/history'
     | '/identity/print'
     | '/identity/qr'
@@ -2198,9 +2168,6 @@ export interface FileRouteTypes {
     | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
-    | '/identity/card'
-    | '/identity/customize'
-    | '/identity/full'
     | '/identity/history'
     | '/identity/print'
     | '/identity/qr'
@@ -2413,9 +2380,6 @@ export interface FileRouteTypes {
     | '/help/$slug'
     | '/identity/analytics'
     | '/identity/business'
-    | '/identity/card'
-    | '/identity/customize'
-    | '/identity/full'
     | '/identity/history'
     | '/identity/print'
     | '/identity/qr'
@@ -2629,9 +2593,6 @@ export interface RootRouteChildren {
   HelpSlugRoute: typeof HelpSlugRoute
   IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
   IdentityBusinessRoute: typeof IdentityBusinessRoute
-  IdentityCardRoute: typeof IdentityCardRoute
-  IdentityCustomizeRoute: typeof IdentityCustomizeRoute
-  IdentityFullRoute: typeof IdentityFullRoute
   IdentityHistoryRoute: typeof IdentityHistoryRoute
   IdentityPrintRoute: typeof IdentityPrintRoute
   IdentityQrRoute: typeof IdentityQrRoute
@@ -3097,27 +3058,6 @@ declare module '@tanstack/react-router' {
       path: '/identity/business'
       fullPath: '/identity/business'
       preLoaderRoute: typeof IdentityBusinessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity/card': {
-      id: '/identity/card'
-      path: '/identity/card'
-      fullPath: '/identity/card'
-      preLoaderRoute: typeof IdentityCardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity/customize': {
-      id: '/identity/customize'
-      path: '/identity/customize'
-      fullPath: '/identity/customize'
-      preLoaderRoute: typeof IdentityCustomizeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity/full': {
-      id: '/identity/full'
-      path: '/identity/full'
-      fullPath: '/identity/full'
-      preLoaderRoute: typeof IdentityFullRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/identity/history': {
@@ -4358,9 +4298,6 @@ const rootRouteChildren: RootRouteChildren = {
   HelpSlugRoute: HelpSlugRoute,
   IdentityAnalyticsRoute: IdentityAnalyticsRoute,
   IdentityBusinessRoute: IdentityBusinessRoute,
-  IdentityCardRoute: IdentityCardRoute,
-  IdentityCustomizeRoute: IdentityCustomizeRoute,
-  IdentityFullRoute: IdentityFullRoute,
   IdentityHistoryRoute: IdentityHistoryRoute,
   IdentityPrintRoute: IdentityPrintRoute,
   IdentityQrRoute: IdentityQrRoute,
