@@ -29,7 +29,6 @@ export const contentCategories = [
   { key: "bookings", label: "Bookings & studios", blurb: "Availability, policies, no-shows" },
   { key: "marketplace", label: "Marketplace & rentals", blurb: "Buying, selling, renting gear" },
   { key: "trust", label: "Trust & safety", blurb: "Verification, reviews, reporting" },
-  { key: "billing", label: "Plans & payouts", blurb: "Pro, Business, invoices" },
   { key: "legal", label: "Legal", blurb: "Terms, privacy, community rules" },
 ];
 

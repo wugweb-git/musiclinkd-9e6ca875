@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   CalendarCheck,
-  CreditCard,
   type LucideIcon,
   Rocket,
   Scale,
@@ -21,7 +20,7 @@ export const Route = createFileRoute("/help/")({
       {
         name: "description",
         content:
-          "Guides, policies and answers for profiles, bookings, marketplace, verification and payouts on MusicLinkd.",
+          "Guides, policies and answers for profiles, bookings, marketplace, and verification on MusicLinkd.",
       },
       { property: "og:title", content: "Help & Guides | MusicLinkd" },
       {
@@ -41,7 +40,6 @@ const topics: Record<string, { short: string; icon: LucideIcon }> = {
   bookings: { short: "Bookings", icon: CalendarCheck },
   marketplace: { short: "Marketplace", icon: Store },
   trust: { short: "Trust", icon: ShieldCheck },
-  billing: { short: "Billing", icon: CreditCard },
   legal: { short: "Legal", icon: Scale },
 };
 

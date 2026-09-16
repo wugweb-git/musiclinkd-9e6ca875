@@ -6,7 +6,6 @@ import {
   BookingTimeline,
   Detail,
   EmptyState,
-  PaymentPill,
   PriceBreakdownCard,
 } from "@/components/ml/booking";
 import {
@@ -27,12 +26,12 @@ export const Route = createFileRoute("/provider/bookings/$ref")({
       {
         name: "description",
         content:
-          "Everything you need to run the session: customer, room, timing, add-ons and payout status.",
+          "Everything you need to run the session: customer, room, timing, and add-ons.",
       },
       { property: "og:title", content: "Session detail — MusicLinkd provider" },
       {
         property: "og:description",
-        content: "Customer, room, timing and payout for a confirmed session.",
+        content: "Customer, room and timing for a confirmed session.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -70,7 +69,6 @@ function ProviderBookingDetail() {
       <main className="px-5 pt-4">
         <div className="flex flex-wrap items-center gap-2">
           <BookingStatusPill status={bk.status} />
-          <PaymentPill status={bk.payment} />
         </div>
 
         <div className="mt-4 rounded-lg bg-subtle p-4">

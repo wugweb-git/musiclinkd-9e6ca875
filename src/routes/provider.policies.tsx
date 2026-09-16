@@ -12,7 +12,7 @@ export const Route = createFileRoute("/provider/policies")({
       {
         name: "description",
         content:
-          "Cancellation, rescheduling, deposit, payment, overtime, arrival and equipment rules customers must accept before they book your space.",
+          "Cancellation, rescheduling, overtime, arrival and equipment rules customers must accept before they book your space.",
       },
       { property: "og:title", content: "Booking policies — MusicLinkd provider" },
       {
@@ -32,22 +32,12 @@ const sections = [
   {
     id: "cancellation",
     title: "Cancellation",
-    placeholder: "What happens when a customer cancels, and what is refunded.",
+    placeholder: "What happens when a customer cancels.",
   },
   {
     id: "reschedule",
     title: "Rescheduling",
     placeholder: "How far ahead a session can be moved, and how many times.",
-  },
-  {
-    id: "deposit",
-    title: "Deposit",
-    placeholder: "What you take upfront and whether it is refundable.",
-  },
-  {
-    id: "payment",
-    title: "Payment",
-    placeholder: "When the balance is due and which methods you accept.",
   },
   {
     id: "overtime",
@@ -98,7 +88,7 @@ function Policies() {
             ))}
           </div>
           <p className="mt-2 text-1 text-muted-foreground">
-            Cancellations inside this window keep the deposit.
+            Your cancellation terms apply inside this window.
           </p>
         </section>
 

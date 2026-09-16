@@ -47,7 +47,6 @@
     "src/components/dropzone.tsx",
     "src/components/file-upload-01.tsx",
     "src/components/onboarding-01.tsx",
-    "src/components/pricing-table-one-demo.tsx",
     "src/registry/kept.stories.tsx",
     "src/components/spectrumui/**",
     "src/components/tab-switcher.tsx",

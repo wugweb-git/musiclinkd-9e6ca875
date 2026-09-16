@@ -12,10 +12,10 @@ export const Route = createFileRoute("/provider/pricing")({
       {
         name: "description",
         content:
-          "Set hourly, half-day, full-day and session rates for each room, plus add-on prices and the deposit you take at booking.",
+          "Set hourly, half-day, full-day and session rates for each room and add-on prices.",
       },
       { property: "og:title", content: "Pricing — MusicLinkd provider" },
-      { property: "og:description", content: "Rates, add-ons and deposit for your space." },
+      { property: "og:description", content: "Rates and add-ons for your space." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -25,7 +25,6 @@ export const Route = createFileRoute("/provider/pricing")({
 
 function Pricing() {
   const entity = getBookable("octave-sound-labs");
-  const [deposit, setDeposit] = useState(entity?.depositPct ?? 25);
   const [rates, setRates] = useState<Record<string, number>>(() => {
     const out: Record<string, number> = {};
     entity?.resources.forEach((r) => r.tiers.forEach((t) => (out[`${r.id}:${t.unit}`] = t.price)));
@@ -82,35 +81,6 @@ function Pricing() {
                 onChange={(v) => setAddOns((s) => ({ ...s, [a.id]: v }))}
               />
             ))}
-          </div>
-        </section>
-
-        <section className="min-w-0">
-          <h2 className="text-2">Deposit</h2>
-          <p className="mt-0.5 text-1 text-muted-foreground">
-            Share of the total collected when a booking is confirmed. The balance is due at the
-            studio.
-          </p>
-          <div className="mt-3 rounded-lg bg-subtle p-4">
-            <label htmlFor="deposit" className="text-1 font-semibold">
-              Deposit percentage
-            </label>
-            <input
-              id="deposit"
-              type="range"
-              min={0}
-              max={100}
-              step={5}
-              value={deposit}
-              onChange={(e) => setDeposit(Number(e.target.value))}
-              className="mt-3 w-full accent-[var(--primary)]"
-            />
-            <div className="mt-2 flex items-center justify-between text-1">
-              <span className="font-bold">{deposit}%</span>
-              <span className="text-muted-foreground">
-                On a {inr(10000)} session that's {inr(Math.round(10000 * (deposit / 100)))} upfront
-              </span>
-            </div>
           </div>
         </section>
 

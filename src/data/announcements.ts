@@ -102,20 +102,6 @@ export const faqs: Faq[] = [
     answer:
       "You cannot delete a review someone wrote about you, but you can reply publicly, and report it if it breaks the review policy.",
   },
-  {
-    id: "faq-7",
-    topic: "Plans & payouts",
-    question: "What does the platform fee cover?",
-    answer:
-      "Payment handling, dispute support and the trust checks that sit behind bookings. It is itemised on every invoice.",
-  },
-  {
-    id: "faq-8",
-    topic: "Plans & payouts",
-    question: "Can I switch plans mid-month?",
-    answer:
-      "Yes. Upgrades apply immediately and are prorated; downgrades take effect at the end of the current period so you keep what you paid for.",
-  },
 ];
 
-export const faqTopics = ["Getting started", "Bookings", "Trust & safety", "Plans & payouts"];
+export const faqTopics = ["Getting started", "Bookings", "Trust & safety"];

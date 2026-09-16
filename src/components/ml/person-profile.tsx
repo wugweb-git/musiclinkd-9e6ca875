@@ -390,7 +390,6 @@ type OwnerDestination =
   | "/verification"
   | "/reviews"
   | "/bands"
-  | "/plans"
   | "/recommendations"
   | "/help";
 

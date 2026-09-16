@@ -141,7 +141,7 @@ function Availability() {
             <span className="block text-sm font-semibold">Instant booking</span>
             <span className="block text-1 text-muted-foreground">
               {instant
-                ? "Slots confirm automatically when the deposit is paid."
+                ? "Requests confirm automatically."
                 : "You review every request before it confirms."}
             </span>
           </span>
@@ -170,7 +170,7 @@ function Availability() {
         <div className="mt-3">
           <PolicyCard
             title="Cancellation window"
-            body="Customers can cancel free up to 48 hrs before the session. Inside that window you keep 50% of the deposit."
+            body="Customers can cancel free up to 48 hrs before the session. Inside that window, your own cancellation terms apply."
           />
         </div>
 

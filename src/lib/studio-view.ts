@@ -6,7 +6,7 @@ import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
  * filled; everything else is a neutral empty value ("", 0, []) that the render paths skip.
- * There is no deposit, tax, response time, distance, timezone, add-ons or availability calendar.
+ * There is no tax, response time, distance, timezone, add-ons or availability calendar.
  */
 
 export type DiscoverStudio = {
@@ -96,7 +96,6 @@ export function bookableFromStudio(row: StudioRow, labels: TaxonomyLabels): Book
     policies: row.cancellation_policy
       ? [{ title: "Cancellation", body: row.cancellation_policy }]
       : [],
-    depositPct: 0,
     taxPct: 0,
     responseTime: "",
     hasCalendar: false,

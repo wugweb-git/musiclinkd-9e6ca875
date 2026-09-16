@@ -32,7 +32,7 @@ export const Route = createFileRoute("/provider/bookings/")({
       { property: "og:title", content: "Provider bookings — MusicLinkd" },
       {
         property: "og:description",
-        content: "Requests, today's schedule and earnings for your space.",
+        content: "Requests, and today's schedule for your space.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
