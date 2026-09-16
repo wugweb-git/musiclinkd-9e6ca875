@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
-import { SectionRow } from "@/components/ml/market";
+import { MarketCategoryIcon, SectionRow } from "@/components/ml/market";
 import {
   EquipmentCard,
   EquipmentTile,
@@ -100,14 +100,11 @@ function RentHome() {
               params={{ slug: c.slug }}
               className="flex w-[108px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3"
             >
-              <span
-                className="flex h-11 w-11 items-center justify-center rounded-sm text-2"
-                style={{ background: "var(--surface-subtle)" }}
-              >
-                {c.emoji}
+              <span className="flex h-8 items-center">
+                <MarketCategoryIcon slug={c.slug} />
               </span>
-              <span className="text-1 font-semibold leading-tight">{c.label}</span>
-              <span className="text-1 text-muted-foreground">{c.count}</span>
+              <span className="text-1 font-semibold leading-tight text-foreground">{c.label}</span>
+              <span className="text-1 text-foreground">{c.count}</span>
             </Link>
           ))}
         </div>

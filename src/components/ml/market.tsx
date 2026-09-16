@@ -1,6 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { Heart, MapPin, Star, ShieldCheck, Check, LocateFixed, Search } from "lucide-react";
+import {
+  Heart,
+  MapPin,
+  Star,
+  ShieldCheck,
+  Check,
+  LocateFixed,
+  Search,
+  Guitar,
+  MicVocal,
+  SlidersVertical,
+  Package,
+  Headphones,
+  Building2,
+  Disc3,
+  Speaker,
+  type LucideIcon,
+} from "lucide-react";
 import type { Listing } from "@/data/market";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
 import { EmptyState as BaseEmptyState, Price } from "./kit";
@@ -90,15 +107,32 @@ export function TrustPill({ label }: { label: string }) {
   );
 }
 
+const categoryIcons: Record<string, LucideIcon> = {
+  instruments: Guitar,
+  "audio-gear": MicVocal,
+  audio: MicVocal,
+  studio: SlidersVertical,
+  rentals: Package,
+  services: Headphones,
+  spaces: Building2,
+  dj: Disc3,
+  live: Speaker,
+  other: Package,
+};
+
+/** A market or rental category's line icon, in ink. */
+export function MarketCategoryIcon({ slug, size = iconSize.lg }: { slug: string; size?: number }) {
+  const Icon = categoryIcons[slug] ?? Package;
+  return <Icon size={size} strokeWidth={1.75} className="text-foreground" aria-hidden />;
+}
+
 export function CategoryTile({
   slug,
   label,
-  emoji,
   count,
 }: {
   slug: string;
   label: string;
-  emoji: string;
   count: string;
 }) {
   return (
@@ -107,11 +141,11 @@ export function CategoryTile({
       params={{ slug }}
       className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3"
     >
-      <span className="flex h-8 items-center text-4 leading-none" aria-hidden>
-        {emoji}
+      <span className="flex h-8 items-center">
+        <MarketCategoryIcon slug={slug} />
       </span>
-      <span className="text-1 font-semibold leading-tight">{label}</span>
-      <span className="text-1 text-muted-foreground">{count}</span>
+      <span className="text-1 font-semibold leading-tight text-foreground">{label}</span>
+      <span className="text-1 text-foreground">{count}</span>
     </Link>
   );
 }
@@ -453,7 +487,7 @@ export function CategorySheet({
 }: {
   open: boolean;
   onClose: () => void;
-  categories: readonly { slug: string; label: string; emoji: string; count: string }[];
+  categories: readonly { slug: string; label: string; count: string }[];
 }) {
   const [query, setQuery] = useState("");
   const shown = categories.filter((c) => c.label.toLowerCase().includes(query.toLowerCase()));
@@ -477,12 +511,14 @@ export function CategorySheet({
             >
               <span
                 aria-hidden
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-3 leading-none"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip"
               >
-                {c.emoji}
+                <MarketCategoryIcon slug={c.slug} />
               </span>
-              <span className="min-w-0 flex-1 text-sm font-semibold">{c.label}</span>
-              <span className="text-1 text-muted-foreground">{c.count}</span>
+              <span className="min-w-0 flex-1 text-sm font-semibold text-foreground">
+                {c.label}
+              </span>
+              <span className="text-1 text-foreground">{c.count}</span>
             </Link>
           </li>
         ))}

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Camera, Star } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Price } from "@/components/ml/kit";
-import { ConditionBadge, LocationRow } from "@/components/ml/market";
+import { ConditionBadge, LocationRow, MarketCategoryIcon } from "@/components/ml/market";
 import { RentalAvailabilityBadge, RentalCalendar } from "@/components/ml/rental";
 import { equipment, rentalCategories } from "@/data/rentals";
 import { iconSize } from "@/lib/tokens";
@@ -106,9 +106,9 @@ function ListForRent() {
                     background: cat === c.slug ? "var(--surface-subtle)" : "var(--card)",
                   }}
                 >
-                  <span className="text-3">{c.emoji}</span>
-                  <p className="mt-2 text-1 font-semibold">{c.label}</p>
-                  <p className="text-1 text-muted-foreground">{c.count}</p>
+                  <MarketCategoryIcon slug={c.slug} />
+                  <p className="mt-2 text-1 font-semibold text-foreground">{c.label}</p>
+                  <p className="text-1 text-foreground">{c.count}</p>
                 </button>
               ))}
             </div>

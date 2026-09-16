@@ -168,7 +168,7 @@ export function SearchBar({
  *   <Chip media={<Mic size={iconSize.sm} />} active={on}>Singer</Chip>         icon in a circle
  *   <Chip media="https://…/rock.jpg">Rock</Chip>                       image in a circle
  *
- * States: selected (pink text on a 20% pink tint, with a small spring when picked), pressed (state layer and a small scale),
+ * States: selected (ink with white text, with a small spring when picked), pressed (state layer and a small scale),
  * focus ring, disabled at 50%.
  * `aria-pressed` is set whenever `active` is given, so toggles read as toggles. Touch area is 48dp.
  */
@@ -215,7 +215,7 @@ export function Chip({
         atLimit ? "opacity-50" : ""
       } ${refused ? "animate-shake" : picked && active ? "animate-select" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
-          ? "border-transparent bg-brand/20 text-pink-on-tint"
+          ? "border-transparent bg-selected-bg text-selected-text"
           : "border-border bg-card text-foreground"
       }`}
     >
@@ -223,7 +223,7 @@ export function Chip({
         <span
           aria-hidden
           className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full ${
-            active ? "bg-card/60 text-pink-on-tint" : "bg-subtle text-muted-foreground"
+            active ? "bg-background/15 text-selected-text" : "bg-subtle text-muted-foreground"
           }`}
         >
           {typeof media === "string" ? (
