@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, Dialog, EmptyState, Loading, Price } from "@/components/ml/kit";
+import { Card, Dialog, EmptyState, Loading, Price, SegmentedField } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import {
   pricingModelUnit,
@@ -329,12 +329,13 @@ function NewService() {
             />
             <div>
               <span className="pill bg-subtle text-muted-foreground">Notice needed</span>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {bookingWindows.map((w) => (
-                  <Chip key={w} active={notice === w} onClick={() => setNotice(w)}>
-                    {w}
-                  </Chip>
-                ))}
+              <div className="mt-2">
+                <SegmentedField
+                  label="Notice needed"
+                  value={notice}
+                  options={bookingWindows}
+                  onChange={setNotice}
+                />
               </div>
             </div>
             {options?.workModes.length ? (

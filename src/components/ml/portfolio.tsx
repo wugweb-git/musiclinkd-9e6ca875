@@ -18,6 +18,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { WavePlayer } from "@/components/waves-cn/wave-player";
 import { Btn, BtnLink, Chip } from "@/components/ml/ui";
 import {
   analyticsFor,
@@ -157,8 +158,17 @@ export function AudioPreview({ src, title }: { src: string; title: string }) {
     <div className="rounded-lg border border-border bg-card p-4">
       <p className="pill bg-subtle text-muted-foreground">Audio preview</p>
       <p className="mt-1 truncate text-sm font-semibold">{title}</p>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied external link (YouTube/Spotify/SoundCloud); no caption track exists to attach, and an empty <track> would assert captions that are not there */}
-      <audio controls src={src} className="mt-3 w-full" aria-label={`Play ${title}`} />
+      {/*
+       * The waveform player (waves-cn, wavesurfer): a bare <audio> element told you nothing about
+       * a take. Colours come from the app's own tokens, so it is ink on grey like everything else.
+       */}
+      <WavePlayer
+        src={src}
+        waveColor="var(--color-muted-foreground)"
+        progressColor="var(--color-ink)"
+        waveHeight={56}
+        className="mt-3 border-0 bg-transparent p-0 shadow-none"
+      />
     </div>
   );
 }

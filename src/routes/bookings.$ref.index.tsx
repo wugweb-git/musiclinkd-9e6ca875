@@ -178,12 +178,16 @@ function BookingDetail() {
               <BtnLink to="/booking/$id" params={{ id: b.id }} className="w-full">
                 Book Again
               </BtnLink>
-              <Btn variant="outline" className="w-full" onClick={() => undefined}>
+              {/* The review window opens when the work completes and closes 14 days later; the
+                  form says so itself when the booking is past it. */}
+              <BtnLink
+                to="/reviews/write/$id"
+                params={{ id: b.id }}
+                variant="outline"
+                className="w-full"
+              >
                 Leave a Review
-              </Btn>
-              <p className="text-center text-1 text-muted-foreground">
-                Reviews are handled in your MusicLinkd reviews flow.
-              </p>
+              </BtnLink>
             </>
           ) : null}
         </div>
