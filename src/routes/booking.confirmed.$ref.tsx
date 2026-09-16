@@ -3,6 +3,7 @@ import { CalendarPlus, CheckCircle2, Clock, MessageCircle, Share2 } from "lucide
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
 import { bookables, formatDate, formatTime, inr, isoDate } from "@/data/booking";
+import { addToCalendar, shareLink } from "@/lib/booking-actions";
 
 export const Route = createFileRoute("/booking/confirmed/$ref")({
   head: () => ({
@@ -70,10 +71,31 @@ function Confirmed() {
 
         {!requested ? (
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <Btn variant="outline" onClick={() => undefined}>
+            <Btn
+              variant="outline"
+              onClick={() =>
+                addToCalendar({
+                  uid: ref,
+                  title: `${b.name} · ${r.name}`,
+                  date,
+                  start: "16:00",
+                  end: "20:00",
+                  location: `${b.name}, ${b.area}, ${b.city}`,
+                  description: `Booking ${ref}`,
+                })
+              }
+            >
               <CalendarPlus size={16} className="mr-1.5" /> Add to Calendar
             </Btn>
-            <Btn variant="outline" onClick={() => undefined}>
+            <Btn
+              variant="outline"
+              onClick={() =>
+                void shareLink({
+                  title: `Session at ${b.name}, ${formatDate(date)}`,
+                  url: `${window.location.origin}/booking/${b.id}`,
+                })
+              }
+            >
               <Share2 size={16} className="mr-1.5" /> Share
             </Btn>
           </div>

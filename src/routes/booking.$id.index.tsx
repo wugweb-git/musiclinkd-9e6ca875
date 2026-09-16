@@ -1,11 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Bookmark, MessageCircle, Share2 } from "lucide-react";
-import { Btn, BtnLink } from "@/components/ml/ui";
+import { Btn, BtnLink, IconBtn } from "@/components/ml/ui";
 import { BookableHero, EntityMetaRow, PolicyCard, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr, lowestRate } from "@/data/booking";
 import { Price } from "@/components/ml/kit";
 import { TextLink } from "@/components/ml/links";
+import { shareLink } from "@/lib/booking-actions";
 
 export const Route = createFileRoute("/booking/$id/")({
   head: () => ({
@@ -31,6 +34,8 @@ export const Route = createFileRoute("/booking/$id/")({
 function BookingEntry() {
   const { bookable: b } = useBookingDraft();
   const navigate = useNavigate();
+  // Saved on this visit only: there is no saved-spaces store yet.
+  const [saved, setSaved] = useState(false);
   const from = Math.min(...b.resources.flatMap((r) => r.tiers.map((t) => t.price)));
   const equipment = [
     ...new Set([...(b.equipment ?? []), ...b.resources.flatMap((r) => r.equipment)]),
@@ -60,12 +65,23 @@ function BookingEntry() {
           <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
             <MessageCircle size={16} className="mr-1.5" /> Message
           </BtnLink>
-          <Btn variant="outline" className="px-4" onClick={() => undefined}>
-            <Bookmark size={16} />
-          </Btn>
-          <Btn variant="outline" className="px-4" onClick={() => undefined}>
-            <Share2 size={16} />
-          </Btn>
+          <IconBtn
+            label={saved ? "Remove from saved" : "Save space"}
+            className="h-12 w-12"
+            onClick={() => {
+              setSaved((s) => !s);
+              toast.success(saved ? "Removed from saved" : "Saved");
+            }}
+          >
+            <Bookmark size={16} fill={saved ? "currentColor" : "none"} aria-hidden />
+          </IconBtn>
+          <IconBtn
+            label="Share space"
+            className="h-12 w-12"
+            onClick={() => void shareLink({ title: b.name, url: window.location.href })}
+          >
+            <Share2 size={16} aria-hidden />
+          </IconBtn>
         </div>
 
         <section className="mt-6">

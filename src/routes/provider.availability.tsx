@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { AvailabilityCalendar, PolicyCard } from "@/components/ml/booking";
@@ -34,6 +35,31 @@ function Availability() {
   const [blocked, setBlocked] = useState<string[]>([]);
   const [instant, setInstant] = useState(false);
   const r = b.resources.find((x) => x.id === resourceId) ?? b.resources[0]!;
+
+  // There is no provider availability table yet, so a save is kept on this device and read back
+  // after mount (reading it during render would differ from the server's HTML).
+  const storageKey = `ml:provider-availability:${b.id}`;
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as { open?: string[]; blocked?: string[]; instant?: boolean };
+      if (saved.open) setOpen(saved.open);
+      if (saved.blocked) setBlocked(saved.blocked);
+      if (typeof saved.instant === "boolean") setInstant(saved.instant);
+    } catch {
+      /* nothing saved */
+    }
+  }, [storageKey]);
+
+  function save() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ open, blocked, instant }));
+      toast.success("Availability saved on this device");
+    } catch {
+      toast.error("Couldn't save availability");
+    }
+  }
 
   return (
     <Screen>
@@ -148,7 +174,7 @@ function Availability() {
           />
         </div>
 
-        <Btn className="mt-6 w-full" onClick={() => undefined}>
+        <Btn className="mt-6 w-full" onClick={save}>
           Save Availability
         </Btn>
         <BtnLink to="/provider/bookings" variant="ghost" className="mt-2 w-full">

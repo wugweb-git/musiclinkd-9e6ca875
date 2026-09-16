@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, Row, Dialog, Price, StatusPill } from "@/components/ml/kit";
+import { Card, Dialog, Price, StatusPill } from "@/components/ml/kit";
 import { plans, currentSubscription, type PlanKey } from "@/data/monetization";
 
 export const Route = createFileRoute("/plans/checkout")({
@@ -74,11 +74,8 @@ function Checkout() {
 
         <Card className="space-y-2">
           <h2 className="text-sm">Payment method</h2>
-          <Row
-            title={currentSubscription.method}
-            subtitle="Change payment method"
-            onClick={() => undefined}
-          />
+          {/* Not a button: payments are not processed yet, so there is nothing to change it to. */}
+          <p className="text-sm font-semibold">{currentSubscription.method}</p>
           <p className="text-1 text-muted-foreground">
             Payments are not processed in this design build.
           </p>

@@ -19,6 +19,7 @@ import {
   inr,
   priceFor,
 } from "@/data/booking";
+import { addToCalendar, openDirections } from "@/lib/booking-actions";
 
 export const Route = createFileRoute("/bookings/$ref/")({
   head: () => ({
@@ -148,10 +149,28 @@ function BookingDetail() {
 
           {upcoming ? (
             <>
-              <Btn variant="outline" className="w-full" onClick={() => undefined}>
+              <Btn
+                variant="outline"
+                className="w-full"
+                onClick={() =>
+                  addToCalendar({
+                    uid: bk.ref,
+                    title: `${b.name} · ${r.name}`,
+                    date: bk.date,
+                    start: bk.start,
+                    end: bk.end,
+                    location: `${b.name}, ${b.area}, ${b.city}`,
+                    description: `Booking #${bk.ref}`,
+                  })
+                }
+              >
                 <CalendarPlus size={16} className="mr-1.5" /> Add to Calendar
               </Btn>
-              <Btn variant="outline" className="w-full" onClick={() => undefined}>
+              <Btn
+                variant="outline"
+                className="w-full"
+                onClick={() => openDirections(`${b.name}, ${b.area}, ${b.city}`)}
+              >
                 <Navigation size={16} className="mr-1.5" /> Get Directions
               </Btn>
               <BtnLink
