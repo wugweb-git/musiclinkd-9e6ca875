@@ -2,6 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
   BadgeCheck,
+  Check,
+  UserPlus,
+  Send,
+  Plus,
   BarChart3,
   BriefcaseBusiness,
   ChevronRight,
@@ -12,7 +16,9 @@ import {
   Globe2,
   Guitar,
   Heart,
+  Info,
   Languages,
+  LayoutGrid,
   LifeBuoy,
   MapPin,
   Music,
@@ -22,14 +28,16 @@ import {
   Settings,
   Settings2,
   QrCode,
+  Rows3,
   Share2,
   Sparkles,
   Star,
   Users,
+  type LucideIcon,
 } from "lucide-react";
 import type { PersonProfile, profileInsights } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
-import { joinParts } from "@/lib/utils";
+import { cn, joinParts } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
 import { Price } from "./kit";
 import {
@@ -56,13 +64,20 @@ import {
   ChipGroup,
   ChipGroupList,
   InfoRow,
-  StatRow,
+  isUnavailableForWork,
 } from "./profile";
 import { HireModal } from "./hire-modal";
 
 type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About";
 
-const tabs: ProfileTab[] = ["Overview", "Portfolio", "Projects", "Services", "About"];
+/** Each section carries an icon, so an unselected tab can be the icon alone. */
+const tabs: { key: ProfileTab; icon: LucideIcon }[] = [
+  { key: "Overview", icon: Sparkles },
+  { key: "About", icon: Info },
+  { key: "Portfolio", icon: Music },
+  { key: "Projects", icon: FolderKanban },
+  { key: "Services", icon: BriefcaseBusiness },
+];
 
 /** An owner's empty-state button that opens new portfolio work of the kind the section shows. */
 const addWork = (label: string, kind: WorkKind): ProfileEmptyCta => ({
@@ -115,9 +130,10 @@ export function PersonProfileExperience({
             onInsights={() => setInsightsOpen((open) => !open)}
           />
         ) : (
-          <ViewerActions onHire={() => setHireOpen(true)} />
+          <ViewerActions
+            onHire={isUnavailableForWork(p.availability) ? undefined : () => setHireOpen(true)}
+          />
         )}
-        <StatRow p={p} />
       </div>
 
       {owner ? (
@@ -125,14 +141,40 @@ export function PersonProfileExperience({
       ) : null}
 
       <nav
+        role="tablist"
         aria-label="Profile sections"
-        className="rail sticky top-0 z-20 mt-5 flex gap-2 overflow-x-auto border-b border-border bg-background/95 px-5 py-3 backdrop-blur no-scrollbar"
+        className="sticky top-0 z-20 mt-5 flex items-stretch border-b border-border bg-background/95 px-2 backdrop-blur"
       >
-        {tabs.map((item) => (
-          <Chip key={item} active={tab === item} onClick={() => setTab(item)}>
-            {item}
-          </Chip>
-        ))}
+        {tabs.map(({ key, icon: Icon }) => {
+          const active = tab === key;
+          return (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-label={key}
+              onClick={() => setTab(key)}
+              className={cn(
+                "state-layer relative flex flex-1 items-center justify-center gap-2 rounded-t-md py-3.5 transition-colors",
+                active ? "text-foreground" : "text-muted-foreground",
+              )}
+            >
+              <Icon size={18} aria-hidden />
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
+                  active ? "max-w-32 opacity-100" : "max-w-0 opacity-0",
+                )}
+              >
+                {key}
+              </span>
+              {active ? (
+                <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground" />
+              ) : null}
+            </button>
+          );
+        })}
       </nav>
 
       <main className="px-5 pb-8">
@@ -165,24 +207,42 @@ export function PersonProfileExperience({
   );
 }
 
-function ViewerActions({ onHire }: { onHire: () => void }) {
+function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
+  const [following, setFollowing] = useState(false);
+  const [connected, setConnected] = useState(false);
+
   return (
-    <div className="grid grid-cols-4 gap-2">
-      <Btn variant="ink" className="min-w-0 px-2 text-1" onClick={() => undefined}>
-        Connect
+    // One row, primary first: connect, then message, then hire, then follow. Each says its state.
+    <div className="flex items-center gap-2">
+      <Btn
+        variant={connected ? "outline" : "primary"}
+        className="min-w-0 flex-1 px-3"
+        icon={connected ? <Check size={16} aria-hidden /> : <UserPlus size={16} aria-hidden />}
+        onClick={() => setConnected((c) => !c)}
+      >
+        {connected ? "Requested" : "Connect"}
       </Btn>
-      <Link
+      <BtnLink
         to="/messages"
-        className="inline-flex min-h-12 min-w-0 items-center justify-center rounded-full bg-primary px-2 text-1 font-semibold text-primary-foreground"
+        variant="outline"
+        className="min-w-0 flex-1 px-3"
+        icon={<Send size={16} aria-hidden />}
       >
         Message
-      </Link>
-      <Btn variant="outline" className="min-w-0 px-2 text-1" onClick={onHire}>
-        Hire
-      </Btn>
-      <Btn variant="ghost" className="min-w-0 px-2 text-1" onClick={() => undefined}>
-        Follow
-      </Btn>
+      </BtnLink>
+      {onHire ? (
+        <Btn variant="outline" className="min-w-0 flex-1 px-3" onClick={onHire}>
+          Hire
+        </Btn>
+      ) : null}
+      <IconBtn
+        label={following ? "Following" : "Follow"}
+        variant={following ? "ghost" : "outline"}
+        className="h-12 w-12"
+        onClick={() => setFollowing((f) => !f)}
+      >
+        {following ? <Check size={18} aria-hidden /> : <Plus size={18} aria-hidden />}
+      </IconBtn>
     </div>
   );
 }
@@ -425,8 +485,27 @@ function Portfolio({
   onToggleTrack: (id: string) => void;
   owner: boolean;
 }) {
+  const [layout, setLayout] = useState<"grid" | "rows">("grid");
   return (
     <>
+      <div className="mt-6 flex items-center justify-end gap-1">
+        <IconBtn
+          label="Grid view"
+          variant={layout === "grid" ? "outline" : "ghost"}
+          className="h-10 w-10"
+          onClick={() => setLayout("grid")}
+        >
+          <LayoutGrid size={16} aria-hidden />
+        </IconBtn>
+        <IconBtn
+          label="Row view"
+          variant={layout === "rows" ? "outline" : "ghost"}
+          className="h-10 w-10"
+          onClick={() => setLayout("rows")}
+        >
+          <Rows3 size={16} aria-hidden />
+        </IconBtn>
+      </div>
       <ProfileSection title="Audio">
         <div className="space-y-2">
           {p.audio.length ? (
@@ -448,9 +527,11 @@ function Portfolio({
         </div>
       </ProfileSection>
       <ProfileSection title="Video">
-        <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
+        <div className={cn(layout === "grid" ? "grid grid-cols-2 gap-3" : "space-y-4")}>
           {p.video.length ? (
-            p.video.map((video) => <VideoCard key={video.id} v={video} />)
+            p.video.map((video) => (
+              <VideoCard key={video.id} v={video} layout={layout === "grid" ? "grid" : "row"} />
+            ))
           ) : (
             <div className="w-full">
               <ProfileEmpty
@@ -465,7 +546,21 @@ function Portfolio({
       {/* Gallery shows only for profiles that already have images (owner, 15 Sep); there is no upload. */}
       {p.gallery.length ? (
         <ProfileSection title="Gallery">
-          <GalleryGrid images={p.gallery} />
+          {layout === "grid" ? (
+            <GalleryGrid images={p.gallery} />
+          ) : (
+            <div className="space-y-3">
+              {p.gallery.map((image) => (
+                <img
+                  key={image}
+                  src={image}
+                  alt=""
+                  loading="lazy"
+                  className="h-56 w-full rounded-lg object-cover"
+                />
+              ))}
+            </div>
+          )}
         </ProfileSection>
       ) : null}
     </>

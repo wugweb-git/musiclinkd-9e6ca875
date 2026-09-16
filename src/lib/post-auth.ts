@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** Where a signed-in user lands. Every sign-in path returns to `/`, and the splash decides. */
-export type PostAuthTarget = "/feed" | "/onboarding" | "/onboarding/resume";
+export type PostAuthTarget = "/home" | "/onboarding" | "/onboarding/resume";
 
 type OnboardingState = {
   onboarding_complete?: boolean | null;
@@ -10,7 +10,7 @@ type OnboardingState = {
 } | null;
 
 export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
-  if (profile?.onboarding_complete) return "/feed";
+  if (profile?.onboarding_complete) return "/home";
   const draft = profile?.onboarding_draft;
   const started =
     Boolean(profile?.onboarding_step) ||

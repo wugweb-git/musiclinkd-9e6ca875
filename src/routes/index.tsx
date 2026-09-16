@@ -36,7 +36,7 @@ function SessionCheck() {
     // not held further.
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hold = reduced ? 0 : Math.min(2000, Math.max(0, 900 - (Date.now() - mountedAt.current)));
-    const go = (to: "/welcome" | "/feed" | ReturnType<typeof postAuthTarget>) =>
+    const go = (to: "/welcome" | "/home" | ReturnType<typeof postAuthTarget>) =>
       window.setTimeout(() => {
         if (active) void navigate({ to, replace: true });
       }, hold);
@@ -49,7 +49,7 @@ function SessionCheck() {
     loadProfile()
       .then((profile) => go(postAuthTarget(profile)))
       // Offline or a failed read: Home still works from the local session.
-      .catch(() => go("/feed"));
+      .catch(() => go("/home"));
     return () => {
       active = false;
     };

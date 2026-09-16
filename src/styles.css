@@ -100,7 +100,7 @@
   --spacing-nav-clear: 96px;
 
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
-  --container-app: 430px;
+  --container-app: 640px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

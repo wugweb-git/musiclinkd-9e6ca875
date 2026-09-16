@@ -106,7 +106,7 @@ function Done() {
           edges.bottom ? "border-border" : "border-transparent",
         )}
       >
-        <BtnLink to="/feed" className="w-full">
+        <BtnLink to="/home" className="w-full">
           Go to My Home
         </BtnLink>
       </div>

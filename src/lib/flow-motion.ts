@@ -43,7 +43,7 @@ export function useArrival(key: string) {
 }
 
 /** Flow screens that sit outside the linear order: they cross-fade rather than slide. */
-const SIDE = new Set(["/", "/onboarding/skip", "/onboarding/resume", "/auth/forgot", "/feed"]);
+const SIDE = new Set(["/", "/onboarding/skip", "/onboarding/resume", "/auth/forgot", "/home"]);
 
 const clean = (p: string) => (p.length > 1 ? p.replace(/\/$/, "") : p);
 
@@ -86,6 +86,6 @@ export function flowTransitionTypes({
   if (a >= 0 && b >= 0) return [b > a ? "forward" : "back"];
   const inFlow = (p: string) => ORDER.includes(p) || SIDE.has(p);
   // Home to Home-adjacent screens is everyday navigation, not the flow: no transition.
-  if (from === "/feed" && !ORDER.includes(to)) return false;
+  if (from === "/home" && !ORDER.includes(to)) return false;
   return inFlow(from) && inFlow(to) ? ["fade"] : false;
 }

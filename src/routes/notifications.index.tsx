@@ -57,7 +57,7 @@ function NotificationsScreen() {
       <TopBar
         title="Notifications"
         subtitle={unreadCount(items) ? `${unreadCount(items)} unread` : "You are all caught up"}
-        back="/feed"
+        back="/home"
         right={
           <Link
             to="/notifications/settings"

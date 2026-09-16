@@ -62,7 +62,7 @@ function Recs() {
       <TopBar
         title="For you"
         subtitle="Why you are seeing each one"
-        back="/feed"
+        back="/home"
         right={
           <Link
             to="/recommendations/settings"

@@ -1,7 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
+  CalendarDays,
+  Camera,
+  CircleCheck,
+  CircleSlash,
+  Pencil,
   BadgeCheck,
   MoreHorizontal,
   Pause,
@@ -28,11 +33,13 @@ import type {
   VideoItem,
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
-import { Btn, BtnLink, IconBtn, Sheet } from "./ui";
+import { Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "./ui";
 import { Price } from "./kit";
 import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
+import { roleIcon } from "@/lib/role-icons";
+import { useTaxonomy } from "@/lib/taxonomy";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -137,16 +144,39 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
   );
 }
 
+/** Busy and Touring mean the person is not taking work; everything else is open. */
+export function isOpenForWork(status?: string | undefined) {
+  return Boolean(status) && status !== "Busy" && status !== "Touring";
+}
+
+/** Said, in so many words, that they are not taking work. An unset status is not a no. */
+export function isUnavailableForWork(status?: string | undefined) {
+  return status === "Busy" || status === "Touring";
+}
+
+/** One word for a status, so the label stays a label. */
+const availabilityWord: Record<string, string> = {
+  Available: "Available",
+  "In Studio": "Recording",
+  "Available for Shows": "Available",
+  "Looking for Collaboration": "Collaborating",
+  "Available for Session Work": "Available",
+  Busy: "Busy",
+  Touring: "Touring",
+};
+
 export function StatusBadge({ status }: { status: string }) {
-  const busy = status === "Busy" || status === "Touring";
+  const open = isOpenForWork(status);
+  const Icon = open ? CircleCheck : CircleSlash;
   return (
     <span
-      className={`pill shrink-0 ${
-        busy ? "bg-subtle text-muted-foreground" : "bg-success-container text-success-strong"
+      className={`pill shrink-0 gap-1 ${
+        open ? "bg-success-container text-success-strong" : "bg-subtle text-muted-foreground"
       }`}
+      title={status}
     >
-      <span className={`h-1.5 w-1.5 rounded-full ${busy ? "bg-muted-foreground" : "bg-success"}`} />
-      {status}
+      <Icon size={12} aria-hidden />
+      {availabilityWord[status] ?? status}
     </span>
   );
 }
@@ -237,6 +267,51 @@ function isVerifiedTier(tier: PersonProfile["verification"]) {
   return tier === "Professional" || tier === "Industry Verified";
 }
 
+/** The roles someone picked, each with the icon its taxonomy entry carries. */
+function RoleLine({ p }: { p: PersonProfile }) {
+  const { options } = useTaxonomy();
+  const roles = [p.primaryRole, ...p.secondaryRoles].filter(Boolean);
+  const slugs = p.roleSlugs ?? [];
+  if (!roles.length) return null;
+  return (
+    <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
+      {roles.map((role, i) => {
+        const slug = slugs[i];
+        const option = slug ? options?.["person_types"]?.find((o) => o.slug === slug) : undefined;
+        const Icon = slug ? roleIcon(option ?? { slug, metadata: null }) : null;
+        return (
+          <li key={role} className="flex items-center gap-1.5">
+            {Icon ? <Icon size={14} strokeWidth={1.75} aria-hidden /> : null}
+            {role}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Window scroll in px, read on a frame, so the cover can shrink as the page moves. */
+function useScrollY() {
+  const [y, setY] = useState(0);
+  useEffect(() => {
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        setY(window.scrollY);
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+  return y;
+}
+
 export function ProfileHero({
   p,
   owner,
@@ -251,10 +326,17 @@ export function ProfileHero({
   onMore?: (() => void) | undefined;
   back?: string | undefined;
 }) {
-  const handle = joinParts(p.username ? `@${p.username}` : "", p.yearsActive);
+  // The cover gives way as the page scrolls: 192px down to a 96px band, the photo down to 72px.
+  const y = useScrollY();
+  const shrink = Math.min(1, Math.max(0, y / 120));
+  const coverHeight = 192 - 96 * shrink;
+  const photoSize = 112 - 40 * shrink;
   return (
     <header>
-      <div className="relative h-44">
+      <div
+        className="relative overflow-hidden motion-reduce:!h-48"
+        style={{ height: `${coverHeight}px` }}
+      >
         {p.cover ? (
           <>
             <img src={p.cover} alt={`${p.name} cover`} className="h-full w-full object-cover" />
@@ -273,6 +355,17 @@ export function ProfileHero({
           </Link>
         ) : null}
         <div className="absolute right-5 top-5 flex gap-2">
+          {/* The owner edits the cover from the cover itself, the way people expect. */}
+          {owner ? (
+            <IconBtnLink
+              to="/profile/edit"
+              label="Edit cover photo"
+              variant="plain"
+              className="bg-card/90"
+            >
+              <Pencil size={16} aria-hidden />
+            </IconBtnLink>
+          ) : null}
           {/* The owner shares from the actions row, so the hero has no second Share. */}
           {onShare && !owner ? (
             <IconBtn label="Share Profile" variant="plain" className="bg-card/90" onClick={onShare}>
@@ -287,21 +380,31 @@ export function ProfileHero({
         </div>
       </div>
 
-      <div className="-mt-10 px-5">
-        <div className="relative w-20">
+      <div className="-mt-14 px-5">
+        <div className="relative motion-reduce:!w-28" style={{ width: `${photoSize}px` }}>
           {p.photo ? (
             <img
               src={p.photo}
               alt={p.name}
-              className="h-20 w-20 rounded-lg border-2 border-background object-cover"
+              className="aspect-square w-full rounded-full border-4 border-background object-cover motion-reduce:!h-28"
             />
           ) : (
-            <span className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-background bg-card text-muted-foreground">
-              <User size={28} aria-label={p.name} />
+            <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-background bg-card text-muted-foreground">
+              <User size={36} aria-label={p.name} />
             </span>
           )}
+          {owner ? (
+            <IconBtnLink
+              to="/profile/edit"
+              label="Change profile photo"
+              variant="outline"
+              className="absolute -bottom-1 -left-1 h-9 w-9 bg-card"
+            >
+              <Camera size={15} aria-hidden />
+            </IconBtnLink>
+          ) : null}
           {isVerifiedTier(p.verification) ? (
-            <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
+            <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
               <BadgeCheck size={13} aria-label="Verified" />
             </span>
           ) : null}
@@ -315,16 +418,26 @@ export function ProfileHero({
             {p.availability ? <StatusBadge status={p.availability} /> : null}
           </div>
         ) : null}
-        {handle ? <p className="mt-0.5 text-1 text-muted-foreground">{handle}</p> : null}
-        {p.primaryRole ? (
-          <p className="mt-2 text-sm font-semibold">
-            {[p.primaryRole, ...p.secondaryRoles].join(" · ")}
-          </p>
+        {p.username ? <p className="mt-0.5 text-sm text-muted-foreground">@{p.username}</p> : null}
+        <RoleLine p={p} />
+        {/* The headline is the one line someone writes about themselves; About carries the rest. */}
+        {p.headline && p.headline !== p.primaryRole ? (
+          <p className="mt-1.5 text-sm leading-snug text-foreground">{p.headline}</p>
         ) : null}
-        {p.location ? (
-          <p className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
-            <MapPin size={12} className="shrink-0" aria-hidden />
-            {p.location}
+        {p.location || p.yearsActive ? (
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
+            {p.location ? (
+              <span className="flex items-center gap-1">
+                <MapPin size={13} className="shrink-0" aria-hidden />
+                {p.location}
+              </span>
+            ) : null}
+            {p.yearsActive ? (
+              <span className="flex items-center gap-1">
+                <CalendarDays size={13} className="shrink-0" aria-hidden />
+                {p.yearsActive} active
+              </span>
+            ) : null}
           </p>
         ) : null}
         {owner && p.privacy !== "Public" ? (
@@ -430,9 +543,43 @@ export function NoCover({ className }: { className?: string }) {
   );
 }
 
-export function VideoCard({ v }: { v: VideoItem }) {
+export function VideoCard({
+  v,
+  layout = "card",
+}: {
+  v: VideoItem;
+  /** "card" is the rail tile, "grid" fills a cell, "row" is a wide thumbnail-left row. */
+  layout?: "card" | "grid" | "row";
+}) {
+  if (layout === "row") {
+    return (
+      <article className="flex gap-3">
+        <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-md bg-subtle">
+          {v.thumb ? (
+            <img src={v.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
+          ) : (
+            <NoCover className="h-full w-full" />
+          )}
+          {v.duration ? (
+            <span className="absolute bottom-1 left-1 rounded-sm bg-ink/80 px-1.5 py-0.5 text-0 font-semibold text-background">
+              {v.duration}
+            </span>
+          ) : null}
+        </div>
+        <div className="min-w-0 flex-1 py-0.5">
+          <h3 className="line-clamp-2 text-2 font-semibold leading-snug">{v.title}</h3>
+          <p className="mt-1 truncate text-1 text-muted-foreground">{v.context}</p>
+        </div>
+      </article>
+    );
+  }
   return (
-    <article className="w-[220px] shrink-0 overflow-hidden rounded-lg border border-border bg-card">
+    <article
+      className={cn(
+        "overflow-hidden rounded-lg border border-border bg-card",
+        layout === "grid" ? "w-full" : "w-[220px] shrink-0",
+      )}
+    >
       <div className="relative h-32">
         {v.thumb ? (
           <img src={v.thumb} alt={v.title} loading="lazy" className="h-full w-full object-cover" />

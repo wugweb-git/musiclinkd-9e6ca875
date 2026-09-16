@@ -108,6 +108,7 @@ export function mergeProfileRow(
       : (primary ?? base.headline),
     primaryRole: primary ?? base.primaryRole,
     secondaryRoles: (row.roles ?? []).slice(1).map((r) => roleLabel(r, labels) ?? r),
+    roleSlugs: row.roles ?? [],
     location: [row.city, row.state].filter(Boolean).join(", ") || base.location,
     shortBio: row.bio || base.shortBio,
     longBio: row.bio || base.longBio,

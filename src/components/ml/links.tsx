@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  *   <TextLink to="/auth" icon={<Mail size={16} />}>…</TextLink>
  *   <TextButton onClick={resend}>Send Again</TextButton>  the same look, but it acts instead of navigating
  *   <SectionActionLink to="/search">See All</SectionActionLink>  the action beside a section title, pink
- *   <BtnLink to="/feed">Continue</BtnLink>                a link that looks like a button (re-export of ui.tsx)
+ *   <BtnLink to="/home">Continue</BtnLink>                a link that looks like a button (re-export of ui.tsx)
  *   <IconBtnLink to="/search" label="Search">…</IconBtnLink>  icon-only link (re-export of ui.tsx)
  *
  * `RowLink` (components/ml/collab.tsx) stays where it is: it is a whole-row target, not a text link.

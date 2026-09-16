@@ -125,6 +125,8 @@ export type PersonProfile = {
   roleType: ProfileRole;
   primaryRole: string;
   secondaryRoles: string[];
+  /** Taxonomy slugs behind primaryRole + secondaryRoles, in the same order. Empty for seed data. */
+  roleSlugs?: string[] | undefined;
   location: string;
   availability?: AvailabilityState | undefined;
   verification: VerificationTier;

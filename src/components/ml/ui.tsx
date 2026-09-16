@@ -48,7 +48,7 @@ export function Screen({
 }
 
 const navItems = [
-  { to: "/feed", label: "Home", icon: Home },
+  { to: "/home", label: "Home", icon: Home },
   { to: "/discover", label: "Discover", icon: Compass },
   { to: "/messages", label: "Connections", icon: MessageCircle },
   { to: "/marketplace", label: "Market", icon: Store },

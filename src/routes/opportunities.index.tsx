@@ -61,7 +61,7 @@ function OpportunitiesHome() {
       <TopBar
         title="Opportunities"
         subtitle="Who needs what, right now"
-        back="/feed"
+        back="/home"
         right={
           <button
             type="button"

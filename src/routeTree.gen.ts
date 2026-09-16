@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BandRouteImport } from './routes/band'
 import { Route as FeedRouteImport } from './routes/feed'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as RecentlyViewedRouteImport } from './routes/recently-viewed'
@@ -234,6 +235,11 @@ const BandRoute = BandRouteImport.update({
 const FeedRoute = FeedRouteImport.update({
   id: '/feed',
   path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeRoute = MeRouteImport.update({
@@ -1294,6 +1300,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/feed': typeof FeedRoute
+  '/home': typeof HomeRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recently-viewed': typeof RecentlyViewedRoute
@@ -1507,6 +1514,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/feed': typeof FeedRoute
+  '/home': typeof HomeRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recently-viewed': typeof RecentlyViewedRoute
@@ -1720,6 +1728,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/band': typeof BandRoute
   '/feed': typeof FeedRoute
+  '/home': typeof HomeRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recently-viewed': typeof RecentlyViewedRoute
@@ -1935,6 +1944,7 @@ export interface FileRouteTypes {
     | '/'
     | '/band'
     | '/feed'
+    | '/home'
     | '/me'
     | '/messages'
     | '/recently-viewed'
@@ -2148,6 +2158,7 @@ export interface FileRouteTypes {
     | '/'
     | '/band'
     | '/feed'
+    | '/home'
     | '/me'
     | '/messages'
     | '/recently-viewed'
@@ -2360,6 +2371,7 @@ export interface FileRouteTypes {
     | '/'
     | '/band'
     | '/feed'
+    | '/home'
     | '/me'
     | '/messages'
     | '/recently-viewed'
@@ -2574,6 +2586,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BandRoute: typeof BandRoute
   FeedRoute: typeof FeedRoute
+  HomeRoute: typeof HomeRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   RecentlyViewedRoute: typeof RecentlyViewedRoute
@@ -2798,6 +2811,13 @@ declare module '@tanstack/react-router' {
       path: '/feed'
       fullPath: '/feed'
       preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me': {
@@ -4287,6 +4307,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
   FeedRoute: FeedRoute,
+  HomeRoute: HomeRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   RecentlyViewedRoute: RecentlyViewedRoute,
