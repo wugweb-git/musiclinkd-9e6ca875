@@ -334,7 +334,7 @@ export function ProfileHero({
   const y = useScrollY();
   const shrink = Math.min(1, Math.max(0, y / 120));
   const coverHeight = 192 - 96 * shrink;
-  const photoSize = 112 - 40 * shrink;
+  const photoSize = 136 - 52 * shrink;
   return (
     <header>
       <div
@@ -384,13 +384,13 @@ export function ProfileHero({
         </div>
       </div>
 
-      <div className="-mt-14 px-5">
-        <div className="relative motion-reduce:!w-28" style={{ width: `${photoSize}px` }}>
+      <div className="-mt-16 px-5">
+        <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }}>
           {p.photo ? (
             <img
               src={p.photo}
               alt={p.name}
-              className="aspect-square w-full rounded-full border-4 border-background object-cover motion-reduce:!h-28"
+              className="aspect-square w-full rounded-full border-4 border-background object-cover motion-reduce:!h-34"
             />
           ) : (
             <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-background bg-card text-muted-foreground">

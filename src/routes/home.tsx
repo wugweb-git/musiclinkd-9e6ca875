@@ -453,7 +453,8 @@ function AvailabilitySwitch({ available }: { available: boolean }) {
     setOn(next);
     setSaving(true);
     try {
-      await save({ data: { availability: next ? "Open to collaborations" : null } });
+      // "Collaborations" is one of the stored values profile-view maps to a status people see.
+      await save({ data: { availability: next ? "Collaborations" : null } });
     } catch {
       setOn(!next);
     } finally {

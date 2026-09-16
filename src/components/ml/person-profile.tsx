@@ -157,15 +157,15 @@ export function PersonProfileExperience({
               aria-label={key}
               onClick={() => setTab(key)}
               className={cn(
-                "state-layer relative flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-t-md px-1 py-3.5 transition-colors",
-                active ? "text-foreground" : "text-muted-foreground",
+                "state-layer relative flex items-center justify-center gap-1.5 rounded-t-md py-3.5 transition-[flex,color] duration-200 ease-standard",
+                active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
               )}
             >
               <Icon size={18} aria-hidden />
               <span
                 className={cn(
                   "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
-                  active ? "max-w-24 opacity-100" : "max-w-0 opacity-0",
+                  active ? "max-w-40 opacity-100" : "max-w-0 opacity-0",
                 )}
               >
                 {key}
