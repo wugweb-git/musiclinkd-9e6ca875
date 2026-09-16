@@ -57,7 +57,7 @@ export const Route = createFileRoute("/opportunities/new")({
 });
 
 const modes = ["On-site", "Remote", "Hybrid"] as const;
-const payTypes = ["Paid", "Revenue share", "Unpaid / credit"] as const;
+const payTypes = ["Paid", "Revenue share", "Unpaid"] as const;
 
 function CreateOpportunity() {
   const { step } = Route.useSearch();

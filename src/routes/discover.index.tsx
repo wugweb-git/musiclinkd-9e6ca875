@@ -15,10 +15,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
+import { Price } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
-import { Rate } from "@/components/ml/kit";
 import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
@@ -209,7 +209,13 @@ function Discover() {
                   {t.role} · {t.location}
                 </p>
               </div>
-              <Rate {...t.rate} size="sm" />
+              <Price
+                price={t.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-1"
+              />
             </Link>
           ))}
           {studios.slice(0, 1).map((s) => (
@@ -230,7 +236,13 @@ function Discover() {
                   </span>
                 </p>
               </div>
-              <Rate {...s.rate} size="sm" />
+              <Price
+                price={s.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-1"
+              />
             </Link>
           ))}
           {dbStudios.map((s) => (
@@ -249,7 +261,13 @@ function Discover() {
                   {joinParts(s.location, s.rating == null ? "" : `${s.rating} out of 5`)}
                 </p>
               </div>
-              {s.rate ? <Rate {...s.rate} size="sm" /> : null}
+              <Price
+                price={s.rate}
+                align="end"
+                className="shrink-0"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-1"
+              />
             </Link>
           ))}
         </div>

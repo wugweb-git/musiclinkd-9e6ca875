@@ -2,35 +2,45 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CalendarDays, Music2 } from "lucide-react";
 
 import { Btn } from "./ui";
-import { Card, EmptyState, Loading, Meter, Rate, Row, Segmented, StatusPill, Stars } from "./kit";
+import { Card, EmptyState, Loading, Meter, Price, Row, Segmented, StatusPill, Stars } from "./kit";
 
 /*
  * The kit primitives. Screens reach for these instead of rebuilding a card, an empty state or a
  * progress bar by hand, so every state below is the one a screen gets for free.
  */
 const meta = {
-  title: "Kit/Rate",
-  component: Rate,
-  args: { amount: "₹4,500", unit: "per hour" },
-  argTypes: { size: { control: "inline-radio", options: ["sm", "md", "lg"] } },
-} satisfies Meta<typeof Rate>;
+  title: "Kit/Price",
+  component: Price,
+  args: { price: { amount: "₹4,500", unit: "hr" } },
+  argTypes: { align: { control: "inline-radio", options: ["start", "center", "end"] } },
+} satisfies Meta<typeof Price>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const NoUnit: Story = {
-  args: { amount: "On request", unit: undefined },
+  args: { price: { amount: "On request" } },
   parameters: {
     docs: { description: { story: "An amount with no unit renders the amount alone." } },
   },
 };
 
-/** A rate is two pieces at every size: the amount, then the unit under it. Never one joined string. */
-export const Sizes: Story = {
+export const WithNote: Story = {
+  args: { price: { amount: "₹4,500", unit: "hr", note: "+ ₹5,000 deposit" } },
+};
+
+/** A price is two pieces however it is aligned: the amount, then the unit line under it. */
+export const Alignment: Story = {
   render: () => (
-    <div className="flex items-start gap-8">
-      {(["sm", "md", "lg"] as const).map((size) => (
-        <Rate key={size} amount="₹4,500" unit="per hour" size={size} />
+    <div className="space-y-4">
+      {(["start", "center", "end"] as const).map((align) => (
+        <Price
+          key={align}
+          price={{ amount: "₹4,500", unit: "hr" }}
+          align={align}
+          className="w-full"
+          amountClassName="text-2 font-bold"
+        />
       ))}
     </div>
   ),

@@ -36,7 +36,7 @@ const bySlug: Record<string, LucideIcon> = {
   voice_artist: MicVocal,
   keyboardist: Piano,
   drummer: Drum,
-  wind_player: Wind,
+  flautist: Wind,
   lyricist: PenLine,
   music_director: Clapperboard,
   producer: SlidersHorizontal,

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, MapPin, Star } from "lucide-react";
 import { availabilityTone, type Talent } from "@/data/discover";
-import { Rate, StatusPill } from "./kit";
+import { Price, StatusPill } from "./kit";
 import { Btn, VerifiedBadge } from "./ui";
 
 /*
@@ -145,9 +145,7 @@ export function TalentGridCard({ t }: { t: Talent }) {
           {t.verified ? <VerifiedBadge size={13} /> : null}
         </div>
         <p className="truncate text-1 text-muted-foreground">{t.location}</p>
-        <div className="mt-1">
-          <Rate {...t.rate} size="sm" />
-        </div>
+        <Price price={t.rate} className="mt-1" amountClassName="text-1 font-semibold" />
       </div>
     </Link>
   );

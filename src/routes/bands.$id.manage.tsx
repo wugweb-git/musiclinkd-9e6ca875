@@ -2,9 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, StatusPill, Dialog, EmptyState, Segmented } from "@/components/ml/kit";
-import { getBand, bandRoleCopy, type BandRole } from "@/data/band";
+import { bandRoleCopy, type BandRole } from "@/data/band";
+import { useAuth } from "@/hooks/use-auth";
+import { bandViewFromRow, loadBand } from "@/lib/band-view";
 
 export const Route = createFileRoute("/bands/$id/manage")({
+  loader: ({ params }) => loadBand(params.id),
   head: () => ({
     meta: [
       { title: "Manage Band | MusicLinkd" },
@@ -24,8 +27,9 @@ export const Route = createFileRoute("/bands/$id/manage")({
 const tabs = ["Members", "Invitations", "Settings"] as const;
 
 function ManageBand() {
-  const { id } = Route.useParams();
-  const band = getBand(id);
+  const { band: row, labels } = Route.useLoaderData();
+  const { user } = useAuth();
+  const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [tab, setTab] = useState<(typeof tabs)[number]>("Members");
   const [removing, setRemoving] = useState<string | null>(null);
   const [transfer, setTransfer] = useState(false);
@@ -57,17 +61,23 @@ function ManageBand() {
               Invite a member
             </BtnLink>
             {band.members.map((m) => (
-              <Card key={m.userId} className="space-y-3">
+              <Card key={m.key} className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={m.photo}
-                    alt=""
-                    loading="lazy"
-                    className="h-11 w-11 shrink-0 rounded-full object-cover"
-                  />
+                  {m.photo ? (
+                    <img
+                      src={m.photo}
+                      alt=""
+                      loading="lazy"
+                      className="h-11 w-11 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div aria-hidden className="h-11 w-11 shrink-0 rounded-full bg-subtle" />
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{m.name}</p>
-                    <p className="truncate text-[12px] text-muted-foreground">{m.instrument}</p>
+                    {m.instrument ? (
+                      <p className="truncate text-[12px] text-muted-foreground">{m.instrument}</p>
+                    ) : null}
                   </div>
                   <StatusPill
                     label={bandRoleCopy[m.role].label}
@@ -83,7 +93,7 @@ function ManageBand() {
                     <Btn
                       variant="ghost"
                       className="flex-1 text-xs"
-                      onClick={() => setRemoving(m.userId)}
+                      onClick={() => setRemoving(m.key)}
                     >
                       Remove
                     </Btn>
@@ -96,45 +106,15 @@ function ManageBand() {
         ) : null}
 
         {tab === "Invitations" ? (
-          band.invitations.length ? (
-            band.invitations.map((i) => (
-              <Card key={i.id} className="flex items-center gap-3">
-                <img
-                  src={i.photo}
-                  alt=""
-                  loading="lazy"
-                  className="h-11 w-11 shrink-0 rounded-full object-cover"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{i.name}</p>
-                  <p className="truncate text-[12px] text-muted-foreground">
-                    {i.instrument} · sent {i.sentAt}
-                  </p>
-                </div>
-                <StatusPill
-                  label={
-                    i.status === "pending"
-                      ? "Pending"
-                      : i.status === "accepted"
-                        ? "Accepted"
-                        : i.status === "declined"
-                          ? "Declined"
-                          : "Expired"
-                  }
-                  tone={i.status === "accepted" ? "good" : i.status === "pending" ? "warn" : "bad"}
-                />
-              </Card>
-            ))
-          ) : (
-            <EmptyState
-              title="No invitations yet"
-              body="Invite people you already play with — they keep their own profile."
-            >
-              <BtnLink to="/bands/$id/invite" params={{ id: band.id }} className="w-full">
-                Invite a member
-              </BtnLink>
-            </EmptyState>
-          )
+          // Invitations are not stored yet.
+          <EmptyState
+            title="No invitations yet"
+            body="Invite people you already play with — they keep their own profile."
+          >
+            <BtnLink to="/bands/$id/invite" params={{ id: band.id }} className="w-full">
+              Invite a member
+            </BtnLink>
+          </EmptyState>
         ) : null}
 
         {tab === "Settings" ? (

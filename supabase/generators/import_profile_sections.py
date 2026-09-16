@@ -16,6 +16,8 @@ import sys
 import unicodedata
 import uuid
 
+from taxonomy_renames import clean_row, renamed, with_added
+
 DUMP, SEED, SECTIONS, OUT = sys.argv[1:5]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
 
@@ -50,14 +52,20 @@ for m in re.finditer(r'\{\s*key: "(\w+)",\s*label: "([^"]+)",\s*description:\s*"
     if key in ALREADY:
         continue
     taxonomy_categories.append({"key": key, "label": label, "description": description.replace('\\"', '"')})
+    seeded = []
     for i, o in enumerate(re.finditer(r'\{ label: "([^"]+)", value: "([^"]+)"(?:, metadata: \{ group: "([^"]+)" \})? \}',
                                       opts), 1):
         olabel, value, group = o.group(1), o.group(2), o.group(3)
         slug = SLUG_OVERRIDE.get((key, olabel)) or (value if re.fullmatch(r"[a-z0-9_]+", value) else slugify(olabel))
+        slug = renamed(key, slug)
         SLUG[(key, value)] = SLUG[(key, olabel)] = slug
-        taxonomy_options.append({"category_key": key, "slug": slug, "label": olabel, "sort_order": i,
-                                 "metadata": {"group": group} if group else None})
+        seeded.append({"category_key": key, "slug": slug, "label": olabel, "sort_order": i,
+                       "metadata": {"group": group} if group else None})
+    # Single names, no "/" in labels (owner, 15 Sep 2026): Company PAN / GSTIN is two options.
+    # Text without "/" too: the opportunity_types group "Studio / Space" is "Studio".
+    taxonomy_options.extend(clean_row("taxonomy_options", o) for o in with_added(key, seeded))
 assert len(taxonomy_categories) == 25, len(taxonomy_categories)
+assert not [o for o in taxonomy_options if "/" in o["label"]], "an option label has a /"
 
 
 def tax(category, values, fid):
@@ -72,8 +80,10 @@ def tax(category, values, fid):
 
 
 # ---- helpers ------------------------------------------------------------------------------------
-def paise(price: str):
-    """'₹4,500/hr' -> (450000, 'hr', None); '15% of net' -> (None, None, '15% of net')."""
+def paise(price):
+    """{amount: '₹4,500', unit: 'hr'} or '₹4,500/hr' -> (450000, 'hr', None); '15% of net' -> (None, None, '15% of net')."""
+    if isinstance(price, dict):
+        price = f"{price['amount']} / {price['unit']}" if price.get("unit") else price["amount"]
     m = re.fullmatch(r"₹\s*([\d,]+)\s*(?:/\s*(.+))?", price.strip())
     if not m:
         return None, None, price.strip() or None
@@ -88,9 +98,10 @@ def period(p: str):
     return int(m.group(1)), None if m.group(2) == "present" else int(m.group(2))
 
 
+# Firebase instrument labels (single names in the dump since 16 Sep 2026) -> taxonomy slugs.
 INSTRUMENT_SLUG = {"Acoustic Guitar": "acoustic_guitar", "Electric Guitar": "electric_guitar", "Bass Guitar": "bass_guitar",
-                   "Keyboard / Synthesizer": "keyboard_synthesizer", "Piano": "piano",
-                   "Drums / Percussion": "drums_percussion", "Tabla": "tabla", "Sitar": "sitar",
+                   "Keyboard": "keyboard", "Piano": "piano",
+                   "Drums": "drums", "Tabla": "tabla", "Sitar": "sitar",
                    "Flute (Bansuri)": "flute_bansuri", "Harmonium": "harmonium", "Violin": "violin",
                    "Saxophone": "saxophone"}
 FB_USERS = {u["_id"]: u for u in FB["users"]}
@@ -153,7 +164,7 @@ for rp in FB["role_profiles"]:
         snake["primary_instrument"] = INSTRUMENT_SLUG[snake["primary_instrument"]]
     if "secondary_instruments" in snake:
         snake["secondary_instruments"] = [INSTRUMENT_SLUG[i] for i in snake["secondary_instruments"]]
-    role_details.setdefault((pid, rp["roleKey"]), {}).update(snake)
+    role_details.setdefault((pid, renamed("person_types", rp["roleKey"])), {}).update(snake)
 
 # Reviews of people. Firebase USER reviews carry the attribution inside the text: '"…" — Name, Org'.
 for r in FB["reviews"]:
@@ -212,12 +223,15 @@ SCHEMA = """-- Profile sections: the rest of each profile bucket, keyed by profi
 --   Money is integer paise; a price with no amount keeps its text in price_note.
 --
 -- Data
---   Taxonomy: the 25 categories not yet loaded (published).
+--   Taxonomy: the 25 categories not yet loaded (published). Labels are single names, no "/" (owner,
+--   15 Sep 2026): the seed's combined Company PAN option is company_pan and company_gstin, and the
+--   opportunity_types group is "Studio". Imported text has no "/" either (taxonomy_renames.py);
+--   category descriptions (developer notes) are kept as they are.
 --   Firebase: rates, budget tiers, badges, verified / available, role details (user fields and
 --   role_profiles), service offerings, business / venue details, team and band lineup, shows, and
 --   reviews of people. Studio reviews belong to studios and are not here.
 --   The 11 linked seed profiles: services, experience, reviews and gallery from their TS sections.
---   Not imported: gender, GSTIN, email.
+--   Email, gender and GSTIN are imported privately by 20260915180000_private_imports_and_counts.sql.
 --
 -- Each data block re-reads what it wrote and raises on any difference. Idempotent.
 
@@ -483,7 +497,7 @@ REVIEW_BODY = upsert_body("reviews", REVIEW_COLS, "id") + """
   FROM jsonb_to_recordset(payload) AS r(id uuid, created_at timestamptz)
   WHERE t.id = r.id AND r.created_at IS NOT NULL;"""
 
-parts = [("taxonomy categories", taxonomy_categories, CATEGORY_BODY),
+parts = [("taxonomy categories", taxonomy_categories, CATEGORY_BODY),  # descriptions are kept as they are
          ("taxonomy options", taxonomy_options, OPTION_BODY),
          ("profile fields", profile_fields, PROFILE_FIELDS_BODY),
          ("profile_services", pick(services, SERVICE_COLS), upsert_body("profile_services", SERVICE_COLS, "id")),
@@ -495,6 +509,11 @@ parts = [("taxonomy categories", taxonomy_categories, CATEGORY_BODY),
          ("profile_business", pick(business, BUSINESS_COLS), upsert_body("profile_business", BUSINESS_COLS, "profile_id")),
          ("profile_members", pick(members, MEMBER_COLS), upsert_body("profile_members", MEMBER_COLS, "id")),
          ("profile_events", pick(events, EVENT_COLS), upsert_body("profile_events", EVENT_COLS, "id"))]
+
+# Text without "/" (owner, 15 Sep 2026; taxonomy_renames.py). Table per part, for the column rules.
+TABLE = {"profile fields": "profiles", "taxonomy options": "taxonomy_options"}
+parts = [(label, rows if label == "taxonomy categories" else
+          [clean_row(TABLE.get(label, label), r) for r in rows], body) for label, rows, body in parts]
 
 blocks = []
 for label, rows, body in parts:

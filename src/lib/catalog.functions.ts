@@ -202,14 +202,6 @@ export const getListing = createServerFn({ method: "GET" })
     return (row ?? null) as unknown as ListingRow | null;
   });
 
-/** "₹8,500", "₹1,500 / day", or the note when there is no amount. Empty when neither exists. */
-export function formatPaise(paise: number | null, unit?: string | null, note?: string | null) {
-  if (paise == null) return note ?? "";
-  const amount = `₹${(paise / 100).toLocaleString("en-IN")}`;
-  const priced = unit ? `${amount} / ${unit}` : amount;
-  return note ? `${priced} ${note}` : priced;
-}
-
 /** Label for a taxonomy slug, or the slug when the label is not loaded. */
 export function taxonomyLabel(labels: TaxonomyLabels | undefined, category: string, slug: string) {
   return labels?.[category]?.[slug] ?? slug;

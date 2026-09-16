@@ -3,14 +3,17 @@
  * Canonical names: plan, subscription, entitlement, invoice, payout_account, boost.
  * No payment infrastructure is implemented here.
  */
+import type { PriceParts } from "@/lib/price";
+
 export type PlanKey = "free" | "pro" | "business";
 
 export type Plan = {
   key: PlanKey;
   name: string;
-  price: string;
-  period: string;
-  yearly: string;
+  /** Amount and unit ("month"); the free plan has a note ("forever") instead of a unit. */
+  monthly: PriceParts;
+  /** Amount, unit ("year") and the saving as a note. */
+  yearly: PriceParts;
   tagline: string;
   best?: boolean;
   features: { label: string; included: boolean }[];
@@ -20,9 +23,8 @@ export const plans: Plan[] = [
   {
     key: "free",
     name: "Starter",
-    price: "₹0",
-    period: "forever",
-    yearly: "₹0",
+    monthly: { amount: "₹0", note: "forever" },
+    yearly: { amount: "₹0" },
     tagline: "Be findable and take your first bookings.",
     features: [
       { label: "Public profile & QR identity", included: true },
@@ -36,9 +38,8 @@ export const plans: Plan[] = [
   {
     key: "pro",
     name: "Pro",
-    price: "₹499",
-    period: "per month",
-    yearly: "₹4,990 per year · 2 months free",
+    monthly: { amount: "₹499", unit: "month" },
+    yearly: { amount: "₹4,990", unit: "year", note: "2 months free" },
     tagline: "For working professionals taking regular work.",
     best: true,
     features: [
@@ -53,9 +54,8 @@ export const plans: Plan[] = [
   {
     key: "business",
     name: "Business",
-    price: "₹1,499",
-    period: "per month",
-    yearly: "₹14,990 per year · 2 months free",
+    monthly: { amount: "₹1,499", unit: "month" },
+    yearly: { amount: "₹14,990", unit: "year", note: "2 months free" },
     tagline: "For studios, labels and agencies with a team.",
     features: [
       { label: "Everything in Pro", included: true },

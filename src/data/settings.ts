@@ -138,7 +138,7 @@ export const privacyControls = [
     label: "Profile visibility",
     hint: "Who can open your full profile",
     value: "Public",
-    options: ["Public", "Connections only", "Private"],
+    options: ["Public", "MusicLinkd members", "Limited"],
   },
   {
     key: "contact",

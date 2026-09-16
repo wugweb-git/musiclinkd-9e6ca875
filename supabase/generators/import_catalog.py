@@ -15,6 +15,8 @@ import re
 import sys
 import uuid
 
+from taxonomy_renames import clean_row, renamed, single_names
+
 DUMP, SEED, OUT = sys.argv[1:4]
 NS = uuid.UUID("5b1b2f0e-3c1a-4f6e-9d3a-6d1c2b7e9a10")  # same namespace as import_profiles.py
 
@@ -39,10 +41,16 @@ for m in re.finditer(r'\{\s*key: "(\w+)",\s*label: "([^"]+)",\s*description:\s*"
         slug = value if re.fullmatch(r"[a-z0-9_]+", value) else re.sub(
             r"_+", "_", re.sub(r"[^a-z0-9]+", "_", label.lower().replace("&", "and"))).strip("_")
         SLUG[(m.group(1), label)] = SLUG[(m.group(1), value)] = slug
+        # The dump carries single names since 16 Sep 2026 ("Drums"); the seed still has "Drums / Percussion".
+        if single_names(label) != label:
+            assert SLUG.setdefault((m.group(1), single_names(label)), slug) == slug, (m.group(1), label)
 SLUG[("studio_amenities", "24x7 Access")] = "access_24x7"  # TAXONOMY-MIGRATION-SPEC §3
-GENRE = {"Bollywood / Filmi": "bollywood_filmi", "Indie Pop": "indie_pop", "Hindustani Classical": "hindustani_classical",
-         "Carnatic Classical": "carnatic_classical", "Rajasthani Folk": "rajasthani_folk", "Rock / Metal": "rock_metal",
-         "EDM / Synthwave": "edm_synthwave", "Acoustic / Unplugged": "acoustic_unplugged"}
+for (category, key), slug in list(SLUG.items()):
+    SLUG[(category, key)] = renamed(category, slug)  # single names, owner 15 Sep 2026 (taxonomy_renames.py)
+# Firebase genre labels (single names in the dump since 16 Sep 2026) -> taxonomy slugs.
+GENRE = {"Bollywood": "bollywood", "Indie Pop": "indie_pop", "Hindustani Classical": "hindustani_classical",
+         "Carnatic Classical": "carnatic_classical", "Rajasthani Folk": "rajasthani_folk", "Rock": "rock",
+         "EDM": "edm", "Acoustic": "acoustic"}
 
 
 def slugs(category, values, ref):
@@ -112,7 +120,8 @@ for p in FB["projects"]:
     amount, unit, note = price(p["budget"])
     opportunities.append({
         "id": uid(f"firebase:projects/{p['_id']}"), "creator_profile_id": PROFILE_ID[p["creatorUid"]],
-        "slug": p["_id"].removeprefix("mock-project-"), "title": p["title"], "role_required": p.get("roleRequired"),
+        "slug": p["_id"].removeprefix("mock-project-"), "title": p["title"],
+        "role_required": p.get("roleRequired"),
         "genres": slugs("genres", p.get("genres"), p["_id"]), "budget_paise": amount, "budget_unit": unit,
         "budget_note": note, "collaboration_type": slugs("collaboration_types", [p["collaborationType"]], p["_id"])[0],
         "location": p.get("location"), "status": p["status"].lower(), "applicant_count": p.get("applicantCount") or 0,
@@ -146,14 +155,40 @@ posts = [{"id": uid(f"firebase:feed_posts/{p['_id']}"), "author_profile_id": PRO
           "post_type": p["postType"], "body": p.get("text"), "media_urls": p.get("mediaUrls") or [],
           "audio_url": p.get("audioUrl"), "likes_count": p.get("likesCount") or 0,
           "comments_count": p.get("commentsCount") or 0, "created_at": p["timestamp"]} for p in FB["feed_posts"]]
-brand = [{"profile_id": PROFILE_ID[b["ownerUid"]], "logo_url": b.get("logoUrl"), "hero_banner_url": b.get("heroBannerUrl"),
-          "thumbnail_url": b.get("thumbnailUrl"), "icon_url": b.get("iconUrl")} for b in FB["brand_assets"]]
+# Firebase brand assets point at example.com placeholders. Owner's call (15 Sep): use our own images
+# instead — the owner's avatar for logo, thumbnail and icon; the owner's studio photo for the banner.
+AVATAR = {u["_id"]: u.get("avatarUrl") for u in FB["users"]}
+STUDIO_IMAGE = {s["ownerUid"]: s.get("imageUrl") for s in FB["studios"] if s.get("imageUrl")}
+
+
+def own_image(url: str | None, fallback: str | None) -> str | None:
+    return fallback if url and re.match(r"https?://(www\.)?example\.com/", url) else url
+
+
+brand = [{"profile_id": PROFILE_ID[b["ownerUid"]],
+          "logo_url": own_image(b.get("logoUrl"), AVATAR.get(b["ownerUid"])),
+          "hero_banner_url": own_image(b.get("heroBannerUrl"), STUDIO_IMAGE.get(b["ownerUid"])),
+          "thumbnail_url": own_image(b.get("thumbnailUrl"), AVATAR.get(b["ownerUid"])),
+          "icon_url": own_image(b.get("iconUrl"), AVATAR.get(b["ownerUid"]))} for b in FB["brand_assets"]]
 pages = [{"slug": p["_id"], "route": p["route"], "title": p["title"], "status": p["status"].lower(),
           "content": p["content"], "seo_description": p.get("seoDescription"), "updated_at": p["updatedAt"]}
          for p in FB["page_content"]]
 
 if problems:
     sys.exit("Unmapped values:\n" + "\n".join(problems))
+
+# Text without "/" (owner, 15 Sep 2026; taxonomy_renames.py): whole-value fixes, single labels, phrases.
+studios, rooms, equipment = ([clean_row(t, r) for r in rows] for t, rows in
+                             (("studios", studios), ("studio_rooms", rooms), ("studio_equipment", equipment)))
+studio_reviews = [clean_row("reviews", r) for r in studio_reviews]
+opportunities = [clean_row("opportunities", r) for r in opportunities]
+listings = [clean_row("marketplace_listings", r) for r in listings]
+posts = [clean_row("feed_posts", r) for r in posts]
+pages = [clean_row("cms_pages", r) for r in pages]
+assert not [e for e in equipment if "/" in e["name"]], "an equipment name has a /"
+assert not [p for p in posts if "/" in re.sub(r"(https?://|www\.)\S+", "", p["body"] or "")], "a post body has a /"
+assert not [o for o in opportunities if "/" in (o["role_required"] or "")], "a role_required has a /"
+assert not [m for m in listings if "/" in m["title"]], "a listing title has a /"
 
 SCHEMA = """-- Catalog: studios (rooms, equipment, reviews), opportunities, marketplace listings, feed posts,
 -- brand assets and CMS pages.
@@ -166,8 +201,11 @@ SCHEMA = """-- Catalog: studios (rooms, equipment, reviews), opportunities, mark
 -- ("+ ₹5,000 deposit", "Royalties Split") is kept in a *_note column.
 -- mock-studio-octave-sound-labs is imported as Wugweb (slug wugweb), matching its owner's profile.
 -- Marketplace sellers with no Firebase user document keep a seller_name and no profile.
+-- Imported text is written without "/" (owner, 15 Sep 2026; taxonomy_renames.py): role and title
+-- text, old combined labels, equipment names and post bodies. CMS routes are paths and keep theirs.
 -- Read: public (CMS pages when published). Write: owners of their own rows; CMS is not client-writable.
--- Not imported: studio phone numbers.
+-- The one studio phone number is its owner's business_phone in profile_private
+-- (20260915180000_private_imports_and_counts.sql), not a public studios column.
 --
 -- Each data block re-reads what it wrote and raises on any difference. Idempotent.
 

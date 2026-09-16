@@ -29,14 +29,15 @@ function postedAgo(iso: string, now: number): string {
 }
 
 /**
- * A single role that names an existing person category ("Guitarist", "Singer / Vocalist") uses
- * that category. Several roles, or a role with no matching category, is a collaborator request.
+ * A single role that names an existing person category ("Guitarist", "Singer") uses that category.
+ * Roles are single names (no "/", 15 Sep 2026). Several roles, or a role with no matching category,
+ * is a collaborator request.
  */
 function categoryFromRole(role: string | null): Pick<Opportunity, "categoryKey" | "kind"> {
   if (role && !role.includes(",")) {
-    const parts = role.split("/").map((p) => p.trim().toLowerCase());
+    const name = role.trim().toLowerCase();
     const match = opportunityCategories.find(
-      (c) => c.kind === "Person" && parts.includes(c.label.toLowerCase()),
+      (c) => c.kind === "Person" && c.label.toLowerCase() === name,
     );
     if (match) return { categoryKey: match.key, kind: match.kind };
   }
@@ -49,7 +50,7 @@ function compensationFromRow(row: OpportunityRow): Opportunity["compensation"] {
     return {
       type: "Paid",
       min: row.budget_paise / 100,
-      unit: row.budget_unit ? `per ${row.budget_unit.toLowerCase()}` : "",
+      unit: row.budget_unit ? row.budget_unit.toLowerCase() : "",
       negotiable: false,
       ...note,
     };

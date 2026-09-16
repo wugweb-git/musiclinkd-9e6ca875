@@ -1,7 +1,11 @@
 /**
- * FLOW 16 — VERIFICATION. Design-only trust model.
+ * FLOW 16 — VERIFICATION.
  * Canonical names: verification_request, verification_type, verification_status, trust_signal.
  * Spec state mapping: not_started → unverified, pending → in_review.
+ * Types, requirements and requests are stored (src/lib/verification.functions.ts); screens read those.
+ * What screens still use here: status labels and tones, overallStatus, the wizard steps and the
+ * static copy. verificationTypes, myVerifications, verificationTypesFor and eligibility are no
+ * screen's: supabase/generators/export_services_verification.ts exports them for the migration.
  */
 export type VerificationStatus = "unverified" | "in_review" | "verified" | "rejected" | "expired";
 
@@ -10,6 +14,8 @@ export type VerificationRequirement = {
   label: string;
   /** Why the Trust team needs it — never ask without a reason. */
   why: string;
+  /** Not needed to submit. */
+  optional?: boolean;
   /** Upload of a file, or information typed into the form. */
   kind: "document" | "info";
 };
@@ -75,9 +81,10 @@ export const verificationTypes: VerificationType[] = [
         kind: "info",
       },
       {
-        label: "Professional affiliation (optional)",
+        label: "Affiliation",
         why: "Label, studio or agency you work with, if any.",
         kind: "info",
+        optional: true,
       },
     ],
     turnaround: "3–5 days",
@@ -219,7 +226,7 @@ export const statusLabel: Record<VerificationStatus, string> = {
 };
 
 /** Overall account trust state derived from the individual requests. */
-export function overallStatus(reqs: VerificationRequest[] = myVerifications): VerificationStatus {
+export function overallStatus(reqs: readonly { status: VerificationStatus }[]): VerificationStatus {
   if (reqs.some((r) => r.status === "rejected")) return "rejected";
   if (reqs.some((r) => r.status === "expired")) return "expired";
   if (reqs.some((r) => r.status === "in_review")) return "in_review";

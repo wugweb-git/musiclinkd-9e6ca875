@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { Chip, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
-import { Rate } from "@/components/ml/kit";
+import { Price } from "@/components/ml/kit";
 import { talents, studios } from "@/data/discover";
 
 export const Route = createFileRoute("/saved")({
@@ -49,7 +49,13 @@ function Saved() {
                     <h3 className="truncate text-sm">{s.name}</h3>
                     <p className="truncate text-1 text-muted-foreground">{s.location}</p>
                   </div>
-                  <Rate {...s.rate} size="sm" />
+                  <Price
+                    price={s.rate}
+                    align="end"
+                    className="shrink-0"
+                    amountClassName="text-1 font-semibold"
+                    unitClassName="text-1"
+                  />
                 </div>
                 <Actions />
               </article>
@@ -67,7 +73,13 @@ function Saved() {
                       {t.role} · {t.location.split(",").pop()}
                     </p>
                   </div>
-                  <Rate {...t.rate} size="sm" />
+                  <Price
+                    price={t.rate}
+                    align="end"
+                    className="shrink-0"
+                    amountClassName="text-1 font-semibold"
+                    unitClassName="text-1"
+                  />
                 </div>
                 <Actions />
               </article>

@@ -48,9 +48,9 @@ export const savedSearches: SavedSearch[] = [
   },
   {
     id: "ss-3",
-    label: "Tracking rooms under ₹3,000/hr",
+    label: "Tracking rooms under ₹3,000 per hour",
     query: "studio tracking room",
-    filters: ["Mumbai", "Under ₹3,000/hr", "Live room"],
+    filters: ["Mumbai", "Under ₹3,000 per hour", "Live room"],
     alerts: false,
     newCount: 0,
     createdAt: now - 58 * day,

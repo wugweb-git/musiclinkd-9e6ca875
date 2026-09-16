@@ -83,7 +83,7 @@ function RentHome() {
       </header>
 
       <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
-        {["For You", "Available today", "Near me", "Delivery", "Under ₹1k/day"].map((c, i) => (
+        {["For You", "Available today", "Near me", "Delivery", "Under ₹1k per day"].map((c, i) => (
           <Chip key={c} active={i === 0}>
             {c}
           </Chip>

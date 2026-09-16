@@ -8,7 +8,8 @@
 import { talents, studios } from "./discover";
 import { listings, sellerById } from "./market";
 import { demoPortfolio } from "./portfolio";
-import { getBookable, inr } from "./booking";
+import { getBookable, lowestRate } from "./booking";
+import type { PriceParts } from "@/lib/price";
 
 /** Canonical entity kinds a MusicLinkd QR may resolve to. */
 export type QrEntityType =
@@ -166,6 +167,8 @@ export type DestinationPreview = {
   title: string;
   subtitle: string;
   meta: string;
+  /** Rendered as amount and unit line under the meta. */
+  price?: PriceParts | undefined;
   extra?: string | undefined;
   image: string;
   verified?: boolean;
@@ -206,12 +209,13 @@ export function previewFor(d: QrDestination): DestinationPreview | null {
     const b = getBookable(myBusiness.entityId);
     const r = b?.resources.find((x) => x.id === d.entityId);
     if (!r || !b) return null;
-    const from = Math.min(...r.tiers.map((t) => t.price));
+    const from = lowestRate(r.tiers);
     return {
       kind: "service",
       title: r.name,
       subtitle: b.name,
-      meta: `${inr(from)} onwards · ${r.tiers[0]?.label ?? "per hour"}`,
+      meta: "",
+      ...(from ? { price: { ...from, amount: `From ${from.amount}` } } : {}),
       extra: `${b.area}, ${b.city}`,
       image: r.photo,
       verified: true,
@@ -225,7 +229,8 @@ export function previewFor(d: QrDestination): DestinationPreview | null {
     return {
       kind: "listing",
       title: l.title,
-      subtitle: `${l.price}${l.condition ? ` · ${l.condition}` : ""}`,
+      subtitle: l.condition ?? "",
+      price: l.price,
       meta: l.location,
       // Only the seller's public display name — never phone, email or address.
       extra: seller ? `Sold by ${seller.name}` : undefined,

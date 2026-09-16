@@ -1,12 +1,12 @@
-// What the band screens render, from a static demo band or a stored profile with a line-up or
-// shows. A stored band fills only what the database holds; the screens skip empty values. There is
-// no formed year, availability, open seat, member photo, member profile, band role, show time,
-// show status other than a past date, release or shared portfolio in the database.
+// What the band screens render, from a stored band (src/lib/bands.functions.ts). Members are talent
+// profiles; their name, photo and badge come from the profile. Empty values are skipped by the
+// screens. There is no follower count, invitation or QR code in the database.
 
-import { myBandId, type Band, type BandRelease } from "@/data/band";
-import { formatPaise, taxonomyLabel } from "@/lib/catalog.functions";
-import type { TaxonomyLabels } from "@/lib/portfolio.functions";
-import type { BandRecord } from "@/lib/profile-groups.functions";
+import type { Band } from "@/data/band";
+import { getBandBySlug, listBands, type BandRow } from "@/lib/bands.functions";
+import { taxonomyLabel } from "@/lib/catalog.functions";
+import { priceParts, type PriceParts } from "@/lib/price";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { joinParts } from "@/lib/utils";
 
 export type BandEventView = {
@@ -18,70 +18,61 @@ export type BandEventView = {
   ticketNote?: string | undefined;
 };
 
+export type BandReleaseView = {
+  id: string;
+  title: string;
+  kind: string;
+  year: number | null;
+  cover: string;
+};
+
+export type BandMemberView = {
+  key: string;
+  profileId: string;
+  name: string;
+  photo: string;
+  instrument: string;
+  detail: string;
+  verified: boolean;
+  username?: string | undefined;
+  role: Band["members"][number]["role"];
+};
+
 export type BandView = {
   id: string;
   name: string;
   verified: boolean;
   avatar: string;
   cover: string;
+  genres: string[];
+  city: string;
   subtitle: string;
   tagline: string;
   bio: string;
   availability?: Band["availability"] | undefined;
-  rate: string;
+  rate: PriceParts | null;
   lookingFor: string[];
   nextShow: string;
   portfolioCount: number;
-  members: {
-    key: string;
-    name: string;
-    photo: string;
-    detail: string;
-    verified: boolean;
-    username?: string | undefined;
-    role?: Band["members"][number]["role"] | undefined;
-  }[];
+  members: BandMemberView[];
   events: BandEventView[];
-  releases: BandRelease[];
+  releases: BandReleaseView[];
+  /** The viewer created the band, or is its owner or an admin. */
   owner: boolean;
 };
 
-export function bandViewFromStatic(band: Band): BandView {
-  return {
-    id: band.id,
-    name: band.name,
-    verified: band.verified,
-    avatar: band.avatar,
-    cover: band.cover,
-    subtitle: `${band.genres.join(" · ")} · ${band.city} · since ${band.formed}`,
-    tagline: band.tagline,
-    bio: band.bio,
-    availability: band.availability,
-    rate: band.rate,
-    lookingFor: band.lookingFor,
-    nextShow: `${band.events[0]?.title ?? "No shows scheduled"} · ${band.events[0]?.date ?? ""}`,
-    portfolioCount: band.portfolioItemIds.length,
-    members: band.members.map((m) => ({
-      key: m.userId,
-      name: m.name,
-      photo: m.photo,
-      detail: `${m.instrument} · since ${m.since}`,
-      verified: m.verified,
-      username: m.userId,
-      role: m.role,
-    })),
-    events: band.events.map((e) => ({
-      id: e.id,
-      title: e.title,
-      place: `${e.venue} · ${e.city}`,
-      date: e.date,
-      status: e.status,
-      ticketNote: e.ticketNote,
-    })),
-    releases: band.releases,
-    owner: band.id === myBandId,
-  };
-}
+const AVAILABILITY: Record<NonNullable<BandRow["availability"]>, Band["availability"]> = {
+  available: "Available",
+  selective: "Selective",
+  booked: "Booked",
+};
+
+const RELEASE_KIND: Record<BandRow["releases"][number]["kind"], string> = {
+  single: "Single",
+  ep: "EP",
+  album: "Album",
+  live: "Live",
+};
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -92,53 +83,120 @@ function todayIso(now = new Date()) {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-/** In the static shows' formats: "Sat 19 Sep" for coming dates, "Feb 2026" for past ones. */
-function showDate(iso: string, past: boolean) {
-  const [y, m, d] = iso.split("-").map(Number);
-  if (!y || !m || !d) return "";
-  if (past) return `${MONTHS[m - 1]} ${y}`;
-  const day = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-  return `${DAYS[day]} ${d} ${MONTHS[m - 1]}`;
+/** "9:00 PM" from "21:00:00". */
+function showTime(time: string | null) {
+  if (!time) return "";
+  const [h, m] = time.split(":").map(Number);
+  if (h == null || m == null || Number.isNaN(h) || Number.isNaN(m)) return "";
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
 }
 
-export function bandViewFromRecord(r: BandRecord, labels: TaxonomyLabels): BandView {
-  const { profile } = r;
+/** "Sat 19 Sep · 9:00 PM" for a coming day; "Feb 2026" for a past date or a month. */
+function showDate(e: BandRow["events"][number], past: boolean) {
+  const [y, m, d] = (e.event_date ?? "").split("-").map(Number);
+  if (!y || !m || !d) return "";
+  if (past || e.date_precision === "month") return `${MONTHS[m - 1]} ${y}`;
+  const day = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  return joinParts(`${DAYS[day]} ${d} ${MONTHS[m - 1]}`, showTime(e.event_time));
+}
+
+function isPast(e: BandRow["events"][number], today: string) {
+  if (!e.event_date) return false;
+  // A month-only date is past once its month has ended.
+  if (e.date_precision === "month") return e.event_date.slice(0, 7) < today.slice(0, 7);
+  return e.event_date < today;
+}
+
+export function bandViewFromRow(
+  row: BandRow,
+  labels: TaxonomyLabels,
+  viewerId: string | null,
+): BandView {
   const today = todayIso();
-  const events: BandEventView[] = r.events.map((e) => {
-    // Only a date before today is a known status; confirmed or on hold is not stored.
-    const past = e.event_date != null && e.event_date < today;
-    return {
+  const events: BandEventView[] = row.events
+    .map((e) => ({ e, past: isPast(e, today) }))
+    // Coming shows first, soonest first; then past shows, latest first.
+    .sort((a, b) =>
+      a.past !== b.past
+        ? Number(a.past) - Number(b.past)
+        : a.past
+          ? (b.e.event_date ?? "").localeCompare(a.e.event_date ?? "")
+          : (a.e.event_date ?? "").localeCompare(b.e.event_date ?? ""),
+    )
+    .map(({ e, past }) => ({
       id: e.id,
       title: e.title,
-      place: e.venue_name ?? "",
-      date: e.event_date ? showDate(e.event_date, past) : "",
-      status: past ? "past" : undefined,
-    };
-  });
+      place: joinParts(e.venue, e.city),
+      date: showDate(e, past),
+      status: past ? "past" : (e.status ?? undefined),
+      ticketNote: past ? undefined : (e.ticket_note ?? undefined),
+    }));
   const next = events.find((e) => e.status !== "past");
-  const genres = (profile.genres ?? []).map((g) => taxonomyLabel(labels, "genres", g));
+  const genres = row.genres.map((g) => taxonomyLabel(labels, "genres", g));
+  const members: BandMemberView[] = row.members
+    .filter((m) => m.profile)
+    .map((m) => ({
+      key: m.profile_id,
+      profileId: m.profile_id,
+      name: m.profile?.display_name ?? m.profile?.username ?? "",
+      photo: m.profile?.avatar_url ?? "",
+      instrument: m.instrument ?? "",
+      detail: joinParts(m.instrument, m.since_year ? `since ${m.since_year}` : ""),
+      verified: m.profile?.is_verified ?? false,
+      username: m.profile?.username ?? undefined,
+      role: m.role,
+    }));
+  const owner =
+    viewerId != null &&
+    (row.created_by === viewerId ||
+      members.some((m) => m.profileId === viewerId && m.role !== "member"));
   return {
-    id: profile.username ?? profile.id,
-    name: profile.display_name ?? profile.username ?? "",
-    verified: profile.is_verified,
-    avatar: profile.avatar_url ?? "",
-    cover: profile.cover_url ?? "",
-    subtitle: joinParts(genres.join(" · "), profile.city),
-    tagline: profile.headline ?? "",
-    bio: profile.bio ?? "",
-    rate: formatPaise(profile.hourly_rate_paise, "hr"),
-    lookingFor: [],
-    nextShow: `${next?.title ?? "No shows scheduled"} · ${next?.date ?? ""}`,
-    portfolioCount: 0,
-    members: r.lineup.map((m) => ({
-      key: m.id,
-      name: m.name,
-      photo: "",
-      detail: m.role ?? "",
-      verified: false,
-    })),
+    id: row.slug,
+    name: row.name,
+    verified: row.is_verified,
+    avatar: row.avatar_url ?? "",
+    cover: row.cover_url ?? "",
+    genres,
+    city: row.city ?? "",
+    subtitle: joinParts(
+      genres.join(" · "),
+      row.city,
+      row.formed_year ? `since ${row.formed_year}` : "",
+    ),
+    tagline: row.tagline ?? "",
+    bio: row.bio ?? "",
+    availability: row.availability ? AVAILABILITY[row.availability] : undefined,
+    rate: priceParts(row.rate_paise, row.rate_unit),
+    lookingFor: row.looking_for,
+    nextShow: joinParts(next?.title ?? "No shows scheduled", next?.date),
+    portfolioCount: row.releases.length,
+    members,
     events,
-    releases: [],
-    owner: false,
+    releases: row.releases.map((r) => ({
+      id: r.id,
+      title: r.title,
+      kind: RELEASE_KIND[r.kind],
+      year: r.release_year,
+      cover: r.cover_url ?? "",
+    })),
+    owner,
   };
+}
+
+/** Loader for one band's screens. A failed read is treated as not found. */
+export async function loadBand(slug: string) {
+  const [band, labels] = await Promise.all([
+    getBandBySlug({ data: { slug } }).catch(() => null),
+    getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+  ]);
+  return { band, labels };
+}
+
+/** Loader for band lists. A failed read shows no bands. */
+export async function loadBands() {
+  const [bands, labels] = await Promise.all([
+    listBands().catch((): BandRow[] => []),
+    getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+  ]);
+  return { bands, labels };
 }

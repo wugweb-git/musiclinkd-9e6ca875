@@ -12,6 +12,7 @@ import {
   languages as languageOptions,
   linkPlatforms,
   roles as roleDefs,
+  visibilityOptions,
   workModes as workModeOptions,
 } from "@/data/onboarding";
 
@@ -355,26 +356,18 @@ function EditProfile() {
       done: true,
       body: (
         <div className="space-y-2">
-          {[
-            { value: "public", label: "Public", hint: "Anyone on MusicLinkd can find you" },
-            {
-              value: "connections",
-              label: "Connections only",
-              hint: "Only people you're connected with",
-            },
-            { value: "private", label: "Private", hint: "Hidden from discovery" },
-          ].map((o) => (
+          {visibilityOptions.map((o) => (
             <button
-              key={o.value}
+              key={o.key}
               type="button"
-              onClick={() => update({ visibility: o.value })}
-              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.value ? "border-primary bg-subtle" : "border-border bg-card"}`}
+              onClick={() => update({ visibility: o.key })}
+              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.key ? "border-primary bg-subtle" : "border-border bg-card"}`}
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold">{o.label}</span>
                 <span className="block truncate text-1 text-muted-foreground">{o.hint}</span>
               </span>
-              {form.visibility === o.value ? (
+              {form.visibility === o.key ? (
                 <Check size={16} className="shrink-0 text-primary" aria-hidden />
               ) : null}
             </button>

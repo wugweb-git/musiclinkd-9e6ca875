@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MessageCircle, CheckCircle2, Circle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Dialog } from "@/components/ml/kit";
+import { Card, StatusPill, EmptyState, Dialog, Price } from "@/components/ml/kit";
 import { getApplication, getOpportunity, applicationTone } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
 
@@ -96,7 +96,14 @@ function ApplicationDetail() {
           <h2 className="text-[15px]">What you sent</h2>
           <p className="text-[13px] text-muted-foreground">{a.message}</p>
           {a.rateQuoted ? (
-            <p className="text-[12px] text-muted-foreground">Rate quoted: {a.rateQuoted}</p>
+            <div>
+              <p className="text-[12px] text-muted-foreground">Rate quoted</p>
+              <Price
+                price={a.rateQuoted}
+                amountClassName="text-[12px] font-semibold"
+                unitClassName="text-[11px]"
+              />
+            </div>
           ) : null}
           <div className="flex flex-wrap gap-2 pt-1">
             {a.portfolioIds.map((pid) => {

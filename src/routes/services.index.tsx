@@ -1,9 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarClock, Plus, Settings2 } from "lucide-react";
-import { Screen, TopBar, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Row } from "@/components/ml/kit";
-import { myServices, priceLabel, serviceStatusTone, type ServiceStatus } from "@/data/services";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { Card, StatusPill, EmptyState, Loading, Price, Row } from "@/components/ml/kit";
+import { StateCard } from "@/components/ml/portfolio";
+import { serviceStatusTone } from "@/data/services";
+import { categoryEmoji, optionLabel, useMyServices, useServiceOptions } from "@/hooks/use-services";
+import { priceParts } from "@/lib/price";
+import type { ServiceStatus } from "@/lib/services.functions";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -27,11 +31,12 @@ const filters = ["All", "Active", "Paused", "Draft"] as const;
 
 function ServicesHome() {
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
-  const list = myServices.filter(
+  // Signed out: no services, so the empty state. Views, enquiries and bookings are not stored.
+  const { items, pending, error, retry } = useMyServices();
+  const { options } = useServiceOptions();
+  const list = items.filter(
     (s) => filter === "All" || s.status === (filter.toLowerCase() as ServiceStatus),
   );
-  const bookings = myServices.reduce((n, s) => n + s.stats.bookings, 0);
-  const enquiries = myServices.reduce((n, s) => n + s.stats.enquiries, 0);
 
   return (
     <Screen>
@@ -52,21 +57,16 @@ function ServicesHome() {
       />
 
       <div className="space-y-4 px-5 pt-4 pb-6">
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            {
-              label: "Live services",
-              value: myServices.filter((s) => s.status === "active").length,
-            },
-            { label: "Enquiries", value: enquiries },
-            { label: "Booked", value: bookings },
-          ].map((s) => (
-            <Card key={s.label}>
-              <p className="text-[11px] text-muted-foreground">{s.label}</p>
-              <p className="mt-1 text-[20px] font-bold leading-none">{s.value}</p>
+        {items.length ? (
+          <div className="grid grid-cols-3 gap-2">
+            <Card>
+              <p className="text-[11px] text-muted-foreground">Live services</p>
+              <p className="mt-1 text-[20px] font-bold leading-none">
+                {items.filter((s) => s.status === "active").length}
+              </p>
             </Card>
-          ))}
-        </div>
+          </div>
+        ) : null}
 
         <div className="space-y-2">
           <Row
@@ -91,7 +91,16 @@ function ServicesHome() {
           ))}
         </div>
 
-        {list.length ? (
+        {pending ? (
+          <Loading />
+        ) : error ? (
+          <StateCard
+            tone="error"
+            title="We couldn't load your services"
+            body="Check your connection and try again."
+            action={<Btn onClick={retry}>Retry</Btn>}
+          />
+        ) : list.length ? (
           <div className="space-y-3">
             {list.map((s) => (
               <Link key={s.id} to="/services/$id" params={{ id: s.id }} className="block">
@@ -101,22 +110,22 @@ function ServicesHome() {
                       aria-hidden
                       className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-subtle text-[18px]"
                     >
-                      {s.emoji}
+                      {categoryEmoji(s.category)}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[14px] font-semibold">{s.title}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">
-                        {s.category} · {priceLabel(s.basePrice, s.unit)}
-                      </p>
+                      <p className="truncate text-[14px] font-semibold">{s.name}</p>
+                      {s.category ? (
+                        <p className="truncate text-[12px] text-muted-foreground">
+                          {optionLabel(options?.categories, s.category)}
+                        </p>
+                      ) : null}
+                      <Price
+                        price={priceParts(s.price_paise, s.price_unit, s.price_note)}
+                        amountClassName="text-[12px] font-semibold"
+                        unitClassName="text-[11px]"
+                      />
                     </div>
                     <StatusPill label={s.status} tone={serviceStatusTone[s.status]} />
-                  </div>
-                  <div className="flex gap-4 text-[11px] text-muted-foreground">
-                    <span>{s.stats.views} views</span>
-                    <span>{s.stats.enquiries} enquiries</span>
-                    <span>
-                      ★ {s.stats.rating} ({s.stats.reviews})
-                    </span>
                   </div>
                 </Card>
               </Link>

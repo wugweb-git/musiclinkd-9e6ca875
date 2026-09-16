@@ -1,6 +1,7 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { singers, talents, type Talent } from "./discover";
 import { linkedProfileSeeds } from "./linked-profiles";
+import { priceText, type PriceParts } from "@/lib/price";
 
 /**
  * FLOW-02 · Profile module data contract (design-time fixtures only).
@@ -63,7 +64,7 @@ export type ServiceItem = {
   id: string;
   name: string;
   description: string;
-  from?: string | undefined;
+  from?: PriceParts | undefined;
   turnaround?: string | undefined;
   mode?: "Remote" | "In person" | "Remote · In person" | undefined;
   availability?: string | undefined;
@@ -99,6 +100,8 @@ export type OpportunityItem = {
   id: string;
   title: string;
   detail: string;
+  /** The stored budget, rendered as amount and unit under the detail. */
+  price?: PriceParts | undefined;
   tone: "seeking" | "offering";
 };
 
@@ -106,6 +109,7 @@ export type MarketEntry = {
   id: string;
   title: string;
   meta: string;
+  price?: PriceParts | undefined;
   image: string;
   kind: "sale" | "rental";
   to: NonNullable<LinkProps["to"]>;
@@ -124,7 +128,7 @@ export type PersonProfile = {
   location: string;
   availability?: AvailabilityState | undefined;
   verification: VerificationTier;
-  privacy: "Public" | "Connections only" | "Private";
+  privacy: "Public" | "MusicLinkd members" | "Limited";
   yearsActive: string;
   shortBio: string;
   longBio: string;
@@ -133,7 +137,7 @@ export type PersonProfile = {
   languages: string[];
   influences: string[];
   specialisations: string[];
-  professional: { label: string; value: string }[];
+  professional: { label: string; value: string | PriceParts }[];
   stats: { connections: string; followers: string; plays: string; credits: number };
   rating: number;
   reviewCount: number;
@@ -151,7 +155,7 @@ export type PersonProfile = {
   reviews: ReviewItem[];
   opportunities: OpportunityItem[];
   market: MarketEntry[];
-  studio?: { name: string; meta: string; to: string } | undefined;
+  studio?: { name: string; meta: string; price?: PriceParts | undefined; to: string } | undefined;
   mutuals: { name: string; photo: string }[];
 };
 
@@ -243,7 +247,7 @@ const rahul: PersonProfile = {
   specialisations: ["Vocal production", "Analog summing", "Hybrid mixing", "Stem mastering prep"],
   professional: [
     { label: "DAW", value: "Ableton Live · Pro Tools" },
-    { label: "Production styles", value: "Hybrid analog / ITB, live tracking" },
+    { label: "Production styles", value: "Hybrid analog, live tracking" },
     { label: "Monitoring", value: "Focal Shape 65 · Neumann KH 80" },
     { label: "Turnaround", value: "3–5 working days per mix" },
     { label: "Session experience", value: "180+ released tracks" },
@@ -385,7 +389,7 @@ const rahul: PersonProfile = {
       id: "s1",
       name: "Full track production",
       description: "Arrangement, session players, tracking and a mixed master-ready bounce.",
-      from: "₹25,000 / track",
+      from: { amount: "₹25,000", unit: "track" },
       turnaround: "2–3 weeks",
       mode: "Remote · In person",
       availability: "2 slots this month",
@@ -394,7 +398,7 @@ const rahul: PersonProfile = {
       id: "s2",
       name: "Mixing",
       description: "Hybrid mix with two revision rounds and stems delivered.",
-      from: "₹12,000 / song",
+      from: { amount: "₹12,000", unit: "song" },
       turnaround: "3–5 days",
       mode: "Remote",
       availability: "Open",
@@ -506,7 +510,8 @@ const rahul: PersonProfile = {
     {
       id: "m1",
       title: "Neumann TLM 103",
-      meta: "For sale · Like new · ₹68,000",
+      meta: "For sale · Like new",
+      price: { amount: "₹68,000" },
       image: u("photo-1590602847861-f357a9332bbc", 400),
       kind: "sale",
       to: "/marketplace",
@@ -514,7 +519,8 @@ const rahul: PersonProfile = {
     {
       id: "m2",
       title: "Fender Twin Reverb",
-      meta: "For rent · ₹2,400 / day",
+      meta: "For rent",
+      price: { amount: "₹2,400", unit: "day" },
       image: u("photo-1511735111819-9a3f7709049c", 400),
       kind: "rental",
       to: "/marketplace/rent",
@@ -572,7 +578,7 @@ const ananya: PersonProfile = {
       id: "s1",
       name: "Session vocals",
       description: "Lead or backing vocals tracked remotely, comped and tuned.",
-      from: "₹18,000 / song",
+      from: { amount: "₹18,000", unit: "song" },
       turnaround: "48 hours",
       mode: "Remote · In person",
       availability: "Open",
@@ -581,7 +587,7 @@ const ananya: PersonProfile = {
       id: "s2",
       name: "Vocal arrangement",
       description: "Harmony stacks, ad-libs and a guide comp for your production.",
-      from: "₹9,000 / song",
+      from: { amount: "₹9,000", unit: "song" },
       turnaround: "3 days",
       mode: "Remote",
       availability: "Open",
@@ -629,8 +635,8 @@ function fromTalent(t: Talent): PersonProfile {
     languages: t.languages,
     stats: { connections: "—", followers: t.followers, plays: "—", credits: t.credits },
     rating: t.rating,
-    shortBio: `${t.role} working across ${t.genres.slice(0, 2).join(" and ")}. Starting at ${t.rate}.`,
-    longBio: `${t.role} working across ${t.genres.join(", ")}. Sessions run remote or in person around ${t.location}, with starting rates from ${t.rate}.`,
+    shortBio: `${t.role} working across ${t.genres.slice(0, 2).join(" and ")}. Starting at ${priceText(t.rate)}.`,
+    longBio: `${t.role} working across ${t.genres.join(", ")}. Sessions run remote or in person around ${t.location}, with starting rates from ${priceText(t.rate)}.`,
   };
 }
 

@@ -856,7 +856,7 @@ export const popularRentalSearches = [
   "Pioneer XDJ",
   "Fender Twin Reverb",
   "Drum kit Mumbai",
-  "Line array under ₹10k/day",
+  "Line array under ₹10k per day",
 ];
 
 export const priceFor = (e: Equipment, days: number) => {

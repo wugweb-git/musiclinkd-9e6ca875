@@ -31,6 +31,7 @@ import type { PersonProfile, profileInsights } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { joinParts } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
+import { Price } from "./kit";
 import {
   AudioTrackCard,
   CollaboratorCard,
@@ -703,9 +704,16 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold">{p.studio.name}</span>
-              <span className="mt-1 block truncate text-1 text-muted-foreground">
-                {p.studio.meta}
-              </span>
+              {p.studio.meta ? (
+                <span className="mt-1 block truncate text-1 text-muted-foreground">
+                  {p.studio.meta}
+                </span>
+              ) : null}
+              <Price
+                price={p.studio.price}
+                className="mt-1"
+                amountClassName="text-1 font-semibold"
+              />
             </span>
             <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
           </Link>

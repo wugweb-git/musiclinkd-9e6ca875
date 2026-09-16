@@ -29,6 +29,8 @@ import type {
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { Btn, BtnLink, IconBtn, Sheet } from "./ui";
+import { Price } from "./kit";
+import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
 
@@ -209,13 +211,23 @@ export function ChipGroup({
   );
 }
 
-export function InfoRow({ label, value }: { label: string; value: string }) {
+/** A label and its value; a price value renders as amount and unit line, right-aligned. */
+export function InfoRow({ label, value }: { label: string; value: string | PriceParts }) {
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
       <span className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
-      <span className="max-w-3/5 text-right text-1 font-semibold">{value}</span>
+      {typeof value === "string" ? (
+        <span className="max-w-3/5 text-right text-1 font-semibold">{value}</span>
+      ) : (
+        <Price
+          price={value}
+          align="end"
+          className="max-w-3/5"
+          amountClassName="text-1 font-semibold"
+        />
+      )}
     </div>
   );
 }
@@ -499,7 +511,12 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-2">{s.name}</h3>
         {s.from ? (
-          <span className="shrink-0 text-1 font-bold text-foreground">{s.from}</span>
+          <Price
+            price={s.from}
+            align="end"
+            className="shrink-0"
+            amountClassName="text-1 font-bold"
+          />
         ) : (
           <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
@@ -597,7 +614,8 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-2">{o.title}</h3>
-          <p className="mt-0.5 text-1 text-muted-foreground">{o.detail}</p>
+          {o.detail ? <p className="mt-0.5 text-1 text-muted-foreground">{o.detail}</p> : null}
+          <Price price={o.price} className="mt-1" amountClassName="text-1 font-semibold" />
         </div>
         <Link
           to="/messages"
@@ -630,7 +648,8 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
       )}
       <div className="min-w-0">
         <h3 className="truncate text-1">{m.title}</h3>
-        <p className="truncate text-1 text-muted-foreground">{m.meta}</p>
+        {m.meta ? <p className="truncate text-1 text-muted-foreground">{m.meta}</p> : null}
+        <Price price={m.price} amountClassName="text-1 font-semibold" />
       </div>
     </Link>
   );

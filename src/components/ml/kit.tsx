@@ -6,6 +6,7 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChevronRight, Star } from "lucide-react";
+import { unitLabel, type PriceParts } from "@/lib/price";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
 
@@ -37,6 +38,56 @@ export function StatusPill({
     >
       {icon ?? <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} />}
       {label}
+    </span>
+  );
+}
+
+/**
+ * A rate as two values: the amount in brand pink, and under it the unit line ("per hour") in small
+ * muted type. Price text that is not a unit ("+ ₹5,000 deposit") is its own muted line. A price with
+ * no unit shows only the amount. `amountClassName` keeps each place's size and weight; `align="end"`
+ * right-aligns both lines in rows where the amount sits on the right.
+ */
+export function Price({
+  price,
+  align = "start",
+  tone = "price",
+  className = "",
+  amountClassName = "",
+  unitClassName = "text-1",
+}: {
+  price: PriceParts | null | undefined;
+  align?: "start" | "center" | "end" | undefined;
+  /** "inherit" leaves the amount in the surrounding colour where prices were never pink (plans). */
+  tone?: "price" | "inherit" | undefined;
+  className?: string | undefined;
+  amountClassName?: string | undefined;
+  /** Size of the unit and note lines; never larger than the amount. */
+  unitClassName?: string | undefined;
+}) {
+  if (!price?.amount) return null;
+  const unit = unitLabel(price.unit);
+  const alignment =
+    align === "end"
+      ? "items-end text-right"
+      : align === "center"
+        ? "items-center text-center"
+        : "items-start";
+  return (
+    <span className={`inline-flex min-w-0 flex-col ${alignment} ${className}`}>
+      <span className={`${tone === "price" ? "text-price" : ""} ${amountClassName}`}>
+        {price.amount}
+      </span>
+      {unit ? (
+        <span className={`${unitClassName} font-normal leading-tight text-muted-foreground`}>
+          {unit}
+        </span>
+      ) : null}
+      {price.note ? (
+        <span className={`${unitClassName} font-normal leading-tight text-muted-foreground`}>
+          {price.note}
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -201,35 +252,6 @@ export function Meter({
       <div className="mt-1 h-2 rounded-full bg-subtle">
         <div className="h-2 rounded-full bg-primary" style={{ width: `${pct}%` }} />
       </div>
-    </div>
-  );
-}
-
-/*
- * A rate is two values, never one joined string. The amount carries the price colour; the unit
- * sits under it as a small grey line ("₹4,500" / "per hour"), because the database stores the
- * amount and the unit separately and they are read as two pieces, not as "₹4,500 / hr".
- * An amount with no unit ("On request") renders the amount alone.
- */
-export function Rate({
-  amount,
-  unit,
-  size = "md",
-}: {
-  amount: string;
-  unit?: string | undefined;
-  size?: "sm" | "md" | "lg";
-}) {
-  const amountSize =
-    size === "lg"
-      ? "text-4 font-bold"
-      : size === "sm"
-        ? "text-1 font-semibold"
-        : "text-2 font-bold";
-  return (
-    <div className="min-w-0">
-      <p className={`truncate text-price ${amountSize}`}>{amount}</p>
-      {unit ? <p className="truncate text-1 text-muted-foreground">{unit}</p> : null}
     </div>
   );
 }

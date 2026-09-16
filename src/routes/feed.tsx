@@ -18,7 +18,7 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
-import { EmptyState, Loading, Row, StatusPill } from "@/components/ml/kit";
+import { EmptyState, Loading, Price, Row, StatusPill } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
@@ -349,6 +349,11 @@ function Body({ home }: { home: Home }) {
                   <p className="truncate text-1 text-muted-foreground">
                     {a.meta} · {a.when}
                   </p>
+                  <Price
+                    price={a.price}
+                    className="mt-0.5"
+                    amountClassName="text-1 font-semibold"
+                  />
                 </div>
               </li>
             ))}
@@ -371,7 +376,7 @@ function Body({ home }: { home: Home }) {
       <section className="pt-7">
         <SectionHeader title="Shortcuts" />
         <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pb-1">
-          <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track / EP" />
+          <QuietAction to="/portfolio/new" icon={<Plus size={14} />} label="Add track" />
           <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
           <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />
           <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />
