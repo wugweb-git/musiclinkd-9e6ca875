@@ -344,7 +344,11 @@ function Body({ home }: { home: Home }) {
                   </p>
                 </div>
                 {a.kind === "request" ? (
-                  <Btn variant="primary" className="hit-area min-h-11 shrink-0 px-4 text-1" disabled>
+                  <Btn
+                    variant="primary"
+                    className="hit-area min-h-11 shrink-0 px-4 text-1"
+                    disabled
+                  >
                     Accept
                   </Btn>
                 ) : null}

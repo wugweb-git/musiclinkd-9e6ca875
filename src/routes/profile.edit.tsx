@@ -417,7 +417,9 @@ function EditProfile() {
                     {section.done ? (
                       <Check size={16} aria-hidden />
                     ) : (
-                      <span aria-hidden className="text-1 font-bold">•</span>
+                      <span aria-hidden className="text-1 font-bold">
+                        •
+                      </span>
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
