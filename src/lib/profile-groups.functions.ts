@@ -300,18 +300,16 @@ export const listPeopleByRole = createServerFn({ method: "GET" })
   .inputValidator((d) =>
     z
       .object({
-        role: z.string().min(1).max(60),
+        role: z.string().min(1).max(60).optional(),
         limit: z.number().int().min(1).max(60).optional(),
       })
       .parse(d),
   )
   .handler(async ({ data }): Promise<DirectoryPerson[]> => {
     const client = await anonClient();
-    const { data: rows, error } = await client
-      .from("profiles")
-      .select(PROFILE)
-      .contains("roles", [data.role])
-      .eq("visibility", "public")
+    let query = client.from("profiles").select(PROFILE).eq("visibility", "public");
+    if (data.role) query = query.contains("roles", [data.role]);
+    const { data: rows, error } = await query
       .order("is_verified", { ascending: false })
       .limit(data.limit ?? 40);
     if (error) throw new Error(error.message);
