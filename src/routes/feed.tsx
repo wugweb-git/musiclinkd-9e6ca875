@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import type { ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
+  Bell,
   ChevronRight,
   WifiOff,
   RefreshCw,
@@ -16,8 +17,10 @@ import {
   Star,
   CreditCard,
   LifeBuoy,
+  Settings,
 } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
+import { Switch } from "@/components/ui/switch";
 import { EmptyState, Loading, Price, Row, StatusPill } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
@@ -31,7 +34,12 @@ import {
   type ForYouTile,
 } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
-import { getMyProfile, listMyPortfolio, getTaxonomyLabels } from "@/lib/portfolio.functions";
+import {
+  getMyProfile,
+  listMyPortfolio,
+  getTaxonomyLabels,
+  saveMyProfile,
+} from "@/lib/portfolio.functions";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import { listOpportunities, listStudios } from "@/lib/catalog.functions";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
@@ -223,10 +231,22 @@ function Dashboard() {
 
 function Header() {
   return (
-    // No brand mark here: the splash carries it, and Home is already the app's own screen.
     <header className="sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
-      <NotificationsBell />
-      <ViewerAvatar className="h-10 w-10" />
+      <Link
+        to="/notifications"
+        aria-label="Notifications"
+        className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+      >
+        <Bell size={18} aria-hidden />
+      </Link>
+      <Link
+        to="/settings"
+        aria-label="Settings"
+        className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+      >
+        <Settings size={18} aria-hidden />
+      </Link>
+      <ViewerAvatar className="h-12 w-12" />
     </header>
   );
 }
@@ -263,22 +283,7 @@ function Body({ home }: { home: Home }) {
         </h1>
         {user.role ? <p className="mt-1 truncate text-sm text-background/70">{user.role}</p> : null}
 
-        <div className="mt-4 flex items-center gap-2">
-          <span className="pill bg-background/15 text-background">
-            <span
-              aria-hidden
-              className={`h-1.5 w-1.5 rounded-full ${user.available ? "bg-success" : "bg-background/60"}`}
-            />
-            {user.available ? "Open to collaborations" : "Not taking work"}
-          </span>
-          <Link
-            to="/profile/edit"
-            className="pill state-layer bg-background/15 text-background"
-            aria-label={`Profile ${user.profileCompletion}% complete. Edit your profile.`}
-          >
-            Profile {user.profileCompletion}%
-          </Link>
-        </div>
+        <AvailabilitySwitch available={user.available} />
 
         {cont.length ? (
           <ul className="mt-5 space-y-2">
@@ -450,6 +455,45 @@ function Body({ home }: { home: Home }) {
           <QuietAction to="/help" icon={<LifeBuoy size={14} />} label="Help" />
         </div>
       </section>
+    </div>
+  );
+}
+
+/*
+ * Home is the person's own screen, so availability is a control here, not a badge: flip it and the
+ * profile is updated. The public profile is where other people read the result.
+ */
+function AvailabilitySwitch({ available }: { available: boolean }) {
+  const save = useServerFn(saveMyProfile);
+  const [on, setOn] = useState(available);
+  const [saving, setSaving] = useState(false);
+
+  const toggle = async (next: boolean) => {
+    setOn(next);
+    setSaving(true);
+    try {
+      await save({ data: { availability: next ? "Open to collaborations" : null } });
+    } catch {
+      setOn(!next);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="mt-5 flex items-center gap-3 rounded-lg bg-background/10 px-4 py-3">
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold">Taking work</span>
+        <span className="block text-1 text-background/70">
+          {on ? "People can see you are open" : "Hidden from people looking to hire"}
+        </span>
+      </span>
+      <Switch
+        checked={on}
+        disabled={saving}
+        onCheckedChange={(next) => void toggle(next)}
+        aria-label="Taking work"
+      />
     </div>
   );
 }
