@@ -3,6 +3,7 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { BtnLink, TopBar } from "@/components/ml/ui";
 import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
 import { SignalLine } from "@/components/charts/recharts/line-signal";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/profile/insights")({
   head: () => ({
@@ -28,6 +29,10 @@ export const Route = createFileRoute("/profile/insights")({
 function Insights() {
   const me = ownerProfile;
   const i = profileInsights;
+  // Insights are not recorded for real accounts yet. The sample figures belong to the signed-out
+  // demo only; a real account (or one still resolving) sees dashes, never a borrowed number.
+  const { signedIn, loading } = useAuth();
+  const sample = !signedIn && !loading;
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-28">
@@ -37,6 +42,14 @@ function Insights() {
         <div className="grid grid-cols-2 gap-3">
           {i.headline.map((m) => {
             const up = m.delta.startsWith("+");
+            if (!sample) {
+              return (
+                <article key={m.label} className="rounded-lg bg-subtle p-4">
+                  <p className="text-1 text-muted-foreground">{m.label}</p>
+                  <p className="mt-1 text-3 tabular-nums">—</p>
+                </article>
+              );
+            }
             return (
               <article key={m.label} className="rounded-lg bg-subtle p-4">
                 <p className="text-1 text-muted-foreground">{m.label}</p>
@@ -59,7 +72,7 @@ function Insights() {
           <h2 className="text-2">Plays over time</h2>
           <div className="mt-3 rounded-lg bg-subtle p-3">
             <SignalLine
-              data={i.trend}
+              data={sample ? i.trend : []}
               xKey="day"
               seriesKey="plays"
               series={{ key: "plays", label: "Audio plays" }}
@@ -67,6 +80,11 @@ function Insights() {
               color="var(--color-ink)"
               title="Audio plays over the last 28 days"
               showGrid
+              emptyContent={
+                <p className="py-10 text-center text-1 text-muted-foreground">
+                  Plays will show here once people start listening.
+                </p>
+              }
             />
           </div>
         </section>
@@ -77,7 +95,7 @@ function Insights() {
             {i.secondary.map((s) => (
               <div key={s.label} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm text-muted-foreground">{s.label}</span>
-                <span className="text-sm font-semibold tabular-nums">{s.value}</span>
+                <span className="text-sm font-semibold tabular-nums">{sample ? s.value : "—"}</span>
               </div>
             ))}
           </div>
@@ -86,7 +104,12 @@ function Insights() {
         <section className="mt-6">
           <h2 className="text-2">Where your audience is</h2>
           <div className="mt-3 space-y-3 rounded-lg bg-subtle p-4">
-            {i.audience.map((a) => (
+            {sample ? null : (
+              <p className="text-1 text-muted-foreground">
+                The cities your listeners are in will show here.
+              </p>
+            )}
+            {(sample ? i.audience : []).map((a) => (
               <div key={a.city}>
                 <div className="flex items-baseline justify-between text-1">
                   <span className="font-semibold">{a.city}</span>
@@ -106,16 +129,19 @@ function Insights() {
         <section className="mt-6 rounded-lg bg-subtle p-5">
           <p className="text-sm font-semibold">Get seen more</p>
           <p className="mt-1 text-1 text-muted-foreground">
-            {me.name.split(" ")[0]}, your profile is {profileCompletion.percent}% complete.
-            Finishing these lifts search ranking.
+            {sample
+              ? `${me.name.split(" ")[0]}, your profile is ${profileCompletion.percent}% complete. Finishing these lifts search ranking.`
+              : "A complete profile ranks higher in search."}
           </p>
-          <ul className="mt-3 space-y-1.5">
-            {profileCompletion.missing.map((m) => (
-              <li key={m.id} className="text-1 text-muted-foreground">
-                · {m.label}
-              </li>
-            ))}
-          </ul>
+          {sample ? (
+            <ul className="mt-3 space-y-1.5">
+              {profileCompletion.missing.map((m) => (
+                <li key={m.id} className="text-1 text-muted-foreground">
+                  · {m.label}
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <BtnLink to="/profile/edit" className="mt-4 w-full">
             Complete Profile
           </BtnLink>
