@@ -6,15 +6,8 @@ import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  genres as genreOptions,
-  instruments as instrumentOptions,
-  languages as languageOptions,
-  linkPlatforms,
-  roles as roleDefs,
-  visibilityOptions,
-  workModes as workModeOptions,
-} from "@/data/onboarding";
+import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
+import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/profile/edit")({
   head: () => ({
@@ -107,6 +100,13 @@ function EditProfile() {
   const [status, setStatus] = useState<
     "idle" | "saving" | "saved" | "error" | "offline" | "taken" | "reserved" | "invalid"
   >("idle");
+
+  // Options come from taxonomy_options, the same source onboarding uses; the form stores slugs.
+  const { options: taxonomy, state: taxonomyState } = useTaxonomy();
+  const roleOptions = taxonomy ? talentTypes(taxonomy.person_types) : [];
+  const genreOptions = taxonomy?.genres ?? [];
+  const instrumentOptions = taxonomy?.instruments ?? [];
+  const languageOptions = taxonomy?.languages ?? [];
 
   const fetchProfile = useCallback(() => {
     setState("loading");
@@ -257,10 +257,10 @@ function EditProfile() {
       done: form.roles.length > 0,
       body: (
         <div className="space-y-4">
-          <Chips
+          <TaxonomyChips
             label="Roles"
-            options={roleDefs.map((r) => r.key)}
-            labels={Object.fromEntries(roleDefs.map((r) => [r.key, r.label]))}
+            options={roleOptions}
+            state={taxonomyState}
             selected={form.roles}
             onToggle={(v) => toggle("roles", v)}
           />
@@ -285,21 +285,24 @@ function EditProfile() {
       done: form.genres.length > 0 && form.languages.length > 0,
       body: (
         <div className="space-y-4">
-          <Chips
+          <TaxonomyChips
             label="Genres"
             options={genreOptions}
+            state={taxonomyState}
             selected={form.genres}
             onToggle={(v) => toggle("genres", v)}
           />
-          <Chips
+          <TaxonomyChips
             label="Instruments"
             options={instrumentOptions}
+            state={taxonomyState}
             selected={form.instruments}
             onToggle={(v) => toggle("instruments", v)}
           />
-          <Chips
+          <TaxonomyChips
             label="Languages"
             options={languageOptions}
+            state={taxonomyState}
             selected={form.languages}
             onToggle={(v) => toggle("languages", v)}
           />
@@ -508,6 +511,41 @@ function Field({
       )}
       {hint ? <span className="mt-1 block text-1 text-muted-foreground">{hint}</span> : null}
     </label>
+  );
+}
+
+function TaxonomyChips({
+  label,
+  options,
+  state,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  options: TaxonomyOption[];
+  state: "loading" | "ready" | "error";
+  selected: string[];
+  onToggle: (slug: string) => void;
+}) {
+  return (
+    <div>
+      <span className="block text-1 font-medium text-muted-foreground">{label}</span>
+      {state === "loading" ? (
+        <p className="mt-2 text-1 text-muted-foreground">Loading options…</p>
+      ) : state === "error" ? (
+        <p className="mt-2 text-1 text-warn">
+          Options could not be loaded. Reopen this screen to try again.
+        </p>
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {options.map((o) => (
+            <Chip key={o.slug} active={selected.includes(o.slug)} onClick={() => onToggle(o.slug)}>
+              {o.label}
+            </Chip>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
