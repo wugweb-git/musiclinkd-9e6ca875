@@ -247,7 +247,7 @@ function OpportunityDetail() {
             Send in a Conversation
           </BtnLink>
           <BtnLink to="/identity/qr" variant="ghost" className="w-full">
-            Show As QR
+            Show as QR
           </BtnLink>
         </div>
       </Sheet>

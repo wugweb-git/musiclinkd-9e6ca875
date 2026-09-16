@@ -225,7 +225,7 @@ function WelcomeScreen() {
           {showDemoControls ? (
             <p className="text-center text-1">
               <AuthLink to="/dev/new-user" className="text-muted-foreground">
-                Dev: Test As a New User
+                Dev: Test as a New User
               </AuthLink>
             </p>
           ) : null}

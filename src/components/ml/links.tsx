@@ -55,12 +55,18 @@ function TextLinkAnchor({
 export const TextLink = createLink(TextLinkAnchor);
 
 function SectionActionAnchor({
+  icon,
   children,
   className,
   ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & { ref?: Ref<HTMLAnchorElement> }) {
+}: AnchorHTMLAttributes<HTMLAnchorElement> & { icon?: ReactNode; ref?: Ref<HTMLAnchorElement> }) {
   return (
     <a {...props} className={cn(textLinkBase, "text-primary", className)}>
+      {icon ? (
+        <span aria-hidden className="inline-flex shrink-0">
+          {icon}
+        </span>
+      ) : null}
       {children}
     </a>
   );
@@ -68,7 +74,8 @@ function SectionActionAnchor({
 
 /**
  * The action beside a section title — "See All", "View All". Brand pink, the one link colour that
- * is not ink. Nothing else on the screen should borrow it.
+ * is not ink. Nothing else on the screen should borrow it. An optional leading `icon` marks an action
+ * that is not a plain "see all" — the city on Nearby, the shortcut on Recommended.
  */
 export const SectionActionLink = createLink(SectionActionAnchor);
 

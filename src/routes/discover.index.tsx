@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { MapPin, Sparkles } from "lucide-react";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { Price } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
@@ -127,7 +128,11 @@ function Discover() {
       <section className="pb-6">
         <SectionHeader
           title="Recommended for you"
-          action={<SectionActionLink to="/recommendations">For You</SectionActionLink>}
+          action={
+            <SectionActionLink to="/recommendations" icon={<Sparkles size={14} />}>
+              For You
+            </SectionActionLink>
+          }
         />
         <div className="space-y-3 px-5">
           <Link
@@ -168,7 +173,11 @@ function Discover() {
       <section className="pb-8">
         <SectionHeader
           title="Nearby professionals"
-          action={<SectionActionLink to="/discover/nearby">Mumbai</SectionActionLink>}
+          action={
+            <SectionActionLink to="/discover/nearby" icon={<MapPin size={14} />}>
+              Mumbai
+            </SectionActionLink>
+          }
         />
         <div className="space-y-3 px-5">
           {talents.slice(0, 2).map((t) => (

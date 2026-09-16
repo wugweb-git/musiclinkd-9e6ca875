@@ -150,7 +150,7 @@ function Lifecycle() {
             variant="outline"
             className="flex-1 w-full"
           >
-            Keep As Is
+            Keep as Is
           </BtnLink>
           <Btn
             variant={c.danger ? "ink" : "primary"}

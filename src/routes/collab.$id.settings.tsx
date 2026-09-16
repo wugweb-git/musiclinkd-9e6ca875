@@ -170,7 +170,7 @@ function Settings() {
             params={{ id: project.id, action: "hold" }}
           />
           <RowLink
-            title="Mark As Completed"
+            title="Mark as Completed"
             subtitle="Locks the timeline and unlocks credits"
             to="/collab/$id/lifecycle/$action"
             params={{ id: project.id, action: "complete" }}
