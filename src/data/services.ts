@@ -202,7 +202,7 @@ export const availabilityStates = [
 ] as const;
 export type AvailabilityState = (typeof availabilityStates)[number];
 
-export const bookingWindows = ["Same day", "24 hours notice", "3 days notice", "1 week notice"];
+export const bookingWindows = ["Same day", "24 hours", "3 days", "1 week"];
 export const noticeDefault = "24 hours notice";
 
 export const serviceDraftKey = "ml.service.draft";

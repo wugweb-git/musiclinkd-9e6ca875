@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Card, EmptyState, SegmentedField } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
 
 export const Route = createFileRoute("/business/$id/enquiry")({
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/business/$id/enquiry")({
   component: BusinessEnquiry,
 });
 
-const intents = ["Book a room", "Mixing", "Event or live", "Something else"];
+const intents = ["Room", "Mixing", "Live", "Other"];
 
 function BusinessEnquiry() {
   const b = businessView(Route.useLoaderData());
@@ -80,12 +80,13 @@ function BusinessEnquiry() {
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
           <p className="text-sm font-semibold">What is this about?</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {intents.map((i) => (
-              <Chip key={i} active={intent === i} onClick={() => setIntent(i)}>
-                {i}
-              </Chip>
-            ))}
+          <div className="mt-3">
+            <SegmentedField
+              label="What is this about?"
+              value={intent}
+              options={intents}
+              onChange={setIntent}
+            />
           </div>
         </Card>
 

@@ -321,7 +321,6 @@ function OwnerPanel({
       <div className="grid grid-cols-2 gap-2">
         <OwnerLink to="/portfolio" icon={<FolderKanban size={16} />} label="Manage portfolio" />
         <OwnerLink to="/services" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
-        <OwnerLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
         <OwnerLink to="/reviews" icon={<Star size={16} />} label="Reviews" />
         <OwnerLink to="/settings" icon={<Settings size={16} />} label="Settings" />
       </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { Field, TextInput, StickyBar, Label } from "@/components/ml/collab";
+import { SegmentedField } from "@/components/ml/kit";
 import { collabRoles, collabTypes } from "@/data/collab";
 
 export const Route = createFileRoute("/collab/new/")({
@@ -82,13 +83,12 @@ function CreateCollab() {
         </Field>
 
         <Field label="How you'll work">
-          <div className="flex flex-wrap gap-2">
-            {["Remote", "In person", "Hybrid"].map((m) => (
-              <Chip key={m} active={m === mode} onClick={() => setMode(m)}>
-                {m}
-              </Chip>
-            ))}
-          </div>
+          <SegmentedField
+            label="How you'll work"
+            value={mode}
+            options={["Remote", "In person", "Hybrid"]}
+            onChange={setMode}
+          />
         </Field>
 
         <Field label="Timeline" optional hint="You can set milestones once the project is created.">

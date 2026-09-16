@@ -10,8 +10,11 @@ import {
   Plus,
   Search,
   Building2,
+  BadgeCheck,
   Calendar,
   Compass,
+  MessageCircle,
+  Wallet,
   Megaphone,
   Rss,
   Users,
@@ -294,6 +297,22 @@ function Body({ home }: { home: Home }) {
         ) : null}
       </section>
 
+      {/*
+       * Your tools: what came off the profile. The profile is what visitors read; these are the
+       * owner's own instruments, so they live on the owner's screen, two to a row, icon first.
+       */}
+      <section className="pt-7">
+        <SectionHeader title="Your tools" />
+        <div className="grid grid-cols-2 gap-2 px-5">
+          <ToolLink to="/identity/qr" icon={<QrCode size={16} />} label="QR & digital card" />
+          <ToolLink to="/plans/earnings" icon={<Wallet size={16} />} label="Earnings" />
+          <ToolLink to="/bands" icon={<Users size={16} />} label="My bands" />
+          <ToolLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
+          <ToolLink to="/recommendations" icon={<Sparkles size={16} />} label="For you" />
+          <ToolLink to="/help" icon={<LifeBuoy size={16} />} label="Help & guides" />
+        </div>
+      </section>
+
       {/* Roles being cast: the live opportunities table, newest first. */}
       <section className="pt-7">
         <SectionHeader
@@ -474,13 +493,7 @@ function Body({ home }: { home: Home }) {
           <QuietAction to="/search" icon={<Search size={14} />} label="Search talent" />
           <QuietAction to="/studio" icon={<Building2 size={14} />} label="Find a studio" />
           <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />
-          <QuietAction to="/bands" icon={<Users size={14} />} label="My bands" />
-          <QuietAction to="/reviews" icon={<Star size={14} />} label="Reviews" />
-          {/* Moved off the profile: these are the owner's own tools, not what visitors read. */}
-          <QuietAction to="/identity/qr" icon={<QrCode size={14} />} label="QR card" />
-          <QuietAction to="/plans/earnings" icon={<CreditCard size={14} />} label="Earnings" />
-          <QuietAction to="/recommendations" icon={<Sparkles size={14} />} label="For you" />
-          <QuietAction to="/help" icon={<LifeBuoy size={14} />} label="Help" />
+          <QuietAction to="/messages" icon={<MessageCircle size={14} />} label="Messages" />
         </div>
       </section>
     </div>
@@ -545,6 +558,23 @@ function usePeers(roleSlug: string | null) {
   return people;
 }
 
+type ToolDestination =
+  "/identity/qr" | "/plans/earnings" | "/bands" | "/verification" | "/recommendations" | "/help";
+
+/** A tool tile: icon, label, chevron. Two to a row under Your tools. */
+function ToolLink({ to, icon, label }: { to: ToolDestination; icon: ReactNode; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="state-layer flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3.5"
+    >
+      <span className="shrink-0 text-muted-foreground">{icon}</span>
+      <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
+      <ChevronRight size={14} className="shrink-0 text-muted-foreground" aria-hidden />
+    </Link>
+  );
+}
+
 type QuietDestination =
   | "/portfolio/new"
   | "/search"
@@ -554,9 +584,7 @@ type QuietDestination =
   | "/bands"
   | "/reviews"
   | "/plans"
-  | "/plans/earnings"
-  | "/identity/qr"
-  | "/recommendations"
+  | "/messages"
   | "/help";
 
 function QuietAction({

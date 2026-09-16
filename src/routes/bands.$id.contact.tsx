@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Card, EmptyState, SegmentedField } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/bands/$id/contact")({
   component: BandContact,
 });
 
-const reasons = ["Book for a show", "Studio session", "Collaboration", "Press or feature"];
+const reasons = ["Show", "Session", "Collab", "Press"];
 
 function BandContact() {
   const { band: row, labels } = Route.useLoaderData();
@@ -75,12 +75,13 @@ function BandContact() {
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
           <p className="text-sm font-semibold">Why are you reaching out?</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {reasons.map((r) => (
-              <Chip key={r} active={reason === r} onClick={() => setReason(r)}>
-                {r}
-              </Chip>
-            ))}
+          <div className="mt-3">
+            <SegmentedField
+              label="Why are you reaching out?"
+              value={reason}
+              options={reasons}
+              onChange={setReason}
+            />
           </div>
         </Card>
 

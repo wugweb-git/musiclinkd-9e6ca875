@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Card, EmptyState, SegmentedField } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { bookingWindows } from "@/data/services";
 
@@ -67,12 +67,13 @@ function BusinessAvailability() {
 
         <Card>
           <p className="text-sm font-semibold">How much notice do you need?</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {bookingWindows.map((w) => (
-              <Chip key={w} active={notice === w} onClick={() => setNotice(w)}>
-                {w}
-              </Chip>
-            ))}
+          <div className="mt-3">
+            <SegmentedField
+              label="How much notice do you need?"
+              value={notice}
+              options={bookingWindows}
+              onChange={setNotice}
+            />
           </div>
         </Card>
 
