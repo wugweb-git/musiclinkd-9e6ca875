@@ -20,7 +20,8 @@ import { TextLink } from "@/components/ml/links";
 /* ---------------------------------------------------------------- shell */
 
 /** Where Back lands when there is no history to return to (a deep link, an email link). */
-export type AuthBack = { to: "/welcome" } | { to: "/auth/phone" } | { to: "/profile" } | { to: "/auth" };
+export type AuthBack =
+  { to: "/welcome" } | { to: "/auth/phone" } | { to: "/profile" } | { to: "/auth" };
 
 export function AuthScreen({
   children,
