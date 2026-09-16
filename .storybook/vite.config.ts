@@ -8,17 +8,29 @@ import tsConfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [react(), tailwindcss(), tsConfigPaths()],
   resolve: {
-    alias: {
-      // Without the TanStack Start plugin, the real package's server-core can't resolve
-      // its "#tanstack-*-entry" subpath imports and crashes Vite's optimizer. See the stub
-      // file for the full explanation.
-      "@tanstack/react-start": resolve(import.meta.dirname, "./stubs/tanstack-react-start.ts"),
+    // Array form so each stub matches its exact specifier: a plain "@tanstack/react-start" key also
+    // captured "@tanstack/react-start/server" and pointed the production build at a path inside
+    // the stub file.
+    alias: [
+      // Without the TanStack Start plugin, the real package's server-core can't resolve its
+      // "#tanstack-*-entry" subpath imports and crashes Vite's optimizer. See the stub file.
+      {
+        find: /^@tanstack\/react-start$/,
+        replacement: resolve(import.meta.dirname, "./stubs/tanstack-react-start.ts"),
+      },
+      {
+        find: /^@tanstack\/react-start\/server$/,
+        replacement: resolve(import.meta.dirname, "./stubs/tanstack-react-start-server.ts"),
+      },
       // Renders every story signed-out with no live Supabase call — see the stub file.
-      "@/hooks/use-auth": resolve(import.meta.dirname, "./stubs/use-auth.ts"),
+      {
+        find: /^@\/hooks\/use-auth$/,
+        replacement: resolve(import.meta.dirname, "./stubs/use-auth.ts"),
+      },
       // vite-tsconfig-paths only resolves "@/" inside files the app tsconfig includes, so the kept
       // registry components (excluded from type-checking) 404 without this. It sits after the
       // use-auth stub: Vite matches aliases in order.
-      "@": resolve(import.meta.dirname, "../src"),
-    },
+      { find: /^@\//, replacement: `${resolve(import.meta.dirname, "../src")}/` },
+    ],
   },
 });

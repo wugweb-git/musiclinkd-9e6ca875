@@ -15,3 +15,22 @@ export function useServerFn<T extends (...args: never[]) => unknown>(fn: T): T {
     throw new Error("Server functions are not available in Storybook.");
   }) as unknown as T;
 }
+
+// The production build (unlike dev) checks every import in the graph, and story components reach
+// modules that define server functions and middleware at load time. Each builder here accepts any
+// chain (.middleware().inputValidator().handler()) and ends in a function that fails when called.
+type Chain = { [method: string]: (...args: unknown[]) => Chain } & ((...args: unknown[]) => never);
+
+function chain(): Chain {
+  const unavailable = () => {
+    throw new Error("Server functions are not available in Storybook.");
+  };
+  return new Proxy(unavailable, {
+    get: () => () => chain(),
+  }) as unknown as Chain;
+}
+
+export const createServerFn = (..._args: unknown[]) => chain();
+export const createMiddleware = (..._args: unknown[]) => chain();
+export const createCsrfMiddleware = (..._args: unknown[]) => chain();
+export const createStart = (..._args: unknown[]) => chain();
