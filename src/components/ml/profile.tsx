@@ -43,6 +43,7 @@ import { LogoMark } from "./logo";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
+import { AgentAudioVisualizerBar } from "@/components/agents-ui/agent-audio-visualizer-bar";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -708,7 +709,17 @@ export function AudioTrackCard({
         <p className="truncate text-1 text-muted-foreground">
           {joinParts(track.role, track.project)}
         </p>
-        {track.duration ? (
+        {/* While a track plays, the bars stand in for the duration: the row shows it is running. */}
+        {playing ? (
+          <AgentAudioVisualizerBar
+            size="sm"
+            state="speaking"
+            barCount={5}
+            volumeBands={[0.5, 0.9, 0.35, 0.75, 0.55]}
+            className="mt-1 h-4 justify-start gap-0.5 text-foreground"
+            aria-hidden
+          />
+        ) : track.duration ? (
           <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
         ) : null}
       </div>

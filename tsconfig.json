@@ -39,7 +39,8 @@
     }
   },
   "exclude": [
-    "src/components/agents-ui/**",
+    "src/components/agents-ui/agent-audio-visualizer-wave.tsx",
+    "src/components/agents-ui/react-shader-toy.tsx",
     "src/components/animate-ui/**",
     "src/components/animbits/**",
     "src/components/command-menu-01.tsx",

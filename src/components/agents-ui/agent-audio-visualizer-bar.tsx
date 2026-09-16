@@ -40,13 +40,13 @@ function cloneSingleChild(
     // Checking isValidElement is the safe way and avoids a typescript error too.
     if (isValidElement(child) && Children.only(children)) {
       const childProps = child.props as Record<string, unknown>;
-      if (childProps.className) {
+      if (childProps["className"]) {
         // make sure we retain classnames of both passed props and child
         props ??= {};
-        props.className = cn(childProps.className as string, props.className as string);
-        props.style = {
-          ...(childProps.style as CSSProperties),
-          ...(props.style as CSSProperties),
+        props["className"] = cn(childProps["className"] as string, props["className"] as string);
+        props["style"] = {
+          ...(childProps["style"] as CSSProperties),
+          ...(props["style"] as CSSProperties),
         };
       }
       return cloneElement(child, { ...props, key: key ? String(key) : undefined });
