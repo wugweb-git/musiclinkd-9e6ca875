@@ -77,16 +77,38 @@ function Saved() {
   );
 }
 
+/*
+ * Nothing is wired to these yet: there is no thread to open, no share target and no saved-talent
+ * table to remove from. They are disabled with the reason in the accessible name rather than
+ * taking the tap and doing nothing.
+ */
 function Actions() {
   return (
     <div className="mt-3 flex gap-2">
-      <button className="min-h-11 flex-1 rounded-full bg-ink text-xs font-semibold text-background">
+      <button
+        type="button"
+        disabled
+        aria-label="Messaging isn't open yet"
+        className="hit-area min-h-11 flex-1 rounded-full bg-ink text-1 font-semibold text-background disabled:opacity-40"
+      >
         Message
       </button>
-      <button className="min-h-11 flex-1 rounded-full border border-border text-xs font-semibold">
+      <button
+        type="button"
+        disabled
+        aria-label="Sharing isn't open yet"
+        className="hit-area min-h-11 flex-1 rounded-full border border-border text-1 font-semibold disabled:opacity-40"
+      >
         Share
       </button>
-      <button className="min-h-11 w-11 rounded-full border border-border text-xs">✕</button>
+      <button
+        type="button"
+        disabled
+        aria-label="Removing isn't open yet"
+        className="hit-area flex min-h-11 w-11 items-center justify-center rounded-full border border-border disabled:opacity-40"
+      >
+        <X size={16} aria-hidden />
+      </button>
     </div>
   );
 }

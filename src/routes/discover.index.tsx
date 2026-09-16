@@ -1,11 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  ArrowRight,
   Boxes,
   CalendarDays,
   Disc3,
   Drum,
   Mic2,
   SlidersVertical,
+  Sparkles,
+  Star,
   Store,
   Ticket,
   Users,
@@ -14,11 +17,12 @@ import {
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
-import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
+import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { Rate } from "@/components/ml/kit";
 import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
+import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
 
@@ -75,15 +79,13 @@ function Discover() {
       <header className="px-5 pb-4 pt-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-1 font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               MusicLinkd
             </p>
             <h1 className="text-4 leading-tight">Discover</h1>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card">
-              🔔
-            </button>
+            <NotificationsBell />
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
             <ViewerAvatar />
           </div>
@@ -156,16 +158,13 @@ function Discover() {
             to="/recommendations/swipe"
             className="flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background"
           >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-background/10 text-2xl">
-              ✨
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-background/10">
+              <Sparkles size={22} aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-              <h3 className="text-sm text-background">24 new matches</h3>
-              <p className="text-1 opacity-75">
-                Based on Hindi film, indie &amp; your Mumbai activity
-              </p>
+              <h3 className="text-sm text-background">Swipe through matches</h3>
             </div>
-            <span className="shrink-0 text-lg">→</span>
+            <ArrowRight size={18} className="shrink-0" aria-hidden />
           </Link>
           <div className="grid grid-cols-2 gap-3">
             <Link
@@ -222,8 +221,13 @@ function Discover() {
               <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-md object-cover" />
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-sm">{s.name}</h3>
-                <p className="truncate text-1 text-muted-foreground">
-                  {s.location} · {s.rating} ★
+                <p className="flex min-w-0 items-center gap-1 truncate text-1 text-muted-foreground">
+                  <span className="truncate">{s.location}</span>
+                  <span aria-hidden>·</span>
+                  <span className="inline-flex shrink-0 items-center gap-0.5">
+                    {s.rating}
+                    <Star size={11} fill="currentColor" aria-hidden />
+                  </span>
                 </p>
               </div>
               <Rate {...s.rate} size="sm" />
@@ -242,9 +246,7 @@ function Discover() {
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-sm">{s.name}</h3>
                 <p className="truncate text-1 text-muted-foreground">
-                  {[s.location, s.rating == null ? "" : `${s.rating} ★`]
-                    .filter(Boolean)
-                    .join(" · ")}
+                  {joinParts(s.location, s.rating == null ? "" : `${s.rating} out of 5`)}
                 </p>
               </div>
               {s.rate ? <Rate {...s.rate} size="sm" /> : null}

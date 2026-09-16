@@ -128,17 +128,25 @@ export function Row({
   );
 }
 
+/** `icon` is for states that carry a meaning the words alone don't — offline, failed to load. */
 export function EmptyState({
+  icon,
   title,
   body,
   children,
 }: {
+  icon?: ReactNode;
   title: string;
   body: string;
   children?: ReactNode;
 }) {
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
+      {icon ? (
+        <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-subtle">
+          {icon}
+        </span>
+      ) : null}
       <h3 className="text-2 leading-tight">{title}</h3>
       <p className="mx-auto mt-2 max-w-[280px] text-1 text-muted-foreground">{body}</p>
       {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
