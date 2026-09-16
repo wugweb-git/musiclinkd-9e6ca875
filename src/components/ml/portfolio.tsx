@@ -550,13 +550,13 @@ export function ReorderList({
                 {workType(item.kind).label} · position {i + 1}
               </p>
             </div>
-            <div className="flex shrink-0 gap-1">
+            <div className="flex shrink-0 gap-3">
               <button
                 type="button"
                 onClick={() => onMove(i, -1)}
                 disabled={i === 0}
                 aria-label={`Move ${item.title} up`}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
+                className="hit-area flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
               >
                 <ArrowUp size={16} aria-hidden />
               </button>
@@ -565,7 +565,7 @@ export function ReorderList({
                 onClick={() => onMove(i, 1)}
                 disabled={i === items.length - 1}
                 aria-label={`Move ${item.title} down`}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
+                className="hit-area flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
               >
                 <ArrowDown size={16} aria-hidden />
               </button>

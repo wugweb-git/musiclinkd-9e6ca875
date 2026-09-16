@@ -185,16 +185,16 @@ export const singers: Talent[] = [
   },
 ];
 
-export const quickCategories: { label: string; emoji: string; to: QuickCategoryTo }[] = [
-  { label: "Talent", emoji: "🎤", to: "/categories" },
-  { label: "Bands", emoji: "🥁", to: "/bands" },
-  { label: "Studios", emoji: "🏢", to: "/discover/community" },
-  { label: "Events", emoji: "🎪", to: "/categories" },
-  { label: "Marketplace", emoji: "🛒", to: "/marketplace" },
-  { label: "Rentals", emoji: "🎛", to: "/marketplace/rent" },
-  { label: "Labels", emoji: "🏷", to: "/discover/community" },
-  { label: "Venues", emoji: "🏟", to: "/discover/community" },
-  { label: "Communities", emoji: "👥", to: "/discover/community" },
+export const quickCategories: { label: string; to: QuickCategoryTo }[] = [
+  { label: "Talent", to: "/categories" },
+  { label: "Bands", to: "/bands" },
+  { label: "Studios", to: "/discover/community" },
+  { label: "Events", to: "/categories" },
+  { label: "Marketplace", to: "/marketplace" },
+  { label: "Rentals", to: "/marketplace/rent" },
+  { label: "Labels", to: "/discover/community" },
+  { label: "Venues", to: "/discover/community" },
+  { label: "Communities", to: "/discover/community" },
 ];
 
 type QuickCategoryTo =

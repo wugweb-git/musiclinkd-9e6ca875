@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { Screen, Btn, SectionHeader } from "@/components/ml/ui";
 import { Row, StatusPill } from "@/components/ml/kit";
-import { LogoMark } from "@/components/ml/logo";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import {
@@ -205,23 +204,16 @@ function Dashboard() {
 
 function Header() {
   return (
-    <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
-      <p className="flex min-w-0 items-center gap-2 text-2 font-semibold text-foreground">
-        <span aria-hidden className="shrink-0 text-brand">
-          <LogoMark className="w-6" />
-        </span>
-        <span className="truncate">MusicLinkd</span>
-      </p>
-      <div className="flex shrink-0 items-center gap-2">
-        <Link
-          to="/notifications"
-          aria-label="Notifications"
-          className="hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
-        >
-          <Bell size={18} />
-        </Link>
-        <ViewerAvatar className="h-10 w-10" />
-      </div>
+    // No brand mark here: the splash carries it, and Home is already the app's own screen.
+    <header className="sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-border bg-background/90 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur">
+      <Link
+        to="/notifications"
+        aria-label="Notifications"
+        className="hit-area relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+      >
+        <Bell size={18} />
+      </Link>
+      <ViewerAvatar className="h-10 w-10" />
     </header>
   );
 }
@@ -352,7 +344,7 @@ function Body({ home }: { home: Home }) {
                   </p>
                 </div>
                 {a.kind === "request" ? (
-                  <Btn variant="primary" className="min-h-9 shrink-0 px-4 text-1">
+                  <Btn variant="primary" className="hit-area min-h-11 shrink-0 px-4 text-1" disabled>
                     Accept
                   </Btn>
                 ) : null}
@@ -360,17 +352,15 @@ function Body({ home }: { home: Home }) {
             ))}
           </ul>
         ) : (
-          <div className="mx-5 rounded-lg border border-border bg-card p-5 text-center">
-            <p className="text-2 font-semibold">No activity yet</p>
-            <p className="mt-1 text-1 text-muted-foreground">
-              Connect with artists and studios to see updates here.
-            </p>
-            <Link
-              to="/discover"
-              className="hit-area mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
+          <div className="mx-5">
+            <EmptyState
+              title="No activity yet"
+              body="Connect with artists and studios to see updates here."
             >
-              Discover talent
-            </Link>
+              <BtnLink to="/discover" variant="ink">
+                Discover talent
+              </BtnLink>
+            </EmptyState>
           </div>
         )}
       </section>
