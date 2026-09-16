@@ -490,9 +490,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
+      <span className="block text-1 font-medium text-muted-foreground">{label}</span>
       {multiline ? (
         <textarea
           value={value}
@@ -528,9 +526,7 @@ function Chips({
 }) {
   return (
     <div>
-      <span className="block text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
+      <span className="block text-1 font-medium text-muted-foreground">{label}</span>
       <div className="mt-2 flex flex-wrap gap-2">
         {options.map((o) => (
           <Chip key={o} active={selected.includes(o)} onClick={() => onToggle(o)}>

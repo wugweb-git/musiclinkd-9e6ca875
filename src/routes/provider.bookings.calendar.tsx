@@ -179,7 +179,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
               onClick={() => onPick(d)}
               className="flex w-full min-w-0 items-center justify-between gap-3 py-1 text-left"
             >
-              <span className="min-w-0 truncate text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
+              <span className="pill min-w-0 truncate bg-subtle text-muted-foreground">
                 {formatDate(d)}
               </span>
               <span className="shrink-0 text-[11px] font-semibold text-muted-foreground">
@@ -209,7 +209,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
   const cells = monthGrid(now.getFullYear(), now.getMonth());
   return (
     <div>
-      <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+      <div className="grid grid-cols-7 gap-1 text-center text-1 font-medium uppercase text-muted-foreground">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={`${d}-${i}`}>{d}</span>
         ))}

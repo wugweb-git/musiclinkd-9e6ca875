@@ -106,7 +106,7 @@ export function QrIdentityCard({
       className="overflow-hidden rounded-lg border border-border p-5 text-center"
       style={{ background: s.light, color: s.dark }}
     >
-      <p className="text-1 font-bold uppercase tracking-widest opacity-60">MusicLinkd</p>
+      <p className="pill bg-background/10 tracking-widest">MusicLinkd</p>
 
       <div className="mt-4 flex flex-col items-center gap-2">
         <img
@@ -224,9 +224,7 @@ const kindLabel: Record<DestinationPreview["kind"], string> = {
 export function DestinationPreviewCard({ preview }: { preview: DestinationPreview }) {
   return (
     <section className="rounded-lg border border-border bg-card p-4">
-      <p className="text-1 font-bold uppercase tracking-[0.14em] text-muted-foreground">
-        {kindLabel[preview.kind]}
-      </p>
+      <p className="pill bg-subtle text-muted-foreground">{kindLabel[preview.kind]}</p>
       <div className="mt-3 flex gap-3">
         {preview.image ? (
           <img

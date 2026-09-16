@@ -204,9 +204,7 @@ function Sell() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
+      <p className="mb-1.5 pill bg-subtle text-muted-foreground">{label}</p>
       {children}
     </div>
   );

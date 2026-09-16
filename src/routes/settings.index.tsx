@@ -28,9 +28,7 @@ function SettingsScreen() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         {settingsGroups.map((g) => (
           <div key={g.key} className="space-y-2">
-            <h2 className="px-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-              {g.title}
-            </h2>
+            <h2 className="px-1 pill bg-subtle text-muted-foreground">{g.title}</h2>
             <Card className="p-0">
               {g.rows.map((r) => (
                 <Link

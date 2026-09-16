@@ -86,7 +86,7 @@ function Discussion() {
               </div>
               {d.decision ? (
                 <span
-                  className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+                  className="pill"
                   style={{ background: "var(--success-container)", color: "var(--success)" }}
                 >
                   Decision
@@ -94,7 +94,7 @@ function Discussion() {
               ) : null}
               {d.pinned ? (
                 <span
-                  className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+                  className="pill"
                   style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
                 >
                   Pinned

@@ -112,9 +112,7 @@ function TeamScreen() {
       <Sheet open={invite} onClose={() => setInvite(false)} title="Invite to team">
         <div className="space-y-3">
           <label className="block">
-            <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-              Email or @username
-            </span>
+            <span className="pill bg-subtle text-muted-foreground">Email or @username</span>
             <input
               placeholder="@kabir"
               className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"

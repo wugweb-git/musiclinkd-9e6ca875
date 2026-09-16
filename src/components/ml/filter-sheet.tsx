@@ -39,9 +39,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
 
       {groups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-            {g.label}
-          </h3>
+          <h3 className="pill mb-2 bg-subtle text-muted-foreground">{g.label}</h3>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
               <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
@@ -58,9 +56,7 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
         <Toggle label="Session musician available" value={session} onChange={setSession} />
       </div>
 
-      <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        Sort by
-      </h3>
+      <h3 className="pill mb-2 bg-subtle text-muted-foreground">Sort by</h3>
       <div className="mb-6 flex flex-wrap gap-2">
         {sorts.map((s) => (
           <Chip key={s} active={sort === s} onClick={() => setSort(s)}>

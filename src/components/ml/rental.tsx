@@ -553,9 +553,7 @@ export function RentalFilterSheet({
         </button>
       </div>
 
-      <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        Rental dates
-      </h3>
+      <h3 className="pill mb-2 bg-subtle text-muted-foreground">Rental dates</h3>
       <div className="mb-5 flex flex-wrap gap-2">
         {["Any dates", "This weekend", "Next week", "Pick dates"].map((d) => (
           <Chip key={d} active={dates === d} onClick={() => setDates(d)}>
@@ -566,9 +564,7 @@ export function RentalFilterSheet({
 
       {groups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-            {g.label}
-          </h3>
+          <h3 className="pill mb-2 bg-subtle text-muted-foreground">{g.label}</h3>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
               <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>

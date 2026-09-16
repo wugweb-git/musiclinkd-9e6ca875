@@ -36,7 +36,7 @@ export function WorkspaceShell({
             <Link
               to="/collab/$id/settings"
               params={{ id: project.id }}
-              className="text-1 font-bold uppercase tracking-wide text-muted-foreground"
+              className="pill bg-subtle text-muted-foreground"
             >
               Settings
             </Link>

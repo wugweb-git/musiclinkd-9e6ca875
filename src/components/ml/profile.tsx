@@ -215,9 +215,7 @@ export function ChipGroup({
 export function InfoRow({ label, value }: { label: string; value: string | PriceParts }) {
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-      <span className="text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
+      <span className="pill bg-subtle text-muted-foreground">{label}</span>
       {typeof value === "string" ? (
         <span className="max-w-3/5 text-right text-1 font-semibold">{value}</span>
       ) : (
@@ -591,14 +589,12 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
         </span>
       </div>
       {r.context ? (
-        <p className="mt-1.5 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-          {r.context}
-        </p>
+        <p className="pill mt-1.5 bg-subtle text-muted-foreground">{r.context}</p>
       ) : null}
       <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.text}</p>
       {r.response ? (
         <div className="mt-3 rounded-lg bg-subtle p-3">
-          <p className="text-1 font-bold uppercase tracking-wide text-muted-foreground">Response</p>
+          <p className="pill bg-subtle text-muted-foreground">Response</p>
           <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
         </div>
       ) : null}
@@ -734,9 +730,7 @@ export function ShareSheet({
             <QrBlock seed={p.username} />
           </div>
           <div className="min-w-0 text-background">
-            <p className="text-1 font-bold uppercase tracking-wide opacity-70">
-              MusicLinkd identity
-            </p>
+            <p className="pill bg-subtle/60">MusicLinkd identity</p>
             <p className="mt-1 truncate text-1 font-semibold">{url.replace(/^https?:\/\//, "")}</p>
             <p className="mt-1 text-1 opacity-75">Scan to open this profile in MusicLinkd.</p>
           </div>

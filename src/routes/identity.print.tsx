@@ -68,9 +68,7 @@ function PrintPreview() {
           >
             <QrCode value={canonicalUrl(who.code)} size={format === "poster" ? 180 : 110} />
             <div className={format === "poster" ? "" : "min-w-0"}>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                MusicLinkd
-              </p>
+              <p className="pill bg-subtle text-muted-foreground">MusicLinkd</p>
               <p className="truncate text-[17px] leading-tight">{name}</p>
               <p className="truncate text-[12px] text-muted-foreground">{line}</p>
               <p className="mt-1 truncate text-[11px] text-muted-foreground">

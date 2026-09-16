@@ -69,11 +69,7 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 }
 
 export function Label({ children }: { children: ReactNode }) {
-  return (
-    <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-      {children}
-    </h3>
-  );
+  return <h3 className="pill mb-2 bg-subtle text-muted-foreground">{children}</h3>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -503,7 +499,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
         Offline — showing cached project data. 2 changes not yet synced.
       </p>
       {onRetry ? (
-        <button type="button" onClick={onRetry} className="text-1 font-bold uppercase">
+        <button type="button" onClick={onRetry} className="pill bg-subtle text-foreground">
           Retry
         </button>
       ) : null}
@@ -621,7 +617,7 @@ export function Field({
   return (
     <div className="mb-5">
       <div className="mb-2 flex items-baseline justify-between">
-        <h3 className="text-1 font-bold uppercase tracking-wide text-muted-foreground">{label}</h3>
+        <h3 className="pill bg-subtle text-muted-foreground">{label}</h3>
         {optional ? <span className="text-1 text-muted-foreground">Optional</span> : null}
       </div>
       {children}

@@ -378,9 +378,7 @@ export function MarketFilterSheet({
 
       {filterGroups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="mb-2 text-1 font-bold uppercase tracking-wide text-muted-foreground">
-            {g.label}
-          </h3>
+          <h3 className="pill mb-2 bg-subtle text-muted-foreground">{g.label}</h3>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
               <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
@@ -518,7 +516,7 @@ export function OfferSheet({
 
           <label
             htmlFor="your-offer"
-            className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
+            className="mb-1.5 block text-1 font-medium text-muted-foreground"
           >
             Your offer
           </label>
@@ -533,7 +531,7 @@ export function OfferSheet({
 
           <label
             htmlFor="message-optional"
-            className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
+            className="mb-1.5 block text-1 font-medium text-muted-foreground"
           >
             Message (optional)
           </label>

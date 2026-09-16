@@ -95,7 +95,7 @@ export function HireModal({
             <div>
               <label
                 htmlFor="message"
-                className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground"
+                className="mb-1.5 block text-1 font-medium text-muted-foreground"
               >
                 Message
               </label>
@@ -119,9 +119,7 @@ export function HireModal({
 function Field({ label, placeholder }: { label: string; placeholder: string }) {
   return (
     <div>
-      <label className="mb-1.5 block text-1 font-bold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </label>
+      <label className="mb-1.5 block text-1 font-medium text-muted-foreground">{label}</label>
       <input
         placeholder={placeholder}
         className="h-12 w-full rounded-md border border-border bg-card px-4 text-sm outline-none focus:border-primary"

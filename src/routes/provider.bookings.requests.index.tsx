@@ -48,7 +48,7 @@ function Requests() {
               setLoading(true);
               window.setTimeout(() => setLoading(false), 700);
             }}
-            className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+            className="pill bg-subtle text-muted-foreground"
           >
             Refresh
           </button>
