@@ -89,6 +89,7 @@ import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analy
 import { Route as PortfolioReorderRouteImport } from './routes/portfolio.reorder'
 import { Route as PortfolioSelectRouteImport } from './routes/portfolio.select'
 import { Route as PortfolioSettingsRouteImport } from './routes/portfolio.settings'
+import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
@@ -620,6 +621,11 @@ const PortfolioSelectRoute = PortfolioSelectRouteImport.update({
 const PortfolioSettingsRoute = PortfolioSettingsRouteImport.update({
   id: '/portfolio/settings',
   path: '/portfolio/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
@@ -1400,6 +1406,7 @@ export interface FileRoutesByFullPath {
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/plans/': typeof PlansIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/recommendations/': typeof RecommendationsIndexRoute
   '/reviews/': typeof ReviewsIndexRoute
   '/search/': typeof SearchIndexRoute
@@ -1613,6 +1620,7 @@ export interface FileRoutesByTo {
   '/opportunities': typeof OpportunitiesIndexRoute
   '/plans': typeof PlansIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/recommendations': typeof RecommendationsIndexRoute
   '/reviews': typeof ReviewsIndexRoute
   '/search': typeof SearchIndexRoute
@@ -1828,6 +1836,7 @@ export interface FileRoutesById {
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/plans/': typeof PlansIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/recommendations/': typeof RecommendationsIndexRoute
   '/reviews/': typeof ReviewsIndexRoute
   '/search/': typeof SearchIndexRoute
@@ -2044,6 +2053,7 @@ export interface FileRouteTypes {
     | '/opportunities/'
     | '/plans/'
     | '/portfolio/'
+    | '/profile/'
     | '/recommendations/'
     | '/reviews/'
     | '/search/'
@@ -2257,6 +2267,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/plans'
     | '/portfolio'
+    | '/profile'
     | '/recommendations'
     | '/reviews'
     | '/search'
@@ -2471,6 +2482,7 @@ export interface FileRouteTypes {
     | '/opportunities/'
     | '/plans/'
     | '/portfolio/'
+    | '/profile/'
     | '/recommendations/'
     | '/reviews/'
     | '/search/'
@@ -2686,6 +2698,7 @@ export interface RootRouteChildren {
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   PlansIndexRoute: typeof PlansIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
   RecommendationsIndexRoute: typeof RecommendationsIndexRoute
   ReviewsIndexRoute: typeof ReviewsIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
@@ -3350,6 +3363,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/settings'
       fullPath: '/portfolio/settings'
       preLoaderRoute: typeof PortfolioSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/$username': {
@@ -4407,6 +4427,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   PlansIndexRoute: PlansIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
   RecommendationsIndexRoute: RecommendationsIndexRoute,
   ReviewsIndexRoute: ReviewsIndexRoute,
   SearchIndexRoute: SearchIndexRoute,

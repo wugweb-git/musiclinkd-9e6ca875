@@ -36,7 +36,7 @@ function HelpIndex() {
 
   return (
     <Screen>
-      <TopBar title="Help & guides" subtitle="Written for working musicians" back="/me" />
+      <TopBar title="Help & guides" subtitle="Written for working musicians" back="/profile" />
       <div className="space-y-4 px-5 pt-4">
         <SearchBar value={q} onChange={setQ} placeholder="Search guides, policies and answers" />
 

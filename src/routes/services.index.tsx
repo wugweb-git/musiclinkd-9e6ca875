@@ -43,7 +43,7 @@ function ServicesHome() {
       <TopBar
         title="Services"
         subtitle="What people can book you for"
-        back="/me"
+        back="/profile"
         right={
           <Link
             to="/services/new"

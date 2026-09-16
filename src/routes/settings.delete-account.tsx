@@ -40,7 +40,7 @@ function DeleteAccount() {
 
   return (
     <Screen bottomNav={false}>
-      <TopBar title="Delete account" subtitle="This cannot be undone" back="/me" />
+      <TopBar title="Delete account" subtitle="This cannot be undone" back="/profile" />
       <main className="px-5 pb-12 pt-4">
         <AuthNotice tone="warn" title="Consider deactivating instead">
           Hiding your profile keeps your work safe and you can come back any time.
@@ -89,7 +89,7 @@ function DeleteAccount() {
           >
             Delete my account
           </Btn>
-          <Btn className="w-full" onClick={() => void navigate({ to: "/me" })}>
+          <Btn className="w-full" onClick={() => void navigate({ to: "/profile" })}>
             Keep my account
           </Btn>
         </div>

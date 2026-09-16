@@ -51,7 +51,7 @@ function PortfolioOverview() {
       <TopBar
         title="Your portfolio"
         subtitle="Show the work you're proud of"
-        back="/me"
+        back="/profile"
         right={
           <IconBtnLink to="/portfolio/settings" label="Portfolio Settings" variant="plain">
             <Settings size={20} aria-hidden />
@@ -80,7 +80,7 @@ function PortfolioOverview() {
               <BtnLink to="/portfolio/select" variant="outline">
                 Share Work
               </BtnLink>
-              <BtnLink to="/me" variant="outline">
+              <BtnLink to="/profile" variant="outline">
                 Preview on Profile
               </BtnLink>
             </div>

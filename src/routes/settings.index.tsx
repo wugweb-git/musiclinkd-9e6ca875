@@ -63,7 +63,7 @@ export const Route = createFileRoute("/settings/")({
 function SettingsScreen() {
   return (
     <Screen>
-      <TopBar title="Settings" subtitle="Account and preferences" back="/me" />
+      <TopBar title="Settings" subtitle="Account and preferences" back="/profile" />
       <div className="space-y-6 px-5 pt-4 pb-6">
         {settingsGroups.map((g) => (
           <section key={g.key}>

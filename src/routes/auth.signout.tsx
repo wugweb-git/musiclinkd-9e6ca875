@@ -31,7 +31,7 @@ function SignOutScreen() {
   }
 
   return (
-    <AuthScreen back={{ to: "/me" }}>
+    <AuthScreen back={{ to: "/profile" }}>
       <div
         className="mb-6 flex h-14 w-14 items-center justify-center rounded-md"
         style={{ background: "var(--surface-subtle)" }}
@@ -46,7 +46,7 @@ function SignOutScreen() {
         <Btn className="w-full" onClick={() => void signOut()} disabled={busy}>
           {busy ? "Signing out…" : "Yes, sign out"}
         </Btn>
-        <Btn variant="outline" className="w-full" onClick={() => void navigate({ to: "/me" })}>
+        <Btn variant="outline" className="w-full" onClick={() => void navigate({ to: "/profile" })}>
           Stay signed in
         </Btn>
       </div>

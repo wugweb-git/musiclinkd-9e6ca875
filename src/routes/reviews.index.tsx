@@ -36,7 +36,7 @@ function ReviewsHub() {
 
   return (
     <Screen>
-      <TopBar title="Reviews" subtitle="Only from completed work" back="/me" />
+      <TopBar title="Reviews" subtitle="Only from completed work" back="/profile" />
       <div className="space-y-4 px-5 pt-4">
         <Card className="space-y-3">
           <div className="flex items-end gap-3">

@@ -186,7 +186,7 @@ function EditProfile() {
   if (state === "loading") {
     return (
       <Screen>
-        <TopBar title="Edit profile" back="/me" />
+        <TopBar title="Edit profile" back="/profile" />
         <div className="space-y-2 px-5 py-6" aria-busy>
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="h-[72px] animate-pulse rounded-lg bg-subtle" />
@@ -199,7 +199,7 @@ function EditProfile() {
   if (state === "error") {
     return (
       <Screen>
-        <TopBar title="Edit profile" back="/me" />
+        <TopBar title="Edit profile" back="/profile" />
         <main className="px-5 py-6">
           <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5">
             <p className="text-sm font-semibold text-destructive">We couldn't load your profile</p>
@@ -382,7 +382,7 @@ function EditProfile() {
 
   return (
     <Screen>
-      <TopBar title="Edit profile" subtitle={`${gaps.percent}% complete`} back="/me" />
+      <TopBar title="Edit profile" subtitle={`${gaps.percent}% complete`} back="/profile" />
       <main className="px-5 pb-40 pt-5">
         {gaps.missing.length ? (
           <div className="mb-4 rounded-lg border border-border bg-card p-4">

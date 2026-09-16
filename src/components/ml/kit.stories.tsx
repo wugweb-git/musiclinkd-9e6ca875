@@ -63,7 +63,7 @@ export const Rows: Story = {
   name: "Row: link and button",
   render: () => (
     <div className="space-y-2">
-      <Row icon={<Music2 size={18} />} title="Your applications" subtitle="Nothing yet" to="/me" />
+      <Row icon={<Music2 size={18} />} title="Your applications" subtitle="Nothing yet" to="/profile" />
       <Row icon={<CalendarDays size={18} />} title="Availability" onClick={() => {}} />
       <Row title="No icon, no subtitle" onClick={() => {}} />
     </div>

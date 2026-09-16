@@ -71,7 +71,7 @@ function DigitalId() {
       <TopBar
         title="Your MusicLinkd ID"
         subtitle={`@${myIdentity.username}`}
-        back="/me"
+        back="/profile"
         right={
           <Link
             to="/identity/settings"

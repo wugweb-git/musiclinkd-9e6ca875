@@ -7,7 +7,7 @@ export type Stat = {
   label: string;
   value: number;
   hint: string;
-  to: "/messages" | "/me" | "/recommendations/swipe" | "/saved" | "/opportunities";
+  to: "/messages" | "/profile" | "/recommendations/swipe" | "/saved" | "/opportunities";
 };
 
 /** Open opportunities: the one list both the headline update and the Opportunities tiles count. */
@@ -32,7 +32,7 @@ export type ContinueItem = {
   meta: string;
   progress: number;
   cta: string;
-  to: "/me" | "/saved" | "/studio";
+  to: "/profile" | "/saved" | "/studio";
 };
 
 export type Booking = {
@@ -76,7 +76,7 @@ export const dashboardData: DashboardData = {
       to: "/messages",
     },
     { key: "messages", label: "Unread messages", value: 3, hint: "Beta", to: "/messages" },
-    { key: "views", label: "Profile views", value: 148, hint: "+24 this week", to: "/me" },
+    { key: "views", label: "Profile views", value: 148, hint: "+24 this week", to: "/profile" },
     {
       key: "collabs",
       label: "Collab opportunities",
@@ -92,7 +92,7 @@ export const dashboardData: DashboardData = {
       meta: "3 of 5 tracks added",
       progress: 60,
       cta: "Continue upload",
-      to: "/me",
+      to: "/profile",
     },
     {
       id: "shortlist",
@@ -177,7 +177,7 @@ import { bookings, getBookable, getResource, formatDate, formatTime } from "./bo
 export type DashLink =
   | "/discover"
   | "/messages"
-  | "/me"
+  | "/profile"
   | "/recommendations/swipe"
   | "/saved"
   | "/search"

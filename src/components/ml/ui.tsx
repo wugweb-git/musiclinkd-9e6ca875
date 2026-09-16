@@ -52,7 +52,7 @@ const navItems = [
   { to: "/discover", label: "Discover", icon: Compass },
   { to: "/messages", label: "Connections", icon: MessageCircle },
   { to: "/marketplace", label: "Market", icon: Store },
-  { to: "/me", label: "Profile", icon: User },
+  { to: "/profile", label: "Profile", icon: User },
 ];
 
 export function BottomNav() {

@@ -74,7 +74,7 @@ function VerificationHub() {
 
   return (
     <Screen>
-      <TopBar title="Verification" subtitle="Trust signals across your profile" back="/me" />
+      <TopBar title="Verification" subtitle="Trust signals across your profile" back="/profile" />
       <div className="space-y-4 px-5 pt-4 pb-4">
         <Card className="space-y-3">
           <div className="flex items-start justify-between gap-3">

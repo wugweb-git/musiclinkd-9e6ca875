@@ -51,7 +51,7 @@ function BusinessHome() {
       <TopBar
         title="Businesses"
         subtitle="Studios, labels, venues"
-        back="/me"
+        back="/profile"
         right={
           <Link
             to="/business/new"

@@ -34,7 +34,7 @@ function Plans() {
 
   return (
     <Screen>
-      <TopBar title="Plans" subtitle="Upgrade when the work does" back="/me" />
+      <TopBar title="Plans" subtitle="Upgrade when the work does" back="/profile" />
       <div className="space-y-4 px-5 pt-4">
         <Card className="space-y-2">
           <div className="flex items-center gap-2">

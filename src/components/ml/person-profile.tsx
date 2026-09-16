@@ -26,7 +26,6 @@ import {
   Pencil,
   Play,
   Settings,
-  Settings2,
   QrCode,
   Rows3,
   Share2,
@@ -324,7 +323,6 @@ function OwnerPanel({
         <OwnerLink to="/services" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
         <OwnerLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
         <OwnerLink to="/reviews" icon={<Star size={16} />} label="Reviews" />
-        <OwnerLink to="/profile/edit" icon={<Settings2 size={16} />} label="Profile settings" />
         <OwnerLink to="/settings" icon={<Settings size={16} />} label="Settings" />
       </div>
 

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/profile/$username")({
   // rows winning over seed data. A username in neither is a 404, never somebody else's page.
   loader: async ({ params }) => {
     // "me" is the owner's own profile, which has its own screen.
-    if (params.username === "me") throw redirect({ to: "/me" });
+    if (params.username === "me") throw redirect({ to: "/profile" });
     const [row, business, labels] = await Promise.all([
       getPublicProfile({ data: { username: params.username } })
         .catch(() => null)

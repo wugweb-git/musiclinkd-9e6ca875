@@ -93,7 +93,7 @@ function Done() {
               Singers, producers, studios and bands near you.
             </p>
           </Link>
-          <Link to="/me" className={cn(nextCard, rise)} style={beat(4 + summary.length)}>
+          <Link to="/profile" className={cn(nextCard, rise)} style={beat(4 + summary.length)}>
             <p className="text-sm font-semibold">View my profile</p>
             <p className="mt-1 text-1 text-muted-foreground">See exactly what others see.</p>
           </Link>

@@ -122,7 +122,7 @@ function Checkout() {
         <BtnLink to="/plans/manage" className="w-full">
           Manage Subscription
         </BtnLink>
-        <BtnLink to="/me" variant="outline" className="w-full">
+        <BtnLink to="/profile" variant="outline" className="w-full">
           Back to Profile
         </BtnLink>
       </Dialog>

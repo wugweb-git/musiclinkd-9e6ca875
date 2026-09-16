@@ -30,7 +30,7 @@ function Insights() {
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-28">
-      <TopBar title="Profile insights" subtitle={i.range} back="/me" />
+      <TopBar title="Profile insights" subtitle={i.range} back="/profile" />
 
       <main className="px-5 pt-4">
         <div className="grid grid-cols-2 gap-3">
