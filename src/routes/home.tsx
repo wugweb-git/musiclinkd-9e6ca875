@@ -15,7 +15,10 @@ import {
   Star,
   CreditCard,
   LifeBuoy,
+  MapPin,
+  QrCode,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { Switch } from "@/components/ui/switch";
@@ -290,32 +293,53 @@ function Body({ home }: { home: Home }) {
 
       {/* Roles being cast: the live opportunities table, newest first. */}
       <section className="pt-7">
-        <SectionHeader title="Roles being cast" action={<Link to="/opportunities">See All</Link>} />
+        <SectionHeader
+          title="Roles being cast"
+          action={<SectionActionLink to="/opportunities">See All</SectionActionLink>}
+        />
         {opportunities.length ? (
           <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
-            {opportunities.map((o) => (
-              <Link
-                key={o.id}
-                to="/opportunities/$id"
-                params={{ id: o.slug }}
-                className="state-layer flex w-[240px] shrink-0 flex-col justify-between rounded-lg border border-border bg-card p-4"
-              >
-                <span className="min-w-0">
-                  <span className="block truncate text-2 font-semibold leading-snug">
-                    {o.title}
+            {opportunities.map((o) => {
+              const budget = priceParts(o.budget_paise, o.budget_unit, o.budget_note);
+              return (
+                <Link
+                  key={o.id}
+                  to="/opportunities/$id"
+                  params={{ id: o.slug }}
+                  className="state-layer flex w-[260px] shrink-0 flex-col rounded-lg border border-border bg-card p-4"
+                >
+                  <span className="line-clamp-2 text-2 font-semibold leading-snug">{o.title}</span>
+                  {o.role_required ? (
+                    <span className="mt-1 block truncate text-1 text-muted-foreground">
+                      {o.role_required}
+                    </span>
+                  ) : null}
+                  {o.location ? (
+                    <span className="mt-0.5 flex items-center gap-1 truncate text-1 text-muted-foreground">
+                      <MapPin size={12} className="shrink-0" aria-hidden />
+                      {o.location}
+                    </span>
+                  ) : null}
+                  <span className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3 mt-3">
+                    {/* A budget with no figure is a note, not a price, so it stays a quiet label. */}
+                    {o.budget_paise == null ? (
+                      <span className="pill shrink-0 bg-subtle text-muted-foreground">
+                        {o.budget_note ?? "Budget on request"}
+                      </span>
+                    ) : (
+                      <Price
+                        price={budget}
+                        amountClassName="text-sm font-semibold"
+                        unitClassName="text-0"
+                      />
+                    )}
+                    <span className="pill shrink-0 bg-subtle text-muted-foreground">
+                      {o.applicant_count} applied
+                    </span>
                   </span>
-                  <span className="mt-1 block truncate text-1 text-muted-foreground">
-                    {[o.role_required, o.location].filter(Boolean).join(" · ")}
-                  </span>
-                </span>
-                <span className="mt-3 flex items-end justify-between gap-2">
-                  <Price price={priceParts(o.budget_paise, o.budget_unit, o.budget_note)} />
-                  <span className="pill shrink-0 bg-subtle text-muted-foreground">
-                    {o.applicant_count} applied
-                  </span>
-                </span>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="mx-5">
@@ -327,7 +351,10 @@ function Body({ home }: { home: Home }) {
       {/* People in the same line of work, from the live profiles table. */}
       {peers.length ? (
         <section className="pt-7">
-          <SectionHeader title="People to meet" action={<Link to="/discover">See All</Link>} />
+          <SectionHeader
+            title="People to meet"
+            action={<SectionActionLink to="/discover">See All</SectionActionLink>}
+          />
           <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
             {peers.map((p) => (
               <Link
@@ -361,7 +388,10 @@ function Body({ home }: { home: Home }) {
       {/* Studios, live from the studios table, with their real rate. */}
       {studios.length ? (
         <section className="pt-7">
-          <SectionHeader title="Studios to book" action={<Link to="/studio">See All</Link>} />
+          <SectionHeader
+            title="Studios to book"
+            action={<SectionActionLink to="/studio">See All</SectionActionLink>}
+          />
           <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
             {studios.map((st) => (
               <li key={st.slug}>
@@ -377,12 +407,18 @@ function Body({ home }: { home: Home }) {
                     <span aria-hidden className="h-11 w-11 shrink-0 rounded-md bg-subtle" />
                   )}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">{st.name}</span>
-                    <span className="block truncate text-1 text-muted-foreground">
+                    <span className="block truncate text-2 font-semibold">{st.name}</span>
+                    <span className="mt-0.5 flex items-center gap-1 truncate text-1 text-muted-foreground">
+                      <MapPin size={12} className="shrink-0" aria-hidden />
                       {st.location}
                     </span>
                   </span>
-                  <Price price={st.rate} align="end" />
+                  <Price
+                    price={st.rate}
+                    align="end"
+                    amountClassName="text-sm font-semibold"
+                    unitClassName="text-0"
+                  />
                 </Link>
               </li>
             ))}
@@ -432,7 +468,10 @@ function Body({ home }: { home: Home }) {
           <QuietAction to="/bookings" icon={<Calendar size={14} />} label="My bookings" />
           <QuietAction to="/bands" icon={<Users size={14} />} label="My bands" />
           <QuietAction to="/reviews" icon={<Star size={14} />} label="Reviews" />
-          <QuietAction to="/plans" icon={<CreditCard size={14} />} label="Plan" />
+          {/* Moved off the profile: these are the owner's own tools, not what visitors read. */}
+          <QuietAction to="/identity/qr" icon={<QrCode size={14} />} label="QR card" />
+          <QuietAction to="/plans/earnings" icon={<CreditCard size={14} />} label="Earnings" />
+          <QuietAction to="/recommendations" icon={<Sparkles size={14} />} label="For you" />
           <QuietAction to="/help" icon={<LifeBuoy size={14} />} label="Help" />
         </div>
       </section>
@@ -507,6 +546,9 @@ type QuietDestination =
   | "/bands"
   | "/reviews"
   | "/plans"
+  | "/plans/earnings"
+  | "/identity/qr"
+  | "/recommendations"
   | "/help";
 
 function QuietAction({

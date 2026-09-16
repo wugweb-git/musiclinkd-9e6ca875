@@ -55,6 +55,8 @@ import {
   type ProfileEmptyCta,
   ProfileHero,
   ProfileSection,
+  StackSection,
+  ClampedText,
   ProjectCard,
   ReviewCard,
   ServiceCard,
@@ -64,7 +66,7 @@ import {
   ChipGroup,
   ChipGroupList,
   InfoRow,
-  isUnavailableForWork,
+  isOpenForWork,
 } from "./profile";
 import { HireModal } from "./hire-modal";
 
@@ -132,7 +134,7 @@ export function PersonProfileExperience({
           />
         ) : (
           <ViewerActions
-            onHire={isUnavailableForWork(p.availability) ? undefined : () => setHireOpen(true)}
+            onHire={isOpenForWork(p.availability) ? () => setHireOpen(true) : undefined}
           />
         )}
       </div>
@@ -179,7 +181,17 @@ export function PersonProfileExperience({
       </nav>
 
       <main className="px-5 pb-8">
-        {tab === "Overview" ? (
+        {tab === "Overview" && owner ? (
+          <OwnerOverview
+            p={p}
+            playingId={playingId}
+            onToggleTrack={toggleTrack}
+            onHire={() => setHireOpen(true)}
+            owner={owner}
+            onTab={setTab}
+          />
+        ) : null}
+        {tab === "Overview" && !owner ? (
           <Overview
             p={p}
             playingId={playingId}
@@ -233,7 +245,12 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         Message
       </BtnLink>
       {onHire ? (
-        <Btn variant="outline" className="min-w-0 flex-1 px-3" onClick={onHire}>
+        <Btn
+          variant="outline"
+          className="min-w-0 flex-1 px-3"
+          icon={<BriefcaseBusiness size={16} aria-hidden />}
+          onClick={onHire}
+        >
           Hire
         </Btn>
       ) : null}
@@ -304,14 +321,8 @@ function OwnerPanel({
       <div className="grid grid-cols-2 gap-2">
         <OwnerLink to="/portfolio" icon={<FolderKanban size={16} />} label="Manage portfolio" />
         <OwnerLink to="/services" icon={<BriefcaseBusiness size={16} />} label="Manage services" />
-        <OwnerLink to="/services/availability" icon={<Clock3 size={16} />} label="Availability" />
-        <OwnerLink to="/identity/qr" icon={<QrCode size={16} />} label="My QR & digital ID" />
         <OwnerLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
         <OwnerLink to="/reviews" icon={<Star size={16} />} label="Reviews" />
-        <OwnerLink to="/bands" icon={<Users size={16} />} label="My bands" />
-        <OwnerLink to="/plans" icon={<CreditCard size={16} />} label="Plan & earnings" />
-        <OwnerLink to="/recommendations" icon={<Sparkles size={16} />} label="For you" />
-        <OwnerLink to="/help" icon={<LifeBuoy size={16} />} label="Help & guides" />
         <OwnerLink to="/profile/edit" icon={<Settings2 size={16} />} label="Profile settings" />
         <OwnerLink to="/settings" icon={<Settings size={16} />} label="Settings" />
       </div>
@@ -471,6 +482,126 @@ function Overview({
           <ServiceCard s={p.services[0]!} onEnquire={onHire} />
         </ProfileSection>
       ) : null}
+      <RelationshipSections p={p} />
+    </>
+  );
+}
+
+function OwnerOverview({
+  p,
+  playingId,
+  onToggleTrack,
+  onHire,
+  owner,
+  onTab,
+}: {
+  p: PersonProfile;
+  playingId: string | null;
+  onToggleTrack: (id: string) => void;
+  onHire: () => void;
+  owner: boolean;
+  onTab: (tab: ProfileTab) => void;
+}) {
+  // The owner's own profile: stacked sections, each editable from its heading row.
+  const edit = "/profile/edit" as const;
+  return (
+    <>
+      <StackSection
+        title="About"
+        editTo={edit}
+        showAll="Read full profile"
+        onShowAll={() => onTab("About")}
+      >
+        {p.shortBio ? (
+          <ClampedText text={p.shortBio} />
+        ) : (
+          <ProfileEmpty
+            title="No summary yet"
+            body={
+              owner
+                ? "Say what you do and who you do it for."
+                : "This professional has not written a summary yet."
+            }
+            cta={owner ? { label: "Write a summary", to: "/profile/edit" } : undefined}
+          />
+        )}
+      </StackSection>
+
+      {p.featured ? (
+        <StackSection title="Featured" editTo={edit}>
+          <FeaturedCard featured={p.featured} />
+        </StackSection>
+      ) : null}
+
+      {p.genres.length || p.instruments.length || p.languages.length ? (
+        <StackSection title="Music identity" editTo={edit} collapsible>
+          <ChipGroupList>
+            <ChipGroup label="Genres" icon={Music} items={p.genres} />
+            <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
+            <ChipGroup label="Languages" icon={Languages} items={p.languages} />
+          </ChipGroupList>
+        </StackSection>
+      ) : null}
+
+      <StackSection
+        title="Audio"
+        editTo={edit}
+        {...(p.audio.length > 2
+          ? { showAll: `Show all ${p.audio.length} tracks`, onShowAll: () => onTab("Portfolio") }
+          : {})}
+      >
+        {p.audio.length ? (
+          <div className="space-y-2">
+            {p.audio.slice(0, 2).map((track) => (
+              <AudioTrackCard
+                key={track.id}
+                track={track}
+                playing={playingId === track.id}
+                onToggle={() => onToggleTrack(track.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <ProfileEmpty
+            title="No audio yet"
+            body="This professional has not added audio samples yet."
+            cta={owner ? addWork("Add audio", "track") : undefined}
+          />
+        )}
+      </StackSection>
+
+      {p.projects.length ? (
+        <StackSection
+          title="Projects"
+          editTo={edit}
+          collapsible
+          {...(p.projects.length > 2
+            ? {
+                showAll: `Show all ${p.projects.length} projects`,
+                onShowAll: () => onTab("Projects"),
+              }
+            : {})}
+        >
+          <div className="space-y-2">
+            {p.projects.slice(0, 2).map((project) => (
+              <ProjectCard key={project.id} p={project} />
+            ))}
+          </div>
+        </StackSection>
+      ) : null}
+
+      {p.services.length ? (
+        <StackSection
+          title="Services"
+          editTo={edit}
+          collapsible
+          showAll="All services"
+          onShowAll={() => onTab("Services")}
+        >
+          <ServiceCard s={p.services[0]!} onEnquire={onHire} />
+        </StackSection>
+      ) : null}
+
       <RelationshipSections p={p} />
     </>
   );

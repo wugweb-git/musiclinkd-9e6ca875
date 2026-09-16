@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   CalendarDays,
   Camera,
+  ChevronDown,
   CircleCheck,
   CircleSlash,
   Pencil,
@@ -74,6 +75,100 @@ export function ProfileSection({
       </div>
       {children}
     </section>
+  );
+}
+
+/**
+ * A stacked profile section: full-bleed block, thick divider under it, the title with the owner's
+ * edit pencil on the same row, and an optional collapse for the sections people skip past.
+ */
+export function StackSection({
+  title,
+  editTo,
+  collapsible = false,
+  defaultOpen = true,
+  showAll,
+  onShowAll,
+  children,
+}: {
+  title: string;
+  /** Owner only: where editing this section happens. Visitors pass nothing. */
+  editTo?: "/profile/edit" | undefined;
+  collapsible?: boolean;
+  defaultOpen?: boolean;
+  /** Footer link label, e.g. "Show all tracks". */
+  showAll?: string | undefined;
+  onShowAll?: (() => void) | undefined;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const bodyId = `${title.replace(/\s+/g, "-").toLowerCase()}-body`;
+  return (
+    <section className="-mx-5 border-b-8 border-subtle bg-card px-5 py-5">
+      <div className="flex items-center gap-1">
+        <h2 className="min-w-0 flex-1 text-2.5 font-bold">{title}</h2>
+        {editTo ? (
+          <IconBtnLink to={editTo} label={`Edit ${title}`} variant="ghost" className="h-10 w-10">
+            <Pencil size={17} aria-hidden />
+          </IconBtnLink>
+        ) : null}
+        {collapsible ? (
+          <IconBtn
+            label={open ? `Collapse ${title}` : `Expand ${title}`}
+            variant="ghost"
+            className="h-10 w-10"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls={bodyId}
+          >
+            <ChevronDown
+              size={18}
+              aria-hidden
+              className={cn(
+                "transition-transform duration-200 ease-standard motion-reduce:transition-none",
+                open ? "rotate-180" : "",
+              )}
+            />
+          </IconBtn>
+        ) : null}
+      </div>
+      <div id={bodyId} hidden={!open} className="mt-3">
+        {children}
+      </div>
+      {open && showAll ? (
+        <button
+          type="button"
+          onClick={onShowAll}
+          className="link-action mt-4 flex w-full items-center justify-center gap-1 border-t border-border pt-3 text-sm font-semibold text-primary"
+        >
+          {showAll}
+          <ChevronRight size={15} aria-hidden />
+        </button>
+      ) : null}
+    </section>
+  );
+}
+
+/** Body copy that stops at a few lines until someone asks for the rest. */
+const clampClass: Record<number, string> = {
+  2: "line-clamp-2",
+  3: "line-clamp-3",
+  4: "line-clamp-4",
+};
+
+export function ClampedText({ text, lines = 3 }: { text: string; lines?: 2 | 3 | 4 }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <p className={cn("text-sm leading-relaxed", open ? "" : clampClass[lines])}>{text}</p>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="state-layer mt-1 text-sm font-semibold text-muted-foreground"
+      >
+        {open ? "less" : "…more"}
+      </button>
+    </div>
   );
 }
 
@@ -330,15 +425,15 @@ export function ProfileHero({
   onMore?: (() => void) | undefined;
   back?: string | undefined;
 }) {
-  // The cover gives way as the page scrolls: 192px down to a 96px band, the photo down to 72px.
+  // LinkedIn-height cover (132px), giving way to a 72px band as the page scrolls.
   const y = useScrollY();
   const shrink = Math.min(1, Math.max(0, y / 120));
-  const coverHeight = 192 - 96 * shrink;
+  const coverHeight = 132 - 60 * shrink;
   const photoSize = 136 - 52 * shrink;
   return (
     <header>
       <div
-        className="relative overflow-hidden motion-reduce:!h-48"
+        className="relative overflow-hidden motion-reduce:!h-33"
         style={{ height: `${coverHeight}px` }}
       >
         {p.cover ? (
