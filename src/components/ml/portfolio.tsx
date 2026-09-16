@@ -403,12 +403,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
   const embeddable = /youtube|youtu\.be|vimeo/.test(src);
   if (embeddable) {
     return (
-      <a
-        href={src}
-        target="_blank"
-        rel="noreferrer"
-        className="block rounded-lg bg-subtle p-4"
-      >
+      <a href={src} target="_blank" rel="noreferrer" className="block rounded-lg bg-subtle p-4">
         <p className="pill bg-background text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
         <p className="mt-1 truncate text-1 text-foreground">{src}</p>
