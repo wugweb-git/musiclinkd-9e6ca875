@@ -43,8 +43,8 @@ import { TextLink } from "@/components/ml/links";
 const toneStyle: Record<string, { pill: string; dot: string }> = {
   ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
   warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
-  info: { pill: "bg-subtle text-foreground", dot: "bg-foreground" },
-  off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
+  info: { pill: "bg-background text-foreground", dot: "bg-foreground" },
+  off: { pill: "bg-background text-muted-foreground", dot: "bg-muted-foreground" },
 };
 
 export function BookingStatusPill({ status }: { status: BookingStatus }) {
@@ -87,7 +87,7 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
               className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-muted-foreground" : "text-muted-foreground"}`}
             >
               {s.label}
-              {current ? <span className="pill ml-2 bg-subtle text-foreground">Now</span> : null}
+              {current ? <span className="pill ml-2 bg-background text-foreground">Now</span> : null}
             </p>
           </li>
         );
@@ -167,8 +167,8 @@ export function ResourceCard({
   const from = lowestRate(r.tiers);
   return (
     <div
-      className={`overflow-hidden rounded-lg border-2 bg-subtle ${
-        selected ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
+      className={`overflow-hidden rounded-lg border-2 bg-background ${
+        selected ? "border-foreground bg-background" : "border-transparent bg-background"
       }`}
     >
       <div className="flex gap-3 p-3">
@@ -204,7 +204,7 @@ export function ResourceCard({
           {r.equipment.slice(0, 3).map((e) => (
             <span
               key={e}
-              className="rounded-full bg-subtle px-2.5 py-1 text-1 text-muted-foreground"
+              className="rounded-full bg-background px-2.5 py-1 text-1 text-muted-foreground"
             >
               {e}
             </span>
@@ -259,7 +259,7 @@ export function AvailabilityCalendar({
   });
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -310,7 +310,7 @@ export function AvailabilityCalendar({
                   ? "bg-primary text-primary-foreground"
                   : disabled
                     ? "bg-transparent"
-                    : "bg-subtle"
+                    : "bg-background"
               } ${inMonth ? "" : "opacity-35"} ${isSel ? "" : dayStyle[a.state]}`}
             >
               <span className={isSel ? "font-bold" : ""}>{d.getDate()}</span>
@@ -383,7 +383,7 @@ export function SlotPicker({
                   ? "border-transparent bg-primary text-primary-foreground"
                   : open
                     ? "border-border bg-card text-foreground"
-                    : "border-transparent bg-subtle text-muted-foreground line-through"
+                    : "border-transparent bg-background text-muted-foreground line-through"
               }`}
             >
               {formatTime(s.start)}
@@ -433,7 +433,7 @@ export function DurationPicker({
         })}
       </div>
       {isCustom && onCustomHours ? (
-        <label className="mt-3 flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
+        <label className="mt-3 flex items-center gap-3 rounded-lg bg-subtle px-4 py-3">
           <span className="text-1 font-semibold">Custom hours</span>
           <input
             type="number"
@@ -464,7 +464,7 @@ export function AddOnCard({
 }) {
   return (
     <div
-      className={`rounded-lg border-2 bg-subtle p-4 ${selected ? "border-foreground bg-subtle" : "border-transparent bg-subtle"}`}
+      className={`rounded-lg border-2 bg-background p-4 ${selected ? "border-foreground bg-background" : "border-transparent bg-background"}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -486,7 +486,7 @@ export function AddOnCard({
             {selected ? "Added" : "Add"}
           </Btn>
         ) : (
-          <span className="rounded-full bg-subtle px-3 py-2 text-1 font-semibold text-muted-foreground">
+          <span className="rounded-full bg-background px-3 py-2 text-1 font-semibold text-muted-foreground">
             Unavailable
           </span>
         )}
@@ -497,7 +497,7 @@ export function AddOnCard({
 
 export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: boolean }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <Row label={p.baseLabel} value={inr(p.base)} />
       {p.addOns.map((a) => (
         <Row key={a.name} label={a.name} value={inr(a.price)} muted />
@@ -553,7 +553,7 @@ export function PolicyCard({
   critical?: boolean | undefined;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
         {critical ? (
           <AlertTriangle size={16} className="text-primary" />
@@ -577,7 +577,7 @@ export function AcknowledgeRow({
   label: string;
 }) {
   return (
-    <label className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+    <label className="flex items-start gap-3 rounded-lg bg-subtle p-4">
       <input
         type="checkbox"
         checked={checked}
@@ -609,7 +609,7 @@ export function BookingSummaryCard({
   people: number;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="flex gap-3">
         <img
           src={r.photo}
@@ -638,7 +638,7 @@ export function BookingSummaryCard({
 export function Detail({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="pill bg-subtle text-muted-foreground">{label}</dt>
+      <dt className="pill bg-background text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 truncate text-sm font-semibold">{value}</dd>
     </div>
   );
@@ -659,7 +659,7 @@ export function BookingListCard({
     <Link
       to={provider ? "/provider/bookings/$ref" : "/bookings/$ref"}
       params={{ ref: booking.ref }}
-      className="block rounded-lg border border-border bg-card p-4"
+      className="block rounded-lg bg-subtle p-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -697,7 +697,7 @@ export function ProviderRequestCard({
   entityResource: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-start gap-3">
         <img
           src={booking.customerAvatar}
@@ -742,7 +742,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
     <div
       role="status"
-      className="mb-4 flex items-start gap-3 rounded-lg border border-border bg-card p-4"
+      className="mb-4 flex items-start gap-3 rounded-lg bg-subtle p-4"
     >
       <WifiOff size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
@@ -818,8 +818,8 @@ export function BookingSkeleton({ rows = 3 }: { rows?: number }) {
 
 export function CalendarSkeleton() {
   return (
-    <div className="rounded-lg border border-border bg-card p-4" aria-hidden>
-      <div className="h-5 w-32 animate-pulse rounded-full bg-subtle" />
+    <div className="rounded-lg bg-subtle p-4" aria-hidden>
+      <div className="h-5 w-32 animate-pulse rounded-full bg-background" />
       <div className="mt-4 grid grid-cols-7 gap-1">
         {Array.from({ length: 28 }, (_, i) => (
           <div key={i} className="h-12 animate-pulse rounded-sm bg-subtle" />

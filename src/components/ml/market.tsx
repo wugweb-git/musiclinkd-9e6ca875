@@ -104,7 +104,7 @@ export function CategoryTile({
     <Link
       to="/marketplace/c/$slug"
       params={{ slug }}
-      className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg border border-border bg-card p-3"
+      className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3"
     >
       <span className="flex h-8 items-center text-4 leading-none" aria-hidden>
         {emoji}
@@ -209,7 +209,7 @@ export function ListingTile({ l }: { l: Listing }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="h-full w-full bg-subtle" />
+          <div className="h-full w-full bg-background" />
         )}
         <div className="absolute right-1.5 top-1.5">
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
@@ -327,12 +327,12 @@ export function EmptyState({
 
 export function ListingSkeleton() {
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="h-40 w-full animate-pulse bg-subtle" />
+    <div className="overflow-hidden rounded-lg bg-subtle">
+      <div className="h-40 w-full animate-pulse bg-background" />
       <div className="space-y-2 p-3.5">
-        <div className="h-4 w-24 animate-pulse rounded-full bg-subtle" />
-        <div className="h-3 w-full animate-pulse rounded-full bg-subtle" />
-        <div className="h-3 w-2/3 animate-pulse rounded-full bg-subtle" />
+        <div className="h-4 w-24 animate-pulse rounded-full bg-background" />
+        <div className="h-3 w-full animate-pulse rounded-full bg-background" />
+        <div className="h-3 w-2/3 animate-pulse rounded-full bg-background" />
       </div>
     </div>
   );
@@ -422,7 +422,7 @@ export function LocationSheet({
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search"
           aria-label="Search places"
-          className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
+          className="press-brand mb-3 h-12 w-full rounded-sm bg-subtle px-3.5 text-sm outline-none focus:border-foreground"
         />
       ) : null}
       <p className="pill mb-1 text-muted-foreground">Suggested for you</p>
@@ -463,7 +463,7 @@ export function CategorySheet({
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search"
         aria-label="Search categories"
-        className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
+        className="press-brand mb-3 h-12 w-full rounded-sm bg-subtle px-3.5 text-sm outline-none focus:border-foreground"
       />
       <ul>
         {shown.map((c) => (
@@ -527,7 +527,7 @@ export function MarketFilterSheet({
 
       {filterGroups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="pill mb-2 bg-subtle text-muted-foreground">{g.label}</h3>
+          <h3 className="pill mb-2 bg-background text-muted-foreground">{g.label}</h3>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
               <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
@@ -690,7 +690,7 @@ export function OfferSheet({
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
             placeholder="I can collect from Dadar this weekend."
-            className="mb-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+            className="mb-3 w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
           />
           <p className="mb-5 text-1 text-muted-foreground">
             Offers expire after 48 hours. Payment is arranged directly with the seller.

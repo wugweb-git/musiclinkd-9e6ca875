@@ -72,7 +72,7 @@ function NotificationsScreen() {
           <Link
             to="/notifications/settings"
             aria-label="Notification settings"
-            className="grid h-10 w-10 place-items-center rounded-full bg-subtle"
+            className="grid h-10 w-10 place-items-center rounded-full bg-background"
           >
             <Settings2 size={16} />
           </Link>
@@ -101,7 +101,7 @@ function NotificationsScreen() {
       {invites.length && (filter === "All" || filter === "Unread") ? (
         <section className="px-5 pt-5">
           <h2 className="pill mb-2 px-1 text-muted-foreground">Invitations</h2>
-          <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
             {invites.map((inv) => (
               <li key={inv.id} className="p-4">
                 <div className="flex gap-3">
@@ -147,7 +147,7 @@ function NotificationsScreen() {
       <section className="px-5 pt-5 pb-6">
         <h2 className="pill mb-2 px-1 text-muted-foreground">Activity</h2>
         {list.length ? (
-          <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
             {list.map((n) => {
               const Icon = notificationIcon(n.category);
               return (
@@ -156,7 +156,7 @@ function NotificationsScreen() {
                     type="button"
                     onClick={() => open(n.id, n.to)}
                     className={`state-layer flex w-full gap-3 px-4 py-3.5 text-left ${
-                      n.read ? "" : "bg-subtle"
+                      n.read ? "" : "bg-background"
                     }`}
                   >
                     <span className="relative shrink-0">
@@ -170,7 +170,7 @@ function NotificationsScreen() {
                       ) : (
                         <span
                           aria-hidden
-                          className="grid h-11 w-11 place-items-center rounded-full bg-subtle"
+                          className="grid h-11 w-11 place-items-center rounded-full bg-background"
                         >
                           <Icon size={20} strokeWidth={1.75} />
                         </span>

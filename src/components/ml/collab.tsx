@@ -43,8 +43,8 @@ import { TextLink } from "@/components/ml/links";
 const toneStyle: Record<string, { pill: string; dot: string }> = {
   ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
   warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
-  info: { pill: "bg-subtle text-foreground", dot: "bg-foreground" },
-  off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
+  info: { pill: "bg-background text-foreground", dot: "bg-foreground" },
+  off: { pill: "bg-background text-muted-foreground", dot: "bg-muted-foreground" },
   bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
 };
 
@@ -66,12 +66,12 @@ export function Tag({ children, tone = "off" }: { children: ReactNode; tone?: st
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-lg border border-border bg-card p-4 ${className}`}>{children}</div>
+    <div className={`rounded-lg bg-subtle p-4 ${className}`}>{children}</div>
   );
 }
 
 export function Label({ children }: { children: ReactNode }) {
-  return <h3 className="pill mb-2 bg-subtle text-muted-foreground">{children}</h3>;
+  return <h3 className="pill mb-2 bg-background text-muted-foreground">{children}</h3>;
 }
 
 /* ------------------------------------------------------------------ */
@@ -98,7 +98,7 @@ export function ParticipantStack({
         />
       ))}
       {rest > 0 ? (
-        <span className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-subtle text-1 font-bold text-muted-foreground">
+        <span className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-background text-1 font-bold text-muted-foreground">
           +{rest}
         </span>
       ) : null}
@@ -182,7 +182,7 @@ export function ProjectCard({ project }: { project: Project }) {
     <Link
       to="/collab/$id"
       params={{ id: project.id }}
-      className="mb-3 block overflow-hidden rounded-lg border border-border bg-card"
+      className="mb-3 block overflow-hidden rounded-lg bg-subtle"
     >
       <div className="flex gap-3 p-3">
         <img
@@ -210,7 +210,7 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
       <div className="px-3 pb-3">
         {project.status === "active" || project.status === "onHold" ? (
-          <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-subtle">
+          <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-background">
             <div
               className="h-full rounded-full bg-primary"
               style={{ width: `${project.progress}%` }}
@@ -373,7 +373,7 @@ function ActivityGlyph({ kind }: { kind: ActivityEntry["kind"] }) {
 export function ActivityItem({ a }: { a: ActivityEntry }) {
   return (
     <li className="flex gap-3 py-3">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-subtle text-muted-foreground">
+      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background text-muted-foreground">
         <ActivityGlyph kind={a.kind} />
       </span>
       <div className="min-w-0 flex-1">
@@ -429,16 +429,16 @@ export function CollabSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-3 py-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="animate-pulse rounded-lg border border-border bg-card p-3">
+        <div key={i} className="animate-pulse rounded-lg bg-subtle p-3">
           <div className="flex gap-3">
             <div className="h-20 w-20 shrink-0 rounded-lg bg-subtle" />
             <div className="flex-1 space-y-2 py-1">
-              <div className="h-3.5 w-2/3 rounded-full bg-subtle" />
-              <div className="h-3 w-1/2 rounded-full bg-subtle" />
-              <div className="h-6 w-24 rounded-full bg-subtle" />
+              <div className="h-3.5 w-2/3 rounded-full bg-background" />
+              <div className="h-3 w-1/2 rounded-full bg-background" />
+              <div className="h-6 w-24 rounded-full bg-background" />
             </div>
           </div>
-          <div className="mt-3 h-1.5 w-full rounded-full bg-subtle" />
+          <div className="mt-3 h-1.5 w-full rounded-full bg-background" />
         </div>
       ))}
     </div>
@@ -476,7 +476,7 @@ export function ErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center rounded-lg border border-border bg-card px-6 py-12 text-center">
+    <div className="flex flex-col items-center rounded-lg bg-subtle px-6 py-12 text-center">
       <AlertTriangle size={24} className="mb-3 text-destructive" />
       <h3 className="text-2">{title}</h3>
       <p className="mt-1 mb-5 text-1 text-muted-foreground">{body}</p>
@@ -497,7 +497,7 @@ export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
         Offline — showing cached project data. 2 changes not yet synced.
       </p>
       {onRetry ? (
-        <button type="button" onClick={onRetry} className="pill bg-subtle text-foreground">
+        <button type="button" onClick={onRetry} className="pill bg-background text-foreground">
           Retry
         </button>
       ) : null}
@@ -562,7 +562,7 @@ export function UploadPanel({
             <X size={16} className="text-muted-foreground" />
           </button>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-subtle">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-background">
           <div className="h-full w-[46%] rounded-full bg-primary" />
         </div>
         <p className="mt-2 text-1 text-muted-foreground">46% · 22.1 MB of 48.2 MB</p>
@@ -615,7 +615,7 @@ export function Field({
   return (
     <div className="mb-5">
       <div className="mb-2 flex items-baseline justify-between">
-        <h3 className="pill bg-subtle text-muted-foreground">{label}</h3>
+        <h3 className="pill bg-background text-muted-foreground">{label}</h3>
         {optional ? <span className="text-1 text-muted-foreground">Optional</span> : null}
       </div>
       {children}
@@ -636,7 +636,7 @@ export function TextInput({
   multiline?: boolean;
 }) {
   const cls =
-    "w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary";
+    "w-full rounded-lg bg-subtle px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary";
   if (multiline) {
     return (
       <textarea

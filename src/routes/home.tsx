@@ -338,7 +338,7 @@ function Body({ home }: { home: Home }) {
                   key={o.id}
                   to="/opportunities/$id"
                   params={{ id: o.slug }}
-                  className="state-layer flex w-[260px] shrink-0 flex-col rounded-lg border border-border bg-card p-4"
+                  className="state-layer flex w-[260px] shrink-0 flex-col rounded-lg bg-subtle p-4"
                 >
                   <span className="line-clamp-2 text-2 font-semibold leading-snug">{o.title}</span>
                   {o.role_required ? (
@@ -355,7 +355,7 @@ function Body({ home }: { home: Home }) {
                   <span className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3 mt-3">
                     {/* A budget with no figure is a note, not a price, so it stays a quiet label. */}
                     {o.budget_paise == null ? (
-                      <span className="pill shrink-0 bg-subtle text-muted-foreground">
+                      <span className="pill shrink-0 bg-background text-muted-foreground">
                         {o.budget_note ?? "Budget on request"}
                       </span>
                     ) : (
@@ -365,7 +365,7 @@ function Body({ home }: { home: Home }) {
                         unitClassName="text-1"
                       />
                     )}
-                    <span className="pill shrink-0 bg-subtle text-muted-foreground">
+                    <span className="pill shrink-0 bg-background text-muted-foreground">
                       {o.applicant_count} applied
                     </span>
                   </span>
@@ -397,7 +397,7 @@ function Body({ home }: { home: Home }) {
                 key={p.username}
                 to="/profile/$username"
                 params={{ username: p.username }}
-                className="state-layer flex w-[150px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card p-4 text-center"
+                className="state-layer flex w-[150px] shrink-0 flex-col items-center gap-2 rounded-lg bg-subtle p-4 text-center"
               >
                 {p.avatarUrl ? (
                   <img
@@ -407,7 +407,7 @@ function Body({ home }: { home: Home }) {
                     className="h-14 w-14 rounded-full object-cover"
                   />
                 ) : (
-                  <span aria-hidden className="h-14 w-14 rounded-full bg-subtle" />
+                  <span aria-hidden className="h-14 w-14 rounded-full bg-background" />
                 )}
                 <span className="min-w-0">
                   <span className="block truncate text-1 font-semibold">{p.name}</span>
@@ -428,7 +428,7 @@ function Body({ home }: { home: Home }) {
             title="Studios to book"
             action={<SectionActionLink to="/studio">See All</SectionActionLink>}
           />
-          <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
             {studios.map((st) => (
               <li key={st.slug}>
                 <Link to="/studio" className="state-layer flex items-center gap-3 px-4 py-3.5">
@@ -575,7 +575,7 @@ function ToolLink({
   label: string;
   soon?: boolean;
 }) {
-  const cls = "flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3.5";
+  const cls = "flex min-w-0 items-center gap-2 rounded-lg bg-subtle px-3 py-3.5";
   if (onClick && !soon) {
     return (
       <button type="button" onClick={onClick} className={`state-layer text-left ${cls}`}>
@@ -631,8 +631,8 @@ function SkeletonBody() {
   return (
     <div className="space-y-4 px-5 pt-20" aria-busy aria-label="Loading your dashboard">
       <div className="animate-pulse space-y-4">
-        <div className="h-8 w-2/3 rounded-full bg-subtle" />
-        <div className="h-4 w-1/2 rounded-full bg-subtle" />
+        <div className="h-8 w-2/3 rounded-full bg-background" />
+        <div className="h-4 w-1/2 rounded-full bg-background" />
         <div className="h-24 rounded-lg bg-subtle" />
         <div className="h-28 rounded-lg bg-subtle" />
         <div className="grid grid-cols-2 gap-3">

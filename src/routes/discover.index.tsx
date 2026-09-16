@@ -112,7 +112,7 @@ function Discover() {
             </>
           );
           const cls =
-            "relative flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3";
+            "relative flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg bg-subtle px-2 py-3";
           return c.soon ? (
             <div key={c.label} aria-disabled="true" className={cls}>
               {inner}

@@ -68,7 +68,7 @@ function SettingsScreen() {
         {settingsGroups.map((g) => (
           <section key={g.key}>
             <h2 className="pill mb-2 px-1 text-muted-foreground">{g.title}</h2>
-            <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+            <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
               {g.rows.map((r) => {
                 const Icon = rowIcons[r.icon] ?? Circle;
                 if (r.key === "spotify") {

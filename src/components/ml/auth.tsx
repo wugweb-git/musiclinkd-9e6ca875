@@ -148,7 +148,7 @@ export type NoticeTone = "error" | "info" | "success" | "warn";
 const noticeStyles: Record<NoticeTone, { box: string; icon: string; Icon: LucideIcon }> = {
   error: { box: "bg-danger-container", icon: "text-destructive", Icon: CircleAlert },
   warn: { box: "bg-warn-container", icon: "text-foreground", Icon: TriangleAlert },
-  info: { box: "bg-subtle", icon: "text-muted-foreground", Icon: Info },
+  info: { box: "bg-background", icon: "text-muted-foreground", Icon: Info },
   success: { box: "bg-success-container", icon: "text-success", Icon: CircleCheck },
 };
 
@@ -257,7 +257,7 @@ export function TextField({
           invalid
             ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
             : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
-          disabled && "bg-subtle opacity-60",
+          disabled && "bg-background opacity-60",
         )}
       >
         {leading}
@@ -648,7 +648,7 @@ export type AuthStatusTone = "danger" | "neutral";
 
 const statusTone: Record<AuthStatusTone, { tile: string; icon: string }> = {
   danger: { tile: "bg-danger-container", icon: "text-destructive" },
-  neutral: { tile: "bg-subtle", icon: "text-muted-foreground" },
+  neutral: { tile: "bg-background", icon: "text-muted-foreground" },
 };
 
 /**
@@ -686,7 +686,7 @@ export function AuthStatus({
       </div>
       <AuthHeading title={title} sub={body} />
       {list?.length ? (
-        <div className="mb-6 rounded-lg border border-border bg-card p-4">
+        <div className="mb-6 rounded-lg bg-subtle p-4">
           {listTitle ? <p className="text-sm font-semibold">{listTitle}</p> : null}
           <ul className="mt-2 list-disc space-y-1.5 pl-4 text-1 leading-relaxed text-muted-foreground">
             {list.map((item) => (

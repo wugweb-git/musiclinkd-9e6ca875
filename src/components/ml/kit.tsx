@@ -243,7 +243,7 @@ export function Row({
       {right ?? <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />}
     </>
   );
-  const cls = "flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-3";
+  const cls = "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3";
   if (to) {
     return (
       <Link to={to} {...(params ? { params } : {})} className={cls}>
@@ -430,7 +430,7 @@ export function Dialog({
         onClick={onClose}
         className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
       />
-      <div className="relative w-full rounded-3xl border border-border bg-card p-5">
+      <div className="relative w-full rounded-3xl bg-subtle p-5">
         <h2 className="text-2 leading-tight">{title}</h2>
         {body ? <p className="mt-2 text-1 text-muted-foreground">{body}</p> : null}
         {children ? <div className="mt-4 flex flex-col gap-2">{children}</div> : null}
