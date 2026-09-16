@@ -104,7 +104,7 @@ function ReviewsHub() {
                   ))}
                 </div>
                 <BtnLink to="/reviews/write/$id" params={{ id: p.id }} className="w-full">
-                  Write review
+                  Write Review
                 </BtnLink>
               </Card>
             ))

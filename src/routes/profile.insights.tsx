@@ -99,7 +99,7 @@ function Insights() {
             ))}
           </ul>
           <BtnLink to="/profile/edit" className="mt-4 w-full">
-            Complete profile
+            Complete Profile
           </BtnLink>
         </section>
       </main>

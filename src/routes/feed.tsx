@@ -34,6 +34,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
+import { SectionActionLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/feed")({
   head: () => ({
@@ -469,7 +470,7 @@ function StateBlock({
     <div className="px-5 py-16">
       <EmptyState icon={icon} title={title} body={body}>
         <Btn variant="ink" className="w-full" onClick={onRetry}>
-          Try again
+          Try Again
         </Btn>
       </EmptyState>
     </div>

@@ -66,7 +66,7 @@ function BusinessQr() {
 
         <div className="mt-3">
           <BtnLink to="/identity/print" variant="ghost" className="w-full">
-            <Printer size={16} className="mr-2" /> Preview studio sign & poster
+            <Printer size={16} className="mr-2" /> Preview Studio Sign & Poster
           </BtnLink>
         </div>
 

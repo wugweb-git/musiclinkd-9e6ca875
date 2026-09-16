@@ -98,7 +98,7 @@ function OpportunitySearch() {
                 setCats([]);
               }}
             >
-              Clear filters
+              Clear Filters
             </Btn>
             <BtnLink
               to="/opportunities/new"
@@ -106,7 +106,7 @@ function OpportunitySearch() {
               variant="ghost"
               className="w-full"
             >
-              Post what you need instead
+              Post What You Need Instead
             </BtnLink>
           </EmptyState>
         ) : (

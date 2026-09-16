@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Label, Tag } from "@/components/ml/collab";
 import { DeletedState } from "@/components/ml/collab-extra";
 import { getProject, milestoneMeta } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/collab/$id/milestones/$mid")({
   head: ({ params }) => {
@@ -85,7 +86,7 @@ function MilestoneDetail() {
             params={{ id: project.id }}
             className="flex-1 w-full"
           >
-            Edit milestone
+            Edit Milestone
           </BtnLink>
         </div>
 
@@ -93,13 +94,13 @@ function MilestoneDetail() {
           Only the project owner and the milestone owner can edit or complete this milestone.
         </p>
 
-        <Link
+        <TextLink
           to="/collab/$id/timeline"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-foreground"
+          className="mb-8 block text-center text-[12px]"
         >
-          Back to timeline
-        </Link>
+          Back to Timeline
+        </TextLink>
       </main>
     </Screen>
   );

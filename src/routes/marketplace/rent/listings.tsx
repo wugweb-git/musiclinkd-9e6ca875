@@ -4,6 +4,7 @@ import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { EquipmentRow, RentalStatusPill } from "@/components/ml/rental";
 import { equipment, equipmentById, inr, rentalNotifications, rentalRequests } from "@/data/rentals";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/marketplace/rent/listings")({
   head: () => ({
@@ -49,12 +50,9 @@ function MyListings() {
         subtitle={`${equipment.length} items · 3 requests`}
         back="/marketplace/rent"
         right={
-          <Link
-            to="/marketplace/rent/list"
-            className="shrink-0 text-xs font-semibold text-foreground"
-          >
+          <TextLink to="/marketplace/rent/list" className="shrink-0 text-xs">
             New
-          </Link>
+          </TextLink>
         }
       />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
@@ -160,7 +158,7 @@ function MyListings() {
             emoji="📝"
             title="No drafts"
             body="Start a rental listing and we'll keep it here until you publish."
-            action={<BtnLink to="/marketplace/rent/list">Rent out equipment</BtnLink>}
+            action={<BtnLink to="/marketplace/rent/list">Rent Out Equipment</BtnLink>}
           />
         ) : null}
 

@@ -63,10 +63,10 @@ function PrivacyScreen() {
             Request a copy of your profile, portfolio and bookings.
           </p>
           <Btn variant="outline" className="w-full">
-            Request a copy
+            Request a Copy
           </Btn>
           <BtnLink to="/settings/delete-account" variant="ghost" className="w-full">
-            Delete account
+            Delete Account
           </BtnLink>
         </Card>
       </div>

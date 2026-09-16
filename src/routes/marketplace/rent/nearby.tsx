@@ -98,7 +98,7 @@ function NearbyRentals() {
             Renters nearby are searching for backline and mics every week.
           </p>
           <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">
-            Rent out equipment
+            Rent Out Equipment
           </BtnLink>
         </div>
       </div>

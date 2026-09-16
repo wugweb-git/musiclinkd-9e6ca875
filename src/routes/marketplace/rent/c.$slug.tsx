@@ -84,7 +84,7 @@ function RentCategory() {
             emoji="📦"
             title="Nothing listed here yet"
             body="No providers have listed this sub-category in Mumbai. Try a wider area or set an alert."
-            action={<BtnLink to="/marketplace/rent/search">Search all rentals</BtnLink>}
+            action={<BtnLink to="/marketplace/rent/search">Search All Rentals</BtnLink>}
           />
         )}
       </div>

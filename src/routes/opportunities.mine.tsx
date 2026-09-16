@@ -51,7 +51,7 @@ function MyOpportunities() {
             body="Post a requirement and receive applications with portfolios attached."
           >
             <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
-              Post an opportunity
+              Post an Opportunity
             </BtnLink>
           </EmptyState>
         ) : (
@@ -83,7 +83,7 @@ function MyOpportunities() {
                     search={{ step: "preview" }}
                     className="flex-1 w-full"
                   >
-                    Finish draft
+                    Finish Draft
                   </BtnLink>
                 ) : (
                   <BtnLink

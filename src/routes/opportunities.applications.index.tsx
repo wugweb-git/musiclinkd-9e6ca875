@@ -57,7 +57,7 @@ function Applications() {
             body="Apply to an opportunity and you'll be able to track it from this screen."
           >
             <BtnLink to="/opportunities" className="w-full">
-              Find opportunities
+              Find Opportunities
             </BtnLink>
           </EmptyState>
         ) : (

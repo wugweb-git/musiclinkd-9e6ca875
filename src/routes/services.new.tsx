@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -24,6 +24,7 @@ import { haptic } from "@/lib/haptics";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
+import { TextLink } from "@/components/ml/links";
 
 const steps = ["category", "basics", "pricing", "delivery", "review"] as const;
 type Step = (typeof steps)[number];
@@ -365,12 +366,9 @@ function NewService() {
                 </div>
               </div>
             ) : null}
-            <Link
-              to="/services/availability"
-              className="block text-[12px] font-semibold text-foreground"
-            >
-              Set your weekly availability →
-            </Link>
+            <TextLink to="/services/availability" className="block text-[12px]">
+              Set Your Weekly Availability →
+            </TextLink>
           </Card>
         ) : null}
 
@@ -431,7 +429,7 @@ function NewService() {
               disabled={busy !== null}
               onClick={() => void submit("active")}
             >
-              Publish service
+              Publish Service
             </Btn>
           )}
         </div>
@@ -443,7 +441,7 @@ function NewService() {
             disabled={busy !== null}
             onClick={() => void submit("draft")}
           >
-            Save draft
+            Save Draft
           </Btn>
         ) : null}
       </div>
@@ -455,7 +453,7 @@ function NewService() {
         onClose={() => setPublished(false)}
       >
         <BtnLink to="/services" className="w-full">
-          Back to services
+          Back to Services
         </BtnLink>
       </Dialog>
     </Screen>

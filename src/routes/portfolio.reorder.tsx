@@ -79,7 +79,7 @@ function Reorder() {
           <StateCard
             title="Nothing to reorder yet"
             body="Add your first work and it will show up here."
-            action={<BtnLink to="/portfolio/new">Add work</BtnLink>}
+            action={<BtnLink to="/portfolio/new">Add Work</BtnLink>}
           />
         ) : null}
 
@@ -97,7 +97,7 @@ function Reorder() {
         {order.length ? (
           <div className="sticky bottom-0 mt-6 border-t border-border bg-background/95 py-4 backdrop-blur">
             <Btn className="w-full" onClick={() => toast.success("Order saved for this session")}>
-              Save order
+              Save Order
             </Btn>
           </div>
         ) : null}

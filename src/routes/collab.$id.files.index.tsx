@@ -71,7 +71,7 @@ function Files() {
           variant="outline"
           className="flex-1 w-full"
         >
-          Media gallery
+          Media Gallery
         </BtnLink>
       </div>
 

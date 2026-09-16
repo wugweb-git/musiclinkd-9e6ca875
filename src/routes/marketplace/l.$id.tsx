@@ -183,7 +183,7 @@ function ListingDetail() {
                 variant="outline"
                 className="mt-3 w-full"
               >
-                View profile
+                View Profile
               </BtnLink>
             ) : null}
           </div>
@@ -209,7 +209,7 @@ function ListingDetail() {
               variant="outline"
               className="mt-3 w-full"
             >
-              View profile
+              View Profile
             </BtnLink>
           </div>
         ) : null}

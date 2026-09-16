@@ -56,10 +56,10 @@ function Nearby() {
             </p>
           </Card>
           <Btn className="w-full" onClick={() => setAllowed(true)}>
-            Use my location
+            Use My Location
           </Btn>
           <BtnLink to="/search" variant="ghost" className="w-full">
-            Pick a city instead
+            Pick a City Instead
           </BtnLink>
         </div>
       </Screen>

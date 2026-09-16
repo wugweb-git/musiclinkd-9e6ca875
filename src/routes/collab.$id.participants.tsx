@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BtnLink, Screen, Sheet, Chip, TopBar } from "@/components/ml/ui";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { Card, Label, ParticipantRow, PermissionState } from "@/components/ml/collab";
 import { collabRoles, getProject } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/collab/$id/participants")({
   head: ({ params }) => {
@@ -62,7 +63,7 @@ function Participants() {
             Add collaborators to get the project moving.
           </p>
           <BtnLink to="/collab/new/collaborators" className="mt-3 w-full">
-            Add collaborators
+            Add Collaborators
           </BtnLink>
         </Card>
       ) : (
@@ -124,26 +125,26 @@ function Participants() {
         >
           See the role taxonomy
         </button>
-        <Link
+        <TextLink
           to="/collab/$id/roles"
           params={{ id: project.id }}
-          className="mt-2 block text-[11px] font-semibold text-foreground"
+          className="mt-2 block text-[11px]"
         >
-          Open project roles
-        </Link>
+          Open Project Roles
+        </TextLink>
       </Card>
 
-      <Link
+      <TextLink
         to="/collab/$id/invite-link"
         params={{ id: project.id }}
-        className="mb-5 block text-center text-[12px] font-semibold text-foreground"
+        className="mb-5 block text-center text-[12px]"
       >
-        Invite with a link instead
-      </Link>
+        Invite with a Link Instead
+      </TextLink>
 
       <div className="mb-8 flex gap-3">
         <BtnLink to="/collab/new/collaborators" className="flex-1 w-full">
-          Invite more people
+          Invite More People
         </BtnLink>
         <BtnLink
           to="/collab/$id/share"
@@ -151,7 +152,7 @@ function Participants() {
           variant="outline"
           className="flex-1 w-full"
         >
-          Share link
+          Share Link
         </BtnLink>
       </div>
 

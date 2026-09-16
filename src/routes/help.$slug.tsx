@@ -37,7 +37,7 @@ function HelpPage() {
             body="The guide you followed is no longer published. Search the help centre for the current version."
           >
             <BtnLink to="/help" className="w-full">
-              Back to help
+              Back to Help
             </BtnLink>
           </EmptyState>
         </div>

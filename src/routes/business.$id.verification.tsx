@@ -138,14 +138,14 @@ function BusinessVerification() {
             only ever shows a badge.
           </p>
           <BtnLink to="/verification/privacy" variant="ghost" className="mt-3 w-full">
-            How your documents are handled
+            How Your Documents Are Handled
           </BtnLink>
         </Card>
 
         {owner && !b.verified ? (
           status === "in_review" ? (
             <Btn className="w-full" disabled>
-              Submitted for review
+              Submitted for Review
             </Btn>
           ) : (
             <BtnLink
@@ -154,7 +154,7 @@ function BusinessVerification() {
               search={{ step: 0 }}
               className="w-full"
             >
-              Submit for review
+              Submit for Review
             </BtnLink>
           )
         ) : null}

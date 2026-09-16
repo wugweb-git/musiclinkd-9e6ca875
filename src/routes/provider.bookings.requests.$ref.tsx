@@ -50,7 +50,7 @@ function RequestReview() {
           <EmptyState
             title="Request no longer available"
             body="It was withdrawn or already handled."
-            action={<BtnLink to="/provider/bookings">Back to requests</BtnLink>}
+            action={<BtnLink to="/provider/bookings">Back to Requests</BtnLink>}
           />
         </div>
       </Screen>
@@ -74,7 +74,7 @@ function RequestReview() {
                 : `${bk.customer} has been notified and the slot stays open for other bookings.`}
             </p>
             <BtnLink to="/provider/bookings" className="mt-4 w-full">
-              Back to workspace
+              Back to Workspace
             </BtnLink>
           </div>
         </main>
@@ -126,11 +126,11 @@ function RequestReview() {
         </div>
 
         <BtnLink to="/messages" variant="outline" className="mt-3 w-full">
-          <MessageCircle size={15} className="mr-1.5" /> Ask a question first
+          <MessageCircle size={15} className="mr-1.5" /> Ask a Question First
         </BtnLink>
 
         <Btn variant="ghost" className="mt-2 w-full" onClick={() => setDecision("declining")}>
-          Propose a different time or decline
+          Propose a Different Time or Decline
         </Btn>
 
         {decision === "declining" ? (

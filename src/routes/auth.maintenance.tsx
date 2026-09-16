@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Wrench } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import { AuthStatus } from "@/components/ml/auth";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/auth/maintenance")({
   head: () => ({
@@ -29,15 +30,11 @@ function MaintenanceScreen() {
       body="We're shipping an update to MusicLinkd. Your account, work and bookings are safe."
       actions={
         <Btn className="w-full" onClick={() => window.location.reload()}>
-          Check again
+          Check Again
         </Btn>
       }
       note="Nothing in progress is lost — drafts stay on your device."
-      footer={
-        <Link to="/help" className="hit-area font-semibold text-foreground">
-          Read status updates
-        </Link>
-      }
+      footer={<TextLink to="/help">Read Status Updates</TextLink>}
     />
   );
 }

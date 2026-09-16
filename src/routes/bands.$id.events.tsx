@@ -89,7 +89,7 @@ function BandEvents() {
                 </Card>
               ))}
               <Btn variant="outline" className="w-full">
-                Add a show
+                Add a Show
               </Btn>
             </div>
           ) : (
@@ -97,7 +97,7 @@ function BandEvents() {
               title="No shows booked"
               body="Add a date so members and followers know where to be."
             >
-              <Btn>Add a show</Btn>
+              <Btn>Add a Show</Btn>
             </EmptyState>
           )
         ) : gigs.length ? (

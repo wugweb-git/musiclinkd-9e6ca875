@@ -95,7 +95,7 @@ function DigitalId() {
             title="You're offline"
             body="Your QR still works — anyone scanning it will open your profile once they're online."
           >
-            <Btn onClick={() => setPhase("ready")}>Show my QR anyway</Btn>
+            <Btn onClick={() => setPhase("ready")}>Show My QR Anyway</Btn>
           </StateCard>
         ) : (
           <>
@@ -217,7 +217,7 @@ function DigitalId() {
         </div>
         <div className="mt-4">
           <BtnLink to="/identity/card" variant="outline" className="w-full">
-            <Download size={16} className="mr-2" /> Make a share card instead
+            <Download size={16} className="mr-2" /> Make a Share Card Instead
           </BtnLink>
         </div>
       </Sheet>

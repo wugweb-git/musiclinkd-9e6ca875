@@ -114,7 +114,7 @@ function CreateCollab() {
       <StickyBar>
         <div className="flex gap-3">
           <BtnLink to="/collab" variant="outline" className="flex-1 w-full">
-            Save draft
+            Save Draft
           </BtnLink>
           <BtnLink to="/collab/new/collaborators" className="flex-[2] w-full">
             Continue

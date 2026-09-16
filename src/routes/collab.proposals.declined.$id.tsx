@@ -55,7 +55,7 @@ function ProposalDeclined() {
             Message {proposal.from.split(" ")[0]}
           </BtnLink>
           <BtnLink to="/collab" className="flex-1 w-full">
-            Back to collaborations
+            Back to Collaborations
           </BtnLink>
         </div>
       </main>

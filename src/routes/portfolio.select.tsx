@@ -52,7 +52,7 @@ function PortfolioSelect() {
           <StateCard
             title="No work to share yet"
             body="Add a track, project or performance and you can attach it to any conversation."
-            action={<BtnLink to="/portfolio/new">Add work</BtnLink>}
+            action={<BtnLink to="/portfolio/new">Add Work</BtnLink>}
           />
         ) : null}
 

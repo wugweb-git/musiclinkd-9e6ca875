@@ -45,7 +45,7 @@ function BandProfile() {
             body="It may have been deleted or made private by its owner."
           >
             <BtnLink to="/bands" className="w-full">
-              Back to bands
+              Back to Bands
             </BtnLink>
           </EmptyState>
         </div>
@@ -340,7 +340,7 @@ function BandProfile() {
                   variant="outline"
                   className="w-full"
                 >
-                  Open portfolio
+                  Open Portfolio
                 </BtnLink>
               </EmptyState>
             )

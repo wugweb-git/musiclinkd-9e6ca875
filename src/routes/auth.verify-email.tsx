@@ -123,17 +123,17 @@ function VerifyEmail() {
         disabled={code.length !== 6 || !email}
         onClick={() => void verify(code)}
       >
-        Verify and continue
+        Verify and Continue
       </Btn>
 
       <p className="mt-5 flex justify-center text-1 text-muted-foreground">
         {countdown.seconds > 0 ? (
           <span aria-live="polite">
-            Resend code in 0:{String(countdown.seconds).padStart(2, "0")}
+            Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
           </span>
         ) : (
           <AuthTextButton icon={<RotateCw size={15} />} onClick={() => void resend()}>
-            Resend code
+            Resend Code
           </AuthTextButton>
         )}
       </p>
@@ -142,7 +142,7 @@ function VerifyEmail() {
 
       <p className="mt-6 flex justify-center text-1">
         <AuthLink to="/auth" icon={<Pencil size={15} />}>
-          Use a different email
+          Use a Different Email
         </AuthLink>
       </p>
     </AuthScreen>

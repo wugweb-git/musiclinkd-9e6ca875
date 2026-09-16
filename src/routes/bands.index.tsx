@@ -70,7 +70,7 @@ function BandsIndex() {
             body="Create your group and invite the people you already play with."
           >
             <BtnLink to="/bands/new" className="w-full">
-              Create a band
+              Create a Band
             </BtnLink>
           </EmptyState>
         ) : (

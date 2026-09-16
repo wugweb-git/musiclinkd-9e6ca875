@@ -147,10 +147,10 @@ function Schedule() {
                         </Btn>
                       ) : null}
                       <BtnLink to="/messages" variant="outline" className="w-full">
-                        Message provider
+                        Message Provider
                       </BtnLink>
                       <BtnLink to="/studio" variant="ghost" className="w-full">
-                        See similar spaces
+                        See Similar Spaces
                       </BtnLink>
                     </div>
                   }
@@ -236,7 +236,7 @@ function Schedule() {
         </p>
         <div className="mt-5 space-y-2">
           <Btn className="w-full" onClick={() => setConflict(false)}>
-            Choose another time
+            Choose Another Time
           </Btn>
           <Btn
             variant="outline"
@@ -246,7 +246,7 @@ function Schedule() {
               setConflict(false);
             }}
           >
-            Choose another date
+            Choose Another Date
           </Btn>
           <Btn variant="ghost" className="w-full" onClick={() => setConflict(false)}>
             Return

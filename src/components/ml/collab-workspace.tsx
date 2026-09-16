@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { StatusPill } from "@/components/ml/collab";
 import type { Project } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 const tabs = [
   { key: "overview", label: "Overview", to: "/collab/$id" },
@@ -33,13 +34,13 @@ export function WorkspaceShell({
         back="/collab"
         right={
           right ?? (
-            <Link
+            <TextLink
               to="/collab/$id/settings"
               params={{ id: project.id }}
               className="text-1 font-bold uppercase tracking-wide text-muted-foreground"
             >
               Settings
-            </Link>
+            </TextLink>
           )
         }
       />

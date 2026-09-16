@@ -120,10 +120,10 @@ function Checkout() {
         onClose={() => setState("idle")}
       >
         <BtnLink to="/plans/manage" className="w-full">
-          Manage subscription
+          Manage Subscription
         </BtnLink>
         <BtnLink to="/me" variant="outline" className="w-full">
-          Back to profile
+          Back to Profile
         </BtnLink>
       </Dialog>
       <Dialog
@@ -132,7 +132,7 @@ function Checkout() {
         body="No money was taken. Try another method or retry in a minute."
         onClose={() => setState("idle")}
       >
-        <Btn onClick={() => setState("idle")}>Try again</Btn>
+        <Btn onClick={() => setState("idle")}>Try Again</Btn>
       </Dialog>
     </Screen>
   );

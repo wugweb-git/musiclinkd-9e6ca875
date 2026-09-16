@@ -102,7 +102,7 @@ function WorkDetail() {
           <StateCard
             title="This work is no longer available"
             body="It may have been deleted, archived, or you don't have permission to view it."
-            action={<BtnLink to="/portfolio">Back to portfolio</BtnLink>}
+            action={<BtnLink to="/portfolio">Back to Portfolio</BtnLink>}
           />
         ) : null}
 
@@ -175,19 +175,19 @@ function WorkDetail() {
                 <IconBtnLink
                   to="/portfolio/$id/edit"
                   params={{ id }}
-                  label="Edit work"
+                  label="Edit Work"
                   variant="ink"
                   className="h-11 w-11"
                 >
                   <Pencil size={18} aria-hidden />
                 </IconBtnLink>
               )}
-              <IconBtn label="Share work" variant="outline" className="h-11 w-11" onClick={share}>
+              <IconBtn label="Share Work" variant="outline" className="h-11 w-11" onClick={share}>
                 <Share2 size={18} aria-hidden />
               </IconBtn>
               <IconBtnLink
                 to="/portfolio/new"
-                label="Add another work"
+                label="Add Another Work"
                 variant="outline"
                 className="h-11 w-11"
               >
@@ -195,7 +195,7 @@ function WorkDetail() {
               </IconBtnLink>
               {demo ? null : (
                 <IconBtn
-                  label="Delete this work"
+                  label="Delete This Work"
                   variant="outline"
                   className="ml-auto h-11 w-11 text-destructive"
                   onClick={onDelete}
@@ -212,7 +212,7 @@ function WorkDetail() {
       {onboarding && item?.published ? (
         <div className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-app bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
           <BtnLink to="/onboarding/preview" className="w-full">
-            Continue to review profile
+            Continue to Review Profile
           </BtnLink>
         </div>
       ) : null}

@@ -1,13 +1,5 @@
-import { Link, createLink, useNavigate, useRouter } from "@tanstack/react-router";
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type AnchorHTMLAttributes,
-  type ReactNode,
-  type Ref,
-} from "react";
+import { useNavigate, useRouter } from "@tanstack/react-router";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   CircleAlert,
@@ -23,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { IconBtn } from "./ui";
+import { TextLink } from "@/components/ml/links";
 
 /* ---------------------------------------------------------------- shell */
 
@@ -193,66 +186,11 @@ export function AuthNotice({
 
 /* --------------------------------------------------------------- links */
 
-function AuthLinkAnchor({
-  icon,
-  children,
-  className,
-  ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & { icon?: ReactNode; ref?: Ref<HTMLAnchorElement> }) {
-  return (
-    <a
-      {...props}
-      className={cn(
-        "link-action hit-area inline-flex items-center gap-1.5 font-semibold text-foreground",
-        className,
-      )}
-    >
-      {icon ? (
-        <span aria-hidden className="inline-flex shrink-0">
-          {icon}
-        </span>
-      ) : null}
-      {children}
-    </a>
-  );
-}
-
-/** Inline text link: underline on hover, dims while pressed, 48dp touch area, optional icon. */
-export const AuthLink = createLink(AuthLinkAnchor);
-
-/** The same treatment for an action that is not navigation. */
-export function AuthTextButton({
-  icon,
-  children,
-  onClick,
-  disabled = false,
-  className,
-}: {
-  icon?: ReactNode;
-  children: ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "link-action hit-area inline-flex items-center gap-1.5 font-semibold text-foreground disabled:pointer-events-none disabled:text-muted-foreground",
-        className,
-      )}
-    >
-      {icon ? (
-        <span aria-hidden className="inline-flex shrink-0">
-          {icon}
-        </span>
-      ) : null}
-      {children}
-    </button>
-  );
-}
+/**
+ * The auth screens' text link and text action. Both live in components/ml/links.tsx now, with the
+ * rest of the link system; these names stay so the auth screens and their stories keep working.
+ */
+export { TextLink as AuthLink, TextButton as AuthTextButton } from "@/components/ml/links";
 
 /* -------------------------------------------------------------- fields */
 
@@ -691,19 +629,13 @@ export function LegalNote() {
   return (
     <p className="mt-6 text-center text-1 leading-relaxed text-muted-foreground">
       By continuing you agree to our{" "}
-      <Link
-        to="/legal/terms"
-        className="hit-area font-semibold text-foreground underline underline-offset-2"
-      >
+      <TextLink to="/legal/terms" className="underline underline-offset-2">
         Terms
-      </Link>{" "}
+      </TextLink>{" "}
       and{" "}
-      <Link
-        to="/legal/privacy"
-        className="hit-area font-semibold text-foreground underline underline-offset-2"
-      >
+      <TextLink to="/legal/privacy" className="underline underline-offset-2">
         Privacy Policy
-      </Link>
+      </TextLink>
       .
     </p>
   );

@@ -81,10 +81,10 @@ function Recs() {
         ) : !anything ? (
           <EmptyState title={recEmptyCopy.title} body={recEmptyCopy.body}>
             <BtnLink to="/profile/edit" className="w-full">
-              Complete my profile
+              Complete My Profile
             </BtnLink>
             <BtnLink to="/discover" variant="outline" className="w-full">
-              Browse Discover instead
+              Browse Discover Instead
             </BtnLink>
           </EmptyState>
         ) : (
@@ -170,7 +170,7 @@ function Recs() {
             suggestions.
           </p>
           <BtnLink to="/recommendations/settings" variant="outline" className="w-full">
-            Recommendation settings
+            Recommendation Settings
           </BtnLink>
         </Card>
       </div>

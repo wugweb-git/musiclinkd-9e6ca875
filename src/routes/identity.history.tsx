@@ -53,7 +53,7 @@ function ScanHistory() {
             body="Codes you scan appear here so you can find that studio or session player again."
           >
             <BtnLink to="/identity/scan" className="w-full">
-              <ScanLine size={16} className="mr-2" /> Open scanner
+              <ScanLine size={16} className="mr-2" /> Open Scanner
             </BtnLink>
           </StateCard>
         ) : (

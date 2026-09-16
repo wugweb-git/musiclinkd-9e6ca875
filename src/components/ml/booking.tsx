@@ -36,6 +36,7 @@ import {
   type Resource,
   type Slot,
 } from "@/data/booking";
+import { TextLink } from "@/components/ml/links";
 
 /* ------------------------------------------------------------------ */
 /* Status + payment                                                    */
@@ -487,12 +488,12 @@ export function AddOnCard({
             amountClassName="text-sm font-semibold"
           />
           {a.rentalListingId ? (
-            <Link
+            <TextLink
               to="/marketplace/rent"
-              className="mt-1 inline-flex items-center gap-1 text-1 font-bold uppercase tracking-wide text-foreground"
+              className="mt-1 gap-1 text-1 font-bold uppercase tracking-wide"
             >
-              Rental marketplace <ChevronRight size={12} />
-            </Link>
+              Rental Marketplace <ChevronRight size={12} />
+            </TextLink>
           ) : null}
         </div>
         {a.available ? (
@@ -742,13 +743,13 @@ export function ProviderRequestCard({
       </div>
       <div className="mt-3 flex items-center justify-between">
         <span className="text-sm font-bold text-price">{inr(booking.amount)}</span>
-        <Link
+        <TextLink
           to="/provider/bookings/requests/$ref"
           params={{ ref: booking.ref }}
-          className="inline-flex items-center gap-1 text-xs font-bold text-foreground"
+          className="gap-1 text-xs font-bold"
         >
-          Review request <ChevronRight size={14} />
-        </Link>
+          Review Request <ChevronRight size={14} />
+        </TextLink>
       </div>
     </div>
   );
@@ -818,7 +819,7 @@ export function ErrorState({
       <p className="mt-2 font-semibold">{title}</p>
       <p className="mt-1 text-xs text-muted-foreground">{message}</p>
       <Btn className="mt-4 w-full" onClick={onRetry}>
-        Try again
+        Try Again
       </Btn>
     </div>
   );
