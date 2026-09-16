@@ -46,7 +46,6 @@
     "src/components/command-menu-01.tsx",
     "src/components/dropzone.tsx",
     "src/components/file-upload-01.tsx",
-    "src/components/kibo-ui/**",
     "src/components/onboarding-01.tsx",
     "src/components/pricing-table-one-demo.tsx",
     "src/components/spectrumui/**",

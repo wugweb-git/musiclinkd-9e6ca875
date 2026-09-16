@@ -230,12 +230,14 @@ export const KanbanProvider = <
     const overColumn =
       overItem?.column || columns.find((col) => col.id === over.id)?.id || columns[0]?.id;
 
-    if (activeColumn !== overColumn) {
+    if (activeColumn !== overColumn && overColumn) {
       let newData = [...data];
       const activeIndex = newData.findIndex((item) => item.id === active.id);
       const overIndex = newData.findIndex((item) => item.id === over.id);
+      const moving = newData[activeIndex];
+      if (!moving) return;
 
-      newData[activeIndex].column = overColumn;
+      moving.column = overColumn;
       newData = arrayMove(newData, activeIndex, overIndex);
 
       onDataChange?.(newData);

@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
+import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
+import { SegmentedField } from "@/components/ml/kit";
+import {
+  KanbanBoard,
+  KanbanCard,
+  KanbanCards,
+  KanbanHeader,
+  KanbanProvider,
+} from "@/components/kibo-ui/kanban";
 import { WorkspaceShell } from "@/components/ml/collab-workspace";
 import { Card, EmptyState, Label, MilestoneRow, PermissionState } from "@/components/ml/collab";
-import { getProject } from "@/data/collab";
+import { getProject, type Milestone } from "@/data/collab";
 
 export const Route = createFileRoute("/collab/$id/timeline")({
   head: ({ params }) => {
@@ -52,13 +60,16 @@ function Timeline() {
         </p>
       </Card>
 
-      <div className="mb-4 flex gap-2">
-        {["Milestones", "Tasks"].map((v) => (
-          <Chip key={v} active={v === view} onClick={() => setView(v)}>
-            {v}
-          </Chip>
-        ))}
+      <div className="mb-4">
+        <SegmentedField
+          label="What to show"
+          value={view}
+          options={["Milestones", "Board", "Tasks"]}
+          onChange={setView}
+        />
       </div>
+
+      {view === "Board" ? <MilestoneBoard milestones={project.milestones} /> : null}
 
       {view === "Milestones" ? (
         project.milestones.length === 0 ? (
@@ -81,7 +92,7 @@ function Timeline() {
             </div>
           </>
         )
-      ) : (
+      ) : view === "Tasks" ? (
         <>
           {project.tasks.length === 0 ? (
             <EmptyState
@@ -127,11 +138,73 @@ function Timeline() {
             })}
           </div>
         </>
-      )}
+      ) : null}
 
       <BtnLink to="/collab/$id/milestones/new" params={{ id: project.id }} className="mb-8 w-full">
         Add Milestone
       </BtnLink>
     </WorkspaceShell>
+  );
+}
+
+/** The four states a milestone can be in, as the board's columns. */
+const milestoneStages = [
+  { id: "todo", name: "To do" },
+  { id: "inProgress", name: "In progress" },
+  { id: "overdue", name: "Overdue" },
+  { id: "done", name: "Done" },
+];
+
+type MilestoneCard = { id: string; name: string; column: string; milestone: Milestone };
+
+/**
+ * Milestones as a board rather than a list. Dragging one to another column moves it here only —
+ * there is no milestone_status write behind this yet, so it reflects how you are reading the
+ * project, not a change the other participants see.
+ */
+function MilestoneBoard({ milestones }: { milestones: Milestone[] }) {
+  const [cards, setCards] = useState<MilestoneCard[]>(() =>
+    milestones.map((m) => ({ id: m.id, name: m.name, column: m.status, milestone: m })),
+  );
+
+  if (!milestones.length) {
+    return (
+      <EmptyState
+        title="No milestones to sort yet"
+        body="Break the project into stages, and they appear on the board."
+      />
+    );
+  }
+
+  return (
+    <div className="rail -mx-5 mb-5 overflow-x-auto px-5 pb-1 no-scrollbar">
+      <KanbanProvider
+        columns={milestoneStages}
+        data={cards}
+        onDataChange={setCards}
+        className="min-w-[680px] gap-3"
+      >
+        {(stage) => (
+          <KanbanBoard key={stage.id} id={stage.id} className="bg-subtle">
+            <KanbanHeader className="flex items-center justify-between text-2">
+              {stage.name}
+              <span className="pill bg-card text-muted-foreground">
+                {cards.filter((c) => c.column === stage.id).length}
+              </span>
+            </KanbanHeader>
+            <KanbanCards id={stage.id}>
+              {(card: MilestoneCard) => (
+                <KanbanCard key={card.id} {...card}>
+                  <span className="block text-1 font-semibold">{card.name}</span>
+                  <span className="mt-0.5 block truncate text-1 text-muted-foreground">
+                    {card.milestone.owner} · due {card.milestone.due}
+                  </span>
+                </KanbanCard>
+              )}
+            </KanbanCards>
+          </KanbanBoard>
+        )}
+      </KanbanProvider>
+    </div>
   );
 }

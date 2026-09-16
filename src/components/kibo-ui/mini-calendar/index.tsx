@@ -79,13 +79,13 @@ export const MiniCalendar = ({
   const [selectedDate, setSelectedDate] = useControllableState<Date | undefined>({
     prop: value,
     defaultProp: defaultValue,
-    onChange: onValueChange,
+    ...(onValueChange ? { onChange: onValueChange } : {}),
   });
 
   const [currentStartDate, setCurrentStartDate] = useControllableState({
     prop: startDate,
     defaultProp: defaultStartDate,
-    onChange: onStartDateChange,
+    ...(onStartDateChange ? { onChange: onStartDateChange } : {}),
   });
 
   const handleDateSelect = (date: Date) => {
