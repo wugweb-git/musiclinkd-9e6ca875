@@ -70,7 +70,7 @@ export function HireModal({
                   choice === o.label ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
                 }`}
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-subtle">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-icon-chip">
                   <o.Icon size={20} aria-hidden />
                 </span>
                 <span className="flex-1">
@@ -79,7 +79,7 @@ export function HireModal({
                 </span>
                 <span
                   className={`h-5 w-5 rounded-full border-2 ${
-                    choice === o.label ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
+                    choice === o.label ? "border-primary bg-primary" : "border-border"
                   }`}
                 />
               </button>

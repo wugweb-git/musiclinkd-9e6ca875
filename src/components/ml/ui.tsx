@@ -1,6 +1,8 @@
 import { Link, createLink, useRouterState } from "@tanstack/react-router";
 import { haptic } from "@/lib/haptics";
 import {
+  useEffect,
+  useRef,
   useState,
   type AnchorHTMLAttributes,
   type PointerEvent,
@@ -24,20 +26,26 @@ import {
  * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
  * `100vh` so the browser's own chrome doesn't push the page end off screen on a phone.
  *
- * Tab screens keep the default bottom nav. A flow screen (onboarding, add work, booking) passes
- * `bottomNav={false}`, and `className` carries its own bottom clearance when something is fixed
- * over the page end — `pb-32` for a footer action bar, and so on. That clearance is the only thing
- * these screens ever differed on, so nothing needs to rebuild the shell by hand.
+ * The bottom nav is a route-type rule: shown on the five tab roots, hidden on every pushed screen
+ * (detail, form, settings sub-page, flow). A sheet opened over a tab root leaves it as it was.
+ * `bottomNav` overrides the rule; `className` carries a screen's own bottom clearance.
  */
+export function isTabRoot(path: string) {
+  const p = path.length > 1 ? path.replace(/\/+$/, "") : path;
+  return navItems.some((item) => item.to === p);
+}
+
 export function Screen({
   children,
-  bottomNav = true,
+  bottomNav,
   className = "",
 }: {
   children: ReactNode;
   bottomNav?: boolean;
   className?: string;
 }) {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  bottomNav ??= isTabRoot(path);
   const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background">
@@ -47,7 +55,7 @@ export function Screen({
   );
 }
 
-const navItems = [
+export const navItems = [
   { to: "/home", label: "Home", icon: Home },
   { to: "/discover", label: "Discover", icon: Compass },
   { to: "/messages", label: "Connections", icon: MessageCircle },
@@ -159,7 +167,7 @@ export function SearchBar({
  *   <Chip media={<Mic size={16} />} active={on}>Singer</Chip>         icon in a circle
  *   <Chip media="https://…/rock.jpg">Rock</Chip>                       image in a circle
  *
- * States: selected (ink, with a small spring when picked), pressed (state layer and a small scale),
+ * States: selected (pink text on a 20% pink tint, with a small spring when picked), pressed (state layer and a small scale),
  * focus ring, disabled at 50%.
  * `aria-pressed` is set whenever `active` is given, so toggles read as toggles. Touch area is 48dp.
  */
@@ -206,7 +214,7 @@ export function Chip({
         atLimit ? "opacity-50" : ""
       } ${refused ? "animate-shake" : picked && active ? "animate-select" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
-          ? "border-transparent bg-selected-bg text-selected-text"
+          ? "border-transparent bg-brand/20 text-pink-on-tint"
           : "border-border bg-card text-foreground"
       }`}
     >
@@ -214,7 +222,7 @@ export function Chip({
         <span
           aria-hidden
           className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full ${
-            active ? "bg-background/15 text-selected-text" : "bg-subtle text-muted-foreground"
+            active ? "bg-card/60 text-pink-on-tint" : "bg-subtle text-muted-foreground"
           }`}
         >
           {typeof media === "string" ? (
@@ -257,7 +265,8 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
  * stops under prefers-reduced-motion. Styles: `state-layer`, `ripple` in styles.css.
  */
 
-type BtnVariant = "primary" | "ink" | "ghost" | "outline";
+/** `brand` is for branded blocks only (a pink hero or promo), never an ordinary action. */
+type BtnVariant = "primary" | "ink" | "ghost" | "outline" | "brand";
 
 /*
  * Filled buttons go disabled the Material way: a faint ink container with faint ink text, so a
@@ -273,10 +282,11 @@ const btnVariants: Record<BtnVariant, string> = {
   ink: `bg-ink text-background ${filledDisabled}`,
   outline: `border border-border bg-card text-foreground ${dimDisabled}`,
   ghost: `bg-subtle text-muted-foreground ${dimDisabled}`,
+  brand: `bg-brand text-white ${filledDisabled}`,
 };
 
 const btnBase =
-  "state-layer relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-[transform,background-color,color] duration-200 ease-standard active:scale-97 disabled:pointer-events-none aria-disabled:pointer-events-none";
+  "state-layer press-brand relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-[transform,background-color,color] duration-200 ease-standard active:scale-97 disabled:pointer-events-none aria-disabled:pointer-events-none";
 
 function btnClass(variant: BtnVariant, className: string) {
   return `${btnBase} ${btnVariants[variant]} ${className}`;
@@ -416,7 +426,7 @@ const iconBtnVariants: Record<IconBtnVariant, string> = {
   plain: "text-foreground",
 };
 function iconBtnClass(variant: IconBtnVariant, className: string) {
-  return `hit-area state-layer inline-flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full transition-transform duration-125 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 ${iconBtnVariants[variant]} ${className}`;
+  return `hit-area state-layer press-brand inline-flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full transition-transform duration-125 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 ${iconBtnVariants[variant]} ${className}`;
 }
 
 /** Icon-only button. 40px to look at, 48dp to touch; `label` is its accessible name. */
@@ -501,7 +511,27 @@ export function Sheet({
   children: ReactNode;
   title?: string;
 }) {
+  const panel = useRef<HTMLDivElement>(null);
+  const [drag, setDrag] = useState<{ start: number; dy: number } | null>(null);
+  const close = useRef(onClose);
+  close.current = onClose;
+
+  useEffect(() => {
+    if (!open) return;
+    const opener = document.activeElement as HTMLElement | null;
+    panel.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close.current();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      opener?.focus?.();
+    };
+  }, [open]);
+
   if (!open) return null;
+  const dy = drag?.dy ?? 0;
   return (
     <div className="fixed inset-0 z-50 mx-auto flex w-full max-w-app flex-col justify-end">
       <button
@@ -509,8 +539,33 @@ export function Sheet({
         onClick={onClose}
         className="absolute inset-0 animate-in fade-in bg-ink/50 backdrop-blur-[2px] duration-200"
       />
-      <div className="relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-3xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar duration-300 ease-enter">
-        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
+      <div
+        ref={panel}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        tabIndex={-1}
+        style={dy ? { transform: `translateY(${dy}px)` } : undefined}
+        className={`relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-3xl border border-border bg-card px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 outline-none no-scrollbar duration-300 ease-enter ${drag ? "" : "transition-transform"}`}
+      >
+        <div
+          aria-hidden
+          className="-mx-5 -mt-3 mb-1 touch-none px-5 pb-3 pt-3"
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            setDrag({ start: e.clientY, dy: 0 });
+          }}
+          onPointerMove={(e) => {
+            if (drag) setDrag({ ...drag, dy: Math.max(0, e.clientY - drag.start) });
+          }}
+          onPointerUp={() => {
+            if (drag && drag.dy > 80) onClose();
+            setDrag(null);
+          }}
+          onPointerCancel={() => setDrag(null)}
+        >
+          <div className="mx-auto h-1 w-10 rounded-full bg-border" />
+        </div>
         {title ? <h2 className="mb-4 text-3">{title}</h2> : null}
         {children}
       </div>

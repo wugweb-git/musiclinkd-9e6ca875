@@ -19,6 +19,7 @@ import {
 } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { MadeByWugweb } from "@/components/ml/kit";
 
 /*
  * Sign in with email: the alternative on the mobile sign-in screen. One field and a 6-digit code,
@@ -128,6 +129,7 @@ function EmailSignIn() {
       </p>
 
       <LegalNote />
+      <MadeByWugweb />
     </AuthScreen>
   );
 }

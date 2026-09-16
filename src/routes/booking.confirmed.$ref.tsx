@@ -65,7 +65,7 @@ function Confirmed() {
             <Detail label="Location" value={`${b.area}, ${b.city}`} />
             <Detail label="Booking ID" value={ref} />
             <Detail label={requested ? "Estimated price" : "Amount"} value={inr(11328)} />
-            <Detail label="Payment" value={requested ? "Nothing charged yet" : "Deposit paid"} />
+            <Detail label="Payment" value="Directly with the studio" />
           </dl>
         </div>
 

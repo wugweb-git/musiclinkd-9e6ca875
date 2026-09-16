@@ -42,7 +42,7 @@ function Categories() {
                 params={{ slug: c.slug }}
                 className="state-layer flex items-center gap-3 px-4 py-3.5"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
                   <Icon
                     size={20}
                     strokeWidth={1.75}

@@ -16,16 +16,20 @@ import {
   Star,
   X,
   type LucideIcon,
+  ChevronDown,
+  ExternalLink,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
-import { Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
+import { embedFor } from "@/lib/embed";
 import {
   analyticsFor,
   contributorDirectory,
   FEATURED_LIMIT,
   mediaStateCopy,
   workType,
+  workTypes,
   type MediaState,
   type PortfolioItem,
   type WorkAnalyticsFigures,
@@ -64,41 +68,137 @@ export function WorkTypeIcon({ kind, size = "md" }: { kind: string; size?: "md" 
   );
 }
 
+/** Add work: the type list in a bottom drawer, icon in a grey circle, one row per type. */
+export function WorkTypeSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  return (
+    <Sheet open={open} onClose={onClose} title="Add work">
+      <ul>
+        {workTypes.map((t) => {
+          const Icon = workIcons[t.kind] ?? Music2;
+          return (
+            <li key={t.kind}>
+              <Link
+                to="/portfolio/new/$kind"
+                params={{ kind: t.kind }}
+                onClick={onClose}
+                className="state-layer flex items-center gap-3 py-2.5"
+              >
+                <span
+                  aria-hidden
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-foreground"
+                >
+                  <Icon size={24} strokeWidth={1.75} />
+                </span>
+                <span className="text-sm font-semibold">{t.label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </Sheet>
+  );
+}
+
 /* ---------------- Work card (WHAT · WHO · ROLE · MEDIA · CONTEXT) ------- */
 
+/*
+ * Two states. Resting: cover (or type icon), title, type. Tapped: expands in place with the player
+ * when the link's source embeds, or an Open link to a new tab when it doesn't.
+ */
 export function WorkCard({ item }: { item: PortfolioItem }) {
   const t = workType(item.kind);
+  const [open, setOpen] = useState(false);
+  const embed = item.media_url ? embedFor(item.media_url) : null;
   return (
-    <Link
-      to="/portfolio/$id"
-      params={{ id: item.id }}
-      className="state-layer block rounded-lg bg-subtle p-4 transition-transform duration-125 ease-standard active:scale-97"
-    >
-      <div className="flex gap-3">
-        <WorkTypeIcon kind={item.kind} size="lg" />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="truncate text-2 font-semibold">{item.title}</h3>
-            <StatusPill published={item.published} />
-          </div>
-          <p className="mt-0.5 text-1 text-muted-foreground">
-            {t.label}
-            {item.release_year ? ` · ${item.release_year}` : ""}
-          </p>
-          {item.role ? (
-            <p className="mt-1 truncate text-1 font-semibold text-foreground">{item.role}</p>
-          ) : null}
-          {item.description ? (
-            <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{item.description}</p>
-          ) : null}
-          {item.collaborators.length ? (
-            <p className="mt-1.5 truncate text-1 text-muted-foreground">
-              with {item.collaborators.join(", ")}
+    <div className="rounded-lg bg-subtle">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="state-layer block w-full rounded-lg p-4 text-left transition-transform duration-125 ease-standard active:scale-97"
+      >
+        <div className="flex gap-3">
+          {item.cover_url ? (
+            <img
+              src={item.cover_url}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-16 w-16 shrink-0 rounded-lg object-cover"
+            />
+          ) : (
+            <WorkTypeIcon kind={item.kind} size="lg" />
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="truncate text-2 font-semibold">{item.title}</h3>
+              <StatusPill published={item.published} />
+            </div>
+            <p className="mt-0.5 text-1 text-muted-foreground">
+              {t.label}
+              {item.release_year ? ` · ${item.release_year}` : ""}
             </p>
-          ) : null}
+            {item.role ? (
+              <p className="mt-1 truncate text-1 font-semibold text-foreground">{item.role}</p>
+            ) : null}
+            {item.description ? (
+              <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{item.description}</p>
+            ) : null}
+            {item.collaborators.length ? (
+              <p className="mt-1.5 truncate text-1 text-muted-foreground">
+                with {item.collaborators.join(", ")}
+              </p>
+            ) : null}
+          </div>
+          <ChevronDown
+            size={20}
+            aria-hidden
+            className={`mt-0.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
+          />
         </div>
-      </div>
-    </Link>
+      </button>
+      {open ? (
+        <div className="animate-in fade-in space-y-3 px-4 pb-4 duration-200">
+          {embed?.mode === "iframe" ? (
+            <iframe
+              src={embed.src}
+              title={item.title}
+              height={embed.height}
+              loading="lazy"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+              allowFullScreen
+              className="w-full rounded-lg border-0 bg-background"
+            />
+          ) : embed?.mode === "audio" ? (
+            // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied file; no caption track exists to attach
+            <audio src={embed.src} controls preload="none" className="w-full" />
+          ) : embed?.mode === "video" ? (
+            // eslint-disable-next-line jsx-a11y/media-has-caption -- user-supplied file; no caption track exists to attach
+            <video src={embed.src} controls preload="none" className="w-full rounded-lg" />
+          ) : null}
+          <div className="flex gap-2">
+            {embed?.mode === "external" ? (
+              <a
+                href={embed.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="state-layer press-brand inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-background"
+              >
+                <ExternalLink size={16} aria-hidden /> Open
+              </a>
+            ) : null}
+            <BtnLink
+              to="/portfolio/$id"
+              params={{ id: item.id }}
+              variant="outline"
+              className="min-h-10 flex-1"
+            >
+              Details
+            </BtnLink>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -400,10 +500,28 @@ export function AudioPlayer({
 }
 
 export function VideoPlayer({ src, title }: { src: string; title: string }) {
-  const embeddable = /youtube|youtu\.be|vimeo/.test(src);
-  if (embeddable) {
+  const embed = embedFor(src);
+  if (embed?.mode === "iframe") {
     return (
-      <a href={src} target="_blank" rel="noreferrer" className="block rounded-lg bg-subtle p-4">
+      <iframe
+        src={embed.src}
+        title={title}
+        height={embed.height}
+        loading="lazy"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+        allowFullScreen
+        className="w-full rounded-lg border-0 bg-subtle"
+      />
+    );
+  }
+  if (embed?.mode === "external") {
+    return (
+      <a
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block rounded-lg bg-subtle p-4"
+      >
         <p className="pill bg-background text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
         <p className="mt-1 truncate text-1 text-foreground">{src}</p>

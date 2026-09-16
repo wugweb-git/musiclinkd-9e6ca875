@@ -8,7 +8,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import QRCode from "qrcode";
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { Btn, BtnLink, VerifiedBadge } from "./ui";
+import { Btn, BtnLink, Sheet, VerifiedBadge } from "./ui";
+import { useViewer } from "./viewer";
 import { Price } from "./kit";
 import { canonicalUrl, styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 
@@ -320,8 +321,7 @@ export function ActionRow({
       </span>
     </>
   );
-  const cls =
-    "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-left";
+  const cls = "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-left";
   if (to) {
     return (
       <Link to={to} className={cls}>
@@ -473,4 +473,41 @@ export function PrimaryPair({
 
 export function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse rounded-lg bg-subtle ${className}`} />;
+}
+
+/** Your QR in a bottom drawer: the code, your name, share. Full options stay on /identity/qr. */
+export function QrSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { displayName, username, photo } = useViewer();
+  const url =
+    username && typeof window !== "undefined"
+      ? `${window.location.origin}/profile/${username}`
+      : "";
+  return (
+    <Sheet open={open} onClose={onClose} title="Your QR">
+      {url ? (
+        <div className="flex flex-col items-center gap-4">
+          <QrCode
+            value={url}
+            size={220}
+            overlay={photo || undefined}
+            label={`MusicLinkd QR for ${displayName || "your profile"}`}
+          />
+          {displayName ? <p className="text-2 font-semibold">{displayName}</p> : null}
+          <div className="w-full">
+            <CopyLinkRow url={url} />
+          </div>
+          <div className="w-full">
+            <ShareActions url={url} title={`${displayName || "My profile"} on MusicLinkd`} />
+          </div>
+        </div>
+      ) : (
+        <BtnLink to="/profile/edit" className="w-full" onClick={onClose}>
+          Set Username
+        </BtnLink>
+      )}
+      <BtnLink to="/identity/qr" variant="outline" className="mt-3 w-full" onClick={onClose}>
+        More QR options
+      </BtnLink>
+    </Sheet>
+  );
 }

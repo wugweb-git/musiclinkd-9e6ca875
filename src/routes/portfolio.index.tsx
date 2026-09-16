@@ -3,7 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Settings } from "lucide-react";
 import { Btn, BtnLink, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
-import { PortfolioHeader, PortfolioSkeleton, StateCard, WorkCard } from "@/components/ml/portfolio";
+import {
+  PortfolioHeader,
+  PortfolioSkeleton,
+  StateCard,
+  WorkCard,
+  WorkTypeSheet,
+} from "@/components/ml/portfolio";
+import { useState } from "react";
 import { demoPortfolio, roleSuggestions, type PortfolioItem } from "@/data/portfolio";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -31,6 +38,7 @@ export const Route = createFileRoute("/portfolio/")({
 
 function PortfolioOverview() {
   const { signedIn, loading: authLoading } = useAuth();
+  const [adding, setAdding] = useState(false);
   const fetchItems = useServerFn(listMyPortfolio);
   const q = useQuery({
     queryKey: ["portfolio", "mine"],
@@ -70,7 +78,7 @@ function PortfolioOverview() {
             />
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <BtnLink to="/portfolio/new">Add Work</BtnLink>
+              <Btn onClick={() => setAdding(true)}>Add Work</Btn>
               <BtnLink to="/portfolio/reorder" variant="outline">
                 Reorder
               </BtnLink>
@@ -115,7 +123,7 @@ function PortfolioOverview() {
             <StateCard
               title="Your work belongs here"
               body={roleSuggestions["default"]!}
-              action={<BtnLink to="/portfolio/new">Add Work</BtnLink>}
+              action={<Btn onClick={() => setAdding(true)}>Add Work</Btn>}
             />
           ) : null}
 
@@ -124,6 +132,7 @@ function PortfolioOverview() {
           ))}
         </div>
       </main>
+      <WorkTypeSheet open={adding} onClose={() => setAdding(false)} />
     </Screen>
   );
 }

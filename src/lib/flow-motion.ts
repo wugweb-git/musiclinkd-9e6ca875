@@ -3,7 +3,8 @@ import type { ParsedLocation } from "@tanstack/react-router";
 import { steps } from "@/data/onboarding";
 
 /**
- * Page motion for the registration flow (splash → auth → onboarding → Home). The order below is the
+ * Page motion. The registration flow (splash → auth → onboarding → Home) follows the order below;
+ * everything else follows `appTransition`. In the flow, the order below is the
  * order a new user travels, so a navigation to a later screen slides forward and to an earlier one
  * slides back, whether it came from a button, a link or the Android back gesture. The keyframes
  * live in styles.css under "page motion".
@@ -85,7 +86,18 @@ export function flowTransitionTypes({
   if (!pathChanged) return a >= 0 && b >= 0 && a !== b ? [b > a ? "forward" : "back"] : false;
   if (a >= 0 && b >= 0) return [b > a ? "forward" : "back"];
   const inFlow = (p: string) => ORDER.includes(p) || SIDE.has(p);
-  // Home to Home-adjacent screens is everyday navigation, not the flow: no transition.
-  if (from === "/home" && !ORDER.includes(to)) return false;
-  return inFlow(from) && inFlow(to) ? ["fade"] : false;
+  if (inFlow(from) && inFlow(to) && !(from === "/home" && !ORDER.includes(to))) return ["fade"];
+  return appTransition(from, to);
+}
+
+const TAB_ROOTS = new Set(["/home", "/discover", "/messages", "/marketplace", "/profile"]);
+
+/**
+ * Everyday navigation, Android style: between tabs cross-fades; into a screen pushes forward;
+ * out of it (a parent path or a tab) pops back; sideways between pushed screens pushes.
+ */
+function appTransition(from: string, to: string): string[] {
+  if (TAB_ROOTS.has(from) && TAB_ROOTS.has(to)) return ["fade"];
+  if (TAB_ROOTS.has(to) || from.startsWith(`${to}/`)) return ["back"];
+  return ["forward"];
 }

@@ -7,7 +7,8 @@ export type SettingsGroup = {
   key: string;
   title: string;
   /** `icon` names a lucide icon the settings screen maps; keep it to one word. */
-  rows: { key: string; label: string; hint: string; to: string; icon: string }[];
+  /** `soon`: placed in a later phase — the row shows but does nothing. */
+  rows: { key: string; label: string; hint: string; to: string; icon: string; soon?: boolean }[];
 };
 
 export const settingsGroups: SettingsGroup[] = [
@@ -35,13 +36,7 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "Identity and professional badges",
         to: "/verification",
         icon: "badge-check",
-      },
-      {
-        key: "plans",
-        label: "Plan & billing",
-        hint: "Your subscription and invoices",
-        to: "/plans/manage",
-        icon: "credit-card",
+        soon: true,
       },
     ],
   },
@@ -70,12 +65,18 @@ export const settingsGroups: SettingsGroup[] = [
         to: "/portfolio/settings",
         icon: "folder",
       },
+    ],
+  },
+  {
+    key: "music",
+    title: "Music & listening",
+    rows: [
       {
-        key: "earnings",
-        label: "Earnings",
-        hint: "Payouts and history",
-        to: "/plans/earnings",
-        icon: "wallet",
+        key: "spotify",
+        label: "Spotify",
+        hint: "Connect your account",
+        to: "/settings",
+        icon: "music",
       },
     ],
   },
@@ -239,7 +240,6 @@ export const securityRows = [
 
 export const supportTopics = [
   { key: "bookings", label: "A booking went wrong", to: "/help" },
-  { key: "payments", label: "Payments and payouts", to: "/help" },
   { key: "safety", label: "Report someone", to: "/help" },
   { key: "account", label: "I cannot access my account", to: "/auth/forgot" },
 ];

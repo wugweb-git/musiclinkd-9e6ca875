@@ -120,7 +120,7 @@ function Review() {
               <AcknowledgeRow
                 checked={ack}
                 onChange={setAck}
-                label={`I've read ${b.name}'s cancellation, deposit and overtime terms.`}
+                label={`I've read ${b.name}'s cancellation and overtime terms.`}
               />
             </div>
           </>
@@ -129,18 +129,14 @@ function Review() {
 
       <StickyBar
         price={inr(price.total)}
-        hint={price.deposit ? `${inr(price.deposit)} deposit due now` : "No deposit required"}
         disabled={!ready}
         primaryLabel={instant ? "Confirm booking" : "Request booking"}
+        // Bookings end at Confirmed: payment happens between the two people, off MusicLinkd.
         onPrimary={() =>
-          navigate(
-            price.deposit > 0
-              ? { to: "/booking/$id/pay", params: { id: b.id } }
-              : {
-                  to: "/booking/confirmed/$ref",
-                  params: { ref: instant ? "MLB-NEW-C" : "MLB-NEW-R" },
-                },
-          )
+          navigate({
+            to: "/booking/confirmed/$ref",
+            params: { ref: instant ? "MLB-NEW-C" : "MLB-NEW-R" },
+          })
         }
       />
     </div>

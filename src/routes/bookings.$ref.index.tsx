@@ -6,7 +6,6 @@ import {
   BookingTimeline,
   Detail,
   EmptyState,
-  PaymentPill,
   PriceBreakdownCard,
   PolicyCard,
 } from "@/components/ml/booking";
@@ -86,7 +85,6 @@ function BookingDetail() {
 
         <div className="flex flex-wrap items-center gap-2">
           <BookingStatusPill status={bk.status} />
-          <PaymentPill status={bk.payment} />
         </div>
 
         <div className="mt-4 rounded-lg bg-subtle p-4">

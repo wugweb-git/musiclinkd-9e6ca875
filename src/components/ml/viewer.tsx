@@ -34,6 +34,7 @@ export type Viewer = {
   loading: boolean;
   photo: string | null;
   displayName: string | null;
+  username: string | null;
   initials: string;
 };
 
@@ -63,6 +64,7 @@ export function useViewer(): Viewer {
     loading,
     photo: row?.avatar_url ?? null,
     displayName,
+    username: row?.username ?? null,
     initials: initialsOf(displayName),
   };
 }

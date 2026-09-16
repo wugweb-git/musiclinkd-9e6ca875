@@ -438,7 +438,7 @@ export function FulfilmentPicker({
             onClick={() => onChange(o.id)}
             className="flex w-full items-center gap-3 px-4 py-4 text-left"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
               <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
             </span>
             <span className="min-w-0 flex-1">

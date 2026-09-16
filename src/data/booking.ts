@@ -2,7 +2,7 @@
  * FLOW 08 — BOOKING — design-time seeded data.
  *
  * Entity names map to the canonical MusicLinkd model:
- *   businessProfile · service · availability · booking · payment · user
+ *   businessProfile · service · availability · booking · user
  * Fields not present in the canonical schema are tagged below:
  *   EXISTING  — already in the schema spec
  *   COMPUTED  — derived in the UI from existing fields
@@ -41,17 +41,6 @@ export type BookingStatus =
   | "rejected"
   | "expired"
   | "noShow";
-
-/** payment.status — EXISTING */
-export type PaymentStatus =
-  | "pending"
-  | "processing"
-  | "paid"
-  | "failed"
-  | "partiallyPaid"
-  | "balanceDue"
-  | "refundPending"
-  | "refunded";
 
 export type Slot = {
   /** availability.slots[].start — EXISTING, 24h local */
@@ -124,7 +113,6 @@ export type Bookable = {
   resources: Resource[];
   addOns: AddOn[];
   policies: Policy[];
-  depositPct: number;
   taxPct: number;
   /** COMPUTED */
   responseTime: string;
@@ -144,9 +132,7 @@ export type Booking = {
   end: string;
   hours: number;
   status: BookingStatus;
-  payment: PaymentStatus;
   amount: number;
-  deposit: number;
   people: number;
   purpose: string;
   notes?: string;
@@ -171,17 +157,12 @@ const STUDIO_F = "photo-1493225457124-a3eb161ffa5f";
 const commonPolicies: Policy[] = [
   {
     title: "Cancellation",
-    body: "Free cancellation up to 48 hours before the session. Within 48 hours the deposit is non-refundable.",
+    body: "Free cancellation up to 48 hours before the session.",
     critical: true,
   },
   {
     title: "Rescheduling",
     body: "One free reschedule up to 24 hours before your slot, subject to availability.",
-  },
-  {
-    title: "Deposit & payment",
-    body: "A deposit is charged to hold the room. The balance is due at the studio on the day.",
-    critical: true,
   },
   {
     title: "Overtime",
@@ -232,7 +213,6 @@ export const bookables: Bookable[] = [
       "A tracking room built for live bands and vocalists, with an SSL-fed control room and an engineer on every session.",
     facilities: ["Live room", "Vocal booth", "Engineer included", "Parking", "Green room", "Wi-Fi"],
     responseTime: "Usually replies in 2 hours",
-    depositPct: 25,
     taxPct: 18,
     resources: [
       {
@@ -349,7 +329,6 @@ export const bookables: Bookable[] = [
       "Attended and unattended mastering in a purpose-built room, with stem mastering on request.",
     facilities: ["Attended sessions", "Stem mastering", "Analogue chain", "Reference library"],
     responseTime: "Usually replies same day",
-    depositPct: 50,
     taxPct: 18,
     resources: [
       {
@@ -403,7 +382,6 @@ export const bookables: Bookable[] = [
     about: "Three backlined rehearsal rooms, open late, priced by the hour with no minimum.",
     facilities: ["Backline included", "Open till 2 AM", "Lockers", "Cafe"],
     responseTime: "Instant confirmation",
-    depositPct: 0,
     taxPct: 18,
     resources: [
       {
@@ -468,7 +446,6 @@ export const bookables: Bookable[] = [
     about: "Four-mic podcast room with multicam video capture and a producer on the desk.",
     facilities: ["4 mic positions", "Multicam video", "Producer", "Same-day audio"],
     responseTime: "Usually replies in 1 hour",
-    depositPct: 30,
     taxPct: 18,
     resources: [
       {
@@ -606,9 +583,7 @@ export type PriceLines = {
   subtotal: number;
   tax: number;
   taxPct: number;
-  deposit: number;
   total: number;
-  balance: number;
 };
 
 export function priceFor(b: Bookable, r: Resource, hours: number, addOnIds: string[]): PriceLines {
@@ -625,7 +600,6 @@ export function priceFor(b: Bookable, r: Resource, hours: number, addOnIds: stri
   const subtotal = base + addOns.reduce((s, a) => s + a.price, 0);
   const tax = Math.round((subtotal * b.taxPct) / 100);
   const total = subtotal + tax;
-  const deposit = Math.round((total * b.depositPct) / 100);
   return {
     baseLabel,
     base,
@@ -633,9 +607,7 @@ export function priceFor(b: Bookable, r: Resource, hours: number, addOnIds: stri
     subtotal,
     tax,
     taxPct: b.taxPct,
-    deposit,
     total,
-    balance: total - deposit,
   };
 }
 
@@ -684,9 +656,7 @@ export const bookings: Booking[] = [
     end: "20:00",
     hours: 4,
     status: "upcoming",
-    payment: "partiallyPaid",
     amount: 11328,
-    deposit: 2832,
     people: 5,
     purpose: "Band tracking — single",
     notes: "Bringing our own snare and pedalboard.",
@@ -705,9 +675,7 @@ export const bookings: Booking[] = [
     end: "14:00",
     hours: 3,
     status: "requested",
-    payment: "pending",
     amount: 7080,
-    deposit: 2124,
     people: 3,
     purpose: "Podcast episode 12",
     addOnIds: ["clips"],
@@ -725,9 +693,7 @@ export const bookings: Booking[] = [
     end: "17:00",
     hours: 4,
     status: "completed",
-    payment: "paid",
     amount: 14160,
-    deposit: 7080,
     people: 2,
     purpose: "EP mastering — 4 tracks",
     addOnIds: [],
@@ -745,9 +711,7 @@ export const bookings: Booking[] = [
     end: "22:00",
     hours: 3,
     status: "cancelled",
-    payment: "refunded",
     amount: 2124,
-    deposit: 0,
     people: 4,
     purpose: "Set rehearsal",
     addOnIds: [],
@@ -769,9 +733,7 @@ export const providerRequests: Booking[] = [
     end: "15:00",
     hours: 5,
     status: "requested",
-    payment: "pending",
     amount: 12390,
-    deposit: 3098,
     people: 6,
     purpose: "Live band tracking",
     notes: "Five-piece, need the full kit mic'd.",
@@ -790,9 +752,7 @@ export const providerRequests: Booking[] = [
     end: "20:00",
     hours: 2,
     status: "reviewing",
-    payment: "pending",
     amount: 2832,
-    deposit: 708,
     people: 2,
     purpose: "Vocal stacks",
     addOnIds: [],
@@ -810,9 +770,7 @@ export const providerRequests: Booking[] = [
     end: "18:00",
     hours: 6,
     status: "requested",
-    payment: "pending",
     amount: 11210,
-    deposit: 2803,
     people: 2,
     purpose: "Attended mix — 2 songs",
     addOnIds: [],
@@ -833,9 +791,7 @@ export const providerToday: Booking[] = [
     end: "20:00",
     hours: 4,
     status: "upcoming",
-    payment: "partiallyPaid",
     amount: 11328,
-    deposit: 2832,
     people: 5,
     purpose: "Band tracking — single",
     addOnIds: ["engineer", "drums"],
@@ -853,9 +809,7 @@ export const providerToday: Booking[] = [
     end: "13:00",
     hours: 2,
     status: "completed",
-    payment: "paid",
     amount: 2832,
-    deposit: 708,
     people: 1,
     purpose: "Ad voiceover",
     addOnIds: [],
@@ -887,24 +841,10 @@ export const statusMeta: Record<
   noShow: { label: "No-show", tone: "off" },
 };
 
-export const paymentMeta: Record<PaymentStatus, string> = {
-  pending: "Payment pending",
-  processing: "Payment processing",
-  paid: "Paid in full",
-  failed: "Payment failed",
-  partiallyPaid: "Deposit paid",
-  balanceDue: "Balance due",
-  refundPending: "Refund processing",
-  refunded: "Refunded",
-};
-
 export const bookingTimeline: { status: BookingStatus; label: string }[] = [
   { status: "requested", label: "Requested" },
   { status: "reviewing", label: "Provider reviewing" },
   { status: "confirmed", label: "Confirmed" },
-  { status: "upcoming", label: "Upcoming" },
-  { status: "inProgress", label: "In progress" },
-  { status: "completed", label: "Completed" },
 ];
 
 export const declineReasons = [

@@ -3,7 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import type { ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
-  Bell,
   ChevronRight,
   WifiOff,
   RefreshCw,
@@ -13,13 +12,10 @@ import {
   BadgeCheck,
   Calendar,
   Compass,
-  MessageCircle,
-  Wallet,
   Megaphone,
   Rss,
   Users,
   Star,
-  CreditCard,
   LifeBuoy,
   MapPin,
   QrCode,
@@ -28,11 +24,13 @@ import {
 } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { Switch } from "@/components/ui/switch";
-import { EmptyState, Loading, Price } from "@/components/ml/kit";
+import { EmptyState, Loading, Price, SoonBadge } from "@/components/ml/kit";
+import { toast } from "sonner";
 import { TalentCard } from "@/components/ml/cards";
 import { StatRow } from "@/components/ml/profile";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
+import { QrSheet } from "@/components/ml/qr";
 import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -233,13 +231,7 @@ function Dashboard() {
 function Header() {
   return (
     <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-end gap-2 px-5 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <Link
-        to="/notifications"
-        aria-label="Notifications"
-        className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10 text-background backdrop-blur"
-      >
-        <Bell size={20} aria-hidden />
-      </Link>
+      <NotificationsBell tone="onInk" />
       <Link
         to="/settings"
         aria-label="Settings"
@@ -259,6 +251,7 @@ function Body({ home }: { home: Home }) {
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
   const hello = useGreeting();
+  const [qrOpen, setQrOpen] = useState(false);
   const peers = usePeers(home.roleSlug);
 
   return (
@@ -307,20 +300,28 @@ function Body({ home }: { home: Home }) {
       </section>
 
       {/*
-       * Your tools: what came off the profile. The profile is what visitors read; these are the
-       * owner's own instruments, so they live on the owner's screen, two to a row, icon first.
+       * Your tools: the owner's own instruments and shortcuts, one list, two to a row. Bands and
+       * Verification are placed in later phases, so they show and do nothing yet.
        */}
       <section className="pt-7">
         <SectionHeader title="Your tools" />
         <div className="grid grid-cols-2 gap-2 px-5">
-          <ToolLink to="/identity/qr" icon={<QrCode size={16} />} label="QR & digital card" />
-          <ToolLink to="/plans/earnings" icon={<Wallet size={16} />} label="Earnings" />
-          <ToolLink to="/bands" icon={<Users size={16} />} label="My bands" />
-          <ToolLink to="/verification" icon={<BadgeCheck size={16} />} label="Verification" />
+          <ToolLink to="/portfolio/new" icon={<Plus size={16} />} label="Add track" />
+          <ToolLink
+            onClick={() => setQrOpen(true)}
+            icon={<QrCode size={16} />}
+            label="QR & digital card"
+          />
+          <ToolLink to="/search" icon={<Search size={16} />} label="Search talent" />
+          <ToolLink to="/studio" icon={<Building2 size={16} />} label="Find a studio" />
+          <ToolLink to="/bookings" icon={<Calendar size={16} />} label="My bookings" />
           <ToolLink to="/recommendations" icon={<Sparkles size={16} />} label="For you" />
           <ToolLink to="/help" icon={<LifeBuoy size={16} />} label="Help & guides" />
+          <ToolLink icon={<Users size={16} />} label="My bands" soon />
+          <ToolLink icon={<BadgeCheck size={16} />} label="Verification" soon />
         </div>
       </section>
+      <QrSheet open={qrOpen} onClose={() => setQrOpen(false)} />
 
       {/* Roles being cast: the live opportunities table, newest first. */}
       <section className="pt-7">
@@ -494,17 +495,6 @@ function Body({ home }: { home: Home }) {
           </div>
         )}
       </section>
-
-      <section className="pt-7">
-        <SectionHeader title="Shortcuts" />
-        <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pb-1">
-          <QuietAction to="/portfolio/new" icon={<Plus size={16} />} label="Add track" />
-          <QuietAction to="/search" icon={<Search size={16} />} label="Search talent" />
-          <QuietAction to="/studio" icon={<Building2 size={16} />} label="Find a studio" />
-          <QuietAction to="/bookings" icon={<Calendar size={16} />} label="My bookings" />
-          <QuietAction to="/messages" icon={<MessageCircle size={16} />} label="Messages" />
-        </div>
-      </section>
     </div>
   );
 }
@@ -526,6 +516,7 @@ function AvailabilitySwitch({ available }: { available: boolean }) {
       await save({ data: { availability: next ? "Collaborations" : null } });
     } catch {
       setOn(!next);
+      toast.error("Could not update. Try again.");
     } finally {
       setSaving(false);
     }
@@ -568,50 +559,48 @@ function usePeers(roleSlug: string | null) {
 }
 
 type ToolDestination =
-  "/identity/qr" | "/plans/earnings" | "/bands" | "/verification" | "/recommendations" | "/help";
+  "/portfolio/new" | "/search" | "/studio" | "/bookings" | "/recommendations" | "/help";
 
-/** A tool tile: icon, label, chevron. Two to a row under Your tools. */
-function ToolLink({ to, icon, label }: { to: ToolDestination; icon: ReactNode; label: string }) {
-  return (
-    <Link
-      to={to}
-      className="state-layer flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3.5"
-    >
-      <span className="shrink-0 text-muted-foreground">{icon}</span>
-      <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
-      <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
-    </Link>
-  );
-}
-
-type QuietDestination =
-  | "/portfolio/new"
-  | "/search"
-  | "/studio"
-  | "/messages"
-  | "/bookings"
-  | "/bands"
-  | "/reviews"
-  | "/plans"
-  | "/messages"
-  | "/help";
-
-function QuietAction({
+/** A tool tile: icon, label, chevron. Two to a row under Your tools. `soon` makes it inert. */
+function ToolLink({
   to,
   icon,
   label,
+  soon = false,
+  onClick,
 }: {
-  to: QuietDestination;
+  to?: ToolDestination;
+  onClick?: () => void;
   icon: ReactNode;
   label: string;
+  soon?: boolean;
 }) {
+  const cls = "flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3.5";
+  if (onClick && !soon) {
+    return (
+      <button type="button" onClick={onClick} className={`state-layer text-left ${cls}`}>
+        <span className="shrink-0 text-muted-foreground">{icon}</span>
+        <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
+        <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
+      </button>
+    );
+  }
+  if (soon || !to) {
+    return (
+      <div aria-disabled="true" className={cls}>
+        <span className="shrink-0 text-muted-foreground">{icon}</span>
+        <span className="min-w-0 flex-1 truncate text-1 font-semibold text-muted-foreground">
+          {label}
+        </span>
+        <SoonBadge />
+      </div>
+    );
+  }
   return (
-    <Link
-      to={to}
-      className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5"
-    >
-      <span className="shrink-0 text-foreground">{icon}</span>
-      <span className="whitespace-nowrap text-1 font-semibold">{label}</span>
+    <Link to={to} className={`state-layer ${cls}`}>
+      <span className="shrink-0 text-muted-foreground">{icon}</span>
+      <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
+      <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />
     </Link>
   );
 }

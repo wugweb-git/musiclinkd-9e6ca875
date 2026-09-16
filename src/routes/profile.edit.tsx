@@ -31,7 +31,8 @@ export const Route = createFileRoute("/profile/edit")({
 });
 
 type Form = {
-  display_name: string;
+  first_name: string;
+  last_name: string;
   username: string;
   headline: string;
   bio: string;
@@ -49,7 +50,8 @@ type Form = {
 };
 
 const empty: Form = {
-  display_name: "",
+  first_name: "",
+  last_name: "",
   username: "",
   headline: "",
   bio: "",
@@ -66,10 +68,21 @@ const empty: Form = {
   links: {},
 };
 
+/** First and last from their own columns once they exist, else display_name split at the first space. */
+function splitName(row: ProfileRow): { first_name: string; last_name: string } {
+  const r = row as ProfileRow & { first_name?: string | null; last_name?: string | null };
+  if (r.first_name) return { first_name: r.first_name, last_name: r.last_name ?? "" };
+  const full = (row.display_name ?? "").trim();
+  const space = full.indexOf(" ");
+  return space < 0
+    ? { first_name: full, last_name: "" }
+    : { first_name: full.slice(0, space), last_name: full.slice(space + 1).trim() };
+}
+
 function fromRow(row: ProfileRow | null): Form {
   if (!row) return empty;
   return {
-    display_name: row.display_name ?? "",
+    ...splitName(row),
     username: row.username ?? "",
     headline: row.headline ?? "",
     bio: row.bio ?? "",
@@ -154,7 +167,10 @@ function EditProfile() {
     try {
       const saved = await persist({
         data: {
-          display_name: form.display_name || null,
+          display_name:
+            [form.first_name.trim(), form.last_name.trim()].filter(Boolean).join(" ") || null,
+          first_name: form.first_name.trim() || null,
+          last_name: form.last_name.trim() || null,
           // Set once, then locked by the database; only an unset username is sent.
           ...(row?.username ? {} : { username: form.username || null }),
           headline: form.headline || null,
@@ -226,14 +242,21 @@ function EditProfile() {
       id: "identity",
       label: "Identity",
       detail: "Name, username, headline, bio",
-      done: Boolean(form.display_name && form.username),
+      done: Boolean(form.first_name && form.username),
       body: (
         <div className="space-y-3">
-          <Field
-            label="Display name"
-            value={form.display_name}
-            onChange={(v) => update({ display_name: v })}
-          />
+          <div className="grid grid-cols-2 gap-3">
+            <Field
+              label="First name"
+              value={form.first_name}
+              onChange={(v) => update({ first_name: v })}
+            />
+            <Field
+              label="Last name"
+              value={form.last_name}
+              onChange={(v) => update({ last_name: v })}
+            />
+          </div>
           <Field
             label="Username"
             value={form.username}
@@ -397,10 +420,7 @@ function EditProfile() {
           {sections.map((section) => {
             const isOpen = open === section.id;
             return (
-              <section
-                key={section.id}
-                className="overflow-hidden rounded-lg bg-subtle"
-              >
+              <section key={section.id} className="overflow-hidden rounded-lg bg-subtle">
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : section.id)}

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Settings2, CheckCheck, BellOff } from "lucide-react";
 import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/kit";
@@ -9,6 +9,8 @@ import {
   notifications as seed,
   categoryMeta,
   unreadCount,
+  storeReadIds,
+  withStoredRead,
   type NotificationCategory,
 } from "@/data/notifications";
 
@@ -41,6 +43,11 @@ const filterMatch: Record<string, NotificationCategory[]> = {
 function NotificationsScreen() {
   const navigate = useNavigate();
   const [items, setItems] = useState(seed);
+  useEffect(() => setItems((all) => withStoredRead(all)), []);
+  const markRead = (next: typeof items) => {
+    setItems(next);
+    storeReadIds(next.filter((n) => n.read).map((n) => n.id));
+  };
   const [invites, setInvites] = useState(seedInvitations);
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
 
@@ -51,7 +58,7 @@ function NotificationsScreen() {
   });
 
   const open = (id: string, to: string) => {
-    setItems((all) => all.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    markRead(items.map((n) => (n.id === id ? { ...n, read: true } : n)));
     navigate({ to });
   };
 
@@ -83,7 +90,7 @@ function NotificationsScreen() {
       <div className="px-5 pt-3">
         <button
           type="button"
-          onClick={() => setItems((all) => all.map((n) => ({ ...n, read: true })))}
+          onClick={() => markRead(items.map((n) => ({ ...n, read: true })))}
           className="inline-flex items-center gap-1.5 text-1 font-semibold text-foreground"
         >
           <CheckCheck size={16} /> Mark all as read

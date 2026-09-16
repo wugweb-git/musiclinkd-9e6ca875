@@ -77,10 +77,6 @@ import { Route as OpportunitiesMineRouteImport } from './routes/opportunities.mi
 import { Route as OpportunitiesNewRouteImport } from './routes/opportunities.new'
 import { Route as OpportunitiesSavedRouteImport } from './routes/opportunities.saved'
 import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
-import { Route as PlansIndexRouteImport } from './routes/plans.index'
-import { Route as PlansCheckoutRouteImport } from './routes/plans.checkout'
-import { Route as PlansEarningsRouteImport } from './routes/plans.earnings'
-import { Route as PlansManageRouteImport } from './routes/plans.manage'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
 import { Route as PortfolioReorderRouteImport } from './routes/portfolio.reorder'
@@ -110,6 +106,7 @@ import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as SettingsPrivacyRouteImport } from './routes/settings.privacy'
 import { Route as SettingsSecurityRouteImport } from './routes/settings.security'
+import { Route as SettingsSpotifyRouteImport } from './routes/settings.spotify'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as VerificationTypeRouteImport } from './routes/verification.$type'
@@ -125,7 +122,6 @@ import { Route as BandsIdPortfolioRouteImport } from './routes/bands.$id.portfol
 import { Route as BookingIdIndexRouteImport } from './routes/booking.$id.index'
 import { Route as BookingIdAddonsRouteImport } from './routes/booking.$id.addons'
 import { Route as BookingIdDetailsRouteImport } from './routes/booking.$id.details'
-import { Route as BookingIdPayRouteImport } from './routes/booking.$id.pay'
 import { Route as BookingIdReviewRouteImport } from './routes/booking.$id.review'
 import { Route as BookingIdScheduleRouteImport } from './routes/booking.$id.schedule'
 import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.service'
@@ -560,26 +556,6 @@ const OpportunitiesSearchRoute = OpportunitiesSearchRouteImport.update({
   path: '/opportunities/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlansIndexRoute = PlansIndexRouteImport.update({
-  id: '/plans/',
-  path: '/plans/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlansCheckoutRoute = PlansCheckoutRouteImport.update({
-  id: '/plans/checkout',
-  path: '/plans/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlansEarningsRoute = PlansEarningsRouteImport.update({
-  id: '/plans/earnings',
-  path: '/plans/earnings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlansManageRoute = PlansManageRouteImport.update({
-  id: '/plans/manage',
-  path: '/plans/manage',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   id: '/portfolio/',
   path: '/portfolio/',
@@ -725,6 +701,11 @@ const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
   path: '/settings/security',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsSpotifyRoute = SettingsSpotifyRouteImport.update({
+  id: '/settings/spotify',
+  path: '/settings/spotify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalentIdRoute = TalentIdRouteImport.update({
   id: '/talent/$id',
   path: '/talent/$id',
@@ -798,11 +779,6 @@ const BookingIdAddonsRoute = BookingIdAddonsRouteImport.update({
 const BookingIdDetailsRoute = BookingIdDetailsRouteImport.update({
   id: '/details',
   path: '/details',
-  getParentRoute: () => BookingIdRoute,
-} as any)
-const BookingIdPayRoute = BookingIdPayRouteImport.update({
-  id: '/pay',
-  path: '/pay',
   getParentRoute: () => BookingIdRoute,
 } as any)
 const BookingIdReviewRoute = BookingIdReviewRouteImport.update({
@@ -1341,9 +1317,6 @@ export interface FileRoutesByFullPath {
   '/opportunities/new': typeof OpportunitiesNewRoute
   '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
-  '/plans/checkout': typeof PlansCheckoutRoute
-  '/plans/earnings': typeof PlansEarningsRoute
-  '/plans/manage': typeof PlansManageRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/select': typeof PortfolioSelectRoute
@@ -1366,6 +1339,7 @@ export interface FileRoutesByFullPath {
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/security': typeof SettingsSecurityRoute
+  '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1383,7 +1357,6 @@ export interface FileRoutesByFullPath {
   '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
-  '/plans/': typeof PlansIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/recommendations/': typeof RecommendationsIndexRoute
@@ -1399,7 +1372,6 @@ export interface FileRoutesByFullPath {
   '/bands/$id/portfolio': typeof BandsIdPortfolioRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
-  '/booking/$id/pay': typeof BookingIdPayRoute
   '/booking/$id/review': typeof BookingIdReviewRoute
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
@@ -1552,9 +1524,6 @@ export interface FileRoutesByTo {
   '/opportunities/new': typeof OpportunitiesNewRoute
   '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
-  '/plans/checkout': typeof PlansCheckoutRoute
-  '/plans/earnings': typeof PlansEarningsRoute
-  '/plans/manage': typeof PlansManageRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/select': typeof PortfolioSelectRoute
@@ -1577,6 +1546,7 @@ export interface FileRoutesByTo {
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/security': typeof SettingsSecurityRoute
+  '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1594,7 +1564,6 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
-  '/plans': typeof PlansIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/recommendations': typeof RecommendationsIndexRoute
@@ -1610,7 +1579,6 @@ export interface FileRoutesByTo {
   '/bands/$id/portfolio': typeof BandsIdPortfolioRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
-  '/booking/$id/pay': typeof BookingIdPayRoute
   '/booking/$id/review': typeof BookingIdReviewRoute
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
@@ -1765,9 +1733,6 @@ export interface FileRoutesById {
   '/opportunities/new': typeof OpportunitiesNewRoute
   '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
-  '/plans/checkout': typeof PlansCheckoutRoute
-  '/plans/earnings': typeof PlansEarningsRoute
-  '/plans/manage': typeof PlansManageRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/portfolio/reorder': typeof PortfolioReorderRoute
   '/portfolio/select': typeof PortfolioSelectRoute
@@ -1790,6 +1755,7 @@ export interface FileRoutesById {
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
   '/settings/security': typeof SettingsSecurityRoute
+  '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
   '/verification/badge': typeof VerificationBadgeRoute
@@ -1807,7 +1773,6 @@ export interface FileRoutesById {
   '/notifications/': typeof NotificationsIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
-  '/plans/': typeof PlansIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/recommendations/': typeof RecommendationsIndexRoute
@@ -1823,7 +1788,6 @@ export interface FileRoutesById {
   '/bands/$id/portfolio': typeof BandsIdPortfolioRoute
   '/booking/$id/addons': typeof BookingIdAddonsRoute
   '/booking/$id/details': typeof BookingIdDetailsRoute
-  '/booking/$id/pay': typeof BookingIdPayRoute
   '/booking/$id/review': typeof BookingIdReviewRoute
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
@@ -1979,9 +1943,6 @@ export interface FileRouteTypes {
     | '/opportunities/new'
     | '/opportunities/saved'
     | '/opportunities/search'
-    | '/plans/checkout'
-    | '/plans/earnings'
-    | '/plans/manage'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/select'
@@ -2004,6 +1965,7 @@ export interface FileRouteTypes {
     | '/settings/delete-account'
     | '/settings/privacy'
     | '/settings/security'
+    | '/settings/spotify'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -2021,7 +1983,6 @@ export interface FileRouteTypes {
     | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
-    | '/plans/'
     | '/portfolio/'
     | '/profile/'
     | '/recommendations/'
@@ -2037,7 +1998,6 @@ export interface FileRouteTypes {
     | '/bands/$id/portfolio'
     | '/booking/$id/addons'
     | '/booking/$id/details'
-    | '/booking/$id/pay'
     | '/booking/$id/review'
     | '/booking/$id/schedule'
     | '/booking/$id/service'
@@ -2190,9 +2150,6 @@ export interface FileRouteTypes {
     | '/opportunities/new'
     | '/opportunities/saved'
     | '/opportunities/search'
-    | '/plans/checkout'
-    | '/plans/earnings'
-    | '/plans/manage'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/select'
@@ -2215,6 +2172,7 @@ export interface FileRouteTypes {
     | '/settings/delete-account'
     | '/settings/privacy'
     | '/settings/security'
+    | '/settings/spotify'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -2232,7 +2190,6 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/onboarding'
     | '/opportunities'
-    | '/plans'
     | '/portfolio'
     | '/profile'
     | '/recommendations'
@@ -2248,7 +2205,6 @@ export interface FileRouteTypes {
     | '/bands/$id/portfolio'
     | '/booking/$id/addons'
     | '/booking/$id/details'
-    | '/booking/$id/pay'
     | '/booking/$id/review'
     | '/booking/$id/schedule'
     | '/booking/$id/service'
@@ -2402,9 +2358,6 @@ export interface FileRouteTypes {
     | '/opportunities/new'
     | '/opportunities/saved'
     | '/opportunities/search'
-    | '/plans/checkout'
-    | '/plans/earnings'
-    | '/plans/manage'
     | '/portfolio/analytics'
     | '/portfolio/reorder'
     | '/portfolio/select'
@@ -2427,6 +2380,7 @@ export interface FileRouteTypes {
     | '/settings/delete-account'
     | '/settings/privacy'
     | '/settings/security'
+    | '/settings/spotify'
     | '/talent/$id'
     | '/verification/$type'
     | '/verification/badge'
@@ -2444,7 +2398,6 @@ export interface FileRouteTypes {
     | '/notifications/'
     | '/onboarding/'
     | '/opportunities/'
-    | '/plans/'
     | '/portfolio/'
     | '/profile/'
     | '/recommendations/'
@@ -2460,7 +2413,6 @@ export interface FileRouteTypes {
     | '/bands/$id/portfolio'
     | '/booking/$id/addons'
     | '/booking/$id/details'
-    | '/booking/$id/pay'
     | '/booking/$id/review'
     | '/booking/$id/schedule'
     | '/booking/$id/service'
@@ -2615,9 +2567,6 @@ export interface RootRouteChildren {
   OpportunitiesNewRoute: typeof OpportunitiesNewRoute
   OpportunitiesSavedRoute: typeof OpportunitiesSavedRoute
   OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
-  PlansCheckoutRoute: typeof PlansCheckoutRoute
-  PlansEarningsRoute: typeof PlansEarningsRoute
-  PlansManageRoute: typeof PlansManageRoute
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   PortfolioReorderRoute: typeof PortfolioReorderRoute
   PortfolioSelectRoute: typeof PortfolioSelectRoute
@@ -2640,6 +2589,7 @@ export interface RootRouteChildren {
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   SettingsPrivacyRoute: typeof SettingsPrivacyRoute
   SettingsSecurityRoute: typeof SettingsSecurityRoute
+  SettingsSpotifyRoute: typeof SettingsSpotifyRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
   VerificationBadgeRoute: typeof VerificationBadgeRoute
@@ -2657,7 +2607,6 @@ export interface RootRouteChildren {
   NotificationsIndexRoute: typeof NotificationsIndexRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
-  PlansIndexRoute: typeof PlansIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
   RecommendationsIndexRoute: typeof RecommendationsIndexRoute
@@ -3242,34 +3191,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/plans/': {
-      id: '/plans/'
-      path: '/plans'
-      fullPath: '/plans/'
-      preLoaderRoute: typeof PlansIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plans/checkout': {
-      id: '/plans/checkout'
-      path: '/plans/checkout'
-      fullPath: '/plans/checkout'
-      preLoaderRoute: typeof PlansCheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plans/earnings': {
-      id: '/plans/earnings'
-      path: '/plans/earnings'
-      fullPath: '/plans/earnings'
-      preLoaderRoute: typeof PlansEarningsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plans/manage': {
-      id: '/plans/manage'
-      path: '/plans/manage'
-      fullPath: '/plans/manage'
-      preLoaderRoute: typeof PlansManageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/portfolio/': {
       id: '/portfolio/'
       path: '/portfolio'
@@ -3473,6 +3394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsSecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/spotify': {
+      id: '/settings/spotify'
+      path: '/settings/spotify'
+      fullPath: '/settings/spotify'
+      preLoaderRoute: typeof SettingsSpotifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/talent/$id': {
       id: '/talent/$id'
       path: '/talent/$id'
@@ -3576,13 +3504,6 @@ declare module '@tanstack/react-router' {
       path: '/details'
       fullPath: '/booking/$id/details'
       preLoaderRoute: typeof BookingIdDetailsRouteImport
-      parentRoute: typeof BookingIdRoute
-    }
-    '/booking/$id/pay': {
-      id: '/booking/$id/pay'
-      path: '/pay'
-      fullPath: '/booking/$id/pay'
-      preLoaderRoute: typeof BookingIdPayRouteImport
       parentRoute: typeof BookingIdRoute
     }
     '/booking/$id/review': {
@@ -4242,7 +4163,6 @@ declare module '@tanstack/react-router' {
 interface BookingIdRouteChildren {
   BookingIdAddonsRoute: typeof BookingIdAddonsRoute
   BookingIdDetailsRoute: typeof BookingIdDetailsRoute
-  BookingIdPayRoute: typeof BookingIdPayRoute
   BookingIdReviewRoute: typeof BookingIdReviewRoute
   BookingIdScheduleRoute: typeof BookingIdScheduleRoute
   BookingIdServiceRoute: typeof BookingIdServiceRoute
@@ -4252,7 +4172,6 @@ interface BookingIdRouteChildren {
 const BookingIdRouteChildren: BookingIdRouteChildren = {
   BookingIdAddonsRoute: BookingIdAddonsRoute,
   BookingIdDetailsRoute: BookingIdDetailsRoute,
-  BookingIdPayRoute: BookingIdPayRoute,
   BookingIdReviewRoute: BookingIdReviewRoute,
   BookingIdScheduleRoute: BookingIdScheduleRoute,
   BookingIdServiceRoute: BookingIdServiceRoute,
@@ -4320,9 +4239,6 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesNewRoute: OpportunitiesNewRoute,
   OpportunitiesSavedRoute: OpportunitiesSavedRoute,
   OpportunitiesSearchRoute: OpportunitiesSearchRoute,
-  PlansCheckoutRoute: PlansCheckoutRoute,
-  PlansEarningsRoute: PlansEarningsRoute,
-  PlansManageRoute: PlansManageRoute,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   PortfolioReorderRoute: PortfolioReorderRoute,
   PortfolioSelectRoute: PortfolioSelectRoute,
@@ -4345,6 +4261,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   SettingsPrivacyRoute: SettingsPrivacyRoute,
   SettingsSecurityRoute: SettingsSecurityRoute,
+  SettingsSpotifyRoute: SettingsSpotifyRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
   VerificationBadgeRoute: VerificationBadgeRoute,
@@ -4362,7 +4279,6 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsIndexRoute: NotificationsIndexRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
-  PlansIndexRoute: PlansIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
   ProfileIndexRoute: ProfileIndexRoute,
   RecommendationsIndexRoute: RecommendationsIndexRoute,

@@ -1,20 +1,35 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { unreadCount, withStoredRead } from "@/data/notifications";
 
 /*
  * The notifications bell, sized and styled to sit beside SearchIconButton in a tab screen's
  * header. Home and Discover both had their own; Discover's was a bare 🔔 with no label and
  * nothing behind it.
  */
-export function NotificationsBell() {
+export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }) {
+  const [unread, setUnread] = useState(0);
+  useEffect(() => setUnread(unreadCount(withStoredRead())), []);
+  const surface =
+    tone === "onInk"
+      ? "border-background/25 bg-background/10 text-background backdrop-blur"
+      : "border-border bg-card";
   return (
     <Link
       to="/notifications"
-      aria-label="Notifications"
-      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-97"
+      aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+      className={`hit-area state-layer relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-transform duration-125 ease-standard active:scale-97 ${surface}`}
     >
       <Bell size={20} aria-hidden />
+      {unread ? (
+        <span
+          aria-hidden
+          className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold leading-none text-white"
+        >
+          {unread > 9 ? "9+" : unread}
+        </span>
+      ) : null}
     </Link>
   );
 }

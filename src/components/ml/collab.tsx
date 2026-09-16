@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Btn, VerifiedBadge } from "@/components/ml/ui";
+import { EmptyState as BaseEmptyState } from "@/components/ml/kit";
 import {
   fileKindMeta,
   milestoneMeta,
@@ -233,7 +234,7 @@ export function FileRow({ file, projectId }: { file: CollabFile; projectId: stri
       {file.cover ? (
         <img src={file.cover} alt="" className="h-12 w-12 shrink-0 rounded-sm object-cover" />
       ) : (
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-subtle text-muted-foreground">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-icon-chip text-muted-foreground">
           {meta.icon}
         </span>
       )}
@@ -444,6 +445,7 @@ export function CollabSkeleton({ rows = 3 }: { rows?: number }) {
   );
 }
 
+/** Collab's own icon/spacing treatment, preserved via kit.tsx's EmptyState "circle-lg" variant. */
 export function EmptyState({
   title,
   body,
@@ -454,14 +456,13 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
-      <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-primary">
-        <Music size={24} aria-hidden />
-      </span>
-      <h3 className="text-2">{title}</h3>
-      <p className="mt-1 mb-5 max-w-[260px] text-1 text-muted-foreground">{body}</p>
-      {action}
-    </div>
+    <BaseEmptyState
+      variant="circle-lg"
+      icon={<Music size={24} aria-hidden />}
+      title={title}
+      body={body}
+      action={action}
+    />
   );
 }
 

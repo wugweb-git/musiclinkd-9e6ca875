@@ -182,6 +182,8 @@ const profilePatchSchema = z.object({
   availability: z.string().max(40).optional().nullable(),
   avatar_url: z.string().max(500).optional().nullable(),
   cover_url: z.string().max(500).optional().nullable(),
+  first_name: z.string().max(60).optional().nullable(),
+  last_name: z.string().max(60).optional().nullable(),
   links: z.record(z.string(), z.string().max(300)).optional(),
   discovery_prefs: z.record(z.string(), z.unknown()).optional(),
   onboarding_step: z.string().max(40).optional().nullable(),
@@ -197,11 +199,18 @@ export const saveMyProfile = createServerFn({ method: "POST" })
     const patch = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== undefined),
     ) as Record<string, unknown>;
-    const { data: row, error } = await context.supabase
-      .from("profiles")
-      .upsert({ id: context.userId, ...patch } as never, { onConflict: "id" })
-      .select()
-      .single();
+    const write = (values: Record<string, unknown>) =>
+      context.supabase
+        .from("profiles")
+        .upsert({ id: context.userId, ...values } as never, { onConflict: "id" })
+        .select()
+        .single();
+    let { data: row, error } = await write(patch);
+    // first_name / last_name arrive with their migration; until then display_name carries the name.
+    if (error?.code === "PGRST204" && ("first_name" in patch || "last_name" in patch)) {
+      const { first_name: _f, last_name: _l, ...rest } = patch;
+      ({ data: row, error } = await write(rest));
+    }
     if (error) throw new Error(usernameError(error) ?? error.message);
     return row;
   });

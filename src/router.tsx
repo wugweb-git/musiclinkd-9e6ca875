@@ -12,7 +12,7 @@ export const getRouter = () => {
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
-    // Registration-flow page motion; every other navigation returns false and stays instant.
+    // Page motion: the registration flow in order, everyday navigation as push, pop or fade.
     defaultViewTransition: { types: flowTransitionTypes },
   });
   trackHistory(router);

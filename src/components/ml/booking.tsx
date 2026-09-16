@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Btn, VerifiedBadge } from "@/components/ml/ui";
-import { Price } from "@/components/ml/kit";
+import { EmptyState as BaseEmptyState, Price } from "@/components/ml/kit";
 import {
   availabilityFor,
   formatDate,
@@ -23,7 +23,6 @@ import {
   isoDate,
   lowestRate,
   monthGrid,
-  paymentMeta,
   statusMeta,
   bookingTimeline,
   type AddOn,
@@ -31,7 +30,6 @@ import {
   type Booking,
   type BookingStatus,
   type DayState,
-  type PaymentStatus,
   type PriceLines,
   type Resource,
   type Slot,
@@ -39,7 +37,7 @@ import {
 import { TextLink } from "@/components/ml/links";
 
 /* ------------------------------------------------------------------ */
-/* Status + payment                                                    */
+/* Status                                                            */
 /* ------------------------------------------------------------------ */
 
 const toneStyle: Record<string, { pill: string; dot: string }> = {
@@ -56,14 +54,6 @@ export function BookingStatusPill({ status }: { status: BookingStatus }) {
     <span className={`inline-flex items-center gap-1.5 rounded-full pill ${c.pill}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} aria-hidden />
       {meta.label}
-    </span>
-  );
-}
-
-export function PaymentPill({ status }: { status: PaymentStatus }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-border pill text-muted-foreground">
-      {paymentMeta[status]}
     </span>
   );
 }
@@ -517,15 +507,9 @@ export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: bo
       {p.taxPct ? <Row label={`Taxes (${p.taxPct}%)`} value={inr(p.tax)} muted /> : null}
       <div className="my-2 h-px bg-border" />
       <Row label="Total" value={inr(p.total)} strong />
-      {p.deposit > 0 ? (
-        <>
-          <Row label="Deposit due now" value={inr(p.deposit)} />
-          <Row label="Balance at the studio" value={inr(p.balance)} muted />
-        </>
-      ) : null}
       {!compact ? (
         <p className="mt-3 text-1 text-muted-foreground">
-          Prices come from the provider's configured rates. Nothing is charged until you confirm.
+          Prices come from the provider's configured rates. You settle payment with the provider directly.
         </p>
       ) : null}
     </div>
@@ -750,25 +734,6 @@ export function ProviderRequestCard({
   );
 }
 
-export function PaymentSummaryCard({ p, paid }: { p: PriceLines; paid?: boolean }) {
-  return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <p className="pill bg-subtle text-muted-foreground">Payment</p>
-      <Row label="Total booking value" value={inr(p.total)} />
-      <Row
-        label={paid ? "Deposit paid" : "Deposit due now"}
-        value={inr(p.deposit || p.total)}
-        strong
-      />
-      <Row label="Balance at the studio" value={inr(p.deposit ? p.balance : 0)} muted />
-      <p className="mt-3 text-1 text-muted-foreground">
-        Payments are handled by the provider's payment partner. MusicLinkd never stores your card
-        details.
-      </p>
-    </div>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /* States                                                              */
 /* ------------------------------------------------------------------ */
@@ -820,6 +785,7 @@ export function ErrorState({
   );
 }
 
+/** Booking's own icon/spacing treatment, preserved via kit.tsx's EmptyState "bare" variant. */
 export function EmptyState({
   title,
   body,
@@ -830,12 +796,13 @@ export function EmptyState({
   action?: ReactNode | undefined;
 }) {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center">
-      <Calendar size={24} className="mx-auto text-muted-foreground" />
-      <p className="mt-2 font-semibold">{title}</p>
-      <p className="mt-1 text-1 text-muted-foreground">{body}</p>
-      {action ? <div className="mt-4">{action}</div> : null}
-    </div>
+    <BaseEmptyState
+      variant="bare"
+      icon={<Calendar size={24} className="mx-auto text-muted-foreground" />}
+      title={title}
+      body={body}
+      action={action}
+    />
   );
 }
 

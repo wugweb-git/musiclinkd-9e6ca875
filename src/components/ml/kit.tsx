@@ -92,12 +92,38 @@ export function Price({
   );
 }
 
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
+/**
+ * A feature that is placed in a later phase: its entry stays visible but does nothing. Wrap the
+ * entry's label with it, and render the entry as a plain element rather than a link.
+ */
+export function SoonBadge({ className = "" }: { className?: string }) {
   return (
-    <section className={`rounded-lg bg-subtle p-4 ${className}`}>
-      {children}
-    </section>
+    <span
+      className={`inline-flex shrink-0 items-center rounded-full bg-pink-container px-2 py-0.5 text-1 font-semibold text-pink-strong ${className}`}
+    >
+      Soon
+    </span>
   );
+}
+
+/** The maker's credit: Sign in and Settings, same place at the foot of each. */
+export function MadeByWugweb() {
+  return (
+    <p className="px-1 pt-2 text-center text-1 text-muted-foreground">
+      <a
+        href="https://wugweb.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="link-action"
+      >
+        Made by Wugweb
+      </a>
+    </p>
+  );
+}
+
+export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <section className={`rounded-lg bg-subtle p-4 ${className}`}>{children}</section>;
 }
 
 /**
@@ -131,7 +157,7 @@ export function SegmentedField<T extends string>({
           aria-checked={value === o}
           onClick={() => onChange(o)}
           className={`min-w-0 flex-1 truncate rounded-full px-2 py-2 text-1 font-semibold transition-colors ${
-            value === o ? "bg-ink text-background" : "text-muted-foreground"
+            value === o ? "bg-brand/20 text-pink-on-tint" : "text-muted-foreground"
           }`}
         >
           {o}
@@ -175,7 +201,7 @@ export function Segmented<T extends string>({
           >
             {o}
             {active ? (
-              <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-foreground [button:first-child>&]:left-0" />
+              <span className="absolute inset-x-3 bottom-0 h-0.5 animate-underline rounded-full bg-brand [button:first-child>&]:left-0" />
             ) : null}
           </button>
         );
@@ -204,7 +230,7 @@ export function Row({
   const inner = (
     <>
       {icon ? (
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-foreground">
+        <span className="flex h-10 w-7 shrink-0 items-center justify-center text-foreground">
           {icon}
         </span>
       ) : null}
@@ -232,18 +258,77 @@ export function Row({
   );
 }
 
-/** `icon` is for states that carry a meaning the words alone don't — offline, failed to load. */
+/**
+ * `icon` is for states that carry a meaning the words alone don't — offline, failed to load.
+ *
+ * `variant` reproduces the icon treatment three other modules each hand-rolled before this was
+ * consolidated (see docs/component-inventory-2026-09-16.md): "circle-sm" (default, this module's
+ * original look), "bare" (icon.tsx-era booking screens — no circle, tighter padding, no title
+ * heading tag, no body max-width), "circle-lg" (collab screens — bigger, tinted circle), and
+ * "square-lg" (market screens — square swatch, sized for an emoji character rather than an icon).
+ * Each variant is byte-for-byte the markup it replaces, so no screen's pixels changed when the
+ * three duplicate EmptyStates were removed in favour of this one.
+ */
+export type EmptyStateVariant = "circle-sm" | "bare" | "circle-lg" | "square-lg";
+
 export function EmptyState({
   icon,
+  variant = "circle-sm",
   title,
   body,
+  action,
   children,
 }: {
   icon?: ReactNode;
+  variant?: EmptyStateVariant;
   title: string;
   body: string;
+  action?: ReactNode;
   children?: ReactNode;
 }) {
+  const extra = action ?? children;
+
+  if (variant === "bare") {
+    return (
+      <div className="rounded-lg border border-dashed border-border bg-card p-6 text-center">
+        {icon}
+        <p className="mt-2 font-semibold">{title}</p>
+        <p className="mt-1 text-1 text-muted-foreground">{body}</p>
+        {extra ? <div className="mt-4">{extra}</div> : null}
+      </div>
+    );
+  }
+
+  if (variant === "circle-lg") {
+    return (
+      <div className="flex flex-col items-center rounded-lg border border-dashed border-border bg-card px-6 py-12 text-center">
+        {icon ? (
+          <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-primary">
+            {icon}
+          </span>
+        ) : null}
+        <h3 className="text-2">{title}</h3>
+        <p className="mt-1 mb-5 max-w-[260px] text-1 text-muted-foreground">{body}</p>
+        {extra}
+      </div>
+    );
+  }
+
+  if (variant === "square-lg") {
+    return (
+      <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
+        {icon ? (
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-sm bg-subtle text-3">
+            {icon}
+          </div>
+        ) : null}
+        <h3 className="text-2">{title}</h3>
+        <p className="mx-auto mt-1 max-w-[260px] text-1 text-muted-foreground">{body}</p>
+        {extra ? <div className="mt-5">{extra}</div> : null}
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg border border-dashed border-border bg-card px-6 py-8 text-center">
       {icon ? (
@@ -253,8 +338,8 @@ export function EmptyState({
       ) : null}
       <h3 className="text-2 leading-tight">{title}</h3>
       <p className="mx-auto mt-2 max-w-[280px] text-1 text-muted-foreground">{body}</p>
-      {children ? (
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">{children}</div>
+      {extra ? (
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">{extra}</div>
       ) : null}
     </div>
   );

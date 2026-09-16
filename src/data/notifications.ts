@@ -157,3 +157,25 @@ export const quietHours = { enabled: true, from: "23:00", to: "08:00" };
 
 export const notificationPrefsKey = "ml.notifications.prefs";
 export const notificationReadKey = "ml.notifications.read";
+
+export function storedReadIds(): string[] {
+  try {
+    const raw = window.localStorage.getItem(notificationReadKey);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function storeReadIds(ids: string[]) {
+  try {
+    window.localStorage.setItem(notificationReadKey, JSON.stringify(ids));
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
+export function withStoredRead(items: NotificationItem[] = notifications) {
+  const read = new Set(storedReadIds());
+  return items.map((n) => (read.has(n.id) ? { ...n, read: true } : n));
+}

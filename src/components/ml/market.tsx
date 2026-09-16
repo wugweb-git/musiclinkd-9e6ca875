@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
-import { Heart, MapPin, Star, ShieldCheck, Check } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Heart, MapPin, Star, ShieldCheck, Check, LocateFixed, Search } from "lucide-react";
 import type { Listing } from "@/data/market";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
-import { Price } from "./kit";
+import { EmptyState as BaseEmptyState, Price } from "./kit";
 import type { PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
 
@@ -106,7 +106,7 @@ export function CategoryTile({
       params={{ slug }}
       className="flex w-[104px] shrink-0 flex-col gap-2 rounded-lg border border-border bg-card p-3"
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-subtle text-2">
+      <span className="flex h-8 items-center text-4 leading-none" aria-hidden>
         {emoji}
       </span>
       <span className="text-1 font-semibold leading-tight">{label}</span>
@@ -308,6 +308,7 @@ export function SellerSummary({
   );
 }
 
+/** Market's own emoji/spacing treatment, preserved via kit.tsx's EmptyState "square-lg" variant. */
 export function EmptyState({
   emoji,
   title,
@@ -320,14 +321,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card px-6 py-10 text-center">
-      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-sm bg-subtle text-3">
-        {emoji}
-      </div>
-      <h3 className="text-2">{title}</h3>
-      <p className="mx-auto mt-1 max-w-[260px] text-1 text-muted-foreground">{body}</p>
-      {action ? <div className="mt-5">{action}</div> : null}
-    </div>
+    <BaseEmptyState variant="square-lg" icon={emoji} title={title} body={body} action={action} />
   );
 }
 
@@ -344,12 +338,164 @@ export function ListingSkeleton() {
   );
 }
 
+export const marketCities = ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Pune", "Goa"];
+
+const CITY_KEY = "ml.market.city";
+
+/** The Market's chosen place, kept on this device. */
+export function useMarketCity() {
+  const [city, setCity] = useState("Mumbai");
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(CITY_KEY);
+      if (saved) setCity(saved);
+    } catch {
+      /* storage may be unavailable */
+    }
+  }, []);
+  const choose = (next: string) => {
+    setCity(next);
+    try {
+      window.localStorage.setItem(CITY_KEY, next);
+    } catch {
+      /* storage may be unavailable */
+    }
+  };
+  return [city, choose] as const;
+}
+
+/** Choose a location: locate me or edit, then a flat list of suggested places. */
+export function LocationSheet({
+  open,
+  onClose,
+  city,
+  onChoose,
+}: {
+  open: boolean;
+  onClose: () => void;
+  city: string;
+  onChoose: (city: string) => void;
+}) {
+  const [locating, setLocating] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [query, setQuery] = useState("");
+  const pick = (next: string) => {
+    onChoose(next);
+    setEditing(false);
+    setQuery("");
+    onClose();
+  };
+  const locate = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        setLocating(false);
+        pick("Current location");
+      },
+      () => setLocating(false),
+      { timeout: 10000 },
+    );
+  };
+  const shown = marketCities.filter((c) => c.toLowerCase().includes(query.toLowerCase()));
+  return (
+    <Sheet open={open} onClose={onClose} title="Choose a location">
+      <p className="mb-4 flex items-center gap-2 text-sm font-semibold">
+        <MapPin size={16} aria-hidden /> {city}
+      </p>
+      <div className="mb-5 flex gap-2">
+        <Btn
+          className="flex-1"
+          icon={<LocateFixed size={16} />}
+          loading={locating}
+          onClick={locate}
+        >
+          Locate me
+        </Btn>
+        <Btn variant="ghost" className="flex-1" onClick={() => setEditing((v) => !v)}>
+          Edit
+        </Btn>
+      </div>
+      {editing ? (
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search"
+          aria-label="Search places"
+          className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
+        />
+      ) : null}
+      <p className="pill mb-1 text-muted-foreground">Suggested for you</p>
+      <ul>
+        {shown.map((c) => (
+          <li key={c}>
+            <button
+              type="button"
+              onClick={() => pick(c)}
+              className="state-layer flex w-full items-center gap-3 py-3 text-left text-sm"
+            >
+              <Search size={20} className="shrink-0 text-muted-foreground" aria-hidden />
+              <span className={c === city ? "font-semibold" : ""}>{c}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </Sheet>
+  );
+}
+
+/** Every category: a search field, then rows with the icon in a grey circle. */
+export function CategorySheet({
+  open,
+  onClose,
+  categories,
+}: {
+  open: boolean;
+  onClose: () => void;
+  categories: readonly { slug: string; label: string; emoji: string; count: string }[];
+}) {
+  const [query, setQuery] = useState("");
+  const shown = categories.filter((c) => c.label.toLowerCase().includes(query.toLowerCase()));
+  return (
+    <Sheet open={open} onClose={onClose} title="Categories">
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search"
+        aria-label="Search categories"
+        className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
+      />
+      <ul>
+        {shown.map((c) => (
+          <li key={c.slug}>
+            <Link
+              to="/marketplace/c/$slug"
+              params={{ slug: c.slug }}
+              onClick={onClose}
+              className="state-layer flex items-center gap-3 py-2.5"
+            >
+              <span
+                aria-hidden
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-3 leading-none"
+              >
+                {c.emoji}
+              </span>
+              <span className="min-w-0 flex-1 text-sm font-semibold">{c.label}</span>
+              <span className="text-1 text-muted-foreground">{c.count}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Sheet>
+  );
+}
+
 const filterGroups: { label: string; options: string[] }[] = [
   { label: "Listing type", options: ["For sale", "Rental", "Service", "Space"] },
   { label: "Category", options: ["Instruments", "Audio Gear", "Studio", "Services", "Spaces"] },
   { label: "Condition", options: ["New", "Like New", "Excellent", "Good", "Fair"] },
   { label: "Brand", options: ["Fender", "Neumann", "Focusrite", "Roland", "Swaraj", "Yamaha"] },
-  { label: "Location", options: ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Pune", "Goa"] },
+  { label: "Location", options: marketCities },
   { label: "Distance", options: ["Within 5 km", "Within 15 km", "Within 50 km", "Anywhere"] },
   { label: "Price", options: ["Under ₹10k", "₹10k–50k", "₹50k–1L", "Above ₹1L"] },
 ];
@@ -599,11 +745,14 @@ export function SectionRow({
   title,
   hint,
   to,
+  action,
   children,
 }: {
   title: string;
   hint?: string;
   to?: string;
+  /** Used in place of the See All link when the section opens something instead of a page. */
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -613,11 +762,12 @@ export function SectionRow({
           <h2 className="text-2">{title}</h2>
           {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
         </div>
-        {to ? (
-          <SectionActionLink to={to} className="text-1">
-            See All
-          </SectionActionLink>
-        ) : null}
+        {action ??
+          (to ? (
+            <SectionActionLink to={to} className="text-1">
+              See All
+            </SectionActionLink>
+          ) : null)}
       </div>
       {children}
     </section>

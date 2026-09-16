@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, Row, EmptyState, Dialog, StatusPill } from "@/components/ml/kit";
+import { Card, Row, EmptyState, Dialog, StatusPill, SoonBadge } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { joinParts } from "@/lib/utils";
 
@@ -109,8 +109,7 @@ function ManageBusiness() {
             icon={<ShieldCheck size={16} />}
             title="Business verification"
             subtitle={b.verified ? "Verified — renews yearly" : "Get the verified badge"}
-            to="/business/$id/verification"
-            params={{ id }}
+            right={<SoonBadge />}
           />
         </div>
 

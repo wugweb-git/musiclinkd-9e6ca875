@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Detail, EmptyState, PolicyCard, StickyBar } from "@/components/ml/booking";
-import { formatDate, formatTime, getBookable, getBooking, getResource, inr } from "@/data/booking";
+import { formatDate, formatTime, getBookable, getBooking, getResource } from "@/data/booking";
 
 export const Route = createFileRoute("/bookings/$ref/cancel")({
   head: () => ({
@@ -11,10 +11,10 @@ export const Route = createFileRoute("/bookings/$ref/cancel")({
       {
         name: "description",
         content:
-          "Review the refund you'd receive under the provider's policy before cancelling your session.",
+          "Review the provider's cancellation policy before cancelling your session.",
       },
       { property: "og:title", content: "Cancel booking — MusicLinkd" },
-      { property: "og:description", content: "Refund preview and confirmation before cancelling." },
+      { property: "og:description", content: "Policy and confirmation before cancelling." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -50,8 +50,6 @@ function Cancel() {
     );
   }
 
-  const refund = Math.round(bk.amount * 0.5);
-
   if (done) {
     return (
       <Screen>
@@ -60,12 +58,10 @@ function Cancel() {
           <div className="rounded-lg bg-subtle p-5">
             <p className="font-semibold">Booking cancelled</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {b.name} has been notified. Any refund reaches your original payment method in 5–7
-              working days.
+              {b.name} has been notified.
             </p>
             <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
               <Detail label="Reference" value={bk.ref} />
-              <Detail label="Refund" value={inr(refund)} />
             </dl>
             <BtnLink to="/bookings" className="mt-4 w-full">
               Back to Bookings
@@ -86,15 +82,13 @@ function Cancel() {
           <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
             <Detail label="Date" value={formatDate(bk.date)} />
             <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
-            <Detail label="Paid" value={inr(bk.amount)} />
-            <Detail label="Refund due" value={inr(refund)} />
           </dl>
         </div>
 
         <div className="mt-3">
           <PolicyCard
             title="Cancellation policy"
-            body="Cancel more than 48 hrs before the session for a full refund of the deposit. Within 48 hrs, 50% is retained by the provider."
+            body="MusicLinkd takes no payment. Settle anything you paid directly with the studio."
             critical
           />
         </div>
@@ -133,8 +127,6 @@ function Cancel() {
       </main>
 
       <StickyBar
-        price={inr(refund)}
-        hint="Estimated refund"
         disabled={!reason}
         primaryLabel="Cancel booking"
         onPrimary={() => setDone(true)}

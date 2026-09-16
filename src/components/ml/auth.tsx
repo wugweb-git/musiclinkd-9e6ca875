@@ -253,7 +253,7 @@ export function TextField({
       </label>
       <div
         className={cn(
-          "flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
+          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
           invalid
             ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
             : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
@@ -530,7 +530,7 @@ export function CodeInput({
               style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
                 complete && "animate-meter",
-                "flex h-14 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard",
+                "flex h-14 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard in-active:shadow-[0_0_0_2px_var(--brand)]",
                 invalid
                   ? "border-destructive"
                   : active || value.length === length

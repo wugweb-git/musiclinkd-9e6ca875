@@ -154,11 +154,8 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
       <div className="space-y-2">
         {["Rangreza — T-Series (2025)", "Neon Monsoon — Indie EP", "Kabir Sessions Vol. 2"].map(
           (p) => (
-            <div
-              key={p}
-              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-subtle">
+            <div key={p} className="flex items-center gap-3 rounded-lg bg-subtle p-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-icon-chip">
                 ▶
               </span>
               <p className="flex-1 text-1 font-semibold">{p}</p>

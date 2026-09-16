@@ -107,6 +107,8 @@
   /* Tinted containers and the text-safe pink. */
   --color-pink-container: var(--pink-container);
   --color-pink-strong: var(--pink-strong);
+  --color-pink-on-tint: var(--pink-on-tint);
+  --color-icon-chip: var(--icon-chip);
   /* Prices are always brand pink (owner, 16 Sep), in the text-safe shade. */
   --color-price: var(--pink-strong);
   --color-success-container: var(--success-container);
@@ -161,6 +163,7 @@
 
   /* A chip that was just picked gives a little, then springs back. */
   --animate-select: select 320ms var(--easing-spring);
+  --animate-underline: underline 220ms var(--easing-enter) both;
   /* A complete code pulses box by box, left to right, like a level meter. */
   --animate-meter: meter 360ms var(--easing-standard);
 
@@ -288,7 +291,9 @@
   --ring: #0d0d0d;
 
   --ink: #0d0d0d; /* tokens.json color.ink */
-  /* Brand pink. An accent, not an action colour: never buttons, links, selection or body text. */
+  /* Brand pink, rare and always a signal: the active tab underline, press feedback while a finger
+   * is down, a selected pill (pink-on-tint text over a 20% fill), prices, and the `brand` button
+   * inside branded blocks only. Never a resting border, background or body text. */
   --brand: #ea4c89;
   --purple: oklch(0.6056 0.2189 292.72);
   --success: oklch(0.7227 0.192 149.58);
@@ -305,6 +310,10 @@
   --success-strong: color-mix(in oklab, var(--success) 52%, black);
   --warn-strong: color-mix(in oklab, var(--warn) 48%, black);
   --pink-strong: #c7295f; /* system: --color-pink-pressed. The only pink permitted for text, and rarely. */
+  /* Pink text on a 20% brand tint: pink-strong alone is 4.2:1 there, below AA. */
+  --pink-on-tint: color-mix(in oklab, var(--pink-strong) 78%, black);
+  /* A chip that reads as a shape against the page (Facebook reference, #e2e5e9 on white). */
+  --icon-chip: #e2e5e9;
   --gradient-brand: linear-gradient(135deg, var(--brand), var(--purple));
   --gradient-ink: linear-gradient(150deg, #0d0d0d, #2b2b2b); /* ink -> inkPressed */
 
@@ -649,10 +658,28 @@ html:active-view-transition-type(fade)::view-transition-new(root) {
   }
 }
 
+/* Brand-pink feedback only while pressed; gone the moment contact ends. */
+@utility press-brand {
+  transition: box-shadow var(--duration-1) var(--easing-standard);
+
+  &:active {
+    box-shadow: 0 0 0 2px var(--brand);
+  }
+}
+
 /* The ripple's clipping box; the button itself stays unclipped so hit-area can reach 48dp. */
 @utility ripple-clip {
   overflow: hidden;
   border-radius: inherit;
+}
+
+@keyframes underline {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 @keyframes ripple {

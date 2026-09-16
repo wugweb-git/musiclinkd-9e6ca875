@@ -16,7 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
-import { Price } from "@/components/ml/kit";
+import { Price, SoonBadge } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
@@ -104,18 +104,26 @@ function Discover() {
       </header>
 
       <div className="rail flex gap-2 overflow-x-auto px-5 pb-5 no-scrollbar">
-        {quickCategories.map((c) => (
-          <Link
-            key={c.label}
-            to={c.to}
-            className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg bg-subtle px-2 py-3"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-subtle">
-              {categoryIcon(c.label)}
-            </span>
-            <span className="text-1 font-semibold">{c.label}</span>
-          </Link>
-        ))}
+        {quickCategories.map((c) => {
+          const inner = (
+            <>
+              <span className="flex h-8 items-center justify-center">{categoryIcon(c.label)}</span>
+              <span className="text-1 font-semibold">{c.label}</span>
+            </>
+          );
+          const cls =
+            "relative flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3";
+          return c.soon ? (
+            <div key={c.label} aria-disabled="true" className={cls}>
+              {inner}
+              <SoonBadge className="absolute -top-1.5 right-1" />
+            </div>
+          ) : (
+            <Link key={c.label} to={c.to} className={cls}>
+              {inner}
+            </Link>
+          );
+        })}
       </div>
 
       <section className="pb-6">
@@ -176,21 +184,21 @@ function Discover() {
             <ArrowRight size={20} className="shrink-0" aria-hidden />
           </Link>
           <div className="grid grid-cols-2 gap-3">
-            <Link
-              to="/recommendations"
-              className="min-w-0 rounded-lg bg-subtle p-4"
-            >
+            <Link to="/recommendations" className="min-w-0 rounded-lg bg-subtle p-4">
               <p className="truncate text-1 font-semibold">Why you see this</p>
               <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
                 Explainable picks across people, spaces, gear and work
               </p>
             </Link>
-            <Link to="/bands" className="min-w-0 rounded-lg bg-subtle p-4">
-              <p className="truncate text-1 font-semibold">Bands near you</p>
+            <div aria-disabled="true" className="min-w-0 rounded-lg bg-subtle p-4">
+              <p className="flex items-center gap-2 text-1 font-semibold">
+                <span className="truncate">Bands near you</span>
+                <SoonBadge />
+              </p>
               <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
                 Line-ups looking for members and shows
               </p>
-            </Link>
+            </div>
           </div>
         </div>
       </section>

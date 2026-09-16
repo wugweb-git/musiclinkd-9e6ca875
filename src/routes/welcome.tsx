@@ -17,6 +17,7 @@ import { beat, useArrival } from "@/lib/flow-motion";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
+import { MadeByWugweb } from "@/components/ml/kit";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -221,6 +222,7 @@ function WelcomeScreen() {
           </Btn>
 
           <LegalNote />
+          <MadeByWugweb />
 
           {showDemoControls ? (
             <p className="text-center text-1">
