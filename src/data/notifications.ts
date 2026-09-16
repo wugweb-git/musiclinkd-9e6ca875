@@ -26,15 +26,16 @@ export type NotificationItem = {
   cta?: string;
 };
 
-export const categoryMeta: Record<NotificationCategory, { label: string; emoji: string }> = {
-  opportunities: { label: "Opportunities", emoji: "🎯" },
-  bookings: { label: "Bookings", emoji: "📅" },
-  messages: { label: "Messages", emoji: "💬" },
-  collaboration: { label: "Collaboration", emoji: "🎛️" },
-  verification: { label: "Verification", emoji: "🛡️" },
-  reviews: { label: "Reviews", emoji: "⭐" },
-  marketplace: { label: "Marketplace", emoji: "🛒" },
-  system: { label: "Account", emoji: "⚙️" },
+/** `icon` names a lucide icon the notification screens map. Icons, never emoji. */
+export const categoryMeta: Record<NotificationCategory, { label: string; icon: string }> = {
+  opportunities: { label: "Opportunities", icon: "target" },
+  bookings: { label: "Bookings", icon: "calendar" },
+  messages: { label: "Messages", icon: "message" },
+  collaboration: { label: "Collaboration", icon: "sliders" },
+  verification: { label: "Verification", icon: "shield" },
+  reviews: { label: "Reviews", icon: "star" },
+  marketplace: { label: "Marketplace", icon: "store" },
+  system: { label: "Account", icon: "settings" },
 };
 
 const img = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=120&q=80`;

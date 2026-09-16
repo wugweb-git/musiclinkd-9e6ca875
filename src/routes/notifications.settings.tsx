@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MoonStar } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { Card } from "@/components/ml/kit";
+import { notificationIcon } from "@/components/ml/notification-icons";
 import {
   channels,
   defaultPreferences,
@@ -51,10 +52,11 @@ function NotificationSettings() {
 
         {prefs.map((p) => (
           <Card key={p.category} className="space-y-3">
-            <p className="text-sm font-semibold">
-              <span aria-hidden className="mr-1.5">
-                {categoryMeta[p.category].emoji}
-              </span>
+            <p className="flex items-center gap-2 text-sm font-semibold">
+              {(() => {
+                const Icon = notificationIcon(p.category);
+                return <Icon size={16} strokeWidth={1.75} aria-hidden />;
+              })()}
               {categoryMeta[p.category].label}
             </p>
             <div className="flex flex-wrap gap-2">
