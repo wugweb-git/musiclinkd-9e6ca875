@@ -26,7 +26,7 @@ export function SaveButton({
         e.stopPropagation();
         onToggle();
       }}
-      className="flex items-center justify-center rounded-full border border-border bg-card/95 backdrop-blur transition-transform active:scale-90"
+      className="flex items-center justify-center rounded-full border border-border bg-card/95 backdrop-blur transition-transform active:scale-97"
       style={{ width: size, height: size }}
     >
       <Heart

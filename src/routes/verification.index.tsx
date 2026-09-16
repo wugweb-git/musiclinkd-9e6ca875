@@ -113,7 +113,7 @@ function VerificationHub() {
                     to="/verification/$type"
                     params={{ type: t.key }}
                     search={{ step: 0 }}
-                    className="state-layer block rounded-lg transition-transform duration-125 ease-standard active:scale-98"
+                    className="state-layer block rounded-lg transition-transform duration-125 ease-standard active:scale-97"
                   >
                     <Card className="space-y-2">
                       <div className="flex items-start justify-between gap-3">

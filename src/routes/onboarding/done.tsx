@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 /** A next-step card is a link: it takes the button's state layer and press scale. */
 const nextCard =
-  "state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-98";
+  "state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-97";
 
 export const Route = createFileRoute("/onboarding/done")({
   head: () => ({

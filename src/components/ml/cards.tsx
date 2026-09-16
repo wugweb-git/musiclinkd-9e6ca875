@@ -96,7 +96,7 @@ export function TalentCard({ t }: { t: Talent }) {
     <Link
       to="/profile/$username"
       params={{ username: t.id }}
-      className="state-layer block w-[172px] shrink-0 overflow-hidden rounded-lg border border-border bg-card transition-transform duration-125 ease-standard active:scale-98"
+      className="state-layer block w-[172px] shrink-0 overflow-hidden rounded-lg border border-border bg-card transition-transform duration-125 ease-standard active:scale-97"
     >
       <div className="relative h-[150px]">
         <img

@@ -376,7 +376,7 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
   return (
     <Link
       to={to}
-      className="state-layer flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3 text-1 font-semibold transition-transform duration-125 ease-standard active:scale-98"
+      className="state-layer flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3 text-1 font-semibold transition-transform duration-125 ease-standard active:scale-97"
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
@@ -408,7 +408,7 @@ function Overview({
             <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
             <button
               type="button"
-              className="state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-98"
+              className="state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-97"
               onClick={() => onTab("About")}
             >
               Read full profile <ChevronRight size={16} aria-hidden />

@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface ChartTooltipItem {
-  name?: string
-  value?: number | string | null
-  color?: string
-  dataKey?: string | number
-  unit?: string
-  [key: string]: unknown
+  name?: string;
+  value?: number | string | null;
+  color?: string;
+  dataKey?: string | number;
+  unit?: string;
+  [key: string]: unknown;
 }
 
 export interface ChartTooltipProps {
-  active?: boolean
-  payload?: ChartTooltipItem[]
-  label?: React.ReactNode
-  formatter?: (value: number | string, name?: string, item?: ChartTooltipItem) => React.ReactNode
-  labelFormatter?: (label: React.ReactNode) => React.ReactNode
-  className?: string
-  indicator?: "dot" | "line" | "dashed"
-  hideLabel?: boolean
+  active?: boolean;
+  payload?: ChartTooltipItem[];
+  label?: React.ReactNode;
+  formatter?: (value: number | string, name?: string, item?: ChartTooltipItem) => React.ReactNode;
+  labelFormatter?: (label: React.ReactNode) => React.ReactNode;
+  className?: string;
+  indicator?: "dot" | "line" | "dashed";
+  hideLabel?: boolean;
   /**
    * Whether to render in ultra-compact mode for smaller charts and preview tiles.
    */
-  compact?: boolean
+  compact?: boolean;
 }
 
 /**
@@ -44,25 +44,21 @@ export function ChartTooltip({
   compact = false,
 }: ChartTooltipProps) {
   if (!active || !payload?.length) {
-    return null
+    return null;
   }
 
-  const formattedLabel = labelFormatter ? labelFormatter(label) : label
+  const formattedLabel = labelFormatter ? labelFormatter(label) : label;
 
   return (
     <div
-      className={cn(
-        "plotcn-chart-tooltip",
-        compact && "plotcn-chart-tooltip-compact",
-        className
-      )}
+      className={cn("plotcn-chart-tooltip", compact && "plotcn-chart-tooltip-compact", className)}
       role="tooltip"
     >
       {!hideLabel && formattedLabel !== undefined && formattedLabel !== null && (
         <div
           className={cn(
             "font-mono text-[var(--chart-tooltip-muted)] border-b border-[var(--chart-tooltip-border)] truncate",
-            compact ? "text-[10px] mb-1 pb-0.5" : "text-[11px] mb-1.5 pb-1"
+            compact ? "text-[10px] mb-1 pb-0.5" : "text-[11px] mb-1.5 pb-1",
           )}
         >
           {formattedLabel}
@@ -70,16 +66,14 @@ export function ChartTooltip({
       )}
       <div className={cn("flex flex-col", compact ? "gap-0.5" : "gap-1")}>
         {payload.map((item, index) => {
-          const itemColor = item.color || "var(--chart-1)"
-          const rawVal = item.value
-          let displayVal: React.ReactNode = "—"
+          const itemColor = item.color || "var(--chart-1)";
+          const rawVal = item.value;
+          let displayVal: React.ReactNode = "—";
 
           if (typeof rawVal === "number" && Number.isFinite(rawVal)) {
-            displayVal = formatter
-              ? formatter(rawVal, item.name, item)
-              : rawVal.toLocaleString()
+            displayVal = formatter ? formatter(rawVal, item.name, item) : rawVal.toLocaleString();
           } else if (typeof rawVal === "string" && rawVal.trim() !== "") {
-            displayVal = formatter ? formatter(rawVal, item.name, item) : rawVal
+            displayVal = formatter ? formatter(rawVal, item.name, item) : rawVal;
           }
 
           return (
@@ -118,9 +112,9 @@ export function ChartTooltip({
                 {item.unit ? ` ${item.unit}` : ""}
               </span>
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

@@ -72,7 +72,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
     <Link
       to="/portfolio/$id"
       params={{ id: item.id }}
-      className="state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-98"
+      className="state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-97"
     >
       <div className="flex gap-3">
         <WorkTypeIcon kind={item.kind} size="lg" />
@@ -483,7 +483,7 @@ export function ContributorPicker({
               key={c.id}
               type="button"
               onClick={() => add(c.name)}
-              className="state-layer flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-98"
+              className="state-layer flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-97"
             >
               <span className="text-sm font-semibold">{c.name}</span>
               <span className="text-1 text-muted-foreground">{c.role}</span>
@@ -493,7 +493,7 @@ export function ContributorPicker({
             <button
               type="button"
               onClick={() => add(q.trim())}
-              className="state-layer w-full rounded-lg border border-dashed border-border bg-card px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-98"
+              className="state-layer w-full rounded-lg border border-dashed border-border bg-card px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-97"
             >
               <span className="text-sm font-semibold">Add “{q.trim()}”</span>
               <span className="block text-1 text-muted-foreground">

@@ -12,7 +12,7 @@ export function NotificationsBell() {
     <Link
       to="/notifications"
       aria-label="Notifications"
-      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-95"
+      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-97"
     >
       <Bell size={20} aria-hidden />
     </Link>
@@ -31,7 +31,7 @@ export function SearchIconButton({ open, onToggle }: { open: boolean; onToggle: 
       aria-label={open ? "Close search" : "Search"}
       aria-expanded={open}
       onClick={onToggle}
-      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-95"
+      className="hit-area state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-125 ease-standard active:scale-97"
     >
       {open ? <X size={20} aria-hidden /> : <Search size={20} aria-hidden />}
     </button>

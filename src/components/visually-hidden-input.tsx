@@ -14,18 +14,8 @@ interface VisuallyHiddenInputProps<T = InputValue> extends Omit<
   bubbles?: boolean;
 }
 
-function VisuallyHiddenInput<T = InputValue>(
-  props: VisuallyHiddenInputProps<T>,
-) {
-  const {
-    control,
-    value,
-    checked,
-    bubbles = true,
-    type = "hidden",
-    style,
-    ...inputProps
-  } = props;
+function VisuallyHiddenInput<T = InputValue>(props: VisuallyHiddenInputProps<T>) {
+  const { control, value, checked, bubbles = true, type = "hidden", style, ...inputProps } = props;
 
   const isCheckInput = React.useMemo(
     () => type === "checkbox" || type === "radio" || type === "switch",
@@ -79,9 +69,7 @@ function VisuallyHiddenInput<T = InputValue>(
 
       if ("borderBoxSize" in entry) {
         const borderSizeEntry = entry.borderBoxSize;
-        const borderSize = Array.isArray(borderSizeEntry)
-          ? borderSizeEntry[0]
-          : borderSizeEntry;
+        const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
         width = borderSize.inlineSize;
         height = borderSize.blockSize;
       } else {
@@ -127,9 +115,7 @@ function VisuallyHiddenInput<T = InputValue>(
   const composedStyle = React.useMemo<React.CSSProperties>(() => {
     return {
       ...style,
-      ...(controlSize.width !== undefined && controlSize.height !== undefined
-        ? controlSize
-        : {}),
+      ...(controlSize.width !== undefined && controlSize.height !== undefined ? controlSize : {}),
       border: 0,
       clip: "rect(0 0 0 0)",
       clipPath: "inset(50%)",

@@ -76,9 +76,7 @@ export const MiniCalendar = ({
   children,
   ...props
 }: MiniCalendarProps) => {
-  const [selectedDate, setSelectedDate] = useControllableState<
-    Date | undefined
-  >({
+  const [selectedDate, setSelectedDate] = useControllableState<Date | undefined>({
     prop: value,
     defaultProp: defaultValue,
     onChange: onValueChange,
@@ -97,7 +95,7 @@ export const MiniCalendar = ({
   const handleNavigate = (direction: "prev" | "next") => {
     const newStartDate = addDays(
       currentStartDate || new Date(),
-      direction === "next" ? days : -days
+      direction === "next" ? days : -days,
     );
     setCurrentStartDate(newStartDate);
   };
@@ -113,10 +111,7 @@ export const MiniCalendar = ({
   return (
     <MiniCalendarContext.Provider value={contextValue}>
       <div
-        className={cn(
-          "flex items-center gap-2 rounded-lg border bg-background p-2",
-          className
-        )}
+        className={cn("flex items-center gap-2 rounded-lg border bg-background p-2", className)}
         {...props}
       >
         {children}
@@ -125,11 +120,10 @@ export const MiniCalendar = ({
   );
 };
 
-export type MiniCalendarNavigationProps =
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    direction: "prev" | "next";
-    asChild?: boolean;
-  };
+export type MiniCalendarNavigationProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  direction: "prev" | "next";
+  asChild?: boolean;
+};
 
 export const MiniCalendarNavigation = ({
   direction,
@@ -167,18 +161,11 @@ export const MiniCalendarNavigation = ({
   );
 };
 
-export type MiniCalendarDaysProps = Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "children"
-> & {
+export type MiniCalendarDaysProps = Omit<HTMLAttributes<HTMLDivElement>, "children"> & {
   children: (date: Date) => ReactNode;
 };
 
-export const MiniCalendarDays = ({
-  className,
-  children,
-  ...props
-}: MiniCalendarDaysProps) => {
+export const MiniCalendarDays = ({ className, children, ...props }: MiniCalendarDaysProps) => {
   const { startDate, days: dayCount } = useMiniCalendar();
   const days = getDays(startDate, dayCount);
 
@@ -193,11 +180,7 @@ export type MiniCalendarDayProps = ComponentProps<typeof Button> & {
   date: Date;
 };
 
-export const MiniCalendarDay = ({
-  date,
-  className,
-  ...props
-}: MiniCalendarDayProps) => {
+export const MiniCalendarDay = ({ date, className, ...props }: MiniCalendarDayProps) => {
   const { selectedDate, onDateSelect } = useMiniCalendar();
   const { month, day } = formatDate(date);
   const isSelected = selectedDate && isSameDay(date, selectedDate);
@@ -208,7 +191,7 @@ export const MiniCalendarDay = ({
       className={cn(
         "h-auto min-w-[3rem] flex-col gap-0 p-2 text-xs",
         isTodayDate && !isSelected && "bg-accent",
-        className
+        className,
       )}
       onClick={() => onDateSelect(date)}
       size="sm"
@@ -219,7 +202,7 @@ export const MiniCalendarDay = ({
       <span
         className={cn(
           "font-medium text-[10px] text-muted-foreground",
-          isSelected && "text-primary-foreground/70"
+          isSelected && "text-primary-foreground/70",
         )}
       >
         {month}

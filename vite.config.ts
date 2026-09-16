@@ -5,11 +5,41 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import type { Plugin } from "vite";
+import sirv from "sirv";
+
+// Dev-only: serves the static /guide design-system reference (guide/index.html etc.)
+// straight from disk at http://localhost:<port>/guide — not part of the production build.
+function serveGuidePlugin(): Plugin {
+  return {
+    name: "serve-guide",
+    apply: "serve",
+    configureServer(server) {
+      const serve = sirv("guide", { dev: true, single: false });
+      server.middlewares.use("/guide", serve);
+    },
+  };
+}
 
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    plugins: [serveGuidePlugin()],
+    server: {
+      proxy: {
+        // Dev-only: forwards /storybook to `npm run storybook` (port 6006) so both
+        // the app and Storybook are reachable from one dev URL. Run storybook separately.
+        "/storybook": {
+          target: "http://localhost:6006",
+          changeOrigin: true,
+          ws: true,
+          rewrite: (path) => path.replace(/^\/storybook/, ""),
+        },
+      },
+    },
   },
 });

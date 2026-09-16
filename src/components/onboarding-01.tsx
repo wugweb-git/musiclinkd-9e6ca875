@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   IconArchive,
@@ -7,72 +7,66 @@ import {
   IconCircleDashed,
   IconDots,
   IconMail,
-} from '@tabler/icons-react';
-import { useState } from 'react';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
+} from "@tabler/icons-react";
+import { useState } from "react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 const steps = [
   {
-    id: 'profile',
-    title: 'Complete your profile',
-    description:
-      'Add your name, photo, and role so your team knows who you are.',
+    id: "profile",
+    title: "Complete your profile",
+    description: "Add your name, photo, and role so your team knows who you are.",
     completed: true,
-    actionLabel: 'Edit profile',
-    actionHref: '#',
+    actionLabel: "Edit profile",
+    actionHref: "#",
   },
   {
-    id: 'workspace',
-    title: 'Set up your workspace',
-    description:
-      'Customize your workspace with a name, icon, and default settings.',
+    id: "workspace",
+    title: "Set up your workspace",
+    description: "Customize your workspace with a name, icon, and default settings.",
     completed: false,
-    actionLabel: 'Configure workspace',
-    actionHref: '#',
+    actionLabel: "Configure workspace",
+    actionHref: "#",
   },
   {
-    id: 'invite',
-    title: 'Invite your team',
-    description:
-      'Bring your teammates on board so you can collaborate in real time.',
+    id: "invite",
+    title: "Invite your team",
+    description: "Bring your teammates on board so you can collaborate in real time.",
     completed: false,
-    actionLabel: 'Send invites',
-    actionHref: '#',
+    actionLabel: "Send invites",
+    actionHref: "#",
   },
   {
-    id: 'integrations',
-    title: 'Connect integrations',
-    description:
-      'Link your favorite tools like Slack, GitHub, and Linear to streamline workflows.',
+    id: "integrations",
+    title: "Connect integrations",
+    description: "Link your favorite tools like Slack, GitHub, and Linear to streamline workflows.",
     completed: false,
-    actionLabel: 'Browse integrations',
-    actionHref: '#',
+    actionLabel: "Browse integrations",
+    actionHref: "#",
   },
   {
-    id: 'workflow',
-    title: 'Create your first workflow',
-    description:
-      'Automate a repetitive task with a simple drag-and-drop workflow builder.',
+    id: "workflow",
+    title: "Create your first workflow",
+    description: "Automate a repetitive task with a simple drag-and-drop workflow builder.",
     completed: false,
-    actionLabel: 'Build workflow',
-    actionHref: '#',
+    actionLabel: "Build workflow",
+    actionHref: "#",
   },
   {
-    id: 'notifications',
-    title: 'Set up notifications',
-    description:
-      'Choose how and when you want to be notified about updates and mentions.',
+    id: "notifications",
+    title: "Set up notifications",
+    description: "Choose how and when you want to be notified about updates and mentions.",
     completed: false,
-    actionLabel: 'Manage notifications',
-    actionHref: '#',
+    actionLabel: "Manage notifications",
+    actionHref: "#",
   },
 ];
 
@@ -85,13 +79,7 @@ interface OnboardingStep {
   actionHref: string;
 }
 
-function CircularProgress({
-  completed,
-  total,
-}: {
-  completed: number;
-  total: number;
-}) {
+function CircularProgress({ completed, total }: { completed: number; total: number }) {
   const progress = total > 0 ? ((total - completed) / total) * 100 : 0;
   const strokeDashoffset = 100 - progress;
 
@@ -125,10 +113,7 @@ function CircularProgress({
 function StepIndicator({ completed }: { completed: boolean }) {
   if (completed) {
     return (
-      <IconCircleCheckFilled
-        aria-hidden="true"
-        className="mt-1 size-4.5 shrink-0 text-primary"
-      />
+      <IconCircleCheckFilled aria-hidden="true" className="mt-1 size-4.5 shrink-0 text-primary" />
     );
   }
   return (
@@ -156,9 +141,7 @@ export function Onboarding01() {
   };
 
   const handleStepAction = (step: OnboardingStep) => {
-    const updated = currentSteps.map((s) =>
-      s.id === step.id ? { ...s, completed: true } : s
-    );
+    const updated = currentSteps.map((s) => (s.id === step.id ? { ...s, completed: true } : s));
     setCurrentSteps(updated);
     const nextIncomplete = updated.find((s) => !s.completed);
     setOpenStepId(nextIncomplete?.id ?? null);
@@ -168,9 +151,7 @@ export function Onboarding01() {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-background p-4">
         <div className="text-center">
-          <p className="text-pretty text-muted-foreground">
-            Checklist dismissed
-          </p>
+          <p className="text-pretty text-muted-foreground">Checklist dismissed</p>
           <button
             className="mt-2 text-primary text-sm underline"
             onClick={() => setDismissed(false)}
@@ -191,46 +172,28 @@ export function Onboarding01() {
               Get started with Acme
             </h3>
             <div className="mt-2 flex items-center justify-end sm:mt-0">
-              <CircularProgress
-                completed={remainingCount}
-                total={currentSteps.length}
-              />
+              <CircularProgress completed={remainingCount} total={currentSteps.length} />
               <div className="mr-3 ml-1.5 text-muted-foreground text-sm">
-                <span className="font-medium text-foreground">
-                  {completedCount}
-                </span>
-                {' / '}
-                <span className="font-medium text-foreground">
-                  {currentSteps.length}
-                </span>{' '}
-                completed
+                <span className="font-medium text-foreground">{completedCount}</span>
+                {" / "}
+                <span className="font-medium text-foreground">{currentSteps.length}</span> completed
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger
-                  render={
-                    <Button className="h-6 w-6" size="icon" variant="ghost" />
-                  }
+                  render={<Button className="h-6 w-6" size="icon" variant="ghost" />}
                 >
                   <IconDots aria-hidden="true" className="h-4 w-4 shrink-0" />
                   <span className="sr-only">Options</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40">
                   <DropdownMenuItem onClick={() => setDismissed(true)}>
-                    <IconArchive
-                      aria-hidden="true"
-                      className="mr-2 h-4 w-4 shrink-0"
-                    />
+                    <IconArchive aria-hidden="true" className="mr-2 h-4 w-4 shrink-0" />
                     Dismiss
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() =>
-                      window.open('mailto:support@acme.com?subject=Feedback')
-                    }
+                    onClick={() => window.open("mailto:support@acme.com?subject=Feedback")}
                   >
-                    <IconMail
-                      aria-hidden="true"
-                      className="mr-2 h-4 w-4 shrink-0"
-                    />
+                    <IconMail aria-hidden="true" className="mr-2 h-4 w-4 shrink-0" />
                     Give feedback
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -250,20 +213,20 @@ export function Onboarding01() {
               return (
                 <div
                   className={cn(
-                    'group',
-                    isOpen && 'rounded-lg',
-                    showBorderTop && 'border-border border-t'
+                    "group",
+                    isOpen && "rounded-lg",
+                    showBorderTop && "border-border border-t",
                   )}
                   key={step.id}
                 >
                   <div
                     className={cn(
-                      'block w-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                      isOpen && 'rounded-lg'
+                      "block w-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      isOpen && "rounded-lg",
                     )}
                     onClick={() => handleStepClick(step.id)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
+                      if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
                         handleStepClick(step.id);
                       }
@@ -273,8 +236,8 @@ export function Onboarding01() {
                   >
                     <div
                       className={cn(
-                        'relative overflow-hidden rounded-lg transition-colors',
-                        isOpen && 'border border-border bg-muted'
+                        "relative overflow-hidden rounded-lg transition-colors",
+                        isOpen && "border border-border bg-muted",
                       )}
                     >
                       <div className="relative flex items-center justify-between gap-3 py-3 pr-2 pl-4">
@@ -285,10 +248,8 @@ export function Onboarding01() {
                           <div className="mt-0.5 grow">
                             <h4
                               className={cn(
-                                'font-semibold',
-                                step.completed
-                                  ? 'text-primary'
-                                  : 'text-foreground'
+                                "font-semibold",
+                                step.completed ? "text-primary" : "text-foreground",
                               )}
                             >
                               {step.title}
@@ -299,10 +260,7 @@ export function Onboarding01() {
                                   {step.description}
                                 </p>
                                 <a
-                                  className={cn(
-                                    buttonVariants({ size: 'sm' }),
-                                    'mt-3'
-                                  )}
+                                  className={cn(buttonVariants({ size: "sm" }), "mt-3")}
                                   href={step.actionHref}
                                   onClick={(e) => {
                                     e.stopPropagation();

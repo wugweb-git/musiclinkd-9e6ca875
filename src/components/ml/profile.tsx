@@ -1193,7 +1193,7 @@ export function CompletionCard({
           <li key={m.id}>
             <Link
               to={m.to ?? "/profile/edit"}
-              className="state-layer flex min-h-10 items-center gap-2 rounded-sm text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-98"
+              className="state-layer flex min-h-10 items-center gap-2 rounded-sm text-1 text-muted-foreground transition-transform duration-125 ease-standard active:scale-97"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
               {m.label}

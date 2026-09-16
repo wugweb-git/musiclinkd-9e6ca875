@@ -55,11 +55,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ROOT_NAME = "MediaPlayer";
 const SEEK_NAME = "MediaPlayerSeek";
@@ -100,10 +96,7 @@ interface StoreState {
 interface Store {
   subscribe: (cb: () => void) => () => void;
   getState: () => StoreState;
-  setState: (
-    key: keyof StoreState,
-    value: StoreState[keyof StoreState],
-  ) => void;
+  setState: (key: keyof StoreState, value: StoreState[keyof StoreState]) => void;
   notify: () => void;
 }
 
@@ -120,10 +113,7 @@ function useStoreContext(consumerName: string) {
 function useStore<T>(selector: (state: StoreState) => T): T {
   const store = useStoreContext("useStore");
 
-  const getSnapshot = React.useCallback(
-    () => selector(store.getState()),
-    [store, selector],
-  );
+  const getSnapshot = React.useCallback(() => selector(store.getState()), [store, selector]);
 
   return React.useSyncExternalStore(store.subscribe, getSnapshot, getSnapshot);
 }
@@ -143,9 +133,7 @@ interface MediaPlayerContextValue {
   withoutTooltip: boolean;
 }
 
-const MediaPlayerContext = React.createContext<MediaPlayerContextValue | null>(
-  null,
-);
+const MediaPlayerContext = React.createContext<MediaPlayerContextValue | null>(null);
 
 function useMediaPlayerContext(consumerName: string) {
   const context = React.useContext(MediaPlayerContext);
@@ -155,10 +143,7 @@ function useMediaPlayerContext(consumerName: string) {
   return context;
 }
 
-interface MediaPlayerProps extends Omit<
-  DivProps,
-  "onTimeUpdate" | "onVolumeChange"
-> {
+interface MediaPlayerProps extends Omit<DivProps, "onTimeUpdate" | "onVolumeChange"> {
   onPlay?: () => void;
   onPause?: () => void;
   onEnded?: () => void;
@@ -250,9 +235,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
 
   const dir = DirectionPrimitive.useDirection(dirProp);
   const dispatch = useMediaDispatch();
-  const mediaRef = React.useRef<HTMLVideoElement | HTMLAudioElement | null>(
-    null,
-  );
+  const mediaRef = React.useRef<HTMLVideoElement | HTMLAudioElement | null>(null);
 
   const store = useStoreContext(ROOT_NAME);
 
@@ -265,9 +248,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
   const volumeIndicatorTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const mediaPaused = useMediaSelector((state) => state.mediaPaused ?? true);
-  const isFullscreen = useMediaSelector(
-    (state) => state.mediaIsFullscreen ?? false,
-  );
+  const isFullscreen = useMediaSelector((state) => state.mediaIsFullscreen ?? false);
 
   const [mounted, setMounted] = React.useState(false);
   React.useLayoutEffect(() => {
@@ -281,8 +262,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
     : null;
 
   const isVideo =
-    (typeof HTMLVideoElement !== "undefined" &&
-      mediaRef.current instanceof HTMLVideoElement) ||
+    (typeof HTMLVideoElement !== "undefined" && mediaRef.current instanceof HTMLVideoElement) ||
     mediaRef.current?.tagName?.toLowerCase() === "mux-player";
 
   const onControlsShow = React.useCallback(() => {
@@ -328,14 +308,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
         store.setState("controlsVisible", false);
       }
     },
-    [
-      store.setState,
-      rootImplProps.onMouseLeave,
-      autoHide,
-      mediaPaused,
-      menuOpen,
-      dragging,
-    ],
+    [store.setState, rootImplProps.onMouseLeave, autoHide, mediaPaused, menuOpen, dragging],
   );
 
   const onMouseMove = React.useCallback(
@@ -363,14 +336,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
     if (autoHide) {
       onControlsShow();
     }
-  }, [
-    store.setState,
-    onControlsShow,
-    autoHide,
-    menuOpen,
-    mediaPaused,
-    dragging,
-  ]);
+  }, [store.setState, onControlsShow, autoHide, menuOpen, mediaPaused, dragging]);
 
   const onKeyDown = React.useCallback(
     (event: React.KeyboardEvent<RootElement>) => {
@@ -426,26 +392,17 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
 
         case "arrowright":
           event.preventDefault();
-          if (
-            isVideo ||
-            (mediaElement instanceof HTMLAudioElement && event.shiftKey)
-          ) {
+          if (isVideo || (mediaElement instanceof HTMLAudioElement && event.shiftKey)) {
             dispatch({
               type: MediaActionTypes.MEDIA_SEEK_REQUEST,
-              detail: Math.min(
-                mediaElement.duration,
-                mediaElement.currentTime + SEEK_STEP_SHORT,
-              ),
+              detail: Math.min(mediaElement.duration, mediaElement.currentTime + SEEK_STEP_SHORT),
             });
           }
           break;
 
         case "arrowleft":
           event.preventDefault();
-          if (
-            isVideo ||
-            (mediaElement instanceof HTMLAudioElement && event.shiftKey)
-          ) {
+          if (isVideo || (mediaElement instanceof HTMLAudioElement && event.shiftKey)) {
             dispatch({
               type: MediaActionTypes.MEDIA_SEEK_REQUEST,
               detail: Math.max(0, mediaElement.currentTime - SEEK_STEP_SHORT),
@@ -511,9 +468,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
           break;
 
         case "d": {
-          const hasDownload = mediaElement.querySelector(
-            '[data-slot="media-player-download"]',
-          );
+          const hasDownload = mediaElement.querySelector('[data-slot="media-player-download"]');
 
           if (!hasDownload) break;
 
@@ -570,10 +525,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
           event.preventDefault();
           dispatch({
             type: MediaActionTypes.MEDIA_SEEK_REQUEST,
-            detail: Math.min(
-              mediaElement.duration,
-              mediaElement.currentTime + SEEK_STEP_LONG,
-            ),
+            detail: Math.min(mediaElement.duration, mediaElement.currentTime + SEEK_STEP_LONG),
           });
           break;
         }
@@ -649,18 +601,14 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
     if (onPause) mediaElement.addEventListener("pause", onPause);
     if (onEnded) mediaElement.addEventListener("ended", onEnded);
     if (onTimeUpdate)
-      mediaElement.addEventListener("timeupdate", () =>
-        onTimeUpdate?.(mediaElement.currentTime),
-      );
+      mediaElement.addEventListener("timeupdate", () => onTimeUpdate?.(mediaElement.currentTime));
     if (onVolumeChange)
       mediaElement.addEventListener("volumechange", () => {
         onVolumeChange?.(mediaElement.volume);
         onMuted?.(mediaElement.muted);
       });
     if (onMediaError)
-      mediaElement.addEventListener("error", () =>
-        onMediaError?.(mediaElement.error),
-      );
+      mediaElement.addEventListener("error", () => onMediaError?.(mediaElement.error));
     if (onFullscreenChange) {
       document.addEventListener("fullscreenchange", () =>
         onFullscreenChange?.(!!document.fullscreenElement),
@@ -681,9 +629,7 @@ function MediaPlayerImpl(props: MediaPlayerProps) {
           onMuted?.(mediaElement.muted);
         });
       if (onMediaError)
-        mediaElement.removeEventListener("error", () =>
-          onMediaError?.(mediaElement.error),
-        );
+        mediaElement.removeEventListener("error", () => onMediaError?.(mediaElement.error));
       if (onFullscreenChange) {
         document.removeEventListener("fullscreenchange", () =>
           onFullscreenChange?.(!!document.fullscreenElement),
@@ -788,8 +734,7 @@ function MediaPlayerVideo(props: MediaPlayerVideoProps) {
 
   const context = useMediaPlayerContext("MediaPlayerVideo");
   const dispatch = useMediaDispatch();
-  const mediaRefCallback =
-    useMediaRef() as React.RefCallback<HTMLVideoElement | null>;
+  const mediaRefCallback = useMediaRef() as React.RefCallback<HTMLVideoElement | null>;
   const composedRef = useComposedRefs(ref, context.mediaRef, mediaRefCallback);
 
   const onPlayToggle = React.useCallback(
@@ -833,8 +778,7 @@ function MediaPlayerAudio(props: MediaPlayerAudioProps) {
   const { asChild, ref, ...audioProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerAudio");
-  const mediaRefCallback =
-    useMediaRef() as React.RefCallback<HTMLAudioElement | null>;
+  const mediaRefCallback = useMediaRef() as React.RefCallback<HTMLAudioElement | null>;
   const composedRef = useComposedRefs(ref, context.mediaRef, mediaRefCallback);
 
   const AudioPrimitive = asChild ? SlotPrimitive.Slot : "audio";
@@ -855,9 +799,7 @@ function MediaPlayerControls(props: DivProps) {
   const { asChild, className, ...controlsProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerControls");
-  const isFullscreen = useMediaSelector(
-    (state) => state.mediaIsFullscreen ?? false,
-  );
+  const isFullscreen = useMediaSelector((state) => state.mediaIsFullscreen ?? false);
   const controlsVisible = useStore((state) => state.controlsVisible);
 
   const ControlsPrimitive = asChild ? SlotPrimitive.Slot : "div";
@@ -883,13 +825,7 @@ interface MediaPlayerLoadingProps extends DivProps {
 }
 
 function MediaPlayerLoading(props: MediaPlayerLoadingProps) {
-  const {
-    delayMs = 500,
-    asChild,
-    className,
-    children,
-    ...loadingProps
-  } = props;
+  const { delayMs = 500, asChild, className, children, ...loadingProps } = props;
 
   const isLoading = useMediaSelector((state) => state.mediaLoading ?? false);
   const isPaused = useMediaSelector((state) => state.mediaPaused ?? true);
@@ -944,9 +880,7 @@ function MediaPlayerLoading(props: MediaPlayerLoadingProps) {
         className,
       )}
     >
-      {children ?? (
-        <Loader2Icon className="size-20 animate-spin stroke-[.0938rem] text-primary" />
-      )}
+      {children ?? <Loader2Icon className="size-20 animate-spin stroke-[.0938rem] text-primary" />}
     </LoadingPrimitive>
   );
 }
@@ -974,9 +908,7 @@ function MediaPlayerError(props: MediaPlayerErrorProps) {
   } = props;
 
   const context = useMediaPlayerContext("MediaPlayerError");
-  const isFullscreen = useMediaSelector(
-    (state) => state.mediaIsFullscreen ?? false,
-  );
+  const isFullscreen = useMediaSelector((state) => state.mediaIsFullscreen ?? false);
   const mediaError = useMediaSelector((state) => state.mediaError);
 
   const error = errorProp ?? mediaError;
@@ -1049,12 +981,9 @@ function MediaPlayerError(props: MediaPlayerErrorProps) {
 
     const descriptionMap: Record<number, string> = {
       [MediaError.MEDIA_ERR_ABORTED]: "Media playback was aborted",
-      [MediaError.MEDIA_ERR_NETWORK]:
-        "A network error occurred while loading the media",
-      [MediaError.MEDIA_ERR_DECODE]:
-        "An error occurred while decoding the media",
-      [MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED]:
-        "The media format is not supported",
+      [MediaError.MEDIA_ERR_NETWORK]: "A network error occurred while loading the media",
+      [MediaError.MEDIA_ERR_DECODE]: "An error occurred while decoding the media",
+      [MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED]: "The media format is not supported",
     };
 
     return descriptionMap[error.code] ?? "An unknown error occurred";
@@ -1082,9 +1011,7 @@ function MediaPlayerError(props: MediaPlayerErrorProps) {
         <div className="flex max-w-md flex-col items-center gap-4 px-6 py-8 text-center">
           <AlertTriangleIcon className="size-12 text-destructive" />
           <div className="flex flex-col gap-px text-center">
-            <h3 className="text-xl font-semibold tracking-tight">
-              {errorLabel}
-            </h3>
+            <h3 className="text-xl font-semibold tracking-tight">{errorLabel}</h3>
             <p className="text-sm leading-relaxed text-balance text-muted-foreground">
               {errorDescription}
             </p>
@@ -1128,12 +1055,8 @@ function MediaPlayerVolumeIndicator(props: DivProps) {
 
   const mediaVolume = useMediaSelector((state) => state.mediaVolume ?? 1);
   const mediaMuted = useMediaSelector((state) => state.mediaMuted ?? false);
-  const mediaVolumeLevel = useMediaSelector(
-    (state) => state.mediaVolumeLevel ?? "high",
-  );
-  const volumeIndicatorVisible = useStore(
-    (state) => state.volumeIndicatorVisible,
-  );
+  const mediaVolumeLevel = useMediaSelector((state) => state.mediaVolumeLevel ?? "high");
+  const volumeIndicatorVisible = useStore((state) => state.volumeIndicatorVisible);
 
   if (!volumeIndicatorVisible) return null;
 
@@ -1194,9 +1117,7 @@ function MediaPlayerVolumeIndicator(props: DivProps) {
 function MediaPlayerControlsOverlay(props: DivProps) {
   const { asChild, className, ...overlayProps } = props;
 
-  const isFullscreen = useMediaSelector(
-    (state) => state.mediaIsFullscreen ?? false,
-  );
+  const isFullscreen = useMediaSelector((state) => state.mediaIsFullscreen ?? false);
   const controlsVisible = useStore((state) => state.controlsVisible);
 
   const OverlayPrimitive = asChild ? SlotPrimitive.Slot : "div";
@@ -1240,10 +1161,7 @@ function MediaPlayerPlay(props: React.ComponentProps<typeof Button>) {
   );
 
   return (
-    <MediaPlayerTooltip
-      tooltip={mediaPaused ? "Play" : "Pause"}
-      shortcut="Space"
-    >
+    <MediaPlayerTooltip tooltip={mediaPaused ? "Play" : "Pause"} shortcut="Space">
       <Button
         type="button"
         aria-controls={context.mediaId}
@@ -1256,10 +1174,7 @@ function MediaPlayerPlay(props: React.ComponentProps<typeof Button>) {
         {...playButtonProps}
         variant="ghost"
         size="icon"
-        className={cn(
-          "size-8 [&_svg:not([class*='fill-'])]:fill-current",
-          className,
-        )}
+        className={cn("size-8 [&_svg:not([class*='fill-'])]:fill-current", className)}
         onClick={onPlayToggle}
       >
         {children ?? (mediaPaused ? <PlayIcon /> : <PauseIcon />)}
@@ -1268,26 +1183,16 @@ function MediaPlayerPlay(props: React.ComponentProps<typeof Button>) {
   );
 }
 
-interface MediaPlayerSeekBackwardProps extends React.ComponentProps<
-  typeof Button
-> {
+interface MediaPlayerSeekBackwardProps extends React.ComponentProps<typeof Button> {
   seconds?: number;
 }
 
 function MediaPlayerSeekBackward(props: MediaPlayerSeekBackwardProps) {
-  const {
-    seconds = SEEK_STEP_SHORT,
-    children,
-    className,
-    disabled,
-    ...seekBackwardProps
-  } = props;
+  const { seconds = SEEK_STEP_SHORT, children, className, disabled, ...seekBackwardProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerSeekBackward");
   const dispatch = useMediaDispatch();
-  const mediaCurrentTime = useMediaSelector(
-    (state) => state.mediaCurrentTime ?? 0,
-  );
+  const mediaCurrentTime = useMediaSelector((state) => state.mediaCurrentTime ?? 0);
 
   const isDisabled = disabled || context.disabled;
 
@@ -1329,29 +1234,17 @@ function MediaPlayerSeekBackward(props: MediaPlayerSeekBackwardProps) {
   );
 }
 
-interface MediaPlayerSeekForwardProps extends React.ComponentProps<
-  typeof Button
-> {
+interface MediaPlayerSeekForwardProps extends React.ComponentProps<typeof Button> {
   seconds?: number;
 }
 
 function MediaPlayerSeekForward(props: MediaPlayerSeekForwardProps) {
-  const {
-    seconds = SEEK_STEP_LONG,
-    children,
-    className,
-    disabled,
-    ...seekForwardProps
-  } = props;
+  const { seconds = SEEK_STEP_LONG, children, className, disabled, ...seekForwardProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerSeekForward");
   const dispatch = useMediaDispatch();
-  const mediaCurrentTime = useMediaSelector(
-    (state) => state.mediaCurrentTime ?? 0,
-  );
-  const [, seekableEnd] = useMediaSelector(
-    (state) => state.mediaSeekable ?? [0, 0],
-  );
+  const mediaCurrentTime = useMediaSelector((state) => state.mediaCurrentTime ?? 0);
+  const [, seekableEnd] = useMediaSelector((state) => state.mediaSeekable ?? [0, 0]);
   const isDisabled = disabled || context.disabled;
 
   const onSeekForward = React.useCallback(
@@ -1362,10 +1255,7 @@ function MediaPlayerSeekForward(props: MediaPlayerSeekForwardProps) {
 
       dispatch({
         type: MediaActionTypes.MEDIA_SEEK_REQUEST,
-        detail: Math.min(
-          seekableEnd ?? Number.POSITIVE_INFINITY,
-          mediaCurrentTime + seconds,
-        ),
+        detail: Math.min(seekableEnd ?? Number.POSITIVE_INFINITY, mediaCurrentTime + seconds),
       });
     },
     [dispatch, props.onClick, mediaCurrentTime, seekableEnd, seconds],
@@ -1401,9 +1291,7 @@ interface SeekState {
   hasInitialPosition: boolean;
 }
 
-interface MediaPlayerSeekProps extends React.ComponentProps<
-  typeof SliderPrimitive.Root
-> {
+interface MediaPlayerSeekProps extends React.ComponentProps<typeof SliderPrimitive.Root> {
   withTime?: boolean;
   withoutChapter?: boolean;
   withoutTooltip?: boolean;
@@ -1411,9 +1299,7 @@ interface MediaPlayerSeekProps extends React.ComponentProps<
   tooltipTimeVariant?: "current" | "progress";
   tooltipSideOffset?: number;
   tooltipCollisionBoundary?: Element | Element[];
-  tooltipCollisionPadding?:
-    | number
-    | Partial<Record<"top" | "right" | "bottom" | "left", number>>;
+  tooltipCollisionPadding?: number | Partial<Record<"top" | "right" | "bottom" | "left", number>>;
 }
 
 function MediaPlayerSeek(props: MediaPlayerSeekProps) {
@@ -1434,25 +1320,17 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
   const context = useMediaPlayerContext(SEEK_NAME);
   const store = useStoreContext(SEEK_NAME);
   const dispatch = useMediaDispatch();
-  const mediaCurrentTime = useMediaSelector(
-    (state) => state.mediaCurrentTime ?? 0,
-  );
+  const mediaCurrentTime = useMediaSelector((state) => state.mediaCurrentTime ?? 0);
   const [seekableStart = 0, seekableEnd = 0] = useMediaSelector(
     (state) => state.mediaSeekable ?? [0, 0],
   );
   const mediaBuffered = useMediaSelector((state) => state.mediaBuffered ?? []);
   const mediaEnded = useMediaSelector((state) => state.mediaEnded ?? false);
 
-  const chapterCues = useMediaSelector(
-    (state) => state.mediaChaptersCues ?? [],
-  );
+  const chapterCues = useMediaSelector((state) => state.mediaChaptersCues ?? []);
   const mediaPreviewTime = useMediaSelector((state) => state.mediaPreviewTime);
-  const mediaPreviewImage = useMediaSelector(
-    (state) => state.mediaPreviewImage,
-  );
-  const mediaPreviewCoords = useMediaSelector(
-    (state) => state.mediaPreviewCoords,
-  );
+  const mediaPreviewImage = useMediaSelector((state) => state.mediaPreviewImage);
+  const mediaPreviewCoords = useMediaSelector((state) => state.mediaPreviewCoords);
 
   const seekRef = React.useRef<HTMLDivElement>(null);
   const tooltipRef = React.useRef<HTMLDivElement>(null);
@@ -1489,11 +1367,9 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
   const displayValue = seekState.pendingSeekTime ?? mediaCurrentTime;
 
   const isDisabled = disabled || context.disabled;
-  const tooltipDisabled =
-    withoutTooltip || context.withoutTooltip || store.getState().menuOpen;
+  const tooltipDisabled = withoutTooltip || context.withoutTooltip || store.getState().menuOpen;
 
-  const currentTooltipSideOffset =
-    tooltipSideOffset ?? context.tooltipSideOffset;
+  const currentTooltipSideOffset = tooltipSideOffset ?? context.tooltipSideOffset;
 
   const getCachedTime = React.useCallback((time: number, duration: number) => {
     const roundedTime = Math.floor(time);
@@ -1573,13 +1449,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
 
       return null;
     },
-    [
-      tooltipThumbnailSrc,
-      mediaPreviewTime,
-      mediaPreviewImage,
-      mediaPreviewCoords,
-      tooltipDisabled,
-    ],
+    [tooltipThumbnailSrc, mediaPreviewTime, mediaPreviewImage, mediaPreviewCoords, tooltipDisabled],
   );
 
   const onPreviewUpdate = React.useCallback(
@@ -1605,8 +1475,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
     (clientX: number) => {
       if (!seekRef.current) return;
 
-      const tooltipWidth =
-        tooltipRef.current?.offsetWidth ?? SEEK_TOOLTIP_WIDTH_FALLBACK;
+      const tooltipWidth = tooltipRef.current?.offsetWidth ?? SEEK_TOOLTIP_WIDTH_FALLBACK;
 
       let x = clientX;
       const y = seekRectRef.current?.top ?? 0;
@@ -1619,14 +1488,8 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
 
       for (const boundary of collisionData.boundaries) {
         const boundaryRect = boundary.getBoundingClientRect();
-        minLeft = Math.max(
-          minLeft,
-          boundaryRect.left + collisionData.padding.left,
-        );
-        maxRight = Math.min(
-          maxRight,
-          boundaryRect.right - collisionData.padding.right,
-        );
+        minLeft = Math.max(minLeft, boundaryRect.left + collisionData.padding.left);
+        maxRight = Math.min(maxRight, boundaryRect.right - collisionData.padding.right);
       }
 
       if (x - halfTooltipWidth < minLeft) {
@@ -1660,14 +1523,8 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
   const onHoverProgressUpdate = React.useCallback(() => {
     if (!seekRef.current || seekableEnd <= 0) return;
 
-    const hoverPercent = Math.min(
-      100,
-      (hoverTimeRef.current / seekableEnd) * 100,
-    );
-    seekRef.current.style.setProperty(
-      SEEK_HOVER_PERCENT,
-      `${hoverPercent.toFixed(4)}%`,
-    );
+    const hoverPercent = Math.min(100, (hoverTimeRef.current / seekableEnd) * 100);
+    seekRef.current.style.setProperty(SEEK_HOVER_PERCENT, `${hoverPercent.toFixed(4)}%`);
   }, [seekableEnd]);
 
   React.useEffect(() => {
@@ -1823,10 +1680,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
         }
 
         const clientX = lastPointerXRef.current;
-        const offsetXOnSeekBar = Math.max(
-          0,
-          Math.min(clientX - seekRect.left, seekRect.width),
-        );
+        const offsetXOnSeekBar = Math.max(0, Math.min(clientX - seekRect.left, seekRect.width));
         const relativeX = offsetXOnSeekBar / seekRect.width;
         const calculatedHoverTime = relativeX * seekableEnd;
 
@@ -1835,12 +1689,10 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
         onHoverProgressUpdate();
 
         const wasHovering = seekState.isHovering;
-        const isCurrentlyHovering =
-          clientX >= seekRect.left && clientX <= seekRect.right;
+        const isCurrentlyHovering = clientX >= seekRect.left && clientX <= seekRect.right;
 
         const timeHovering = Date.now() - pointerEnterTimeRef.current;
-        const totalMovement =
-          horizontalMovementRef.current + verticalMovementRef.current;
+        const totalMovement = horizontalMovementRef.current + verticalMovementRef.current;
         const horizontalRatio =
           totalMovement > 0 ? horizontalMovementRef.current / totalMovement : 0;
 
@@ -1854,12 +1706,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
             horizontalRatio > 0.6 ||
             (totalMovement < 10 && timeHovering > 50));
 
-        if (
-          !wasHovering &&
-          isCurrentlyHovering &&
-          shouldShowTooltip &&
-          !tooltipDisabled
-        ) {
+        if (!wasHovering && isCurrentlyHovering && shouldShowTooltip && !tooltipDisabled) {
           setSeekState((prev) => ({ ...prev, isHovering: true }));
         }
 
@@ -2022,8 +1869,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
     const spriteHeight = Number.parseFloat(thumbnail.coords[3] ?? "0");
 
     const scaleX = spriteWidth > 0 ? SPRITE_CONTAINER_WIDTH / spriteWidth : 1;
-    const scaleY =
-      spriteHeight > 0 ? SPRITE_CONTAINER_HEIGHT / spriteHeight : 1;
+    const scaleY = spriteHeight > 0 ? SPRITE_CONTAINER_HEIGHT / spriteHeight : 1;
     const scale = Math.min(scaleX, scaleY);
 
     return {
@@ -2085,74 +1931,69 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
         </SliderPrimitive.Track>
         <SliderPrimitive.Thumb className="relative z-10 block size-2.5 shrink-0 rounded-full bg-primary shadow-sm ring-ring/50 transition-[color,box-shadow] will-change-transform hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50" />
       </SliderPrimitive.Root>
-      {!withoutTooltip &&
-        !context.withoutTooltip &&
-        seekState.isHovering &&
-        seekableEnd > 0 && (
-          <MediaPlayerPortal>
+      {!withoutTooltip && !context.withoutTooltip && seekState.isHovering && seekableEnd > 0 && (
+        <MediaPlayerPortal>
+          <div
+            ref={tooltipRef}
+            className="pointer-events-none z-50 contain-[layout_style] [transition:opacity_150ms_ease-in-out] backface-hidden"
+            style={{
+              position: "fixed" as const,
+              left: `var(${SEEK_TOOLTIP_X}, 0rem)`,
+              top: `var(${SEEK_TOOLTIP_Y}, 0rem)`,
+              transform: `translateX(-50%) translateY(calc(-100% - ${currentTooltipSideOffset}px))`,
+              visibility: seekState.hasInitialPosition ? "visible" : "hidden",
+              opacity: seekState.hasInitialPosition ? 1 : 0,
+            }}
+          >
             <div
-              ref={tooltipRef}
-              className="pointer-events-none z-50 contain-[layout_style] [transition:opacity_150ms_ease-in-out] backface-hidden"
-              style={{
-                position: "fixed" as const,
-                left: `var(${SEEK_TOOLTIP_X}, 0rem)`,
-                top: `var(${SEEK_TOOLTIP_Y}, 0rem)`,
-                transform: `translateX(-50%) translateY(calc(-100% - ${currentTooltipSideOffset}px))`,
-                visibility: seekState.hasInitialPosition ? "visible" : "hidden",
-                opacity: seekState.hasInitialPosition ? 1 : 0,
-              }}
+              className={cn(
+                "flex flex-col items-center gap-1.5 rounded-sm border bg-background text-foreground shadow-sm dark:bg-zinc-900",
+                thumbnail && "min-h-10",
+                !thumbnail && currentChapterCue && "px-3 py-1.5",
+              )}
             >
+              {thumbnail?.src && (
+                <div
+                  data-slot="media-player-seek-thumbnail"
+                  className="overflow-hidden rounded-sm rounded-b-none"
+                  style={{
+                    width: `${SPRITE_CONTAINER_WIDTH}px`,
+                    height: `${SPRITE_CONTAINER_HEIGHT}px`,
+                  }}
+                >
+                  {thumbnail.coords ? (
+                    <div style={spriteStyle} />
+                  ) : (
+                    <img
+                      src={thumbnail.src}
+                      alt={`Preview at ${hoverTime}`}
+                      className="size-full object-cover"
+                    />
+                  )}
+                </div>
+              )}
+              {currentChapterCue && (
+                <div
+                  data-slot="media-player-seek-chapter-title"
+                  className="line-clamp-2 max-w-48 text-center text-xs text-balance"
+                >
+                  {currentChapterCue.text}
+                </div>
+              )}
               <div
+                data-slot="media-player-seek-time"
                 className={cn(
-                  "flex flex-col items-center gap-1.5 rounded-sm border bg-background text-foreground shadow-sm dark:bg-zinc-900",
-                  thumbnail && "min-h-10",
-                  !thumbnail && currentChapterCue && "px-3 py-1.5",
+                  "text-center text-xs whitespace-nowrap tabular-nums",
+                  thumbnail && "pb-1.5",
+                  !(thumbnail || currentChapterCue) && "px-2.5 py-1",
                 )}
               >
-                {thumbnail?.src && (
-                  <div
-                    data-slot="media-player-seek-thumbnail"
-                    className="overflow-hidden rounded-sm rounded-b-none"
-                    style={{
-                      width: `${SPRITE_CONTAINER_WIDTH}px`,
-                      height: `${SPRITE_CONTAINER_HEIGHT}px`,
-                    }}
-                  >
-                    {thumbnail.coords ? (
-                      <div style={spriteStyle} />
-                    ) : (
-                      <img
-                        src={thumbnail.src}
-                        alt={`Preview at ${hoverTime}`}
-                        className="size-full object-cover"
-                      />
-                    )}
-                  </div>
-                )}
-                {currentChapterCue && (
-                  <div
-                    data-slot="media-player-seek-chapter-title"
-                    className="line-clamp-2 max-w-48 text-center text-xs text-balance"
-                  >
-                    {currentChapterCue.text}
-                  </div>
-                )}
-                <div
-                  data-slot="media-player-seek-time"
-                  className={cn(
-                    "text-center text-xs whitespace-nowrap tabular-nums",
-                    thumbnail && "pb-1.5",
-                    !(thumbnail || currentChapterCue) && "px-2.5 py-1",
-                  )}
-                >
-                  {tooltipTimeVariant === "progress"
-                    ? `${hoverTime} / ${duration}`
-                    : hoverTime}
-                </div>
+                {tooltipTimeVariant === "progress" ? `${hoverTime} / ${duration}` : hoverTime}
               </div>
             </div>
-          </MediaPlayerPortal>
-        )}
+          </div>
+        </MediaPlayerPortal>
+      )}
     </div>
   );
 
@@ -2169,9 +2010,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
   return SeekSlider;
 }
 
-interface MediaPlayerVolumeProps extends React.ComponentProps<
-  typeof SliderPrimitive.Root
-> {
+interface MediaPlayerVolumeProps extends React.ComponentProps<typeof SliderPrimitive.Root> {
   asChild?: boolean;
   expandable?: boolean;
 }
@@ -2184,9 +2023,7 @@ function MediaPlayerVolume(props: MediaPlayerVolumeProps) {
   const dispatch = useMediaDispatch();
   const mediaVolume = useMediaSelector((state) => state.mediaVolume ?? 1);
   const mediaMuted = useMediaSelector((state) => state.mediaMuted ?? false);
-  const mediaVolumeLevel = useMediaSelector(
-    (state) => state.mediaVolumeLevel ?? "high",
-  );
+  const mediaVolumeLevel = useMediaSelector((state) => state.mediaVolumeLevel ?? "high");
 
   const sliderId = React.useId();
   const volumeTriggerId = React.useId();
@@ -2241,9 +2078,7 @@ function MediaPlayerVolume(props: MediaPlayerVolumeProps) {
       data-slot="media-player-volume-container"
       className={cn(
         "group flex items-center",
-        expandable
-          ? "gap-0 group-focus-within:gap-2 group-hover:gap-1.5"
-          : "gap-1.5",
+        expandable ? "gap-0 group-focus-within:gap-2 group-hover:gap-1.5" : "gap-1.5",
         className,
       )}
     >
@@ -2311,20 +2146,13 @@ function MediaPlayerTime(props: MediaPlayerTimeProps) {
   const { variant = "progress", asChild, className, ...timeProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerTime");
-  const mediaCurrentTime = useMediaSelector(
-    (state) => state.mediaCurrentTime ?? 0,
-  );
-  const [, seekableEnd = 0] = useMediaSelector(
-    (state) => state.mediaSeekable ?? [0, 0],
-  );
+  const mediaCurrentTime = useMediaSelector((state) => state.mediaCurrentTime ?? 0);
+  const [, seekableEnd = 0] = useMediaSelector((state) => state.mediaSeekable ?? [0, 0]);
 
   const times = React.useMemo(() => {
     if (variant === "remaining") {
       return {
-        remaining: timeUtils.formatTime(
-          seekableEnd - mediaCurrentTime,
-          seekableEnd,
-        ),
+        remaining: timeUtils.formatTime(seekableEnd - mediaCurrentTime, seekableEnd),
       };
     }
 
@@ -2362,10 +2190,7 @@ function MediaPlayerTime(props: MediaPlayerTimeProps) {
       data-variant={variant}
       dir={context.dir}
       {...timeProps}
-      className={cn(
-        "flex items-center gap-1 text-sm text-foreground/80",
-        className,
-      )}
+      className={cn("flex items-center gap-1 text-sm text-foreground/80", className)}
     >
       <span className="tabular-nums">{times.current}</span>
       <span role="separator" aria-hidden="true" aria-valuenow={0} tabIndex={-1}>
@@ -2401,9 +2226,7 @@ function MediaPlayerPlaybackSpeed(props: MediaPlayerPlaybackSpeedProps) {
   const context = useMediaPlayerContext(PLAYBACK_SPEED_NAME);
   const store = useStoreContext(PLAYBACK_SPEED_NAME);
   const dispatch = useMediaDispatch();
-  const mediaPlaybackRate = useMediaSelector(
-    (state) => state.mediaPlaybackRate ?? 1,
-  );
+  const mediaPlaybackRate = useMediaSelector((state) => state.mediaPlaybackRate ?? 1);
 
   const isDisabled = disabled || context.disabled;
 
@@ -2426,12 +2249,7 @@ function MediaPlayerPlaybackSpeed(props: MediaPlayerPlaybackSpeedProps) {
   );
 
   return (
-    <DropdownMenu
-      modal={modal}
-      open={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-    >
+    <DropdownMenu modal={modal} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <MediaPlayerTooltip tooltip="Playback speed" shortcut={["<", ">"]}>
         <DropdownMenuTrigger asChild>
           <Button
@@ -2512,10 +2330,7 @@ function MediaPlayerLoop(props: MediaPlayerLoopProps) {
   );
 
   return (
-    <MediaPlayerTooltip
-      tooltip={isLooping ? "Disable loop" : "Enable loop"}
-      shortcut="R"
-    >
+    <MediaPlayerTooltip tooltip={isLooping ? "Disable loop" : "Enable loop"} shortcut="R">
       <Button
         type="button"
         aria-controls={context.mediaId}
@@ -2532,28 +2347,20 @@ function MediaPlayerLoop(props: MediaPlayerLoopProps) {
         onClick={onLoopToggle}
       >
         {children ??
-          (isLooping ? (
-            <RepeatIcon className="text-muted-foreground" />
-          ) : (
-            <RepeatIcon />
-          ))}
+          (isLooping ? <RepeatIcon className="text-muted-foreground" /> : <RepeatIcon />)}
       </Button>
     </MediaPlayerTooltip>
   );
 }
 
-interface MediaPlayerFullscreenProps extends React.ComponentProps<
-  typeof Button
-> {}
+interface MediaPlayerFullscreenProps extends React.ComponentProps<typeof Button> {}
 
 function MediaPlayerFullscreen(props: MediaPlayerFullscreenProps) {
   const { children, className, disabled, ...fullscreenProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerFullscreen");
   const dispatch = useMediaDispatch();
-  const isFullscreen = useMediaSelector(
-    (state) => state.mediaIsFullscreen ?? false,
-  );
+  const isFullscreen = useMediaSelector((state) => state.mediaIsFullscreen ?? false);
 
   const isDisabled = disabled || context.disabled;
 
@@ -2593,25 +2400,17 @@ function MediaPlayerFullscreen(props: MediaPlayerFullscreenProps) {
   );
 }
 
-interface MediaPlayerPiPProps extends Omit<
-  React.ComponentProps<typeof Button>,
-  "children"
-> {
-  children?:
-    | React.ReactNode
-    | ((isPictureInPicture: boolean) => React.ReactNode);
+interface MediaPlayerPiPProps extends Omit<React.ComponentProps<typeof Button>, "children"> {
+  children?: React.ReactNode | ((isPictureInPicture: boolean) => React.ReactNode);
   onPipError?: (error: unknown, state: "enter" | "exit") => void;
 }
 
 function MediaPlayerPiP(props: MediaPlayerPiPProps) {
-  const { children, className, onPipError, disabled, ...pipButtonProps } =
-    props;
+  const { children, className, onPipError, disabled, ...pipButtonProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerPiP");
   const dispatch = useMediaDispatch();
-  const isPictureInPicture = useMediaSelector(
-    (state) => state.mediaIsPip ?? false,
-  );
+  const isPictureInPicture = useMediaSelector((state) => state.mediaIsPip ?? false);
 
   const isDisabled = disabled || context.disabled;
 
@@ -2663,11 +2462,7 @@ function MediaPlayerPiP(props: MediaPlayerPiPProps) {
         {typeof children === "function"
           ? children(isPictureInPicture)
           : (children ??
-            (isPictureInPicture ? (
-              <PictureInPicture2Icon />
-            ) : (
-              <PictureInPictureIcon />
-            )))}
+            (isPictureInPicture ? <PictureInPicture2Icon /> : <PictureInPictureIcon />))}
       </Button>
     </MediaPlayerTooltip>
   );
@@ -2713,8 +2508,7 @@ function MediaPlayerCaptions(props: React.ComponentProps<typeof Button>) {
         className={cn("size-8", className)}
         onClick={onCaptionsToggle}
       >
-        {children ??
-          (isSubtitlesActive ? <SubtitlesIcon /> : <CaptionsOffIcon />)}
+        {children ?? (isSubtitlesActive ? <SubtitlesIcon /> : <CaptionsOffIcon />)}
       </Button>
     </MediaPlayerTooltip>
   );
@@ -2787,21 +2581,11 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
   const store = useStoreContext(SETTINGS_NAME);
   const dispatch = useMediaDispatch();
 
-  const mediaPlaybackRate = useMediaSelector(
-    (state) => state.mediaPlaybackRate ?? 1,
-  );
-  const mediaSubtitlesList = useMediaSelector(
-    (state) => state.mediaSubtitlesList ?? [],
-  );
-  const mediaSubtitlesShowing = useMediaSelector(
-    (state) => state.mediaSubtitlesShowing ?? [],
-  );
-  const mediaRenditionList = useMediaSelector(
-    (state) => state.mediaRenditionList ?? [],
-  );
-  const selectedRenditionId = useMediaSelector(
-    (state) => state.mediaRenditionSelected,
-  );
+  const mediaPlaybackRate = useMediaSelector((state) => state.mediaPlaybackRate ?? 1);
+  const mediaSubtitlesList = useMediaSelector((state) => state.mediaSubtitlesList ?? []);
+  const mediaSubtitlesShowing = useMediaSelector((state) => state.mediaSubtitlesShowing ?? []);
+  const mediaRenditionList = useMediaSelector((state) => state.mediaRenditionList ?? []);
+  const selectedRenditionId = useMediaSelector((state) => state.mediaRenditionSelected);
 
   const isDisabled = disabled || context.disabled;
   const isSubtitlesActive = mediaSubtitlesShowing.length > 0;
@@ -2877,12 +2661,7 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
   );
 
   return (
-    <DropdownMenu
-      modal={modal}
-      open={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-    >
+    <DropdownMenu modal={modal} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <MediaPlayerTooltip tooltip="Settings">
         <DropdownMenuTrigger asChild>
           <Button
@@ -2982,17 +2761,13 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
             </Badge>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuItem
-              className="justify-between"
-              onSelect={onSubtitlesToggle}
-            >
+            <DropdownMenuItem className="justify-between" onSelect={onSubtitlesToggle}>
               Off
               {!isSubtitlesActive && <CheckIcon />}
             </DropdownMenuItem>
             {mediaSubtitlesList.map((subtitleTrack) => {
               const isSelected = mediaSubtitlesShowing.some(
-                (showingSubtitle) =>
-                  showingSubtitle.label === subtitleTrack.label,
+                (showingSubtitle) => showingSubtitle.label === subtitleTrack.label,
               );
               return (
                 <DropdownMenuItem
@@ -3006,9 +2781,7 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
               );
             })}
             {mediaSubtitlesList.length === 0 && (
-              <DropdownMenuItem disabled>
-                No captions available
-              </DropdownMenuItem>
+              <DropdownMenuItem disabled>No captions available</DropdownMenuItem>
             )}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
@@ -3042,14 +2815,7 @@ interface MediaPlayerTooltipProps
 }
 
 function MediaPlayerTooltip(props: MediaPlayerTooltipProps) {
-  const {
-    tooltip,
-    shortcut,
-    delayDuration,
-    sideOffset,
-    children,
-    ...tooltipProps
-  } = props;
+  const { tooltip, shortcut, delayDuration, sideOffset, children, ...tooltipProps } = props;
 
   const context = useMediaPlayerContext("MediaPlayerTooltip");
   const tooltipDelayDuration = delayDuration ?? context.tooltipDelayDuration;
@@ -3059,10 +2825,7 @@ function MediaPlayerTooltip(props: MediaPlayerTooltipProps) {
 
   return (
     <Tooltip {...tooltipProps} delayDuration={tooltipDelayDuration}>
-      <TooltipTrigger
-        className="text-foreground focus-visible:ring-ring/50"
-        asChild
-      >
+      <TooltipTrigger className="text-foreground focus-visible:ring-ring/50" asChild>
         {children}
       </TooltipTrigger>
       <TooltipContent

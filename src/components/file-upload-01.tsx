@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { HelpCircle, Trash2, Upload } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { HelpCircle, Trash2, Upload } from "lucide-react";
+import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,21 +13,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export default function FileUpload01() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [fileProgresses, setFileProgresses] = useState<Record<string, number>>(
-    {}
-  );
+  const [fileProgresses, setFileProgresses] = useState<Record<string, number>>({});
 
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
@@ -97,11 +90,7 @@ export default function FileUpload01() {
                 <Label className="mb-2" htmlFor="projectName">
                   Project name
                 </Label>
-                <Input
-                  defaultValue="Open Source Stripe"
-                  id="projectName"
-                  type="text"
-                />
+                <Input defaultValue="Open Source Stripe" id="projectName" type="text" />
               </div>
 
               <div>
@@ -111,9 +100,9 @@ export default function FileUpload01() {
                 <Select
                   defaultValue="1"
                   items={{
-                    '1': 'Ephraim Duncan',
-                    '2': 'Lucas Smith',
-                    '3': 'Timur Ercan',
+                    "1": "Ephraim Duncan",
+                    "2": "Lucas Smith",
+                    "3": "Timur Ercan",
                   }}
                 >
                   <SelectTrigger className="w-full ps-2" id="projectLead">
@@ -172,14 +161,14 @@ export default function FileUpload01() {
                 Upload a project image
               </p>
               <p className="mt-1 text-pretty text-muted-foreground text-sm">
-                or,{' '}
+                or,{" "}
                 <label
                   className="cursor-pointer font-medium text-primary hover:text-primary/90"
                   htmlFor="fileUpload"
                   onClick={(e) => e.stopPropagation()}
                 >
                   click to browse
-                </label>{' '}
+                </label>{" "}
                 (4MB max)
               </p>
               <input
@@ -193,12 +182,7 @@ export default function FileUpload01() {
             </div>
           </div>
 
-          <div
-            className={cn(
-              'space-y-3 px-6 pb-5',
-              uploadedFiles.length > 0 ? 'mt-4' : ''
-            )}
-          >
+          <div className={cn("space-y-3 px-6 pb-5", uploadedFiles.length > 0 ? "mt-4" : "")}>
             {uploadedFiles.map((file, index) => {
               const imageUrl = URL.createObjectURL(file);
 
@@ -212,11 +196,7 @@ export default function FileUpload01() {
                 >
                   <div className="flex items-center gap-2">
                     <div className="row-span-2 flex h-14 w-18 items-center justify-center self-start overflow-hidden rounded-sm bg-muted">
-                      <img
-                        alt={file.name}
-                        className="h-full w-full object-cover"
-                        src={imageUrl}
-                      />
+                      <img alt={file.name} className="h-full w-full object-cover" src={imageUrl} />
                     </div>
 
                     <div className="flex-1 pr-1">
@@ -276,13 +256,10 @@ export default function FileUpload01() {
                 </TooltipTrigger>
                 <TooltipContent className="border bg-background py-3 text-foreground">
                   <div className="space-y-1">
-                    <p className="text-pretty font-medium text-[13px]">
-                      Need assistance?
-                    </p>
+                    <p className="text-pretty font-medium text-[13px]">Need assistance?</p>
                     <p className="max-w-[200px] text-pretty text-muted-foreground text-xs dark:text-muted-background">
-                      Upload project images by dragging and dropping files or
-                      using the file browser. Supported formats: JPG, PNG, SVG.
-                      Maximum file size: 4MB.
+                      Upload project images by dragging and dropping files or using the file
+                      browser. Supported formats: JPG, PNG, SVG. Maximum file size: 4MB.
                     </p>
                   </div>
                 </TooltipContent>
@@ -290,10 +267,7 @@ export default function FileUpload01() {
             </TooltipProvider>
 
             <div className="flex gap-2">
-              <Button
-                className="h-9 px-4 font-medium text-sm"
-                variant="outline"
-              >
+              <Button className="h-9 px-4 font-medium text-sm" variant="outline">
                 Cancel
               </Button>
               <Button className="h-9 px-4 font-medium text-sm">Continue</Button>

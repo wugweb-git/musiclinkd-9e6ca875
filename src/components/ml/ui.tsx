@@ -109,7 +109,7 @@ export function TopBar({
       {back ? (
         <Link
           to={back}
-          className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-95"
+          className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-97"
           aria-label="Back"
         >
           <ArrowLeft size={20} aria-hidden />
@@ -276,7 +276,7 @@ const btnVariants: Record<BtnVariant, string> = {
 };
 
 const btnBase =
-  "state-layer relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-[transform,background-color,color] duration-200 ease-standard active:scale-98 disabled:pointer-events-none aria-disabled:pointer-events-none";
+  "state-layer relative inline-flex min-h-12 select-none items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-[transform,background-color,color] duration-200 ease-standard active:scale-97 disabled:pointer-events-none aria-disabled:pointer-events-none";
 
 function btnClass(variant: BtnVariant, className: string) {
   return `${btnBase} ${btnVariants[variant]} ${className}`;
@@ -416,7 +416,7 @@ const iconBtnVariants: Record<IconBtnVariant, string> = {
   plain: "text-foreground",
 };
 function iconBtnClass(variant: IconBtnVariant, className: string) {
-  return `hit-area state-layer inline-flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full transition-transform duration-125 ease-standard active:scale-95 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 ${iconBtnVariants[variant]} ${className}`;
+  return `hit-area state-layer inline-flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full transition-transform duration-125 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 ${iconBtnVariants[variant]} ${className}`;
 }
 
 /** Icon-only button. 40px to look at, 48dp to touch; `label` is its accessible name. */
