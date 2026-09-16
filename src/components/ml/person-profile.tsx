@@ -144,40 +144,41 @@ export function PersonProfileExperience({
       ) : null}
 
       <nav
-        role="tablist"
         aria-label="Profile sections"
-        className="sticky top-0 z-20 mt-5 flex items-stretch border-b border-border bg-background/95 px-2 backdrop-blur"
+        className="sticky top-0 z-20 mt-5 border-b border-border bg-background/95 px-2 backdrop-blur"
       >
-        {tabs.map(({ key, icon: Icon }) => {
-          const active = tab === key;
-          return (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              aria-label={key}
-              onClick={() => setTab(key)}
-              className={cn(
-                "state-layer relative flex items-center justify-center gap-1.5 rounded-t-md py-3.5 transition-[flex,color] duration-200 ease-standard",
-                active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
-              )}
-            >
-              <Icon size={18} aria-hidden />
-              <span
+        <div role="tablist" aria-label="Profile sections" className="flex items-stretch">
+          {tabs.map(({ key, icon: Icon }) => {
+            const active = tab === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                aria-label={key}
+                onClick={() => setTab(key)}
                 className={cn(
-                  "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
-                  active ? "max-w-40 opacity-100" : "max-w-0 opacity-0",
+                  "state-layer relative flex items-center justify-center gap-1.5 rounded-t-md py-3.5 transition-[flex,color] duration-200 ease-standard",
+                  active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
                 )}
               >
-                {key}
-              </span>
-              {active ? (
-                <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground" />
-              ) : null}
-            </button>
-          );
-        })}
+                <Icon size={18} aria-hidden />
+                <span
+                  className={cn(
+                    "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
+                    active ? "max-w-40 opacity-100" : "max-w-0 opacity-0",
+                  )}
+                >
+                  {key}
+                </span>
+                {active ? (
+                  <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground" />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
       </nav>
 
       <main className="px-5 pb-8">
