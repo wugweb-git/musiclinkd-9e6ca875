@@ -10,8 +10,6 @@ import {
   Plus,
   Search,
   Building2,
-  UserPlus,
-  ArrowRight,
   Calendar,
   Users,
   Star,
@@ -21,18 +19,11 @@ import {
 } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { Switch } from "@/components/ui/switch";
-import { EmptyState, Loading, Price, Row, StatusPill } from "@/components/ml/kit";
+import { EmptyState, Loading, Price } from "@/components/ml/kit";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
-import {
-  emptyDashboard,
-  forYouTiles,
-  headlineUpdate,
-  type ContinueCard,
-  type DashboardData,
-  type ForYouTile,
-} from "@/data/dashboard";
+import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
 import {
   getMyProfile,
@@ -248,16 +239,6 @@ function Header() {
       </Link>
       <ViewerAvatar className="h-12 w-12" />
     </header>
-  );
-}
-
-function StatTile({ tile }: { tile: ForYouTile }) {
-  return (
-    <Link to={tile.to} className="min-w-0 rounded-lg border border-border bg-card p-4">
-      <p className="text-3 font-bold leading-none">{tile.value}</p>
-      <p className="mt-2 truncate text-1 font-semibold">{tile.label}</p>
-      <p className="truncate text-1 text-muted-foreground">{tile.hint}</p>
-    </Link>
   );
 }
 
@@ -514,38 +495,6 @@ function usePeers(roleSlug: string | null) {
     };
   }, [list, roleSlug]);
   return people;
-}
-
-function ContinueBlock({ c }: { c: ContinueCard }) {
-  const inner = (
-    <>
-      <p className="text-1 text-muted-foreground">{c.eyebrow}</p>
-      <p className="mt-1 line-clamp-2 text-2 font-bold leading-snug">{c.title}</p>
-      <p className="mt-0.5 truncate text-1 text-muted-foreground">{c.meta}</p>
-      {c.detail ? <p className="mt-1 truncate text-1 font-semibold">{c.detail}</p> : null}
-      {typeof c.progress === "number" ? (
-        <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-subtle">
-          <div className="h-full rounded-full bg-primary" style={{ width: `${c.progress}%` }} />
-        </div>
-      ) : null}
-      <span className="mt-3 inline-flex items-center gap-1 text-1 font-semibold text-foreground">
-        {c.cta} <ArrowRight size={13} />
-      </span>
-    </>
-  );
-  const cls = "block min-w-0 rounded-lg border border-border bg-card p-4";
-  if (c.ref) {
-    return (
-      <Link to="/bookings/$ref" params={{ ref: c.ref }} className={cls}>
-        {inner}
-      </Link>
-    );
-  }
-  return (
-    <Link to={c.to ?? "/me"} className={cls}>
-      {inner}
-    </Link>
-  );
 }
 
 type QuietDestination =
