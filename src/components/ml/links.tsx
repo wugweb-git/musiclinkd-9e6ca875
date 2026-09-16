@@ -28,7 +28,10 @@ import { cn } from "@/lib/utils";
  * Touch: `hit-area` gives every one of these a 48dp target without changing the drawn size.
  * Colour: ink is the rule. Brand pink is reserved for prices and for the section action, so reach
  * for SectionActionLink only in the "See All" / "View All" role beside a section title.
- * Labels are Title Case, apart from a link that sits inside a sentence.
+ * Labels are Title Case, apart from a link that sits inside a sentence: principal words
+ * capitalised, and a, an, the, and, or, for, to, of, in, on, with, at, by, from, as stay lower
+ * unless first or last. Dev-only controls (behind `showDemoControls`) are exempt and stay
+ * sentence case, so they read as tooling rather than product copy.
  */
 
 const textLinkBase = "link-action hit-area inline-flex items-center gap-1.5 font-semibold";

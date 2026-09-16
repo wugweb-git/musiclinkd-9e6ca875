@@ -129,11 +129,11 @@ function VerifyEmail() {
       <p className="mt-5 flex justify-center text-1 text-muted-foreground">
         {countdown.seconds > 0 ? (
           <span aria-live="polite">
-            Resend code in 0:{String(countdown.seconds).padStart(2, "0")}
+            Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
           </span>
         ) : (
           <AuthTextButton icon={<RotateCw size={15} />} onClick={() => void resend()}>
-            Resend code
+            Resend Code
           </AuthTextButton>
         )}
       </p>

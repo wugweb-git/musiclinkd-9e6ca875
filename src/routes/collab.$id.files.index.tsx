@@ -108,10 +108,10 @@ function Files() {
         {showDemoControls ? (
           <div className="mt-4 flex gap-2">
             <Btn variant="outline" className="flex-1" onClick={() => setState("done")}>
-              Simulate Success
+              Simulate success
             </Btn>
             <Btn variant="ghost" className="flex-1" onClick={() => setState("error")}>
-              Simulate Failure
+              Simulate failure
             </Btn>
           </div>
         ) : null}

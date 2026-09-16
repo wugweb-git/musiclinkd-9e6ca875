@@ -204,10 +204,10 @@ function Schedule() {
         {showDemoControls && sim === "ok" ? (
           <div className="mt-6 flex gap-2">
             <Btn variant="ghost" className="flex-1" onClick={() => setSim("loading")}>
-              Loading State
+              Loading state
             </Btn>
             <Btn variant="ghost" className="flex-1" onClick={() => setSim("error")}>
-              Error State
+              Error state
             </Btn>
           </div>
         ) : null}
