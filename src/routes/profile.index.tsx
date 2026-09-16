@@ -7,6 +7,7 @@ import { StateCard } from "@/components/ml/portfolio";
 import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
 import {
   getMyProfile,
+  saveMyProfile,
   getMyProfileSections,
   getTaxonomyLabels,
   type ProfileSections,
@@ -15,6 +16,8 @@ import {
 import { mergeProfileRow, mergeSections, profileFromRow } from "@/lib/profile-view";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { uploadProfileImage } from "@/lib/profile-images";
 import { Btn, Screen } from "@/components/ml/ui";
 
 export const Route = createFileRoute("/profile/")({
@@ -41,6 +44,7 @@ export const Route = createFileRoute("/profile/")({
 function MyProfile() {
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);
+  const save = useServerFn(saveMyProfile);
   const loadLabels = useServerFn(getTaxonomyLabels);
   const loadSections = useServerFn(getMyProfileSections);
   const [row, setRow] = useState<ProfileRow | null>(null);
@@ -49,6 +53,28 @@ function MyProfile() {
   const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   // Bumped by Retry to run the load again.
   const [attempt, setAttempt] = useState(0);
+
+  /*
+   * A new photo or cover: upload to the person's own storage folder, save the URL, and put it in
+   * the local row so the hero shows it without a reload. The upload lives here rather than in the
+   * component so ml/profile.tsx stays free of server functions — Storybook renders it.
+   */
+  const pickImage = async (kind: "avatar" | "cover", file: File) => {
+    try {
+      const url = await uploadProfileImage(kind, file);
+      await save({ data: kind === "avatar" ? { avatar_url: url } : { cover_url: url } });
+      setRow(
+        (current) =>
+          ({
+            ...(current ?? {}),
+            [kind === "avatar" ? "avatar_url" : "cover_url"]: url,
+          }) as ProfileRow,
+      );
+      toast.success(kind === "avatar" ? "Profile photo updated" : "Cover updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "That upload didn't work. Try again.");
+    }
+  };
 
   useEffect(() => {
     if (loading || !signedIn) return;
@@ -109,22 +135,7 @@ function MyProfile() {
     labels,
   );
   // Completion comes from the record itself; there are no insight figures for a real profile yet.
-  // A new photo lands in the local row at once, so the hero shows it without a reload.
-  const onImageChanged = (kind: "avatar" | "cover", url: string) =>
-    setRow(
-      (current) =>
-        ({
-          ...(current ?? {}),
-          [kind === "avatar" ? "avatar_url" : "cover_url"]: url,
-        }) as ProfileRow,
-    );
-
   return (
-    <PersonProfileExperience
-      p={view}
-      owner
-      completion={profileGaps(row)}
-      onImageChanged={onImageChanged}
-    />
+    <PersonProfileExperience p={view} owner completion={profileGaps(row)} onPickImage={pickImage} />
   );
 }

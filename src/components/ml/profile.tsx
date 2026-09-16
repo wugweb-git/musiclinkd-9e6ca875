@@ -42,13 +42,7 @@ import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
-import { useServerFn } from "@tanstack/react-start";
-import { saveMyProfile } from "@/lib/portfolio.functions";
-import {
-  PROFILE_IMAGE_ACCEPT,
-  uploadProfileImage,
-  type ProfileImageKind,
-} from "@/lib/profile-images";
+import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -404,27 +398,22 @@ function ImagePickButton({
   label,
   className,
   children,
-  onChanged,
+  onPick,
 }: {
   kind: ProfileImageKind;
   label: string;
   className?: string;
   children: ReactNode;
-  onChanged: (url: string) => void;
+  /** The screen owns the upload and the save; this button owns the file input and the spinner. */
+  onPick: (kind: ProfileImageKind, file: File) => Promise<void>;
 }) {
-  const save = useServerFn(saveMyProfile);
   const [busy, setBusy] = useState(false);
 
   const pick = async (file: File | undefined) => {
     if (!file) return;
     setBusy(true);
     try {
-      const url = await uploadProfileImage(kind, file);
-      await save({ data: kind === "avatar" ? { avatar_url: url } : { cover_url: url } });
-      onChanged(url);
-      toast.success(kind === "avatar" ? "Profile photo updated" : "Cover updated");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "That upload didn't work. Try again.");
+      await onPick(kind, file);
     } finally {
       setBusy(false);
     }
@@ -505,12 +494,12 @@ export function ProfileHero({
   onShare,
   onMore,
   back,
-  onImageChanged,
+  onPickImage,
 }: {
   p: PersonProfile;
   owner?: boolean;
-  /** Owner only: called with the new URL after a photo or cover upload. */
-  onImageChanged?: ((kind: ProfileImageKind, url: string) => void) | undefined;
+  /** Owner only: uploads the chosen file and saves it to the profile. */
+  onPickImage?: ((kind: ProfileImageKind, file: File) => Promise<void>) | undefined;
   /** Left out when there is no username to share. */
   onShare?: (() => void) | undefined;
   onMore?: (() => void) | undefined;
@@ -546,12 +535,12 @@ export function ProfileHero({
         ) : null}
         <div className="absolute right-5 top-5 flex gap-2">
           {/* The owner edits the cover from the cover itself, the way people expect. */}
-          {owner && onImageChanged ? (
+          {owner && onPickImage ? (
             <ImagePickButton
               kind="cover"
               label="Change cover photo"
               className="h-11 w-11 bg-card/90 text-foreground"
-              onChanged={(url) => onImageChanged("cover", url)}
+              onPick={onPickImage}
             >
               <Pencil size={16} aria-hidden />
             </ImagePickButton>
@@ -583,12 +572,12 @@ export function ProfileHero({
               <User size={32} aria-label={p.name} />
             </span>
           )}
-          {owner && onImageChanged ? (
+          {owner && onPickImage ? (
             <ImagePickButton
               kind="avatar"
               label="Change profile photo"
               className="absolute -bottom-1 -left-1 h-9 w-9 border border-border bg-card text-foreground"
-              onChanged={(url) => onImageChanged("avatar", url)}
+              onPick={onPickImage}
             >
               <Camera size={16} aria-hidden />
             </ImagePickButton>
