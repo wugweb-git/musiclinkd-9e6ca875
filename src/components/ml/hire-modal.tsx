@@ -68,7 +68,9 @@ export function HireModal({
                 type="button"
                 onClick={() => setChoice(o.label)}
                 className={`flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left ${
-                  choice === o.label ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
+                  choice === o.label
+                    ? "border-foreground bg-subtle"
+                    : "border-transparent bg-subtle"
                 }`}
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-icon-chip">

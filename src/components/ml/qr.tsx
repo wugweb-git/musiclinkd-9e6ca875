@@ -426,10 +426,18 @@ export function ShareActions({
         to="/messages"
       />
       {onDownload ? (
-        <ActionRow icon={<Download size={iconSize.sm} />} label="Download image" onClick={onDownload} />
+        <ActionRow
+          icon={<Download size={iconSize.sm} />}
+          label="Download image"
+          onClick={onDownload}
+        />
       ) : null}
       {onSaveContact ? (
-        <ActionRow icon={<Check size={iconSize.sm} />} label="Add to contacts" onClick={onSaveContact} />
+        <ActionRow
+          icon={<Check size={iconSize.sm} />}
+          label="Add to contacts"
+          onClick={onSaveContact}
+        />
       ) : null}
     </div>
   );

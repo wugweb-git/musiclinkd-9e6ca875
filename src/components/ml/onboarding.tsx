@@ -946,7 +946,11 @@ export function PhotoPicker({
         <ul className="space-y-2">
           {[
             { icon: <Camera size={iconSize.md} />, label: "Take photo", input: camera },
-            { icon: <ImageIcon size={iconSize.md} />, label: "Choose from gallery", input: gallery },
+            {
+              icon: <ImageIcon size={iconSize.md} />,
+              label: "Choose from gallery",
+              input: gallery,
+            },
           ].map((o) => (
             <li key={o.label}>
               <button
@@ -1126,13 +1130,7 @@ export function ReadinessCard({
   style?: CSSProperties;
 }) {
   return (
-    <div
-      className={cn(
-        "flex items-start gap-3 rounded-lg bg-subtle p-4",
-        className,
-      )}
-      style={style}
-    >
+    <div className={cn("flex items-start gap-3 rounded-lg bg-subtle p-4", className)} style={style}>
       <span
         className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
           done ? "animate-pop bg-success text-background" : "border-2 border-border"

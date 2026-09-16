@@ -253,7 +253,13 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
       <Btn
         variant={connected ? "outline" : "primary"}
         className="min-w-0 flex-1 px-3"
-        icon={connected ? <Check size={iconSize.sm} aria-hidden /> : <UserPlus size={iconSize.sm} aria-hidden />}
+        icon={
+          connected ? (
+            <Check size={iconSize.sm} aria-hidden />
+          ) : (
+            <UserPlus size={iconSize.sm} aria-hidden />
+          )
+        }
         onClick={() => setConnected((c) => !c)}
       >
         {connected ? "Requested" : "Connect"}
@@ -287,7 +293,11 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         className="h-12 w-12"
         onClick={() => setFollowing((f) => !f)}
       >
-        {following ? <Check size={iconSize.md} aria-hidden /> : <Plus size={iconSize.md} aria-hidden />}
+        {following ? (
+          <Check size={iconSize.md} aria-hidden />
+        ) : (
+          <Plus size={iconSize.md} aria-hidden />
+        )}
       </IconBtn>
     </div>
   );
@@ -346,8 +356,16 @@ function OwnerPanel({
         <CompletionCard percent={completion.percent} missing={completion.missing} />
       ) : null}
       <div className="grid grid-cols-2 gap-2">
-        <OwnerLink to="/portfolio" icon={<FolderKanban size={iconSize.sm} />} label="Manage portfolio" />
-        <OwnerLink to="/services" icon={<BriefcaseBusiness size={iconSize.sm} />} label="Manage services" />
+        <OwnerLink
+          to="/portfolio"
+          icon={<FolderKanban size={iconSize.sm} />}
+          label="Manage portfolio"
+        />
+        <OwnerLink
+          to="/services"
+          icon={<BriefcaseBusiness size={iconSize.sm} />}
+          label="Manage services"
+        />
         <OwnerLink to="/reviews" icon={<Star size={iconSize.sm} />} label="Reviews" />
         <OwnerLink to="/settings" icon={<Settings size={iconSize.sm} />} label="Settings" />
       </div>
@@ -402,7 +420,11 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
-      <ChevronRight size={iconSize.sm} className="ml-auto shrink-0 text-muted-foreground" aria-hidden />
+      <ChevronRight
+        size={iconSize.sm}
+        className="ml-auto shrink-0 text-muted-foreground"
+        aria-hidden
+      />
     </Link>
   );
 }
@@ -961,8 +983,16 @@ function About({ p }: { p: PersonProfile }) {
             label="Connections"
             value={p.stats.connections}
           />
-          <IdentityFact icon={<Globe2 size={iconSize.sm} />} label="Followers" value={p.stats.followers} />
-          <IdentityFact icon={<MapPin size={iconSize.sm} />} label="Location" value={p.location || "—"} />
+          <IdentityFact
+            icon={<Globe2 size={iconSize.sm} />}
+            label="Followers"
+            value={p.stats.followers}
+          />
+          <IdentityFact
+            icon={<MapPin size={iconSize.sm} />}
+            label="Location"
+            value={p.location || "—"}
+          />
           <IdentityFact
             icon={<Clock3 size={iconSize.sm} />}
             label="Experience"
@@ -1078,7 +1108,11 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
                 amountClassName="text-sm font-semibold"
               />
             </span>
-            <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
+            <ChevronRight
+              size={iconSize.sm}
+              className="shrink-0 text-muted-foreground"
+              aria-hidden
+            />
           </Link>
         </ProfileSection>
       ) : null}

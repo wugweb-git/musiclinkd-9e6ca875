@@ -265,7 +265,11 @@ function DigitalId() {
               hint="Card, poster, studio sign, badge"
               to="/identity/print"
             />
-            <ActionRow icon={<History size={iconSize.sm} />} label="Scan history" to="/identity/history" />
+            <ActionRow
+              icon={<History size={iconSize.sm} />}
+              label="Scan history"
+              to="/identity/history"
+            />
             <ActionRow
               icon={<BarChart3 size={iconSize.sm} />}
               label="QR analytics"

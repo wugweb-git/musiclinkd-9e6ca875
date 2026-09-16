@@ -66,9 +66,7 @@ export function Tag({ children, tone = "off" }: { children: ReactNode; tone?: st
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <div className={`rounded-lg bg-subtle p-4 ${className}`}>{children}</div>
-  );
+  return <div className={`rounded-lg bg-subtle p-4 ${className}`}>{children}</div>;
 }
 
 export function Label({ children }: { children: ReactNode }) {

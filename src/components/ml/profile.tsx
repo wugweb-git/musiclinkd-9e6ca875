@@ -750,7 +750,11 @@ export function AudioTrackCard({
           aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
         >
-          {playing ? <Pause size={iconSize.sm} aria-hidden /> : <Play size={iconSize.sm} aria-hidden />}
+          {playing ? (
+            <Pause size={iconSize.sm} aria-hidden />
+          ) : (
+            <Play size={iconSize.sm} aria-hidden />
+          )}
         </button>
       </div>
       {playing && track.media ? (

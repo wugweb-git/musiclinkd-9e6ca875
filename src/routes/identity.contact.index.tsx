@@ -32,8 +32,12 @@ function BusinessCard() {
   const c = myIdentity.contact;
   const url = canonicalUrl(myIdentity.code);
   const shared = [
-    c.phone.shared ? { icon: <Phone size={iconSize.sm} />, label: c.phone.value, hint: "Mobile" } : null,
-    c.email.shared ? { icon: <Mail size={iconSize.sm} />, label: c.email.value, hint: "Email" } : null,
+    c.phone.shared
+      ? { icon: <Phone size={iconSize.sm} />, label: c.phone.value, hint: "Mobile" }
+      : null,
+    c.email.shared
+      ? { icon: <Mail size={iconSize.sm} />, label: c.email.value, hint: "Email" }
+      : null,
     c.company.shared
       ? { icon: <Building2 size={iconSize.sm} />, label: c.company.value, hint: "Studio" }
       : null,

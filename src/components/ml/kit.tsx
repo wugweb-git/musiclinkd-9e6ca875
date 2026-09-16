@@ -241,7 +241,9 @@ export function Row({
           <span className="block truncate text-1 text-muted-foreground">{subtitle}</span>
         ) : null}
       </span>
-      {right ?? <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />}
+      {right ?? (
+        <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
+      )}
     </>
   );
   const cls = "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3";

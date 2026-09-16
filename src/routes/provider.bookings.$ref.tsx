@@ -26,8 +26,7 @@ export const Route = createFileRoute("/provider/bookings/$ref")({
       { title: "Session detail — MusicLinkd provider" },
       {
         name: "description",
-        content:
-          "Everything you need to run the session: customer, room, timing, and add-ons.",
+        content: "Everything you need to run the session: customer, room, timing, and add-ons.",
       },
       { property: "og:title", content: "Session detail — MusicLinkd provider" },
       {
@@ -115,7 +114,8 @@ function ProviderBookingDetail() {
 
         <div className="mt-6 space-y-2">
           <BtnLink to="/messages" variant="outline" className="w-full">
-            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message {bk.customer.split(" ")[0]}
+            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message{" "}
+            {bk.customer.split(" ")[0]}
           </BtnLink>
           <BtnLink to="/provider/availability" variant="ghost" className="w-full">
             Block or Adjust This Room's Calendar

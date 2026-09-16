@@ -284,7 +284,11 @@ function Body({ home }: { home: Home }) {
                       <span className="block truncate text-1 text-background/70">{c.meta}</span>
                     ) : null}
                   </span>
-                  <ChevronRight size={iconSize.sm} className="shrink-0 text-background/70" aria-hidden />
+                  <ChevronRight
+                    size={iconSize.sm}
+                    className="shrink-0 text-background/70"
+                    aria-hidden
+                  />
                 </Link>
               </li>
             ))}
@@ -489,7 +493,11 @@ function Body({ home }: { home: Home }) {
               title="No activity yet"
               body="Follow artists and studios, and their updates land here."
             >
-              <BtnLink to="/discover" variant="ink" icon={<Compass size={iconSize.sm} aria-hidden />}>
+              <BtnLink
+                to="/discover"
+                variant="ink"
+                icon={<Compass size={iconSize.sm} aria-hidden />}
+              >
                 Discover talent
               </BtnLink>
             </EmptyState>

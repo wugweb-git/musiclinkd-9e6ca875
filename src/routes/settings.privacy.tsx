@@ -71,7 +71,11 @@ function PrivacyScreen() {
                     <span className="block text-1 text-muted-foreground">{c.hint}</span>
                   </span>
                   <span className="shrink-0 text-1 font-semibold">{values[c.key] ?? c.value}</span>
-                  <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
+                  <ChevronRight
+                    size={iconSize.md}
+                    className="shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
                 </button>
               </li>
             );
@@ -137,7 +141,11 @@ function PrivacyScreen() {
                 >
                   {o}
                   {checked ? (
-                    <Check size={iconSize.md} className="animate-pop text-pink-strong" aria-hidden />
+                    <Check
+                      size={iconSize.md}
+                      className="animate-pop text-pink-strong"
+                      aria-hidden
+                    />
                   ) : null}
                 </button>
               );

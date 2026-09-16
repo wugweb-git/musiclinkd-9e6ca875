@@ -120,10 +120,7 @@ function MyBookings() {
           </div>
         ) : null}
 
-        <Link
-          to="/provider/bookings"
-          className="mt-6 block rounded-lg bg-subtle p-4"
-        >
+        <Link to="/provider/bookings" className="mt-6 block rounded-lg bg-subtle p-4">
           <p className="text-sm font-semibold">Manage a space you run</p>
           <p className="mt-0.5 text-1 text-muted-foreground">
             Open the provider workspace to review requests and set availability.

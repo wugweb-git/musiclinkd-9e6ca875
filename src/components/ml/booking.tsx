@@ -88,7 +88,9 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
               className={`pb-3 text-sm ${current ? "font-semibold" : done ? "text-muted-foreground" : "text-muted-foreground"}`}
             >
               {s.label}
-              {current ? <span className="pill ml-2 bg-background text-foreground">Now</span> : null}
+              {current ? (
+                <span className="pill ml-2 bg-background text-foreground">Now</span>
+              ) : null}
             </p>
           </li>
         );
@@ -510,7 +512,8 @@ export function PriceBreakdownCard({ p, compact }: { p: PriceLines; compact?: bo
       <Row label="Total" value={inr(p.total)} strong />
       {!compact ? (
         <p className="mt-3 text-1 text-muted-foreground">
-          Prices come from the provider's configured rates. You settle payment with the provider directly.
+          Prices come from the provider's configured rates. You settle payment with the provider
+          directly.
         </p>
       ) : null}
     </div>
@@ -741,10 +744,7 @@ export function ProviderRequestCard({
 
 export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
-    <div
-      role="status"
-      className="mb-4 flex items-start gap-3 rounded-lg bg-subtle p-4"
-    >
+    <div role="status" className="mb-4 flex items-start gap-3 rounded-lg bg-subtle p-4">
       <WifiOff size={iconSize.sm} className="mt-0.5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">You're offline</p>

@@ -360,7 +360,11 @@ export function PasswordInput({
             onClick={() => setShow((s) => !s)}
           >
             <span key={String(show)} className="inline-flex animate-pop">
-              {show ? <EyeOff size={iconSize.md} aria-hidden /> : <Eye size={iconSize.md} aria-hidden />}
+              {show ? (
+                <EyeOff size={iconSize.md} aria-hidden />
+              ) : (
+                <Eye size={iconSize.md} aria-hidden />
+              )}
             </span>
           </IconBtn>
         }

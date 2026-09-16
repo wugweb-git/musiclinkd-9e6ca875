@@ -52,7 +52,11 @@ function Categories() {
                   />
                 </span>
                 <span className="min-w-0 flex-1 truncate text-2">{c.label}</span>
-                <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
+                <ChevronRight
+                  size={iconSize.md}
+                  className="shrink-0 text-muted-foreground"
+                  aria-hidden
+                />
               </Link>
             </li>
           );

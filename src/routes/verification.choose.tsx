@@ -61,7 +61,11 @@ function ChooseType() {
                   <p className="mt-0.5 text-1 text-muted-foreground">{t.appliesTo}</p>
                 </div>
                 {locked ? (
-                  <StatusPill label="Locked" tone="neutral" icon={<Lock size={iconSize.xs} aria-hidden />} />
+                  <StatusPill
+                    label="Locked"
+                    tone="neutral"
+                    icon={<Lock size={iconSize.xs} aria-hidden />}
+                  />
                 ) : (
                   <StatusPill label={statusLabel[status]} tone={statusTone[status]} />
                 )}

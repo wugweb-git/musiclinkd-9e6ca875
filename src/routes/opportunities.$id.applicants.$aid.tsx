@@ -63,8 +63,8 @@ function ApplicantDetail() {
               </div>
               <p className="truncate text-1 text-muted-foreground">{a.headline}</p>
               <p className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
-                <Star size={iconSize.xs} className="text-primary" fill="currentColor" /> {a.rating} ·{" "}
-                {a.city}
+                <Star size={iconSize.xs} className="text-primary" fill="currentColor" /> {a.rating}{" "}
+                · {a.city}
               </p>
             </div>
           </div>
@@ -96,10 +96,7 @@ function ApplicantDetail() {
           <h2 className="mb-2 text-sm">Attached work</h2>
           <div className="grid grid-cols-2 gap-2">
             {a.portfolio.map((p) => (
-              <div
-                key={p.id}
-                className="overflow-hidden rounded-[20px] bg-subtle"
-              >
+              <div key={p.id} className="overflow-hidden rounded-[20px] bg-subtle">
                 <img src={p.cover} alt="" className="h-24 w-full object-cover" />
                 <div className="p-3">
                   <p className="truncate text-1 font-semibold">{p.title}</p>

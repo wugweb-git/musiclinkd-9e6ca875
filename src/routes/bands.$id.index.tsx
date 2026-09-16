@@ -308,10 +308,7 @@ function BandProfile() {
             band.releases.length ? (
               <div className="grid grid-cols-2 gap-3">
                 {band.releases.map((r) => (
-                  <article
-                    key={r.id}
-                    className="overflow-hidden rounded-[24px] bg-subtle"
-                  >
+                  <article key={r.id} className="overflow-hidden rounded-[24px] bg-subtle">
                     {r.cover ? (
                       <img
                         src={r.cover}

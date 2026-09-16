@@ -462,7 +462,11 @@ export function IconBtn({
     >
       {ripple.layer}
       <span className="relative inline-flex">
-        {loading ? <LoaderCircle size={iconSize.md} className="animate-spin" aria-hidden /> : children}
+        {loading ? (
+          <LoaderCircle size={iconSize.md} className="animate-spin" aria-hidden />
+        ) : (
+          children
+        )}
       </span>
     </button>
   );

@@ -61,13 +61,25 @@ function SaveContact() {
                   hint={myIdentity.role}
                 />
                 {c.phone.shared ? (
-                  <ActionRow icon={<Check size={iconSize.sm} />} label={c.phone.value} hint="Mobile" />
+                  <ActionRow
+                    icon={<Check size={iconSize.sm} />}
+                    label={c.phone.value}
+                    hint="Mobile"
+                  />
                 ) : null}
                 {c.email.shared ? (
-                  <ActionRow icon={<Check size={iconSize.sm} />} label={c.email.value} hint="Email" />
+                  <ActionRow
+                    icon={<Check size={iconSize.sm} />}
+                    label={c.email.value}
+                    hint="Email"
+                  />
                 ) : null}
                 {c.company.shared ? (
-                  <ActionRow icon={<Check size={iconSize.sm} />} label={c.company.value} hint="Company" />
+                  <ActionRow
+                    icon={<Check size={iconSize.sm} />}
+                    label={c.company.value}
+                    hint="Company"
+                  />
                 ) : null}
                 <ActionRow
                   icon={<Check size={iconSize.sm} />}

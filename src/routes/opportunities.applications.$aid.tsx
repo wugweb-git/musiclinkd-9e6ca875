@@ -110,7 +110,10 @@ function ApplicationDetail() {
             {a.portfolioIds.map((pid) => {
               const item = demoPortfolio.find((p) => p.id === pid);
               return (
-                <span key={pid} className="rounded-full bg-background px-3 py-1.5 text-1 font-semibold">
+                <span
+                  key={pid}
+                  className="rounded-full bg-background px-3 py-1.5 text-1 font-semibold"
+                >
                   {workType(item?.kind ?? "track").emoji} {item?.title ?? "Attached work"}
                 </span>
               );

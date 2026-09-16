@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { Decorator, Preview } from "@storybook/react-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -33,14 +33,18 @@ const withRouter: Decorator = (Story) => {
  * (e.g. the useServerFn stub throwing, see .storybook/stubs) settles immediately instead of
  * retrying for several seconds.
  */
-const withQueryClient: Decorator = (Story) => {
-  const [client] = useState(() => new QueryClient({ defaultOptions: { queries: { retry: false } } }));
-  return (
-    <QueryClientProvider client={client}>
-      <Story />
-    </QueryClientProvider>
+function StoryQueryClient({ children }: { children: ReactNode }) {
+  const [client] = useState(
+    () => new QueryClient({ defaultOptions: { queries: { retry: false } } }),
   );
-};
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+}
+
+const withQueryClient: Decorator = (Story) => (
+  <StoryQueryClient>
+    <Story />
+  </StoryQueryClient>
+);
 
 /** Phone frame: the app is designed and tested at 412px. */
 const withPhone: Decorator = (Story, ctx) =>

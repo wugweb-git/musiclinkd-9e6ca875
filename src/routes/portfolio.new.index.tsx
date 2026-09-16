@@ -65,7 +65,11 @@ function AddWork() {
                 <span className="block text-sm font-semibold">{t.label}</span>
                 <span className="block truncate text-1 text-muted-foreground">{t.blurb}</span>
               </span>
-              <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
+              <ChevronRight
+                size={iconSize.md}
+                className="shrink-0 text-muted-foreground"
+                aria-hidden
+              />
             </Link>
           ))}
         </div>

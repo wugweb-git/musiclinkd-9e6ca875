@@ -57,7 +57,10 @@ function ProviderBookings() {
         title="Provider workspace"
         subtitle="Octave Sound Labs"
         right={
-          <TextLink to="/provider/availability" className="pill bg-background text-muted-foreground">
+          <TextLink
+            to="/provider/availability"
+            className="pill bg-background text-muted-foreground"
+          >
             Availability
           </TextLink>
         }

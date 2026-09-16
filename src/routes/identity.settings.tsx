@@ -80,7 +80,9 @@ function QrSettings() {
           onChange={set("discoverable")}
         />
 
-        <p className="pill mt-3 px-1 bg-background text-muted-foreground">Shared on my digital card</p>
+        <p className="pill mt-3 px-1 bg-background text-muted-foreground">
+          Shared on my digital card
+        </p>
         <Toggle label="Phone number" value={state.phone} onChange={set("phone")} />
         <Toggle label="Email address" value={state.email} onChange={set("email")} />
         <Toggle label="Company" value={state.company} onChange={set("company")} />

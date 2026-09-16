@@ -446,7 +446,11 @@ function EditProfile() {
                     </span>
                   </span>
                   {isOpen ? (
-                    <ChevronDown size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
+                    <ChevronDown
+                      size={iconSize.sm}
+                      className="shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
                   ) : (
                     <ChevronRight
                       size={iconSize.sm}

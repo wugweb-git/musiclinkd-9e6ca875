@@ -39,7 +39,9 @@ function PortfolioSettings() {
               aria-pressed={visibility === v.value}
               onClick={() => setVisibility(v.value)}
               className={`w-full rounded-lg border-2 p-4 text-left ${
-                visibility === v.value ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
+                visibility === v.value
+                  ? "border-foreground bg-subtle"
+                  : "border-transparent bg-subtle"
               }`}
             >
               <span className="block text-sm font-semibold">{v.label}</span>

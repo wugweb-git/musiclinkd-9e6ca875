@@ -677,7 +677,11 @@ function Wizard({
               return (
                 <Card key={r.id} className="space-y-2 py-3">
                   <div className="flex items-start gap-3">
-                    <FileText size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+                    <FileText
+                      size={iconSize.sm}
+                      className="mt-0.5 shrink-0 text-primary"
+                      aria-hidden
+                    />
                     <div className="min-w-0 flex-1">
                       <p className="text-1 font-semibold break-words">{r.label}</p>
                       <p className="mt-0.5 text-1 text-muted-foreground">{r.why}</p>
@@ -686,7 +690,9 @@ function Wizard({
                   </div>
                   {file ? (
                     <>
-                      <p className="truncate rounded-[14px] bg-background px-3 py-2 text-1">{file}</p>
+                      <p className="truncate rounded-[14px] bg-background px-3 py-2 text-1">
+                        {file}
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"

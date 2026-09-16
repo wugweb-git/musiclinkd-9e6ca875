@@ -10,8 +10,7 @@ export const Route = createFileRoute("/bookings/$ref/cancel")({
       { title: "Cancel booking — MusicLinkd" },
       {
         name: "description",
-        content:
-          "Review the provider's cancellation policy before cancelling your session.",
+        content: "Review the provider's cancellation policy before cancelling your session.",
       },
       { property: "og:title", content: "Cancel booking — MusicLinkd" },
       { property: "og:description", content: "Policy and confirmation before cancelling." },
@@ -57,9 +56,7 @@ function Cancel() {
         <main className="px-5 pt-6">
           <div className="rounded-lg bg-subtle p-5">
             <p className="font-semibold">Booking cancelled</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {b.name} has been notified.
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{b.name} has been notified.</p>
             <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
               <Detail label="Reference" value={bk.ref} />
             </dl>
@@ -126,11 +123,7 @@ function Cancel() {
         </label>
       </main>
 
-      <StickyBar
-        disabled={!reason}
-        primaryLabel="Cancel booking"
-        onPrimary={() => setDone(true)}
-      />
+      <StickyBar disabled={!reason} primaryLabel="Cancel booking" onPrimary={() => setDone(true)} />
     </div>
   );
 }

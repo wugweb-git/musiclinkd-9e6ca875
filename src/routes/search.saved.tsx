@@ -70,7 +70,11 @@ function SavedSearches() {
                   {alerts[s.id] ? (
                     <Bell size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
                   ) : (
-                    <BellOff size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
+                    <BellOff
+                      size={iconSize.sm}
+                      className="shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
                   )}
                   <p className="min-w-0 text-1 font-semibold">
                     {alerts[s.id] ? "Alerts on — weekly digest" : "Alerts off"}

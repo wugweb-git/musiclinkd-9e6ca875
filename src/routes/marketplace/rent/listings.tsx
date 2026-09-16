@@ -164,10 +164,7 @@ function MyListings() {
 
         {tab === "Alerts"
           ? rentalNotifications.map((n) => (
-              <article
-                key={n.id}
-                className="flex items-start gap-3 rounded-lg bg-subtle p-4"
-              >
+              <article key={n.id} className="flex items-start gap-3 rounded-lg bg-subtle p-4">
                 <span
                   className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ background: tone[n.tone] }}

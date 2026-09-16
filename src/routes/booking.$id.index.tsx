@@ -89,10 +89,7 @@ function BookingEntry() {
           <h3 className="text-2">Rooms &amp; services</h3>
           <div className="mt-3 space-y-2">
             {b.resources.map((r) => (
-              <div
-                key={r.id}
-                className="flex items-center gap-3 rounded-lg bg-subtle p-3"
-              >
+              <div key={r.id} className="flex items-center gap-3 rounded-lg bg-subtle p-3">
                 {r.photo ? (
                   <img
                     src={r.photo}
