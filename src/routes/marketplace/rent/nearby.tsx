@@ -5,6 +5,7 @@ import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
 import { equipment, providers, rentalCategories } from "@/data/rentals";
 import { iconSize } from "@/lib/tokens";
+import { MarketCategoryIcon } from "@/components/ml/market";
 
 export const Route = createFileRoute("/marketplace/rent/nearby")({
   head: () => ({
@@ -68,8 +69,13 @@ function NearbyRentals() {
           All
         </Chip>
         {rentalCategories.map((c) => (
-          <Chip key={c.slug} active={cat === c.slug} onClick={() => setCat(c.slug)}>
-            {c.emoji} {c.label}
+          <Chip
+            key={c.slug}
+            active={cat === c.slug}
+            media={<MarketCategoryIcon slug={c.slug} size={iconSize.sm} />}
+            onClick={() => setCat(c.slug)}
+          >
+            {c.label}
           </Chip>
         ))}
       </div>

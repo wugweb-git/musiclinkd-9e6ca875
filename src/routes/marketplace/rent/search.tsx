@@ -17,6 +17,7 @@ import {
 } from "@/data/rentals";
 import { loadCatalogRentals } from "@/lib/market-view";
 import { iconSize } from "@/lib/tokens";
+import { MarketCategoryIcon } from "@/components/ml/market";
 
 export const Route = createFileRoute("/marketplace/rent/search")({
   // Database rentals are searched after the static ones.
@@ -89,8 +90,8 @@ function RentSearch() {
             <div className="flex flex-wrap gap-2">
               {rentalCategories.map((c) => (
                 <Link key={c.slug} to="/marketplace/rent/c/$slug" params={{ slug: c.slug }}>
-                  <Chip>
-                    {c.emoji} {c.label}
+                  <Chip media={<MarketCategoryIcon slug={c.slug} size={iconSize.sm} />}>
+                    {c.label}
                   </Chip>
                 </Link>
               ))}
