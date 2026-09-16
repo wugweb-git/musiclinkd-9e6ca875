@@ -141,6 +141,11 @@ export function SegmentedField<T extends string>({
   );
 }
 
+/**
+ * Views of one list (For you / Recent / Nearby): underline tabs, the way the public profile does
+ * it. Every screen that switches views uses this, so the pattern reads the same everywhere. Pills
+ * stay for filters that narrow a list; `SegmentedField` stays for settings answers.
+ */
 export function Segmented<T extends string>({
   value,
   options,
@@ -151,23 +156,30 @@ export function Segmented<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="rail no-scrollbar flex gap-2 overflow-x-auto" role="tablist">
-      {options.map((o) => (
-        <button
-          key={o}
-          type="button"
-          role="tab"
-          aria-selected={value === o}
-          onClick={() => onChange(o)}
-          className={`shrink-0 rounded-full border px-4 py-2 text-1 font-semibold ${
-            value === o
-              ? "border-transparent bg-selected-bg text-selected-text"
-              : "border-border bg-card text-foreground"
-          }`}
-        >
-          {o}
-        </button>
-      ))}
+    <div
+      className="rail no-scrollbar -mx-5 flex overflow-x-auto border-b border-border px-5"
+      role="tablist"
+    >
+      {options.map((o) => {
+        const active = value === o;
+        return (
+          <button
+            key={o}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(o)}
+            className={`state-layer relative shrink-0 px-3 py-3 text-sm font-semibold transition-colors duration-200 ease-standard first:pl-0 ${
+              active ? "text-foreground" : "text-muted-foreground"
+            }`}
+          >
+            {o}
+            {active ? (
+              <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-foreground [button:first-child>&]:left-0" />
+            ) : null}
+          </button>
+        );
+      })}
     </div>
   );
 }

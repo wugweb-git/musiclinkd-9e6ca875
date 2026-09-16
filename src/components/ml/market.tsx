@@ -26,7 +26,7 @@ export function SaveButton({
         e.stopPropagation();
         onToggle();
       }}
-      className="flex items-center justify-center rounded-full border border-border bg-card/95 backdrop-blur transition-transform active:scale-97"
+      className="flex items-center justify-center rounded-full bg-card/90 backdrop-blur transition-transform active:scale-97"
       style={{ width: size, height: size }}
     >
       <Heart
@@ -40,7 +40,7 @@ export function SaveButton({
 }
 
 export function ConditionBadge({ value }: { value: string }) {
-  return <span className="rounded-full bg-subtle pill text-muted-foreground">{value}</span>;
+  return <span className="pill bg-background text-muted-foreground">{value}</span>;
 }
 
 export function Rating({
@@ -69,12 +69,13 @@ export function LocationRow({ text }: { text: string }) {
   );
 }
 
-/** A listing's price: the amount, with the unit line and any price note under it. */
+/** A listing's price: the amount, with the unit line and any price note under it. Never larger than
+ * the title it sits under. */
 export function PriceBlock({ price, size = "md" }: { price: PriceParts; size?: "md" | "lg" }) {
   return (
     <Price
       price={price}
-      amountClassName={size === "lg" ? "text-3 font-bold" : "text-2 font-bold"}
+      amountClassName={size === "lg" ? "text-3 font-bold" : "text-sm font-semibold"}
     />
   );
 }
@@ -142,12 +143,15 @@ export function ListingCard({
   const [localSaved, setLocalSaved] = useState(false);
   const isSaved = saved ?? localSaved;
   const meta = typeMeta(l);
+  // The same order as an opportunity: what it is, then its terms as one quiet line, then price.
+  // The type or brand and the condition read as words, not as badges stacked on the photo.
+  const terms = [meta.tag, l.condition].filter(Boolean).join(" · ");
   const where = [l.location, l.distance].filter(Boolean).join(" · ");
   return (
     <Link
       to="/marketplace/l/$id"
       params={{ id: l.id }}
-      className="block overflow-hidden rounded-lg border border-border bg-card"
+      className="block overflow-hidden rounded-lg bg-subtle"
     >
       <div className="relative">
         {l.photos[0] ? (
@@ -155,10 +159,10 @@ export function ListingCard({
             src={l.photos[0]}
             alt={l.title}
             loading="lazy"
-            className="h-40 w-full object-cover"
+            className="aspect-[16/10] w-full object-cover"
           />
         ) : (
-          <div className="h-40 w-full bg-subtle" />
+          <div className="aspect-[16/10] w-full bg-background" />
         )}
         <div className="absolute right-2 top-2">
           <SaveButton
@@ -166,25 +170,21 @@ export function ListingCard({
             onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
           />
         </div>
-        <span className="absolute left-2 top-2 rounded-full pill pill-glass">{meta.tag}</span>
       </div>
-      <div className="p-3.5">
-        <div className="flex items-start justify-between gap-2">
+      <div className="p-4">
+        <h3 className="line-clamp-2 text-2 font-semibold leading-snug">{l.title}</h3>
+        {terms ? <p className="mt-1 truncate text-1 text-muted-foreground">{terms}</p> : null}
+        <div className="mt-3 flex items-end justify-between gap-3">
           <PriceBlock price={l.price} />
-          {l.condition ? (
-            <ConditionBadge value={l.condition} />
-          ) : (
+          {l.rating ? (
             <Rating value={l.rating} count={l.reviews} />
-          )}
+          ) : meta.line ? (
+            <span className="shrink-0 text-1 text-muted-foreground">{meta.line}</span>
+          ) : null}
         </div>
-        <h3 className="mt-1.5 line-clamp-2 text-2 leading-snug">{l.title}</h3>
-        {l.subtitle ? (
-          <p className="mt-0.5 line-clamp-1 text-1 text-muted-foreground">{l.subtitle}</p>
-        ) : null}
-        {where || meta.line ? (
-          <div className="mt-2.5 flex items-center justify-between">
-            {where ? <LocationRow text={where} /> : <span />}
-            {meta.line ? <span className="text-1 text-muted-foreground">{meta.line}</span> : null}
+        {where ? (
+          <div className="mt-3">
+            <LocationRow text={where} />
           </div>
         ) : null}
       </div>
@@ -198,7 +198,7 @@ export function ListingTile({ l }: { l: Listing }) {
     <Link
       to="/marketplace/l/$id"
       params={{ id: l.id }}
-      className="block w-[168px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
+      className="block w-[168px] shrink-0 overflow-hidden rounded-lg bg-subtle"
     >
       <div className="relative h-[124px]">
         {l.photos[0] ? (
@@ -216,8 +216,10 @@ export function ListingTile({ l }: { l: Listing }) {
         </div>
       </div>
       <div className="p-3">
-        <PriceBlock price={l.price} />
-        <h3 className="mt-1 line-clamp-2 text-1 leading-snug">{l.title}</h3>
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug">{l.title}</h3>
+        <div className="mt-1.5">
+          <PriceBlock price={l.price} />
+        </div>
         {l.distance ? (
           <p className="mt-1 truncate text-1 text-muted-foreground">{l.distance}</p>
         ) : null}
@@ -229,7 +231,7 @@ export function ListingTile({ l }: { l: Listing }) {
 export function ListingRow({ l }: { l: Listing }) {
   const [saved, setSaved] = useState(false);
   return (
-    <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
+    <article className="flex gap-3 rounded-lg bg-subtle p-3">
       <Link to="/marketplace/l/$id" params={{ id: l.id }} className="shrink-0">
         {l.photos[0] ? (
           <img
@@ -245,8 +247,8 @@ export function ListingRow({ l }: { l: Listing }) {
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <Link to="/marketplace/l/$id" params={{ id: l.id }} className="min-w-0">
+            <h3 className="line-clamp-2 text-sm font-semibold leading-snug">{l.title}</h3>
             <PriceBlock price={l.price} />
-            <h3 className="line-clamp-2 text-1 leading-snug">{l.title}</h3>
           </Link>
           <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
         </div>

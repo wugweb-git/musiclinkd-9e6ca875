@@ -6,7 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
 import { Bookmark, MapPin, Clock, Users, Wallet, Star } from "lucide-react";
 import { Card, Price, StatusPill, ReasonChip, type Tone } from "@/components/ml/kit";
-import { VerifiedBadge } from "@/components/ml/ui";
+import { IconBtn, VerifiedBadge } from "@/components/ml/ui";
 import {
   categoryLabel,
   payParts,
@@ -124,65 +124,55 @@ export function OpportunityCard({
   onSave?: () => void;
 }) {
   const pay = payParts(o);
+  // Who and when first, then what, then the terms as one quiet line. At most one label: Featured.
+  const terms = [categoryLabel(o.categoryKey), o.workMode, o.city].filter(Boolean).join(" · ");
   return (
-    <article className="relative rounded-lg border border-border bg-card p-4">
-      {onSave ? (
-        <button
-          type="button"
-          onClick={onSave}
-          aria-label={saved ? "Remove from saved" : "Save opportunity"}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background"
-        >
-          <Bookmark
-            size={16}
-            className={saved ? "text-primary" : "text-muted-foreground"}
-            fill={saved ? "currentColor" : "none"}
-          />
-        </button>
-      ) : null}
-      <Link to="/opportunities/$id" params={{ id: o.id }} className="block pr-10">
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusPill label={categoryLabel(o.categoryKey)} tone="brand" />
-          {o.workMode ? <StatusPill label={o.workMode} /> : null}
-          {o.featured ? <StatusPill label="Featured" tone="warn" /> : null}
-        </div>
-        <h3 className="mt-2 text-2 leading-snug">{o.title}</h3>
-        {o.summary ? (
-          <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">{o.summary}</p>
-        ) : null}
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
-          {pay ? (
-            <span className="inline-flex items-start gap-1">
-              <Wallet size={12} className="mt-0.5 shrink-0" />
-              <Price price={pay} amountClassName="text-1 font-semibold" />
-            </span>
-          ) : null}
-          {o.city ? (
-            <span className="inline-flex items-center gap-1">
-              <MapPin size={12} /> {o.city}
-            </span>
-          ) : null}
-          {o.postedAt ? (
-            <span className="inline-flex items-center gap-1">
-              <Clock size={12} /> {o.postedAt}
-            </span>
-          ) : null}
-          <span className="inline-flex items-center gap-1">
-            <Users size={12} /> {o.applicants} applied
-          </span>
-        </div>
-        <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
+    <article className="relative rounded-lg bg-subtle p-4">
+      <Link to="/opportunities/$id" params={{ id: o.id }} className="block">
+        <div className="flex items-center gap-2.5 pr-10">
           {o.poster.photo ? (
-            <img src={o.poster.photo} alt="" className="h-7 w-7 rounded-full object-cover" />
+            <img
+              src={o.poster.photo}
+              alt=""
+              className="h-8 w-8 shrink-0 rounded-full object-cover"
+            />
           ) : null}
-          <span className="min-w-0 flex-1 truncate text-1 text-muted-foreground">
-            {o.poster.name}
-          </span>
-          {o.matchScore ? (
-            <span className="shrink-0 text-1 font-bold text-foreground">{o.matchScore}% fit</span>
-          ) : null}
+          <p className="min-w-0 flex-1 truncate text-1 text-muted-foreground">
+            <span className="font-semibold text-foreground">{o.poster.name}</span>
+            {o.postedAt ? ` · ${o.postedAt}` : null}
+          </p>
+          {o.featured ? <span className="pill shrink-0 bg-background">Featured</span> : null}
+        </div>
+
+        <h3 className="mt-3 line-clamp-2 text-2 font-semibold leading-snug">{o.title}</h3>
+        {terms ? <p className="mt-1 truncate text-1 text-muted-foreground">{terms}</p> : null}
+
+        <div className="mt-4 flex items-end justify-between gap-3">
+          {pay ? (
+            <Price price={pay} amountClassName="text-sm font-semibold" />
+          ) : (
+            <span className="text-1 text-muted-foreground">Pay on enquiry</span>
+          )}
+          <p className="shrink-0 text-right text-1 text-muted-foreground">
+            {o.matchScore ? (
+              <span className="block text-sm font-semibold text-foreground">
+                {o.matchScore}% match
+              </span>
+            ) : null}
+            {o.applicants} applied
+          </p>
         </div>
       </Link>
+      {onSave ? (
+        <IconBtn
+          label={saved ? "Remove from saved" : "Save opportunity"}
+          variant="plain"
+          className="absolute right-2 top-2"
+          onClick={onSave}
+        >
+          <Bookmark size={20} fill={saved ? "currentColor" : "none"} aria-hidden />
+        </IconBtn>
+      ) : null}
     </article>
   );
 }
