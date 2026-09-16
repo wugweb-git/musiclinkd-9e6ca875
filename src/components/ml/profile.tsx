@@ -47,17 +47,21 @@ export function ProfileSection({
   title,
   action,
   onAction,
+  aside,
   children,
 }: {
   title: string;
   action?: string;
   onAction?: () => void;
+  /** Controls that belong on the heading row, such as a layout switch. */
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <section className="mt-6">
-      <div className="mb-3 flex items-baseline justify-between gap-3">
+      <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="text-2">{title}</h2>
+        {aside}
         {action ? (
           <button
             type="button"

@@ -68,7 +68,7 @@ import {
 } from "./profile";
 import { HireModal } from "./hire-modal";
 
-type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About";
+type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About" | "Reviews";
 
 /** Each section carries an icon, so an unselected tab can be the icon alone. */
 const tabs: { key: ProfileTab; icon: LucideIcon }[] = [
@@ -77,6 +77,7 @@ const tabs: { key: ProfileTab; icon: LucideIcon }[] = [
   { key: "Portfolio", icon: Music },
   { key: "Projects", icon: FolderKanban },
   { key: "Services", icon: BriefcaseBusiness },
+  { key: "Reviews", icon: Star },
 ];
 
 /** An owner's empty-state button that opens new portfolio work of the kind the section shows. */
@@ -156,15 +157,15 @@ export function PersonProfileExperience({
               aria-label={key}
               onClick={() => setTab(key)}
               className={cn(
-                "state-layer relative flex flex-1 items-center justify-center gap-2 rounded-t-md py-3.5 transition-colors",
+                "state-layer relative flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-t-md px-1 py-3.5 transition-colors",
                 active ? "text-foreground" : "text-muted-foreground",
               )}
             >
               <Icon size={18} aria-hidden />
               <span
                 className={cn(
-                  "overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
-                  active ? "max-w-32 opacity-100" : "max-w-0 opacity-0",
+                  "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
+                  active ? "max-w-24 opacity-100" : "max-w-0 opacity-0",
                 )}
               >
                 {key}
@@ -194,6 +195,7 @@ export function PersonProfileExperience({
         {tab === "Projects" ? <Projects p={p} owner={owner} /> : null}
         {tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
         {tab === "About" ? <About p={p} /> : null}
+        {tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
       </main>
 
       {share ? <ShareSheet p={p} open={shareOpen} onClose={() => setShareOpen(false)} /> : null}
@@ -488,25 +490,29 @@ function Portfolio({
   const [layout, setLayout] = useState<"grid" | "rows">("grid");
   return (
     <>
-      <div className="mt-6 flex items-center justify-end gap-1">
-        <IconBtn
-          label="Grid view"
-          variant={layout === "grid" ? "outline" : "ghost"}
-          className="h-10 w-10"
-          onClick={() => setLayout("grid")}
-        >
-          <LayoutGrid size={16} aria-hidden />
-        </IconBtn>
-        <IconBtn
-          label="Row view"
-          variant={layout === "rows" ? "outline" : "ghost"}
-          className="h-10 w-10"
-          onClick={() => setLayout("rows")}
-        >
-          <Rows3 size={16} aria-hidden />
-        </IconBtn>
-      </div>
-      <ProfileSection title="Audio">
+      <ProfileSection
+        title="Audio"
+        aside={
+          <span className="flex items-center gap-1">
+            <IconBtn
+              label="Grid view"
+              variant={layout === "grid" ? "outline" : "ghost"}
+              className="h-10 w-10"
+              onClick={() => setLayout("grid")}
+            >
+              <LayoutGrid size={16} aria-hidden />
+            </IconBtn>
+            <IconBtn
+              label="Row view"
+              variant={layout === "rows" ? "outline" : "ghost"}
+              className="h-10 w-10"
+              onClick={() => setLayout("rows")}
+            >
+              <Rows3 size={16} aria-hidden />
+            </IconBtn>
+          </span>
+        }
+      >
         <div className="space-y-2">
           {p.audio.length ? (
             p.audio.map((track) => (
@@ -726,7 +732,23 @@ function About({ p }: { p: PersonProfile }) {
           />
         </div>
       </ProfileSection>
+    </>
+  );
+}
+
+function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
+  return (
+    <>
       <ProfileSection title="Reviews">
+        {p.reviewCount ? (
+          <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold">
+            <Star size={15} className="fill-foreground" aria-hidden />
+            {p.rating.toFixed(1)}
+            <span className="font-normal text-muted-foreground">
+              · {p.reviewCount} {p.reviewCount === 1 ? "review" : "reviews"}
+            </span>
+          </p>
+        ) : null}
         {p.reviews.length ? (
           <div className="space-y-3">
             {p.reviews.map((review) => (
@@ -736,10 +758,21 @@ function About({ p }: { p: PersonProfile }) {
         ) : (
           <ProfileEmpty
             title="No reviews yet"
-            body="Verified project and service reviews will appear here."
+            body="Reviews appear here once work booked through MusicLinkd is complete."
           />
         )}
       </ProfileSection>
+      {/* Reviews follow completed work, so the path to writing one runs through Reviews. */}
+      <div className="mt-5 rounded-lg border border-border bg-card p-4">
+        <p className="text-1 text-muted-foreground">
+          {owner
+            ? "Ask the people you have worked with to review you. Requests go out from Reviews."
+            : `You can review ${p.name || "this profile"} once a booking, order or rental with them is complete. It stays open for 14 days.`}
+        </p>
+        <BtnLink to="/reviews" variant="outline" className="mt-3 w-full">
+          {owner ? "Request a review" : "Write a review"}
+        </BtnLink>
+      </div>
     </>
   );
 }
