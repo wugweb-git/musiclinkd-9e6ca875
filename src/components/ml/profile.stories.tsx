@@ -104,7 +104,7 @@ export const FacetsLongLabels: Story = {
 /** A price value renders as amount with the unit on its own line; a string value renders as is. */
 export const Info: Story = {
   render: () => (
-    <div className="rounded-lg border border-border bg-card">
+    <div className="rounded-lg bg-subtle">
       <InfoRow label="Experience" value="10+ years" />
       <InfoRow label="Hourly rate" value={{ amount: "₹4,500", unit: "hr" }} />
       <InfoRow label="Per song" value={{ amount: "₹18,000", unit: "song" }} />

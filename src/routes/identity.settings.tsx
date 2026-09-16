@@ -36,7 +36,7 @@ function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex items-center justify-between gap-3 rounded-[20px] border border-border bg-card px-4 py-3">
+    <label className="flex items-center justify-between gap-3 rounded-[20px] bg-subtle px-4 py-3">
       <span className="min-w-0">
         <span className="block text-sm font-semibold">{label}</span>
         {hint ? <span className="block text-1 text-muted-foreground">{hint}</span> : null}
@@ -80,13 +80,13 @@ function QrSettings() {
           onChange={set("discoverable")}
         />
 
-        <p className="pill mt-3 px-1 bg-subtle text-muted-foreground">Shared on my digital card</p>
+        <p className="pill mt-3 px-1 bg-background text-muted-foreground">Shared on my digital card</p>
         <Toggle label="Phone number" value={state.phone} onChange={set("phone")} />
         <Toggle label="Email address" value={state.email} onChange={set("email")} />
         <Toggle label="Company" value={state.company} onChange={set("company")} />
         <Toggle label="Website" value={state.website} onChange={set("website")} />
 
-        <p className="pill mt-3 px-1 bg-subtle text-muted-foreground">Insights</p>
+        <p className="pill mt-3 px-1 bg-background text-muted-foreground">Insights</p>
         <Toggle
           label="Count scans of my QR"
           hint="Aggregate counts only — never who scanned it."

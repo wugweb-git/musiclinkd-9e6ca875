@@ -61,7 +61,7 @@ function CategoryDirectory() {
             body="Nobody with this role has a public profile at the moment."
           />
         ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
             {people.data.map((p) => (
               <li key={p.username}>
                 <Link
@@ -77,7 +77,7 @@ function CategoryDirectory() {
                       className="h-11 w-11 shrink-0 rounded-full object-cover"
                     />
                   ) : (
-                    <span className="h-11 w-11 shrink-0 rounded-full bg-subtle" aria-hidden />
+                    <span className="h-11 w-11 shrink-0 rounded-full bg-background" aria-hidden />
                   )}
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1">

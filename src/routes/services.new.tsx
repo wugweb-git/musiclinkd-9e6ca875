@@ -219,7 +219,7 @@ function NewService() {
           {steps.map((s, i) => (
             <span
               key={s}
-              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`}
+              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-background"}`}
             />
           ))}
         </div>
@@ -265,7 +265,7 @@ function NewService() {
               placeholder="Session vocals — lead & harmonies"
             />
             <label className="block">
-              <span className="pill bg-subtle text-muted-foreground">Description</span>
+              <span className="pill bg-background text-muted-foreground">Description</span>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -328,7 +328,7 @@ function NewService() {
               placeholder="3–4 days"
             />
             <div>
-              <span className="pill bg-subtle text-muted-foreground">Notice needed</span>
+              <span className="pill bg-background text-muted-foreground">Notice needed</span>
               <div className="mt-2">
                 <SegmentedField
                   label="Notice needed"
@@ -340,7 +340,7 @@ function NewService() {
             </div>
             {options?.workModes.length ? (
               <div>
-                <span className="pill bg-subtle text-muted-foreground">Mode</span>
+                <span className="pill bg-background text-muted-foreground">Mode</span>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {options.workModes.map((m) => {
                     const on = workModes.includes(m.slug);
@@ -383,7 +383,7 @@ function NewService() {
                 key={k}
                 className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
               >
-                <span className="pill bg-subtle text-muted-foreground">{k}</span>
+                <span className="pill bg-background text-muted-foreground">{k}</span>
                 {typeof v === "string" ? (
                   <span className="max-w-[60%] text-right text-1 font-semibold">{v}</span>
                 ) : (
@@ -467,7 +467,7 @@ function Lines({
 }) {
   return (
     <label className="block">
-      <span className="pill bg-subtle text-muted-foreground">{label}</span>
+      <span className="pill bg-background text-muted-foreground">{label}</span>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -494,7 +494,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="pill bg-subtle text-muted-foreground">{label}</span>
+      <span className="pill bg-background text-muted-foreground">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}

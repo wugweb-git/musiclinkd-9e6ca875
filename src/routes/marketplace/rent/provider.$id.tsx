@@ -125,7 +125,7 @@ function ProviderProfile() {
 
         {tab === "Reviews"
           ? rentalReviews.map((r) => (
-              <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+              <article key={r.id} className="rounded-lg bg-subtle p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-1 font-semibold">{r.name}</p>
@@ -147,7 +147,7 @@ function ProviderProfile() {
 
         {tab === "About" ? (
           <>
-            <p className="rounded-lg border border-border bg-card p-4 text-1 leading-relaxed text-muted-foreground">
+            <p className="rounded-lg bg-subtle p-4 text-1 leading-relaxed text-muted-foreground">
               {p.bio}
             </p>
             <dl className="divide-y divide-border rounded-lg border border-border">

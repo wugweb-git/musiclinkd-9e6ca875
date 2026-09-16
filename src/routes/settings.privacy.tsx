@@ -49,7 +49,7 @@ function PrivacyScreen() {
       <TopBar title="Privacy" subtitle="Who sees and contacts you" back="/settings" />
       <div className="space-y-6 px-5 pt-4 pb-6">
         {/* One list, not a card per question: the hairlines already separate them. */}
-        <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+        <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
           {privacyControls.map((c) => {
             const Icon = controlIcons[c.icon] ?? Circle;
             return (
@@ -78,7 +78,7 @@ function PrivacyScreen() {
 
         <section>
           <h2 className="pill mb-2 px-1 text-muted-foreground">Blocked people</h2>
-          <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3.5">
+          <div className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3.5">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-subtle">
               <UserX size={20} strokeWidth={1.75} aria-hidden />
             </span>

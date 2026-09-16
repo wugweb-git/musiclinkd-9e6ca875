@@ -94,7 +94,7 @@ export function Price({
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-lg border border-border bg-card p-4 ${className}`}>
+    <section className={`rounded-lg bg-subtle p-4 ${className}`}>
       {children}
     </section>
   );

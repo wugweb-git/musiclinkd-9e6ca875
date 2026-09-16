@@ -124,7 +124,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
+      <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg bg-subtle py-3 text-center">
         <div>
           <p className="text-sm font-bold">{t.followers}</p>
           <p className="text-1 uppercase text-muted-foreground">Followers</p>
@@ -143,7 +143,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
         {[...t.genres, ...t.languages].map((x) => (
           <span
             key={x}
-            className="rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold text-muted-foreground"
+            className="rounded-full bg-background px-3 py-1.5 text-1 font-semibold text-muted-foreground"
           >
             {x}
           </span>
@@ -156,7 +156,7 @@ function ProfilePreview({ t, onHire }: { t: Talent; onHire: () => void }) {
           (p) => (
             <div
               key={p}
-              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-subtle">
                 ▶

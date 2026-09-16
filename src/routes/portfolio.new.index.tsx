@@ -54,7 +54,7 @@ function AddWork() {
               params={{ kind: t.kind }}
               search={onboarding ? { from: "onboarding" } : {}}
               className={cn(
-                "state-layer flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-97",
+                "state-layer flex items-center gap-3 rounded-lg bg-subtle p-4 transition-transform duration-125 ease-standard active:scale-97",
                 rise,
               )}
               style={beat(i / 2)}

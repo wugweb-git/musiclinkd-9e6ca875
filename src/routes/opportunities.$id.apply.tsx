@@ -100,7 +100,7 @@ function ApplyFlow() {
           {order.slice(0, 3).map((s, i) => (
             <span
               key={s}
-              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`}
+              className={`h-1.5 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-background"}`}
             />
           ))}
         </div>
@@ -131,7 +131,7 @@ function ApplyFlow() {
                     }
                     className={`overflow-hidden rounded-[20px] border text-left ${on ? "border-primary" : "border-border"} bg-card`}
                   >
-                    <span className="flex h-20 w-full items-center justify-center bg-subtle text-3">
+                    <span className="flex h-20 w-full items-center justify-center bg-background text-3">
                       {workType(p.kind).emoji}
                     </span>
                     <span className="block p-3">
@@ -164,7 +164,7 @@ function ApplyFlow() {
               rows={7}
               maxLength={600}
               placeholder={`Why you're right for "${o.title}"…`}
-              className="w-full rounded-[20px] border border-border bg-card p-4 text-sm outline-none"
+              className="w-full rounded-[20px] bg-subtle p-4 text-sm outline-none"
             />
             <p className="text-right text-1 text-muted-foreground">{message.length}/600</p>
             <Card className="space-y-2">

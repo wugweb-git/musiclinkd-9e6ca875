@@ -90,7 +90,7 @@ function BookingEntry() {
             {b.resources.map((r) => (
               <div
                 key={r.id}
-                className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+                className="flex items-center gap-3 rounded-lg bg-subtle p-3"
               >
                 {r.photo ? (
                   <img
@@ -126,7 +126,7 @@ function BookingEntry() {
               {b.facilities.map((f) => (
                 <span
                   key={f}
-                  className="rounded-full bg-subtle px-3 py-1.5 text-1 text-muted-foreground"
+                  className="rounded-full bg-background px-3 py-1.5 text-1 text-muted-foreground"
                 >
                   {f}
                 </span>

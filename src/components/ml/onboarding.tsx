@@ -490,7 +490,7 @@ export function StepShell({
               {status}
             </div>
             <div
-              className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-subtle"
+              className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-background"
               role="progressbar"
               aria-valuenow={pct}
               aria-valuemin={0}
@@ -742,7 +742,7 @@ export function InlineField({
         className={cn(
           "flex items-center gap-1 rounded-sm border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
           multiline ? "py-3" : "h-12",
-          readOnly && "bg-subtle",
+          readOnly && "bg-background",
           error
             ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
             : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
@@ -951,7 +951,7 @@ export function PhotoPicker({
               <button
                 type="button"
                 onClick={() => o.input.current?.click()}
-                className="flex min-h-14 w-full items-center gap-3 rounded-lg border border-border bg-card px-4 text-sm font-semibold"
+                className="flex min-h-14 w-full items-center gap-3 rounded-lg bg-subtle px-4 text-sm font-semibold"
               >
                 {o.icon}
                 {o.label}
@@ -995,7 +995,7 @@ export function SelectField({
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
           className={cn(
-            "h-12 w-full appearance-none rounded-sm border border-border bg-card pl-3.5 pr-10 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground disabled:bg-subtle disabled:opacity-60 [@media(hover:hover)]:hover:border-muted-foreground",
+            "h-12 w-full appearance-none rounded-sm bg-subtle pl-3.5 pr-10 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard focus-visible:border-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground disabled:bg-subtle disabled:opacity-60 [@media(hover:hover)]:hover:border-muted-foreground",
             value ? "text-foreground" : "text-muted-foreground",
           )}
         >
@@ -1127,7 +1127,7 @@ export function ReadinessCard({
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-lg border border-border bg-card p-4",
+        "flex items-start gap-3 rounded-lg bg-subtle p-4",
         className,
       )}
       style={style}
@@ -1164,7 +1164,7 @@ export function HandoffCard({
   onLater?: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-lg bg-subtle p-5">
       <h3 className="text-2">{title}</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
       <div className="mt-4 flex items-center gap-2">

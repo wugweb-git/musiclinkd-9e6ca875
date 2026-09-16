@@ -364,7 +364,7 @@ function EditProfile() {
               key={o.key}
               type="button"
               onClick={() => update({ visibility: o.key })}
-              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.key ? "border-primary bg-subtle" : "border-border bg-card"}`}
+              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border px-4 text-left ${form.visibility === o.key ? "border-primary bg-background" : "border-border bg-card"}`}
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold">{o.label}</span>
@@ -385,7 +385,7 @@ function EditProfile() {
       <TopBar title="Edit profile" subtitle={`${gaps.percent}% complete`} back="/profile" />
       <main className="px-5 pb-40 pt-5">
         {gaps.missing.length ? (
-          <div className="mb-4 rounded-lg border border-border bg-card p-4">
+          <div className="mb-4 rounded-lg bg-subtle p-4">
             <p className="text-1 font-semibold">Finish your profile</p>
             <p className="mt-1 text-1 leading-relaxed text-muted-foreground">
               Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
@@ -399,7 +399,7 @@ function EditProfile() {
             return (
               <section
                 key={section.id}
-                className="overflow-hidden rounded-lg border border-border bg-card"
+                className="overflow-hidden rounded-lg bg-subtle"
               >
                 <button
                   type="button"
@@ -408,7 +408,7 @@ function EditProfile() {
                   className="flex min-h-[72px] w-full items-center gap-3 px-4 text-left"
                 >
                   <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-subtle text-foreground"}`}
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-background text-foreground"}`}
                   >
                     {section.done ? (
                       <Check size={16} aria-hidden />
@@ -499,14 +499,14 @@ function Field({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={4}
-          className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
+          className="mt-1.5 w-full rounded-lg bg-subtle px-4 py-3 text-sm outline-none focus:border-primary"
         />
       ) : (
         <input
           value={value}
           readOnly={readOnly}
           onChange={(e) => onChange(e.target.value)}
-          className={`mt-1.5 min-h-12 w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-subtle text-muted-foreground" : "bg-card"}`}
+          className={`mt-1.5 min-h-12 w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-background text-muted-foreground" : "bg-card"}`}
         />
       )}
       {hint ? <span className="mt-1 block text-1 text-muted-foreground">{hint}</span> : null}

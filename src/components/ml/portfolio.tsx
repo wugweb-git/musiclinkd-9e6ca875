@@ -235,7 +235,7 @@ export function PortfolioHeader({
 
 /** The input box of the shared fields (TextField, InlineField), for inputs inside portfolio controls. */
 const fieldBox =
-  "h-12 w-full rounded-sm border border-border bg-card px-3.5 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-1 focus:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground";
+  "h-12 w-full rounded-sm bg-subtle px-3.5 text-2 outline-none transition-[border-color,box-shadow] duration-125 ease-standard placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-1 focus:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground";
 
 export function MediaStatePill({ state }: { state: MediaState }) {
   const c = mediaStateCopy[state];

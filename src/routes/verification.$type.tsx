@@ -195,7 +195,7 @@ function VerificationRequestScreen() {
         <TopBar title={def.title} back="/verification" />
         <div className="space-y-4 px-5 pt-4 pb-6">
           <Card className="space-y-3 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-subtle">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-background">
               <ShieldCheck size={24} className="text-primary" aria-hidden />
             </div>
             <h2 className="text-2 leading-tight">Verified</h2>
@@ -552,7 +552,7 @@ function Wizard({
           {verificationSteps.map((s, i) => (
             <span
               key={s}
-              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-subtle"}`}
+              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-background"}`}
             />
           ))}
         </div>
@@ -615,7 +615,7 @@ function Wizard({
                   <span className="text-1 font-semibold">{r.label}</span>
                   <span className="mt-0.5 block text-1 text-muted-foreground">{r.why}</span>
                   {r.privateField === "phone" ? (
-                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-[16px] border border-border bg-card px-4 focus-within:border-primary">
+                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-[16px] bg-subtle px-4 focus-within:border-primary">
                       <span className="text-sm text-muted-foreground">+91</span>
                       <input
                         value={values[r.id] ?? ""}
@@ -632,7 +632,7 @@ function Wizard({
                       value={values[r.id] ?? ""}
                       onChange={(e) => setValues((v) => ({ ...v, [r.id]: e.target.value }))}
                       maxLength={140}
-                      className="mt-2 h-12 w-full rounded-[16px] border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+                      className="mt-2 h-12 w-full rounded-[16px] bg-subtle px-4 text-sm outline-none focus:border-primary"
                       placeholder="Type here"
                     />
                   )}
@@ -685,7 +685,7 @@ function Wizard({
                   </div>
                   {file ? (
                     <>
-                      <p className="truncate rounded-[14px] bg-subtle px-3 py-2 text-1">{file}</p>
+                      <p className="truncate rounded-[14px] bg-background px-3 py-2 text-1">{file}</p>
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
@@ -720,7 +720,7 @@ function Wizard({
                     <button
                       type="button"
                       onClick={() => pick(r.id)}
-                      className="inline-flex items-center gap-1 rounded-full bg-subtle px-3 py-2 text-1 font-semibold"
+                      className="inline-flex items-center gap-1 rounded-full bg-background px-3 py-2 text-1 font-semibold"
                     >
                       <Paperclip size={12} aria-hidden /> Attach file
                     </button>
@@ -786,7 +786,7 @@ function Wizard({
                 </div>
               ))}
             </Card>
-            <label className="flex items-start gap-3 rounded-[20px] border border-border bg-card px-4 py-3">
+            <label className="flex items-start gap-3 rounded-[20px] bg-subtle px-4 py-3">
               <input
                 type="checkbox"
                 checked={consent}
@@ -821,7 +821,7 @@ function Wizard({
         {step === 4 ? (
           <>
             <Card className="space-y-3 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-subtle">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-background">
                 <Check size={24} className="text-primary" aria-hidden />
               </div>
               <h2 className="text-2 leading-tight">Submitted for review</h2>

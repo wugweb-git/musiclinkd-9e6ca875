@@ -138,7 +138,7 @@ function Sell() {
               <textarea
                 rows={4}
                 placeholder="Condition, history, what's included..."
-                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                className="w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
               />
             </Field>
             <Field label="Location">
@@ -151,8 +151,8 @@ function Sell() {
         ) : null}
 
         {step === 3 ? (
-          <div className="overflow-hidden rounded-lg border border-border bg-card">
-            <div className="flex h-40 items-center justify-center bg-subtle text-1 text-muted-foreground">
+          <div className="overflow-hidden rounded-lg bg-subtle">
+            <div className="flex h-40 items-center justify-center bg-background text-1 text-muted-foreground">
               Cover photo
             </div>
             <div className="p-4">
@@ -204,7 +204,7 @@ function Sell() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="pill mb-1.5 bg-subtle text-muted-foreground">{label}</p>
+      <p className="pill mb-1.5 bg-background text-muted-foreground">{label}</p>
       {children}
     </div>
   );

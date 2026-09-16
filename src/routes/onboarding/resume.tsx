@@ -52,14 +52,14 @@ function Resume() {
           <span className="font-semibold text-foreground">{def?.title ?? "the next step"}</span>.
         </p>
 
-        <div className="mt-6 rounded-lg border border-border bg-card p-5">
+        <div className="mt-6 rounded-lg bg-subtle p-5">
           <p className="text-1 text-muted-foreground">Next up</p>
           <p className="mt-1 text-2">{def?.title ?? "Review your profile"}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {def?.subtitle ?? "One last look before publishing."}
           </p>
           <div
-            className="mt-4 h-1 overflow-hidden rounded-full bg-subtle"
+            className="mt-4 h-1 overflow-hidden rounded-full bg-background"
             role="progressbar"
             aria-valuenow={done}
             aria-valuemin={0}

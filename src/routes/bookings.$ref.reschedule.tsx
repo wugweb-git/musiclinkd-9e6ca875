@@ -62,7 +62,7 @@ function Reschedule() {
       <Screen>
         <TopBar title="Reschedule" back="/bookings" />
         <main className="px-5 pt-6">
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="rounded-lg bg-subtle p-5">
             <p className="font-semibold">Reschedule request sent</p>
             <p className="mt-1 text-sm text-muted-foreground">
               {b.name} will confirm the new slot. Your original time stays held until they respond.

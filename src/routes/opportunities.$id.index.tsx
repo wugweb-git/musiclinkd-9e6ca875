@@ -173,7 +173,7 @@ function OpportunityDetail() {
             {tags.length ? (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {tags.map((g) => (
-                  <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold">
+                  <span key={g} className="rounded-full bg-background px-2.5 py-1 text-1 font-semibold">
                     {g}
                   </span>
                 ))}

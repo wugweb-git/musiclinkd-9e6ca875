@@ -86,7 +86,7 @@ function Discussion() {
               </div>
               {d.decision ? (
                 <span
-                  className="pill px-2.5 py-1 bg-subtle text-muted-foreground"
+                  className="pill px-2.5 py-1 bg-background text-muted-foreground"
                   style={{ background: "var(--success-container)", color: "var(--success)" }}
                 >
                   Decision
@@ -94,7 +94,7 @@ function Discussion() {
               ) : null}
               {d.pinned ? (
                 <span
-                  className="pill px-2.5 py-1 bg-subtle text-muted-foreground"
+                  className="pill px-2.5 py-1 bg-background text-muted-foreground"
                   style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
                 >
                   Pinned

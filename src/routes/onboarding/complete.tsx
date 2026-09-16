@@ -77,7 +77,7 @@ function Complete() {
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
-        <section className={cn("rounded-lg border border-border bg-card p-5", rise)}>
+        <section className={cn("rounded-lg bg-subtle p-5", rise)}>
           <PartyPopper size={24} className="animate-pop text-primary" style={beat(2)} />
           <h1 className="mt-3 text-3 leading-tight">
             {first ? `You're on MusicLinkd, ${first}` : "You're on MusicLinkd"}
@@ -91,7 +91,7 @@ function Complete() {
               <span className="tabular-nums text-muted-foreground">{pct}%</span>
             </div>
             <div
-              className="mt-2 h-2 overflow-hidden rounded-full bg-subtle"
+              className="mt-2 h-2 overflow-hidden rounded-full bg-background"
               role="progressbar"
               aria-valuenow={pct}
               aria-valuemin={0}

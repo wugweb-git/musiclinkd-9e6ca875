@@ -52,7 +52,7 @@ function Details() {
             <select
               value={draft.purpose}
               onChange={(e) => set({ purpose: e.target.value })}
-              className="min-h-12 w-full rounded-lg border border-border bg-card px-4 text-sm"
+              className="min-h-12 w-full rounded-lg bg-subtle px-4 text-sm"
             >
               <option value="">Select a purpose</option>
               <option>Tracking — band</option>
@@ -70,7 +70,7 @@ function Details() {
               value={draft.notes}
               onChange={(e) => set({ notes: e.target.value })}
               placeholder="e.g. Monsoon EP"
-              className="min-h-12 w-full rounded-lg border border-border bg-card px-4 text-sm"
+              className="min-h-12 w-full rounded-lg bg-subtle px-4 text-sm"
             />
           </Field>
 
@@ -103,7 +103,7 @@ function Details() {
               onChange={(e) => set({ requirements: e.target.value })}
               rows={4}
               placeholder="Backline changes, extra mics, load-in timing…"
-              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm"
+              className="w-full rounded-lg bg-subtle px-4 py-3 text-sm"
             />
           </Field>
         </div>

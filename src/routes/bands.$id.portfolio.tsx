@@ -68,7 +68,7 @@ function BandPortfolio() {
                         loading="lazy"
                       />
                     ) : (
-                      <div aria-hidden className="h-14 w-14 shrink-0 rounded-[12px] bg-subtle" />
+                      <div aria-hidden className="h-14 w-14 shrink-0 rounded-[12px] bg-background" />
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{r.title}</p>

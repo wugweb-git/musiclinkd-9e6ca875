@@ -36,7 +36,7 @@ function AccountScreen() {
               className="flex items-center gap-3 border-b border-border p-4 last:border-0"
             >
               <div className="min-w-0 flex-1">
-                <p className="pill bg-subtle text-muted-foreground">{f.label}</p>
+                <p className="pill bg-background text-muted-foreground">{f.label}</p>
                 <p className="mt-0.5 flex items-center gap-2 truncate text-1 font-semibold">
                   {f.value}
                   {f.verified ? <StatusPill label="verified" tone="good" /> : null}
@@ -65,7 +65,7 @@ function AccountScreen() {
       >
         <div className="space-y-3">
           <label className="block">
-            <span className="pill bg-subtle text-muted-foreground">
+            <span className="pill bg-background text-muted-foreground">
               New {field?.label.toLowerCase()}
             </span>
             <input

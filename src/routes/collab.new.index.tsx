@@ -102,7 +102,7 @@ function CreateCollab() {
           <TextInput value={budget} onChange={setBudget} placeholder="₹1,80,000" />
         </Field>
 
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg bg-subtle p-4">
           <Label>What happens next</Label>
           <p className="text-1 text-muted-foreground">
             You'll invite collaborators and set their roles. Nothing is shared until you send

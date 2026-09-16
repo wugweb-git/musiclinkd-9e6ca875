@@ -68,7 +68,7 @@ function PortfolioAnalytics() {
             {/* The same 30 days as the totals above, drawn. */}
             <section className="mt-6">
               <h2 className="text-2">Views over time</h2>
-              <div className="mt-3 rounded-lg border border-border bg-card p-3">
+              <div className="mt-3 rounded-lg bg-subtle p-3">
                 <SignalLine
                   /* Sample series, so it belongs to the signed-out demo only. A real account
                      shows the chart's own empty state until there is an analytics table. */
@@ -104,7 +104,7 @@ function PortfolioAnalytics() {
                     key={item.id}
                     to="/portfolio/$id"
                     params={{ id: item.id }}
-                    className="block rounded-lg border border-border bg-card p-4"
+                    className="block rounded-lg bg-subtle p-4"
                   >
                     <p className="truncate text-sm font-semibold">{item.title}</p>
                     <p className="mt-1 text-1 text-muted-foreground">

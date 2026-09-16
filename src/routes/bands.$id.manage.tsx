@@ -71,7 +71,7 @@ function ManageBand() {
                       className="h-11 w-11 shrink-0 rounded-full object-cover"
                     />
                   ) : (
-                    <div aria-hidden className="h-11 w-11 shrink-0 rounded-full bg-subtle" />
+                    <div aria-hidden className="h-11 w-11 shrink-0 rounded-full bg-background" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{m.name}</p>

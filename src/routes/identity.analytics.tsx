@@ -24,7 +24,7 @@ export const Route = createFileRoute("/identity/analytics")({
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-[20px] border border-border bg-card px-4 py-3">
+    <div className="rounded-[20px] bg-subtle px-4 py-3">
       <p className="text-3 leading-tight">{value}</p>
       <p className="text-1 text-muted-foreground">{label}</p>
     </div>
@@ -46,7 +46,7 @@ function QrAnalytics() {
           <Stat label="Bookings" value={qrAnalytics.bookings} />
         </div>
 
-        <section className="mt-4 rounded-[24px] border border-border bg-card p-4">
+        <section className="mt-4 rounded-[24px] bg-subtle p-4">
           <h2 className="text-2">Where scans come from</h2>
           <div className="mt-3 flex flex-col gap-3">
             {qrAnalytics.bySource.map((s) => (
@@ -55,7 +55,7 @@ function QrAnalytics() {
                   <span className="font-semibold">{s.label}</span>
                   <span className="text-muted-foreground">{s.value}</span>
                 </div>
-                <div className="mt-1 h-2 rounded-full bg-subtle">
+                <div className="mt-1 h-2 rounded-full bg-background">
                   <div
                     className="h-2 rounded-full bg-primary"
                     style={{ width: `${Math.round((s.value / max) * 100)}%` }}

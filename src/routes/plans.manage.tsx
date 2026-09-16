@@ -137,7 +137,7 @@ function ManagePlan() {
                 setCancelOpen(false);
                 setCancelled(true);
               }}
-              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-1 font-semibold"
+              className="w-full rounded-lg bg-subtle px-4 py-3 text-left text-1 font-semibold"
             >
               {r}
             </button>

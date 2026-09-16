@@ -267,7 +267,7 @@ export const SyncStates: Story = {
   render: () => (
     <div className="space-y-4 p-5">
       {(["idle", "loading", "saving", "saved", "offline", "error"] as SyncState[]).map((s) => (
-        <div key={s} className="rounded-lg border border-border bg-card p-3">
+        <div key={s} className="rounded-lg bg-subtle p-3">
           <p className="mb-2 text-1 text-muted-foreground">{s}</p>
           <SyncStatus state={s} />
           <SyncBanner state={s} onRetry={() => {}} />

@@ -54,12 +54,12 @@ function Studio() {
             </div>
             <p className="text-1 text-muted-foreground">Andheri West, Mumbai · 3 live rooms</p>
           </div>
-          <span className="rounded-full bg-subtle px-3 py-1.5 text-1 font-bold text-warn">
+          <span className="rounded-full bg-background px-3 py-1.5 text-1 font-bold text-warn">
             4.9 ★
           </span>
         </div>
 
-        <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-card py-3 text-center">
+        <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg bg-subtle py-3 text-center">
           <Price
             price={{ amount: "₹1,800", unit: "hour" }}
             align="center"
@@ -116,7 +116,7 @@ function Studio() {
 
       <section className="px-5 pt-6">
         <h2 className="mb-3 text-sm">Availability · August 2026</h2>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg bg-subtle p-4">
           <div className="grid grid-cols-7 gap-1.5 text-center">
             {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
               <span key={i} className="text-1 font-bold text-muted-foreground">
@@ -133,7 +133,7 @@ function Studio() {
                     sel
                       ? "bg-primary text-primary-foreground"
                       : busy
-                        ? "bg-subtle text-muted-foreground line-through"
+                        ? "bg-background text-muted-foreground line-through"
                         : "border border-border"
                   }`}
                 >

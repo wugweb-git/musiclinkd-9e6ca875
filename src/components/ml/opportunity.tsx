@@ -82,7 +82,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
       </>,
     );
   if (o.poster.hires) meta.push(`${o.poster.hires} hires`);
-  const className = "flex items-center gap-3 rounded-lg border border-border bg-card p-3";
+  const className = "flex items-center gap-3 rounded-lg bg-subtle p-3";
   const body = (
     <>
       {o.poster.photo ? (

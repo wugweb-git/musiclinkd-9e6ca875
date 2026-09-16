@@ -74,7 +74,7 @@ function BusinessHome() {
                 {b.cover ? (
                   <img src={b.cover} alt="" className="h-28 w-full object-cover" loading="lazy" />
                 ) : (
-                  <div aria-hidden className="h-28 w-full bg-subtle" />
+                  <div aria-hidden className="h-28 w-full bg-background" />
                 )}
                 <div className="space-y-2 p-4 pt-0">
                   <div className="flex items-start gap-3">

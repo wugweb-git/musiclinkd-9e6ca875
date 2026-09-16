@@ -26,7 +26,7 @@ export function RentalAvailabilityBadge({
   const map = {
     ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
     warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
-    off: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
+    off: { pill: "bg-background text-muted-foreground", dot: "bg-muted-foreground" },
   } as const;
   const c = map[tone];
   return (
@@ -63,11 +63,11 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
   const tone: Record<RentalStatus, string> = {
     Requested: "bg-warn-container text-warn-strong",
     "Offer sent": "bg-status-category-bg text-status-category-text",
-    Confirmed: "bg-subtle text-foreground",
+    Confirmed: "bg-background text-foreground",
     Active: "bg-success-container text-success-strong",
-    Completed: "bg-subtle text-muted-foreground",
-    Cancelled: "bg-subtle text-muted-foreground",
-    Declined: "bg-subtle text-muted-foreground",
+    Completed: "bg-background text-muted-foreground",
+    Cancelled: "bg-background text-muted-foreground",
+    Declined: "bg-background text-muted-foreground",
   };
   return <span className={`shrink-0 rounded-full pill ${tone[status]}`}>{status}</span>;
 }
@@ -75,7 +75,7 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
 export function EquipmentCard({ e }: { e: Equipment }) {
   const [saved, setSaved] = useState(false);
   return (
-    <article className="overflow-hidden rounded-lg border border-border bg-card">
+    <article className="overflow-hidden rounded-lg bg-subtle">
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
         <div className="relative">
           <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
@@ -127,7 +127,7 @@ export function EquipmentTile({ e }: { e: RentalItem }) {
     <Link
       to="/marketplace/rent/e/$id"
       params={{ id: e.id }}
-      className="block w-[176px] shrink-0 overflow-hidden rounded-lg border border-border bg-card"
+      className="block w-[176px] shrink-0 overflow-hidden rounded-lg bg-subtle"
     >
       {e.photos[0] ? (
         <img
@@ -137,7 +137,7 @@ export function EquipmentTile({ e }: { e: RentalItem }) {
           className="h-[124px] w-full object-cover"
         />
       ) : (
-        <div className="h-[124px] w-full bg-subtle" />
+        <div className="h-[124px] w-full bg-background" />
       )}
       <div className="p-3">
         <RentalPriceBlock e={e} />
@@ -157,7 +157,7 @@ export function EquipmentRow({ e, action }: { e: RentalItem; action?: ReactNode 
   const [saved, setSaved] = useState(false);
   const provider = providerName(e);
   return (
-    <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
+    <article className="flex gap-3 rounded-lg bg-subtle p-3">
       <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="shrink-0">
         {e.photos[0] ? (
           <img
@@ -238,7 +238,7 @@ export function ProviderCard({ p }: { p: Provider }) {
     <Link
       to="/marketplace/rent/provider/$id"
       params={{ id: p.id }}
-      className="block rounded-lg border border-border bg-card p-4"
+      className="block rounded-lg bg-subtle p-4"
     >
       <ProviderSummary p={p} />
       <div className="mt-3 flex flex-wrap gap-2">
@@ -281,7 +281,7 @@ export function RentalCalendar({
   );
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="mb-3 flex items-center justify-between">
         <p className="text-2 font-semibold">
           {month.toLocaleString("en-IN", { month: "long", year: "numeric" })}
@@ -310,7 +310,7 @@ export function RentalCalendar({
               onClick={() => onSelect(day)}
               className={`flex h-9 items-center justify-center rounded-sm text-1 font-semibold transition-colors ${
                 isBlocked ? "text-muted-foreground line-through opacity-50" : ""
-              } ${isEdge ? "bg-primary text-primary-foreground" : inRange ? "bg-subtle text-foreground" : ""}`}
+              } ${isEdge ? "bg-primary text-primary-foreground" : inRange ? "bg-background text-foreground" : ""}`}
             >
               {day}
             </button>
@@ -356,7 +356,7 @@ export function PriceBreakdown({
   ];
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="space-y-2.5">
         {rows.map((r) => (
           <div key={r.k} className="flex items-start justify-between gap-3">
@@ -427,7 +427,7 @@ export function FulfilmentPicker({
   }
 
   return (
-    <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+    <div className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
       {options.map((o) => {
         const Icon = o.icon;
         const active = value === o.id;
@@ -467,7 +467,7 @@ export function BookingCard({
   action?: ReactNode;
 }) {
   return (
-    <article className="rounded-lg border border-border bg-card p-3">
+    <article className="rounded-lg bg-subtle p-3">
       <div className="flex gap-3">
         <img
           src={e.photos[0]}
@@ -496,13 +496,13 @@ export function BookingCard({
 
 export function RentalSkeleton() {
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="h-44 w-full animate-pulse bg-subtle" />
+    <div className="overflow-hidden rounded-lg bg-subtle">
+      <div className="h-44 w-full animate-pulse bg-background" />
       <div className="space-y-2 p-4">
-        <div className="h-4 w-28 animate-pulse rounded-full bg-subtle" />
-        <div className="h-3 w-full animate-pulse rounded-full bg-subtle" />
-        <div className="h-3 w-2/3 animate-pulse rounded-full bg-subtle" />
-        <div className="h-10 w-full animate-pulse rounded-full bg-subtle" />
+        <div className="h-4 w-28 animate-pulse rounded-full bg-background" />
+        <div className="h-3 w-full animate-pulse rounded-full bg-background" />
+        <div className="h-3 w-2/3 animate-pulse rounded-full bg-background" />
+        <div className="h-10 w-full animate-pulse rounded-full bg-background" />
       </div>
     </div>
   );
@@ -554,7 +554,7 @@ export function RentalFilterSheet({
         </button>
       </div>
 
-      <h3 className="pill mb-2 bg-subtle text-muted-foreground">Rental dates</h3>
+      <h3 className="pill mb-2 bg-background text-muted-foreground">Rental dates</h3>
       <div className="mb-5 flex flex-wrap gap-2">
         {["Any dates", "This weekend", "Next week", "Pick dates"].map((d) => (
           <Chip key={d} active={dates === d} onClick={() => setDates(d)}>
@@ -565,7 +565,7 @@ export function RentalFilterSheet({
 
       {groups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="pill mb-2 bg-subtle text-muted-foreground">{g.label}</h3>
+          <h3 className="pill mb-2 bg-background text-muted-foreground">{g.label}</h3>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
               <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>

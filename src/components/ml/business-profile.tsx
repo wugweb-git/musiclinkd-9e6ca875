@@ -34,7 +34,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
             to="/business/$id/manage"
             params={{ id: b.id }}
             aria-label="Manage business"
-            className="grid h-10 w-10 place-items-center rounded-full bg-subtle"
+            className="grid h-10 w-10 place-items-center rounded-full bg-background"
           >
             <Settings2 size={16} />
           </Link>
@@ -44,7 +44,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
       {b.cover ? (
         <img src={b.cover} alt="" className="h-40 w-full object-cover" loading="lazy" />
       ) : (
-        <div aria-hidden className="h-40 w-full bg-subtle" />
+        <div aria-hidden className="h-40 w-full bg-background" />
       )}
 
       <div className="space-y-4 px-5 pt-4 pb-6">
@@ -59,7 +59,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
           ) : (
             <div
               aria-hidden
-              className="h-16 w-16 shrink-0 rounded-lg border-4 border-background bg-subtle"
+              className="h-16 w-16 shrink-0 rounded-lg border-4 border-background bg-background"
             />
           )}
           <div className="min-w-0 flex-1 pb-1">
@@ -88,7 +88,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
         </div>
 
         {b.stats ? (
-          <div className="grid grid-cols-4 gap-2 rounded-lg border border-border bg-card p-3 text-center">
+          <div className="grid grid-cols-4 gap-2 rounded-lg bg-subtle p-3 text-center">
             {b.stats.map(([k, v]) => (
               <div key={k}>
                 <p className="text-sm font-bold leading-tight">{v}</p>
@@ -177,7 +177,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                   {sp.detail ? <p className="text-1 text-muted-foreground">{sp.detail}</p> : null}
                   <div className="flex flex-wrap gap-1.5">
                     {sp.gear.map((g) => (
-                      <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-1">
+                      <span key={g} className="rounded-full bg-background px-2.5 py-1 text-1">
                         {g}
                       </span>
                     ))}
@@ -203,7 +203,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                     loading="lazy"
                   />
                 ) : (
-                  <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-subtle" />
+                  <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-background" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-1 font-semibold">{m.name}</p>

@@ -42,7 +42,7 @@ function Saved() {
       <div className="space-y-3 px-5">
         {tab === "Studios"
           ? studios.map((s) => (
-              <article key={s.name} className="rounded-lg border border-border bg-card p-4">
+              <article key={s.name} className="rounded-lg bg-subtle p-4">
                 <div className="flex items-center gap-3">
                   <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
                   <div className="min-w-0 flex-1">
@@ -61,7 +61,7 @@ function Saved() {
               </article>
             ))
           : talents.slice(0, 3).map((t) => (
-              <article key={t.id} className="rounded-lg border border-border bg-card p-4">
+              <article key={t.id} className="rounded-lg bg-subtle p-4">
                 <div className="flex items-center gap-3">
                   <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-sm object-cover" />
                   <div className="min-w-0 flex-1">

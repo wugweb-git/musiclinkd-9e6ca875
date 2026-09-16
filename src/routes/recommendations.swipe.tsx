@@ -91,7 +91,7 @@ function Recommended() {
         </button>
         <button
           onClick={() => swipe("right")}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-subtle text-3"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-background text-3"
           aria-label="Save"
         >
           ♡
@@ -122,7 +122,7 @@ function Card({
 }) {
   return (
     <article
-      className={`absolute inset-0 overflow-hidden rounded-[32px] border border-border bg-card transition-all duration-200 ${className}`}
+      className={`absolute inset-0 overflow-hidden rounded-[32px] bg-subtle transition-all duration-200 ${className}`}
     >
       <img src={t.photo} alt={t.name} className="h-[300px] w-full object-cover" />
       <div className="absolute left-4 top-4">
@@ -143,7 +143,7 @@ function Card({
           {t.genres.map((g) => (
             <span
               key={g}
-              className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground"
+              className="rounded-full bg-background px-2.5 py-1 text-1 font-semibold text-muted-foreground"
             >
               {g}
             </span>

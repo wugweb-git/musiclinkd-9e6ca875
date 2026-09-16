@@ -45,7 +45,7 @@ function BusinessCard() {
     <Screen>
       <TopBar title="Digital card" subtitle={myIdentity.name} back="/identity/qr" />
       <main className="px-5 pt-4">
-        <section className="overflow-hidden rounded-[24px] border border-border bg-card">
+        <section className="overflow-hidden rounded-[24px] bg-subtle">
           <div className="flex items-center gap-4 bg-ink px-5 py-5 text-background">
             <img src={myIdentity.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
             <div className="min-w-0">
@@ -64,7 +64,7 @@ function BusinessCard() {
         </section>
 
         <div className="mt-4 flex flex-col gap-2">
-          <p className="pill px-1 bg-subtle text-muted-foreground">Shared details</p>
+          <p className="pill px-1 bg-background text-muted-foreground">Shared details</p>
           {shared.map((s) => (
             <ActionRow key={s.label} icon={s.icon} label={s.label} hint={s.hint} />
           ))}

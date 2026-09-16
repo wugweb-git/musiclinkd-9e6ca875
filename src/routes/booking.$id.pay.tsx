@@ -126,7 +126,7 @@ function Pay() {
         {phase === "processing" ? (
           <p
             role="status"
-            className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-1"
+            className="mt-4 flex items-center gap-3 rounded-lg bg-subtle p-4 text-1"
           >
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
             Processing payment…
@@ -137,7 +137,7 @@ function Pay() {
           <button
             type="button"
             onClick={() => setPhase("failed")}
-            className="pill mt-6 bg-subtle text-muted-foreground"
+            className="pill mt-6 bg-background text-muted-foreground"
           >
             Preview failure state
           </button>
@@ -216,7 +216,7 @@ function Result({
         )}
         <h1 className="mt-4 text-3 leading-tight">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{body}</p>
-        <dl className="mt-6 rounded-lg border border-border bg-card p-4">
+        <dl className="mt-6 rounded-lg bg-subtle p-4">
           {rows.map(([k, v]) => (
             <div key={k} className="flex items-baseline justify-between gap-3 py-1.5">
               <dt className="text-1 text-muted-foreground">{k}</dt>

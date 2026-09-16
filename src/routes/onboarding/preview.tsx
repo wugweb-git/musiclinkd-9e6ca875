@@ -95,7 +95,7 @@ function Preview() {
 
       <main className="px-5 pt-6">
         <h2 className="text-2">Your details</h2>
-        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
           <DetailRow
             label="Roles"
             values={names(

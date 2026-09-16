@@ -64,7 +64,7 @@ function RequestReview() {
       <Screen>
         <TopBar title="Request" back="/provider/bookings" />
         <main className="px-5 pt-6">
-          <div className="rounded-lg border border-border bg-card p-5">
+          <div className="rounded-lg bg-subtle p-5">
             <p className="font-semibold">
               {decision === "accepted" ? "Request accepted" : "Request declined"}
             </p>
@@ -86,7 +86,7 @@ function RequestReview() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar title={`Request #${bk.ref}`} subtitle={r.name} back="/provider/bookings" />
       <main className="px-5 pt-4">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg bg-subtle p-4">
           <div className="flex items-center gap-3">
             <img
               src={bk.customerAvatar}
@@ -99,12 +99,12 @@ function RequestReview() {
               <p className="truncate text-1 text-muted-foreground">{bk.customerRole}</p>
             </div>
           </div>
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground">
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1 text-1 font-semibold text-muted-foreground">
             <ShieldCheck size={12} /> Verified profile · 4 past sessions
           </p>
         </div>
 
-        <div className="mt-3 rounded-lg border border-border bg-card p-4">
+        <div className="mt-3 rounded-lg bg-subtle p-4">
           <dl className="grid grid-cols-2 gap-3 text-1">
             <Detail label="Date" value={formatDate(bk.date)} />
             <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
@@ -134,7 +134,7 @@ function RequestReview() {
         </Btn>
 
         {decision === "declining" ? (
-          <div className="mt-3 rounded-lg border border-border bg-card p-4">
+          <div className="mt-3 rounded-lg bg-subtle p-4">
             <p className="text-sm font-semibold">Reason</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {declineReasons.map((x) => (

@@ -88,7 +88,7 @@ function HelpPage() {
               );
             if (b.type === "callout")
               return (
-                <Card key={i} className="bg-subtle">
+                <Card key={i} className="bg-background">
                   <p className="text-1 leading-relaxed">{b.text}</p>
                 </Card>
               );

@@ -51,8 +51,8 @@ function SaveContact() {
           </StateCard>
         ) : (
           <>
-            <section className="rounded-[24px] border border-border bg-card p-4">
-              <p className="pill bg-subtle text-muted-foreground">Will be saved</p>
+            <section className="rounded-[24px] bg-subtle p-4">
+              <p className="pill bg-background text-muted-foreground">Will be saved</p>
               <div className="mt-3 flex flex-col gap-2">
                 <ActionRow
                   icon={<UserRoundPlus size={16} />}

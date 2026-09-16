@@ -115,7 +115,7 @@ function BlockRow({ b }: { b: Booking }) {
       {...(requestRefs.has(b.ref)
         ? { to: "/provider/bookings/requests/$ref" as const, params: { ref: b.ref } }
         : { to: "/provider/bookings/$ref" as const, params: { ref: b.ref } })}
-      className="flex min-w-0 items-start gap-3 rounded-lg border border-border bg-card p-3"
+      className="flex min-w-0 items-start gap-3 rounded-lg bg-subtle p-3"
     >
       <span className="w-[62px] shrink-0 text-1 font-bold leading-tight">
         {formatTime(b.start)}
@@ -141,7 +141,7 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
     <div className="space-y-3">
       <DayNav date={date} onDate={onDate} />
       {items.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-5 text-center">
+        <div className="rounded-lg bg-subtle p-5 text-center">
           <p className="text-sm font-semibold">Nothing booked</p>
           <p className="mt-1 text-1 text-muted-foreground">
             This day is completely open. Block it off in Availability if you're not taking sessions.
@@ -179,7 +179,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
               onClick={() => onPick(d)}
               className="flex w-full min-w-0 items-center justify-between gap-3 py-1 text-left"
             >
-              <span className="pill min-w-0 truncate bg-subtle text-muted-foreground">
+              <span className="pill min-w-0 truncate bg-background text-muted-foreground">
                 {formatDate(d)}
               </span>
               <span className="shrink-0 text-1 font-semibold text-muted-foreground">
@@ -209,7 +209,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
   const cells = monthGrid(now.getFullYear(), now.getMonth());
   return (
     <div>
-      <div className="pill grid grid-cols-7 gap-1 text-center bg-subtle text-muted-foreground">
+      <div className="pill grid grid-cols-7 gap-1 text-center bg-background text-muted-foreground">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <span key={`${d}-${i}`}>{d}</span>
         ))}
@@ -226,7 +226,7 @@ function MonthView({ onPick }: { onPick: (d: string) => void }) {
               onClick={() => onPick(iso)}
               aria-label={`${formatDate(iso)}, ${count} session${count === 1 ? "" : "s"}`}
               className={`flex aspect-square min-w-0 flex-col items-center justify-center rounded-lg border border-border text-1 font-semibold ${
-                inMonth ? "bg-card" : "bg-subtle text-muted-foreground"
+                inMonth ? "bg-card" : "bg-background text-muted-foreground"
               }`}
             >
               {d.getDate()}

@@ -108,7 +108,7 @@ function WorkDetail() {
 
         {item ? (
           <>
-            <section className="rounded-lg border border-border bg-card p-5">
+            <section className="rounded-lg bg-subtle p-5">
               <div className="flex items-start justify-between gap-3">
                 <WorkTypeIcon kind={item.kind} />
                 <StatusPill published={item.published} />
@@ -143,15 +143,15 @@ function WorkDetail() {
                 href={item.media_url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-4 block rounded-lg border border-border bg-card p-4 text-sm font-semibold text-foreground"
+                className="mt-4 block rounded-lg bg-subtle p-4 text-sm font-semibold text-foreground"
               >
                 Open media link ↗
               </a>
             ) : null}
 
             {item.collaborators.length ? (
-              <section className="mt-4 rounded-lg border border-border bg-card p-4">
-                <h2 className="pill bg-subtle text-muted-foreground">Credits</h2>
+              <section className="mt-4 rounded-lg bg-subtle p-4">
+                <h2 className="pill bg-background text-muted-foreground">Credits</h2>
                 <div className="mt-2 space-y-2">
                   {item.collaborators.map((c) => (
                     <CreditRow key={c} name={c} />

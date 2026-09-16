@@ -57,7 +57,7 @@ function RentalBooking() {
       <TopBar title="Rental" subtitle={b.ref} back="/marketplace/rent/mine" />
 
       <div className="px-5 py-4">
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div className="overflow-hidden rounded-lg bg-subtle">
           <img src={e.photos[0]} alt={e.name} className="h-40 w-full object-cover" />
           <div className="p-4">
             <div className="flex items-start justify-between gap-2">
@@ -95,7 +95,7 @@ function RentalBooking() {
         </dl>
 
         <h2 className="mt-6 text-2">Provider</h2>
-        <div className="mt-2 rounded-lg border border-border bg-card p-4">
+        <div className="mt-2 rounded-lg bg-subtle p-4">
           <ProviderSummary p={p} />
           <div className="mt-3 grid grid-cols-2 gap-2">
             <BtnLink to="/messages" variant="outline" className="w-full">
@@ -194,7 +194,7 @@ function RentalBooking() {
             </div>
           ))}
         </dl>
-        <p className="pill mb-2 mt-4 bg-subtle text-muted-foreground">Condition confirmation</p>
+        <p className="pill mb-2 mt-4 bg-background text-muted-foreground">Condition confirmation</p>
         <div className="flex flex-wrap gap-2">
           {["Same as received", "Minor wear", "Damage to report"].map((c) => (
             <Chip key={c} active={c === "Same as received"}>
@@ -208,7 +208,7 @@ function RentalBooking() {
         <textarea
           rows={3}
           placeholder="Notes for the provider"
-          className="mt-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+          className="mt-3 w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
         />
         <p className="mt-3 text-1 text-muted-foreground">
           The deposit is released by the provider once they have checked the equipment.
@@ -233,7 +233,7 @@ function RentalBooking() {
             <p className="truncate text-1 text-muted-foreground">{p.name}</p>
           </div>
         </div>
-        <p className="pill mb-2 bg-subtle text-muted-foreground">Overall experience</p>
+        <p className="pill mb-2 bg-background text-muted-foreground">Overall experience</p>
         <div className="mb-4 flex gap-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -247,7 +247,7 @@ function RentalBooking() {
             </button>
           ))}
         </div>
-        <p className="pill mb-2 bg-subtle text-muted-foreground">What went well</p>
+        <p className="pill mb-2 bg-background text-muted-foreground">What went well</p>
         <div className="mb-4 flex flex-wrap gap-2">
           {["Equipment condition", "Accuracy", "Communication", "Pickup", "Delivery", "Value"].map(
             (t) => (
@@ -266,7 +266,7 @@ function RentalBooking() {
         <textarea
           rows={3}
           placeholder="Write a short review (optional)"
-          className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+          className="w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
         />
         <div className="mt-3 flex items-center justify-between rounded-lg bg-subtle px-4 py-3">
           <span className="text-1 font-semibold">Your rating</span>

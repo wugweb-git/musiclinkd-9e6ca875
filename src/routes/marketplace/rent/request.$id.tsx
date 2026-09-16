@@ -102,7 +102,7 @@ function RequestFlow() {
           })}
         </div>
 
-        <div className="mb-4 flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+        <div className="mb-4 flex items-center gap-3 rounded-lg bg-subtle p-3">
           <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-sm object-cover" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-1 font-semibold">{e.name}</p>
@@ -118,7 +118,7 @@ function RequestFlow() {
         {step === "dates" ? (
           <>
             <RentalCalendar e={e} start={start} end={end} onSelect={pick} />
-            <div className="mt-4 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
+            <div className="mt-4 flex items-center justify-between rounded-lg bg-subtle px-4 py-3">
               <div>
                 <p className="text-1 font-semibold">Quantity</p>
                 <p className="text-1 text-muted-foreground">{e.quantity} available</p>
@@ -174,7 +174,7 @@ function RequestFlow() {
 
         {step === "request" ? (
           <>
-            <div className="rounded-lg border border-border bg-card p-4">
+            <div className="rounded-lg bg-subtle p-4">
               <ProviderSummary p={p} />
             </div>
             <dl className="mt-4 divide-y divide-border rounded-lg border border-border">
@@ -202,7 +202,7 @@ function RequestFlow() {
               onChange={(ev) => setNote(ev.target.value)}
               rows={3}
               placeholder="Recording at Famous Studios, need it from 10 am on the 18th."
-              className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+              className="w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
             />
             <p className="mt-3 text-1 text-muted-foreground">
               No payment is taken now. The provider confirms availability and the final amount in

@@ -241,8 +241,8 @@ const kindLabel: Record<DestinationPreview["kind"], string> = {
 
 export function DestinationPreviewCard({ preview }: { preview: DestinationPreview }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-4">
-      <p className="pill bg-subtle text-muted-foreground">{kindLabel[preview.kind]}</p>
+    <section className="rounded-lg bg-subtle p-4">
+      <p className="pill bg-background text-muted-foreground">{kindLabel[preview.kind]}</p>
       <div className="mt-3 flex gap-3">
         {preview.image ? (
           <img
@@ -288,7 +288,7 @@ export function StateCard({
   children?: ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-card p-6 text-center">
+    <section className="rounded-lg bg-subtle p-6 text-center">
       <h2 className="text-2 leading-tight">{title}</h2>
       <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">{body}</p>
       {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
@@ -311,7 +311,7 @@ export function ActionRow({
 }) {
   const inner = (
     <>
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-subtle text-foreground">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
         {icon}
       </span>
       <span className="min-w-0 flex-1 text-left">
@@ -321,7 +321,7 @@ export function ActionRow({
     </>
   );
   const cls =
-    "flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-left";
+    "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-left";
   if (to) {
     return (
       <Link to={to} className={cls}>
@@ -357,7 +357,7 @@ export function CopyLinkRow({ url }: { url: string }) {
           toast.success("Link copied");
           timer.current = setTimeout(() => setDone(false), 1600);
         }}
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-subtle"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-background"
       >
         {done ? <Check size={16} /> : <Copy size={16} />}
       </button>

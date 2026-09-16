@@ -38,7 +38,7 @@ function Insights() {
           {i.headline.map((m) => {
             const up = m.delta.startsWith("+");
             return (
-              <article key={m.label} className="rounded-lg border border-border bg-card p-4">
+              <article key={m.label} className="rounded-lg bg-subtle p-4">
                 <p className="text-1 text-muted-foreground">{m.label}</p>
                 <p className="mt-1 text-3 tabular-nums">{m.value}</p>
                 <p
@@ -57,7 +57,7 @@ function Insights() {
         {/* The same 28 days the headline figures cover, drawn rather than listed. */}
         <section className="mt-6">
           <h2 className="text-2">Plays over time</h2>
-          <div className="mt-3 rounded-lg border border-border bg-card p-3">
+          <div className="mt-3 rounded-lg bg-subtle p-3">
             <SignalLine
               data={i.trend}
               xKey="day"
@@ -73,7 +73,7 @@ function Insights() {
 
         <section className="mt-6">
           <h2 className="text-2">Engagement</h2>
-          <div className="mt-3 divide-y divide-border rounded-lg border border-border bg-card">
+          <div className="mt-3 divide-y divide-border rounded-lg bg-subtle">
             {i.secondary.map((s) => (
               <div key={s.label} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm text-muted-foreground">{s.label}</span>
@@ -85,14 +85,14 @@ function Insights() {
 
         <section className="mt-6">
           <h2 className="text-2">Where your audience is</h2>
-          <div className="mt-3 space-y-3 rounded-lg border border-border bg-card p-4">
+          <div className="mt-3 space-y-3 rounded-lg bg-subtle p-4">
             {i.audience.map((a) => (
               <div key={a.city}>
                 <div className="flex items-baseline justify-between text-1">
                   <span className="font-semibold">{a.city}</span>
                   <span className="tabular-nums text-muted-foreground">{a.share}%</span>
                 </div>
-                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-subtle">
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-background">
                   <div
                     className="h-full rounded-full bg-primary"
                     style={{ width: `${a.share}%` }}
@@ -103,7 +103,7 @@ function Insights() {
           </div>
         </section>
 
-        <section className="mt-6 rounded-lg border border-border bg-card p-5">
+        <section className="mt-6 rounded-lg bg-subtle p-5">
           <p className="text-sm font-semibold">Get seen more</p>
           <p className="mt-1 text-1 text-muted-foreground">
             {me.name.split(" ")[0]}, your profile is {profileCompletion.percent}% complete.

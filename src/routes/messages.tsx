@@ -25,7 +25,7 @@ function Messages() {
         title="Messages"
         subtitle="3 unread"
         right={
-          <TextLink to="/collab" className="pill bg-subtle text-muted-foreground">
+          <TextLink to="/collab" className="pill bg-background text-muted-foreground">
             Collabs
           </TextLink>
         }
@@ -33,7 +33,7 @@ function Messages() {
       <div className="px-5 pt-4">
         <Link
           to="/collab"
-          className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-4"
+          className="flex items-center justify-between rounded-lg bg-subtle px-4 py-4"
         >
           <span className="min-w-0">
             <span className="block text-sm font-semibold">Collaborations</span>
@@ -45,7 +45,7 @@ function Messages() {
         </Link>
         <Link
           to="/portfolio/select"
-          className="mt-3 flex items-center justify-between rounded-lg border border-border bg-card px-4 py-4"
+          className="mt-3 flex items-center justify-between rounded-lg bg-subtle px-4 py-4"
         >
           <span className="min-w-0">
             <span className="block text-sm font-semibold">Share work</span>

@@ -64,7 +64,7 @@ function BandProfile() {
           <Link
             to="/identity/qr"
             aria-label="Band QR"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-subtle"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-background"
           >
             <QrCode size={20} aria-hidden />
           </Link>
@@ -73,7 +73,7 @@ function BandProfile() {
       {band.cover ? (
         <img src={band.cover} alt="" className="h-40 w-full object-cover" />
       ) : (
-        <div aria-hidden className="h-40 w-full bg-subtle" />
+        <div aria-hidden className="h-40 w-full bg-background" />
       )}
       <div className="px-5">
         <div className="-mt-10 flex items-end gap-3">
@@ -86,7 +86,7 @@ function BandProfile() {
           ) : (
             <div
               aria-hidden
-              className="h-20 w-20 shrink-0 rounded-lg border-4 border-background bg-subtle"
+              className="h-20 w-20 shrink-0 rounded-lg border-4 border-background bg-background"
             />
           )}
           <div className="min-w-0 flex-1 pb-1">
@@ -116,7 +116,7 @@ function BandProfile() {
               <Link
                 to="/bands/$id/invite"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
               >
                 <UserPlus size={16} aria-hidden />
                 Invite
@@ -128,7 +128,7 @@ function BandProfile() {
               <Link
                 to="/bands/$id/contact"
                 params={{ id: band.id }}
-                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
               >
                 <MessageSquare size={16} aria-hidden />
                 Message
@@ -144,7 +144,7 @@ function BandProfile() {
           </Link>
           <Link
             to="/identity/qr"
-            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-subtle px-2 text-1 font-semibold text-muted-foreground"
+            className="inline-flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-full bg-background px-2 text-1 font-semibold text-muted-foreground"
           >
             <Share2 size={16} aria-hidden />
             Share
@@ -218,7 +218,7 @@ function BandProfile() {
                         className="h-12 w-12 shrink-0 rounded-full object-cover"
                       />
                     ) : (
-                      <div aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-subtle" />
+                      <div aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-background" />
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
@@ -309,7 +309,7 @@ function BandProfile() {
                 {band.releases.map((r) => (
                   <article
                     key={r.id}
-                    className="overflow-hidden rounded-[24px] border border-border bg-card"
+                    className="overflow-hidden rounded-[24px] bg-subtle"
                   >
                     {r.cover ? (
                       <img
@@ -319,7 +319,7 @@ function BandProfile() {
                         className="aspect-square w-full object-cover"
                       />
                     ) : (
-                      <div aria-hidden className="aspect-square w-full bg-subtle" />
+                      <div aria-hidden className="aspect-square w-full bg-background" />
                     )}
                     <div className="p-3">
                       <h3 className="truncate text-1">{r.title}</h3>

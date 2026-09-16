@@ -91,7 +91,7 @@ function Pricing() {
             Share of the total collected when a booking is confirmed. The balance is due at the
             studio.
           </p>
-          <div className="mt-3 rounded-lg border border-border bg-card p-4">
+          <div className="mt-3 rounded-lg bg-subtle p-4">
             <label htmlFor="deposit" className="text-1 font-semibold">
               Deposit percentage
             </label>
@@ -141,14 +141,14 @@ function MoneyRow({
 }) {
   const id = `rate-${label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
-    <div className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-card p-3">
+    <div className="flex min-w-0 items-center gap-3 rounded-lg bg-subtle p-3">
       <div className="min-w-0 flex-1">
         <label htmlFor={id} className="block truncate text-1 font-semibold">
           {label}
         </label>
         {hint ? <p className="truncate text-1 text-muted-foreground">{hint}</p> : null}
       </div>
-      <div className="flex shrink-0 items-center gap-1 rounded-full bg-subtle px-3 py-2">
+      <div className="flex shrink-0 items-center gap-1 rounded-full bg-background px-3 py-2">
         <span className="text-1 font-semibold text-muted-foreground">₹</span>
         <input
           id={id}

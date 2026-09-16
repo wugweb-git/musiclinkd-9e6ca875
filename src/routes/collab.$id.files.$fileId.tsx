@@ -84,7 +84,7 @@ function FileDetail() {
         {file.versions?.length ? (
           <>
             <Label>Version history</Label>
-            <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
+            <div className="mb-5 divide-y divide-border rounded-lg bg-subtle px-4">
               {file.versions.map((v, i) => (
                 <div key={v.id} className="py-4">
                   <div className="flex items-center justify-between">
@@ -109,7 +109,7 @@ function FileDetail() {
         ) : null}
 
         <Label>Actions</Label>
-        <div className="mb-8 divide-y divide-border rounded-lg border border-border bg-card">
+        <div className="mb-8 divide-y divide-border rounded-lg bg-subtle">
           <RowLink title="Upload a New Version" subtitle="Keeps the history intact" />
           <RowLink title="Change Access" subtitle={file.access} />
           <RowLink title="Add to Portfolio" subtitle="Hands off to your portfolio flow" />

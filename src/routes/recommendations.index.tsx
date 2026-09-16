@@ -67,7 +67,7 @@ function Recs() {
           <Link
             to="/recommendations/settings"
             aria-label="Recommendation settings"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-subtle"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-background"
           >
             <Settings2 size={20} aria-hidden />
           </Link>
@@ -185,7 +185,7 @@ function Recs() {
                 if (feedbackFor) setHidden((p) => [...p, feedbackFor]);
                 setFeedbackFor(null);
               }}
-              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-1 font-semibold"
+              className="w-full rounded-lg bg-subtle px-4 py-3 text-left text-1 font-semibold"
             >
               {f}
             </button>

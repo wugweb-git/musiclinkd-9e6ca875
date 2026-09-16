@@ -25,9 +25,9 @@ export function MediaTile({ file, projectId }: { file: CollabFile; projectId: st
     <Link
       to="/collab/$id/files/$fileId"
       params={{ id: projectId, fileId: file.id }}
-      className="block overflow-hidden rounded-lg border border-border bg-card"
+      className="block overflow-hidden rounded-lg bg-subtle"
     >
-      <div className="relative h-24 w-full bg-subtle">
+      <div className="relative h-24 w-full bg-background">
         {file.cover ? (
           <img src={file.cover} alt="" className="h-full w-full object-cover" />
         ) : (

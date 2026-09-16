@@ -58,7 +58,7 @@ function NewBusiness() {
           {steps.map((s, i) => (
             <span
               key={s}
-              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-subtle"}`}
+              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-background"}`}
             />
           ))}
         </div>
@@ -75,7 +75,7 @@ function NewBusiness() {
                   type="button"
                   onClick={() => setType(t.key)}
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left ${
-                    type === t.key ? "border-primary bg-subtle" : "border-border bg-background"
+                    type === t.key ? "border-primary bg-background" : "border-border bg-background"
                   }`}
                 >
                   <span aria-hidden className="text-3">
@@ -179,7 +179,7 @@ function NewBusiness() {
                 key={k}
                 className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
               >
-                <span className="pill bg-subtle text-muted-foreground">{k}</span>
+                <span className="pill bg-background text-muted-foreground">{k}</span>
                 <span className="max-w-[60%] text-right text-1 font-semibold">{v}</span>
               </div>
             ))}
@@ -239,7 +239,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="pill bg-subtle text-muted-foreground">{label}</span>
+      <span className="pill bg-background text-muted-foreground">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}

@@ -248,7 +248,7 @@ export function WorkForm({
       ) : null}
 
       {/* Everything else: one list of rows. */}
-      <div className="mt-6 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+      <div className="mt-6 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
         <Row
           label="Your role"
           value={roles.length ? roles.join(", ") : null}

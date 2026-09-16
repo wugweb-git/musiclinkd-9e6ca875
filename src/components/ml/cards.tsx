@@ -21,7 +21,7 @@ export function TalentRow({
   onSave?: ((t: Talent) => void) | undefined;
 }) {
   return (
-    <article className="rounded-lg border border-border bg-card p-4">
+    <article className="rounded-lg bg-subtle p-4">
       <button
         type="button"
         onClick={() => onPreview?.(t)}
@@ -51,7 +51,7 @@ export function TalentRow({
         {t.genres.slice(0, 3).map((g) => (
           <span
             key={g}
-            className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground"
+            className="rounded-full bg-background px-2.5 py-1 text-1 font-semibold text-muted-foreground"
           >
             {g}
           </span>
@@ -96,7 +96,7 @@ export function TalentCard({ t }: { t: Talent }) {
     <Link
       to="/profile/$username"
       params={{ username: t.id }}
-      className="state-layer block w-[172px] shrink-0 overflow-hidden rounded-lg border border-border bg-card transition-transform duration-125 ease-standard active:scale-97"
+      className="state-layer block w-[172px] shrink-0 overflow-hidden rounded-lg bg-subtle transition-transform duration-125 ease-standard active:scale-97"
     >
       <div className="relative h-[150px]">
         <img
@@ -131,7 +131,7 @@ export function TalentGridCard({ t }: { t: Talent }) {
     <Link
       to="/profile/$username"
       params={{ username: t.id }}
-      className="overflow-hidden rounded-lg border border-border bg-card"
+      className="overflow-hidden rounded-lg bg-subtle"
     >
       <img
         src={t.photo}

@@ -94,7 +94,7 @@ function PortfolioSelect() {
         </div>
 
         {selected.length ? (
-          <section className="mt-6 rounded-lg border border-border bg-card p-4">
+          <section className="mt-6 rounded-lg bg-subtle p-4">
             <h2 className="text-sm">Preview</h2>
             <p className="mt-1 text-1 text-muted-foreground">
               {selected.map((s) => s.title).join(" · ")}

@@ -111,7 +111,7 @@ function OpportunitiesHome() {
                 key={c.key}
                 to="/opportunities/search"
                 search={{ q: c.label }}
-                className="w-[116px] shrink-0 rounded-[20px] border border-border bg-card p-3"
+                className="w-[116px] shrink-0 rounded-[20px] bg-subtle p-3"
               >
                 <span className="text-2">{c.emoji}</span>
                 <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>

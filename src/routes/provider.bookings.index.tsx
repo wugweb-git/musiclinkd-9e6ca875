@@ -56,7 +56,7 @@ function ProviderBookings() {
         title="Provider workspace"
         subtitle="Octave Sound Labs"
         right={
-          <TextLink to="/provider/availability" className="pill bg-subtle text-muted-foreground">
+          <TextLink to="/provider/availability" className="pill bg-background text-muted-foreground">
             Availability
           </TextLink>
         }
@@ -164,7 +164,7 @@ function List({ items, emptyTitle }: { items: Booking[]; emptyTitle: string }) {
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <span className="text-foreground">{icon}</span>
       <p className="mt-2 text-2 font-semibold leading-none">{value}</p>
       <p className="mt-1 text-1 text-muted-foreground">{label}</p>

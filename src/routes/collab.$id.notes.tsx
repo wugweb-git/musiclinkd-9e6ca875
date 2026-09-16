@@ -64,7 +64,7 @@ function Notes() {
                 <p className="truncate text-sm font-semibold">{n.title}</p>
                 {n.pinned ? (
                   <span
-                    className="pill shrink-0 px-2.5 py-1 bg-subtle text-muted-foreground"
+                    className="pill shrink-0 px-2.5 py-1 bg-background text-muted-foreground"
                     style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
                   >
                     Pinned

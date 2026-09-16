@@ -82,7 +82,7 @@ function TeamScreen() {
                     loading="lazy"
                   />
                 ) : (
-                  <span aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-subtle" />
+                  <span aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-background" />
                 )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-1 font-semibold">{m.name}</span>
@@ -112,7 +112,7 @@ function TeamScreen() {
       <Sheet open={invite} onClose={() => setInvite(false)} title="Invite to team">
         <div className="space-y-3">
           <label className="block">
-            <span className="pill bg-subtle text-muted-foreground">Email or @username</span>
+            <span className="pill bg-background text-muted-foreground">Email or @username</span>
             <input
               placeholder="@kabir"
               className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"

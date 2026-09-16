@@ -59,7 +59,7 @@ function Mine() {
                   >
                     Published
                   </span>
-                  <span className="rounded-full bg-subtle px-2 py-1">312 views · 41 saves</span>
+                  <span className="rounded-full bg-background px-2 py-1">312 views · 41 saves</span>
                 </div>
               </div>
             ))
@@ -78,13 +78,13 @@ function Mine() {
           ? offers.map((o) => (
               <article
                 key={o.id}
-                className="flex items-center justify-between rounded-lg border border-border bg-card p-4"
+                className="flex items-center justify-between rounded-lg bg-subtle p-4"
               >
                 <div className="min-w-0">
                   <p className="truncate text-1 font-semibold">{o.listing}</p>
                   <p className="text-1 text-muted-foreground">Offer {o.amount}</p>
                 </div>
-                <span className="rounded-full bg-subtle pill text-muted-foreground">
+                <span className="rounded-full bg-background pill text-muted-foreground">
                   {o.status}
                 </span>
               </article>

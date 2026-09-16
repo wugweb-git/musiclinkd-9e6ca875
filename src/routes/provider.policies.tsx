@@ -113,7 +113,7 @@ function Policies() {
               value={text[s.id] ?? ""}
               placeholder={s.placeholder}
               onChange={(e) => setText((t) => ({ ...t, [s.id]: e.target.value }))}
-              className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
+              className="mt-2 w-full resize-none rounded-lg bg-subtle p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
             />
           </section>
         ))}

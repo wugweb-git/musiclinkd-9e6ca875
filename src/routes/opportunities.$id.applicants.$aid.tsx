@@ -97,7 +97,7 @@ function ApplicantDetail() {
             {a.portfolio.map((p) => (
               <div
                 key={p.id}
-                className="overflow-hidden rounded-[20px] border border-border bg-card"
+                className="overflow-hidden rounded-[20px] bg-subtle"
               >
                 <img src={p.cover} alt="" className="h-24 w-full object-cover" />
                 <div className="p-3">

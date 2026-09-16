@@ -81,7 +81,7 @@ function BandsIndex() {
                   {b.cover ? (
                     <img src={b.cover} alt="" loading="lazy" className="h-28 w-full object-cover" />
                   ) : (
-                    <div aria-hidden className="h-28 w-full bg-subtle" />
+                    <div aria-hidden className="h-28 w-full bg-background" />
                   )}
                   <div className="p-4">
                     <div className="flex items-start gap-3">
@@ -95,7 +95,7 @@ function BandsIndex() {
                       ) : (
                         <div
                           aria-hidden
-                          className="-mt-10 h-14 w-14 shrink-0 rounded-sm border-2 border-card bg-subtle"
+                          className="-mt-10 h-14 w-14 shrink-0 rounded-sm border-2 border-card bg-background"
                         />
                       )}
                       <div className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ function BandsIndex() {
                         {b.lookingFor.map((l) => (
                           <span
                             key={l}
-                            className="shrink-0 rounded-full bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground"
+                            className="shrink-0 rounded-full bg-background px-3 py-1 text-1 font-semibold text-muted-foreground"
                           >
                             Looking for: {l}
                           </span>

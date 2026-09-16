@@ -108,7 +108,7 @@ function Discover() {
           <Link
             key={c.label}
             to={c.to}
-            className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card px-2 py-3"
+            className="flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg bg-subtle px-2 py-3"
           >
             <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-subtle">
               {categoryIcon(c.label)}
@@ -178,14 +178,14 @@ function Discover() {
           <div className="grid grid-cols-2 gap-3">
             <Link
               to="/recommendations"
-              className="min-w-0 rounded-lg border border-border bg-card p-4"
+              className="min-w-0 rounded-lg bg-subtle p-4"
             >
               <p className="truncate text-1 font-semibold">Why you see this</p>
               <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
                 Explainable picks across people, spaces, gear and work
               </p>
             </Link>
-            <Link to="/bands" className="min-w-0 rounded-lg border border-border bg-card p-4">
+            <Link to="/bands" className="min-w-0 rounded-lg bg-subtle p-4">
               <p className="truncate text-1 font-semibold">Bands near you</p>
               <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
                 Line-ups looking for members and shows
@@ -210,7 +210,7 @@ function Discover() {
               key={t.id}
               to="/profile/$username"
               params={{ username: t.id }}
-              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
             >
               <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-sm object-cover" />
               <div className="min-w-0 flex-1">
@@ -235,7 +235,7 @@ function Discover() {
             <Link
               key={s.name}
               to="/studio"
-              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
             >
               <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
               <div className="min-w-0 flex-1">
@@ -263,7 +263,7 @@ function Discover() {
               key={s.slug}
               to="/booking/$id"
               params={{ id: s.slug }}
-              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
             >
               {s.photo ? (
                 <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />

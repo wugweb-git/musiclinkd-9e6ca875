@@ -102,7 +102,7 @@ export function HireModal({
               <textarea
                 id="message"
                 rows={4}
-                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                className="w-full rounded-lg bg-subtle p-4 text-sm outline-none focus:border-primary"
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ function Field({ label, placeholder }: { label: string; placeholder: string }) {
       <label className="mb-1.5 block text-1 font-medium text-muted-foreground">{label}</label>
       <input
         placeholder={placeholder}
-        className="h-12 w-full rounded-sm border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+        className="h-12 w-full rounded-sm bg-subtle px-4 text-sm outline-none focus:border-primary"
       />
     </div>
   );

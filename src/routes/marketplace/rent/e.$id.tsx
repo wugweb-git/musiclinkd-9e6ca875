@@ -248,7 +248,7 @@ function RentalDetail() {
 
         {p || e.owner ? <h2 className="mt-6 text-2">Provider</h2> : null}
         {e.owner && !p ? (
-          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+          <div className="mt-2 rounded-lg bg-subtle p-4">
             <SellerSummary seller={e.owner} compact />
             <div className="mt-3 grid grid-cols-2 gap-2">
               {e.owner.username ? (
@@ -268,7 +268,7 @@ function RentalDetail() {
           </div>
         ) : null}
         {p ? (
-          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+          <div className="mt-2 rounded-lg bg-subtle p-4">
             <ProviderSummary p={p} />
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               {[
@@ -303,7 +303,7 @@ function RentalDetail() {
             <h2 className="mt-6 text-2">Reviews</h2>
             <div className="mt-2 space-y-3">
               {rentalReviews.slice(0, 2).map((r) => (
-                <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+                <article key={r.id} className="rounded-lg bg-subtle p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate text-1 font-semibold">{r.name}</p>
@@ -316,7 +316,7 @@ function RentalDetail() {
                     {r.tags.map((t) => (
                       <span
                         key={t}
-                        className="rounded-full bg-subtle px-2 py-1 text-1 font-semibold text-muted-foreground"
+                        className="rounded-full bg-background px-2 py-1 text-1 font-semibold text-muted-foreground"
                       >
                         {t}
                       </span>

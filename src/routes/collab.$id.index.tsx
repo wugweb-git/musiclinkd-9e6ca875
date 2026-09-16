@@ -126,21 +126,21 @@ function Overview() {
       </Link>
 
       <Label>Milestones</Label>
-      <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
+      <div className="mb-5 divide-y divide-border rounded-lg bg-subtle px-4">
         {project.milestones.slice(0, 3).map((m) => (
           <MilestoneRow key={m.id} m={m} projectId={project.id} />
         ))}
       </div>
 
       <Label>Recent files</Label>
-      <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
+      <div className="mb-5 divide-y divide-border rounded-lg bg-subtle px-4">
         {project.files.slice(0, 3).map((f) => (
           <FileRow key={f.id} file={f} projectId={project.id} />
         ))}
       </div>
 
       <Label>Latest activity</Label>
-      <div className="mb-6 rounded-lg border border-border bg-card px-4 py-2">
+      <div className="mb-6 rounded-lg bg-subtle px-4 py-2">
         {project.activity.slice(0, 4).map((a) => (
           <ActivityItem key={a.id} a={a} />
         ))}

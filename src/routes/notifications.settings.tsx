@@ -69,7 +69,7 @@ function NotificationSettings() {
                   className={`min-h-9 rounded-full px-3.5 text-1 font-semibold ${
                     p[c.key]
                       ? "bg-primary text-primary-foreground"
-                      : "bg-subtle text-muted-foreground"
+                      : "bg-background text-muted-foreground"
                   }`}
                 >
                   {c.label}
@@ -90,7 +90,7 @@ function NotificationSettings() {
               aria-checked={quiet}
               aria-label="Quiet hours"
               onClick={() => setQuiet((q) => !q)}
-              className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${quiet ? "bg-primary" : "bg-subtle"}`}
+              className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${quiet ? "bg-primary" : "bg-background"}`}
             >
               <span
                 className={`block h-5 w-5 rounded-full bg-background transition-transform ${quiet ? "translate-x-5" : ""}`}

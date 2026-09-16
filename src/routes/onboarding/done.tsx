@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 /** A next-step card is a link: it takes the button's state layer and press scale. */
 const nextCard =
-  "state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-97";
+  "state-layer block rounded-lg bg-subtle p-4 transition-transform duration-125 ease-standard active:scale-97";
 
 export const Route = createFileRoute("/onboarding/done")({
   head: () => ({
@@ -58,7 +58,7 @@ function Done() {
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
-        <section className={cn("rounded-lg border border-border bg-card p-6 text-center", rise)}>
+        <section className={cn("rounded-lg bg-subtle p-6 text-center", rise)}>
           <Sparkles size={32} className="mx-auto animate-pop text-primary" style={beat(2)} />
           <h1 className="mt-3 text-3 leading-tight">
             {first ? `Welcome aboard, ${first}` : "Welcome aboard"}
@@ -74,7 +74,7 @@ function Done() {
             {summary.map((line, i) => (
               <li
                 key={line}
-                className={cn("rounded-lg border border-border bg-card px-4 py-3 text-sm", rise)}
+                className={cn("rounded-lg bg-subtle px-4 py-3 text-sm", rise)}
                 style={beat(2 + i)}
               >
                 {line}

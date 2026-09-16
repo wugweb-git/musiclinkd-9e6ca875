@@ -35,7 +35,7 @@ function SellerProfile() {
     <Screen>
       <TopBar title="Seller" back="/marketplace" />
       <div className="px-5 py-5">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg bg-subtle p-4">
           <SellerSummary seller={s} />
           <div className="mt-3 flex flex-wrap gap-2">
             <TrustPill label="Verified identity" />
@@ -62,7 +62,7 @@ function SellerProfile() {
         <h2 className="mt-6 text-2">Reviews</h2>
         <div className="mt-2 space-y-3">
           {reviews.map((r) => (
-            <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+            <article key={r.id} className="rounded-lg bg-subtle p-4">
               <div className="flex items-center justify-between">
                 <p className="text-1 font-semibold">{r.name}</p>
                 <Rating value={r.rating} />

@@ -89,7 +89,7 @@ function BookingDetail() {
           <PaymentPill status={bk.payment} />
         </div>
 
-        <div className="mt-4 rounded-lg border border-border bg-card p-4">
+        <div className="mt-4 rounded-lg bg-subtle p-4">
           <div className="flex gap-3">
             <img
               src={r.photo}
@@ -121,7 +121,7 @@ function BookingDetail() {
         </div>
 
         <h2 className="mt-6 text-2">Progress</h2>
-        <div className="mt-3 rounded-lg border border-border bg-card p-4">
+        <div className="mt-3 rounded-lg bg-subtle p-4">
           <BookingTimeline status={bk.status} />
         </div>
 

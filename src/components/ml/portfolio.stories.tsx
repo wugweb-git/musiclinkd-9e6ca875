@@ -104,7 +104,7 @@ export const MediaStates: Story = {
   render: () => (
     <div className="space-y-3">
       {(Object.keys(mediaStateCopy) as (keyof typeof mediaStateCopy)[]).map((state) => (
-        <div key={state} className="rounded-lg border border-border bg-card p-3">
+        <div key={state} className="rounded-lg bg-subtle p-3">
           <MediaStatePill state={state} />
           <p className="mt-2 text-1 text-muted-foreground">{mediaStateCopy[state].hint}</p>
         </div>
@@ -148,7 +148,7 @@ export const Credits: Story = {
   render: () => (
     // CreditRow's `role` is the credit (Vocals, Guitar), not an ARIA role.
     /* eslint-disable jsx-a11y/aria-role */
-    <div className="rounded-lg border border-border bg-card">
+    <div className="rounded-lg bg-subtle">
       <CreditRow name="Aditi Rao" role="Vocals" />
       <CreditRow name="Rohan Mehta" role="Guitar" />
       <CreditRow name="Someone with no role recorded" />

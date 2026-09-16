@@ -52,7 +52,7 @@ function Confirmed() {
             : `Your slot at ${b.name} is locked in. The provider has your session details.`}
         </p>
 
-        <div className="mt-5 rounded-lg border border-border bg-card p-4">
+        <div className="mt-5 rounded-lg bg-subtle p-4">
           <div className="flex items-center justify-between gap-3">
             <p className="truncate font-semibold">{b.name}</p>
             <BookingStatusPill status={requested ? "requested" : "confirmed"} />

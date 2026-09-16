@@ -174,7 +174,7 @@ function ListingDetail() {
           <h2 className="mt-6 text-2">{l.type === "product" ? "Seller" : "Provider"}</h2>
         ) : null}
         {l.owner && !seller ? (
-          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+          <div className="mt-2 rounded-lg bg-subtle p-4">
             <SellerSummary seller={l.owner} compact />
             {l.owner.username ? (
               <BtnLink
@@ -189,7 +189,7 @@ function ListingDetail() {
           </div>
         ) : null}
         {seller ? (
-          <div className="mt-2 rounded-lg border border-border bg-card p-4">
+          <div className="mt-2 rounded-lg bg-subtle p-4">
             <SellerSummary seller={seller} />
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               {[
@@ -219,7 +219,7 @@ function ListingDetail() {
             <h2 className="mt-6 text-2">Reviews</h2>
             <div className="mt-2 space-y-3">
               {reviews.slice(0, 2).map((r) => (
-                <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+                <article key={r.id} className="rounded-lg bg-subtle p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-1 font-semibold">{r.name}</p>
                     <Rating value={r.rating} />

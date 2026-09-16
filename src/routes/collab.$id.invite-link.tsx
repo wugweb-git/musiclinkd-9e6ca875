@@ -79,7 +79,7 @@ function InviteLink() {
           ))}
         </div>
 
-        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card">
+        <div className="mb-5 divide-y divide-border rounded-lg bg-subtle">
           <SwitchRow label="Link is active" value={active} onChange={setActive} />
           <SwitchRow label="Owner approves each join" value={approve} onChange={setApprove} />
         </div>

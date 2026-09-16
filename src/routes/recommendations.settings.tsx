@@ -46,7 +46,7 @@ function RecSettings() {
                 <span className="block truncate text-1 text-muted-foreground">{p.hint}</span>
               </span>
               <span
-                className={`flex h-6 w-11 shrink-0 items-center rounded-full px-0.5 ${p.on ? "bg-primary" : "bg-subtle"}`}
+                className={`flex h-6 w-11 shrink-0 items-center rounded-full px-0.5 ${p.on ? "bg-primary" : "bg-background"}`}
               >
                 <span
                   className={`h-5 w-5 rounded-full bg-background transition-transform ${p.on ? "translate-x-5" : ""}`}

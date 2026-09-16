@@ -85,7 +85,7 @@ function Timeline() {
         ) : (
           <>
             <Label>{project.milestones.length} milestones</Label>
-            <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
+            <div className="mb-5 divide-y divide-border rounded-lg bg-subtle px-4">
               {project.milestones.map((m) => (
                 <MilestoneRow key={m.id} m={m} projectId={project.id} />
               ))}
@@ -101,7 +101,7 @@ function Timeline() {
             />
           ) : null}
           <Label>{project.tasks.length} tasks</Label>
-          <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card px-4">
+          <div className="mb-5 divide-y divide-border rounded-lg bg-subtle px-4">
             {project.tasks.map((t) => {
               const checked = t.done || done.includes(t.id);
               return (

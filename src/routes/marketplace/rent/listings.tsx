@@ -84,7 +84,7 @@ function MyListings() {
                     >
                       {e.listingStatus}
                     </span>
-                    <span className="rounded-full bg-subtle px-2 py-1">
+                    <span className="rounded-full bg-background px-2 py-1">
                       {e.views} views · {e.saves} saves · {e.enquiries} enquiries
                     </span>
                   </div>
@@ -104,7 +104,7 @@ function MyListings() {
           ? rentalRequests.map((r) => {
               const e = equipmentById(r.equipmentId)!;
               return (
-                <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+                <article key={r.id} className="rounded-lg bg-subtle p-4">
                   <div className="flex items-start gap-3">
                     <img
                       src={e.photos[0]}
@@ -166,7 +166,7 @@ function MyListings() {
           ? rentalNotifications.map((n) => (
               <article
                 key={n.id}
-                className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
+                className="flex items-start gap-3 rounded-lg bg-subtle p-4"
               >
                 <span
                   className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"

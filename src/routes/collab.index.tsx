@@ -109,7 +109,7 @@ function CollabHome() {
                           : "ok",
                 )
               }
-              className="pill bg-subtle text-muted-foreground"
+              className="pill bg-background text-muted-foreground"
             >
               States
             </button>

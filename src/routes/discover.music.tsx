@@ -43,7 +43,7 @@ function DiscoverMusic() {
               <Link key={t.id} to="/portfolio/$id" params={{ id: t.id }} className="block">
                 <Card>
                   <div className="flex items-center gap-3">
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-subtle text-2">
+                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-background text-2">
                       {workType(t.kind).emoji}
                     </span>
                     <div className="min-w-0 flex-1">
@@ -70,7 +70,7 @@ function DiscoverMusic() {
             {trending.map((t) => (
               <span
                 key={t.name}
-                className="rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold"
+                className="rounded-full bg-background px-3 py-1.5 text-1 font-semibold"
               >
                 {t.name}
               </span>

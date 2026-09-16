@@ -97,7 +97,7 @@ function RentHome() {
               key={c.slug}
               to="/marketplace/rent/c/$slug"
               params={{ slug: c.slug }}
-              className="flex w-[108px] shrink-0 flex-col gap-2 rounded-lg border border-border bg-card p-3"
+              className="flex w-[108px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3"
             >
               <span
                 className="flex h-11 w-11 items-center justify-center rounded-sm text-2"
@@ -157,7 +157,7 @@ function RentHome() {
       </SectionRow>
 
       <div className="space-y-3 px-5 pb-4">
-        <div className="rounded-lg border border-border bg-card p-5">
+        <div className="rounded-lg bg-subtle p-5">
           <h2 className="text-2">Equipment sitting idle?</h2>
           <p className="mt-1 text-1 text-muted-foreground">
             Rent it out to 72,000+ verified music professionals. You set the dates, deposit and

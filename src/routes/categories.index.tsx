@@ -31,7 +31,7 @@ function Categories() {
   return (
     <Screen>
       <TopBar title="Browse categories" subtitle="Find people by what they do" back="/discover" />
-      <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card mx-5 my-5">
+      <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle mx-5 my-5">
         {categories.map((c) => {
           const option = roles.find((o) => o.slug === c.role);
           const Icon = option ? roleIcon(option) : roleIcon({ slug: c.role, metadata: null });

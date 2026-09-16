@@ -182,7 +182,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
         {r.criteria.map((c) => (
           <span
             key={c.key}
-            className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground"
+            className="rounded-full bg-background px-2.5 py-1 text-1 font-semibold text-muted-foreground"
           >
             {c.label} {c.value}
           </span>
@@ -190,7 +190,7 @@ function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
       </div>
       {r.response ? (
         <div className="rounded-lg bg-subtle p-3">
-          <p className="pill bg-subtle text-muted-foreground">Your response · {r.response.at}</p>
+          <p className="pill bg-background text-muted-foreground">Your response · {r.response.at}</p>
           <p className="mt-1 text-1 text-muted-foreground">{r.response.body}</p>
         </div>
       ) : null}

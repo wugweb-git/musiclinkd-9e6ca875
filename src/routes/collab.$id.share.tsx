@@ -75,7 +75,7 @@ function Share() {
         </div>
 
         <Label>What they see</Label>
-        <div className="mb-5 divide-y divide-border rounded-lg border border-border bg-card">
+        <div className="mb-5 divide-y divide-border rounded-lg bg-subtle">
           <SwitchRow label="Link is active" value={enabled} onChange={setEnabled} />
           <SwitchRow label="Show collaborators" value={showPeople} onChange={setShowPeople} />
           <SwitchRow label="Show files" value={showFiles} onChange={setShowFiles} />

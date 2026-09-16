@@ -55,7 +55,7 @@ function TermsPage() {
         </p>
         <div className="mt-6 space-y-4">
           {sections.map((s) => (
-            <section key={s.title} className="rounded-lg border border-border bg-card p-4">
+            <section key={s.title} className="rounded-lg bg-subtle p-4">
               <h2 className="text-sm font-semibold">{s.title}</h2>
               <p className="mt-1.5 text-1 leading-relaxed text-muted-foreground">{s.body}</p>
             </section>

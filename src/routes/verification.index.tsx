@@ -156,11 +156,11 @@ function VerificationHub() {
               return (
                 <div
                   key={sig.key}
-                  className={`flex flex-col rounded-lg border border-border bg-card p-4 ${
+                  className={`flex flex-col rounded-lg bg-subtle p-4 ${
                     tile.wide ? "col-span-2" : ""
                   }`}
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-subtle text-foreground">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-background text-foreground">
                     <tile.Icon size={20} strokeWidth={1.75} aria-hidden />
                   </span>
                   <p className="mt-3 text-sm font-semibold leading-snug">{sig.label}</p>

@@ -57,7 +57,7 @@ function Conflicts() {
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
           <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-subtle text-foreground">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-background text-foreground">
               <AlertTriangle size={20} />
             </span>
             <p className="text-1 text-muted-foreground">

@@ -89,7 +89,7 @@ function Availability() {
                 aria-checked={d.enabled}
                 aria-label={`${d.day} availability`}
                 onClick={() => toggleDay(d.day)}
-                className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${d.enabled ? "bg-primary" : "bg-subtle"}`}
+                className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${d.enabled ? "bg-primary" : "bg-background"}`}
               >
                 <span
                   className={`block h-5 w-5 rounded-full bg-background transition-transform ${d.enabled ? "translate-x-5" : ""}`}

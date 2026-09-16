@@ -59,7 +59,7 @@ function BusinessReviews() {
             return (
               <Card key={r.id}>
                 <div className="flex items-center gap-3">
-                  <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-subtle" />
+                  <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-background" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{r.author}</p>
                   </div>
