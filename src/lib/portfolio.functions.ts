@@ -111,6 +111,50 @@ export const getMyProfile = createServerFn({ method: "GET" })
     return data;
   });
 
+/**
+ * Fill a profile's name and photo from the identity provider when they are still empty.
+ *
+ * The signup trigger copies full_name and avatar_url from raw_user_meta_data, but only on the
+ * INSERT of a brand-new auth user: anyone who signed up by email and linked Google afterwards, or
+ * whose profile row already existed, keeps an empty name. This reads the provider's own metadata
+ * on the current session and writes only the fields that are still blank — never over anything the
+ * person typed themselves. Returns the fields it filled, so callers can tell whether to refresh.
+ */
+export const syncIdentityFromProvider = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ filled: string[] }> => {
+    const { data: auth } = await context.supabase.auth.getUser();
+    const meta = (auth.user?.user_metadata ?? {}) as Record<string, unknown>;
+    const str = (key: string) => {
+      const v = meta[key];
+      return typeof v === "string" && v.trim() ? v.trim() : null;
+    };
+
+    const { data: row } = await context.supabase
+      .from("profiles")
+      .select("display_name,avatar_url")
+      .eq("id", context.userId)
+      .maybeSingle();
+
+    const name =
+      str("full_name") ??
+      str("name") ??
+      [str("given_name"), str("family_name")].filter(Boolean).join(" ") ??
+      null;
+    const photo = str("avatar_url") ?? str("picture");
+
+    const patch: Record<string, string> = {};
+    if (!row?.display_name?.trim() && name) patch["display_name"] = name.slice(0, 80);
+    if (!row?.avatar_url?.trim() && photo) patch["avatar_url"] = photo.slice(0, 500);
+    if (!Object.keys(patch).length) return { filled: [] };
+
+    const { error } = await context.supabase
+      .from("profiles")
+      .upsert({ id: context.userId, ...patch } as never, { onConflict: "id" });
+    if (error) throw new Error(error.message);
+    return { filled: Object.keys(patch) };
+  });
+
 const strList = (max: number, len = 40) => z.array(z.string().max(len)).max(max).optional();
 
 const profilePatchSchema = z.object({

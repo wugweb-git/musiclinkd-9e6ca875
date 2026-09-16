@@ -109,5 +109,22 @@ function MyProfile() {
     labels,
   );
   // Completion comes from the record itself; there are no insight figures for a real profile yet.
-  return <PersonProfileExperience p={view} owner completion={profileGaps(row)} />;
+  // A new photo lands in the local row at once, so the hero shows it without a reload.
+  const onImageChanged = (kind: "avatar" | "cover", url: string) =>
+    setRow(
+      (current) =>
+        ({
+          ...(current ?? {}),
+          [kind === "avatar" ? "avatar_url" : "cover_url"]: url,
+        }) as ProfileRow,
+    );
+
+  return (
+    <PersonProfileExperience
+      p={view}
+      owner
+      completion={profileGaps(row)}
+      onImageChanged={onImageChanged}
+    />
+  );
 }

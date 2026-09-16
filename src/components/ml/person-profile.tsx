@@ -95,9 +95,12 @@ export function PersonProfileExperience({
   owner = false,
   completion,
   insights,
+  onImageChanged,
 }: {
   p: PersonProfile;
   owner?: boolean;
+  /** Owner only: the screen updates its own copy of the profile after a photo upload. */
+  onImageChanged?: ((kind: "avatar" | "cover", url: string) => void) | undefined;
   /** Owner only: what the profile still needs. Hidden when nothing is missing. */
   completion?: Completion | undefined;
   /** Owner only: insight figures. Left out for a real profile, so no sample numbers show. */
@@ -119,6 +122,7 @@ export function PersonProfileExperience({
       <ProfileHero
         p={p}
         owner={owner}
+        onImageChanged={onImageChanged}
         back={owner ? undefined : "/discover"}
         onShare={share}
         onMore={owner ? undefined : () => setMoreOpen(true)}

@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { LogoMark } from "@/components/ml/logo";
 import { useAuth } from "@/hooks/use-auth";
-import { getMyProfile } from "@/lib/portfolio.functions";
+import { getMyProfile, syncIdentityFromProvider } from "@/lib/portfolio.functions";
 import { postAuthTarget } from "@/lib/post-auth";
 
 // App start. The session lives in the browser, so the server renders the splash and the client
@@ -27,6 +27,7 @@ function SessionCheck() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
   const loadProfile = useServerFn(getMyProfile);
+  const syncIdentity = useServerFn(syncIdentityFromProvider);
   const mountedAt = useRef(Date.now());
 
   useEffect(() => {
@@ -46,14 +47,18 @@ function SessionCheck() {
         active = false;
       };
     }
-    loadProfile()
+    // Google gives a name and photo; the signup trigger only captures them for a brand-new user,
+    // so every sign-in fills whichever of the two is still empty before the profile is read.
+    syncIdentity()
+      .catch(() => null)
+      .then(() => loadProfile())
       .then((profile) => go(postAuthTarget(profile)))
       // Offline or a failed read: Home still works from the local session.
       .catch(() => go("/home"));
     return () => {
       active = false;
     };
-  }, [loading, signedIn, navigate, loadProfile]);
+  }, [loading, signedIn, navigate, loadProfile, syncIdentity]);
 
   return (
     // Full-bleed brand ground with the mark in white: the one screen where pink carries everything.

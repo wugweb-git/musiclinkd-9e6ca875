@@ -7,6 +7,7 @@ import {
   ChevronDown,
   CircleCheck,
   CircleSlash,
+  Loader2,
   Pencil,
   BadgeCheck,
   MoreHorizontal,
@@ -41,6 +42,13 @@ import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
+import { useServerFn } from "@tanstack/react-start";
+import { saveMyProfile } from "@/lib/portfolio.functions";
+import {
+  PROFILE_IMAGE_ACCEPT,
+  uploadProfileImage,
+  type ProfileImageKind,
+} from "@/lib/profile-images";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -366,6 +374,65 @@ function isVerifiedTier(tier: PersonProfile["verification"]) {
   return tier === "Professional" || tier === "Industry Verified";
 }
 
+/**
+ * The owner's photo and cover buttons. Picking a file uploads it to the person's own storage folder
+ * and writes the URL to the profile, so the change is done here rather than on another screen.
+ */
+function ImagePickButton({
+  kind,
+  label,
+  className,
+  children,
+  onChanged,
+}: {
+  kind: ProfileImageKind;
+  label: string;
+  className?: string;
+  children: ReactNode;
+  onChanged: (url: string) => void;
+}) {
+  const save = useServerFn(saveMyProfile);
+  const [busy, setBusy] = useState(false);
+
+  const pick = async (file: File | undefined) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const url = await uploadProfileImage(kind, file);
+      await save({ data: kind === "avatar" ? { avatar_url: url } : { cover_url: url } });
+      onChanged(url);
+      toast.success(kind === "avatar" ? "Profile photo updated" : "Cover updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "That upload didn't work. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <label
+      className={cn(
+        "state-layer flex cursor-pointer items-center justify-center rounded-full",
+        busy ? "pointer-events-none opacity-60" : "",
+        className,
+      )}
+      aria-busy={busy}
+    >
+      <span className="sr-only">{label}</span>
+      <input
+        type="file"
+        accept={PROFILE_IMAGE_ACCEPT}
+        className="sr-only"
+        onChange={(e) => {
+          void pick(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+      {busy ? <Loader2 size={15} className="animate-spin" aria-hidden /> : children}
+    </label>
+  );
+}
+
 /** The roles someone picked, each with the icon its taxonomy entry carries. */
 function RoleLine({ p }: { p: PersonProfile }) {
   const { options } = useTaxonomy();
@@ -417,9 +484,12 @@ export function ProfileHero({
   onShare,
   onMore,
   back,
+  onImageChanged,
 }: {
   p: PersonProfile;
   owner?: boolean;
+  /** Owner only: called with the new URL after a photo or cover upload. */
+  onImageChanged?: ((kind: ProfileImageKind, url: string) => void) | undefined;
   /** Left out when there is no username to share. */
   onShare?: (() => void) | undefined;
   onMore?: (() => void) | undefined;
@@ -455,15 +525,15 @@ export function ProfileHero({
         ) : null}
         <div className="absolute right-5 top-5 flex gap-2">
           {/* The owner edits the cover from the cover itself, the way people expect. */}
-          {owner ? (
-            <IconBtnLink
-              to="/profile/edit"
-              label="Edit cover photo"
-              variant="plain"
-              className="bg-card/90"
+          {owner && onImageChanged ? (
+            <ImagePickButton
+              kind="cover"
+              label="Change cover photo"
+              className="h-11 w-11 bg-card/90 text-foreground"
+              onChanged={(url) => onImageChanged("cover", url)}
             >
               <Pencil size={16} aria-hidden />
-            </IconBtnLink>
+            </ImagePickButton>
           ) : null}
           {/* The owner shares from the actions row, so the hero has no second Share. */}
           {onShare && !owner ? (
@@ -492,15 +562,15 @@ export function ProfileHero({
               <User size={36} aria-label={p.name} />
             </span>
           )}
-          {owner ? (
-            <IconBtnLink
-              to="/profile/edit"
+          {owner && onImageChanged ? (
+            <ImagePickButton
+              kind="avatar"
               label="Change profile photo"
-              variant="outline"
-              className="absolute -bottom-1 -left-1 h-9 w-9 bg-card"
+              className="absolute -bottom-1 -left-1 h-9 w-9 border border-border bg-card text-foreground"
+              onChanged={(url) => onImageChanged("avatar", url)}
             >
               <Camera size={15} aria-hidden />
-            </IconBtnLink>
+            </ImagePickButton>
           ) : null}
           {isVerifiedTier(p.verification) ? (
             <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
