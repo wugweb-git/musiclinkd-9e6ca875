@@ -55,7 +55,7 @@ export function WorkTypeIcon({ kind, size = "md" }: { kind: string; size?: "md" 
   return (
     <span
       aria-hidden
-      className={`flex shrink-0 items-center justify-center bg-subtle text-foreground ${
+      className={`flex shrink-0 items-center justify-center bg-background text-foreground ${
         size === "lg" ? "h-16 w-16 rounded-lg" : "h-12 w-12 rounded-sm"
       }`}
     >
@@ -72,7 +72,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
     <Link
       to="/portfolio/$id"
       params={{ id: item.id }}
-      className="state-layer block rounded-lg border border-border bg-card p-4 transition-transform duration-125 ease-standard active:scale-97"
+      className="state-layer block rounded-lg bg-subtle p-4 transition-transform duration-125 ease-standard active:scale-97"
     >
       <div className="flex gap-3">
         <WorkTypeIcon kind={item.kind} size="lg" />
@@ -155,8 +155,8 @@ export function StateCard({
 
 export function AudioPreview({ src, title }: { src: string; title: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <p className="pill bg-subtle text-muted-foreground">Audio preview</p>
+    <div className="rounded-lg bg-subtle p-4">
+      <p className="pill bg-background text-muted-foreground">Audio preview</p>
       <p className="mt-1 truncate text-sm font-semibold">{title}</p>
       {/*
        * The waveform player (waves-cn, wavesurfer): a bare <audio> element told you nothing about
@@ -217,7 +217,7 @@ export function PortfolioHeader({
     </div>
   );
   return (
-    <section className="rounded-lg border border-border bg-card p-5">
+    <section className="rounded-lg bg-subtle p-5">
       <div className="grid grid-cols-4 gap-3">
         {stat(total, "Works")}
         {stat(published, "Published")}
@@ -246,7 +246,7 @@ export function MediaStatePill({ state }: { state: MediaState }) {
         ? "bg-warn-container text-warn-strong"
         : c.tone === "bad"
           ? "bg-danger-container text-destructive"
-          : "bg-subtle text-muted-foreground";
+          : "bg-background text-muted-foreground";
   return (
     <span className={`inline-flex items-center gap-1 rounded-full pill ${tone}`}>
       <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
@@ -291,7 +291,7 @@ export function MediaUploader({
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium text-muted-foreground">
           {type === "link" ? "Link" : `${type[0]!.toUpperCase()}${type.slice(1)}`}
@@ -302,7 +302,7 @@ export function MediaUploader({
 
       {state === "uploading" ? (
         <div
-          className="mt-3 h-2 overflow-hidden rounded-full bg-subtle"
+          className="mt-3 h-2 overflow-hidden rounded-full bg-background"
           role="progressbar"
           aria-valuenow={progress}
           aria-valuemin={0}
@@ -365,14 +365,14 @@ export function AudioPlayer({
 }) {
   if (!src) {
     return (
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="rounded-lg bg-subtle p-4">
         <MediaStatePill state="not-uploaded" />
         <p className="mt-2 text-1 text-muted-foreground">{mediaStateCopy["not-uploaded"].hint}</p>
       </div>
     );
   }
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-center gap-3">
         {artwork ? (
           <img
@@ -382,7 +382,7 @@ export function AudioPlayer({
           />
         ) : (
           <div
-            className="flex h-14 w-14 items-center justify-center rounded-sm bg-subtle text-muted-foreground"
+            className="flex h-14 w-14 items-center justify-center rounded-sm bg-background text-muted-foreground"
             aria-hidden
           >
             <Headphones size={24} />
@@ -407,9 +407,9 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
         href={src}
         target="_blank"
         rel="noreferrer"
-        className="block rounded-lg border border-border bg-card p-4"
+        className="block rounded-lg bg-subtle p-4"
       >
-        <p className="pill bg-subtle text-muted-foreground">Video</p>
+        <p className="pill bg-background text-muted-foreground">Video</p>
         <p className="mt-1 truncate text-sm font-semibold">{title}</p>
         <p className="mt-1 truncate text-1 text-foreground">{src}</p>
       </a>
@@ -430,7 +430,7 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
 
 export function CreditRow({ name, role }: { name: string; role?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
+    <div className="flex items-center justify-between gap-3 rounded-lg bg-subtle px-4 py-3">
       <span className="min-w-0 truncate text-sm font-semibold">{name}</span>
       {role ? <span className="shrink-0 text-1 text-muted-foreground">{role}</span> : null}
     </div>
@@ -483,7 +483,7 @@ export function ContributorPicker({
               key={c.id}
               type="button"
               onClick={() => add(c.name)}
-              className="state-layer flex w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-97"
+              className="state-layer flex w-full items-center justify-between rounded-lg bg-subtle px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-97"
             >
               <span className="text-sm font-semibold">{c.name}</span>
               <span className="text-1 text-muted-foreground">{c.role}</span>
@@ -550,7 +550,7 @@ export function ReorderList({
   return (
     <ol className="space-y-3">
       {items.map((item, i) => (
-        <li key={item.id} className="rounded-lg border border-border bg-card p-4">
+        <li key={item.id} className="rounded-lg bg-subtle p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{item.title}</p>
@@ -608,7 +608,7 @@ export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {rows.map(([label, n]) => (
-        <div key={label} className="rounded-lg border border-border bg-card p-4">
+        <div key={label} className="rounded-lg bg-subtle p-4">
           <p className="text-3 leading-none tabular-nums">{n.toLocaleString("en-IN")}</p>
           <p className="mt-1 text-1 text-muted-foreground">{label}</p>
         </div>

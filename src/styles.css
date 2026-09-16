@@ -437,13 +437,11 @@
   align-items: center;
   gap: 0.25rem;
   border-radius: 9999px;
-  padding: 0.125rem 0.5rem;
-  /* Eyebrow size: the --type-1 step. Caps read larger than their px size. */
+  padding: 0.25rem 0.625rem;
+  /* A label in sentence case at the --type-1 step. Tracked capitals were the template tell. */
   font-size: var(--type-1);
   line-height: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 600;
   white-space: nowrap;
 }
 

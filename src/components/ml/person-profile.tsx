@@ -122,27 +122,31 @@ export function PersonProfileExperience({
 
   return (
     <Screen>
-      <ProfileHero
-        p={p}
-        owner={owner}
-        onPickImage={onPickImage}
-        back={owner ? undefined : "/discover"}
-        onShare={share}
-        onMore={owner ? undefined : () => setMoreOpen(true)}
-      />
+      {/* Two greys: who this is (hero, actions, tabs) on the light band; what they have done on the
+          darker ground below, in light cards. */}
+      <div className="bg-subtle pb-4">
+        <ProfileHero
+          p={p}
+          owner={owner}
+          onPickImage={onPickImage}
+          back={owner ? undefined : "/discover"}
+          onShare={share}
+          onMore={owner ? undefined : () => setMoreOpen(true)}
+        />
 
-      <div className="px-5 pt-4">
-        {owner ? (
-          <OwnerActions
-            username={p.username}
-            onShare={share}
-            onInsights={() => setInsightsOpen((open) => !open)}
-          />
-        ) : (
-          <ViewerActions
-            onHire={isOpenForWork(p.availability) ? () => setHireOpen(true) : undefined}
-          />
-        )}
+        <div className="px-5 pt-4">
+          {owner ? (
+            <OwnerActions
+              username={p.username}
+              onShare={share}
+              onInsights={() => setInsightsOpen((open) => !open)}
+            />
+          ) : (
+            <ViewerActions
+              onHire={isOpenForWork(p.availability) ? () => setHireOpen(true) : undefined}
+            />
+          )}
+        </div>
       </div>
 
       {owner ? (
@@ -152,7 +156,7 @@ export function PersonProfileExperience({
       {owner ? null : (
         <nav
           aria-label="Profile sections"
-          className="sticky top-0 z-20 mt-5 border-b border-border bg-background/95 px-2 backdrop-blur"
+          className="sticky top-0 z-20 border-b border-border bg-subtle/95 px-2 backdrop-blur"
         >
           <div role="tablist" aria-label="Profile sections" className="flex items-stretch">
             {tabs.map(({ key, icon: Icon }) => {
@@ -261,7 +265,8 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
       >
         Message
       </BtnLink>
-      {onHire ? (
+      {/* Hire stays an icon until you are connected; then it earns its word. */}
+      {onHire && connected ? (
         <Btn
           variant="outline"
           className="min-w-0 flex-1 px-3"
@@ -270,6 +275,10 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         >
           Hire
         </Btn>
+      ) : onHire ? (
+        <IconBtn label="Hire" variant="outline" className="h-12 w-12" onClick={onHire}>
+          <BriefcaseBusiness size={20} aria-hidden />
+        </IconBtn>
       ) : null}
       <IconBtn
         label={following ? "Following" : "Follow"}
@@ -343,10 +352,10 @@ function OwnerPanel({
       </div>
 
       {insightsOpen ? (
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg bg-subtle p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="pill bg-subtle text-muted-foreground">Profile insights</p>
+              <p className="pill bg-background text-muted-foreground">Profile insights</p>
               {insights ? <h2 className="mt-1 text-2">{insights.range}</h2> : null}
             </div>
             <BarChart3 size={20} className="text-primary" aria-hidden />
@@ -389,7 +398,7 @@ function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode;
   return (
     <Link
       to={to}
-      className="state-layer flex min-w-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-3 text-1 font-semibold transition-transform duration-125 ease-standard active:scale-97"
+      className="state-layer flex min-w-0 items-center gap-2 rounded-lg bg-subtle px-3 py-3 text-1 font-semibold transition-transform duration-125 ease-standard active:scale-97"
     >
       <span className="shrink-0 text-muted-foreground">{icon}</span>
       <span className="truncate">{label}</span>
@@ -417,7 +426,7 @@ function Overview({
     <>
       <ProfileSection title="Professional summary">
         {p.shortBio ? (
-          <div className="rounded-lg border border-border bg-card p-4">
+          <div className="rounded-lg bg-subtle p-4">
             <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
             <button
               type="button"
@@ -634,7 +643,7 @@ function OwnerStack({
 
       <StackSection title="Professional details" editTo={edit} collapsible defaultOpen={false}>
         {p.professional.length ? (
-          <div className="divide-y divide-border rounded-lg border border-border bg-card">
+          <div className="divide-y divide-border rounded-lg bg-subtle">
             {p.professional.map((item) => (
               <InfoRow key={item.label} label={item.label} value={item.value} />
             ))}
@@ -827,10 +836,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
         {p.discography.length ? (
           <div className="grid grid-cols-2 gap-3">
             {p.discography.map((release) => (
-              <article
-                key={release.id}
-                className="overflow-hidden rounded-lg border border-border bg-card"
-              >
+              <article key={release.id} className="overflow-hidden rounded-lg bg-subtle">
                 {release.cover ? (
                   <img
                     src={release.cover}
@@ -863,7 +869,7 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
       </ProfileSection>
       <ProfileSection title="Experience & credits">
         {p.experience.length ? (
-          <div className="divide-y divide-border rounded-lg border border-border bg-card">
+          <div className="divide-y divide-border rounded-lg bg-subtle">
             {p.experience.map((item) => (
               <ExperienceCard key={item.id} e={item} />
             ))}
@@ -902,7 +908,7 @@ function About({ p }: { p: PersonProfile }) {
     <>
       <ProfileSection title="About">
         {p.longBio ? (
-          <div className="rounded-lg border border-border bg-card p-4">
+          <div className="rounded-lg bg-subtle p-4">
             <p className="text-sm leading-relaxed text-muted-foreground">{p.longBio}</p>
           </div>
         ) : (
@@ -911,7 +917,7 @@ function About({ p }: { p: PersonProfile }) {
       </ProfileSection>
       <ProfileSection title="Professional details">
         {p.professional.length ? (
-          <div className="divide-y divide-border rounded-lg border border-border bg-card">
+          <div className="divide-y divide-border rounded-lg bg-subtle">
             {p.professional.map((item) => (
               <InfoRow key={item.label} label={item.label} value={item.value} />
             ))}
@@ -995,7 +1001,7 @@ function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
         )}
       </ProfileSection>
       {/* Reviews follow completed work, so the path to writing one runs through Reviews. */}
-      <div className="mt-5 rounded-lg border border-border bg-card p-4">
+      <div className="mt-5 rounded-lg bg-subtle p-4">
         <p className="text-1 text-muted-foreground">
           {owner
             ? "Ask the people you have worked with to review you. Requests go out from Reviews."
@@ -1011,12 +1017,14 @@ function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
 
 function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-lg border border-border bg-card p-3">
-      <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-subtle text-foreground">
+    <div className="flex min-w-0 items-center gap-3 rounded-lg bg-subtle p-3">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
         {icon}
       </span>
-      <p className="pill mt-3 bg-subtle text-muted-foreground">{label}</p>
-      <p className="mt-1 truncate text-1 font-semibold">{value}</p>
+      <span className="min-w-0">
+        <span className="block text-1 text-muted-foreground">{label}</span>
+        <span className="block truncate text-sm font-semibold">{value}</span>
+      </span>
     </div>
   );
 }
@@ -1053,11 +1061,8 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
       ) : null}
       {p.studio ? (
         <ProfileSection title="Studio connection">
-          <Link
-            to={p.studio.to}
-            className="flex items-center gap-3 rounded-lg border border-border bg-card p-4"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-subtle text-foreground">
+          <Link to={p.studio.to} className="flex items-center gap-3 rounded-lg bg-subtle p-4">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
               <Mic2 size={20} aria-hidden />
             </span>
             <span className="min-w-0 flex-1">
@@ -1070,7 +1075,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
               <Price
                 price={p.studio.price}
                 className="mt-1"
-                amountClassName="text-1 font-semibold"
+                amountClassName="text-sm font-semibold"
               />
             </span>
             <ChevronRight size={16} className="shrink-0 text-muted-foreground" aria-hidden />

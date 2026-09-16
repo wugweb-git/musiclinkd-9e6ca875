@@ -21,6 +21,13 @@ import {
   ChevronRight,
   MapPin,
   type LucideIcon,
+  AudioLines,
+  CalendarClock,
+  Globe,
+  Hourglass,
+  Instagram,
+  Laptop,
+  Youtube,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -267,6 +274,20 @@ export function VerificationBadge({ tier, compact }: { tier: string; compact?: b
   );
 }
 
+/** The verified mark that follows a name: brand pink, icon only; the tier is its accessible name. */
+export function VerifiedMark({ tier, size = 20 }: { tier: string; size?: number }) {
+  return (
+    <BadgeCheck
+      size={size}
+      className="shrink-0 fill-pink-strong text-background"
+      role="img"
+      aria-label={tier}
+    >
+      <title>{tier}</title>
+    </BadgeCheck>
+  );
+}
+
 /** Busy and Touring mean the person is not taking work; everything else is open. */
 export function isOpenForWork(status?: string | undefined) {
   return Boolean(status) && status !== "Busy" && status !== "Touring";
@@ -312,8 +333,8 @@ export function TagChip({
   tone?: "subtle" | "pink" | "purple";
 }) {
   const styles: Record<string, string> = {
-    subtle: "bg-subtle text-foreground",
-    pink: "bg-subtle text-foreground",
+    subtle: "bg-background text-foreground",
+    pink: "bg-background text-foreground",
     purple: "bg-status-category-bg text-status-category-text",
   };
   return (
@@ -329,9 +350,7 @@ export function TagChip({
  */
 export function ChipGroupList({ children }: { children: ReactNode }) {
   return (
-    <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
-      {children}
-    </div>
+    <div className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">{children}</div>
   );
 }
 
@@ -368,7 +387,7 @@ export function ChipGroup({
 export function InfoRow({ label, value }: { label: string; value: string | PriceParts }) {
   return (
     <div className="flex items-start justify-between gap-4 px-4 py-3.5">
-      <span className="pill bg-subtle text-muted-foreground">{label}</span>
+      <span className="pill bg-background text-muted-foreground">{label}</span>
       {typeof value === "string" ? (
         <span className="max-w-3/5 text-right text-1 font-semibold">{value}</span>
       ) : (
@@ -566,10 +585,10 @@ export function ProfileHero({
             <img
               src={p.photo}
               alt={p.name}
-              className="aspect-square w-full rounded-full border-4 border-background object-cover motion-reduce:!h-34"
+              className="aspect-square w-full rounded-full border-4 border-subtle object-cover motion-reduce:!h-34"
             />
           ) : (
-            <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-background bg-card text-muted-foreground">
+            <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-subtle bg-card text-muted-foreground">
               <User size={32} aria-label={p.name} />
             </span>
           )}
@@ -583,18 +602,18 @@ export function ProfileHero({
               <Camera size={16} aria-hidden />
             </ImagePickButton>
           ) : null}
-          {isVerifiedTier(p.verification) ? (
-            <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground">
-              <BadgeCheck size={12} aria-label="Verified" />
-            </span>
-          ) : null}
         </div>
 
         {p.name || isVerifiedTier(p.verification) || p.availability ? (
           <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
-            {p.name ? <h1 className="text-3 leading-tight">{p.name}</h1> : null}
-            {isVerifiedTier(p.verification) ? <VerificationBadge tier={p.verification} /> : null}
-            {/* Availability sits with the name, where people look first. */}
+            {/* LinkedIn's pattern: verification is a mark on the name, not a second label. The one
+                label beside the name is availability. */}
+            {p.name ? (
+              <h1 className="flex items-center gap-1.5 text-3 leading-tight">
+                {p.name}
+                {isVerifiedTier(p.verification) ? <VerifiedMark tier={p.verification} /> : null}
+              </h1>
+            ) : null}
             {p.availability ? <StatusBadge status={p.availability} /> : null}
           </div>
         ) : null}
@@ -615,7 +634,7 @@ export function ProfileHero({
             {p.yearsActive ? (
               <span className="flex items-center gap-1">
                 <CalendarDays size={12} className="shrink-0" aria-hidden />
-                {p.yearsActive} active
+                {p.yearsActive.replace(/\s*active$/i, "")} active
               </span>
             ) : null}
           </p>
@@ -643,12 +662,7 @@ export function StatRow({
     { label: "Credits", value: s.credits ? String(s.credits) : "—" },
   ];
   return (
-    <div
-      className={cn(
-        "grid grid-cols-4 gap-2 rounded-lg border border-border bg-card p-3",
-        className,
-      )}
-    >
+    <div className={cn("grid grid-cols-4 gap-2 rounded-lg bg-subtle p-3", className)}>
       {stats.map((s) => (
         <div key={s.label} className="text-center">
           <p className="text-2 font-bold leading-tight">{s.value}</p>
@@ -692,7 +706,7 @@ export function AudioTrackCard({
   onToggle: () => void;
 }) {
   return (
-    <article className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+    <article className="flex items-center gap-3 rounded-lg bg-subtle p-3">
       {track.artwork ? (
         <img
           src={track.artwork}
@@ -755,7 +769,7 @@ export function VideoCard({
   if (layout === "row") {
     return (
       <article className="flex gap-3">
-        <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-sm bg-subtle">
+        <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-sm bg-background">
           {v.thumb ? (
             <img src={v.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
           ) : (
@@ -777,7 +791,7 @@ export function VideoCard({
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-lg border border-border bg-card",
+        "overflow-hidden rounded-lg bg-subtle",
         layout === "grid" ? "w-full" : "w-[220px] shrink-0",
       )}
     >
@@ -824,7 +838,7 @@ export function GalleryGrid({ images }: { images: string[] }) {
 
 export function ProjectCard({ p }: { p: ProjectItem }) {
   return (
-    <article className="flex gap-3 rounded-lg border border-border bg-card p-3">
+    <article className="flex gap-3 rounded-lg bg-subtle p-3">
       {p.cover ? (
         <img
           src={p.cover}
@@ -852,32 +866,43 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
 }
 
 export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () => void }) {
+  // The terms read as one quiet line with icons, not a row of chips competing with the title.
+  const terms = [
+    s.mode ? { icon: Laptop, text: s.mode } : null,
+    s.turnaround ? { icon: Hourglass, text: s.turnaround } : null,
+    s.availability ? { icon: CalendarClock, text: s.availability } : null,
+  ].filter((t) => t !== null);
   return (
-    <article className="rounded-lg border border-border bg-card p-4">
+    <article className="rounded-lg bg-subtle p-4">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-2">{s.name}</h3>
+        <h3 className="min-w-0 text-2 font-semibold leading-snug">{s.name}</h3>
         {s.from ? (
           <Price
             price={s.from}
             align="end"
             className="shrink-0"
-            amountClassName="text-1 font-bold"
+            amountClassName="text-sm font-semibold"
           />
         ) : (
           <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
         )}
       </div>
       {s.description ? (
-        <p className="mt-1 text-1 leading-relaxed text-muted-foreground">{s.description}</p>
+        <p className="mt-1 line-clamp-2 text-1 leading-relaxed text-muted-foreground">
+          {s.description}
+        </p>
       ) : null}
-      {s.mode || s.turnaround || s.availability ? (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {s.mode ? <TagChip>{s.mode}</TagChip> : null}
-          {s.turnaround ? <TagChip>{s.turnaround}</TagChip> : null}
-          {s.availability ? <TagChip tone="pink">{s.availability}</TagChip> : null}
-        </div>
+      {terms.length ? (
+        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
+          {terms.map(({ icon: Icon, text }) => (
+            <li key={text} className="flex items-center gap-1.5">
+              <Icon size={12} className="shrink-0" aria-hidden />
+              {text}
+            </li>
+          ))}
+        </ul>
       ) : null}
-      <Btn variant="outline" className="mt-3 w-full min-h-11 text-1" onClick={onEnquire}>
+      <Btn variant="primary" className="mt-4 min-h-10 w-full text-sm" onClick={onEnquire}>
         Enquire
       </Btn>
     </article>
@@ -925,7 +950,7 @@ export function CollaboratorCard({ c }: { c: Collaborator }) {
 
 export function ReviewCard({ r }: { r: ReviewItem }) {
   return (
-    <article className="rounded-lg border border-border bg-card p-4">
+    <article className="rounded-lg bg-subtle p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="truncate text-2">{r.by}</h3>
@@ -937,12 +962,12 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
         </span>
       </div>
       {r.context ? (
-        <p className="pill mt-1.5 bg-subtle text-muted-foreground">{r.context}</p>
+        <p className="pill mt-1.5 bg-background text-muted-foreground">{r.context}</p>
       ) : null}
       <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.text}</p>
       {r.response ? (
         <div className="mt-3 rounded-lg bg-subtle p-3">
-          <p className="pill bg-subtle text-muted-foreground">Response</p>
+          <p className="pill bg-background text-muted-foreground">Response</p>
           <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
         </div>
       ) : null}
@@ -952,9 +977,7 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
 
 export function OpportunityCard({ o }: { o: OpportunityItem }) {
   return (
-    <article
-      className={`rounded-lg border border-border p-4 ${o.tone === "seeking" ? "bg-subtle" : "bg-card"}`}
-    >
+    <article className={`rounded-lg p-4 bg-subtle`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-2">{o.title}</h3>
@@ -973,11 +996,12 @@ export function OpportunityCard({ o }: { o: OpportunityItem }) {
 }
 
 export function MarketEntryCard({ m }: { m: MarketEntry }) {
+  // A tile, picture first: gear is chosen by how it looks, then what it is, then what it costs.
   return (
     <Link
       to={m.to}
       {...(m.params ? { params: m.params } : {})}
-      className="flex w-[210px] shrink-0 items-center gap-3 rounded-lg border border-border bg-card p-3"
+      className="block w-40 shrink-0 overflow-hidden rounded-lg bg-subtle"
     >
       {m.image ? (
         <img
@@ -985,36 +1009,50 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
           alt=""
           aria-hidden
           loading="lazy"
-          className="h-12 w-12 rounded-sm object-cover"
+          className="aspect-[4/3] w-full object-cover"
         />
       ) : (
-        <div aria-hidden className="h-12 w-12 shrink-0 rounded-sm bg-subtle" />
+        <div aria-hidden className="aspect-[4/3] w-full bg-background" />
       )}
-      <div className="min-w-0">
-        <h3 className="truncate text-1">{m.title}</h3>
-        {m.meta ? <p className="truncate text-1 text-muted-foreground">{m.meta}</p> : null}
-        <Price price={m.price} amountClassName="text-1 font-semibold" />
+      <div className="p-3">
+        <h3 className="truncate text-sm font-semibold">{m.title}</h3>
+        {m.meta ? <p className="mt-0.5 truncate text-1 text-muted-foreground">{m.meta}</p> : null}
+        <Price price={m.price} className="mt-1.5" amountClassName="text-sm font-semibold" />
       </div>
     </Link>
   );
 }
 
+const linkIcons: Record<string, typeof Globe> = {
+  youtube: Youtube,
+  instagram: Instagram,
+  spotify: AudioLines,
+  soundcloud: AudioLines,
+  "apple music": AudioLines,
+};
+
+/**
+ * Streaming and social links, everywhere they appear: one divided list, a platform icon, the
+ * platform, the handle. Links store a handle and no address yet, so the rows are not tappable.
+ */
 export function SocialLinks({ links }: { links: { label: string; handle: string }[] }) {
   return (
-    <div className="flex flex-wrap gap-2">
-      {links.map((l) => (
-        <button
-          key={l.label}
-          type="button"
-          disabled
-          title="Linking out is not wired up yet"
-          className="flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-2 text-1 font-semibold disabled:opacity-64"
-        >
-          {l.label}
-          <span className="text-muted-foreground">{l.handle}</span>
-        </button>
-      ))}
-    </div>
+    <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+      {links.map((l) => {
+        const Icon = linkIcons[l.label.toLowerCase()] ?? Globe;
+        return (
+          <li key={l.label} className="flex items-center gap-3 px-4 py-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
+              <Icon size={16} aria-hidden />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold">{l.label}</span>
+              <span className="block truncate text-1 text-muted-foreground">{l.handle}</span>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -1135,7 +1173,7 @@ export function MoreSheet({
   ];
   return (
     <Sheet open={open} onClose={onClose} title="More">
-      <div className="divide-y divide-border rounded-lg border border-border bg-card">
+      <div className="divide-y divide-border rounded-lg bg-subtle">
         {items.map((i) => {
           const danger = i.startsWith("Block") || i.startsWith("Report");
           return (
@@ -1172,7 +1210,7 @@ export function CompletionCard({
   missing: { id: string; label: string; to?: string }[];
 }) {
   return (
-    <div className="rounded-lg border border-border bg-subtle p-4">
+    <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-baseline justify-between">
         <h3 className="text-2">Your profile is {percent}% complete</h3>
         <span className="text-1 font-semibold text-foreground">{missing.length} left</span>
