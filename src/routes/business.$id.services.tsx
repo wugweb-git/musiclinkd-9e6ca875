@@ -105,9 +105,9 @@ function BusinessServices() {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{s.label}</p>
                   {s.category ? (
-                    <p className="truncate text-[12px] text-muted-foreground">{s.category}</p>
+                    <p className="truncate text-1 text-muted-foreground">{s.category}</p>
                   ) : null}
-                  <Price price={s.price} className="mt-1" amountClassName="text-[13px]" />
+                  <Price price={s.price} className="mt-1" amountClassName="text-1" />
                 </div>
                 <StatusPill label={statusPill[s.status].label} tone={statusPill[s.status].tone} />
               </div>
@@ -137,7 +137,7 @@ function BusinessServices() {
 
         <Card>
           <p className="text-sm font-semibold">Rooms as bookable spaces</p>
-          <p className="mt-1 text-[13px] text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             Each space carries its own rate and calendar. Customers pick the room before they pick a
             date.
           </p>
@@ -148,11 +148,11 @@ function BusinessServices() {
                 className="flex items-center justify-between rounded-[16px] border border-border px-3 py-2"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold">{sp.name}</p>
+                  <p className="truncate text-1 font-semibold">{sp.name}</p>
                   {sp.capacity ? (
-                    <p className="truncate text-[12px] text-muted-foreground">{sp.capacity}</p>
+                    <p className="truncate text-1 text-muted-foreground">{sp.capacity}</p>
                   ) : null}
-                  <Price price={sp.rate} amountClassName="text-[12px] font-semibold" />
+                  <Price price={sp.rate} amountClassName="text-1 font-semibold" />
                 </div>
                 <StatusPill label="Bookable" tone="brand" />
               </div>

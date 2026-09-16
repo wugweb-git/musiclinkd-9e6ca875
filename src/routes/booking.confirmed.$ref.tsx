@@ -42,7 +42,7 @@ function Confirmed() {
         ) : (
           <CheckCircle2 size={44} className="text-primary" />
         )}
-        <h1 className="mt-4 text-[28px] leading-tight">
+        <h1 className="mt-4 text-3 leading-tight">
           {requested ? "Booking request sent" : "Booking confirmed"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -56,7 +56,7 @@ function Confirmed() {
             <p className="truncate font-semibold">{b.name}</p>
             <BookingStatusPill status={requested ? "requested" : "confirmed"} />
           </div>
-          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
             <Detail label="Room" value={r.name} />
             <Detail label="Date" value={formatDate(date)} />
             <Detail label="Time" value={`${formatTime("16:00")} – ${formatTime("20:00")}`} />

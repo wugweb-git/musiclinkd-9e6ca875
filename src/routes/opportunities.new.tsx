@@ -86,8 +86,8 @@ function CreateOpportunity() {
             <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Check size={26} />
             </span>
-            <h2 className="text-[20px] leading-tight">Your opportunity is live</h2>
-            <p className="text-[13px] text-muted-foreground">
+            <h2 className="text-2.5 leading-tight">Your opportunity is live</h2>
+            <p className="text-1 text-muted-foreground">
               It's now in Discover and in recommendations for matching professionals. You'll be
               notified on every application.
             </p>
@@ -134,7 +134,7 @@ function CreateOpportunity() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Female playback singer for indie-pop single"
-                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-[14px] outline-none"
+                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Field label="Requirement type">
@@ -151,7 +151,7 @@ function CreateOpportunity() {
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
                 rows={4}
-                className="w-full rounded-[20px] border border-border bg-card p-4 text-[14px] outline-none"
+                className="w-full rounded-[20px] border border-border bg-card p-4 text-sm outline-none"
               />
             </Field>
           </>
@@ -164,7 +164,7 @@ function CreateOpportunity() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="Mumbai"
-                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-[14px] outline-none"
+                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Field label="Work mode">
@@ -186,12 +186,12 @@ function CreateOpportunity() {
                 value={dates}
                 onChange={(e) => setDates(e.target.value)}
                 placeholder="18–22 Sep 2026"
-                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-[14px] outline-none"
+                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Card className="space-y-1">
-              <p className="text-[13px] font-semibold">Already have a booking calendar?</p>
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-1 font-semibold">Already have a booking calendar?</p>
+              <p className="text-1 text-muted-foreground">
                 Confirmed hires can be converted into a booking in one tap — availability stays
                 owned by Booking.
               </p>
@@ -219,12 +219,12 @@ function CreateOpportunity() {
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="₹25,000–₹40,000 per song"
-                  className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-[14px] outline-none"
+                  className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
                 />
               </Field>
             ) : (
               <Card>
-                <p className="text-[13px] text-muted-foreground">
+                <p className="text-1 text-muted-foreground">
                   Unpaid and revenue-share posts are labelled clearly to applicants. Asking
                   applicants to pay you is not allowed.
                 </p>
@@ -241,7 +241,7 @@ function CreateOpportunity() {
                   value={req}
                   onChange={(e) => setReq(e.target.value)}
                   placeholder="Hindi + English diction"
-                  className="min-w-0 flex-1 rounded-[16px] border border-border bg-card px-4 py-3 text-[14px] outline-none"
+                  className="min-w-0 flex-1 rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
                 />
                 <Btn
                   onClick={() => {
@@ -257,17 +257,17 @@ function CreateOpportunity() {
             </Field>
             <div className="space-y-2">
               {reqs.length === 0 ? (
-                <p className="text-[13px] text-muted-foreground">No requirements yet.</p>
+                <p className="text-1 text-muted-foreground">No requirements yet.</p>
               ) : (
                 reqs.map((r, i) => (
                   <div
                     key={`${r}-${i}`}
                     className="flex items-center gap-2 rounded-[16px] border border-border bg-card px-4 py-3"
                   >
-                    <span className="min-w-0 flex-1 truncate text-[13px]">{r}</span>
+                    <span className="min-w-0 flex-1 truncate text-1">{r}</span>
                     <button
                       type="button"
-                      className="text-[12px] font-semibold text-foreground"
+                      className="text-1 font-semibold text-foreground"
                       onClick={() => setReqs((p) => p.filter((_, j) => j !== i))}
                     >
                       Remove
@@ -281,7 +281,7 @@ function CreateOpportunity() {
 
         {step === "preview" ? (
           <>
-            <h2 className="text-[19px] leading-tight">This is what applicants see</h2>
+            <h2 className="text-2.5 leading-tight">This is what applicants see</h2>
             <Card className="space-y-2">
               <div className="flex flex-wrap gap-2">
                 <StatusPill
@@ -294,22 +294,22 @@ function CreateOpportunity() {
                 />
                 <StatusPill label={mode} />
               </div>
-              <h3 className="text-[17px] leading-snug">{title || "Untitled opportunity"}</h3>
-              <p className="text-[13px] text-muted-foreground">{summary || "No summary yet."}</p>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12px] text-muted-foreground">
+              <h3 className="text-2 leading-snug">{title || "Untitled opportunity"}</h3>
+              <p className="text-1 text-muted-foreground">{summary || "No summary yet."}</p>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-1 text-muted-foreground">
                 <span>{city || "City not set"}</span>
                 <span>{dates || "Dates not set"}</span>
                 <span>{payType === "Paid" ? budget || "Budget not set" : payType}</span>
               </div>
               {reqs.length ? (
-                <ul className="list-disc space-y-1 pl-5 text-[13px]">
+                <ul className="list-disc space-y-1 pl-5 text-1">
                   {reqs.map((r) => (
                     <li key={r}>{r}</li>
                   ))}
                 </ul>
               ) : null}
             </Card>
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               Posting shares your profile, verification status and reviews with applicants.
             </p>
           </>
@@ -348,8 +348,8 @@ function Field({
   return (
     <div className="space-y-2">
       <div>
-        <p className="text-[14px] font-semibold">{label}</p>
-        {hint ? <p className="text-[12px] text-muted-foreground">{hint}</p> : null}
+        <p className="text-sm font-semibold">{label}</p>
+        {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
       </div>
       {children}
     </div>

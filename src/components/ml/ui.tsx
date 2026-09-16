@@ -511,7 +511,7 @@ export function Sheet({
       />
       <div className="relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-2xl border border-border bg-card px-5 pb-8 pt-3 no-scrollbar duration-300 ease-enter">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
-        {title ? <h2 className="mb-4 text-xl">{title}</h2> : null}
+        {title ? <h2 className="mb-4 text-2.5">{title}</h2> : null}
         {children}
       </div>
     </div>

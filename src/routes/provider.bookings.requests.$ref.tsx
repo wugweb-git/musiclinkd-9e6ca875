@@ -96,16 +96,16 @@ function RequestReview() {
             />
             <div className="min-w-0">
               <p className="truncate font-semibold">{bk.customer}</p>
-              <p className="truncate text-xs text-muted-foreground">{bk.customerRole}</p>
+              <p className="truncate text-1 text-muted-foreground">{bk.customerRole}</p>
             </div>
           </div>
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-[11px] font-semibold text-muted-foreground">
+          <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-0 font-semibold text-muted-foreground">
             <ShieldCheck size={12} /> Verified profile · 4 past sessions
           </p>
         </div>
 
         <div className="mt-3 rounded-lg border border-border bg-card p-4">
-          <dl className="grid grid-cols-2 gap-3 text-xs">
+          <dl className="grid grid-cols-2 gap-3 text-1">
             <Detail label="Date" value={formatDate(bk.date)} />
             <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
             <Detail label="Duration" value={`${bk.hours} hrs`} />
@@ -114,13 +114,13 @@ function RequestReview() {
             <Detail label="Add-ons" value={bk.addOnIds.length ? `${bk.addOnIds.length}` : "None"} />
           </dl>
           {bk.notes ? (
-            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+            <p className="mt-3 border-t border-border pt-3 text-1 text-muted-foreground">
               "{bk.notes}"
             </p>
           ) : null}
         </div>
 
-        <h2 className="mt-6 text-[17px]">What you'd earn</h2>
+        <h2 className="mt-6 text-2">What you'd earn</h2>
         <div className="mt-3">
           <PriceBreakdownCard p={price} compact />
         </div>
@@ -142,7 +142,7 @@ function RequestReview() {
                   key={x}
                   type="button"
                   onClick={() => setDecision("declined")}
-                  className="min-h-10 rounded-full border border-border px-3 text-xs font-semibold"
+                  className="min-h-10 rounded-full border border-border px-3 text-1 font-semibold"
                 >
                   {x}
                 </button>
@@ -151,7 +151,7 @@ function RequestReview() {
             <button
               type="button"
               onClick={() => setDecision("none")}
-              className="mt-3 min-h-10 text-xs font-bold text-muted-foreground"
+              className="mt-3 min-h-10 text-1 font-bold text-muted-foreground"
             >
               Keep request
             </button>

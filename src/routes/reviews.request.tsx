@@ -42,7 +42,7 @@ function RequestReviews() {
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
-          <p className="text-[13px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             You can ask once, and send one reminder a week later. After that the request quietly
             expires — no chasing.
           </p>
@@ -63,7 +63,7 @@ function RequestReviews() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.name}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">{t.context}</p>
+                      <p className="truncate text-1 text-muted-foreground">{t.context}</p>
                     </div>
                     {state ? (
                       <StatusPill

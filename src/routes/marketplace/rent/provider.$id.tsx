@@ -54,14 +54,14 @@ function ProviderProfile() {
           <img src={p.photo} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg object-cover" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <h1 className="truncate text-[20px] leading-tight">{p.name}</h1>
+              <h1 className="truncate text-2.5 leading-tight">{p.name}</h1>
               {p.verified ? <VerifiedBadge size={16} /> : null}
             </div>
-            <p className="mt-0.5 text-[12px] text-muted-foreground">{p.role}</p>
-            {p.business ? <p className="text-[11px] text-muted-foreground">{p.business}</p> : null}
+            <p className="mt-0.5 text-1 text-muted-foreground">{p.role}</p>
+            {p.business ? <p className="text-0 text-muted-foreground">{p.business}</p> : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               <Rating value={p.rating} count={p.reviews} />
-              <span className="text-[11px] text-muted-foreground">{p.location}</span>
+              <span className="text-0 text-muted-foreground">{p.location}</span>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@ function ProviderProfile() {
           {p.badges.map((b) => (
             <span
               key={b}
-              className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
+              className="rounded-full px-2.5 py-1 text-0 font-semibold"
               style={{ background: "var(--purple-container)", color: "var(--purple)" }}
             >
               {b}
@@ -86,8 +86,8 @@ function ProviderProfile() {
             { k: "Active", v: `${p.years} yrs` },
           ].map((x) => (
             <div key={x.k} className="rounded-lg bg-subtle px-1 py-2">
-              <p className="truncate text-[12px] font-bold">{x.v}</p>
-              <p className="text-[10px] text-muted-foreground">{x.k}</p>
+              <p className="truncate text-1 font-bold">{x.v}</p>
+              <p className="text-0 text-muted-foreground">{x.k}</p>
             </div>
           ))}
         </div>
@@ -128,16 +128,16 @@ function ProviderProfile() {
               <article key={r.id} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-semibold">{r.name}</p>
-                    <p className="truncate text-[11px] text-muted-foreground">
+                    <p className="truncate text-1 font-semibold">{r.name}</p>
+                    <p className="truncate text-0 text-muted-foreground">
                       {r.context} · {r.date}
                     </p>
                   </div>
                   <Rating value={r.rating} />
                 </div>
-                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{r.body}</p>
+                <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
                 {r.response ? (
-                  <p className="mt-2 rounded-lg bg-subtle p-3 text-[12px] text-muted-foreground">
+                  <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
                     <span className="font-semibold">{p.name}:</span> {r.response}
                   </p>
                 ) : null}
@@ -147,7 +147,7 @@ function ProviderProfile() {
 
         {tab === "About" ? (
           <>
-            <p className="rounded-lg border border-border bg-card p-4 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="rounded-lg border border-border bg-card p-4 text-1 leading-relaxed text-muted-foreground">
               {p.bio}
             </p>
             <dl className="divide-y divide-border rounded-lg border border-border">
@@ -158,14 +158,14 @@ function ProviderProfile() {
                 { k: "Response rate", v: p.responseRate },
               ].map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <dt className="text-xs text-muted-foreground">{r.k}</dt>
-                  <dd className="text-xs font-semibold">{r.v}</dd>
+                  <dt className="text-1 text-muted-foreground">{r.k}</dt>
+                  <dd className="text-1 font-semibold">{r.v}</dd>
                 </div>
               ))}
             </dl>
             <button
               onClick={() => setReport(true)}
-              className="text-[11px] font-semibold text-muted-foreground"
+              className="text-0 font-semibold text-muted-foreground"
             >
               Report or block this provider
             </button>

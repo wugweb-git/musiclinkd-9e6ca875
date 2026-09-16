@@ -55,24 +55,24 @@ function MilestoneDetail() {
       <main className="px-5 pt-5">
         <Card className="mb-5">
           <div className="mb-2 flex items-start justify-between gap-2">
-            <h1 className="text-[18px] font-semibold">{milestone.name}</h1>
+            <h1 className="text-2 font-semibold">{milestone.name}</h1>
             <Tag tone={done ? "ok" : meta.tone}>{done ? "Done" : meta.label}</Tag>
           </div>
-          <p className="text-[13px] text-muted-foreground">{milestone.description}</p>
+          <p className="text-1 text-muted-foreground">{milestone.description}</p>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div>
               <Label>Owner</Label>
-              <p className="text-[13px]">{milestone.owner}</p>
+              <p className="text-1">{milestone.owner}</p>
             </div>
             <div>
               <Label>Deadline</Label>
-              <p className="text-[13px]">{milestone.due}</p>
+              <p className="text-1">{milestone.due}</p>
             </div>
           </div>
           {milestone.notes ? (
             <>
               <Label>Notes</Label>
-              <p className="text-[13px] text-muted-foreground">{milestone.notes}</p>
+              <p className="text-1 text-muted-foreground">{milestone.notes}</p>
             </>
           ) : null}
         </Card>
@@ -90,14 +90,14 @@ function MilestoneDetail() {
           </BtnLink>
         </div>
 
-        <p className="mb-5 text-[11px] text-muted-foreground">
+        <p className="mb-5 text-0 text-muted-foreground">
           Only the project owner and the milestone owner can edit or complete this milestone.
         </p>
 
         <TextLink
           to="/collab/$id/timeline"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px]"
+          className="mb-8 block text-center text-1"
         >
           Back to Timeline
         </TextLink>

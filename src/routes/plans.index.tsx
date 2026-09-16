@@ -39,19 +39,19 @@ function Plans() {
         <Card className="space-y-2">
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-primary" aria-hidden />
-            <h2 className="text-[15px]">
+            <h2 className="text-sm">
               You are on {plans.find((p) => p.key === currentSubscription.planKey)?.name}
             </h2>
           </div>
-          <p className="text-[12px] text-muted-foreground">Renews {currentSubscription.renewsOn}</p>
+          <p className="text-1 text-muted-foreground">Renews {currentSubscription.renewsOn}</p>
           <Price
             price={{
               amount: currentSubscription.amount,
               unit: currentSubscription.billingCycle === "monthly" ? "month" : "year",
             }}
             tone="inherit"
-            amountClassName="text-[12px] font-semibold"
-            unitClassName="text-[11px]"
+            amountClassName="text-1 font-semibold"
+            unitClassName="text-0"
           />
           <BtnLink to="/plans/manage" variant="outline" className="w-full">
             Manage Subscription
@@ -73,8 +73,8 @@ function Plans() {
               <Card className={active ? "border-primary" : ""}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="truncate text-[19px] leading-tight">{p.name}</h3>
-                    <p className="mt-1 text-[12px] text-muted-foreground">{p.tagline}</p>
+                    <h3 className="truncate text-2.5 leading-tight">{p.name}</h3>
+                    <p className="mt-1 text-1 text-muted-foreground">{p.tagline}</p>
                   </div>
                   {p.best ? (
                     <StatusPill label="Most picked" tone="brand" />
@@ -90,15 +90,15 @@ function Plans() {
                   }
                   tone="inherit"
                   className="mt-3"
-                  amountClassName="text-[24px] font-bold leading-none"
-                  unitClassName="mt-1 text-[12px]"
+                  amountClassName="text-3 font-bold leading-none"
+                  unitClassName="mt-1 text-1"
                 />
                 {cycle === "Yearly" && p.key !== "free" ? (
-                  <p className="mt-1 text-[12px] font-semibold text-foreground">2 months free</p>
+                  <p className="mt-1 text-1 font-semibold text-foreground">2 months free</p>
                 ) : null}
                 <ul className="mt-3 space-y-2">
                   {p.features.map((f) => (
-                    <li key={f.label} className="flex items-start gap-2 text-[13px]">
+                    <li key={f.label} className="flex items-start gap-2 text-1">
                       {f.included ? (
                         <Check size={15} className="mt-0.5 shrink-0 text-success" aria-hidden />
                       ) : (

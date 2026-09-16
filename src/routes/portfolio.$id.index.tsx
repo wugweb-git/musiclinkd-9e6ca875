@@ -161,7 +161,7 @@ function WorkDetail() {
             ) : null}
 
             <section className="mt-6">
-              <h2 className="text-[17px]">Performance</h2>
+              <h2 className="text-2">Performance</h2>
               <div className="mt-3">
                 <WorkAnalytics figures={analyticsFor(item.id)} />
               </div>

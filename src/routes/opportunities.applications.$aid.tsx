@@ -57,26 +57,26 @@ function ApplicationDetail() {
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <StatusPill label={a.status} tone={applicationTone(a.status)} />
-            <span className="text-[12px] text-muted-foreground">Applied {a.submittedAt}</span>
+            <span className="text-1 text-muted-foreground">Applied {a.submittedAt}</span>
           </div>
           {a.status === "shortlisted" ? (
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               You're on the shortlist. Keep the conversation going — most shortlists convert within
               a week.
             </p>
           ) : a.status === "rejected" ? (
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               Not selected this time. Your profile stays visible to this poster for future posts.
             </p>
           ) : (
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               The poster has your application. You'll be notified on any change.
             </p>
           )}
         </Card>
 
         <Card className="space-y-3">
-          <h2 className="text-[15px]">Progress</h2>
+          <h2 className="text-sm">Progress</h2>
           {a.timeline.map((t) => (
             <div key={t.label} className="flex items-start gap-2">
               {t.done ? (
@@ -85,23 +85,23 @@ function ApplicationDetail() {
                 <Circle size={16} className="mt-0.5 shrink-0 text-border" />
               )}
               <div className="min-w-0">
-                <p className="text-[13px] font-semibold">{t.label}</p>
-                <p className="text-[12px] text-muted-foreground">{t.at}</p>
+                <p className="text-1 font-semibold">{t.label}</p>
+                <p className="text-1 text-muted-foreground">{t.at}</p>
               </div>
             </div>
           ))}
         </Card>
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">What you sent</h2>
-          <p className="text-[13px] text-muted-foreground">{a.message}</p>
+          <h2 className="text-sm">What you sent</h2>
+          <p className="text-1 text-muted-foreground">{a.message}</p>
           {a.rateQuoted ? (
             <div>
-              <p className="text-[12px] text-muted-foreground">Rate quoted</p>
+              <p className="text-1 text-muted-foreground">Rate quoted</p>
               <Price
                 price={a.rateQuoted}
-                amountClassName="text-[12px] font-semibold"
-                unitClassName="text-[11px]"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-0"
               />
             </div>
           ) : null}
@@ -109,10 +109,7 @@ function ApplicationDetail() {
             {a.portfolioIds.map((pid) => {
               const item = demoPortfolio.find((p) => p.id === pid);
               return (
-                <span
-                  key={pid}
-                  className="rounded-full bg-subtle px-3 py-1.5 text-[12px] font-semibold"
-                >
+                <span key={pid} className="rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold">
                   {workType(item?.kind ?? "track").emoji} {item?.title ?? "Attached work"}
                 </span>
               );

@@ -76,7 +76,7 @@ function OpportunitySearch() {
           <button
             type="button"
             onClick={() => setFilters(true)}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-1 font-semibold"
           >
             <SlidersHorizontal size={14} /> Filters{activeCount ? ` · ${activeCount}` : ""}
           </button>
@@ -111,7 +111,7 @@ function OpportunitySearch() {
           </EmptyState>
         ) : (
           <div className="space-y-3 pb-4">
-            <p className="text-[12px] text-muted-foreground">{list.length} opportunities</p>
+            <p className="text-1 text-muted-foreground">{list.length} opportunities</p>
             {list.map((o) => (
               <OpportunityCard
                 key={o.id}
@@ -127,7 +127,7 @@ function OpportunitySearch() {
       <Sheet open={filters} onClose={() => setFilters(false)} title="Filters">
         <div className="space-y-5">
           <div>
-            <p className="mb-2 text-[13px] font-semibold">Work mode</p>
+            <p className="mb-2 text-1 font-semibold">Work mode</p>
             <div className="flex flex-wrap gap-2">
               {modes.map((m) => (
                 <Chip key={m} active={mode === m} onClick={() => setMode(mode === m ? null : m)}>
@@ -137,7 +137,7 @@ function OpportunitySearch() {
             </div>
           </div>
           <div>
-            <p className="mb-2 text-[13px] font-semibold">Minimum pay</p>
+            <p className="mb-2 text-1 font-semibold">Minimum pay</p>
             <div className="flex flex-wrap gap-2">
               {payBands.map((p) => (
                 <Chip key={p} active={pay === p} onClick={() => setPay(p)}>
@@ -147,7 +147,7 @@ function OpportunitySearch() {
             </div>
           </div>
           <div>
-            <p className="mb-2 text-[13px] font-semibold">Requirement type</p>
+            <p className="mb-2 text-1 font-semibold">Requirement type</p>
             <div className="flex flex-wrap gap-2">
               {opportunityCategories.slice(0, 12).map((c) => (
                 <Chip

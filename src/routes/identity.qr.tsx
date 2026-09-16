@@ -135,7 +135,7 @@ function DigitalId() {
                   type="button"
                   onClick={() => setStyle(s)}
                   aria-pressed={style === s}
-                  className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold capitalize ${
+                  className={`shrink-0 rounded-full border px-4 py-2 text-1 font-semibold capitalize ${
                     style === s
                       ? "border-transparent bg-ink text-background"
                       : "border-border bg-card"
@@ -197,7 +197,7 @@ function DigitalId() {
               </div>
             </div>
 
-            <p className="mt-5 px-1 text-[12px] text-muted-foreground">
+            <p className="mt-5 px-1 text-1 text-muted-foreground">
               Your QR never carries personal data — it points to your public MusicLinkd profile, so
               edits show up instantly without reprinting anything.
             </p>

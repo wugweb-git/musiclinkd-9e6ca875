@@ -114,7 +114,7 @@ function NewProposal() {
         </Field>
 
         <Label>Before you send</Label>
-        <p className="mb-6 text-[11px] text-muted-foreground">
+        <p className="mb-6 text-0 text-muted-foreground">
           A proposal is a working agreement between collaborators, not a legal contract. Payments
           and contracts are handled outside MusicLinkd.
         </p>

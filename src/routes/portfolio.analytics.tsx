@@ -58,7 +58,7 @@ function PortfolioAnalytics() {
           <>
             <WorkAnalytics figures={totals} />
 
-            <h2 className="mt-7 text-[17px]">By work</h2>
+            <h2 className="mt-7 text-2">By work</h2>
             <div className="mt-3 space-y-3">
               {items.length === 0 ? (
                 <StateCard
@@ -77,7 +77,7 @@ function PortfolioAnalytics() {
                     className="block rounded-lg border border-border bg-card p-4"
                   >
                     <p className="truncate text-sm font-semibold">{item.title}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-1 text-muted-foreground">
                       {a.views.toLocaleString("en-IN")} views · {a.plays.toLocaleString("en-IN")}{" "}
                       plays · {a.saves} saves · {a.profileClicks} profile clicks
                     </p>
@@ -85,7 +85,7 @@ function PortfolioAnalytics() {
                 );
               })}
             </div>
-            <p className="mt-6 text-[11px] text-muted-foreground">
+            <p className="mt-6 text-0 text-muted-foreground">
               Figures are canonical MusicLinkd analytics. This screen only reads them.
             </p>
           </>

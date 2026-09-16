@@ -58,8 +58,8 @@ function Participants() {
       <Label>On the project · {active.length}</Label>
       {active.length === 0 ? (
         <Card className="mb-5 text-center">
-          <p className="text-[13px] font-semibold">No collaborators yet</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">No collaborators yet</p>
+          <p className="mt-1 text-1 text-muted-foreground">
             Add collaborators to get the project moving.
           </p>
           <BtnLink to="/collab/new/collaborators" className="mt-3 w-full">
@@ -113,23 +113,19 @@ function Participants() {
       ) : null}
 
       <Card className="mb-5">
-        <p className="text-[13px] font-semibold">Roles and permissions</p>
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className="text-1 font-semibold">Roles and permissions</p>
+        <p className="mt-1 text-0 text-muted-foreground">
           Owners manage everything. Collaborators upload and comment. Viewers can only read the
           project.
         </p>
         <button
           type="button"
           onClick={() => setRoleSheet(true)}
-          className="mt-2 text-[11px] font-semibold text-foreground"
+          className="mt-2 text-0 font-semibold text-foreground"
         >
           See the role taxonomy
         </button>
-        <TextLink
-          to="/collab/$id/roles"
-          params={{ id: project.id }}
-          className="mt-2 block text-[11px]"
-        >
+        <TextLink to="/collab/$id/roles" params={{ id: project.id }} className="mt-2 block text-0">
           Open Project Roles
         </TextLink>
       </Card>
@@ -137,7 +133,7 @@ function Participants() {
       <TextLink
         to="/collab/$id/invite-link"
         params={{ id: project.id }}
-        className="mb-5 block text-center text-[12px]"
+        className="mb-5 block text-center text-1"
       >
         Invite with a Link Instead
       </TextLink>
@@ -162,7 +158,7 @@ function Participants() {
             <Chip key={r}>{r}</Chip>
           ))}
         </div>
-        <p className="pb-2 text-[12px] text-muted-foreground">
+        <p className="pb-2 text-1 text-muted-foreground">
           Roles are shared across profiles, credits and discovery so your work is searchable
           everywhere.
         </p>

@@ -56,11 +56,11 @@ function ReplyToReview() {
             />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{r.authorName}</p>
-              <p className="text-[12px] text-muted-foreground">{r.createdAt}</p>
+              <p className="text-1 text-muted-foreground">{r.createdAt}</p>
             </div>
             <Stars value={r.rating} />
           </div>
-          <p className="mt-3 text-[13px]">{r.body}</p>
+          <p className="mt-3 text-1">{r.body}</p>
         </Card>
 
         <Card>
@@ -75,14 +75,14 @@ function ReplyToReview() {
             placeholder="Short, factual and calm reads better than a defence."
             className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
           />
-          <p className="mt-2 text-[12px] text-muted-foreground">
+          <p className="mt-2 text-1 text-muted-foreground">
             {body.length}/600 · one response per review
           </p>
         </Card>
 
         <Card>
           <p className="text-sm font-semibold">House rules</p>
-          <ul className="mt-2 space-y-1 text-[13px] text-muted-foreground">
+          <ul className="mt-2 space-y-1 text-1 text-muted-foreground">
             {reviewPolicy.map((p) => (
               <li key={p}>· {p}</li>
             ))}

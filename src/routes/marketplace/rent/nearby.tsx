@@ -44,12 +44,12 @@ function NearbyRentals() {
           <div className="flex h-36 items-center justify-center">
             <div className="text-center">
               <MapPin size={20} className="mx-auto text-primary" />
-              <p className="mt-1.5 text-[12px] font-semibold">{shown.length} rentals on the map</p>
-              <p className="text-[10px] text-muted-foreground">Tap to open map view</p>
+              <p className="mt-1.5 text-1 font-semibold">{shown.length} rentals on the map</p>
+              <p className="text-0 text-muted-foreground">Tap to open map view</p>
             </div>
           </div>
         </div>
-        <button className="mt-2 w-full text-center text-[11px] font-semibold text-foreground">
+        <button className="mt-2 w-full text-center text-0 font-semibold text-foreground">
           Use my current location
         </button>
       </div>
@@ -80,8 +80,8 @@ function NearbyRentals() {
       </div>
 
       <section className="px-5 pt-6">
-        <h2 className="text-[16px]">Providers around you</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+        <h2 className="text-2">Providers around you</h2>
+        <p className="mt-0.5 text-1 text-muted-foreground">
           Verified rental partners within {radius}
         </p>
         <div className="mt-3 space-y-3">
@@ -93,8 +93,8 @@ function NearbyRentals() {
 
       <div className="px-5 pb-4 pt-6">
         <div className="rounded-lg border border-border bg-card p-5">
-          <h2 className="text-[16px]">Have gear in your area?</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <h2 className="text-2">Have gear in your area?</h2>
+          <p className="mt-1 text-1 text-muted-foreground">
             Renters nearby are searching for backline and mics every week.
           </p>
           <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">

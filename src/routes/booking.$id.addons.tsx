@@ -54,7 +54,7 @@ function AddOns() {
           ))}
         </div>
 
-        <h2 className="mt-7 text-[17px]">Running total</h2>
+        <h2 className="mt-7 text-2">Running total</h2>
         <div className="mt-3">
           <PriceBreakdownCard p={price} />
         </div>

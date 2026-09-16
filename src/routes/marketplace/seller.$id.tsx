@@ -52,22 +52,22 @@ function SellerProfile() {
           </div>
         </div>
 
-        <h2 className="mt-6 text-[16px]">Listings ({items.length})</h2>
+        <h2 className="mt-6 text-2">Listings ({items.length})</h2>
         <div className="mt-2 space-y-3">
           {items.map((l) => (
             <ListingCard key={l.id} l={l} />
           ))}
         </div>
 
-        <h2 className="mt-6 text-[16px]">Reviews</h2>
+        <h2 className="mt-6 text-2">Reviews</h2>
         <div className="mt-2 space-y-3">
           {reviews.map((r) => (
             <article key={r.id} className="rounded-lg border border-border bg-card p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[13px] font-semibold">{r.name}</p>
+                <p className="text-1 font-semibold">{r.name}</p>
                 <Rating value={r.rating} />
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-0 text-muted-foreground">
                 {r.role} · {r.context} · {r.date}
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>

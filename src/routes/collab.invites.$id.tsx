@@ -59,14 +59,14 @@ function InviteDetail() {
       <TopBar title="Collaboration invitation" subtitle={`Sent ${inv.sentAt}`} back="/collab" />
       <main className="px-5 pt-5">
         <img src={inv.artwork} alt="" className="mb-4 h-40 w-full rounded-lg object-cover" />
-        <h2 className="text-[20px]">{inv.projectName}</h2>
+        <h2 className="text-2.5">{inv.projectName}</h2>
         <div className="mt-3 mb-4 flex flex-wrap gap-2">
           <Tag>{inv.type}</Tag>
           <Tag tone="info">Role: {inv.proposedRole}</Tag>
           {inv.budget ? <Tag tone="ok">{inv.budget}</Tag> : null}
         </div>
 
-        <p className="mb-5 text-[13px] leading-relaxed text-muted-foreground">{inv.description}</p>
+        <p className="mb-5 text-1 leading-relaxed text-muted-foreground">{inv.description}</p>
 
         <Label>Who invited you</Label>
         <Card className="mb-5">
@@ -74,12 +74,12 @@ function InviteDetail() {
             <img src={inv.inviterPhoto} alt="" className="h-11 w-11 rounded-full object-cover" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <p className="truncate text-[14px] font-semibold">{inv.inviter}</p>
+                <p className="truncate text-sm font-semibold">{inv.inviter}</p>
                 <VerifiedBadge size={14} />
               </div>
-              <p className="truncate text-[11px] text-muted-foreground">{inv.inviterRole}</p>
+              <p className="truncate text-0 text-muted-foreground">{inv.inviterRole}</p>
             </div>
-            <TextLink to="/messages" className="text-[11px]">
+            <TextLink to="/messages" className="text-0">
               Message
             </TextLink>
           </div>
@@ -87,14 +87,14 @@ function InviteDetail() {
 
         <Label>What's expected</Label>
         <Card className="mb-5">
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             <span className="font-semibold text-foreground">Timeline:</span> {inv.timeline}
           </p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             <span className="font-semibold text-foreground">Compensation:</span>{" "}
             {inv.budget ?? "To be agreed between collaborators"}
           </p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="mt-1 text-1 text-muted-foreground">
             <span className="font-semibold text-foreground">Credit:</span> {inv.proposedRole} credit
             on release
           </p>

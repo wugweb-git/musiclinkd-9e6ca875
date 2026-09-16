@@ -93,19 +93,19 @@ function Lifecycle() {
         <TopBar title="Done" back="/collab" />
         <main className="px-5 pt-8 text-center">
           <span
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-2xl"
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3"
             style={{ background: "var(--success-container)", color: "var(--success)" }}
           >
             ✓
           </span>
-          <h2 className="text-[20px]">{c.cta} — done</h2>
-          <p className="mx-auto mt-2 mb-6 max-w-[280px] text-[13px] text-muted-foreground">
+          <h2 className="text-2.5">{c.cta} — done</h2>
+          <p className="mx-auto mt-2 mb-6 max-w-[280px] text-1 text-muted-foreground">
             {project.name} has been updated and collaborators have been notified.
           </p>
           {action === "complete" ? (
             <Card className="mb-4 text-left">
-              <p className="text-[13px] font-semibold">What's next</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">
+              <p className="text-1 font-semibold">What's next</p>
+              <p className="mt-1 text-1 text-muted-foreground">
                 Add this work to your portfolio, publish the credits, or leave a review for your
                 collaborators.
               </p>
@@ -123,8 +123,8 @@ function Lifecycle() {
     <Screen bottomNav={false}>
       <TopBar title="Change status" subtitle={project.name} back="/collab" />
       <main className="px-5 pt-6">
-        <h2 className="text-[20px]">{c.title}</h2>
-        <p className="mt-2 mb-5 text-[13px] leading-relaxed text-muted-foreground">{c.body}</p>
+        <h2 className="text-2.5">{c.title}</h2>
+        <p className="mt-2 mb-5 text-1 leading-relaxed text-muted-foreground">{c.body}</p>
 
         <Field label={c.ask} optional>
           <TextInput
@@ -136,7 +136,7 @@ function Lifecycle() {
         </Field>
 
         <Card>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             You can change the project status again later — nothing is deleted.
           </p>
         </Card>

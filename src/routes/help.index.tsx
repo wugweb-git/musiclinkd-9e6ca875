@@ -62,7 +62,7 @@ function HelpIndex() {
         ) : (
           <>
             <section>
-              <h2 className="text-[15px]">Popular right now</h2>
+              <h2 className="text-sm">Popular right now</h2>
               <div className="mt-3 space-y-2">
                 {popularSlugs.map((slug) => {
                   const p = getPage(slug);
@@ -71,16 +71,14 @@ function HelpIndex() {
                     <Link key={slug} to="/help/$slug" params={{ slug }} className="block">
                       <Card className="space-y-1.5">
                         <div className="flex items-start justify-between gap-3">
-                          <h3 className="min-w-0 flex-1 text-[15px] leading-tight">{p.title}</h3>
+                          <h3 className="min-w-0 flex-1 text-sm leading-tight">{p.title}</h3>
                           <StatusPill
                             label={p.kind}
                             tone={p.kind === "policy" ? "warn" : "brand"}
                           />
                         </div>
-                        <p className="line-clamp-2 text-[12px] text-muted-foreground">
-                          {p.summary}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="line-clamp-2 text-1 text-muted-foreground">{p.summary}</p>
+                        <p className="text-0 text-muted-foreground">
                           {p.readTime} · {p.updated}
                         </p>
                       </Card>
@@ -93,7 +91,7 @@ function HelpIndex() {
             <section className="pb-4">
               <div className="flex items-center gap-2">
                 <BookOpen size={16} className="text-primary" aria-hidden />
-                <h2 className="text-[15px]">Browse by topic</h2>
+                <h2 className="text-sm">Browse by topic</h2>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {contentCategories.map((c) => (
@@ -103,8 +101,8 @@ function HelpIndex() {
                     params={{ key: c.key }}
                     className="rounded-[20px] border border-border bg-card p-4"
                   >
-                    <p className="truncate text-[13px] font-semibold">{c.label}</p>
-                    <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">{c.blurb}</p>
+                    <p className="truncate text-1 font-semibold">{c.label}</p>
+                    <p className="mt-1 line-clamp-2 text-0 text-muted-foreground">{c.blurb}</p>
                   </Link>
                 ))}
               </div>

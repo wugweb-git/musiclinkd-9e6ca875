@@ -43,12 +43,12 @@ function PortfolioSettings() {
               }`}
             >
               <span className="block text-sm font-semibold">{v.label}</span>
-              <span className="block text-xs text-muted-foreground">{v.blurb}</span>
+              <span className="block text-1 text-muted-foreground">{v.blurb}</span>
             </button>
           ))}
         </div>
 
-        <h2 className="mt-7 pill bg-subtle text-muted-foreground">Default ordering</h2>
+        <h2 className="pill mt-7 bg-subtle text-muted-foreground">Default ordering</h2>
         <div className="mt-2 space-y-2">
           {[
             { key: "custom", label: "My custom order", blurb: "Use the order you set in Reorder." },
@@ -69,16 +69,16 @@ function PortfolioSettings() {
               }`}
             >
               <span className="block text-sm font-semibold">{o.label}</span>
-              <span className="block text-xs text-muted-foreground">{o.blurb}</span>
+              <span className="block text-1 text-muted-foreground">{o.blurb}</span>
             </button>
           ))}
         </div>
 
-        <h2 className="mt-7 pill bg-subtle text-muted-foreground">Media</h2>
+        <h2 className="pill mt-7 bg-subtle text-muted-foreground">Media</h2>
         <div className="mt-2 flex items-center justify-between rounded-lg border border-border bg-card p-4">
           <div className="pr-4">
             <p className="text-sm font-semibold">Preview audio automatically</p>
-            <p className="text-xs text-muted-foreground">Off by default to save mobile data.</p>
+            <p className="text-1 text-muted-foreground">Off by default to save mobile data.</p>
           </div>
           <button
             type="button"

@@ -44,8 +44,8 @@ function SavedMarket() {
                 className="flex items-center justify-between rounded-lg border border-border bg-card p-4"
               >
                 <div>
-                  <p className="text-[13px] font-semibold">{s}</p>
-                  <p className="text-[11px] text-muted-foreground">Alerts on · 4 new this week</p>
+                  <p className="text-1 font-semibold">{s}</p>
+                  <p className="text-0 text-muted-foreground">Alerts on · 4 new this week</p>
                 </div>
                 <Chip>View</Chip>
               </article>
@@ -61,8 +61,8 @@ function SavedMarket() {
               >
                 <img src={s.photo} alt={s.name} className="h-12 w-12 rounded-md object-cover" />
                 <div className="min-w-0">
-                  <p className="truncate text-[13px] font-semibold">{s.name}</p>
-                  <p className="truncate text-[11px] text-muted-foreground">{s.role}</p>
+                  <p className="truncate text-1 font-semibold">{s.name}</p>
+                  <p className="truncate text-0 text-muted-foreground">{s.role}</p>
                 </div>
               </Link>
             ))

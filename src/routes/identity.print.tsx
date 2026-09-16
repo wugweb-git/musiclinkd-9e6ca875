@@ -45,7 +45,7 @@ function PrintPreview() {
               type="button"
               onClick={() => setSubject(s)}
               aria-pressed={subject === s}
-              className={`flex-1 rounded-full border px-4 py-2.5 text-xs font-semibold ${
+              className={`flex-1 rounded-full border px-4 py-2.5 text-1 font-semibold ${
                 subject === s
                   ? "border-transparent bg-ink text-background"
                   : "border-border bg-card"
@@ -69,9 +69,9 @@ function PrintPreview() {
             <QrCode value={canonicalUrl(who.code)} size={format === "poster" ? 180 : 110} />
             <div className={format === "poster" ? "" : "min-w-0"}>
               <p className="pill bg-subtle text-muted-foreground">MusicLinkd</p>
-              <p className="truncate text-[17px] leading-tight">{name}</p>
-              <p className="truncate text-[12px] text-muted-foreground">{line}</p>
-              <p className="mt-1 truncate text-[11px] text-muted-foreground">
+              <p className="truncate text-2 leading-tight">{name}</p>
+              <p className="truncate text-1 text-muted-foreground">{line}</p>
+              <p className="mt-1 truncate text-0 text-muted-foreground">
                 musiclinkd.app/q/{who.code}
               </p>
             </div>
@@ -91,11 +91,9 @@ function PrintPreview() {
             >
               <span className="min-w-0">
                 <span className="block text-sm font-semibold">{f.label}</span>
-                <span className="block truncate text-[12px] text-muted-foreground">{f.blurb}</span>
+                <span className="block truncate text-1 text-muted-foreground">{f.blurb}</span>
               </span>
-              <span className="shrink-0 text-[11px] font-semibold text-muted-foreground">
-                {f.size}
-              </span>
+              <span className="shrink-0 text-0 font-semibold text-muted-foreground">{f.size}</span>
             </button>
           ))}
         </div>

@@ -61,18 +61,18 @@ function Notes() {
           {sorted.map((n) => (
             <Card key={n.id} className="mb-3">
               <div className="mb-1 flex items-center justify-between gap-2">
-                <p className="truncate text-[14px] font-semibold">{n.title}</p>
+                <p className="truncate text-sm font-semibold">{n.title}</p>
                 {n.pinned ? (
                   <span
-                    className="shrink-0 pill"
+                    className="pill shrink-0 px-2.5 py-1 bg-subtle text-muted-foreground"
                     style={{ background: "var(--surface-subtle)", color: "var(--primary)" }}
                   >
                     Pinned
                   </span>
                 ) : null}
               </div>
-              <p className="text-[13px] leading-relaxed text-muted-foreground">{n.body}</p>
-              <p className="mt-2 text-[10px] text-muted-foreground">
+              <p className="text-1 leading-relaxed text-muted-foreground">{n.body}</p>
+              <p className="mt-2 text-0 text-muted-foreground">
                 {n.author} · updated {n.updated}
               </p>
             </Card>

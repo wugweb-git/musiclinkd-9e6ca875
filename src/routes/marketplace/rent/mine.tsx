@@ -34,7 +34,7 @@ function MyRentals() {
         subtitle="1 active · 1 upcoming"
         back="/marketplace/rent"
         right={
-          <TextLink to="/marketplace/rent/listings" className="shrink-0 text-xs">
+          <TextLink to="/marketplace/rent/listings" className="shrink-0 text-1">
             Listings
           </TextLink>
         }

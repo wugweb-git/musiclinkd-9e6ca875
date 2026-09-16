@@ -77,7 +77,7 @@ function BookingDetail() {
             style={{ background: "var(--surface-subtle)" }}
           >
             <p className="font-semibold">Today at {formatTime(bk.start)}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
+            <p className="mt-0.5 text-1 text-muted-foreground">
               Arrive 10 minutes early for load-in at {b.area}.
             </p>
           </div>
@@ -98,13 +98,13 @@ function BookingDetail() {
             />
             <div className="min-w-0">
               <p className="truncate font-semibold">{b.name}</p>
-              <p className="truncate text-xs text-muted-foreground">{r.name}</p>
-              <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <p className="truncate text-1 text-muted-foreground">{r.name}</p>
+              <p className="mt-1 inline-flex items-center gap-1 text-1 text-muted-foreground">
                 <MapPin size={12} /> {b.area}, {b.city}
               </p>
             </div>
           </div>
-          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+          <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
             <Detail label="Date" value={formatDate(bk.date)} />
             <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
             <Detail label="Duration" value={`${bk.hours} hrs`} />
@@ -113,23 +113,23 @@ function BookingDetail() {
             <Detail label="Amount" value={inr(bk.amount)} />
           </dl>
           {bk.notes ? (
-            <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+            <p className="mt-3 border-t border-border pt-3 text-1 text-muted-foreground">
               {bk.notes}
             </p>
           ) : null}
         </div>
 
-        <h2 className="mt-6 text-[17px]">Progress</h2>
+        <h2 className="mt-6 text-2">Progress</h2>
         <div className="mt-3 rounded-lg border border-border bg-card p-4">
           <BookingTimeline status={bk.status} />
         </div>
 
-        <h2 className="mt-6 text-[17px]">Price</h2>
+        <h2 className="mt-6 text-2">Price</h2>
         <div className="mt-3">
           <PriceBreakdownCard p={price} compact />
         </div>
 
-        <h2 className="mt-6 text-[17px]">Terms that apply</h2>
+        <h2 className="mt-6 text-2">Terms that apply</h2>
         <div className="mt-3 space-y-2">
           {b.policies.slice(0, 3).map((p) => (
             <PolicyCard
@@ -181,7 +181,7 @@ function BookingDetail() {
               <Btn variant="outline" className="w-full" onClick={() => undefined}>
                 Leave a Review
               </Btn>
-              <p className="text-center text-[11px] text-muted-foreground">
+              <p className="text-center text-0 text-muted-foreground">
                 Reviews are handled in your MusicLinkd reviews flow.
               </p>
             </>

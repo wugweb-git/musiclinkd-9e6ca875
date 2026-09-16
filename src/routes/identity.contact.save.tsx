@@ -76,7 +76,7 @@ function SaveContact() {
               </div>
             </section>
 
-            <p className="mt-3 px-1 text-[12px] text-muted-foreground">
+            <p className="mt-3 px-1 text-1 text-muted-foreground">
               Details the owner keeps private are not included.
             </p>
 

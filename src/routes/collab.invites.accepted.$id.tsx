@@ -54,19 +54,19 @@ function InvitationAccepted() {
 
         <Card className="mb-5">
           <Label>Your role</Label>
-          <p className="mb-3 text-[13px]">{inv.proposedRole}</p>
+          <p className="mb-3 text-1">{inv.proposedRole}</p>
           <Label>Timeline</Label>
-          <p className="mb-3 text-[13px]">{inv.timeline}</p>
+          <p className="mb-3 text-1">{inv.timeline}</p>
           <Label>Participants</Label>
           {project ? (
             <div className="flex items-center justify-between">
               <ParticipantStack people={project.participants} />
-              <span className="text-[11px] font-semibold text-foreground">
+              <span className="text-0 font-semibold text-foreground">
                 {project.participants.length} collaborators
               </span>
             </div>
           ) : (
-            <p className="text-[13px] text-muted-foreground">You and {inv.inviter}</p>
+            <p className="text-1 text-muted-foreground">You and {inv.inviter}</p>
           )}
         </Card>
 

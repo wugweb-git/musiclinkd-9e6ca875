@@ -89,17 +89,17 @@ function AddCollaborators() {
                   <img src={c.photo} alt={c.name} className="h-11 w-11 rounded-full object-cover" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
-                      <h3 className="truncate text-[14px]">{c.name}</h3>
+                      <h3 className="truncate text-sm">{c.name}</h3>
                       {c.verified ? <VerifiedBadge size={14} /> : null}
                     </div>
-                    <p className="truncate text-[11px] text-muted-foreground">
+                    <p className="truncate text-0 text-muted-foreground">
                       {c.username} · {c.role} · {c.location}
                     </p>
                     {role ? (
                       <button
                         type="button"
                         onClick={() => setRolePickerFor(c.id)}
-                        className="mt-1 text-[11px] font-semibold text-foreground"
+                        className="mt-1 text-0 font-semibold text-foreground"
                       >
                         Role: {role} · change
                       </button>
@@ -129,8 +129,8 @@ function AddCollaborators() {
         <div className="mt-6">
           <Label>Prefer a link?</Label>
           <Card>
-            <p className="text-[13px] font-semibold">Invite by link</p>
-            <p className="mb-3 text-[11px] text-muted-foreground">
+            <p className="text-1 font-semibold">Invite by link</p>
+            <p className="mb-3 text-0 text-muted-foreground">
               Anyone with the link can request to join. You approve every request, and you can
               disable the link at any time.
             </p>
@@ -162,7 +162,7 @@ function AddCollaborators() {
         onClose={() => setRolePickerFor(null)}
         title="Select role"
       >
-        <p className="mb-4 text-[12px] text-muted-foreground">
+        <p className="mb-4 text-1 text-muted-foreground">
           Roles come from the MusicLinkd role taxonomy so credits stay consistent across the
           platform.
         </p>

@@ -40,7 +40,7 @@ function ManagePlan() {
         <Card className="space-y-2">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-[19px] leading-tight">{plan.name}</h2>
+              <h2 className="text-2.5 leading-tight">{plan.name}</h2>
               <Price
                 price={{
                   amount: currentSubscription.amount,
@@ -48,25 +48,21 @@ function ManagePlan() {
                 }}
                 tone="inherit"
                 className="mt-1"
-                amountClassName="text-[12px] font-semibold"
-                unitClassName="text-[11px]"
+                amountClassName="text-1 font-semibold"
+                unitClassName="text-0"
               />
-              <p className="text-[12px] text-muted-foreground">
-                Renews {currentSubscription.renewsOn}
-              </p>
+              <p className="text-1 text-muted-foreground">Renews {currentSubscription.renewsOn}</p>
             </div>
             <StatusPill
               label={currentSubscription.status === "active" ? "Active" : "Past due"}
               tone={currentSubscription.status === "active" ? "good" : "bad"}
             />
           </div>
-          <p className="text-[12px] text-muted-foreground">
-            Paid with {currentSubscription.method}
-          </p>
+          <p className="text-1 text-muted-foreground">Paid with {currentSubscription.method}</p>
         </Card>
 
         <Card className="space-y-3">
-          <h2 className="text-[15px]">What you are using</h2>
+          <h2 className="text-sm">What you are using</h2>
           {entitlements.map((e) => (
             <Meter
               key={e.label}
@@ -79,12 +75,12 @@ function ManagePlan() {
         </Card>
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">Boosts</h2>
+          <h2 className="text-sm">Boosts</h2>
           {boosts.map((b) => (
             <div key={b.id} className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-semibold">{b.target}</p>
-                <p className="truncate text-[12px] text-muted-foreground">{b.detail}</p>
+                <p className="truncate text-1 font-semibold">{b.target}</p>
+                <p className="truncate text-1 text-muted-foreground">{b.detail}</p>
               </div>
               <StatusPill
                 label={b.state === "active" ? "Running" : "Available"}
@@ -95,19 +91,19 @@ function ManagePlan() {
         </Card>
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">Invoices</h2>
+          <h2 className="text-sm">Invoices</h2>
           {invoices.map((i) => (
             <div
               key={i.id}
               className="flex items-center gap-3 border-b border-border py-2.5 last:border-0"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-semibold">{i.plan}</p>
-                <p className="truncate text-[12px] text-muted-foreground">
+                <p className="truncate text-1 font-semibold">{i.plan}</p>
+                <p className="truncate text-1 text-muted-foreground">
                   {i.date} · {i.id}
                 </p>
               </div>
-              <span className="shrink-0 text-[13px] font-semibold">{i.amount}</span>
+              <span className="shrink-0 text-1 font-semibold">{i.amount}</span>
               <StatusPill
                 label={i.status === "paid" ? "Paid" : "Refunded"}
                 tone={i.status === "paid" ? "good" : "warn"}
@@ -141,7 +137,7 @@ function ManagePlan() {
                 setCancelOpen(false);
                 setCancelled(true);
               }}
-              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-[13px] font-semibold"
+              className="w-full rounded-lg border border-border bg-card px-4 py-3 text-left text-1 font-semibold"
             >
               {r}
             </button>

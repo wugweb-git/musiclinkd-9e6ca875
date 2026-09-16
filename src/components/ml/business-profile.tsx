@@ -64,25 +64,25 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
           )}
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex items-center gap-2">
-              <h1 className="truncate text-[18px] font-bold">{b.name}</h1>
+              <h1 className="truncate text-2 font-bold">{b.name}</h1>
               {b.verified ? <StatusPill label="verified" tone="good" /> : null}
             </div>
             {b.subtitle ? (
-              <p className="truncate text-[12px] text-muted-foreground">{b.subtitle}</p>
+              <p className="truncate text-1 text-muted-foreground">{b.subtitle}</p>
             ) : null}
           </div>
         </div>
 
-        {b.tagline ? <p className="text-[13px] leading-relaxed">{b.tagline}</p> : null}
+        {b.tagline ? <p className="text-1 leading-relaxed">{b.tagline}</p> : null}
 
         <div className="grid grid-cols-3 gap-2">
-          <BtnLink to="/messages" variant="ink" className="w-full px-2 text-xs">
+          <BtnLink to="/messages" variant="ink" className="w-full px-2 text-1">
             Message
           </BtnLink>
-          <BtnLink to="/business/$id/enquiry" params={{ id: b.id }} className="w-full px-2 text-xs">
+          <BtnLink to="/business/$id/enquiry" params={{ id: b.id }} className="w-full px-2 text-1">
             Book
           </BtnLink>
-          <Btn variant="outline" className="w-full px-2 text-xs">
+          <Btn variant="outline" className="w-full px-2 text-1">
             Follow
           </Btn>
         </div>
@@ -91,8 +91,8 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
           <div className="grid grid-cols-4 gap-2 rounded-lg border border-border bg-card p-3 text-center">
             {b.stats.map(([k, v]) => (
               <div key={k}>
-                <p className="text-[15px] font-bold leading-tight">{v}</p>
-                <p className="mt-0.5 text-[10px] text-muted-foreground">{k}</p>
+                <p className="text-sm font-bold leading-tight">{v}</p>
+                <p className="mt-0.5 text-0 text-muted-foreground">{k}</p>
               </div>
             ))}
           </div>
@@ -110,13 +110,13 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
           <>
             {b.about ? (
               <Card className="space-y-2">
-                <h2 className="text-[15px]">About</h2>
-                <p className="text-[13px] leading-relaxed text-muted-foreground">{b.about}</p>
+                <h2 className="text-sm">About</h2>
+                <p className="text-1 leading-relaxed text-muted-foreground">{b.about}</p>
               </Card>
             ) : null}
             {b.services.some((s) => s.status === "active") ? (
               <Card className="space-y-2">
-                <h2 className="text-[15px]">Services & rates</h2>
+                <h2 className="text-sm">Services & rates</h2>
                 {b.services
                   .filter((s) => s.status === "active")
                   .map((s) => (
@@ -124,12 +124,12 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                       key={s.id}
                       className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
                     >
-                      <span className="min-w-0 flex-1 truncate text-[13px]">{s.label}</span>
+                      <span className="min-w-0 flex-1 truncate text-1">{s.label}</span>
                       <Price
                         price={s.price}
                         align="end"
                         className="shrink-0"
-                        amountClassName="text-[13px] font-semibold"
+                        amountClassName="text-1 font-semibold"
                       />
                     </div>
                   ))}
@@ -137,12 +137,9 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
             ) : null}
             {b.hours.length ? (
               <Card className="space-y-2">
-                <h2 className="text-[15px]">Hours</h2>
+                <h2 className="text-sm">Hours</h2>
                 {b.hours.map((h) => (
-                  <div
-                    key={`${h.day}${h.hours}`}
-                    className="flex justify-between gap-3 text-[13px]"
-                  >
+                  <div key={`${h.day}${h.hours}`} className="flex justify-between gap-3 text-1">
                     <span className="text-muted-foreground">{h.day}</span>
                     <span className="font-semibold">{h.hours}</span>
                   </div>
@@ -151,8 +148,8 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
             ) : null}
             {b.address ? (
               <Card className="space-y-2">
-                <h2 className="text-[15px]">Find & contact</h2>
-                <p className="flex items-start gap-2 text-[13px]">
+                <h2 className="text-sm">Find & contact</h2>
+                <p className="flex items-start gap-2 text-1">
                   <MapPin size={15} className="mt-0.5 shrink-0" /> {b.address}
                 </p>
               </Card>
@@ -169,20 +166,18 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 ) : null}
                 <div className="space-y-2 p-4 pt-0">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-[14px] font-semibold">{sp.name}</p>
+                    <p className="text-sm font-semibold">{sp.name}</p>
                     <Price
                       price={sp.rate}
                       align="end"
                       className="shrink-0"
-                      amountClassName="text-[13px] font-bold"
+                      amountClassName="text-1 font-bold"
                     />
                   </div>
-                  {sp.detail ? (
-                    <p className="text-[12px] text-muted-foreground">{sp.detail}</p>
-                  ) : null}
+                  {sp.detail ? <p className="text-1 text-muted-foreground">{sp.detail}</p> : null}
                   <div className="flex flex-wrap gap-1.5">
                     {sp.gear.map((g) => (
-                      <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-[11px]">
+                      <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-0">
                         {g}
                       </span>
                     ))}
@@ -211,15 +206,13 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                   <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-subtle" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-semibold">{m.name}</p>
-                  {m.detail ? (
-                    <p className="text-[11px] text-muted-foreground">{m.detail}</p>
-                  ) : null}
+                  <p className="truncate text-1 font-semibold">{m.name}</p>
+                  {m.detail ? <p className="text-0 text-muted-foreground">{m.detail}</p> : null}
                 </div>
                 {m.invited ? <StatusPill label="invited" tone="warn" /> : null}
               </div>
             ))}
-            <TextLink to="/business/$id/team" params={{ id: b.id }} className="block text-[12px]">
+            <TextLink to="/business/$id/team" params={{ id: b.id }} className="block text-1">
               Manage Team →
             </TextLink>
           </Card>
@@ -229,8 +222,8 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
           <Card className="space-y-2">
             {b.credits.map((c) => (
               <div key={c.id} className="border-b border-border py-2 last:border-0">
-                <p className="text-[13px] font-semibold">{c.title}</p>
-                {c.meta ? <p className="text-[11px] text-muted-foreground">{c.meta}</p> : null}
+                <p className="text-1 font-semibold">{c.title}</p>
+                {c.meta ? <p className="text-0 text-muted-foreground">{c.meta}</p> : null}
               </div>
             ))}
           </Card>

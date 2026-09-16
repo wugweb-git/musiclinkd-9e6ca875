@@ -57,8 +57,8 @@ function OpportunityAnalytics() {
               ]
           ).map((s) => (
             <Card key={s.label}>
-              <p className="text-[12px] text-muted-foreground">{s.label}</p>
-              <p className="mt-1 text-[24px] font-bold leading-none">{s.value}</p>
+              <p className="text-1 text-muted-foreground">{s.label}</p>
+              <p className="mt-1 text-3 font-bold leading-none">{s.value}</p>
             </Card>
           ))}
         </div>
@@ -66,7 +66,7 @@ function OpportunityAnalytics() {
         {stored ? null : (
           <>
             <Card className="space-y-3">
-              <h2 className="text-[15px]">Views · last 7 days</h2>
+              <h2 className="text-sm">Views · last 7 days</h2>
               <div className="flex h-28 items-end gap-2">
                 {a.daily.map((d, i) => (
                   <div
@@ -80,7 +80,7 @@ function OpportunityAnalytics() {
             </Card>
 
             <Card className="space-y-3">
-              <h2 className="text-[15px]">Where views come from</h2>
+              <h2 className="text-sm">Where views come from</h2>
               {a.sources.map((s) => (
                 <Meter
                   key={s.label}
@@ -95,8 +95,8 @@ function OpportunityAnalytics() {
         )}
 
         <Card className="space-y-1">
-          <p className="text-[13px] font-semibold">Getting fewer applications than expected?</p>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">Getting fewer applications than expected?</p>
+          <p className="text-1 text-muted-foreground">
             Posts with a stated budget and 3 or fewer must-haves receive roughly three times more
             applications.
           </p>

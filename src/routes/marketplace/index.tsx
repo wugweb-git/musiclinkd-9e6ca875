@@ -47,15 +47,15 @@ function MarketHome() {
       <header className="sticky top-0 z-30 bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
         <div className="mb-3 flex items-center justify-between">
           <div>
-            <h1 className="text-[24px] leading-tight">Market</h1>
-            <button className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
+            <h1 className="text-3 leading-tight">Market</h1>
+            <button className="mt-0.5 inline-flex items-center gap-1 text-0 font-semibold text-muted-foreground">
               <MapPin size={12} /> Mumbai, Maharashtra · change
             </button>
           </div>
           <div className="flex items-center gap-2">
             <Link
               to="/marketplace/sell"
-              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-xs font-semibold text-background"
+              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
             >
               <Plus size={14} /> Sell
             </Link>
@@ -132,14 +132,14 @@ function MarketHome() {
 
       <div className="px-5 pb-4">
         <div className="rounded-lg border border-border bg-card p-5">
-          <h2 className="text-[16px]">Have gear sitting idle?</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <h2 className="text-2">Have gear sitting idle?</h2>
+          <p className="mt-1 text-1 text-muted-foreground">
             List it to 72,000+ verified music professionals. Free while Market is in Beta.
           </p>
           <BtnLink to="/marketplace/sell" className="mt-4 w-full">
             Create a Listing
           </BtnLink>
-          <TextLink to="/marketplace/mine" className="mt-2 block text-center text-xs">
+          <TextLink to="/marketplace/mine" className="mt-2 block text-center text-1">
             My Marketplace
           </TextLink>
         </div>

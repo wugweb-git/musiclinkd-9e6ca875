@@ -39,15 +39,15 @@ function Checkout() {
         <Card className="space-y-2">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-[19px] leading-tight">{p.name}</h2>
-              <p className="mt-1 text-[12px] text-muted-foreground">{p.tagline}</p>
+              <h2 className="text-2.5 leading-tight">{p.name}</h2>
+              <p className="mt-1 text-1 text-muted-foreground">{p.tagline}</p>
             </div>
             {p.best ? <StatusPill label="Most picked" tone="brand" /> : null}
           </div>
         </Card>
 
         <Card className="space-y-3">
-          <h2 className="text-[15px]">Billing cycle</h2>
+          <h2 className="text-sm">Billing cycle</h2>
           {(["monthly", "yearly"] as const).map((c) => (
             <button
               key={c}
@@ -56,13 +56,13 @@ function Checkout() {
               className={`flex w-full items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left ${cycle === c ? "border-primary" : "border-border"}`}
             >
               <span className="min-w-0">
-                <span className="block text-[13px] font-semibold capitalize">{c}</span>
+                <span className="block text-1 font-semibold capitalize">{c}</span>
                 <Price
                   price={c === "monthly" ? p.monthly : p.yearly}
                   tone="inherit"
                   className="text-muted-foreground"
-                  amountClassName="text-[12px]"
-                  unitClassName="text-[11px]"
+                  amountClassName="text-1"
+                  unitClassName="text-0"
                 />
               </span>
               <span
@@ -73,27 +73,27 @@ function Checkout() {
         </Card>
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">Payment method</h2>
+          <h2 className="text-sm">Payment method</h2>
           <Row
             title={currentSubscription.method}
             subtitle="Change payment method"
             onClick={() => undefined}
           />
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             Payments are not processed in this design build.
           </p>
         </Card>
 
         <Card className="space-y-1.5">
-          <h2 className="text-[15px]">Summary</h2>
+          <h2 className="text-sm">Summary</h2>
           <SummaryLine
             label={`${p.name} · ${cycle}`}
             value={cycle === "monthly" ? p.monthly.amount : p.yearly.amount}
           />
           <SummaryLine label="GST (18%)" value="Included" />
           <div className="mt-2 flex items-center justify-between border-t border-border pt-2">
-            <span className="text-[13px] font-semibold">Total today</span>
-            <span className="text-[17px] font-bold">
+            <span className="text-1 font-semibold">Total today</span>
+            <span className="text-2 font-bold">
               {cycle === "monthly" ? p.monthly.amount : p.yearly.amount}
             </span>
           </div>
@@ -108,7 +108,7 @@ function Checkout() {
         >
           {state === "processing" ? "Processing…" : `Confirm ${p.name}`}
         </Btn>
-        <p className="text-center text-[12px] text-muted-foreground">
+        <p className="text-center text-1 text-muted-foreground">
           Cancel any time. Your plan stays active until the end of the paid period.
         </p>
       </div>
@@ -140,7 +140,7 @@ function Checkout() {
 
 function SummaryLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 text-[13px]">
+    <div className="flex items-center justify-between gap-3 text-1">
       <span className="min-w-0 truncate text-muted-foreground">{label}</span>
       <span className="shrink-0 font-semibold">{value}</span>
     </div>

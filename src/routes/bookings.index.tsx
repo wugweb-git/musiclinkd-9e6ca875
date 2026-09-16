@@ -125,7 +125,7 @@ function MyBookings() {
           className="mt-6 block rounded-lg border border-border bg-card p-4"
         >
           <p className="text-sm font-semibold">Manage a space you run</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <p className="mt-0.5 text-1 text-muted-foreground">
             Open the provider workspace to review requests and set availability.
           </p>
         </Link>

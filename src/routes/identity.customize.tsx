@@ -64,7 +64,7 @@ function Customize() {
               />
               <span className="min-w-0">
                 <span className="block text-sm font-semibold">{s.label}</span>
-                <span className="block text-[12px] text-muted-foreground">{s.blurb}</span>
+                <span className="block text-1 text-muted-foreground">{s.blurb}</span>
               </span>
             </button>
           ))}
@@ -80,7 +80,7 @@ function Customize() {
           />
         </label>
 
-        <p className="mt-3 px-1 text-[12px] text-muted-foreground">
+        <p className="mt-3 px-1 text-1 text-muted-foreground">
           Every option keeps a wide quiet zone and passes contrast checks, so cameras still read it
           from across a room.
         </p>

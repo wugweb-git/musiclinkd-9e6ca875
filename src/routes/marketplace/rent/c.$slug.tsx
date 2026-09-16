@@ -58,19 +58,19 @@ function RentCategory() {
         ))}
       </div>
       <div className="flex items-center justify-between gap-2 px-5 pb-3">
-        <p className="text-xs font-semibold text-muted-foreground">
+        <p className="text-1 font-semibold text-muted-foreground">
           {shown.length} results · {sort}
         </p>
         <div className="flex gap-2">
           <button
             onClick={() => setSortOpen(true)}
-            className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-semibold"
+            className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-0 font-semibold"
           >
             <ArrowUpDown size={13} /> Sort
           </button>
           <button
             onClick={() => setFilters(true)}
-            className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-[11px] font-semibold"
+            className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-0 font-semibold"
           >
             <SlidersHorizontal size={13} /> Filter
           </button>

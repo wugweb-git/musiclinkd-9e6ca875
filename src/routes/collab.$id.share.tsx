@@ -52,7 +52,7 @@ function Share() {
       <main className="px-5 pt-5">
         <Card className="mb-5">
           <Label>Share link</Label>
-          <p className="mb-3 break-all rounded-lg border border-border px-3 py-2 text-[12px] text-muted-foreground">
+          <p className="mb-3 break-all rounded-lg border border-border px-3 py-2 text-1 text-muted-foreground">
             musiclinkd.app/c/{project.id}
           </p>
           <div className="flex gap-2">
@@ -79,7 +79,7 @@ function Share() {
           <SwitchRow label="Show files" value={showFiles} onChange={setShowFiles} />
         </div>
 
-        <p className="mb-6 text-[11px] text-muted-foreground">
+        <p className="mb-6 text-0 text-muted-foreground">
           Turning the link off immediately revokes access for anyone who hasn't been invited
           directly.
         </p>
@@ -87,7 +87,7 @@ function Share() {
         <TextLink
           to="/collab/$id"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px]"
+          className="mb-8 block text-center text-1"
         >
           Back to Workspace
         </TextLink>

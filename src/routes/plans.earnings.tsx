@@ -28,16 +28,16 @@ function Earnings() {
       <div className="space-y-4 px-5 pt-4">
         <Card>
           <p className="pill bg-subtle text-muted-foreground">Net earnings</p>
-          <p className="mt-1 text-[34px] font-bold leading-none">{earnings.net}</p>
-          <p className="mt-2 text-[12px] text-muted-foreground">{earnings.fees}</p>
+          <p className="mt-1 text-4 font-bold leading-none">{earnings.net}</p>
+          <p className="mt-2 text-1 text-muted-foreground">{earnings.fees}</p>
           <div className="mt-4 space-y-2">
             {earnings.lines.map((l) => (
               <div
                 key={l.label}
                 className="flex items-center justify-between rounded-lg bg-subtle px-4 py-3"
               >
-                <span className="text-[13px] font-semibold">{l.label}</span>
-                <span className="text-[13px] font-bold">{l.value}</span>
+                <span className="text-1 font-semibold">{l.label}</span>
+                <span className="text-1 font-bold">{l.value}</span>
               </div>
             ))}
           </div>
@@ -46,10 +46,8 @@ function Earnings() {
         <Card className="space-y-2">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-[15px]">Payout account</h2>
-              <p className="mt-1 truncate text-[12px] text-muted-foreground">
-                {payoutAccount.label}
-              </p>
+              <h2 className="text-sm">Payout account</h2>
+              <p className="mt-1 truncate text-1 text-muted-foreground">{payoutAccount.label}</p>
             </div>
             <StatusPill
               label={
@@ -62,7 +60,7 @@ function Earnings() {
               tone={payoutAccount.state === "verified" ? "good" : "warn"}
             />
           </div>
-          <p className="text-[13px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             Next payout {payoutAccount.nextPayout} · {payoutAccount.pending}
           </p>
           <Btn variant="outline" className="w-full">

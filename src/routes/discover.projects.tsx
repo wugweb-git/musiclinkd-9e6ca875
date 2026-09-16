@@ -44,7 +44,7 @@ function DiscoverProjects() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{o.title}</p>
                       {o.city || o.workMode ? (
-                        <p className="mt-1 text-[13px] text-muted-foreground">
+                        <p className="mt-1 text-1 text-muted-foreground">
                           {[o.city, o.workMode].filter(Boolean).join(" · ")}
                         </p>
                       ) : null}
@@ -52,9 +52,7 @@ function DiscoverProjects() {
                     <StatusPill label={o.kind} tone="brand" />
                   </div>
                   {o.summary ? (
-                    <p className="mt-2 line-clamp-2 text-[13px] text-muted-foreground">
-                      {o.summary}
-                    </p>
+                    <p className="mt-2 line-clamp-2 text-1 text-muted-foreground">{o.summary}</p>
                   ) : null}
                 </Card>
               </Link>

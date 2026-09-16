@@ -49,8 +49,8 @@ function Nearby() {
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-subtle text-foreground">
               <MapPin size={24} />
             </span>
-            <h2 className="mt-3 text-[19px] leading-tight">Show people near you</h2>
-            <p className="mt-2 text-[13px] text-muted-foreground">
+            <h2 className="mt-3 text-2.5 leading-tight">Show people near you</h2>
+            <p className="mt-2 text-1 text-muted-foreground">
               We only use your location to sort results by distance. It is never shown on your
               profile.
             </p>
@@ -94,7 +94,7 @@ function Nearby() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{s.name}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">{s.location}</p>
+                      <p className="truncate text-1 text-muted-foreground">{s.location}</p>
                     </div>
                   </div>
                 </Card>
@@ -114,7 +114,7 @@ function Nearby() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold">{s.name}</p>
                         {s.location ? (
-                          <p className="truncate text-[12px] text-muted-foreground">{s.location}</p>
+                          <p className="truncate text-1 text-muted-foreground">{s.location}</p>
                         ) : null}
                       </div>
                     </div>
@@ -147,7 +147,7 @@ function Nearby() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.name}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">
+                      <p className="truncate text-1 text-muted-foreground">
                         {t.role} · {t.location}
                       </p>
                     </div>

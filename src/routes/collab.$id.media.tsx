@@ -95,7 +95,7 @@ function Media() {
       <TextLink
         to="/collab/$id/files"
         params={{ id: project.id }}
-        className="mb-8 block text-center text-[12px]"
+        className="mb-8 block text-center text-1"
       >
         Open File List
       </TextLink>

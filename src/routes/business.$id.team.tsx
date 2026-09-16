@@ -85,9 +85,9 @@ function TeamScreen() {
                   <span aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-subtle" />
                 )}
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] font-semibold">{m.name}</span>
+                  <span className="block truncate text-1 font-semibold">{m.name}</span>
                   {m.detail ? (
-                    <span className="block text-[11px] text-muted-foreground">{m.detail}</span>
+                    <span className="block text-0 text-muted-foreground">{m.detail}</span>
                   ) : null}
                 </span>
                 {m.invited ? <StatusPill label="invited" tone="warn" /> : null}
@@ -99,11 +99,11 @@ function TeamScreen() {
         )}
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">What each role can do</h2>
+          <h2 className="text-sm">What each role can do</h2>
           {rolePermissions.map((r) => (
             <div key={r.role} className="border-b border-border py-2 last:border-0">
-              <p className="text-[13px] font-semibold">{businessRoleLabel[r.role]}</p>
-              <p className="text-[11px] text-muted-foreground">{r.can.join(" · ")}</p>
+              <p className="text-1 font-semibold">{businessRoleLabel[r.role]}</p>
+              <p className="text-0 text-muted-foreground">{r.can.join(" · ")}</p>
             </div>
           ))}
         </Card>
@@ -115,10 +115,10 @@ function TeamScreen() {
             <span className="pill bg-subtle text-muted-foreground">Email or @username</span>
             <input
               placeholder="@kabir"
-              className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-[13px] outline-none focus:border-primary"
+              className="mt-1.5 min-h-12 w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
             />
           </label>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             They keep their own profile and appear on your team page once they accept.
           </p>
           <Btn className="w-full" onClick={() => setInvite(false)}>

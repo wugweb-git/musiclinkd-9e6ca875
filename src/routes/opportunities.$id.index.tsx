@@ -106,8 +106,8 @@ function OpportunityDetail() {
             {o.workMode ? <StatusPill label={o.workMode} /> : null}
             <StatusPill label={`${o.applicants} applied`} />
           </div>
-          <h1 className="mt-2 text-[24px] leading-tight">{o.title}</h1>
-          {o.summary ? <p className="mt-2 text-[14px] text-muted-foreground">{o.summary}</p> : null}
+          <h1 className="mt-2 text-3 leading-tight">{o.title}</h1>
+          {o.summary ? <p className="mt-2 text-sm text-muted-foreground">{o.summary}</p> : null}
         </div>
 
         <div className="grid grid-cols-3 gap-2">
@@ -123,16 +123,16 @@ function OpportunityDetail() {
             .filter((s) => s.value)
             .map((s) => (
               <div key={s.label} className="rounded-[20px] bg-subtle p-3">
-                <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1 text-0 text-muted-foreground">
                   {s.icon} {s.label}
                 </span>
                 {typeof s.value === "string" ? (
-                  <p className="mt-1 text-[13px] font-semibold leading-snug">{s.value}</p>
+                  <p className="mt-1 text-1 font-semibold leading-snug">{s.value}</p>
                 ) : (
                   <Price
                     price={s.value}
                     className="mt-1"
-                    amountClassName="text-[13px] font-semibold leading-snug"
+                    amountClassName="text-1 font-semibold leading-snug"
                   />
                 )}
               </div>
@@ -143,9 +143,9 @@ function OpportunityDetail() {
 
         {o.brief.length ? (
           <Card className="space-y-2">
-            <h2 className="text-[15px]">The brief</h2>
+            <h2 className="text-sm">The brief</h2>
             {o.brief.map((b) => (
-              <p key={b} className="text-[13px] leading-relaxed text-muted-foreground">
+              <p key={b} className="text-1 leading-relaxed text-muted-foreground">
                 {b}
               </p>
             ))}
@@ -154,7 +154,7 @@ function OpportunityDetail() {
 
         {o.requirements.length || tags.length ? (
           <Card className="space-y-2">
-            <h2 className="text-[15px]">Requirements</h2>
+            <h2 className="text-sm">Requirements</h2>
             {o.requirements.map((r) => (
               <div key={r.label} className="flex items-start gap-2">
                 {r.must ? (
@@ -162,9 +162,9 @@ function OpportunityDetail() {
                 ) : (
                   <Circle size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
                 )}
-                <p className="text-[13px]">
+                <p className="text-1">
                   {r.label}
-                  <span className="ml-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <span className="ml-1 text-0 uppercase tracking-wide text-muted-foreground">
                     {r.must ? "must have" : "nice to have"}
                   </span>
                 </p>
@@ -173,10 +173,7 @@ function OpportunityDetail() {
             {tags.length ? (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {tags.map((g) => (
-                  <span
-                    key={g}
-                    className="rounded-full bg-subtle px-2.5 py-1 text-[11px] font-semibold"
-                  >
+                  <span key={g} className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold">
                     {g}
                   </span>
                 ))}
@@ -186,14 +183,14 @@ function OpportunityDetail() {
         ) : null}
 
         <div>
-          <h2 className="mb-2 text-[15px]">Posted by</h2>
+          <h2 className="mb-2 text-sm">Posted by</h2>
           <PosterRow o={o} />
         </div>
 
         <button
           type="button"
           onClick={() => setReport(true)}
-          className="inline-flex items-center gap-2 text-[12px] font-semibold text-muted-foreground"
+          className="inline-flex items-center gap-2 text-1 font-semibold text-muted-foreground"
         >
           <Flag size={13} /> Report this opportunity
         </button>

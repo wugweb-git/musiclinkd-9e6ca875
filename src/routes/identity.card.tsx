@@ -100,7 +100,7 @@ function ShareCard() {
             <button
               type="button"
               onClick={() => setPhase("error")}
-              className="mt-4 w-full text-[12px] text-muted-foreground underline"
+              className="mt-4 w-full text-1 text-muted-foreground underline"
             >
               Preview the export-failed state
             </button>

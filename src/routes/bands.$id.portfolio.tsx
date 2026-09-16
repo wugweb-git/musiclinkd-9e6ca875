@@ -72,7 +72,7 @@ function BandPortfolio() {
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{r.title}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">
+                      <p className="truncate text-1 text-muted-foreground">
                         {joinParts(r.kind, r.year ? String(r.year) : "")}
                       </p>
                     </div>
@@ -95,7 +95,7 @@ function BandPortfolio() {
           <div className="space-y-3">
             <Card>
               <p className="text-sm font-semibold">Live recordings and sets</p>
-              <p className="mt-1 text-[13px] text-muted-foreground">
+              <p className="mt-1 text-1 text-muted-foreground">
                 A single well-shot live video does more for a booking than five studio demos. Add
                 one set video and a photo from the room.
               </p>

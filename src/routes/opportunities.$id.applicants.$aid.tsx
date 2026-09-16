@@ -57,11 +57,11 @@ function ApplicantDetail() {
             <img src={a.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <h1 className="truncate text-[19px] leading-tight">{a.name}</h1>
+                <h1 className="truncate text-2.5 leading-tight">{a.name}</h1>
                 {a.verified ? <VerifiedBadge size={15} /> : null}
               </div>
-              <p className="truncate text-[13px] text-muted-foreground">{a.headline}</p>
-              <p className="mt-0.5 flex items-center gap-1 text-[12px] text-muted-foreground">
+              <p className="truncate text-1 text-muted-foreground">{a.headline}</p>
+              <p className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
                 <Star size={12} className="text-primary" fill="currentColor" /> {a.rating} ·{" "}
                 {a.city}
               </p>
@@ -69,7 +69,7 @@ function ApplicantDetail() {
           </div>
           <div className="flex items-center justify-between gap-2">
             <StatusPill label={a.status} tone={a.status === "shortlisted" ? "brand" : "neutral"} />
-            <span className="text-[13px] font-bold text-foreground">{a.matchScore}% fit</span>
+            <span className="text-1 font-bold text-foreground">{a.matchScore}% fit</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {a.matchReasons.map((r) => (
@@ -87,12 +87,12 @@ function ApplicantDetail() {
         </Card>
 
         <Card className="space-y-2">
-          <h2 className="text-[15px]">Their message</h2>
-          <p className="text-[13px] text-muted-foreground">{a.message}</p>
+          <h2 className="text-sm">Their message</h2>
+          <p className="text-1 text-muted-foreground">{a.message}</p>
         </Card>
 
         <section>
-          <h2 className="mb-2 text-[15px]">Attached work</h2>
+          <h2 className="mb-2 text-sm">Attached work</h2>
           <div className="grid grid-cols-2 gap-2">
             {a.portfolio.map((p) => (
               <div
@@ -101,8 +101,8 @@ function ApplicantDetail() {
               >
                 <img src={p.cover} alt="" className="h-24 w-full object-cover" />
                 <div className="p-3">
-                  <p className="truncate text-[13px] font-semibold">{p.title}</p>
-                  <p className="text-[11px] text-muted-foreground">{p.kind}</p>
+                  <p className="truncate text-1 font-semibold">{p.title}</p>
+                  <p className="text-0 text-muted-foreground">{p.kind}</p>
                 </div>
               </div>
             ))}

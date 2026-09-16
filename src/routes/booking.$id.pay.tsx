@@ -99,7 +99,7 @@ function Pay() {
       <main className="px-5 pt-4">
         <PaymentSummaryCard p={price} />
 
-        <h2 className="mt-6 text-[17px]">Payment method</h2>
+        <h2 className="mt-6 text-2">Payment method</h2>
         <div className="mt-3 space-y-2">
           <MethodRow
             icon={<Smartphone size={18} />}
@@ -117,7 +117,7 @@ function Pay() {
           />
         </div>
 
-        <p className="mt-4 flex items-start gap-2 rounded-lg bg-subtle px-4 py-3 text-xs text-muted-foreground">
+        <p className="mt-4 flex items-start gap-2 rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
           <Lock size={14} className="mt-0.5 shrink-0" />
           You'll finish the payment in the provider's secure payment window. MusicLinkd never stores
           card details.
@@ -126,7 +126,7 @@ function Pay() {
         {phase === "processing" ? (
           <p
             role="status"
-            className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-xs"
+            className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-card p-4 text-1"
           >
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
             Processing payment…
@@ -137,7 +137,7 @@ function Pay() {
           <button
             type="button"
             onClick={() => setPhase("failed")}
-            className="mt-6 min-h-11 pill bg-subtle text-muted-foreground"
+            className="pill mt-6 bg-subtle text-muted-foreground"
           >
             Preview failure state
           </button>
@@ -183,7 +183,7 @@ function MethodRow({
       <span className="text-foreground">{icon}</span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold">{title}</span>
-        <span className="block text-xs text-muted-foreground">{body}</span>
+        <span className="block text-1 text-muted-foreground">{body}</span>
       </span>
       <span
         className={`h-5 w-5 shrink-0 rounded-full border ${active ? "border-primary bg-primary" : "border-border"}`}
@@ -214,12 +214,12 @@ function Result({
         ) : (
           <AlertTriangle size={44} className="text-destructive" />
         )}
-        <h1 className="mt-4 text-[28px] leading-tight">{title}</h1>
+        <h1 className="mt-4 text-3 leading-tight">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{body}</p>
         <dl className="mt-6 rounded-lg border border-border bg-card p-4">
           {rows.map(([k, v]) => (
             <div key={k} className="flex items-baseline justify-between gap-3 py-1.5">
-              <dt className="text-xs text-muted-foreground">{k}</dt>
+              <dt className="text-1 text-muted-foreground">{k}</dt>
               <dd className="text-sm font-semibold">{v}</dd>
             </div>
           ))}

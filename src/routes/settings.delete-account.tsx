@@ -47,7 +47,7 @@ function DeleteAccount() {
         </AuthNotice>
 
         <section className="rounded-lg border border-border bg-card p-4">
-          <h2 className="text-[14px] font-semibold">Deleted permanently</h2>
+          <h2 className="text-sm font-semibold">Deleted permanently</h2>
           <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
             {removed.map((r) => (
               <li key={r}>• {r}</li>
@@ -56,7 +56,7 @@ function DeleteAccount() {
         </section>
 
         <section className="mt-4 rounded-lg border border-border bg-card p-4">
-          <h2 className="text-[14px] font-semibold">Kept for legal reasons</h2>
+          <h2 className="text-sm font-semibold">Kept for legal reasons</h2>
           <ul className="mt-2 space-y-1.5 text-1 leading-relaxed text-muted-foreground">
             {kept.map((r) => (
               <li key={r}>• {r}</li>
@@ -65,14 +65,14 @@ function DeleteAccount() {
         </section>
 
         <label className="mt-6 block">
-          <span className="mb-2 block pill bg-subtle text-muted-foreground">
+          <span className="mb-2 block text-1 font-medium text-muted-foreground">
             Type DELETE to confirm
           </span>
           <input
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="DELETE"
-            className="h-13 w-full rounded-md border border-border bg-card px-4 text-[15px] outline-none focus:border-primary"
+            className="h-13 w-full rounded-md border border-border bg-card px-4 text-sm outline-none focus:border-primary"
           />
         </label>
 

@@ -31,8 +31,8 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl">Refine search</h2>
-        <button onClick={() => setSelected([])} className="text-xs font-semibold text-foreground">
+        <h2 className="text-2.5">Refine search</h2>
+        <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
           Clear all
         </button>
       </div>

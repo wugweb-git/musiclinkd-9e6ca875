@@ -76,13 +76,13 @@ function BusinessLeads() {
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{l.name}</p>
-                    <p className="truncate text-[12px] text-muted-foreground">
+                    <p className="truncate text-1 text-muted-foreground">
                       {l.intent} · {l.at}
                     </p>
                   </div>
                   <StatusPill label={l.status} tone={leadStatusTone[l.status]} />
                 </div>
-                <p className="mt-3 text-[13px]">{l.message}</p>
+                <p className="mt-3 text-1">{l.message}</p>
                 <div className="mt-3 flex gap-2">
                   <BtnLink to="/messages" className="flex-1 w-full">
                     Reply

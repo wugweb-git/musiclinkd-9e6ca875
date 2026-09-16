@@ -104,7 +104,7 @@ function OpportunitiesHome() {
         />
 
         <section>
-          <h2 className="mb-2 text-[15px]">Browse by need</h2>
+          <h2 className="mb-2 text-sm">Browse by need</h2>
           <div className="rail no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
             {opportunityCategories.slice(0, 10).map((c) => (
               <Link
@@ -113,9 +113,9 @@ function OpportunitiesHome() {
                 search={{ q: c.label }}
                 className="w-[116px] shrink-0 rounded-[20px] border border-border bg-card p-3"
               >
-                <span className="text-lg">{c.emoji}</span>
-                <p className="mt-1 truncate text-[13px] font-semibold">{c.label}</p>
-                <p className="text-[11px] text-muted-foreground">{openCount(c.key)} open</p>
+                <span className="text-2">{c.emoji}</span>
+                <p className="mt-1 truncate text-1 font-semibold">{c.label}</p>
+                <p className="text-0 text-muted-foreground">{openCount(c.key)} open</p>
               </Link>
             ))}
           </div>
@@ -146,8 +146,8 @@ function OpportunitiesHome() {
         )}
 
         <Card className="space-y-2">
-          <h3 className="text-[15px]">Need someone instead?</h3>
-          <p className="text-[13px] text-muted-foreground">
+          <h3 className="text-sm">Need someone instead?</h3>
+          <p className="text-1 text-muted-foreground">
             Post a structured requirement and get applications with portfolios attached.
           </p>
           <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">

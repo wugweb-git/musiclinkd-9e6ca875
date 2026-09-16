@@ -49,8 +49,8 @@ function AgreementScreen() {
       <Label>Working agreement</Label>
       {!a ? (
         <Card className="mb-5 text-center">
-          <p className="text-[13px] font-semibold">No agreement recorded yet</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="text-1 font-semibold">No agreement recorded yet</p>
+          <p className="mt-1 text-1 text-muted-foreground">
             Capture scope, timeline, compensation and credit so everyone is working from the same
             understanding.
           </p>
@@ -59,11 +59,11 @@ function AgreementScreen() {
         <>
           <Card className="mb-4">
             <Label>Scope</Label>
-            <p className="mb-4 text-[13px]">{a.scope}</p>
+            <p className="mb-4 text-1">{a.scope}</p>
             <Label>Deliverables</Label>
             <ul className="mb-4 space-y-1.5">
               {a.deliverables.map((d) => (
-                <li key={d} className="text-[13px]">
+                <li key={d} className="text-1">
                   · {d}
                 </li>
               ))}
@@ -71,19 +71,19 @@ function AgreementScreen() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Timeline</Label>
-                <p className="text-[13px]">{a.timeline}</p>
+                <p className="text-1">{a.timeline}</p>
               </div>
               <div>
                 <Label>Compensation</Label>
-                <p className="text-[13px]">{a.compensation}</p>
+                <p className="text-1">{a.compensation}</p>
               </div>
               <div>
                 <Label>Ownership</Label>
-                <p className="text-[13px]">{a.ownership}</p>
+                <p className="text-1">{a.ownership}</p>
               </div>
               <div>
                 <Label>Credit</Label>
-                <p className="text-[13px]">{a.credit}</p>
+                <p className="text-1">{a.credit}</p>
               </div>
             </div>
           </Card>
@@ -91,7 +91,7 @@ function AgreementScreen() {
           <Card className="mb-5">
             <Label>Roles covered</Label>
             {project.participants.map((p) => (
-              <p key={p.id} className="text-[12px] text-muted-foreground">
+              <p key={p.id} className="text-1 text-muted-foreground">
                 {p.role} — {p.name}
               </p>
             ))}
@@ -99,7 +99,7 @@ function AgreementScreen() {
         </>
       )}
 
-      <p className="mb-6 text-[11px] text-muted-foreground">
+      <p className="mb-6 text-0 text-muted-foreground">
         This is a working agreement between collaborators on MusicLinkd, not a legal contract.
       </p>
 

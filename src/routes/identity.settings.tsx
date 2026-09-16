@@ -39,7 +39,7 @@ function Toggle({
     <label className="flex items-center justify-between gap-3 rounded-[20px] border border-border bg-card px-4 py-3">
       <span className="min-w-0">
         <span className="block text-sm font-semibold">{label}</span>
-        {hint ? <span className="block text-[12px] text-muted-foreground">{hint}</span> : null}
+        {hint ? <span className="block text-1 text-muted-foreground">{hint}</span> : null}
       </span>
       <input
         type="checkbox"
@@ -80,13 +80,13 @@ function QrSettings() {
           onChange={set("discoverable")}
         />
 
-        <p className="mt-3 pill bg-subtle text-muted-foreground">Shared on my digital card</p>
+        <p className="pill mt-3 px-1 bg-subtle text-muted-foreground">Shared on my digital card</p>
         <Toggle label="Phone number" value={state.phone} onChange={set("phone")} />
         <Toggle label="Email address" value={state.email} onChange={set("email")} />
         <Toggle label="Company" value={state.company} onChange={set("company")} />
         <Toggle label="Website" value={state.website} onChange={set("website")} />
 
-        <p className="mt-3 pill bg-subtle text-muted-foreground">Insights</p>
+        <p className="pill mt-3 px-1 bg-subtle text-muted-foreground">Insights</p>
         <Toggle
           label="Count scans of my QR"
           hint="Aggregate counts only — never who scanned it."
@@ -103,7 +103,7 @@ function QrSettings() {
           </BtnLink>
         </div>
 
-        <p className="mt-3 px-1 pb-2 text-[12px] text-muted-foreground">
+        <p className="mt-3 px-1 pb-2 text-1 text-muted-foreground">
           MusicLinkd QR codes never contain contact details, tokens or location — only a public
           link.
         </p>

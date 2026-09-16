@@ -73,10 +73,10 @@ function BandEvents() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{e.title}</p>
                       {e.place ? (
-                        <p className="mt-1 text-[13px] text-muted-foreground">{e.place}</p>
+                        <p className="mt-1 text-1 text-muted-foreground">{e.place}</p>
                       ) : null}
                       {e.date ? (
-                        <p className="mt-1 text-[12px] text-muted-foreground">{e.date}</p>
+                        <p className="mt-1 text-1 text-muted-foreground">{e.date}</p>
                       ) : null}
                     </div>
                     {e.status ? (
@@ -106,10 +106,10 @@ function BandEvents() {
               <Link key={o.id} to="/opportunities/$id" params={{ id: o.id }} className="block">
                 <Card>
                   <p className="text-sm font-semibold">{o.title}</p>
-                  <p className="mt-1 text-[13px] text-muted-foreground">
+                  <p className="mt-1 text-1 text-muted-foreground">
                     {[o.city, o.workMode].filter(Boolean).join(" · ")}
                   </p>
-                  <p className="mt-2 text-[12px] text-muted-foreground">Apply as {band.name}</p>
+                  <p className="mt-2 text-1 text-muted-foreground">Apply as {band.name}</p>
                 </Card>
               </Link>
             ))}

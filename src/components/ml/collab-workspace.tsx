@@ -56,7 +56,7 @@ export function WorkspaceShell({
               key={t.key}
               to={t.to}
               params={{ id: project.id }}
-              className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold ${
+              className={`shrink-0 rounded-full border px-4 py-2 text-1 font-semibold ${
                 active
                   ? "border-transparent bg-selected-bg text-selected-text"
                   : "border-border bg-card text-foreground"

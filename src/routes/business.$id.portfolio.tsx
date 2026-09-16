@@ -58,7 +58,7 @@ function BusinessPortfolio() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{c.title}</p>
                       {c.meta ? (
-                        <p className="mt-1 text-[13px] text-muted-foreground">{c.meta}</p>
+                        <p className="mt-1 text-1 text-muted-foreground">{c.meta}</p>
                       ) : null}
                     </div>
                     <StatusPill label="Public" tone="good" />
@@ -99,7 +99,7 @@ function BusinessPortfolio() {
                 </div>
               ))}
             </div>
-            <p className="text-[12px] text-muted-foreground">
+            <p className="text-1 text-muted-foreground">
               The first photo is used as the cover on Discover. Drag to reorder once you have more
               than three.
             </p>

@@ -104,7 +104,7 @@ function CreateCollab() {
 
         <div className="rounded-lg border border-border bg-card p-4">
           <Label>What happens next</Label>
-          <p className="text-[12px] text-muted-foreground">
+          <p className="text-1 text-muted-foreground">
             You'll invite collaborators and set their roles. Nothing is shared until you send
             invitations.
           </p>

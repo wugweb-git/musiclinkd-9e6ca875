@@ -47,7 +47,7 @@ function Availability() {
           ))}
         </div>
 
-        <h2 className="mt-5 text-[17px]">Opening days</h2>
+        <h2 className="mt-5 text-2">Opening days</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {days.map((d) => {
             const on = open.includes(d);
@@ -69,8 +69,8 @@ function Availability() {
           })}
         </div>
 
-        <h2 className="mt-6 text-[17px]">Block specific dates</h2>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <h2 className="mt-6 text-2">Block specific dates</h2>
+        <p className="mt-1 text-1 text-muted-foreground">
           Tap a date to close {r.name} for maintenance, private sessions or holidays.
         </p>
         <div className="mt-3">
@@ -95,7 +95,7 @@ function Availability() {
                 <button
                   type="button"
                   onClick={() => setBlocked((v) => v.filter((x) => x !== d))}
-                  className="min-h-10 text-xs font-bold text-foreground"
+                  className="min-h-10 text-1 font-bold text-foreground"
                 >
                   Unblock
                 </button>
@@ -104,7 +104,7 @@ function Availability() {
           </ul>
         ) : null}
 
-        <h2 className="mt-6 text-[17px]">Booking rules</h2>
+        <h2 className="mt-6 text-2">Booking rules</h2>
         <button
           type="button"
           onClick={() => setInstant((v) => !v)}
@@ -113,7 +113,7 @@ function Availability() {
         >
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold">Instant booking</span>
-            <span className="block text-xs text-muted-foreground">
+            <span className="block text-1 text-muted-foreground">
               {instant
                 ? "Slots confirm automatically when the deposit is paid."
                 : "You review every request before it confirms."}
@@ -133,7 +133,7 @@ function Availability() {
           <p className="text-sm font-semibold">Rate for {r.name}</p>
           <div className="mt-2 space-y-1.5">
             {r.tiers.map((p) => (
-              <div key={p.label} className="flex items-baseline justify-between text-xs">
+              <div key={p.label} className="flex items-baseline justify-between text-1">
                 <span className="text-muted-foreground">{p.label}</span>
                 <span className="font-semibold text-price">{inr(p.price)}</span>
               </div>

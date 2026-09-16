@@ -34,6 +34,7 @@ router links; if `to` won't type-check, the route is wrong.
 **Components.** Check `src/components/ml/ui.tsx`, `ml/kit.tsx` and `src/components/ui/` (shadcn)
 before creating anything; reuse and restyle, don't add siblings. Use shadcn `dialog`/`sheet`/`drawer`
 for overlays (focus trap, Escape, scroll lock).
+
 - Fields: `TextField` (sentence-case label, not bold), `PhoneField`, `CodeInput`, `InlineField`.
   Errors under the field on blur or submit (`useFieldErrors`); `AuthNotice` only for whole-form problems.
 - Buttons: `Btn`, `Btn icon`, `IconBtn label` (and `BtnLink`, `IconBtnLink`). Use `loading`, not
@@ -45,9 +46,11 @@ for overlays (focus trap, Escape, scroll lock).
 - Icons from `lucide-react` (brands: `ml/brand-icons.tsx`). Never emoji.
 
 **Tokens.** `README.md` is stale.
+
 - Radius by role: `sm` 8 controls, `md` 12 inputs/thumbnails, `lg` 16 cards, `xl` 20, `2xl` 28
   sheets, `3xl` hero, `full` buttons/chips/pills. No arbitrary `rounded-[…]`.
-- Type: `text-1`, `text-sm`, `text-2`, `text-3`, `text-4`, `text-5` (hero). No `text-xs/base/lg`.
+- Type: `text-0` (11px labels), `text-1`, `text-sm`, `text-2`, `text-2.5` (19px section
+  headings), `text-3`, `text-4`, `text-5` (hero). No `text-xs/base/lg`, no `text-[Npx]`.
 - Spacing: Tailwind numeric scale. Secondary text: `text-muted-foreground`.
 - Colour: primary is ink `#0D0D0D`; palette is black, greys, white. Brand pink `#EA4C89` only on the
   logo, unread dots and the Welcome tagline — never buttons, links, selection, icons or body text.
