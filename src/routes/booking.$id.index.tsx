@@ -5,6 +5,7 @@ import { BookableHero, EntityMetaRow, PolicyCard, StickyBar } from "@/components
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr, lowestRate } from "@/data/booking";
 import { Price } from "@/components/ml/kit";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/booking/$id/")({
   head: () => ({
@@ -149,13 +150,13 @@ function BookingEntry() {
             </div>
             {/* Review needs a date and time, which studios without a calendar cannot give. */}
             {b.hasCalendar === false ? null : (
-              <Link
+              <TextLink
                 to="/booking/$id/review"
                 params={{ id: b.id }}
-                className="mt-2 inline-block text-xs font-bold text-foreground"
+                className="mt-2 inline-block text-xs font-bold"
               >
-                See all terms at review
-              </Link>
+                See All Terms at Review
+              </TextLink>
             )}
           </section>
         ) : null}

@@ -37,6 +37,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
+import { SectionActionLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/feed")({
   head: () => ({
@@ -326,7 +327,10 @@ function Body({ home }: { home: Home }) {
 
       {/* 3b — Opportunities */}
       <section className="pt-6">
-        <SectionHeader title="Opportunities" action={<Link to="/opportunities">See all</Link>} />
+        <SectionHeader
+          title="Opportunities"
+          action={<SectionActionLink to="/opportunities">See All</SectionActionLink>}
+        />
         <div className="grid grid-cols-2 gap-3 px-5">
           {opportunityStats.map((t) => (
             <StatTile key={t.id} tile={t} />
@@ -338,7 +342,10 @@ function Body({ home }: { home: Home }) {
 
       {tiles.length || data.forYou.length ? (
         <section className="pt-6">
-          <SectionHeader title="For you" action={<Link to="/recommendations">See all</Link>} />
+          <SectionHeader
+            title="For you"
+            action={<SectionActionLink to="/recommendations">See All</SectionActionLink>}
+          />
           {tiles.length ? (
             <div className="grid grid-cols-2 gap-3 px-5">
               {tiles.map((t) => (
@@ -523,7 +530,7 @@ function StateBlock({
         <h2 className="text-2">{title}</h2>
         <p className="mt-1 text-1 text-muted-foreground">{body}</p>
         <Btn variant="ink" className="mt-4 w-full" onClick={onRetry}>
-          Try again
+          Try Again
         </Btn>
       </div>
     </div>

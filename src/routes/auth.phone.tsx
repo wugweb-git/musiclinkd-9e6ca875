@@ -96,7 +96,7 @@ function PhoneAuth() {
         />
 
         <Btn type="submit" className="mt-2 w-full" loading={busy} disabled={provider === "off"}>
-          Send code
+          Send Code
         </Btn>
       </form>
 
@@ -104,7 +104,7 @@ function PhoneAuth() {
 
       <p className="mt-6 flex justify-center text-sm">
         <AuthLink to="/auth" icon={<Mail size={16} />}>
-          Sign in with email
+          Sign in with Email
         </AuthLink>
       </p>
 

@@ -143,7 +143,7 @@ function RentSearch() {
                 emoji="🔍"
                 title="No rentals matched"
                 body="Try a broader search, widen the distance, or set an alert and we'll tell you when it's listed."
-                action={<BtnLink to="/marketplace/rent">Browse all equipment</BtnLink>}
+                action={<BtnLink to="/marketplace/rent">Browse All Equipment</BtnLink>}
               />
             )}
           </div>

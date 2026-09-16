@@ -82,10 +82,10 @@ function ApplyFlow() {
             </p>
           </Card>
           <BtnLink to="/opportunities/applications" className="w-full">
-            Track my applications
+            Track My Applications
           </BtnLink>
           <BtnLink to="/opportunities" variant="outline" className="w-full">
-            Browse more opportunities
+            Browse More Opportunities
           </BtnLink>
         </div>
       </Screen>
@@ -145,7 +145,7 @@ function ApplyFlow() {
               })}
             </div>
             <BtnLink to="/portfolio/new" variant="ghost" className="w-full">
-              Add new work to portfolio
+              Add New Work to Portfolio
             </BtnLink>
           </>
         ) : null}

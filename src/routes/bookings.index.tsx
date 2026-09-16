@@ -87,7 +87,7 @@ function MyBookings() {
           <EmptyState
             title="No bookings yet"
             body="When you book a studio, jam room or session it shows up here."
-            action={<BtnLink to="/studio">Discover studios &amp; spaces</BtnLink>}
+            action={<BtnLink to="/studio">Discover Studios &amp; Spaces</BtnLink>}
           />
         ) : (
           <div className="space-y-3">

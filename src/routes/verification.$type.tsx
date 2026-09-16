@@ -86,7 +86,7 @@ function TypeNotFound() {
           body="Pick one of the supported levels instead."
         >
           <BtnLink to="/verification/choose" className="w-full">
-            See verification types
+            See Verification Types
           </BtnLink>
         </EmptyState>
       </div>
@@ -178,10 +178,10 @@ function VerificationRequestScreen() {
               search={{ step: 0 }}
               className="w-full"
             >
-              Start identity verification
+              Start Identity Verification
             </BtnLink>
             <BtnLink to="/verification/choose" variant="outline" className="w-full">
-              Back to types
+              Back to Types
             </BtnLink>
           </EmptyState>
         </div>
@@ -287,7 +287,7 @@ function VerificationRequestScreen() {
             Withdraw
           </Btn>
           <Btn variant="ghost" onClick={() => setConfirmWithdraw(false)}>
-            Keep it
+            Keep It
           </Btn>
         </Dialog>
       </Screen>
@@ -345,7 +345,7 @@ function VerificationRequestScreen() {
             Resubmit
           </Btn>
           <BtnLink to="/verification/choose" variant="outline" className="w-full">
-            Review requirements
+            Review Requirements
           </BtnLink>
         </div>
       </Screen>
@@ -373,7 +373,7 @@ function VerificationRequestScreen() {
               void go(0);
             }}
           >
-            Renew verification
+            Renew Verification
           </Btn>
           <Row title="Document privacy" subtitle="What renewal needs" to="/verification/privacy" />
         </div>
@@ -814,7 +814,7 @@ function Wizard({
                   if (consent) void submit();
                 }}
               >
-                Submit for review
+                Submit for Review
               </Btn>
             </div>
             {!consent ? (
@@ -851,7 +851,7 @@ function Wizard({
               </p>
             </Card>
             <BtnLink to="/verification" className="w-full">
-              Back to verification
+              Back to Verification
             </BtnLink>
             <Row
               title="Where the badge appears"

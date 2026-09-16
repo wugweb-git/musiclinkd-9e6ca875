@@ -53,7 +53,7 @@ function PortfolioOverview() {
         subtitle="Show the work you're proud of"
         back="/me"
         right={
-          <IconBtnLink to="/portfolio/settings" label="Portfolio settings" variant="plain">
+          <IconBtnLink to="/portfolio/settings" label="Portfolio Settings" variant="plain">
             <Settings size={20} aria-hidden />
           </IconBtnLink>
         }
@@ -70,7 +70,7 @@ function PortfolioOverview() {
             />
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <BtnLink to="/portfolio/new">Add work</BtnLink>
+              <BtnLink to="/portfolio/new">Add Work</BtnLink>
               <BtnLink to="/portfolio/reorder" variant="outline">
                 Reorder
               </BtnLink>
@@ -78,10 +78,10 @@ function PortfolioOverview() {
                 Performance
               </BtnLink>
               <BtnLink to="/portfolio/select" variant="outline">
-                Share work
+                Share Work
               </BtnLink>
               <BtnLink to="/me" variant="outline">
-                Preview on profile
+                Preview on Profile
               </BtnLink>
             </div>
           </>
@@ -115,7 +115,7 @@ function PortfolioOverview() {
             <StateCard
               title="Your work belongs here"
               body={roleSuggestions["default"]!}
-              action={<BtnLink to="/portfolio/new">Add work</BtnLink>}
+              action={<BtnLink to="/portfolio/new">Add Work</BtnLink>}
             />
           ) : null}
 

@@ -130,7 +130,7 @@ function OpportunitiesHome() {
             title="Nothing here yet"
             body="No opportunities match this view. Widen your city or check back tomorrow."
           >
-            <Btn variant="outline">Change preferences</Btn>
+            <Btn variant="outline">Change Preferences</Btn>
           </EmptyState>
         ) : (
           <div className="space-y-3 pb-4">
@@ -151,7 +151,7 @@ function OpportunitiesHome() {
             Post a structured requirement and get applications with portfolios attached.
           </p>
           <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
-            Post an opportunity
+            Post an Opportunity
           </BtnLink>
         </Card>
       </div>
@@ -159,10 +159,10 @@ function OpportunitiesHome() {
       <Sheet open={sheet} onClose={() => setSheet(false)} title="Post an opportunity">
         <div className="space-y-2">
           <BtnLink to="/opportunities/new" search={{ step: "basics" }} className="w-full">
-            Start from scratch
+            Start from Scratch
           </BtnLink>
           <BtnLink to="/opportunities/mine" variant="outline" className="w-full">
-            My opportunities & drafts
+            My Opportunities & Drafts
           </BtnLink>
         </div>
       </Sheet>

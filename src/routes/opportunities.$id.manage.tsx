@@ -128,7 +128,7 @@ function ManageOpportunity() {
             completed work.
           </p>
           <BtnLink to="/bookings" variant="ghost" className="w-full">
-            Open bookings
+            Open Bookings
           </BtnLink>
         </Card>
       </div>
@@ -158,7 +158,7 @@ function ManageOpportunity() {
         onClose={() => setClosed(null)}
       >
         <BtnLink to="/opportunities/mine" className="w-full">
-          Back to my opportunities
+          Back to My Opportunities
         </BtnLink>
       </Dialog>
     </Screen>

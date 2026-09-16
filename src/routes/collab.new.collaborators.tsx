@@ -136,10 +136,10 @@ function AddCollaborators() {
             </p>
             <div className="flex gap-2">
               <Btn variant="outline" className="flex-1">
-                Copy link
+                Copy Link
               </Btn>
               <Btn variant="ghost" className="flex-1">
-                Disable link
+                Disable Link
               </Btn>
             </div>
           </Card>
@@ -149,7 +149,7 @@ function AddCollaborators() {
       <StickyBar>
         <div className="flex gap-3">
           <BtnLink to="/collab" variant="outline" className="flex-1 w-full">
-            Save draft
+            Save Draft
           </BtnLink>
           <BtnLink to="/collab/$id" params={{ id: "raat-ki-rani" }} className="flex-[2] w-full">
             {count ? `Create & invite ${count}` : "Create project"}

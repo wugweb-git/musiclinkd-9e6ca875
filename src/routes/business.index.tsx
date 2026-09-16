@@ -117,7 +117,7 @@ function BusinessHome() {
             body="A business profile is separate from you — it has its own team, spaces and bookings."
           >
             <BtnLink to="/business/new" search={{ step: "type" as const }} className="w-full">
-              Create a business
+              Create a Business
             </BtnLink>
           </EmptyState>
         )}

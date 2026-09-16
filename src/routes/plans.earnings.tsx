@@ -68,7 +68,7 @@ function Earnings() {
             Next payout {payoutAccount.nextPayout} · {payoutAccount.pending}
           </p>
           <Btn variant="outline" className="w-full">
-            Change payout account
+            Change Payout Account
           </Btn>
         </Card>
 
@@ -82,7 +82,7 @@ function Earnings() {
             variant="ghost"
             className="w-full"
           >
-            How pricing and fees work
+            How Pricing and Fees Work
           </BtnLink>
         </div>
       </div>

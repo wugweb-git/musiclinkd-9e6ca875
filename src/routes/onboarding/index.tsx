@@ -90,7 +90,7 @@ function Welcome() {
       <div className={cn("mt-8 space-y-2", rise)} style={beat(6)}>
         {hydrated && started ? (
           <BtnLink to="/onboarding/resume" className="w-full">
-            Continue setup
+            Continue Setup
           </BtnLink>
         ) : (
           <Btn
@@ -99,12 +99,12 @@ function Welcome() {
               navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft, bucket) } })
             }
           >
-            Let's start
+            Let's Start
           </Btn>
         )}
         <p className="flex justify-center pt-2 text-sm">
           <AuthLink to="/onboarding/skip" className="text-muted-foreground">
-            Skip for now
+            Skip for Now
           </AuthLink>
         </p>
       </div>

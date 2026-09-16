@@ -88,7 +88,7 @@ function Counter() {
             Cancel
           </BtnLink>
           <BtnLink to="/collab/proposals/$id" params={{ id: p.id }} className="flex-[2] w-full">
-            Send counter
+            Send Counter
           </BtnLink>
         </div>
       </StickyBar>

@@ -210,7 +210,7 @@ function CollabHome() {
               </Link>
             ))}
             <BtnLink to="/collab/proposals/new" variant="outline" className="w-full">
-              Send a proposal
+              Send a Proposal
             </BtnLink>
           </section>
         ) : null}
@@ -270,7 +270,7 @@ function CollabHome() {
             Clear
           </Btn>
           <Btn className="flex-1" onClick={() => setFilters(false)}>
-            Show results
+            Show Results
           </Btn>
         </div>
       </Sheet>
@@ -303,9 +303,9 @@ function EmptyForTab({ tab }: { tab: string }) {
         body="Start a project with someone you're already talking to, or find new people to work with."
         action={
           <div className="flex gap-3">
-            <BtnLink to="/collab/new">Start a collaboration</BtnLink>
+            <BtnLink to="/collab/new">Start a Collaboration</BtnLink>
             <BtnLink to="/discover" variant="outline">
-              Discover talent
+              Discover Talent
             </BtnLink>
           </div>
         }
@@ -323,14 +323,14 @@ function EmptyForTab({ tab }: { tab: string }) {
       <EmptyState
         title="No drafts"
         body="Half-finished collaboration setups are saved here so you can pick them up later."
-        action={<BtnLink to="/collab/new">Create collaboration</BtnLink>}
+        action={<BtnLink to="/collab/new">Create Collaboration</BtnLink>}
       />
     );
   return (
     <EmptyState
       title="No collaborations yet"
       body="Find musicians, producers, studios and businesses to work with."
-      action={<BtnLink to="/discover">Discover talent</BtnLink>}
+      action={<BtnLink to="/discover">Discover Talent</BtnLink>}
     />
   );
 }

@@ -150,10 +150,10 @@ function Overview() {
 
       <div className="mb-8 flex gap-3">
         <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
-          Open messages
+          Open Messages
         </BtnLink>
         <BtnLink to="/collab/$id/discussion" params={{ id: project.id }} className="flex-1 w-full">
-          Post an update
+          Post an Update
         </BtnLink>
       </div>
     </WorkspaceShell>

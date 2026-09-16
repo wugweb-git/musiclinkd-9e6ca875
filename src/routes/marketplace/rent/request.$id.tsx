@@ -164,10 +164,10 @@ function RequestFlow() {
             <h2 className="mb-2 mt-5 text-[15px]">Price breakdown</h2>
             <PriceBreakdown e={e} days={days} quantity={qty} delivery={delivery} />
             <Btn className="mt-5 w-full" onClick={() => setStep("request")}>
-              Request rental
+              Request Rental
             </Btn>
             <Btn variant="outline" className="mt-2 w-full" onClick={() => setStep("dates")}>
-              Change dates
+              Change Dates
             </Btn>
           </>
         ) : null}
@@ -209,10 +209,10 @@ function RequestFlow() {
               your conversation.
             </p>
             <Btn className="mt-4 w-full" onClick={() => setStep("confirmed")}>
-              Send rental request
+              Send Rental Request
             </Btn>
             <Btn variant="outline" className="mt-2 w-full" onClick={() => setStep("summary")}>
-              Save draft
+              Save Draft
             </Btn>
           </>
         ) : null}
@@ -245,10 +245,10 @@ function RequestFlow() {
               ))}
             </dl>
             <BtnLink to="/marketplace/rent/mine" className="mt-5 w-full">
-              View rental
+              View Rental
             </BtnLink>
             <BtnLink to="/messages" variant="outline" className="mt-2 w-full">
-              Message provider
+              Message Provider
             </BtnLink>
           </div>
         ) : null}

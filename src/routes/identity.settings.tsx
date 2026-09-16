@@ -103,7 +103,7 @@ function QrSettings() {
             Save
           </Btn>
           <BtnLink to="/identity/analytics" variant="outline" className="flex-1 w-full">
-            View analytics
+            View Analytics
           </BtnLink>
         </div>
 

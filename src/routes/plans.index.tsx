@@ -54,7 +54,7 @@ function Plans() {
             unitClassName="text-[11px]"
           />
           <BtnLink to="/plans/manage" variant="outline" className="w-full">
-            Manage subscription
+            Manage Subscription
           </BtnLink>
         </Card>
 
@@ -128,7 +128,7 @@ function Plans() {
             </BtnLink>
           ) : (
             <Btn variant="outline" className="w-full">
-              This is your current plan
+              This Is Your Current Plan
             </Btn>
           )}
           <Row

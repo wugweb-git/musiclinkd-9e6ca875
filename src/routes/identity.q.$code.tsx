@@ -67,9 +67,9 @@ function QrResult() {
             title="You're offline"
             body="We can't open this code until you're back online. The code stays valid."
           >
-            <Btn onClick={() => setPhase("done")}>Try again</Btn>
+            <Btn onClick={() => setPhase("done")}>Try Again</Btn>
             <BtnLink to="/identity/scan" variant="outline" className="w-full">
-              Back to scanner
+              Back to Scanner
             </BtnLink>
           </StateCard>
         ) : preview ? (
@@ -118,7 +118,7 @@ function QrResult() {
 
             <div className="mt-3">
               <BtnLink to="/identity/scan" variant="ghost" className="w-full">
-                <ScanLine size={16} className="mr-2" /> Scan another code
+                <ScanLine size={16} className="mr-2" /> Scan Another Code
               </BtnLink>
             </div>
           </>

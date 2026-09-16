@@ -223,7 +223,7 @@ function ServiceDetail() {
               Availability
             </BtnLink>
             <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
-              Preview booking
+              Preview Booking
             </BtnLink>
           </div>
         </div>
@@ -237,7 +237,7 @@ function ServiceDetail() {
             variant="outline"
             className="w-full"
           >
-            Edit details & pricing
+            Edit Details & Pricing
           </BtnLink>
           <Btn
             variant="outline"
@@ -258,7 +258,7 @@ function ServiceDetail() {
               setConfirmRemove(true);
             }}
           >
-            Remove service
+            Remove Service
           </Btn>
         </div>
       </Sheet>
@@ -278,10 +278,10 @@ function ServiceDetail() {
             }).then(() => setConfirmRemove(false))
           }
         >
-          Delete service
+          Delete Service
         </Btn>
         <Btn variant="ghost" onClick={() => setConfirmRemove(false)}>
-          Keep it
+          Keep It
         </Btn>
       </Dialog>
 
@@ -292,7 +292,7 @@ function ServiceDetail() {
         onClose={() => setRemoved(false)}
       >
         <BtnLink to="/services" className="w-full">
-          Back to services
+          Back to Services
         </BtnLink>
       </Dialog>
     </Screen>

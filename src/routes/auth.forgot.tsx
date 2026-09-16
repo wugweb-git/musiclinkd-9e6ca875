@@ -91,10 +91,10 @@ function ForgotPassword() {
           </AuthNotice>
           <div className="space-y-3">
             <Btn className="w-full" onClick={() => void navigate({ to: "/auth/phone" })}>
-              Back to sign in
+              Back to Sign In
             </Btn>
             <Btn variant="outline" className="w-full" onClick={() => setSent(false)}>
-              Send to a different email
+              Send to a Different Email
             </Btn>
           </div>
         </>
@@ -119,13 +119,13 @@ function ForgotPassword() {
             error={fields.errorFor("email", emailProblem)}
           />
           <Btn type="submit" className="mt-2 w-full" loading={busy}>
-            Send reset link
+            Send Reset Link
           </Btn>
           <TrustNote>
             For your safety we show the same message whether or not an account exists.
           </TrustNote>
           <p className="mt-6 text-center text-1 text-muted-foreground">
-            Remembered it? <AuthLink to="/auth/phone">Sign in</AuthLink>
+            Remembered it? <AuthLink to="/auth/phone">Sign In</AuthLink>
           </p>
         </form>
       )}

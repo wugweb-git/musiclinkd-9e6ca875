@@ -145,7 +145,7 @@ function Availability() {
             calendar.
           </p>
           <BtnLink to="/provider/bookings/calendar" variant="ghost" className="w-full">
-            Open calendar
+            Open Calendar
           </BtnLink>
         </Card>
 

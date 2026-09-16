@@ -110,10 +110,10 @@ function AgreementScreen() {
           variant="outline"
           className="flex-1 w-full"
         >
-          View roles
+          View Roles
         </BtnLink>
         <BtnLink to="/collab/$id/settings" params={{ id: project.id }} className="flex-1 w-full">
-          Project settings
+          Project Settings
         </BtnLink>
       </div>
     </WorkspaceShell>

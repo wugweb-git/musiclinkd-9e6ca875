@@ -4,6 +4,7 @@ import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { Card, Label, SwitchRow } from "@/components/ml/collab";
 import { DeletedState } from "@/components/ml/collab-extra";
 import { collabRoles, getProject } from "@/data/collab";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/collab/$id/invite-link")({
   head: ({ params }) => {
@@ -63,7 +64,7 @@ function InviteLink() {
           </p>
           <div className="flex gap-2">
             <Btn variant="outline" className="flex-1">
-              Copy link
+              Copy Link
             </Btn>
             <Btn className="flex-1">Share</Btn>
           </div>
@@ -89,16 +90,16 @@ function InviteLink() {
         </p>
 
         <Btn variant="outline" className="mb-5 w-full" onClick={() => setActive(false)}>
-          Disable link
+          Disable Link
         </Btn>
 
-        <Link
+        <TextLink
           to="/collab/$id/participants"
           params={{ id: project.id }}
-          className="mb-8 block text-center text-[12px] font-semibold text-foreground"
+          className="mb-8 block text-center text-[12px]"
         >
-          Invite someone from MusicLinkd instead
-        </Link>
+          Invite Someone from MusicLinkd Instead
+        </TextLink>
       </main>
     </Screen>
   );

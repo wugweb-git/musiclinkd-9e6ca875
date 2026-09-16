@@ -14,6 +14,7 @@ import {
   type RentalItem,
   type RentalStatus,
 } from "@/data/rentals";
+import { TextLink } from "@/components/ml/links";
 
 export function RentalAvailabilityBadge({
   text,
@@ -100,13 +101,13 @@ export function EquipmentCard({ e }: { e: Equipment }) {
         </div>
         <div className="mt-3 flex items-center justify-between gap-2">
           <LocationRow text={`${e.location} · ${e.distance}`} />
-          <Link
+          <TextLink
             to="/marketplace/rent/provider/$id"
             params={{ id: e.providerId }}
-            className="shrink-0 truncate text-1 font-semibold text-foreground"
+            className="shrink-0 truncate text-1"
           >
-            View provider
-          </Link>
+            View Provider
+          </TextLink>
         </div>
         <BtnLink
           to="/marketplace/rent/request/$id"
@@ -114,7 +115,7 @@ export function EquipmentCard({ e }: { e: Equipment }) {
           variant="outline"
           className="mt-3 w-full"
         >
-          Check availability
+          Check Availability
         </BtnLink>
       </div>
     </article>
