@@ -1,7 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { AlertTriangle, CalendarClock } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
+import { Card, EmptyState, StatusPill, Loading } from "@/components/ml/kit";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
+import { answerBooking, listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
+import { formatDate, formatTime } from "@/data/booking";
+import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/services/conflicts")({
@@ -22,31 +31,67 @@ export const Route = createFileRoute("/services/conflicts")({
   component: Conflicts,
 });
 
-const conflicts = [
-  {
-    id: "cf-1",
-    day: "Thursday 18 Sep",
-    kind: "Double booking",
-    detail: "Vocal session 14:00–17:00 overlaps a mixing block 15:00–19:00.",
-    tone: "bad" as const,
-  },
-  {
-    id: "cf-2",
-    day: "Saturday 20 Sep",
-    kind: "Outside your hours",
-    detail: "A request came in for 23:00, past your weekend cut-off of 22:00.",
-    tone: "warn" as const,
-  },
-  {
-    id: "cf-3",
-    day: "Sunday 21 Sep",
-    kind: "No availability",
-    detail: "Two enquiries landed on a day you have marked as time off.",
-    tone: "neutral" as const,
-  },
-];
+type ConflictPair = { a: BookingRequest; b: BookingRequest };
+
+/** Two active requests for the same room on the same day, with overlapping times. */
+function findConflicts(bookings: BookingRequest[]): ConflictPair[] {
+  const active = bookings.filter((b) => ["requested", "reviewing", "confirmed"].includes(b.status));
+  const groups = new Map<string, BookingRequest[]>();
+  for (const b of active) {
+    if (!b.start_time || !b.end_time) continue;
+    const key = `${b.studio?.id ?? ""}:${b.room?.id ?? ""}:${b.session_date}`;
+    groups.set(key, [...(groups.get(key) ?? []), b]);
+  }
+  const pairs: ConflictPair[] = [];
+  for (const rows of groups.values()) {
+    for (let i = 0; i < rows.length; i++) {
+      for (let j = i + 1; j < rows.length; j++) {
+        const a = rows[i]!;
+        const b = rows[j]!;
+        if (a.start_time! < b.end_time! && b.start_time! < a.end_time!) pairs.push({ a, b });
+      }
+    }
+  }
+  return pairs;
+}
+
+function requesterName(b: BookingRequest) {
+  return b.requester?.display_name ?? b.requester?.username ?? "Someone";
+}
 
 function Conflicts() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <ConflictsContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function ConflictsContent() {
+  const [dismissed, setDismissed] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+  const load = useServerFn(listStudioBookings);
+  const answer = useServerFn(answerBooking);
+
+  const q = useQuery({ queryKey: ["studio-bookings"], queryFn: () => load() });
+  const conflicts = findConflicts(q.data ?? []).filter(
+    (c) => !dismissed.includes(`${c.a.id}:${c.b.id}`),
+  );
+
+  const offerAnotherTime = useMutation({
+    mutationFn: (id: string) =>
+      answer({
+        data: {
+          id,
+          status: "reviewing",
+          reply: "This slot double-books with another session — could you offer another time?",
+        },
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["studio-bookings"] }),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
   return (
     <Screen>
       <TopBar
@@ -68,30 +113,49 @@ function Conflicts() {
           </div>
         </Card>
 
-        {conflicts.length ? (
+        {q.isLoading ? (
+          <Loading rows={2} />
+        ) : conflicts.length ? (
           <div className="space-y-3">
-            {conflicts.map((c) => (
-              <Card key={c.id}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold">{c.day}</p>
-                    <p className="mt-1 text-1 text-muted-foreground">{c.detail}</p>
+            {conflicts.map((c) => {
+              const pairId = `${c.a.id}:${c.b.id}`;
+              return (
+                <Card key={pairId}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">{formatDate(c.a.session_date)}</p>
+                      <p className="mt-1 text-1 text-muted-foreground">
+                        {requesterName(c.a)}{" "}
+                        {joinParts(formatTime(c.a.start_time!.slice(0, 5)), c.a.room?.name ?? "")}{" "}
+                        overlaps {requesterName(c.b)}{" "}
+                        {joinParts(formatTime(c.b.start_time!.slice(0, 5)), c.b.room?.name ?? "")}
+                      </p>
+                    </div>
+                    <StatusPill label="Double booking" tone="bad" />
                   </div>
-                  <StatusPill label={c.kind} tone={c.tone} />
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <Btn variant="outline" className="flex-1">
-                    Offer Another Time
-                  </Btn>
-                  <Btn variant="ghost" className="flex-1">
-                    Keep Both
-                  </Btn>
-                </div>
-              </Card>
-            ))}
+                  <div className="mt-3 flex gap-2">
+                    <Btn
+                      variant="outline"
+                      className="flex-1"
+                      loading={offerAnotherTime.isPending}
+                      onClick={() => offerAnotherTime.mutate(c.b.id)}
+                    >
+                      Offer Another Time
+                    </Btn>
+                    <Btn
+                      variant="ghost"
+                      className="flex-1"
+                      onClick={() => setDismissed((p) => [...p, pairId])}
+                    >
+                      Keep Both
+                    </Btn>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         ) : (
-          <EmptyState title="No conflicts" body="Your calendar is clean for the next four weeks." />
+          <EmptyState title="No conflicts" body="Your calendar is clean." />
         )}
 
         <BtnLink to="/services/availability" variant="outline" className="w-full">
