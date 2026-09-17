@@ -15,10 +15,13 @@ import {
   RentalFilterSheet,
   RentalSkeleton,
 } from "@/components/ml/rental";
-import { equipment, rentalCategories } from "@/data/rentals";
+import { equipment, rentalCategories, type RentalItem } from "@/data/rentals";
+import { loadCatalogRentals } from "@/lib/market-view";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/")({
+  // Database rentals follow the static ones, same as marketplace/index.tsx.
+  loader: () => loadCatalogRentals(),
   head: () => ({
     meta: [
       { title: "Rent Equipment — Instruments, Audio & Live Gear | MusicLinkd" },
@@ -50,11 +53,15 @@ function RentHome() {
     return () => clearTimeout(t);
   }, []);
 
+  const catalog = Route.useLoaderData();
+  // Database rows never set `reason` (see market-view.ts), so EquipmentCard's strict-Equipment
+  // "recommended" rail stays on the static list — merging catalog in here would be a no-op anyway.
   const recommended = equipment.filter((e) => e.reason);
-  const nearby = [...equipment]
-    .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+  const allEquipment: RentalItem[] = [...equipment, ...catalog];
+  const nearby = [...allEquipment]
+    .sort((a, b) => parseFloat(a.distance ?? "") - parseFloat(b.distance ?? ""))
     .slice(0, 5);
-  const popular = [...equipment].sort((a, b) => b.rentals - a.rentals).slice(0, 5);
+  const popular = [...allEquipment].sort((a, b) => (b.rentals ?? 0) - (a.rentals ?? 0)).slice(0, 5);
 
   return (
     <Screen>
@@ -192,7 +199,7 @@ function RentHome() {
       <RentalFilterSheet
         open={filters}
         onClose={() => setFilters(false)}
-        results={equipment.length}
+        results={allEquipment.length}
       />
       <LocationSheet
         open={locationOpen}

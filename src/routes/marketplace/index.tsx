@@ -14,10 +14,13 @@ import {
   useMarketCity,
 } from "@/components/ml/market";
 import { listings, marketCategories } from "@/data/market";
+import { loadCatalogListings } from "@/lib/market-view";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/")({
+  // Database listings follow the static ones, same as marketplace/search.tsx.
+  loader: () => loadCatalogListings(),
   head: () => ({
     meta: [
       { title: "Market — Gear, Rentals & Studios | MusicLinkd" },
@@ -56,9 +59,11 @@ function MarketHome() {
   const [city, setCity] = useMarketCity();
   const [view, setView] = useState<(typeof views)[number]["label"]>("For You");
   const navigate = useNavigate();
-  const recommended = listings.filter((l) => l.reason);
-  const nearby = listings.slice(0, 4);
-  const trending = [...listings].sort((a, b) => b.saves - a.saves).slice(0, 5);
+  const catalog = Route.useLoaderData();
+  const all = [...listings, ...catalog];
+  const recommended = all.filter((l) => l.reason);
+  const nearby = all.slice(0, 4);
+  const trending = [...all].sort((a, b) => b.saves - a.saves).slice(0, 5);
 
   return (
     <Screen>

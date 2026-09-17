@@ -2,8 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { ListingRow } from "@/components/ml/market";
 import { listings } from "@/data/market";
+import { loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/nearby")({
+  // Database listings follow the static ones, same as marketplace/index.tsx and search.tsx.
+  loader: () => loadCatalogListings(),
   head: () => ({
     meta: [
       { title: "Nearby Listings | MusicLinkd Market" },
@@ -18,7 +21,13 @@ export const Route = createFileRoute("/marketplace/nearby")({
       },
     ],
   }),
-  component: () => (
+  component: Nearby,
+});
+
+function Nearby() {
+  const catalog = Route.useLoaderData();
+  const all = [...listings, ...catalog];
+  return (
     <Screen>
       <TopBar title="Nearby" subtitle="Dadar, Mumbai · within 15 km" back="/marketplace" />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
@@ -29,10 +38,10 @@ export const Route = createFileRoute("/marketplace/nearby")({
         ))}
       </div>
       <div className="space-y-3 px-5">
-        {listings.map((l) => (
+        {all.map((l) => (
           <ListingRow key={l.id} l={l} />
         ))}
       </div>
     </Screen>
-  ),
-});
+  );
+}

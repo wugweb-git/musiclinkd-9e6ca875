@@ -4,10 +4,13 @@ import { MapPin } from "lucide-react";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
 import { equipment, providers, rentalCategories } from "@/data/rentals";
+import { loadCatalogRentals } from "@/lib/market-view";
 import { iconSize } from "@/lib/tokens";
 import { MarketCategoryIcon } from "@/components/ml/market";
 
 export const Route = createFileRoute("/marketplace/rent/nearby")({
+  // Database rentals follow the static ones. Providers stay static: no matching live source yet.
+  loader: () => loadCatalogRentals(),
   head: () => ({
     meta: [
       { title: "Rentals Near You | MusicLinkd" },
@@ -29,9 +32,11 @@ export const Route = createFileRoute("/marketplace/rent/nearby")({
 const radii = ["5 km", "15 km", "25 km", "50 km"];
 
 function NearbyRentals() {
+  const catalog = Route.useLoaderData();
+  const allEquipment = [...equipment, ...catalog];
   const [radius, setRadius] = useState("15 km");
   const [cat, setCat] = useState("All");
-  const shown = cat === "All" ? equipment : equipment.filter((e) => e.category === cat);
+  const shown = cat === "All" ? allEquipment : allEquipment.filter((e) => e.category === cat);
 
   return (
     <Screen>

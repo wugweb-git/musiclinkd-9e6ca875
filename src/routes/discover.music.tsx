@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
 import { trending } from "@/data/discover";
-import { demoPortfolio, workType } from "@/data/portfolio";
+import { workType } from "@/data/portfolio";
+import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/discover/music")({
   head: () => ({
@@ -19,11 +21,17 @@ export const Route = createFileRoute("/discover/music")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  // Same source discover.index.tsx already uses: real plays in the last 7 days, counted by the
+  // database (trending_portfolio_items), not seed data. Without it the section is just empty.
+  loader: async () => {
+    const tracks = await listTrendingWork().catch((): TrendingItem[] => []);
+    return { tracks };
+  },
   component: DiscoverMusic,
 });
 
 function DiscoverMusic() {
-  const tracks = demoPortfolio.filter((p) => p.kind === "audio" || p.kind === "video");
+  const { tracks } = Route.useLoaderData();
 
   return (
     <Screen>
@@ -49,7 +57,11 @@ function DiscoverMusic() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.title}</p>
                       <p className="truncate text-1 text-muted-foreground">
-                        {workType(t.kind).label} · {t.release_year}
+                        {joinParts(
+                          workType(t.kind).label,
+                          t.display_name,
+                          `${t.plays} ${t.plays === 1 ? "play" : "plays"}`,
+                        )}
                       </p>
                     </div>
                   </div>
