@@ -62,10 +62,12 @@ export const listProjectTypes = createServerFn({ method: "GET" }).handler(
       .eq("category_key", "project_types")
       .order("sort_order");
     if (error) throw new Error(error.message);
-    return ((data ?? []) as unknown as { slug: string; label: string }[]).map(({ slug, label }) => ({
-      slug,
-      label,
-    }));
+    return ((data ?? []) as unknown as { slug: string; label: string }[]).map(
+      ({ slug, label }) => ({
+        slug,
+        label,
+      }),
+    );
   },
 );
 
@@ -85,6 +87,7 @@ export const createCollab = createServerFn({ method: "POST" })
           .string()
           .regex(/^\d{4}-\d{2}-\d{2}$/)
           .optional(),
+        genres: z.array(z.string().trim().max(40)).max(12).optional(),
       })
       .parse(d),
   )
@@ -100,11 +103,17 @@ export const createCollab = createServerFn({ method: "POST" })
       p_ends_on: data.endsOn ?? null,
     });
     if (error) throw new Error(error.message);
-    // What kind of project it is is a plain column, so it is set right after it exists.
+    // What kind of project it is, and its genres, are plain columns — set right after it exists.
     if (data.projectType) {
       await db(context.supabase)
         .from("collabs")
         .update({ project_type: data.projectType } as never)
+        .eq("id", id as string);
+    }
+    if (data.genres?.length) {
+      await db(context.supabase)
+        .from("collabs")
+        .update({ genres: data.genres } as never)
         .eq("id", id as string);
     }
     return { id: id as string };
