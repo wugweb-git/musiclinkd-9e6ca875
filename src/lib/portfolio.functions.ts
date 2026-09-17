@@ -62,6 +62,29 @@ export const myPortfolioPlays = createServerFn({ method: "GET" })
     return counts;
   });
 
+/**
+ * The order the account's work appears in. Order lives on each work (portfolio_items.sort_order),
+ * so saving one is writing the new position to every work in the list.
+ */
+export const reorderPortfolio = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(200) }).parse(d))
+  .handler(async ({ context, data }) => {
+    const client = context.supabase as unknown as SupabaseClient;
+    // One update per work, and only ever the account's own: the user_id filter is the guard.
+    const writes = data.ids.map((id, index) =>
+      client
+        .from("portfolio_items")
+        .update({ sort_order: index })
+        .eq("id", id)
+        .eq("user_id", context.userId),
+    );
+    const results = await Promise.all(writes);
+    const failed = results.find((r) => r.error);
+    if (failed?.error) throw new Error(failed.error.message);
+    return { ordered: data.ids.length };
+  });
+
 export const getMyPortfolioItem = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))

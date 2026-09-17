@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { PortfolioSkeleton, ReorderList, StateCard } from "@/components/ml/portfolio";
 import { demoPortfolio, FEATURED_LIMIT, type PortfolioItem } from "@/data/portfolio";
-import { listMyPortfolio } from "@/lib/portfolio.functions";
+import { listMyPortfolio, reorderPortfolio } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/portfolio/reorder")({
@@ -31,6 +31,7 @@ export const Route = createFileRoute("/portfolio/reorder")({
 
 function Reorder() {
   const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
   const fetchItems = useServerFn(listMyPortfolio);
   const q = useQuery({
     queryKey: ["portfolio", "mine"],
@@ -44,6 +45,17 @@ function Reorder() {
   }, [q.data, signedIn]);
 
   const [featured, setFeatured] = useState<string[]>([]);
+
+  // The order is kept on each work, so saving writes every work's new position.
+  const saveOrder = useServerFn(reorderPortfolio);
+  const save = useMutation({
+    mutationFn: () => saveOrder({ data: { ids: order.map((i) => i.id) } }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["portfolio", "mine"] });
+      toast.success("Order saved");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
 
   function toggleFeatured(id: string) {
     setFeatured((prev) => {
@@ -96,7 +108,12 @@ function Reorder() {
 
         {order.length ? (
           <div className="sticky bottom-0 mt-6 border-t border-border bg-background/95 py-4 backdrop-blur">
-            <Btn className="w-full" onClick={() => toast.success("Order saved for this session")}>
+            <Btn
+              className="w-full"
+              disabled={!signedIn}
+              loading={save.isPending}
+              onClick={() => save.mutate()}
+            >
               Save Order
             </Btn>
           </div>
