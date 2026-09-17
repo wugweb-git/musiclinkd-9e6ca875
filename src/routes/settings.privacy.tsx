@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
+  Briefcase,
+  Calendar,
   Check,
   ChevronRight,
   Circle,
@@ -12,13 +14,16 @@ import {
   Eye,
   MessageSquare,
   Phone,
+  Send,
   Trash2,
   UserX,
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { SoonBadge } from "@/components/ml/kit";
+import { ChipPicker, OptionList } from "@/components/ml/onboarding";
 import { privacyControls } from "@/data/settings";
+import { availabilityFor, contactChannels, workModes } from "@/data/onboarding";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { iconSize } from "@/lib/tokens";
 
@@ -82,6 +87,12 @@ function PrivacyScreen() {
           who_can_message?: string;
           show_phone?: string;
         } | null;
+        contact_channels?: string[] | null;
+        work_modes?: string[] | null;
+        // "Available for" has no array column yet; it rides in `availability` (text) as a
+        // comma-joined list. Lossy only in that empty entries can't round-trip — fine here,
+        // since availabilityFor labels never contain commas.
+        availability?: string | null;
       }
     | null
     | undefined;
@@ -89,8 +100,19 @@ function PrivacyScreen() {
   const [values, setValues] = useState<Record<string, string>>(
     Object.fromEntries(privacyControls.map((c) => [c.key, c.value])),
   );
+
+  // Three more, each a multi-select drawer, each saving straight to its own column on tap.
+  const [reach, setReach] = useState<string[]>([]);
+  const [modes, setModes] = useState<string[]>([]);
+  const [availableFor, setAvailableFor] = useState<string[]>([]);
+  const [drawer, setDrawer] = useState<"reach" | "modes" | "available" | null>(null);
+  const [busy, setBusy] = useState(false);
+
   useEffect(() => {
     if (!row) return;
+    setReach(row.contact_channels ?? []);
+    setModes(row.work_modes ?? []);
+    setAvailableFor((row.availability ?? "").split(", ").filter(Boolean));
     setValues((v) => ({
       ...v,
       visibility: visibilityFromDb[row.visibility ?? "public"] ?? "Public",
@@ -102,6 +124,49 @@ function PrivacyScreen() {
 
   const [editing, setEditing] = useState<string | null>(null);
   const open = privacyControls.find((c) => c.key === editing);
+
+  /** Every one of the three writes its own column, so a save carries only what changed. */
+  async function saveMulti(patch: Record<string, unknown>) {
+    setBusy(true);
+    try {
+      await save({ data: patch });
+      await queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
+    } catch {
+      toast.error("Couldn't save that — try again");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const toggleIn = (list: string[], value: string) =>
+    list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+
+  const summarise = (list: string[], labelFor: (v: string) => string) =>
+    list.length ? list.map(labelFor).join(", ") : "Not set";
+
+  const workRows = [
+    {
+      key: "reach" as const,
+      icon: Send,
+      label: "How people reach you",
+      hint: summarise(
+        reach,
+        (k) => contactChannels.find((c) => c.key === k)?.label ?? k,
+      ),
+    },
+    {
+      key: "modes" as const,
+      icon: Briefcase,
+      label: "Where you work",
+      hint: summarise(modes, (k) => workModes.find((w) => w.key === k)?.label ?? k),
+    },
+    {
+      key: "available" as const,
+      icon: Calendar,
+      label: "Available for",
+      hint: summarise(availableFor, (v) => v),
+    },
+  ];
 
   async function choose(key: string, option: string) {
     const next = { ...values, [key]: option };
@@ -175,6 +240,35 @@ function PrivacyScreen() {
           })}
         </ul>
 
+        {/* The other three of the four: each opens its own drawer, each saves on tap. */}
+        <section>
+          <h2 className="pill mb-2 px-1 text-muted-foreground">Work and availability</h2>
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+            {workRows.map((r) => (
+              <li key={r.key}>
+                <button
+                  type="button"
+                  onClick={() => setDrawer(r.key)}
+                  className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
+                >
+                  <span className="flex h-10 w-7 shrink-0 items-center justify-center">
+                    <r.icon size={24} strokeWidth={1.75} aria-hidden />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-2 font-semibold">{r.label}</span>
+                    <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
+                  </span>
+                  <ChevronRight
+                    size={iconSize.md}
+                    className="shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section>
           <h2 className="pill mb-2 px-1 text-muted-foreground">Blocked people</h2>
           <div className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3.5">
@@ -212,6 +306,49 @@ function PrivacyScreen() {
           </div>
         </section>
       </div>
+      <Sheet
+        open={drawer === "reach"}
+        onClose={() => setDrawer(null)}
+        title="How people reach you"
+      >
+        <OptionList
+          options={contactChannels.filter((c) => c.key !== "business")}
+          selected={reach}
+          onToggle={(k) => {
+            const next = toggleIn(reach, k);
+            setReach(next);
+            void saveMulti({ contact_channels: next });
+          }}
+        />
+        <p className="mt-3 text-1 text-muted-foreground">
+          {busy ? "Saving…" : "Nothing private is published. You choose what to share per enquiry."}
+        </p>
+      </Sheet>
+
+      <Sheet open={drawer === "modes"} onClose={() => setDrawer(null)} title="Where you work">
+        <OptionList
+          options={workModes}
+          selected={modes}
+          onToggle={(k) => {
+            const next = toggleIn(modes, k);
+            setModes(next);
+            void saveMulti({ work_modes: next });
+          }}
+        />
+      </Sheet>
+
+      <Sheet open={drawer === "available"} onClose={() => setDrawer(null)} title="Available for">
+        <ChipPicker
+          options={availabilityFor}
+          selected={availableFor}
+          onToggle={(v) => {
+            const next = toggleIn(availableFor, v);
+            setAvailableFor(next);
+            void saveMulti({ availability: next.join(", ") });
+          }}
+        />
+      </Sheet>
+
       <Sheet
         open={!!open}
         onClose={() => setEditing(null)}
