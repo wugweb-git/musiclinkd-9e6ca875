@@ -1,126 +1,132 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
-import { Field, TextInput, StickyBar, Label } from "@/components/ml/collab";
+import { toast } from "sonner";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { SegmentedField } from "@/components/ml/kit";
-import { collabRoles, collabTypes } from "@/data/collab";
+import { createCollab } from "@/lib/collabs.functions";
+import { useAuth } from "@/hooks/use-auth";
 
+/*
+ * Starting a project: its name, what it is, and who can see it. Everything else — dates, money,
+ * who does what — the people in it settle between themselves.
+ */
 export const Route = createFileRoute("/collab/new/")({
   head: () => ({
     meta: [
-      { title: "Create a collaboration — MusicLinkd" },
+      { title: "Start a project | MusicLinkd" },
       {
         name: "description",
-        content:
-          "Set up a music collaboration: name, type, your role, timeline and optional budget.",
+        content: "Name the project, say what it is, and invite the people making it with you.",
       },
-      { property: "og:title", content: "Create a collaboration — MusicLinkd" },
-      {
-        property: "og:description",
-        content: "Turn a conversation into a structured music project.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:title", content: "Start a project | MusicLinkd" },
+      { property: "og:description", content: "Start a project on MusicLinkd." },
     ],
   }),
-  component: CreateCollab,
+  component: NewCollab,
 });
 
-function CreateCollab() {
+function NewCollab() {
+  const navigate = useNavigate();
+  const { signedIn } = useAuth();
+  const create = useServerFn(createCollab);
   const [name, setName] = useState("");
-  const [type, setType] = useState<string>("Song");
-  const [description, setDescription] = useState("");
-  const [role, setRole] = useState<string>("Composer");
-  const [location, setLocation] = useState("");
-  const [mode, setMode] = useState("Hybrid");
-  const [start, setStart] = useState("");
-  const [target, setTarget] = useState("");
-  const [budget, setBudget] = useState("");
+  const [about, setAbout] = useState("");
+  const [city, setCity] = useState("");
+  const [who, setWho] = useState<"Only the people in it" | "Anyone on MusicLinkd">(
+    "Only the people in it",
+  );
+
+  const start = useMutation({
+    mutationFn: () =>
+      create({
+        data: {
+          name: name.trim(),
+          ...(about.trim() ? { bio: about.trim() } : {}),
+          ...(city.trim() ? { city: city.trim() } : {}),
+          visibility: who === "Anyone on MusicLinkd" ? "public" : "private",
+        },
+      }),
+    onSuccess: ({ id }) => void navigate({ to: "/collab/$id", params: { id } }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
 
   return (
-    <Screen bottomNav={false}>
-      <TopBar title="New collaboration" subtitle="Step 1 of 2 · Project details" back="/collab" />
-      <main className="px-5 pt-5">
-        <Field label="Project name">
-          <TextInput value={name} onChange={setName} placeholder="e.g. Raat Ki Rani" />
-        </Field>
-
-        <Field label="Project type">
-          <div className="flex flex-wrap gap-2">
-            {collabTypes.map((t) => (
-              <Chip key={t} active={t === type} onClick={() => setType(t)}>
-                {t}
-              </Chip>
-            ))}
-          </div>
-        </Field>
-
-        <Field
-          label="Description"
-          optional
-          hint="What are you making, and what does success look like?"
-        >
-          <TextInput
-            value={description}
-            onChange={setDescription}
-            multiline
-            placeholder="A Hindi indie single blending Sufi vocal phrasing with a modern low-end..."
+    <Screen>
+      <TopBar title="Start a project" subtitle="A room for one piece of work" back="/collab" />
+      <form
+        className="space-y-5 px-5 pt-4 pb-8"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (name.trim().length >= 2 && !start.isPending) start.mutate();
+        }}
+      >
+        <div>
+          <label htmlFor="collab-name" className="block text-1 font-semibold">
+            What are you calling it
+          </label>
+          <input
+            id="collab-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Monsoon EP"
+            maxLength={80}
+            className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
           />
-        </Field>
+        </div>
 
-        <Field label="Your role">
-          <div className="flex flex-wrap gap-2">
-            {collabRoles.map((r) => (
-              <Chip key={r} active={r === role} onClick={() => setRole(r)}>
-                {r}
-              </Chip>
-            ))}
-          </div>
-        </Field>
+        <div>
+          <label htmlFor="collab-about" className="block text-1 font-semibold">
+            What it is
+          </label>
+          <textarea
+            id="collab-about"
+            rows={3}
+            value={about}
+            onChange={(e) => setAbout(e.target.value)}
+            placeholder="Four tracks, live drums, tracking in Bengaluru over the winter."
+            maxLength={2000}
+            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
+          />
+        </div>
 
-        <Field label="Location" optional>
-          <TextInput value={location} onChange={setLocation} placeholder="Mumbai" />
-        </Field>
+        <div>
+          <label htmlFor="collab-city" className="block text-1 font-semibold">
+            Where <span className="font-normal text-muted-foreground">· optional</span>
+          </label>
+          <input
+            id="collab-city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Bengaluru"
+            maxLength={80}
+            className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+          />
+        </div>
 
-        <Field label="How you'll work">
+        <div>
+          <p className="mb-1.5 text-1 font-semibold">Who can see it</p>
           <SegmentedField
-            label="How you'll work"
-            value={mode}
-            options={["Remote", "In person", "Hybrid"]}
-            onChange={setMode}
+            label="Who can see it"
+            value={who}
+            options={["Only the people in it", "Anyone on MusicLinkd"] as const}
+            onChange={setWho}
           />
-        </Field>
-
-        <Field label="Timeline" optional hint="You can set milestones once the project is created.">
-          <div className="grid grid-cols-2 gap-3">
-            <TextInput value={start} onChange={setStart} placeholder="Start date" />
-            <TextInput value={target} onChange={setTarget} placeholder="Target date" />
-          </div>
-        </Field>
-
-        <Field label="Budget" optional hint="Only visible to participants you invite.">
-          <TextInput value={budget} onChange={setBudget} placeholder="₹1,80,000" />
-        </Field>
-
-        <div className="rounded-lg bg-subtle p-4">
-          <Label>What happens next</Label>
-          <p className="text-1 text-muted-foreground">
-            You'll invite collaborators and set their roles. Nothing is shared until you send
-            invitations.
-          </p>
         </div>
-      </main>
 
-      <StickyBar>
-        <div className="flex gap-3">
-          <BtnLink to="/collab" variant="outline" className="flex-1 w-full">
-            Save Draft
-          </BtnLink>
-          <BtnLink to="/collab/new/collaborators" className="flex-[2] w-full">
-            Continue
-          </BtnLink>
-        </div>
-      </StickyBar>
+        <Btn
+          type="submit"
+          className="w-full"
+          disabled={name.trim().length < 2 || !signedIn}
+          loading={start.isPending}
+        >
+          {signedIn ? "Start project" : "Sign in to start"}
+        </Btn>
+        <p className="text-1 text-muted-foreground">
+          You can add the people you are working with on the next screen.
+        </p>
+      </form>
     </Screen>
   );
 }

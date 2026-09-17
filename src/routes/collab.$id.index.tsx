@@ -1,159 +1,381 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { BtnLink } from "@/components/ml/ui";
-import { WorkspaceShell } from "@/components/ml/collab-workspace";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { MessageCircle, MoreHorizontal, UserRoundPlus, UsersRound } from "lucide-react";
+import { toast } from "sonner";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
 import {
-  Card,
-  Label,
-  PermissionState,
-  PinnedNote,
-  ParticipantStack,
-  MilestoneRow,
-  FileRow,
-  ActivityItem,
-  Tag,
-} from "@/components/ml/collab";
-import { getProject } from "@/data/collab";
-import { Screen, TopBar } from "@/components/ml/ui";
+  addCollabMember,
+  getCollab,
+  leaveCollab,
+  removeMember,
+  setCollabStatus,
+  setCollabVisibility,
+  setMemberRole,
+  transferCollab,
+  type CollabStatus,
+} from "@/lib/collabs.functions";
+import { getMyProfile } from "@/lib/portfolio.functions";
+import { useAuth } from "@/hooks/use-auth";
+import { iconSize } from "@/lib/tokens";
+import { joinParts } from "@/lib/utils";
 
+/*
+ * One collab: what it is, who is in it, and where to talk. A band shows the same room; only its
+ * kind and its members differ. Everything a tracker would hold — milestones, files, agreements —
+ * the people in it keep between themselves.
+ */
 export const Route = createFileRoute("/collab/$id/")({
-  head: ({ params }) => {
-    const p = getProject(params.id);
-    const title = p ? `${p.name} — collaboration workspace` : "Collaboration workspace";
-    const description = p
-      ? `${p.type} collaboration with ${p.participants.length} people. ${p.description}`
-      : "A MusicLinkd collaboration workspace.";
-    return {
-      meta: [
-        { title: `${title} | MusicLinkd` },
-        { name: "description", content: description.slice(0, 155) },
-        { property: "og:title", content: `${title} | MusicLinkd` },
-        { property: "og:description", content: description.slice(0, 155) },
-        { property: "og:type", content: "website" },
-        { name: "twitter:card", content: "summary" },
-      ],
-    };
-  },
-  component: Overview,
+  head: () => ({
+    meta: [
+      { title: "Collaboration | MusicLinkd" },
+      { name: "description", content: "Who is in this collaboration, and what it is." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: CollabRoom,
 });
 
-function Overview() {
-  const { id } = Route.useParams();
-  const project = getProject(id);
+const statuses = ["active", "paused", "completed", "archived"] as const;
+const statusLabel: Record<CollabStatus, string> = {
+  active: "Active",
+  paused: "Paused",
+  completed: "Finished",
+  archived: "Archived",
+};
 
-  if (!project) {
+function CollabRoom() {
+  const { id } = Route.useParams();
+  const navigate = useNavigate();
+  const { signedIn, loading } = useAuth();
+  const queryClient = useQueryClient();
+  const load = useServerFn(getCollab);
+  const add = useServerFn(addCollabMember);
+  const move = useServerFn(setCollabStatus);
+  const leave = useServerFn(leaveCollab);
+  const changeRole = useServerFn(setMemberRole);
+  const takeOut = useServerFn(removeMember);
+  const handOver = useServerFn(transferCollab);
+  const changeVisibility = useServerFn(setCollabVisibility);
+  const [username, setUsername] = useState("");
+
+  const q = useQuery({
+    queryKey: ["collab", id],
+    queryFn: () => load({ data: { id } }),
+    enabled: signedIn,
+    retry: false,
+  });
+  const readProfile = useServerFn(getMyProfile);
+  const profile = useQuery({
+    queryKey: ["profile", "mine"],
+    queryFn: () => readProfile(),
+    enabled: signedIn,
+  });
+
+  const c = q.data ?? null;
+  const myId = (profile.data as { id?: string } | null)?.id;
+  const myMembership = c?.members.find((m) => m.profile_id === myId);
+  const canManage = myMembership ? ["owner", "admin"].includes(myMembership.role) : false;
+
+  const invite = useMutation({
+    mutationFn: () => add({ data: { id, username: username.trim().replace(/^@/, "") } }),
+    onSuccess: () => {
+      setUsername("");
+      void queryClient.invalidateQueries({ queryKey: ["collab", id] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+
+  // The three things you can do about a person, folded into their row.
+  const person = useMutation<
+    unknown,
+    Error,
+    { profileId: string; what: "admin" | "member" | "remove" | "owner" }
+  >({
+    mutationFn: ({
+      profileId,
+      what,
+    }: {
+      profileId: string;
+      what: "admin" | "member" | "remove" | "owner";
+    }) =>
+      what === "remove"
+        ? takeOut({ data: { id, profileId } })
+        : what === "owner"
+          ? handOver({ data: { id, profileId } })
+          : changeRole({ data: { id, profileId, role: what } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["collab", id] }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+
+  const visibility = useMutation({
+    mutationFn: (next: "public" | "private") =>
+      changeVisibility({ data: { id, visibility: next } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["collab", id] }),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
+  const status = useMutation({
+    mutationFn: (next: CollabStatus) => move({ data: { id, status: next } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["collab", id] }),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
+  const walkOut = useMutation({
+    mutationFn: () => leave({ data: { id } }),
+    onSuccess: () => void navigate({ to: "/collab" }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+
+  if (signedIn && q.isLoading) {
     return (
       <Screen>
         <TopBar title="Collaboration" back="/collab" />
-        <div className="px-5 pt-6">
-          <PermissionState />
+        <div className="px-5 pt-4">
+          <Loading rows={3} />
         </div>
       </Screen>
     );
   }
 
-  const pinned = project.notes.find((n) => n.pinned);
-  const nextMilestone = project.milestones.find((m) => m.status !== "done");
+  if (!c) {
+    return (
+      <Screen>
+        <TopBar title="Collaboration" back="/collab" />
+        <div className="px-5 pt-6">
+          <EmptyState
+            title={signedIn || loading ? "This collaboration is not open to you" : "Sign in first"}
+            body={
+              signedIn || loading
+                ? "A private project is visible to the people in it."
+                : "Sign in to see the projects and bands you are part of."
+            }
+          >
+            <BtnLink to={signedIn ? "/collab" : "/welcome"} className="w-full">
+              {signedIn ? "Back to Collaborations" : "Sign In"}
+            </BtnLink>
+          </EmptyState>
+        </div>
+      </Screen>
+    );
+  }
 
   return (
-    <WorkspaceShell project={project} tab="overview">
-      {project.status === "onHold" && project.holdReason ? (
-        <div
-          className="mb-4 rounded-lg px-4 py-3 text-1 font-semibold"
-          style={{ background: "var(--warn-container)", color: "var(--warn)" }}
-        >
-          On hold — {project.holdReason}
-        </div>
+    <Screen>
+      <TopBar
+        title={c.name}
+        subtitle={joinParts(
+          c.type === "band" ? "Band" : "Project",
+          c.visibility === "private" ? "Private" : "Public",
+          c.city ?? "",
+        )}
+        back="/collab"
+      />
+
+      <div className="space-y-6 px-5 pt-4 pb-8">
+        {c.bio ? <p className="text-sm leading-relaxed">{c.bio}</p> : null}
+
+        <section className="space-y-2">
+          <h2 className="text-sm">
+            {c.members.length} {c.members.length === 1 ? "person" : "people"}
+          </h2>
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+            {c.members.map((m) => (
+              <li key={m.profile_id} className="flex items-center gap-3 px-4 py-3">
+                {m.profile?.avatar_url ? (
+                  <img
+                    src={m.profile.avatar_url}
+                    alt=""
+                    className="h-10 w-10 shrink-0 rounded-full object-cover"
+                  />
+                ) : (
+                  <span
+                    aria-hidden
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background"
+                  >
+                    <UsersRound size={iconSize.sm} />
+                  </span>
+                )}
+                <span className="min-w-0 flex-1">
+                  {m.profile?.username ? (
+                    <Link
+                      to="/profile/$username"
+                      params={{ username: m.profile.username }}
+                      className="block truncate text-sm font-semibold"
+                    >
+                      {m.profile.display_name ?? m.profile.username}
+                    </Link>
+                  ) : (
+                    <span className="block truncate text-sm font-semibold">Someone</span>
+                  )}
+                  {m.instrument ? (
+                    <span className="block truncate text-1 text-muted-foreground">
+                      {m.instrument}
+                    </span>
+                  ) : null}
+                </span>
+                {m.role === "owner" ? (
+                  <span className="pill shrink-0 bg-background text-muted-foreground">Owner</span>
+                ) : canManage && m.profile_id !== myId ? (
+                  <MemberMenu
+                    role={m.role}
+                    busy={person.isPending}
+                    isOwner={myMembership?.role === "owner"}
+                    onChoose={(what) => person.mutate({ profileId: m.profile_id, what })}
+                  />
+                ) : m.role === "admin" ? (
+                  <span className="pill shrink-0 bg-background text-muted-foreground">Admin</span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+
+          {canManage ? (
+            <form
+              className="flex gap-2 pt-1"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (username.trim() && !invite.isPending) invite.mutate();
+              }}
+            >
+              <label className="sr-only" htmlFor="add-member">
+                Username
+              </label>
+              <input
+                id="add-member"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="username"
+                className="min-h-control min-w-0 flex-1 rounded-lg border border-border bg-card px-4 text-sm outline-none"
+              />
+              <Btn
+                type="submit"
+                variant="outline"
+                className="shrink-0 px-4"
+                icon={<UserRoundPlus size={iconSize.sm} aria-hidden />}
+                loading={invite.isPending}
+              >
+                Add
+              </Btn>
+            </form>
+          ) : null}
+        </section>
+
+        <section className="space-y-2">
+          <h2 className="text-sm">Talk</h2>
+          <BtnLink to="/messages" variant="outline" className="w-full">
+            <MessageCircle size={iconSize.sm} className="mr-1.5" aria-hidden /> Open messages
+          </BtnLink>
+        </section>
+
+        {canManage ? (
+          <section className="space-y-2">
+            <h2 className="text-sm">Who can see it</h2>
+            <SegmentedField
+              label="Who can see it"
+              value={c.visibility === "private" ? "Only the people in it" : "Anyone on MusicLinkd"}
+              options={["Only the people in it", "Anyone on MusicLinkd"] as const}
+              onChange={(next) =>
+                visibility.mutate(next === "Anyone on MusicLinkd" ? "public" : "private")
+              }
+            />
+          </section>
+        ) : null}
+
+        {canManage ? (
+          <section className="space-y-2">
+            <h2 className="text-sm">Where it stands</h2>
+            <SegmentedField
+              label="Where it stands"
+              value={statusLabel[c.status]}
+              options={statuses.map((s) => statusLabel[s])}
+              onChange={(next) => {
+                const match = statuses.find((s) => statusLabel[s] === next);
+                if (match) status.mutate(match);
+              }}
+            />
+          </section>
+        ) : null}
+
+        {/* The owner cannot walk out of their own; they hand it over first. */}
+        {myMembership && myMembership.role !== "owner" ? (
+          <Btn
+            variant="ghost"
+            className="w-full"
+            loading={walkOut.isPending}
+            onClick={() => walkOut.mutate()}
+          >
+            Leave this collaboration
+          </Btn>
+        ) : null}
+      </div>
+    </Screen>
+  );
+}
+
+/** What an owner or admin can do about one person: make them admin, hand over, or take them out. */
+function MemberMenu({
+  role,
+  isOwner,
+  busy,
+  onChoose,
+}: {
+  role: "owner" | "admin" | "member";
+  isOwner: boolean;
+  busy: boolean;
+  onChoose: (what: "admin" | "member" | "remove" | "owner") => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span className="relative shrink-0">
+      <button
+        type="button"
+        aria-label="Change this person"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="state-layer flex h-9 w-9 items-center justify-center rounded-full"
+        disabled={busy}
+      >
+        <MoreHorizontal size={iconSize.md} aria-hidden />
+      </button>
+      {open ? (
+        <span className="absolute right-0 top-10 z-tabs flex w-44 flex-col overflow-hidden rounded-lg bg-card shadow-elevation-2">
+          <button
+            type="button"
+            className="state-layer px-4 py-3 text-left text-1 font-semibold"
+            onClick={() => {
+              setOpen(false);
+              onChoose(role === "admin" ? "member" : "admin");
+            }}
+          >
+            {role === "admin" ? "Make a member" : "Make an admin"}
+          </button>
+          {isOwner ? (
+            <button
+              type="button"
+              className="state-layer px-4 py-3 text-left text-1 font-semibold"
+              onClick={() => {
+                setOpen(false);
+                onChoose("owner");
+              }}
+            >
+              Hand the project over
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="state-layer px-4 py-3 text-left text-1 font-semibold text-destructive"
+            onClick={() => {
+              setOpen(false);
+              onChoose("remove");
+            }}
+          >
+            Take out of the project
+          </button>
+        </span>
       ) : null}
-      {project.status === "cancelled" && project.cancelledReason ? (
-        <div className="mb-4 rounded-lg border border-border px-4 py-3 text-1 text-muted-foreground">
-          Cancelled — {project.cancelledReason}
-        </div>
-      ) : null}
-      {project.status === "completed" && project.completedOn ? (
-        <div
-          className="mb-4 rounded-lg px-4 py-3 text-1 font-semibold"
-          style={{ background: "var(--success-container)", color: "var(--success)" }}
-        >
-          Completed on {project.completedOn}
-        </div>
-      ) : null}
-
-      <img src={project.artwork} alt="" className="mb-4 h-40 w-full rounded-lg object-cover" />
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        <Tag>{project.type}</Tag>
-        <Tag>{project.mode}</Tag>
-        <Tag>{project.location}</Tag>
-        {project.budget ? <Tag tone="ok">{project.budget}</Tag> : null}
-      </div>
-
-      <p className="mb-5 text-1 leading-relaxed text-muted-foreground">{project.description}</p>
-
-      {pinned ? (
-        <PinnedNote>
-          {pinned.title} — {pinned.body}
-        </PinnedNote>
-      ) : null}
-
-      <Card className="mb-5">
-        <div className="mb-2 flex items-center justify-between">
-          <p className="text-1 font-semibold">Progress</p>
-          <span className="text-1 font-bold text-foreground">{project.progress}%</span>
-        </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-border">
-          <div
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${project.progress}%` }}
-          />
-        </div>
-        <p className="mt-2 text-1 text-muted-foreground">
-          {nextMilestone
-            ? `Next: ${nextMilestone.name} · due ${nextMilestone.due}`
-            : "All milestones done"}
-        </p>
-      </Card>
-
-      <Label>People</Label>
-      <Link to="/collab/$id/participants" params={{ id: project.id }}>
-        <Card className="mb-5">
-          <div className="flex items-center justify-between">
-            <ParticipantStack people={project.participants} />
-            <span className="text-1 font-semibold text-foreground">
-              {project.participants.length} collaborators
-            </span>
-          </div>
-        </Card>
-      </Link>
-
-      <Label>Milestones</Label>
-      <div className="mb-5 divide-y divide-border rounded-lg bg-subtle px-4">
-        {project.milestones.slice(0, 3).map((m) => (
-          <MilestoneRow key={m.id} m={m} projectId={project.id} />
-        ))}
-      </div>
-
-      <Label>Recent files</Label>
-      <div className="mb-5 divide-y divide-border rounded-lg bg-subtle px-4">
-        {project.files.slice(0, 3).map((f) => (
-          <FileRow key={f.id} file={f} projectId={project.id} />
-        ))}
-      </div>
-
-      <Label>Latest activity</Label>
-      <div className="mb-6 rounded-lg bg-subtle px-4 py-2">
-        {project.activity.slice(0, 4).map((a) => (
-          <ActivityItem key={a.id} a={a} />
-        ))}
-      </div>
-
-      <div className="mb-8 flex gap-3">
-        <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
-          Open Messages
-        </BtnLink>
-        <BtnLink to="/collab/$id/discussion" params={{ id: project.id }} className="flex-1 w-full">
-          Post an Update
-        </BtnLink>
-      </div>
-    </WorkspaceShell>
+    </span>
   );
 }
