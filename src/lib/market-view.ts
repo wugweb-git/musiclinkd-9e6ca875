@@ -1,6 +1,11 @@
 import { subcategories, type Listing, type ListingType } from "@/data/market";
 import type { RentalCategory, RentalItem } from "@/data/rentals";
-import { listListings, taxonomyLabel, type ListingRow } from "@/lib/catalog.functions";
+import {
+  listListings,
+  listMyListings,
+  taxonomyLabel,
+  type ListingRow,
+} from "@/lib/catalog.functions";
 import { priceParts } from "@/lib/price";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 
@@ -119,6 +124,16 @@ async function loadRows() {
 /** Every database listing, newest first. Empty when the catalog cannot be read. */
 export async function loadCatalogListings(): Promise<Listing[]> {
   const [rows, labels] = await loadRows();
+  const now = Date.now();
+  return rows.map((row) => listingFromRow(row, labels, now));
+}
+
+/** The signed-in user's own listings, newest first — for /marketplace/mine. */
+export async function loadMyCatalogListings(): Promise<Listing[]> {
+  const [rows, labels] = await Promise.all([
+    listMyListings().catch((): ListingRow[] => []),
+    getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+  ]);
   const now = Date.now();
   return rows.map((row) => listingFromRow(row, labels, now));
 }

@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState, ListingRow } from "@/components/ml/market";
-import { listings, offers } from "@/data/market";
+import { offers } from "@/data/market";
+import { loadMyCatalogListings } from "@/lib/market-view";
+import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/marketplace/mine")({
@@ -27,11 +30,23 @@ const tabs = ["Active", "Drafts", "Offers"];
 
 function Mine() {
   const [tab, setTab] = useState(tabs[0]!);
+  const { signedIn } = useAuth();
+  const mine = useQuery({
+    queryKey: ["marketplace", "mine"],
+    queryFn: loadMyCatalogListings,
+    enabled: signedIn,
+  });
+  const listings = mine.data ?? [];
+
   return (
     <Screen>
       <TopBar
         title="My Marketplace"
-        subtitle="4 active · 2 pending review"
+        {...(mine.isLoading
+          ? {}
+          : {
+              subtitle: `${listings.length} active listing${listings.length === 1 ? "" : "s"}`,
+            })}
         back="/marketplace"
         right={
           <TextLink to="/marketplace/sell" className="text-1">
@@ -48,22 +63,24 @@ function Mine() {
       </div>
 
       <div className="space-y-3 px-5">
-        {tab === "Active"
-          ? listings.slice(0, 3).map((l) => (
-              <div key={l.id}>
-                <ListingRow l={l} />
-                <div className="mt-1.5 flex gap-2 px-1 text-1 font-semibold text-muted-foreground">
-                  <span
-                    className="rounded-full px-2 py-1"
-                    style={{ background: "var(--success-container)", color: "var(--success)" }}
-                  >
-                    Published
-                  </span>
-                  <span className="rounded-full bg-background px-2 py-1">312 views · 41 saves</span>
-                </div>
-              </div>
-            ))
-          : null}
+        {tab === "Active" ? (
+          mine.isLoading ? (
+            <div className="space-y-3" aria-busy>
+              {[0, 1].map((i) => (
+                <div key={i} className="h-28 animate-pulse rounded-lg bg-subtle" />
+              ))}
+            </div>
+          ) : listings.length ? (
+            listings.map((l) => <ListingRow key={l.id} l={l} />)
+          ) : (
+            <EmptyState
+              emoji="🛍️"
+              title="No listings yet"
+              body="Everything you list on the marketplace shows up here."
+              action={<BtnLink to="/marketplace/sell">Create a Listing</BtnLink>}
+            />
+          )
+        ) : null}
 
         {tab === "Drafts" ? (
           <EmptyState

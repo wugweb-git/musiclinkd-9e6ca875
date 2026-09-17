@@ -189,6 +189,20 @@ export const listListings = createServerFn({ method: "GET" }).handler(async () =
   return (data ?? []) as unknown as ListingRow[];
 });
 
+/** Listings the signed-in user is selling, newest first. */
+export const listMyListings = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data, error } = await client
+      .from("marketplace_listings")
+      .select(LISTING)
+      .eq("seller_profile_id", context.userId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as unknown as ListingRow[];
+  });
+
 export const getListing = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
