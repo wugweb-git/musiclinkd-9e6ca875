@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
   CalendarDays,
@@ -50,7 +50,6 @@ import { LogoMark } from "./logo";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
-import { AgentAudioVisualizerBar } from "@/components/agents-ui/agent-audio-visualizer-bar";
 import { MediaEmbed } from "./media-embed";
 import { recordPlay } from "@/lib/plays";
 import { iconSize } from "@/lib/tokens";
@@ -699,6 +698,30 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
   );
 }
 
+/**
+ * A "now playing" indicator: 5 fixed-height bars. Replaces AgentAudioVisualizerBar
+ * (agents-ui, backed by @livekit/components-react) which this call site never used
+ * for real live-audio data — it always passed a hardcoded volumeBands array, and its
+ * "speaking" state has no time-varying highlight sequence, so the render was already
+ * static. That import alone added 1.1MB to this route's SSR bundle (see
+ * docs/component-inventory-2026-09-16.md); this reproduces the same visual output
+ * with none of it. agents-ui/agent-audio-visualizer-bar.tsx is left in place for
+ * actual live-audio use elsewhere in the future.
+ */
+function PlaybackBars({ className, ...props }: { className?: string } & ComponentProps<"div">) {
+  return (
+    <div className={cn("relative flex items-center", className)} {...props}>
+      {[0.5, 0.9, 0.35, 0.75, 0.55].map((band, i) => (
+        <span
+          key={i}
+          className="w-[8px] min-h-[8px] rounded-full bg-current"
+          style={{ height: `${band * 100}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function AudioTrackCard({
   track,
   playing,
@@ -729,14 +752,7 @@ export function AudioTrackCard({
           </p>
           {/* While a track plays, the bars stand in for the duration: the row shows it is running. */}
           {playing ? (
-            <AgentAudioVisualizerBar
-              size="sm"
-              state="speaking"
-              barCount={5}
-              volumeBands={[0.5, 0.9, 0.35, 0.75, 0.55]}
-              className="mt-1 h-4 justify-start gap-0.5 text-foreground"
-              aria-hidden
-            />
+            <PlaybackBars className="mt-1 h-4 justify-start gap-0.5 text-foreground" aria-hidden />
           ) : track.duration ? (
             <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
           ) : null}
