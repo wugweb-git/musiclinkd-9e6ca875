@@ -174,6 +174,34 @@ export const listMyReviews = createServerFn({ method: "GET" })
     return (data ?? []) as unknown as ReviewRow[];
   });
 
+/** Correct the wording of a review you wrote. Rating is locked once published — body only. */
+export const editMyReview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid(), body: z.string().trim().min(10).max(2000) }).parse(d))
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("reviews")
+      .update({ body: data.body } as never)
+      .eq("id", data.id)
+      .eq("author_profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { edited: true };
+  });
+
+/** Remove a review you wrote. */
+export const deleteMyReview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("reviews")
+      .delete()
+      .eq("id", data.id)
+      .eq("author_profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { deleted: true };
+  });
+
 /** The reviews written about this account, for the Reviews screen. */
 export const listReviewsAboutMe = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

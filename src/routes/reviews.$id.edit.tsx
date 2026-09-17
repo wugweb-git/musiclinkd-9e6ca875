@@ -1,8 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, Dialog, EmptyState, Stars } from "@/components/ml/kit";
-import { getReview } from "@/data/reviews";
+import { Card, Dialog, EmptyState, Loading, Stars } from "@/components/ml/kit";
+import { deleteMyReview, editMyReview, listMyReviews } from "@/lib/reviews.functions";
 
 export const Route = createFileRoute("/reviews/$id/edit")({
   head: () => ({
@@ -24,9 +27,56 @@ export const Route = createFileRoute("/reviews/$id/edit")({
 function EditReview() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const r = getReview(id);
-  const [body, setBody] = useState(r?.body ?? "");
+  const queryClient = useQueryClient();
+  const load = useServerFn(listMyReviews);
+  const save = useServerFn(editMyReview);
+  const remove = useServerFn(deleteMyReview);
+  const q = useQuery({ queryKey: ["reviews", "mine"], queryFn: () => load() });
+  const r = q.data?.find((x) => x.id === id);
+  const [body, setBody] = useState("");
   const [confirm, setConfirm] = useState(false);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => setBody(r?.body ?? ""), [r?.body]);
+
+  async function onSave() {
+    if (!r) return;
+    setBusy(true);
+    try {
+      await save({ data: { id: r.id, body: body.trim() } });
+      await queryClient.invalidateQueries({ queryKey: ["reviews", "mine"] });
+      toast.success("Review updated");
+      void navigate({ to: "/reviews" });
+    } catch {
+      toast.error("Couldn't save that — try again");
+      setBusy(false);
+    }
+  }
+
+  async function onDelete() {
+    if (!r) return;
+    setBusy(true);
+    try {
+      await remove({ data: { id: r.id } });
+      await queryClient.invalidateQueries({ queryKey: ["reviews", "mine"] });
+      toast.success("Review deleted");
+      void navigate({ to: "/reviews" });
+    } catch {
+      toast.error("Couldn't delete that — try again");
+      setBusy(false);
+      setConfirm(false);
+    }
+  }
+
+  if (q.isLoading) {
+    return (
+      <Screen>
+        <TopBar title="Edit review" back="/reviews" />
+        <div className="px-5 pt-8">
+          <Loading />
+        </div>
+      </Screen>
+    );
+  }
 
   if (!r) {
     return (
@@ -41,7 +91,7 @@ function EditReview() {
 
   return (
     <Screen>
-      <TopBar title="Edit review" subtitle={r.sourceLabel} back="/reviews" />
+      <TopBar title="Edit review" subtitle={r.author_name} back="/reviews" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
@@ -69,12 +119,12 @@ function EditReview() {
 
         <Btn
           className="w-full"
-          disabled={body.trim().length < 10}
-          onClick={() => navigate({ to: "/reviews" })}
+          disabled={body.trim().length < 10 || busy}
+          onClick={() => void onSave()}
         >
-          Save changes
+          {busy ? "Saving…" : "Save changes"}
         </Btn>
-        <Btn variant="ghost" className="w-full" onClick={() => setConfirm(true)}>
+        <Btn variant="ghost" className="w-full" onClick={() => setConfirm(true)} disabled={busy}>
           Delete this review
         </Btn>
       </div>
@@ -85,8 +135,10 @@ function EditReview() {
         body="It disappears from their profile and from your history. This cannot be undone."
         onClose={() => setConfirm(false)}
       >
-        <Btn onClick={() => navigate({ to: "/reviews" })}>Delete review</Btn>
-        <Btn variant="ghost" onClick={() => setConfirm(false)}>
+        <Btn onClick={() => void onDelete()} disabled={busy}>
+          {busy ? "Deleting…" : "Delete review"}
+        </Btn>
+        <Btn variant="ghost" onClick={() => setConfirm(false)} disabled={busy}>
           Keep it
         </Btn>
       </Dialog>

@@ -1,8 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Stars } from "@/components/ml/kit";
-import { getReview, reviewPolicy } from "@/data/reviews";
+import { Card, EmptyState, Loading, Stars } from "@/components/ml/kit";
+import { reviewPolicy } from "@/data/reviews";
+import { listReviewsAboutMe, replyToReview } from "@/lib/reviews.functions";
 
 export const Route = createFileRoute("/reviews/$id/reply")({
   head: () => ({
@@ -24,8 +28,39 @@ export const Route = createFileRoute("/reviews/$id/reply")({
 function ReplyToReview() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const r = getReview(id);
-  const [body, setBody] = useState(r?.response?.body ?? "");
+  const queryClient = useQueryClient();
+  const load = useServerFn(listReviewsAboutMe);
+  const reply = useServerFn(replyToReview);
+  const q = useQuery({ queryKey: ["reviews", "about-me"], queryFn: () => load() });
+  const r = q.data?.find((x) => x.id === id);
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+  useEffect(() => setBody(r?.response ?? ""), [r?.response]);
+
+  async function post() {
+    if (!r) return;
+    setSending(true);
+    try {
+      await reply({ data: { id: r.id, response: body.trim() } });
+      await queryClient.invalidateQueries({ queryKey: ["reviews", "about-me"] });
+      toast.success("Reply posted");
+      void navigate({ to: "/reviews" });
+    } catch {
+      toast.error("Couldn't post that reply — try again");
+      setSending(false);
+    }
+  }
+
+  if (q.isLoading) {
+    return (
+      <Screen>
+        <TopBar title="Reply" back="/reviews" />
+        <div className="px-5 pt-8">
+          <Loading />
+        </div>
+      </Screen>
+    );
+  }
 
   if (!r) {
     return (
@@ -43,20 +78,21 @@ function ReplyToReview() {
 
   return (
     <Screen>
-      <TopBar title="Reply" subtitle={r.sourceLabel} back="/reviews" />
+      <TopBar title="Reply" subtitle={r.author_name} back="/reviews" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
           <div className="flex items-center gap-3">
-            <img
-              src={r.authorPhoto}
-              alt=""
-              className="h-10 w-10 rounded-full object-cover"
-              loading="lazy"
-            />
+            <span aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-background" />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">{r.authorName}</p>
-              <p className="text-1 text-muted-foreground">{r.createdAt}</p>
+              <p className="truncate text-sm font-semibold">{r.author_name}</p>
+              <p className="text-1 text-muted-foreground">
+                {new Date(r.created_at).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
             </div>
             <Stars value={r.rating} />
           </div>
@@ -89,12 +125,8 @@ function ReplyToReview() {
           </ul>
         </Card>
 
-        <Btn
-          className="w-full"
-          disabled={body.trim().length < 4}
-          onClick={() => navigate({ to: "/reviews" })}
-        >
-          Post response
+        <Btn className="w-full" disabled={body.trim().length < 4 || sending} onClick={() => void post()}>
+          {sending ? "Posting…" : "Post response"}
         </Btn>
       </div>
     </Screen>
