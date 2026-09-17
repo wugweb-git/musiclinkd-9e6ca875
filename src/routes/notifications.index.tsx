@@ -1,18 +1,25 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Settings2, CheckCheck, BellOff } from "lucide-react";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
-import { EmptyState } from "@/components/ml/kit";
-import { notificationIcon } from "@/components/ml/notification-icons";
-import { invitations as seedInvitations } from "@/data/collab";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
 import {
-  notifications as seed,
-  categoryMeta,
-  unreadCount,
-  storeReadIds,
-  withStoredRead,
-  type NotificationCategory,
-} from "@/data/notifications";
+  BellOff,
+  BriefcaseBusiness,
+  CalendarCheck,
+  MessageCircle,
+  Star,
+  UserRoundPlus,
+  type LucideIcon,
+} from "lucide-react";
+import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
+import { EmptyState, Loading } from "@/components/ml/kit";
+import {
+  listNotifications,
+  markRead,
+  type Notification,
+  type NotificationKind,
+} from "@/lib/notifications.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/notifications/")({
@@ -32,51 +39,87 @@ export const Route = createFileRoute("/notifications/")({
   component: NotificationsScreen,
 });
 
-const filters = ["All", "Unread", "Opportunities", "Bookings", "Messages", "Account"] as const;
+const filters = ["All", "Unread", "Opportunities", "Bookings", "Messages"] as const;
 
-const filterMatch: Record<string, NotificationCategory[]> = {
-  Opportunities: ["opportunities"],
-  Bookings: ["bookings"],
-  Messages: ["messages", "collaboration"],
-  Account: ["system", "verification", "reviews", "marketplace"],
+/** One icon per kind of thing that happened. */
+const kindIcon: Record<NotificationKind, LucideIcon> = {
+  connection_request: UserRoundPlus,
+  connection_accepted: UserRoundPlus,
+  message: MessageCircle,
+  application_received: BriefcaseBusiness,
+  application_status: BriefcaseBusiness,
+  booking_requested: CalendarCheck,
+  booking_answered: CalendarCheck,
+  review_received: Star,
+  review_reply: Star,
 };
 
-function NotificationsScreen() {
-  const navigate = useNavigate();
-  const [items, setItems] = useState(seed);
-  useEffect(() => setItems((all) => withStoredRead(all)), []);
-  const markRead = (next: typeof items) => {
-    setItems(next);
-    storeReadIds(next.filter((n) => n.read).map((n) => n.id));
-  };
-  const [invites, setInvites] = useState(seedInvitations);
-  const [filter, setFilter] = useState<(typeof filters)[number]>("All");
+const groupOf: Record<NotificationKind, (typeof filters)[number]> = {
+  connection_request: "Messages",
+  connection_accepted: "Messages",
+  message: "Messages",
+  application_received: "Opportunities",
+  application_status: "Opportunities",
+  booking_requested: "Bookings",
+  booking_answered: "Bookings",
+  review_received: "All",
+  review_reply: "All",
+};
 
-  const list = items.filter((n) => {
-    if (filter === "All") return true;
-    if (filter === "Unread") return !n.read;
-    return filterMatch[filter]?.includes(n.category) ?? true;
+/** "4 minutes ago" is a lie the moment the tab sits idle; this says the day and time instead. */
+function when(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/** Everything that happened, written by the database as it happened. */
+function NotificationsScreen() {
+  const [filter, setFilter] = useState<(typeof filters)[number]>("All");
+  const { signedIn, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
+  const load = useServerFn(listNotifications);
+  const read = useServerFn(markRead);
+
+  const q = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => load(),
+    enabled: signedIn,
   });
 
-  const open = (id: string, to: string) => {
-    markRead(items.map((n) => (n.id === id ? { ...n, read: true } : n)));
-    navigate({ to });
-  };
+  const mark = useMutation({
+    mutationFn: (id?: string) => read({ data: id ? { id } : {} }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      void queryClient.invalidateQueries({ queryKey: ["notifications", "unread"] });
+    },
+  });
+
+  const all = q.data ?? [];
+  const unread = all.filter((n) => !n.read_at).length;
+  const list = all.filter((n) =>
+    filter === "All" ? true : filter === "Unread" ? !n.read_at : groupOf[n.kind] === filter,
+  );
 
   return (
     <Screen>
       <TopBar
         title="Notifications"
-        subtitle={unreadCount(items) ? `${unreadCount(items)} unread` : "You are all caught up"}
-        back="/home"
+        subtitle={unread ? `${unread} unread` : "Everything that needs you"}
         right={
-          <Link
-            to="/notifications/settings"
-            aria-label="Notification settings"
-            className="grid h-10 w-10 place-items-center rounded-full bg-background"
-          >
-            <Settings2 size={iconSize.sm} />
-          </Link>
+          unread ? (
+            <button
+              type="button"
+              onClick={() => mark.mutate(undefined)}
+              className="pill bg-background text-muted-foreground"
+            >
+              Mark all read
+            </button>
+          ) : undefined
         }
       />
 
@@ -88,135 +131,68 @@ function NotificationsScreen() {
         ))}
       </div>
 
-      <div className="px-5 pt-3">
-        <button
-          type="button"
-          onClick={() => markRead(items.map((n) => ({ ...n, read: true })))}
-          className="inline-flex items-center gap-1.5 text-1 font-semibold text-foreground"
-        >
-          <CheckCheck size={iconSize.sm} /> Mark all as read
-        </button>
-      </div>
-
-      {/* Invitations come first: they are the only rows that ask for an answer. */}
-      {invites.length && (filter === "All" || filter === "Unread") ? (
-        <section className="px-5 pt-5">
-          <h2 className="pill mb-2 px-1 text-muted-foreground">Invitations</h2>
-          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
-            {invites.map((inv) => (
-              <li key={inv.id} className="p-4">
-                <div className="flex gap-3">
-                  <img
-                    src={inv.inviterPhoto}
-                    alt=""
-                    loading="lazy"
-                    className="h-12 w-12 shrink-0 rounded-full object-cover"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-2 font-semibold leading-snug">
-                      {inv.inviter} invited you to {inv.projectName}
-                    </p>
-                    <p className="mt-0.5 truncate text-1 text-muted-foreground">
-                      {inv.inviterRole}
-                    </p>
-                    <p className="mt-0.5 truncate text-1 text-muted-foreground">
-                      As {inv.proposedRole} · {inv.sentAt}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <Btn
-                    variant="outline"
-                    className="min-w-0 flex-1 px-3"
-                    onClick={() => setInvites((all) => all.filter((i) => i.id !== inv.id))}
-                  >
-                    Ignore
-                  </Btn>
-                  <Btn
-                    className="min-w-0 flex-1 px-3"
-                    onClick={() => navigate({ to: "/collab/invites/$id", params: { id: inv.id } })}
-                  >
-                    Accept
-                  </Btn>
-                </div>
+      <main className="px-5 pt-3">
+        {!signedIn && !authLoading ? (
+          <EmptyState
+            title="Sign in to see your notifications"
+            body="Requests, replies and messages land here."
+          />
+        ) : q.isLoading ? (
+          <Loading rows={4} />
+        ) : list.length === 0 ? (
+          <EmptyState
+            icon={<BellOff size={iconSize.md} className="text-muted-foreground" />}
+            title={filter === "All" ? "Nothing yet" : `Nothing under ${filter}`}
+            body="When someone connects, writes, applies or answers you, it appears here."
+          />
+        ) : (
+          <ul className="divide-y divide-border">
+            {list.map((n) => (
+              <li key={n.id}>
+                <NotificationRow n={n} onRead={() => mark.mutate(n.id)} />
               </li>
             ))}
           </ul>
-        </section>
-      ) : null}
-
-      <section className="px-5 pt-5 pb-6">
-        <h2 className="pill mb-2 px-1 text-muted-foreground">Activity</h2>
-        {list.length ? (
-          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
-            {list.map((n) => {
-              const Icon = notificationIcon(n.category);
-              return (
-                <li key={n.id}>
-                  <button
-                    type="button"
-                    onClick={() => open(n.id, n.to)}
-                    className={`state-layer flex w-full gap-3 px-4 py-3.5 text-left ${
-                      n.read ? "" : "bg-background"
-                    }`}
-                  >
-                    <span className="relative shrink-0">
-                      {n.actor ? (
-                        <img
-                          src={n.actor.photo}
-                          alt=""
-                          loading="lazy"
-                          className="h-11 w-11 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span
-                          aria-hidden
-                          className="grid h-11 w-11 place-items-center rounded-full bg-background"
-                        >
-                          <Icon size={20} strokeWidth={1.75} />
-                        </span>
-                      )}
-                      {n.actor ? (
-                        <span
-                          aria-hidden
-                          className="absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-card bg-background"
-                        >
-                          <Icon size={12} strokeWidth={2} />
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-start gap-2">
-                        <span className="min-w-0 flex-1 text-sm font-semibold leading-snug">
-                          {n.title}
-                        </span>
-                        <span className="shrink-0 text-1 text-muted-foreground">{n.when}</span>
-                      </span>
-                      <span className="mt-0.5 block line-clamp-2 text-1 leading-snug text-muted-foreground">
-                        {n.body}
-                      </span>
-                      {n.cta ? (
-                        <span className="mt-1.5 block text-1 font-semibold text-pink-strong">
-                          {n.cta}
-                        </span>
-                      ) : null}
-                    </span>
-                    {!n.read ? (
-                      <span aria-hidden className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand" />
-                    ) : null}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <EmptyState
-            icon={<BellOff size={iconSize.md} className="text-muted-foreground" />}
-            title="Nothing here"
-            body="New activity on your bookings, applications and messages shows up here."
-          />
         )}
-      </section>
+      </main>
     </Screen>
+  );
+}
+
+function NotificationRow({ n, onRead }: { n: Notification; onRead: () => void }) {
+  const Icon = kindIcon[n.kind];
+  const inner = (
+    <>
+      <span className="relative shrink-0">
+        {n.actor?.avatar_url ? (
+          <img src={n.actor.avatar_url} alt="" className="h-11 w-11 rounded-full object-cover" />
+        ) : (
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-background">
+            <Icon size={iconSize.md} aria-hidden />
+          </span>
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold leading-snug">{n.title}</span>
+        {n.body ? (
+          <span className="mt-0.5 block line-clamp-2 text-1 text-muted-foreground">{n.body}</span>
+        ) : null}
+        <span className="mt-1 block text-1 text-muted-foreground">{when(n.created_at)}</span>
+      </span>
+      {n.read_at ? null : (
+        <span aria-label="Unread" className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-brand" />
+      )}
+    </>
+  );
+  const className = "state-layer flex w-full items-start gap-3 py-3.5 text-left";
+
+  return n.href ? (
+    <Link to={n.href} onClick={onRead} className={className}>
+      {inner}
+    </Link>
+  ) : (
+    <button type="button" onClick={onRead} className={className}>
+      {inner}
+    </button>
   );
 }
