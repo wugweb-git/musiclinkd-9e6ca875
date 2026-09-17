@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Stars } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
+import { replyToReview } from "@/lib/reviews.functions";
 
 export const Route = createFileRoute("/business/$id/reviews")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -23,10 +27,29 @@ export const Route = createFileRoute("/business/$id/reviews")({
 });
 
 function BusinessReviews() {
+  const queryClient = useQueryClient();
   const b = businessView(Route.useLoaderData());
+  const reply = useServerFn(replyToReview);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sent, setSent] = useState<Record<string, string>>({});
+  const [sending, setSending] = useState<string | null>(null);
+
+  async function postReply(id: string) {
+    const response = (drafts[id] ?? "").trim();
+    if (response.length < 4) return;
+    setSending(id);
+    try {
+      await reply({ data: { id, response } });
+      setSent((s) => ({ ...s, [id]: response }));
+      setReplyTo(null);
+      await queryClient.invalidateQueries();
+    } catch {
+      toast.error("Couldn't post that reply — try again");
+    } finally {
+      setSending(null);
+    }
+  }
 
   if (!b) {
     return (
@@ -84,13 +107,10 @@ function BusinessReviews() {
                     <div className="mt-2 flex gap-2">
                       <Btn
                         className="flex-1"
-                        disabled={(drafts[r.id] ?? "").trim().length < 4}
-                        onClick={() => {
-                          setSent({ ...sent, [r.id]: drafts[r.id] ?? "" });
-                          setReplyTo(null);
-                        }}
+                        disabled={(drafts[r.id] ?? "").trim().length < 4 || sending === r.id}
+                        onClick={() => void postReply(r.id)}
                       >
-                        Post reply
+                        {sending === r.id ? "Posting…" : "Post reply"}
                       </Btn>
                       <Btn variant="ghost" className="flex-1" onClick={() => setReplyTo(null)}>
                         Cancel

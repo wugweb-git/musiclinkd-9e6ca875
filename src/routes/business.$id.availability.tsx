@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, SegmentedField } from "@/components/ml/kit";
+import { Card, EmptyState } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
-import { bookingWindows } from "@/data/services";
+import { updateMyBusiness } from "@/lib/profile-groups.functions";
 
 export const Route = createFileRoute("/business/$id/availability")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -12,11 +15,10 @@ export const Route = createFileRoute("/business/$id/availability")({
       { title: "Business availability | MusicLinkd" },
       {
         name: "description",
-        content:
-          "Set opening hours, notice period and blackout dates so the calendar only shows real slots.",
+        content: "Set the opening hours customers see on your business profile.",
       },
       { property: "og:title", content: "Business availability | MusicLinkd" },
-      { property: "og:description", content: "Opening hours, notice period and blackout dates." },
+      { property: "og:description", content: "Opening hours for your business." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -25,9 +27,15 @@ export const Route = createFileRoute("/business/$id/availability")({
 });
 
 function BusinessAvailability() {
-  const b = businessView(Route.useLoaderData());
-  const [notice, setNotice] = useState(bookingWindows[1] ?? "24 hours notice");
-  const [saved, setSaved] = useState(false);
+  const queryClient = useQueryClient();
+  const loaderData = Route.useLoaderData();
+  const b = businessView(loaderData);
+  const save = useServerFn(updateMyBusiness);
+  const [hours, setHours] = useState("");
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    setHours(loaderData.record?.business.operating_hours ?? "");
+  }, [loaderData]);
 
   if (!b) {
     return (
@@ -43,53 +51,42 @@ function BusinessAvailability() {
     );
   }
 
+  async function onSave() {
+    setSaving(true);
+    try {
+      await save({ data: { operating_hours: hours.trim() || null } });
+      await queryClient.invalidateQueries();
+      toast.success("Availability saved");
+    } catch {
+      toast.error("Couldn't save availability");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <Screen>
       <TopBar title="Availability" subtitle={b.name} back={`/business/${b.id}/services`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        {b.hours.length ? (
-          <Card>
-            <p className="text-sm font-semibold">Opening hours</p>
-            <div className="mt-3 space-y-2">
-              {b.hours.map((h) => (
-                <div
-                  key={`${h.day}${h.hours}`}
-                  className="flex items-center justify-between text-1"
-                >
-                  <span className="font-semibold">{h.day}</span>
-                  <span className="text-muted-foreground">{h.hours}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        ) : null}
+        <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
+          A single opening-hours line customers see on your business page. Notice period and
+          blackout dates aren't supported yet.
+        </p>
 
         <Card>
-          <p className="text-sm font-semibold">How much notice do you need?</p>
-          <div className="mt-3">
-            <SegmentedField
-              label="How much notice do you need?"
-              value={notice}
-              options={bookingWindows}
-              onChange={setNotice}
-            />
-          </div>
+          <p className="text-sm font-semibold">Opening hours</p>
+          <textarea
+            rows={3}
+            value={hours}
+            placeholder="e.g. Mon–Sat, 10am–7pm. Closed Sundays."
+            onChange={(e) => setHours(e.target.value)}
+            className="mt-2 w-full resize-none rounded-lg border border-border bg-background p-3 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
+          />
         </Card>
 
-        <Card>
-          <p className="text-sm font-semibold">Blackout dates</p>
-          <p className="mt-1 text-1 text-muted-foreground">
-            Days the rooms are closed, whatever the calendar says.
-          </p>
-          {/* Blackout dates are not stored yet. */}
-          <Btn variant="outline" className="mt-3 w-full">
-            Add blackout dates
-          </Btn>
-        </Card>
-
-        <Btn className="w-full" onClick={() => setSaved(true)}>
-          {saved ? "Availability saved" : "Save availability"}
+        <Btn className="w-full" onClick={() => void onSave()} disabled={saving}>
+          {saving ? "Saving…" : "Save availability"}
         </Btn>
       </div>
     </Screen>
