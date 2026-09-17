@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import type { Listing } from "@/data/market";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
-import { EmptyState as BaseEmptyState, Price } from "./kit";
+import { EmptyState as BaseEmptyState, Price, Segmented } from "./kit";
 import type { PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
@@ -546,8 +546,8 @@ export function CategorySheet({
   );
 }
 
+/** Everything but Listing type: pick as many as apply, so they render as Chip clusters. */
 const filterGroups: { label: string; options: string[] }[] = [
-  { label: "Listing type", options: ["For sale", "Rental", "Service", "Space"] },
   { label: "Category", options: ["Instruments", "Audio Gear", "Studio", "Services", "Spaces"] },
   { label: "Condition", options: ["New", "Like New", "Excellent", "Good", "Fair"] },
   { label: "Brand", options: ["Fender", "Neumann", "Focusrite", "Roland", "Swaraj", "Yamaha"] },
@@ -555,6 +555,9 @@ const filterGroups: { label: string; options: string[] }[] = [
   { label: "Distance", options: ["Within 5 km", "Within 15 km", "Within 50 km", "Anywhere"] },
   { label: "Price", options: ["Under ₹10k", "₹10k–50k", "₹50k–1L", "Above ₹1L"] },
 ];
+
+/** A listing is exactly one of these, so it's a tab row (Segmented), not a Chip cluster. */
+const listingTypes = ["For sale", "Rental", "Service", "Space"] as const;
 
 export function MarketFilterSheet({
   open,
@@ -565,7 +568,8 @@ export function MarketFilterSheet({
   onClose: () => void;
   results?: number;
 }) {
-  const [selected, setSelected] = useState<string[]>(["For sale", "Mumbai"]);
+  const [type, setType] = useState<(typeof listingTypes)[number]>("For sale");
+  const [selected, setSelected] = useState<string[]>(["Mumbai"]);
   const [verified, setVerified] = useState(true);
   const [available, setAvailable] = useState(false);
 
@@ -579,6 +583,11 @@ export function MarketFilterSheet({
         <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
           Clear all
         </button>
+      </div>
+
+      <div className="mb-5">
+        <h3 className="pill mb-2 bg-background text-muted-foreground">Listing type</h3>
+        <Segmented value={type} options={listingTypes} onChange={setType} />
       </div>
 
       {filterGroups.map((g) => (
