@@ -186,3 +186,12 @@ export async function loadCatalogRentals(): Promise<RentalItem[]> {
   const [rows, labels] = await loadRows();
   return rows.filter((row) => row.category === "gear_rental").map((r) => rentalFromRow(r, labels));
 }
+
+/** The signed-in seller's own rental listings, newest first — for /marketplace/rent/listings. */
+export async function loadMyCatalogRentals(): Promise<RentalItem[]> {
+  const [rows, labels] = await Promise.all([
+    listMyListings().catch((): ListingRow[] => []),
+    getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+  ]);
+  return rows.filter((row) => row.category === "gear_rental").map((r) => rentalFromRow(r, labels));
+}

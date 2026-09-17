@@ -7,7 +7,14 @@ import { Screen, TopBar, Chip, BtnLink, Btn } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { Loading } from "@/components/ml/kit";
 import { EquipmentRow, RentalStatusPill } from "@/components/ml/rental";
-import { equipment, equipmentById, inr, rentalNotifications, rentalRequests } from "@/data/rentals";
+import {
+  equipment,
+  equipmentById,
+  inr,
+  rentalNotifications,
+  rentalRequests,
+  type RentalItem,
+} from "@/data/rentals";
 import { TextLink } from "@/components/ml/links";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -15,6 +22,7 @@ import {
   setRentalBookingStatus,
   type MyRentalBooking,
 } from "@/lib/rentals.functions";
+import { loadMyCatalogRentals } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/rent/listings")({
   head: () => ({
@@ -72,11 +80,21 @@ function MyListings() {
   });
   const realRequests = q.data ?? [];
 
+  // A real listing carries no status column yet, so it can only honestly sit in "Active".
+  const myListings = useQuery({
+    queryKey: ["marketplace", "mine", "rentals"],
+    queryFn: loadMyCatalogRentals,
+    enabled: signedIn && tab === "Active",
+  });
+  const realListings: RentalItem[] = bucket === "Active" ? (myListings.data ?? []) : [];
+
   return (
     <Screen>
       <TopBar
         title="My rental listings"
-        subtitle={`${equipment.length} items · 3 requests`}
+        subtitle={`${equipment.length + (myListings.data?.length ?? 0)} items · ${
+          rentalRequests.length + realRequests.length
+        } requests`}
         back="/marketplace/rent"
         right={
           <TextLink to="/marketplace/rent/list" className="shrink-0 text-1">
@@ -102,6 +120,20 @@ function MyListings() {
                 </Chip>
               ))}
             </div>
+            {signedIn && myListings.isLoading && bucket === "Active" ? <Loading rows={2} /> : null}
+            {realListings.map((e) => (
+              <div key={e.id}>
+                <EquipmentRow e={e} />
+                <div className="mt-1.5 flex flex-wrap gap-2 px-1 text-1 font-semibold text-muted-foreground">
+                  <span
+                    className="rounded-full px-2 py-1"
+                    style={{ background: "var(--success-container)", color: "var(--success)" }}
+                  >
+                    Active
+                  </span>
+                </div>
+              </div>
+            ))}
             {shown.length ? (
               shown.map((e) => (
                 <div key={e.id}>
@@ -119,13 +151,13 @@ function MyListings() {
                   </div>
                 </div>
               ))
-            ) : (
+            ) : realListings.length === 0 ? (
               <EmptyState
                 emoji="📦"
                 title={`Nothing ${bucket.toLowerCase()}`}
                 body="Listings move through drafts, review, active, reserved and completed as rentals progress."
               />
-            )}
+            ) : null}
           </>
         ) : null}
 
@@ -158,7 +190,9 @@ function MyListings() {
                       · {r.quantity} unit{r.quantity > 1 ? "s" : ""}
                     </p>
                     {r.totalPaise != null ? (
-                      <p className="mt-1 text-1 font-semibold">{inr(Math.round(r.totalPaise / 100))}</p>
+                      <p className="mt-1 text-1 font-semibold">
+                        {inr(Math.round(r.totalPaise / 100))}
+                      </p>
                     ) : null}
                   </div>
                   <RentalStatusPill status={r.status} />

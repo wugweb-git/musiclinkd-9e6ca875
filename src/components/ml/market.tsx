@@ -320,7 +320,7 @@ export function SellerSummary({
   compact = false,
 }: {
   seller: {
-    id?: string;
+    id?: string | null;
     name: string;
     role?: string;
     location?: string;
