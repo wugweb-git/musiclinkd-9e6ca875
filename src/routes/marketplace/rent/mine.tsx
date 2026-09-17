@@ -49,11 +49,15 @@ function MyRentals() {
   const list = bookings.filter((b) => b.bucket === tab);
   const empty = list.length === 0 && real.length === 0;
 
+  const countOf = (bucket: (typeof tabs)[number]) =>
+    (q.data ?? []).filter((b) => bucketOf(b.status) === bucket).length +
+    bookings.filter((b) => b.bucket === bucket).length;
+
   return (
     <Screen>
       <TopBar
         title="My rentals"
-        subtitle="1 active · 1 upcoming"
+        subtitle={`${countOf("Active")} active · ${countOf("Upcoming")} upcoming`}
         back="/marketplace/rent"
         right={
           <TextLink to="/marketplace/rent/listings" className="shrink-0 text-1">
