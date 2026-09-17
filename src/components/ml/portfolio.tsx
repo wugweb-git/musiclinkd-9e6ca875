@@ -21,6 +21,10 @@ import {
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
 import { Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
+import {
+  StateCard as BaseStateCard,
+  StatusPill as BaseStatusPill,
+} from "@/components/ml/kit";
 import { embedFor } from "@/lib/embed";
 import { MediaEmbed } from "./media-embed";
 import {
@@ -176,17 +180,18 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
   );
 }
 
+/**
+ * Exact same colors as kit.tsx's "good"/"warn" tones. icon={<></>} suppresses the dot kit's
+ * version shows by default — this one was always text-only.
+ */
 export function StatusPill({ published }: { published: boolean }) {
   return (
-    <span
-      className={`shrink-0 rounded-full pill ${
-        published
-          ? "bg-success-container text-success-strong"
-          : "bg-warn-container text-warn-strong"
-      }`}
-    >
-      {published ? "Published" : "Draft"}
-    </span>
+    <BaseStatusPill
+      label={published ? "Published" : "Draft"}
+      tone={published ? "good" : "warn"}
+      icon={<></>}
+      className="shrink-0"
+    />
   );
 }
 
@@ -213,16 +218,7 @@ export function StateCard({
   action?: ReactNode;
   tone?: "neutral" | "error";
 }) {
-  return (
-    <div
-      className={`rounded-lg border bg-card p-6 text-center ${tone === "error" ? "border-destructive" : "border-border"}`}
-      role={tone === "error" ? "alert" : undefined}
-    >
-      <h3 className="text-2">{title}</h3>
-      <p className="mx-auto mt-1.5 max-w-[280px] text-sm text-muted-foreground">{body}</p>
-      {action ? <div className="mt-4 flex justify-center">{action}</div> : null}
-    </div>
-  );
+  return <BaseStateCard title={title} body={body} tone={tone} action={action} />;
 }
 
 /* ---------------- Simple audio preview ---------------------------------- */

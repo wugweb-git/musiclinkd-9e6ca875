@@ -8,13 +8,17 @@ import {
   MapPin,
   Star,
   Users,
-  WifiOff,
   AlertTriangle,
   Info,
+  RefreshCw,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Btn, VerifiedBadge } from "@/components/ml/ui";
-import { EmptyState as BaseEmptyState, Price } from "@/components/ml/kit";
+import {
+  EmptyState as BaseEmptyState,
+  OfflineBanner as BaseOfflineBanner,
+  Price,
+} from "@/components/ml/kit";
 import {
   availabilityFor,
   formatDate,
@@ -744,44 +748,55 @@ export function ProviderRequestCard({
 
 export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
-    <div role="status" className="mb-4 flex items-start gap-3 rounded-lg bg-subtle p-4">
-      <WifiOff size={iconSize.sm} className="mt-0.5 shrink-0 text-muted-foreground" />
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">You're offline</p>
-        <p className="mt-0.5 text-1 text-muted-foreground">
-          Availability may have changed. We won't confirm a booking until you're back online.
-        </p>
-      </div>
-      {onRetry ? (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="min-h-touch shrink-0 text-1 font-bold text-foreground"
-        >
-          Retry
-        </button>
-      ) : null}
-    </div>
+    <BaseOfflineBanner
+      body="Availability may have changed. We won't confirm a booking until you're back online."
+      onRetry={onRetry}
+    />
   );
 }
 
 export function ErrorState({
-  title = "Something went wrong",
+  variant = "card",
+  title,
   message,
+  body,
   onRetry,
 }: {
+  variant?: "card" | "subtle";
   title?: string | undefined;
-  message: string;
-  onRetry: () => void;
+  /** "card" variant's copy prop. */
+  message?: string;
+  /** "subtle" variant's copy prop. */
+  body?: string;
+  onRetry?: (() => void) | undefined;
 }) {
+  if (variant === "subtle") {
+    return (
+      <div className="flex flex-col items-center rounded-lg bg-subtle px-6 py-12 text-center">
+        <AlertTriangle size={iconSize.lg} className="mb-3 text-destructive" />
+        <h3 className="text-2">{title ?? "We couldn't load this collaboration."}</h3>
+        <p className="mt-1 mb-5 text-1 text-muted-foreground">
+          {body ?? "Check your connection and try again."}
+        </p>
+        {onRetry ? (
+          <Btn onClick={onRetry}>
+            <RefreshCw size={iconSize.sm} className="mr-2" /> Retry
+          </Btn>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div role="alert" className="rounded-lg border border-destructive/40 bg-card p-5 text-center">
       <AlertTriangle size={iconSize.lg} className="mx-auto text-destructive" />
-      <p className="mt-2 font-semibold">{title}</p>
+      <p className="mt-2 font-semibold">{title ?? "Something went wrong"}</p>
       <p className="mt-1 text-1 text-muted-foreground">{message}</p>
-      <Btn className="mt-4 w-full" onClick={onRetry}>
-        Try Again
-      </Btn>
+      {onRetry ? (
+        <Btn className="mt-4 w-full" onClick={onRetry}>
+          Try Again
+        </Btn>
+      ) : null}
     </div>
   );
 }

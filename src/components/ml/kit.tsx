@@ -5,7 +5,7 @@
  */
 import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { ChevronRight, Star } from "lucide-react";
+import { ChevronRight, Star, WifiOff } from "lucide-react";
 import { unitLabel, type PriceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 
@@ -25,17 +25,19 @@ export function StatusPill({
   tone = "neutral",
   icon,
   onMedia = false,
+  className = "",
 }: {
   label: string;
   tone?: Tone;
   icon?: ReactNode;
   /** Over a photo or video: the blurred light material, the tone kept in the dot. */
   onMedia?: boolean;
+  className?: string;
 }) {
   const c = toneStyle[tone];
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full pill ${onMedia ? "pill-glass" : c.pill}`}
+      className={`inline-flex items-center gap-1 rounded-full pill ${onMedia ? "pill-glass" : c.pill} ${className}`}
     >
       {icon ?? <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} />}
       {label}
@@ -344,6 +346,90 @@ export function EmptyState({
       {extra ? (
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2">{extra}</div>
       ) : null}
+    </div>
+  );
+}
+
+export function OfflineBanner({
+  variant = "neutral",
+  title = "You're offline",
+  body,
+  onRetry,
+}: {
+  variant?: "neutral" | "warn";
+  title?: string;
+  body: ReactNode;
+  onRetry?: (() => void) | undefined;
+}) {
+  if (variant === "warn") {
+    return (
+      <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn">
+        <WifiOff size={iconSize.sm} className="shrink-0" />
+        <p className="flex-1 text-1 font-semibold">{body}</p>
+        {onRetry ? (
+          <button type="button" onClick={onRetry} className="pill bg-background text-foreground">
+            Retry
+          </button>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <div role="status" className="mb-4 flex items-start gap-3 rounded-lg bg-subtle p-4">
+      <WifiOff size={iconSize.sm} className="mt-0.5 shrink-0 text-muted-foreground" />
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold">{title}</p>
+        <p className="mt-0.5 text-1 text-muted-foreground">{body}</p>
+      </div>
+      {onRetry ? (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="min-h-touch shrink-0 text-1 font-bold text-foreground"
+        >
+          Retry
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+export function StateCard({
+  variant = "card",
+  title,
+  body,
+  tone = "neutral",
+  action,
+  children,
+}: {
+  variant?: "card" | "subtle";
+  title: string;
+  body: string;
+  tone?: "neutral" | "error";
+  action?: ReactNode;
+  children?: ReactNode;
+}) {
+  const extra = action ?? children;
+
+  if (variant === "subtle") {
+    return (
+      <section className="rounded-lg bg-subtle p-6 text-center">
+        <h2 className="text-2 leading-tight">{title}</h2>
+        <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">{body}</p>
+        {extra ? <div className="mt-5 flex flex-col gap-2">{extra}</div> : null}
+      </section>
+    );
+  }
+
+  return (
+    <div
+      className={`rounded-lg border bg-card p-6 text-center ${tone === "error" ? "border-destructive" : "border-border"}`}
+      role={tone === "error" ? "alert" : undefined}
+    >
+      <h3 className="text-2">{title}</h3>
+      <p className="mx-auto mt-1.5 max-w-[280px] text-sm text-muted-foreground">{body}</p>
+      {extra ? <div className="mt-4 flex justify-center">{extra}</div> : null}
     </div>
   );
 }

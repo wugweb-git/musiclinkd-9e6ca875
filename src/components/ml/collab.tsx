@@ -8,9 +8,7 @@ import {
   Pause,
   Pin,
   Play,
-  RefreshCw,
   Upload,
-  WifiOff,
   X,
   FileText,
   Flag,
@@ -21,7 +19,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Btn, VerifiedBadge } from "@/components/ml/ui";
-import { EmptyState as BaseEmptyState } from "@/components/ml/kit";
+import {
+  Card,
+  EmptyState as BaseEmptyState,
+  OfflineBanner as BaseOfflineBanner,
+} from "@/components/ml/kit";
+import { ErrorState as BaseErrorState } from "@/components/ml/booking";
+// Re-exported: 20+ files import Card from here rather than kit.tsx directly.
+export { Card };
 import {
   fileKindMeta,
   milestoneMeta,
@@ -63,10 +68,6 @@ export function StatusPill({ status }: { status: CollabStatus }) {
 export function Tag({ children, tone = "off" }: { children: ReactNode; tone?: string }) {
   const c = toneStyle[tone] ?? toneStyle["off"]!;
   return <span className={`inline-flex items-center rounded-full pill ${c.pill}`}>{children}</span>;
-}
-
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-lg bg-subtle p-4 ${className}`}>{children}</div>;
 }
 
 export function Label({ children }: { children: ReactNode }) {
@@ -474,33 +475,16 @@ export function ErrorState({
   body?: string;
   onRetry?: () => void;
 }) {
-  return (
-    <div className="flex flex-col items-center rounded-lg bg-subtle px-6 py-12 text-center">
-      <AlertTriangle size={iconSize.lg} className="mb-3 text-destructive" />
-      <h3 className="text-2">{title}</h3>
-      <p className="mt-1 mb-5 text-1 text-muted-foreground">{body}</p>
-      {onRetry ? (
-        <Btn onClick={onRetry}>
-          <RefreshCw size={iconSize.sm} className="mr-2" /> Retry
-        </Btn>
-      ) : null}
-    </div>
-  );
+  return <BaseErrorState variant="subtle" title={title} body={body} onRetry={onRetry} />;
 }
 
 export function OfflineBanner({ onRetry }: { onRetry?: () => void }) {
   return (
-    <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn">
-      <WifiOff size={iconSize.sm} className="shrink-0" />
-      <p className="flex-1 text-1 font-semibold">
-        Offline — showing cached project data. 2 changes not yet synced.
-      </p>
-      {onRetry ? (
-        <button type="button" onClick={onRetry} className="pill bg-background text-foreground">
-          Retry
-        </button>
-      ) : null}
-    </div>
+    <BaseOfflineBanner
+      variant="warn"
+      body="Offline — showing cached project data. 2 changes not yet synced."
+      onRetry={onRetry}
+    />
   );
 }
 

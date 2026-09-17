@@ -8,6 +8,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import QRCode from "qrcode";
 import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "lucide-react";
 import { toast } from "sonner";
+import { StateCard as BaseStateCard } from "@/components/ml/kit";
 import { Btn, BtnLink, Sheet, VerifiedBadge } from "./ui";
 import { useViewer } from "./viewer";
 import { Price, SoonBadge } from "./kit";
@@ -290,11 +291,9 @@ export function StateCard({
   children?: ReactNode;
 }) {
   return (
-    <section className="rounded-lg bg-subtle p-6 text-center">
-      <h2 className="text-2 leading-tight">{title}</h2>
-      <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">{body}</p>
-      {children ? <div className="mt-5 flex flex-col gap-2">{children}</div> : null}
-    </section>
+    <BaseStateCard variant="subtle" title={title} body={body}>
+      {children}
+    </BaseStateCard>
   );
 }
 
