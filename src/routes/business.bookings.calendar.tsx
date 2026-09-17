@@ -1,21 +1,11 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
-import { BusinessOnlyGate } from "@/components/ml/kit";
+import { BusinessOnlyGate, EmptyState, Loading, StatusPill, type Tone } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { BookingStatusPill } from "@/components/ml/booking";
-import {
-  bookings,
-  formatDate,
-  formatTime,
-  getBookable,
-  getResource,
-  isoDate,
-  monthGrid,
-  providerRequests,
-  providerToday,
-  type Booking,
-} from "@/data/booking";
+import { listStudioBookings, type BookingRequest, type BookingStatus } from "@/lib/bookings.functions";
 
 export const Route = createFileRoute("/business/bookings/calendar")({
   head: () => ({
@@ -37,17 +27,50 @@ export const Route = createFileRoute("/business/bookings/calendar")({
 
 const views = ["Day", "Week", "Month"] as const;
 
-const all: Booking[] = [...providerToday, ...providerRequests, ...bookings];
-const requestRefs = new Set(providerRequests.map((r) => r.ref));
+const statusTone: Record<BookingStatus, Tone> = {
+  requested: "warn",
+  reviewing: "warn",
+  confirmed: "good",
+  declined: "neutral",
+  cancelled: "neutral",
+  completed: "neutral",
+};
+const statusLabel: Record<BookingStatus, string> = {
+  requested: "Requested",
+  reviewing: "Reviewing",
+  confirmed: "Confirmed",
+  declined: "Declined",
+  cancelled: "Cancelled",
+  completed: "Completed",
+};
 
-function label(b: Booking) {
-  const entity = getBookable(b.bookableId);
-  const resource = getResource(entity, b.resourceId);
-  return `${resource?.name ?? "Session"} · ${b.customer}`;
+function isoDate(d: Date) {
+  return d.toISOString().slice(0, 10);
 }
-
-function bookingsOn(iso: string) {
-  return all.filter((b) => b.date === iso).sort((a, b) => a.start.localeCompare(b.start));
+function formatDate(iso: string) {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
+function formatTime(t: string | null) {
+  if (!t) return "";
+  const [h, m] = t.split(":");
+  const hour = Number(h);
+  const period = hour >= 12 ? "PM" : "AM";
+  const twelve = hour % 12 || 12;
+  return `${twelve}:${m} ${period}`;
+}
+function monthGrid(year: number, month: number) {
+  const first = new Date(year, month, 1);
+  const start = new Date(first);
+  start.setDate(start.getDate() - start.getDay());
+  return Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return d;
+  });
 }
 
 function ProviderCalendar() {
@@ -63,10 +86,18 @@ function ProviderCalendarContent() {
   const [view, setView] = useState<(typeof views)[number]>("Day");
   const today = new Date();
   const [cursor, setCursor] = useState(isoDate(today));
+  const load = useServerFn(listStudioBookings);
+  const q = useQuery({ queryKey: ["business", "bookings", "mine"], queryFn: () => load() });
+  const all = q.data ?? [];
+
+  const bookingsOn = (iso: string) =>
+    all
+      .filter((b) => b.session_date === iso)
+      .sort((a, b) => (a.start_time ?? "").localeCompare(b.start_time ?? ""));
 
   return (
     <Screen>
-      <TopBar title="Calendar" subtitle="Octave Sound Labs" back="/business/bookings" />
+      <TopBar title="Calendar" subtitle="Your studio" back="/business/bookings" />
 
       <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
         {views.map((v) => (
@@ -77,16 +108,29 @@ function ProviderCalendarContent() {
       </div>
 
       <main className="px-5 pt-4">
-        {view === "Day" ? <DayView date={cursor} onDate={setCursor} /> : null}
-        {view === "Week" ? <WeekView from={cursor} onPick={setCursor} /> : null}
-        {view === "Month" ? (
-          <MonthView
-            onPick={(d) => {
-              setCursor(d);
-              setView("Day");
-            }}
-          />
-        ) : null}
+        {q.isLoading ? (
+          <Loading />
+        ) : q.isError ? (
+          <EmptyState title="Couldn't load your bookings" body="Check your connection and retry." />
+        ) : (
+          <>
+            {view === "Day" ? (
+              <DayView date={cursor} onDate={setCursor} bookingsOn={bookingsOn} />
+            ) : null}
+            {view === "Week" ? (
+              <WeekView from={cursor} onPick={setCursor} bookingsOn={bookingsOn} />
+            ) : null}
+            {view === "Month" ? (
+              <MonthView
+                onPick={(d) => {
+                  setCursor(d);
+                  setView("Day");
+                }}
+                bookingsOn={bookingsOn}
+              />
+            ) : null}
+          </>
+        )}
       </main>
     </Screen>
   );
@@ -119,34 +163,45 @@ function DayNav({ date, onDate }: { date: string; onDate: (d: string) => void })
   );
 }
 
-function BlockRow({ b }: { b: Booking }) {
+function BlockRow({ b }: { b: BookingRequest }) {
+  const isRequest = b.status === "requested" || b.status === "reviewing";
   return (
     <Link
-      // Requests live on their own detail page; the session page only knows confirmed bookings.
-      {...(requestRefs.has(b.ref)
-        ? { to: "/business/bookings/requests/$ref" as const, params: { ref: b.ref } }
-        : { to: "/business/bookings/$ref" as const, params: { ref: b.ref } })}
+      to={isRequest ? "/business/bookings/requests/$ref" : "/business/bookings/$ref"}
+      params={{ ref: b.id }}
       className="flex min-w-0 items-start gap-3 rounded-lg bg-subtle p-3"
     >
       <span className="w-[62px] shrink-0 text-1 font-bold leading-tight">
-        {formatTime(b.start)}
+        {formatTime(b.start_time)}
         <span className="block text-1 font-semibold text-muted-foreground">
-          {formatTime(b.end)}
+          {formatTime(b.end_time)}
         </span>
       </span>
       <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-primary" aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-1 font-semibold">{label(b)}</p>
+        <p className="truncate text-1 font-semibold">
+          {b.room?.name ?? "Session"} · {b.requester?.display_name ?? b.requester?.username ?? "Someone"}
+        </p>
         <p className="truncate text-1 text-muted-foreground">
-          {b.people} people · {b.purpose}
+          {b.people ? `${b.people} people` : ""}
+          {b.people && b.purpose ? " · " : ""}
+          {b.purpose ?? ""}
         </p>
       </div>
-      <BookingStatusPill status={b.status} />
+      <StatusPill label={statusLabel[b.status]} tone={statusTone[b.status]} />
     </Link>
   );
 }
 
-function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }) {
+function DayView({
+  date,
+  onDate,
+  bookingsOn,
+}: {
+  date: string;
+  onDate: (d: string) => void;
+  bookingsOn: (iso: string) => BookingRequest[];
+}) {
   const items = bookingsOn(date);
   return (
     <div className="space-y-3">
@@ -155,7 +210,7 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
         <div className="rounded-lg bg-subtle p-5 text-center">
           <p className="text-sm font-semibold">Nothing booked</p>
           <p className="mt-1 text-1 text-muted-foreground">
-            This day is completely open. Block it off in Availability if you're not taking sessions.
+            This day has no requests yet.
           </p>
           <Link
             to="/business/availability"
@@ -165,13 +220,21 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
           </Link>
         </div>
       ) : (
-        items.map((b) => <BlockRow key={b.ref} b={b} />)
+        items.map((b) => <BlockRow key={b.id} b={b} />)
       )}
     </div>
   );
 }
 
-function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void }) {
+function WeekView({
+  from,
+  onPick,
+  bookingsOn,
+}: {
+  from: string;
+  onPick: (d: string) => void;
+  bookingsOn: (iso: string) => BookingRequest[];
+}) {
   const start = new Date(`${from}T00:00:00`);
   start.setDate(start.getDate() - start.getDay());
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -200,7 +263,7 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
             {items.length ? (
               <div className="mt-1 space-y-2">
                 {items.map((b) => (
-                  <BlockRow key={b.ref} b={b} />
+                  <BlockRow key={b.id} b={b} />
                 ))}
               </div>
             ) : (
@@ -215,7 +278,13 @@ function WeekView({ from, onPick }: { from: string; onPick: (d: string) => void 
   );
 }
 
-function MonthView({ onPick }: { onPick: (d: string) => void }) {
+function MonthView({
+  onPick,
+  bookingsOn,
+}: {
+  onPick: (d: string) => void;
+  bookingsOn: (iso: string) => BookingRequest[];
+}) {
   const now = new Date();
   const cells = monthGrid(now.getFullYear(), now.getMonth());
   return (

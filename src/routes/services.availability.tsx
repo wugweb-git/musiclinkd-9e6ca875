@@ -1,25 +1,17 @@
+/**
+ * A service is bookable exactly when its owner's profile is available (owner's rule, 18 Sep 2026:
+ * "service is available only when profile is available — an available profile shall deliver
+ * service"). There is no separate booking-capacity status: profiles.availability already answers
+ * this, edited on /profile/edit and shown as a badge on the public profile. This screen reflects
+ * that real value rather than duplicating its own editor.
+ */
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { CalendarOff, Plus } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
-import { Card, EmptyState, Row, SegmentedField } from "@/components/ml/kit";
-import {
-  MiniCalendar,
-  MiniCalendarDay,
-  MiniCalendarDays,
-  MiniCalendarNavigation,
-} from "@/components/kibo-ui/mini-calendar";
-
-/** "14 Sep" — the shape every date on this screen takes. */
-const dayLabel = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
-import {
-  weeklyAvailability,
-  timeOff,
-  availabilityStates,
-  bookingWindows,
-  noticeDefault,
-  type AvailabilityState,
-} from "@/data/services";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { CheckCircle2, CircleDashed } from "lucide-react";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { Card, Loading } from "@/components/ml/kit";
+import { getMyProfile } from "@/lib/portfolio.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/services/availability")({
@@ -28,7 +20,7 @@ export const Route = createFileRoute("/services/availability")({
       { title: "Availability | MusicLinkd" },
       {
         name: "description",
-        content: "Weekly hours, notice period and time off — the calendar every booking checks.",
+        content: "Your services are bookable exactly when your profile says you're available.",
       },
       { property: "og:title", content: "Availability | MusicLinkd" },
       { property: "og:description", content: "Control when people can book you." },
@@ -40,189 +32,48 @@ export const Route = createFileRoute("/services/availability")({
 });
 
 function Availability() {
-  const [state, setState] = useState<AvailabilityState>("Available now");
-  const [notice, setNotice] = useState(noticeDefault);
-  const [days, setDays] = useState(weeklyAvailability);
-  const [off, setOff] = useState(timeOff);
-  const [addOff, setAddOff] = useState(false);
-  const [offStart, setOffStart] = useState<Date | undefined>(undefined);
-  const [offEnd, setOffEnd] = useState<Date | undefined>(undefined);
-  const [offLength, setOffLength] = useState("1 day");
-
-  const toggleDay = (day: string) =>
-    setDays((list) => list.map((d) => (d.day === day ? { ...d, enabled: !d.enabled } : d)));
+  const load = useServerFn(getMyProfile);
+  const q = useQuery({ queryKey: ["profile", "me"], queryFn: () => load() });
+  const availability = (q.data as { availability?: string | null } | null | undefined)?.availability ?? null;
 
   return (
     <Screen>
       <TopBar title="Availability" subtitle="Used by every booking request" back="/services" />
 
       <div className="space-y-4 px-5 pt-4 pb-6">
-        <Card className="space-y-3">
-          <h2 className="text-sm">Right now you are</h2>
-          <div className="flex flex-wrap gap-2">
-            {availabilityStates.map((s) => (
-              <Chip key={s} active={state === s} onClick={() => setState(s)}>
-                {s}
-              </Chip>
-            ))}
-          </div>
-          <p className="text-1 text-muted-foreground">
-            This shows as a badge on your profile, in Discover and on every service you offer.
-          </p>
-        </Card>
-
-        <Card className="space-y-3">
-          <h2 className="text-sm">Weekly hours</h2>
-          {days.map((d) => (
-            <div
-              key={d.day}
-              className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0"
-            >
+        {q.isLoading ? (
+          <Loading />
+        ) : (
+          <Card className="space-y-3">
+            <div className="flex items-center gap-3">
+              {availability ? (
+                <CheckCircle2 size={iconSize.md} className="shrink-0 text-success" />
+              ) : (
+                <CircleDashed size={iconSize.md} className="shrink-0 text-muted-foreground" />
+              )}
               <div className="min-w-0">
-                <p className="text-1 font-semibold">{d.day}</p>
+                <p className="text-sm font-semibold">
+                  {availability ? `Available — ${availability}` : "Not marked available"}
+                </p>
                 <p className="text-1 text-muted-foreground">
-                  {d.enabled ? `${d.from} – ${d.to}` : "Unavailable"}
+                  {availability
+                    ? "Your services can be booked while this is set."
+                    : "Your services can't be booked until you set this."}
                 </p>
               </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={d.enabled}
-                aria-label={`${d.day} availability`}
-                onClick={() => toggleDay(d.day)}
-                className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${d.enabled ? "bg-primary" : "bg-background"}`}
-              >
-                <span
-                  className={`block h-5 w-5 rounded-full bg-background transition-transform ${d.enabled ? "translate-x-5" : ""}`}
-                />
-              </button>
             </div>
-          ))}
-        </Card>
+            <BtnLink to="/profile/edit" variant="outline" className="w-full">
+              Edit availability on your profile
+            </BtnLink>
+          </Card>
+        )}
 
-        <Card className="space-y-3">
-          <h2 className="text-sm">Notice needed</h2>
-          <SegmentedField
-            label="Notice needed"
-            value={notice}
-            options={bookingWindows}
-            onChange={setNotice}
-          />
-        </Card>
-
-        <Card className="space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm">Time off</h2>
-            <button
-              type="button"
-              onClick={() => setAddOff(true)}
-              className="inline-flex items-center gap-1 text-1 font-semibold text-foreground"
-            >
-              <Plus size={iconSize.sm} /> Add
-            </button>
-          </div>
-          {off.length ? (
-            off.map((o) => (
-              <div
-                key={o.id}
-                className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-0"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-1 font-semibold">{o.label}</p>
-                  <p className="text-1 text-muted-foreground">{o.range}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setOff((list) => list.filter((x) => x.id !== o.id))}
-                  className="text-1 font-semibold text-muted-foreground"
-                >
-                  Remove
-                </button>
-              </div>
-            ))
-          ) : (
-            <EmptyState
-              title="No time off"
-              body="Block dates you are travelling or on another project."
-            />
-          )}
-        </Card>
-
-        <Card className="space-y-1">
-          <p className="flex items-center gap-2 text-1 font-semibold">
-            <CalendarOff size={iconSize.sm} /> Bookings already confirmed
-          </p>
-          <p className="text-1 text-muted-foreground">
-            Changing hours never cancels a confirmed booking — manage those in your provider
-            calendar.
-          </p>
-          <BtnLink to="/business/bookings/calendar" variant="ghost" className="w-full">
-            Open Calendar
-          </BtnLink>
-        </Card>
-
-        <Row
-          icon={<CalendarOff size={iconSize.sm} />}
-          title="Booking conflicts"
-          subtitle="Requests that overlap your hours or time off"
-          to="/services/conflicts"
-        />
-      </div>
-
-      <Sheet open={addOff} onClose={() => setAddOff(false)} title="Add time off">
-        {/* Pick the days you are away rather than choosing between three canned ranges. */}
-        <MiniCalendar
-          value={offStart}
-          onValueChange={(d) => {
-            setOffStart(d);
-            if (offEnd && d && d > offEnd) setOffEnd(undefined);
-          }}
-          days={5}
-          className="w-full justify-between"
-        >
-          <MiniCalendarNavigation direction="prev" />
-          <MiniCalendarDays className="flex-1 justify-between">
-            {(date) => <MiniCalendarDay date={date} key={date.toISOString()} />}
-          </MiniCalendarDays>
-          <MiniCalendarNavigation direction="next" />
-        </MiniCalendar>
-
-        <p className="mt-3 text-1 text-muted-foreground">
-          {offStart ? `Away from ${dayLabel(offStart)}` : "Pick the first day you are away."}
+        <p className="px-1 text-1 text-muted-foreground">
+          There's one availability setting for your whole profile — it's what people see on your
+          profile, and it's what gates whether your services accept new requests. Per-service hours,
+          notice periods and time off aren't supported yet.
         </p>
-
-        <div className="mt-2">
-          <SegmentedField
-            label="How long"
-            value={offLength}
-            options={["1 day", "2 days", "A week"]}
-            onChange={setOffLength}
-          />
-        </div>
-
-        <Btn
-          className="mt-4 w-full"
-          disabled={!offStart}
-          onClick={() => {
-            if (!offStart) return;
-            const span = offLength === "1 day" ? 0 : offLength === "2 days" ? 1 : 6;
-            const end = new Date(offStart);
-            end.setDate(end.getDate() + span);
-            setOff((list) => [
-              ...list,
-              {
-                id: `off-${offStart.toISOString().slice(0, 10)}`,
-                label: "Time off",
-                range: span === 0 ? dayLabel(offStart) : `${dayLabel(offStart)} – ${dayLabel(end)}`,
-              },
-            ]);
-            setOffStart(undefined);
-            setAddOff(false);
-          }}
-        >
-          Block these days
-        </Btn>
-      </Sheet>
+      </div>
     </Screen>
   );
 }

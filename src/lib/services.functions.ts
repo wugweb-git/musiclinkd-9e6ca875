@@ -58,6 +58,8 @@ export type ServiceAddonRow = {
 export type ServiceDetail = ServiceRow & {
   packages: ServicePackageRow[];
   addons: ServiceAddonRow[];
+  /** profiles.availability for the service's owner — null means not open for work right now. */
+  ownerAvailability: string | null;
 };
 
 export type ServiceOption = { slug: string; label: string };
@@ -103,19 +105,22 @@ async function serviceDetail(
   if (error) throw new Error(error.message);
   if (!row) return null;
 
-  const [packages, addons] = await Promise.all([
+  const serviceRow = row as { profile_id: string } & Record<string, unknown>;
+  const [packages, addons, owner] = await Promise.all([
     client
       .from("profile_service_packages")
       .select(PACKAGE)
       .eq("service_id", id)
       .order("sort_order"),
     client.from("profile_service_addons").select(ADDON).eq("service_id", id).order("sort_order"),
+    client.from("profiles").select("availability").eq("id", serviceRow.profile_id).maybeSingle(),
   ]);
   if (packages.error) throw new Error(packages.error.message);
   if (addons.error) throw new Error(addons.error.message);
+  if (owner.error) throw new Error(owner.error.message);
 
   return {
-    ...serviceFrom(row as Record<string, unknown>),
+    ...serviceFrom(serviceRow),
     packages: ((packages.data ?? []) as ServicePackageRow[]).map((p) => ({
       ...p,
       price_paise: Number(p.price_paise),
@@ -125,6 +130,7 @@ async function serviceDetail(
       ...a,
       price_paise: Number(a.price_paise),
     })),
+    ownerAvailability: (owner.data as { availability: string | null } | null)?.availability ?? null,
   };
 }
 

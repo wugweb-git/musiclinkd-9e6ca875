@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { BusinessOnlyGate } from "@/components/ml/kit";
+import { Screen, TopBar } from "@/components/ml/ui";
+import { BusinessOnlyGate, EmptyState, Loading } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { StickyBar } from "@/components/ml/booking";
-import { getBookable, inr } from "@/data/booking";
+import { getMyStudio, updateMyStudio, updateStudioRoomRate } from "@/lib/studio-owner.functions";
 
 export const Route = createFileRoute("/business/pricing")({
   head: () => ({
@@ -13,11 +15,10 @@ export const Route = createFileRoute("/business/pricing")({
       { title: "Pricing — MusicLinkd provider" },
       {
         name: "description",
-        content:
-          "Set hourly, half-day, full-day and session rates for each room and add-on prices.",
+        content: "Set your hourly rate, and each room's, for MusicLinkd booking requests.",
       },
       { property: "og:title", content: "Pricing — MusicLinkd provider" },
-      { property: "og:description", content: "Rates and add-ons for your space." },
+      { property: "og:description", content: "Rates for your space and its rooms." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -34,76 +35,101 @@ function Pricing() {
   );
 }
 
-function PricingContent() {
-  const entity = getBookable("octave-sound-labs");
-  const [rates, setRates] = useState<Record<string, number>>(() => {
-    const out: Record<string, number> = {};
-    entity?.resources.forEach((r) => r.tiers.forEach((t) => (out[`${r.id}:${t.unit}`] = t.price)));
-    return out;
-  });
-  const [addOns, setAddOns] = useState<Record<string, number>>(() => {
-    const out: Record<string, number> = {};
-    entity?.addOns.forEach((a) => (out[a.id] = a.price));
-    return out;
-  });
+function rupees(paise: number | null | undefined) {
+  return paise == null ? "" : String(Math.round(paise / 100));
+}
 
-  if (!entity) return null;
+function PricingContent() {
+  const queryClient = useQueryClient();
+  const load = useServerFn(getMyStudio);
+  const saveStudio = useServerFn(updateMyStudio);
+  const saveRoom = useServerFn(updateStudioRoomRate);
+  const q = useQuery({ queryKey: ["business", "studio", "mine"], queryFn: () => load() });
+
+  const [baseRate, setBaseRate] = useState("");
+  const [roomRates, setRoomRates] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!q.data) return;
+    setBaseRate(rupees(q.data.hourly_rate_paise));
+    setRoomRates(Object.fromEntries(q.data.rooms.map((r) => [r.id, rupees(r.hourly_rate_paise)])));
+  }, [q.data]);
+
+  async function save() {
+    if (!q.data) return;
+    try {
+      await saveStudio({
+        data: { hourly_rate_paise: baseRate.trim() ? Math.round(Number(baseRate) * 100) : null },
+      });
+      await Promise.all(
+        q.data.rooms.map((r) => {
+          const v = roomRates[r.id];
+          if (v === undefined || v === rupees(r.hourly_rate_paise)) return Promise.resolve();
+          return saveRoom({
+            data: { roomId: r.id, hourly_rate_paise: v.trim() ? Math.round(Number(v) * 100) : 0 },
+          });
+        }),
+      );
+      await queryClient.invalidateQueries({ queryKey: ["business", "studio", "mine"] });
+      toast.success("Pricing saved");
+    } catch {
+      toast.error("Couldn't save that — try again");
+    }
+  }
+
+  if (q.isLoading) {
+    return (
+      <Screen bottomNav={false}>
+        <TopBar title="Pricing" back="/business/bookings" />
+        <div className="px-5 pt-8">
+          <Loading />
+        </div>
+      </Screen>
+    );
+  }
+  if (!q.data) {
+    return (
+      <Screen bottomNav={false}>
+        <TopBar title="Pricing" back="/business/bookings" />
+        <div className="px-5 pt-4">
+          <EmptyState title="No studio yet" body="Set up your studio profile first." />
+        </div>
+      </Screen>
+    );
+  }
 
   return (
     <Screen bottomNav={false}>
-      <TopBar title="Pricing" subtitle={entity.name} back="/business/bookings" />
+      <TopBar title="Pricing" subtitle={q.data.name} back="/business/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
         <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
-          Rates shown here are what customers see on the booking screens. Changes apply to new
-          bookings only.
+          A flat hourly rate per space. Tiered rates and add-ons aren't supported yet.
         </p>
 
-        {entity.resources.map((r) => (
-          <section key={r.id} className="min-w-0">
-            <h2 className="truncate text-2">{r.name}</h2>
-            <p className="mt-0.5 truncate text-1 text-muted-foreground">{r.description}</p>
+        <MoneyRow label="Base hourly rate" hint="Whole studio" value={baseRate} onChange={setBaseRate} />
+
+        {q.data.rooms.length ? (
+          <section className="min-w-0">
+            <h2 className="text-2">Rooms</h2>
             <div className="mt-3 space-y-2">
-              {r.tiers.map((t) => (
+              {q.data.rooms.map((r) => (
                 <MoneyRow
-                  key={`${r.id}:${t.unit}`}
-                  label={t.label}
-                  hint={`${t.hours || "custom"} hr`}
-                  value={rates[`${r.id}:${t.unit}`] ?? t.price}
-                  onChange={(v) => setRates((s) => ({ ...s, [`${r.id}:${t.unit}`]: v }))}
+                  key={r.id}
+                  label={r.name}
+                  hint="per hour"
+                  value={roomRates[r.id] ?? ""}
+                  onChange={(v) => setRoomRates((s) => ({ ...s, [r.id]: v }))}
                 />
               ))}
             </div>
           </section>
-        ))}
-
-        <section className="min-w-0">
-          <h2 className="text-2">Add-ons</h2>
-          <p className="mt-0.5 text-1 text-muted-foreground">
-            Optional extras customers can add to a session.
-          </p>
-          <div className="mt-3 space-y-2">
-            {entity.addOns.map((a) => (
-              <MoneyRow
-                key={a.id}
-                label={a.name}
-                hint={a.perHour ? "per hour" : "per session"}
-                value={addOns[a.id] ?? a.price}
-                onChange={(v) => setAddOns((s) => ({ ...s, [a.id]: v }))}
-              />
-            ))}
-          </div>
-        </section>
-
-        <p className="text-1 text-muted-foreground">
-          Taxes are applied at {entity.taxPct}% on top of the session total.
-        </p>
+        ) : null}
       </main>
 
       <StickyBar
         primaryLabel="Save pricing"
-        hint="Applies to new bookings only"
-        onPrimary={() => toast.success("Pricing saved for this session")}
+        hint="Applies to new requests only"
+        onPrimary={() => void save()}
       />
     </Screen>
   );
@@ -117,8 +143,8 @@ function MoneyRow({
 }: {
   label: string;
   hint: string;
-  value: number;
-  onChange: (v: number) => void;
+  value: string;
+  onChange: (v: string) => void;
 }) {
   const id = `rate-${label.replace(/\s+/g, "-").toLowerCase()}`;
   return (
@@ -136,7 +162,7 @@ function MoneyRow({
           type="number"
           inputMode="numeric"
           value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => onChange(e.target.value)}
           className="w-20 bg-transparent text-right text-1 font-bold outline-none"
         />
       </div>

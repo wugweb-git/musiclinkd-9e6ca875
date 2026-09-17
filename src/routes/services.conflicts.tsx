@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, CalendarClock } from "lucide-react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { toast } from "sonner";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
 import { iconSize } from "@/lib/tokens";
 
@@ -95,14 +94,10 @@ function Conflicts() {
           <EmptyState title="No conflicts" body="Your calendar is clean for the next four weeks." />
         )}
 
-        <Btn
-          variant="outline"
-          className="w-full"
-          onClick={() => toast("Availability — coming soon")}
-        >
+        <BtnLink to="/services/availability" variant="outline" className="w-full">
           <CalendarClock size={iconSize.sm} className="mr-2 inline" aria-hidden />
           Adjust Availability
-        </Btn>
+        </BtnLink>
       </div>
     </Screen>
   );

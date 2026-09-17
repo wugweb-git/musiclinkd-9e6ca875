@@ -24,7 +24,7 @@ import { haptic } from "@/lib/haptics";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
-import { TextButton } from "@/components/ml/links";
+import { TextLink } from "@/components/ml/links";
 
 const steps = ["category", "basics", "pricing", "delivery", "review"] as const;
 type Step = (typeof steps)[number];
@@ -361,12 +361,9 @@ function NewService() {
                 </div>
               </div>
             ) : null}
-            <TextButton
-              onClick={() => toast("Availability — coming soon")}
-              className="block text-1"
-            >
-              Set Your Weekly Availability →
-            </TextButton>
+            <TextLink to="/services/availability" className="block text-1">
+              Check Your Availability →
+            </TextLink>
           </Card>
         ) : null}
 

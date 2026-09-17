@@ -74,9 +74,8 @@ function ServicesHome() {
           <Row
             icon={<CalendarClock size={iconSize.sm} />}
             title="Availability"
-            subtitle="Weekly hours, notice period, time off"
-            onClick={() => toast("Availability — coming soon")}
-            right={<SoonBadge />}
+            subtitle="Whether your services can be booked right now"
+            to="/services/availability"
           />
           <Row
             icon={<Settings2 size={iconSize.sm} />}

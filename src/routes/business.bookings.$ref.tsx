@@ -1,25 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { MessageCircle, Users } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { BusinessOnlyGate } from "@/components/ml/kit";
+import { BusinessOnlyGate, EmptyState, Loading, StatusPill, type Tone } from "@/components/ml/kit";
+import { Detail } from "@/components/ml/booking";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import {
-  BookingStatusPill,
-  BookingTimeline,
-  Detail,
-  EmptyState,
-  PriceBreakdownCard,
-} from "@/components/ml/booking";
-import {
-  bookings,
-  formatDate,
-  formatTime,
-  getBookable,
-  getResource,
-  inr,
-  priceFor,
-  providerToday,
-} from "@/data/booking";
+import { getBookingRequest, type BookingStatus } from "@/lib/bookings.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/bookings/$ref")({
@@ -28,7 +15,7 @@ export const Route = createFileRoute("/business/bookings/$ref")({
       { title: "Session detail — MusicLinkd provider" },
       {
         name: "description",
-        content: "Everything you need to run the session: customer, room, timing, and add-ons.",
+        content: "Everything you need to run the session: customer, room and timing.",
       },
       { property: "og:title", content: "Session detail — MusicLinkd provider" },
       {
@@ -42,6 +29,39 @@ export const Route = createFileRoute("/business/bookings/$ref")({
   component: ProviderBookingDetail,
 });
 
+const statusTone: Record<BookingStatus, Tone> = {
+  requested: "warn",
+  reviewing: "warn",
+  confirmed: "good",
+  declined: "neutral",
+  cancelled: "neutral",
+  completed: "neutral",
+};
+const statusLabel: Record<BookingStatus, string> = {
+  requested: "Requested",
+  reviewing: "Reviewing",
+  confirmed: "Confirmed",
+  declined: "Declined",
+  cancelled: "Cancelled",
+  completed: "Completed",
+};
+
+function formatDate(iso: string) {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+  });
+}
+function formatTime(t: string | null) {
+  if (!t) return "";
+  const [h, m] = t.split(":");
+  const hour = Number(h);
+  const period = hour >= 12 ? "PM" : "AM";
+  const twelve = hour % 12 || 12;
+  return `${twelve}:${m} ${period}`;
+}
+
 function ProviderBookingDetail() {
   const gate = useRequireBusiness();
   return (
@@ -53,11 +73,25 @@ function ProviderBookingDetail() {
 
 function ProviderBookingDetailContent() {
   const { ref } = Route.useParams();
-  const bk = [...bookings, ...providerToday].find((x) => x.ref === ref);
-  const b = getBookable(bk?.bookableId ?? "");
-  const r = getResource(b, bk?.resourceId);
+  const load = useServerFn(getBookingRequest);
+  const q = useQuery({
+    queryKey: ["booking", ref],
+    queryFn: () => load({ data: { id: ref } }),
+  });
 
-  if (!bk || !b || !r) {
+  if (q.isLoading) {
+    return (
+      <Screen>
+        <TopBar title="Session" back="/business/bookings" />
+        <div className="px-5 pt-8">
+          <Loading />
+        </div>
+      </Screen>
+    );
+  }
+
+  const bk = q.data;
+  if (!bk) {
     return (
       <Screen>
         <TopBar title="Session" back="/business/bookings" />
@@ -72,61 +106,68 @@ function ProviderBookingDetailContent() {
     );
   }
 
-  const price = priceFor(b, r, bk.hours, bk.addOnIds);
+  const customerName = bk.requester?.display_name ?? bk.requester?.username ?? "Someone";
 
   return (
     <Screen>
-      <TopBar title={`#${bk.ref}`} subtitle={r.name} back="/business/bookings" />
+      <TopBar
+        title="Session"
+        subtitle={bk.room?.name ?? bk.studio?.name ?? "Studio"}
+        back="/business/bookings"
+      />
       <main className="px-5 pt-4">
         <div className="flex flex-wrap items-center gap-2">
-          <BookingStatusPill status={bk.status} />
+          <StatusPill label={statusLabel[bk.status]} tone={statusTone[bk.status]} />
         </div>
 
         <div className="mt-4 rounded-lg bg-subtle p-4">
           <div className="flex items-center gap-3">
-            <img
-              src={bk.customerAvatar}
-              alt=""
-              className="h-12 w-12 rounded-full object-cover"
-              loading="lazy"
-            />
+            {bk.requester?.avatar_url ? (
+              <img
+                src={bk.requester.avatar_url}
+                alt=""
+                className="h-12 w-12 rounded-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <span aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-background" />
+            )}
             <div className="min-w-0 flex-1">
-              <p className="truncate font-semibold">{bk.customer}</p>
-              <p className="truncate text-1 text-muted-foreground">{bk.customerRole}</p>
+              <p className="truncate font-semibold">{customerName}</p>
             </div>
-            <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
-              <Users size={iconSize.xs} /> {bk.people}
-            </span>
+            {bk.people ? (
+              <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
+                <Users size={iconSize.xs} /> {bk.people}
+              </span>
+            ) : null}
           </div>
           <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">
-            <Detail label="Date" value={formatDate(bk.date)} />
-            <Detail label="Time" value={`${formatTime(bk.start)} – ${formatTime(bk.end)}`} />
-            <Detail label="Duration" value={`${bk.hours} hrs`} />
-            <Detail label="Purpose" value={bk.purpose} />
-            <Detail label="Room" value={r.name} />
-            <Detail label="Value" value={inr(bk.amount)} />
+            <Detail label="Date" value={formatDate(bk.session_date)} />
+            <Detail
+              label="Time"
+              value={bk.start_time ? `${formatTime(bk.start_time)} – ${formatTime(bk.end_time)}` : "Not set"}
+            />
+            {bk.hours ? <Detail label="Duration" value={`${bk.hours} hrs`} /> : null}
+            {bk.purpose ? <Detail label="Purpose" value={bk.purpose} /> : null}
+            {bk.room ? <Detail label="Room" value={bk.room.name} /> : null}
           </dl>
           {bk.notes ? (
             <p className="mt-3 border-t border-border pt-3 text-1 text-muted-foreground">
               {bk.notes}
             </p>
           ) : null}
-        </div>
-
-        <h2 className="mt-6 text-2">Progress</h2>
-        <div className="mt-3 rounded-lg bg-subtle p-4">
-          <BookingTimeline status={bk.status} />
-        </div>
-
-        <h2 className="mt-6 text-2">Payout</h2>
-        <div className="mt-3">
-          <PriceBreakdownCard p={price} compact />
+          {bk.reply ? (
+            <p className="mt-3 border-t border-border pt-3 text-1">
+              <span className="font-semibold">Your reply: </span>
+              {bk.reply}
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-6 space-y-2">
           <BtnLink to="/messages" variant="outline" className="w-full">
             <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message{" "}
-            {bk.customer.split(" ")[0]}
+            {customerName.split(" ")[0]}
           </BtnLink>
           <BtnLink to="/business/availability" variant="ghost" className="w-full">
             Block or Adjust This Room's Calendar
