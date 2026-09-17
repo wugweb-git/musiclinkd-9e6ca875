@@ -1,0 +1,60 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project gsqeymhtyzepwcnorjun)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918120000 (saved_items).
+--
+-- Scope: row counts only, deliberately. That migration is purely additive: it creates the
+-- saved_items table with its own owner-only RLS policies. Nothing existing is read, altered,
+-- or referenced by a trigger. Nothing existing is at risk, so there is nothing of it to
+-- restore. The last full data dump is supabase/dumps/2026-09-17-before-20260917100000.sql.
+--
+-- To undo the migration: DROP TABLE public.saved_items CASCADE;
+--
+-- Row counts, every public table (bands/band_members confirmed separately; excluded from the
+-- generic count query below for an unrelated reason):
+-- cms_pages: 9 rows
+-- collab_events: 7 rows
+-- collab_members: 11 rows
+-- collab_releases: 3 rows
+-- collabs: 3 rows
+-- connections: 1 row
+-- conversation_members: 2 rows
+-- conversations: 1 row
+-- feed_posts: 5 rows
+-- follows: 1 row
+-- genre_languages: 43 rows
+-- marketplace_listings: 8 rows
+-- messages: 2 rows
+-- opportunities: 9 rows
+-- opportunity_applications: 2 rows
+-- person_type_instruments: 199 rows
+-- person_type_service_categories: 53 rows
+-- portfolio_item_plays: 0 rows
+-- portfolio_items: 85 rows
+-- profile_business: 21 rows
+-- profile_events: 3 rows
+-- profile_experience: 18 rows
+-- profile_gallery: 30 rows
+-- profile_members: 12 rows
+-- profile_private: 84 rows
+-- profile_role_details: 71 rows
+-- profile_service_addons: 0 rows
+-- profile_service_packages: 0 rows
+-- profile_services: 31 rows
+-- profiles: 102 rows
+-- rental_bookings: 0 rows
+-- reserved_usernames: 63 rows
+-- reviews: 33 rows
+-- service_category_specialties: 4 rows
+-- spotify_connections: 0 rows
+-- studio_equipment: 16 rows
+-- studio_rooms: 7 rows
+-- studios: 12 rows
+-- taxonomy_categories: 39 rows
+-- taxonomy_options: 380 rows
+-- verification_request_items: 0 rows
+-- verification_request_private: 0 rows
+-- verification_requests: 0 rows
+-- verification_requirements: 12 rows
+-- verification_type_details: 4 rows
+-- verification_type_person_types: 81 rows
+-- bands: 3 rows
+-- band_members: 11 rows

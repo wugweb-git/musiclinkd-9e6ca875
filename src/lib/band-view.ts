@@ -40,6 +40,8 @@ export type BandMemberView = {
 
 export type BandView = {
   id: string;
+  /** The real bands.id (uuid) — `id` above is the slug, used for routing. */
+  dbId: string;
   name: string;
   verified: boolean;
   avatar: string;
@@ -152,6 +154,7 @@ export function bandViewFromRow(
       members.some((m) => m.profileId === viewerId && m.role !== "member"));
   return {
     id: row.slug,
+    dbId: row.id,
     name: row.name,
     verified: row.is_verified,
     avatar: row.avatar_url ?? "",

@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { X } from "lucide-react";
-import { Chip, Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
-import { Price } from "@/components/ml/kit";
-import { talents, studios } from "@/data/discover";
+import { Chip, Screen, TopBar } from "@/components/ml/ui";
+import { EmptyState, Loading } from "@/components/ml/kit";
+import { listMySaved, unsaveTarget, type SavedCard, type SavedTargetType } from "@/lib/saved.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/saved")({
@@ -25,77 +28,92 @@ export const Route = createFileRoute("/saved")({
   component: Saved,
 });
 
-const tabs = ["Talent", "Bands", "Studios", "Businesses", "Events"];
+const tabs: { label: string; type: SavedTargetType }[] = [
+  { label: "Talent", type: "talent" },
+  { label: "Bands", type: "band" },
+  { label: "Studios", type: "studio" },
+  { label: "Businesses", type: "business" },
+  { label: "Events", type: "event" },
+];
 
 function Saved() {
-  const [tab, setTab] = useState("Talent");
+  const queryClient = useQueryClient();
+  const [tab, setTab] = useState<SavedTargetType>("talent");
+  const load = useServerFn(listMySaved);
+  const remove = useServerFn(unsaveTarget);
+  const q = useQuery({ queryKey: ["saved", "mine"], queryFn: () => load() });
+
+  async function onRemove(card: SavedCard) {
+    try {
+      await remove({ data: { targetType: card.targetType, targetId: card.targetId } });
+      await queryClient.invalidateQueries({ queryKey: ["saved", "mine"] });
+      toast.success("Removed");
+    } catch {
+      toast.error("Couldn't remove that — try again");
+    }
+  }
+
+  const cards = q.data?.[tab] ?? [];
+
   return (
     <Screen>
       <TopBar title="Saved profiles" back="/discover" />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {tabs.map((t) => (
-          <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
-            {t}
+          <Chip key={t.type} active={tab === t.type} onClick={() => setTab(t.type)}>
+            {t.label}
           </Chip>
         ))}
       </div>
 
-      <div className="space-y-3 px-5">
-        {tab === "Studios"
-          ? studios.map((s) => (
-              <article key={s.name} className="rounded-lg bg-subtle p-4">
-                <div className="flex items-center gap-3">
-                  <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-sm">{s.name}</h3>
-                    <p className="truncate text-1 text-muted-foreground">{s.location}</p>
-                  </div>
-                  <Price
-                    price={s.rate}
-                    align="end"
-                    className="shrink-0"
-                    amountClassName="text-1 font-semibold"
-                    unitClassName="text-1"
+      <div className="space-y-3 px-5 pb-8">
+        {q.isLoading ? (
+          <Loading />
+        ) : q.isError ? (
+          <EmptyState
+            title="We couldn't load your saved items"
+            body="Check your connection, then try again."
+          />
+        ) : !cards.length ? (
+          <EmptyState
+            title="Nothing saved here yet"
+            body="Save talent, bands, studios, businesses or events to find them again here."
+          />
+        ) : (
+          cards.map((c) => (
+            <article key={c.id} className="rounded-lg bg-subtle p-4">
+              <div className="flex items-center gap-3">
+                {c.photo ? (
+                  <img
+                    src={c.photo}
+                    alt={c.name}
+                    className="h-14 w-14 rounded-sm object-cover"
                   />
+                ) : (
+                  <span className="h-14 w-14 shrink-0 rounded-sm bg-background" aria-hidden />
+                )}
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-sm">{c.name}</h3>
+                  {c.subtitle ? (
+                    <p className="truncate text-1 text-muted-foreground">{c.subtitle}</p>
+                  ) : null}
                 </div>
-                <Actions />
-              </article>
-            ))
-          : talents.slice(0, 3).map((t) => (
-              <article key={t.id} className="rounded-lg bg-subtle p-4">
-                <div className="flex items-center gap-3">
-                  <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-sm object-cover" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1">
-                      <h3 className="truncate text-sm">{t.name}</h3>
-                      {t.verified ? <VerifiedBadge size={12} /> : null}
-                    </div>
-                    <p className="truncate text-1 text-muted-foreground">
-                      {t.role} · {t.location.split(",").pop()}
-                    </p>
-                  </div>
-                  <Price
-                    price={t.rate}
-                    align="end"
-                    className="shrink-0"
-                    amountClassName="text-1 font-semibold"
-                    unitClassName="text-1"
-                  />
-                </div>
-                <Actions />
-              </article>
-            ))}
+              </div>
+              <Actions onRemove={() => void onRemove(c)} />
+            </article>
+          ))
+        )}
       </div>
     </Screen>
   );
 }
 
 /*
- * Nothing is wired to these yet: there is no thread to open, no share target and no saved-talent
- * table to remove from. They are disabled with the reason in the accessible name rather than
+ * Removing is wired to the real saved_items table. Messaging and sharing still have no real
+ * backend to open, so they stay disabled with the reason in the accessible name rather than
  * taking the tap and doing nothing.
  */
-function Actions() {
+function Actions({ onRemove }: { onRemove: () => void }) {
   return (
     <div className="mt-3 flex gap-2">
       <button
@@ -116,9 +134,9 @@ function Actions() {
       </button>
       <button
         type="button"
-        disabled
-        aria-label="Removing isn't open yet"
-        className="hit-area flex min-h-touch w-11 items-center justify-center rounded-full border border-border disabled:opacity-40"
+        onClick={onRemove}
+        aria-label="Remove from saved"
+        className="hit-area flex min-h-touch w-11 items-center justify-center rounded-full border border-border"
       >
         <X size={iconSize.sm} aria-hidden />
       </button>

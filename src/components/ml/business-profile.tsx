@@ -5,6 +5,8 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import { TextLink } from "@/components/ml/links";
+import { SavedToggle } from "@/components/ml/saved-toggle";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 const tabs = ["Overview", "Spaces", "Team", "Credits"] as const;
@@ -12,6 +14,8 @@ const tabs = ["Overview", "Spaces", "Team", "Credits"] as const;
 /** A business account's profile: /business/$id and /profile/$username for a business. */
 export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }) {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Overview");
+  const { user } = useAuth();
+  const isOwner = !!b && user?.id === b.profileId;
 
   if (!b) {
     return (
@@ -72,6 +76,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
               <p className="truncate text-1 text-muted-foreground">{b.subtitle}</p>
             ) : null}
           </div>
+          {isOwner ? null : <SavedToggle targetType="business" targetId={b.profileId} size={36} />}
         </div>
 
         {b.tagline ? <p className="text-1 leading-relaxed">{b.tagline}</p> : null}

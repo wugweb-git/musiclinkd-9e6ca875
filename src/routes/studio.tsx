@@ -5,6 +5,7 @@ import { EmptyState, Price } from "@/components/ml/kit";
 import { listStudios } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow, type DiscoverStudio } from "@/lib/studio-view";
+import { SavedToggle } from "@/components/ml/saved-toggle";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
@@ -67,15 +68,20 @@ function StudioRow({ s }: { s: DiscoverStudio }) {
       />
     </>
   );
-  const cls = "state-layer flex items-center gap-3 px-4 py-3.5";
-  return s.username ? (
-    <Link to="/profile/$username" params={{ username: s.username }} className={cls}>
-      {body}
-    </Link>
-  ) : (
-    <Link to="/booking/$id" params={{ id: s.slug }} className={cls}>
-      {body}
-    </Link>
+  const cls = "state-layer flex min-w-0 flex-1 items-center gap-3 py-3.5 pl-4";
+  return (
+    <div className="flex items-center gap-1 pr-2">
+      {s.username ? (
+        <Link to="/profile/$username" params={{ username: s.username }} className={cls}>
+          {body}
+        </Link>
+      ) : (
+        <Link to="/booking/$id" params={{ id: s.slug }} className={cls}>
+          {body}
+        </Link>
+      )}
+      <SavedToggle targetType="studio" targetId={s.id} size={36} />
+    </div>
   );
 }
 

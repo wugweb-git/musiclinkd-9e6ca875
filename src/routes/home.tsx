@@ -26,7 +26,7 @@ import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { Switch } from "@/components/ui/switch";
 import { EmptyState, Loading, Price, SoonBadge } from "@/components/ml/kit";
 import { toast } from "sonner";
-import { TalentCard } from "@/components/ml/cards";
+import { SavedToggle } from "@/components/ml/saved-toggle";
 import { StatRow } from "@/components/ml/profile";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
@@ -398,29 +398,36 @@ function Body({ home }: { home: Home }) {
           />
           <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
             {peers.map((p) => (
-              <Link
+              <article
                 key={p.username}
-                to="/profile/$username"
-                params={{ username: p.username }}
-                className="state-layer flex w-[150px] shrink-0 flex-col items-center gap-2 rounded-lg bg-subtle p-4 text-center"
+                className="relative w-[150px] shrink-0 rounded-lg bg-subtle p-4"
               >
-                {p.avatarUrl ? (
-                  <img
-                    src={p.avatarUrl}
-                    alt=""
-                    loading="lazy"
-                    className="h-14 w-14 rounded-full object-cover"
-                  />
-                ) : (
-                  <span aria-hidden className="h-14 w-14 rounded-full bg-background" />
-                )}
-                <span className="min-w-0">
-                  <span className="block truncate text-1 font-semibold">{p.name}</span>
-                  <span className="block truncate text-1 text-muted-foreground">
-                    {p.city ?? p.roles[0] ?? ""}
-                  </span>
+                <span className="absolute right-2 top-2 z-10">
+                  <SavedToggle targetType="talent" targetId={p.id} size={28} />
                 </span>
-              </Link>
+                <Link
+                  to="/profile/$username"
+                  params={{ username: p.username }}
+                  className="state-layer flex flex-col items-center gap-2 text-center"
+                >
+                  {p.avatarUrl ? (
+                    <img
+                      src={p.avatarUrl}
+                      alt=""
+                      loading="lazy"
+                      className="h-14 w-14 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span aria-hidden className="h-14 w-14 rounded-full bg-background" />
+                  )}
+                  <span className="min-w-0">
+                    <span className="block truncate text-1 font-semibold">{p.name}</span>
+                    <span className="block truncate text-1 text-muted-foreground">
+                      {p.city ?? p.roles[0] ?? ""}
+                    </span>
+                  </span>
+                </Link>
+              </article>
             ))}
           </div>
         </section>

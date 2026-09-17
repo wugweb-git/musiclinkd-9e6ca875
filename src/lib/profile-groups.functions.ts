@@ -281,6 +281,7 @@ export const getPublicBand = createServerFn({ method: "GET" })
   });
 
 export type DirectoryPerson = {
+  id: string;
   username: string;
   name: string;
   headline: string | null;
@@ -314,6 +315,7 @@ export const listPeopleByRole = createServerFn({ method: "GET" })
       .limit(data.limit ?? 40);
     if (error) throw new Error(error.message);
     return ((rows ?? []) as ProfileBase[]).map((r) => ({
+      id: r.id,
       username: r.username ?? "",
       name: r.display_name ?? r.username ?? "",
       headline: r.headline,

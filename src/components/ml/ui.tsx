@@ -130,7 +130,7 @@ const menuGroups: {
     title: "For you",
     items: [
       { to: "/recommendations", label: "Recommendations", icon: Sparkles, soon: true },
-      { to: "/saved", label: "Saved", icon: Bookmark, soon: true },
+      { to: "/saved", label: "Saved", icon: Bookmark },
       { to: "/recently-viewed", label: "Recently viewed", icon: History, soon: true },
     ],
   },

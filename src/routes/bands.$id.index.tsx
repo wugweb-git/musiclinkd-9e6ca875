@@ -6,6 +6,7 @@ import { Card, Segmented, StatusPill, EmptyState, Price, Row } from "@/component
 import { bandRoleCopy } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
+import { SavedToggle } from "@/components/ml/saved-toggle";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
@@ -99,6 +100,7 @@ function BandProfile() {
               <p className="truncate text-1 text-muted-foreground">{band.subtitle}</p>
             ) : null}
           </div>
+          {owner ? null : <SavedToggle targetType="band" targetId={band.dbId} size={36} />}
         </div>
 
         {band.tagline ? <p className="mt-3 text-1 text-muted-foreground">{band.tagline}</p> : null}

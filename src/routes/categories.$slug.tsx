@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 
 import { Screen, TopBar, VerifiedBadge } from "@/components/ml/ui";
 import { StateCard } from "@/components/ml/portfolio";
+import { SavedToggle } from "@/components/ml/saved-toggle";
 import { categories } from "@/data/discover";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
@@ -67,11 +68,11 @@ function CategoryDirectory() {
         ) : (
           <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
             {people.data.map((p) => (
-              <li key={p.username}>
+              <li key={p.username} className="flex items-center gap-3 px-4 py-3.5">
                 <Link
                   to="/profile/$username"
                   params={{ username: p.username }}
-                  className="state-layer flex items-center gap-3 px-4 py-3.5"
+                  className="state-layer flex min-w-0 flex-1 items-center gap-3"
                 >
                   {p.avatarUrl ? (
                     <img
@@ -103,6 +104,7 @@ function CategoryDirectory() {
                     ) : null}
                   </span>
                 </Link>
+                <SavedToggle targetType="talent" targetId={p.id} size={36} />
               </li>
             ))}
           </ul>
