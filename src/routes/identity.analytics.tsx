@@ -1,10 +1,15 @@
 /**
  * FLOW-23 · QR-23 "QR analytics" · route: /identity/analytics
- * Aggregate, owner-only counts. Reuses profile analytics language, adds no new tracking.
+ * Aggregate, owner-only counts, backed by public.qr_scans. No downstream conversion (visits,
+ * follows, messages, bookings) is tracked by a scan event, so this only shows what a scan
+ * actually records: that someone opened your code.
  */
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { qrAnalytics } from "@/data/identity";
+import { StateCard, Skeleton } from "@/components/ml/qr";
+import { getMyQrAnalytics } from "@/lib/qr.functions";
 
 export const Route = createFileRoute("/identity/analytics")({
   head: () => ({
@@ -12,11 +17,10 @@ export const Route = createFileRoute("/identity/analytics")({
       { title: "QR analytics — MusicLinkd" },
       {
         name: "description",
-        content:
-          "See how your printed and shared MusicLinkd codes turn into profile visits, follows, messages and bookings.",
+        content: "See how many people have scanned your MusicLinkd QR code.",
       },
       { property: "og:title", content: "QR analytics on MusicLinkd" },
-      { property: "og:description", content: "Which surface actually brings work in." },
+      { property: "og:description", content: "Scans of your code, aggregate only." },
     ],
   }),
   component: QrAnalytics,
@@ -25,50 +29,42 @@ export const Route = createFileRoute("/identity/analytics")({
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-[20px] bg-subtle px-4 py-3">
-      <p className="text-3 leading-tight">{value}</p>
+      <p className="text-3 leading-tight tabular-nums">{value}</p>
       <p className="text-1 text-muted-foreground">{label}</p>
     </div>
   );
 }
 
 function QrAnalytics() {
-  const max = Math.max(...qrAnalytics.bySource.map((s) => s.value));
+  const load = useServerFn(getMyQrAnalytics);
+  const q = useQuery({ queryKey: ["qr", "analytics"], queryFn: () => load() });
+
   return (
     <Screen>
-      <TopBar title="QR analytics" subtitle="Last 30 days" back="/identity/qr" />
+      <TopBar title="QR analytics" subtitle="All time" back="/identity/qr" />
       <main className="px-5 pt-4">
-        <div className="grid grid-cols-2 gap-2">
-          <Stat label="Scans" value={qrAnalytics.scans} />
-          <Stat label="Unique people" value={qrAnalytics.unique} />
-          <Stat label="Profile visits" value={qrAnalytics.profileVisits} />
-          <Stat label="New follows" value={qrAnalytics.follows} />
-          <Stat label="Messages started" value={qrAnalytics.messages} />
-          <Stat label="Bookings" value={qrAnalytics.bookings} />
-        </div>
-
-        <section className="mt-4 rounded-[24px] bg-subtle p-4">
-          <h2 className="text-2">Where scans come from</h2>
-          <div className="mt-3 flex flex-col gap-3">
-            {qrAnalytics.bySource.map((s) => (
-              <div key={s.label}>
-                <div className="flex items-baseline justify-between text-1">
-                  <span className="font-semibold">{s.label}</span>
-                  <span className="text-muted-foreground">{s.value}</span>
-                </div>
-                <div className="mt-1 h-2 rounded-full bg-background">
-                  <div
-                    className="h-2 rounded-full bg-primary"
-                    style={{ width: `${Math.round((s.value / max) * 100)}%` }}
-                  />
-                </div>
-              </div>
+        {q.isLoading ? (
+          <div className="grid grid-cols-2 gap-2">
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-20 rounded-[20px]" />
             ))}
           </div>
-        </section>
+        ) : q.isError || !q.data ? (
+          <StateCard title="Couldn't load analytics" body="Check your connection and retry." />
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <Stat label="Total scans" value={q.data.totalScans} />
+              <Stat label="Unique people" value={q.data.uniqueScanners} />
+              <Stat label="Last 7 days" value={q.data.last7Days} />
+              <Stat label="Last 30 days" value={q.data.last30Days} />
+            </div>
 
-        <p className="mt-3 px-1 text-1 text-muted-foreground">
-          Counts are aggregate. MusicLinkd never shows who scanned your code.
-        </p>
+            <p className="mt-3 px-1 text-1 text-muted-foreground">
+              Counts are aggregate. MusicLinkd never shows who scanned your code.
+            </p>
+          </>
+        )}
 
         <div className="mt-4">
           <BtnLink to="/identity/print" variant="outline" className="w-full">

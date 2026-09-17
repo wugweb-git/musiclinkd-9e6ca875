@@ -179,6 +179,7 @@ const profilePatchSchema = z.object({
   contact_channels: strList(10),
   experience_level: z.string().max(40).optional().nullable(),
   visibility: z.string().max(24).optional(),
+  qr_style: z.enum(["light", "dark", "branded", "minimal"]).optional(),
   availability: z.string().max(40).optional().nullable(),
   avatar_url: z.string().max(500).optional().nullable(),
   cover_url: z.string().max(500).optional().nullable(),

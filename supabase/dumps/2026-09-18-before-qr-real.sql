@@ -1,0 +1,11 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project gsqeymhtyzepwcnorjun)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918130000 (qr_real).
+--
+-- Scope: row counts only. That migration is additive: it adds profiles.qr_style (a new column
+-- with a default, existing rows unaffected) and creates the qr_scans table with its own RLS.
+-- Nothing existing is read, altered destructively, or referenced by a trigger.
+--
+-- To undo: ALTER TABLE public.profiles DROP COLUMN IF EXISTS qr_style;
+--          DROP TABLE IF EXISTS public.qr_scans CASCADE;
+--
+-- profiles: 102 rows (unaffected by the new column beyond its default)

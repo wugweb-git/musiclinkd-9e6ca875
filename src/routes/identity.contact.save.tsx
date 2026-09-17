@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Check, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { StateCard, ActionRow } from "@/components/ml/qr";
-import { myIdentity } from "@/data/identity";
+import { useMyIdentity } from "@/hooks/use-my-identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/contact/save")({
@@ -26,9 +26,42 @@ export const Route = createFileRoute("/identity/contact/save")({
   component: SaveContact,
 });
 
+/** A real .vcf a phone can open straight into its own "add contact" screen. */
+function vCard(me: ReturnType<typeof useMyIdentity>): string {
+  const lines = [
+    "BEGIN:VCARD",
+    "VERSION:3.0",
+    `FN:${me.name || "MusicLinkd contact"}`,
+    me.role ? `TITLE:${me.role}` : null,
+    me.phone ? `TEL;TYPE=CELL:${me.phone}` : null,
+    me.email ? `EMAIL:${me.email}` : null,
+    me.url ? `URL:${me.url}` : null,
+    "END:VCARD",
+  ].filter((l): l is string => l !== null);
+  return lines.join("\n");
+}
+
 function SaveContact() {
+  const me = useMyIdentity();
   const [phase, setPhase] = useState<"ready" | "saving" | "done" | "error">("ready");
-  const c = myIdentity.contact;
+
+  function save() {
+    setPhase("saving");
+    try {
+      const blob = new Blob([vCard(me)], { type: "text/vcard" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${me.name || "musiclinkd-contact"}.vcf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setPhase("done");
+    } catch {
+      setPhase("error");
+    }
+  }
 
   return (
     <Screen>
@@ -36,8 +69,8 @@ function SaveContact() {
       <main className="px-5 pt-4">
         {phase === "done" ? (
           <StateCard
-            title="Contact saved"
-            body={`${myIdentity.name} was added to your phone contacts with their MusicLinkd profile link.`}
+            title="Contact file downloaded"
+            body={`Open the downloaded file to add ${me.name || "this contact"} to your phone contacts, with their MusicLinkd profile link.`}
           >
             <BtnLink to="/identity/contact" className="w-full">
               <Check size={iconSize.sm} className="mr-2" /> Done
@@ -46,7 +79,7 @@ function SaveContact() {
         ) : phase === "error" ? (
           <StateCard
             title="Couldn't save the contact"
-            body="Your browser blocked the download or contacts access. You can copy the details manually instead."
+            body="Your browser blocked the download. You can copy the details manually instead."
           >
             <Btn onClick={() => setPhase("ready")}>Try again</Btn>
           </StateCard>
@@ -57,50 +90,31 @@ function SaveContact() {
               <div className="mt-3 flex flex-col gap-2">
                 <ActionRow
                   icon={<UserRoundPlus size={iconSize.sm} />}
-                  label={myIdentity.name}
-                  hint={myIdentity.role}
+                  label={me.name || "MusicLinkd contact"}
+                  hint={me.role}
                 />
-                {c.phone.shared ? (
+                {me.phone ? (
+                  <ActionRow icon={<Check size={iconSize.sm} />} label={me.phone} hint="Mobile" />
+                ) : null}
+                {me.email ? (
+                  <ActionRow icon={<Check size={iconSize.sm} />} label={me.email} hint="Email" />
+                ) : null}
+                {me.url ? (
                   <ActionRow
                     icon={<Check size={iconSize.sm} />}
-                    label={c.phone.value}
-                    hint="Mobile"
+                    label={me.url}
+                    hint="Profile link"
                   />
                 ) : null}
-                {c.email.shared ? (
-                  <ActionRow
-                    icon={<Check size={iconSize.sm} />}
-                    label={c.email.value}
-                    hint="Email"
-                  />
-                ) : null}
-                {c.company.shared ? (
-                  <ActionRow
-                    icon={<Check size={iconSize.sm} />}
-                    label={c.company.value}
-                    hint="Company"
-                  />
-                ) : null}
-                <ActionRow
-                  icon={<Check size={iconSize.sm} />}
-                  label={`musiclinkd.app/q/${myIdentity.code}`}
-                  hint="Profile link"
-                />
               </div>
             </section>
 
             <p className="mt-3 px-1 text-1 text-muted-foreground">
-              Details the owner keeps private are not included.
+              Details you haven't shared are not included.
             </p>
 
             <div className="mt-4 flex gap-2">
-              <Btn
-                className="flex-1"
-                onClick={() => {
-                  setPhase("saving");
-                  setTimeout(() => setPhase("done"), 600);
-                }}
-              >
+              <Btn className="flex-1" onClick={save} disabled={phase === "saving"}>
                 {phase === "saving" ? "Saving…" : "Save to contacts"}
               </Btn>
               <BtnLink to="/identity/contact" variant="outline" className="flex-1 w-full">

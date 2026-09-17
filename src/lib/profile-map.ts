@@ -27,6 +27,7 @@ export type ProfileRow = {
   cover_url?: string | null;
   links?: unknown;
   discovery_prefs?: unknown;
+  qr_style?: string | null;
   onboarding_step?: string | null;
   onboarding_draft?: unknown;
   onboarding_complete?: boolean | null;

@@ -24,10 +24,9 @@ import {
   Share2,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { useAuth } from "@/hooks/use-auth";
-import { getMyProfile, getTaxonomyLabels } from "@/lib/portfolio.functions";
-import type { TaxonomyLabels } from "@/lib/portfolio.functions";
-import type { ProfileRow } from "@/lib/profile-map";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMyIdentity } from "@/hooks/use-my-identity";
+import { saveMyProfile } from "@/lib/portfolio.functions";
 import { Screen, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import {
   QrCode,
@@ -39,7 +38,7 @@ import {
   DownloadNote,
   nativeShare,
 } from "@/components/ml/qr";
-import { canonicalUrl, myIdentity, qrStyles, SHORT_HOST, type QrStyle } from "@/data/identity";
+import { qrStyles, type QrStyle } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/qr")({
@@ -63,71 +62,26 @@ export const Route = createFileRoute("/identity/qr")({
   component: DigitalId,
 });
 
-/**
- * Who the code is for. Signed in, that is the person's own profile row — the code points at their
- * real public profile URL. Signed out, the seed identity stands in, as it does on /profile.
- */
-function useIdentity() {
-  const { signedIn, loading } = useAuth();
-  const load = useServerFn(getMyProfile);
-  const loadLabels = useServerFn(getTaxonomyLabels);
-  const [row, setRow] = useState<ProfileRow | null>(null);
-  const [labels, setLabels] = useState<TaxonomyLabels>({});
-  const [read, setRead] = useState(false);
-
-  useEffect(() => {
-    if (loading || !signedIn) return;
-    Promise.all([load(), loadLabels().catch((): TaxonomyLabels => ({}))])
-      .then(([r, l]) => {
-        setRow((r ?? null) as ProfileRow | null);
-        setLabels(l);
-      })
-      .catch(() => null)
-      .finally(() => setRead(true));
-  }, [loading, signedIn, load, loadLabels]);
-
-  if (!signedIn) {
-    return {
-      ready: !loading,
-      username: myIdentity.username,
-      name: myIdentity.name,
-      role: myIdentity.role,
-      photo: myIdentity.photo,
-      verified: myIdentity.verified,
-      url: canonicalUrl(myIdentity.code),
-    };
-  }
-
-  const username = row?.username ?? null;
-  const role = (row?.roles ?? [])
-    .slice(0, 2)
-    .map((slug) => labels["person_types"]?.[slug] ?? slug)
-    .join(" · ");
-  return {
-    ready: read,
-    username,
-    name: row?.display_name ?? "",
-    role,
-    photo: row?.avatar_url ?? "",
-    verified: false,
-    // The real, working address for this profile — not a code that resolves to nothing.
-    url: username ? profileUrl(username) : "",
-  };
-}
-
-/** The public profile link people reach by scanning. Absolute, so it works off the phone. */
-function profileUrl(username: string) {
-  const origin = typeof window === "undefined" ? `https://${SHORT_HOST}` : window.location.origin;
-  return `${origin}/profile/${username}`;
-}
-
 function DigitalId() {
+  const queryClient = useQueryClient();
   const [phase, setPhase] = useState<"loading" | "ready" | "offline">("loading");
-  const [style, setStyle] = useState<QrStyle>("light");
   const [share, setShare] = useState(false);
   const [look, setLook] = useState(false);
-  const me = useIdentity();
+  const me = useMyIdentity();
   const url = me.url;
+  const style = me.qrStyle;
+  const save = useServerFn(saveMyProfile);
+  async function setStyle(next: QrStyle) {
+    queryClient.setQueryData(["profile", "me"], (prev: unknown) =>
+      prev && typeof prev === "object" ? { ...prev, qr_style: next } : prev,
+    );
+    try {
+      await save({ data: { qr_style: next } });
+    } catch {
+      toast.error("Couldn't save that style — try again");
+      await queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
+    }
+  }
 
   useEffect(() => {
     const online = typeof navigator === "undefined" || navigator.onLine;
@@ -248,14 +202,12 @@ function DigitalId() {
               label="Scan a MusicLinkd QR"
               hint="Point the camera at someone's code"
               to="/identity/scan"
-              soon
             />
             <ActionRow
               icon={<IdCard size={iconSize.sm} />}
               label="Digital business card"
               hint="Name, role, the contact details you choose to share"
               to="/identity/contact"
-              soon
             />
             <ActionRow
               icon={<Building2 size={iconSize.sm} />}
@@ -269,20 +221,17 @@ function DigitalId() {
               label="Print preview"
               hint="Card, poster, studio sign, badge"
               to="/identity/print"
-              soon
             />
             <ActionRow
               icon={<History size={iconSize.sm} />}
               label="Scan history"
               to="/identity/history"
-              soon
             />
             <ActionRow
               icon={<BarChart3 size={iconSize.sm} />}
               label="QR analytics"
-              hint="Scans, visits, conversions"
+              hint="Total scans, unique people, recent activity"
               to="/identity/analytics"
-              soon
             />
           </div>
 

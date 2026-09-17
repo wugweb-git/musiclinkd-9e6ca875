@@ -8,7 +8,8 @@ import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { QrCode, DownloadNote } from "@/components/ml/qr";
-import { canonicalUrl, myBusiness, myIdentity, printFormats } from "@/data/identity";
+import { myBusiness, printFormats } from "@/data/identity";
+import { useMyIdentity } from "@/hooks/use-my-identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/print")({
@@ -28,11 +29,13 @@ export const Route = createFileRoute("/identity/print")({
 });
 
 function PrintPreview() {
+  const me = useMyIdentity();
   const [format, setFormat] = useState<string>(printFormats[0]!.id);
   const [subject, setSubject] = useState<"me" | "business">("me");
-  const who = subject === "me" ? myIdentity : myBusiness;
-  const name = subject === "me" ? myIdentity.name : myBusiness.name;
-  const line = subject === "me" ? myIdentity.role : myBusiness.category;
+  const name = subject === "me" ? me.name : myBusiness.name;
+  const line = subject === "me" ? me.role : myBusiness.category;
+  const url = subject === "me" ? me.url : `https://musiclinkd.app/q/${myBusiness.code}`;
+  const shortAddress = subject === "me" ? `musiclinkd.app/${me.username ?? ""}` : `musiclinkd.app/q/${myBusiness.code}`;
   const active = printFormats.find((f) => f.id === format)!;
 
   return (
@@ -67,14 +70,12 @@ function PrintPreview() {
                 format === "poster" ? "3 / 4" : format === "studio-sign" ? "1 / 1" : "16 / 9",
             }}
           >
-            <QrCode value={canonicalUrl(who.code)} size={format === "poster" ? 180 : 110} />
+            <QrCode value={url} size={format === "poster" ? 180 : 110} />
             <div className={format === "poster" ? "" : "min-w-0"}>
               <p className="pill bg-subtle text-muted-foreground">MusicLinkd</p>
               <p className="truncate text-2 leading-tight">{name}</p>
               <p className="truncate text-1 text-muted-foreground">{line}</p>
-              <p className="mt-1 truncate text-1 text-muted-foreground">
-                musiclinkd.app/q/{who.code}
-              </p>
+              <p className="mt-1 truncate text-1 text-muted-foreground">{shortAddress}</p>
             </div>
           </div>
         </section>

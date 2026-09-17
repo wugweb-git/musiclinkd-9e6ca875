@@ -3,10 +3,10 @@
  * Only fields the owner marked shareable appear here.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { Building2, Globe, Mail, Phone, UserRoundPlus } from "lucide-react";
+import { Globe, Mail, Phone, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { QrCode, ActionRow, nativeShare } from "@/components/ml/qr";
-import { canonicalUrl, myIdentity } from "@/data/identity";
+import { useMyIdentity } from "@/hooks/use-my-identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/contact/")({
@@ -29,38 +29,35 @@ export const Route = createFileRoute("/identity/contact/")({
 });
 
 function BusinessCard() {
-  const c = myIdentity.contact;
-  const url = canonicalUrl(myIdentity.code);
+  const me = useMyIdentity();
+  const url = me.url;
   const shared = [
-    c.phone.shared
-      ? { icon: <Phone size={iconSize.sm} />, label: c.phone.value, hint: "Mobile" }
-      : null,
-    c.email.shared
-      ? { icon: <Mail size={iconSize.sm} />, label: c.email.value, hint: "Email" }
-      : null,
-    c.company.shared
-      ? { icon: <Building2 size={iconSize.sm} />, label: c.company.value, hint: "Studio" }
-      : null,
-    c.website.shared
-      ? { icon: <Globe size={iconSize.sm} />, label: c.website.value, hint: "Website" }
-      : null,
+    me.phone ? { icon: <Phone size={iconSize.sm} />, label: me.phone, hint: "Mobile" } : null,
+    me.email ? { icon: <Mail size={iconSize.sm} />, label: me.email, hint: "Email" } : null,
+    me.website ? { icon: <Globe size={iconSize.sm} />, label: me.website, hint: "Website" } : null,
   ].filter(Boolean) as { icon: React.ReactNode; label: string; hint: string }[];
 
   return (
     <Screen>
-      <TopBar title="Digital card" subtitle={myIdentity.name} back="/identity/qr" />
+      <TopBar title="Digital card" subtitle={me.name} back="/identity/qr" />
       <main className="px-5 pt-4">
         <section className="overflow-hidden rounded-[24px] bg-subtle">
           <div className="flex items-center gap-4 bg-ink px-5 py-5 text-background">
-            <img src={myIdentity.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
+            {me.photo ? (
+              <img src={me.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
+            ) : (
+              <span aria-hidden className="h-16 w-16 shrink-0 rounded-full bg-background/20" />
+            )}
             <div className="min-w-0">
-              <h2 className="truncate text-3 leading-tight text-background">{myIdentity.name}</h2>
-              <p className="truncate text-1 text-background/70">{myIdentity.role}</p>
-              <p className="truncate text-1 text-background/50">{myIdentity.location}</p>
+              <h2 className="truncate text-3 leading-tight text-background">{me.name}</h2>
+              <p className="truncate text-1 text-background/70">{me.role}</p>
+              {me.username ? (
+                <p className="truncate text-1 text-background/50">@{me.username}</p>
+              ) : null}
             </div>
           </div>
           <div className="flex items-center gap-4 px-5 py-5">
-            <QrCode value={url} size={96} label="MusicLinkd QR" />
+            {url ? <QrCode value={url} size={96} label="MusicLinkd QR" /> : null}
             <p className="text-1 text-muted-foreground">
               Scanning opens the live profile — portfolio, services and availability stay up to date
               without a reprint.
@@ -70,12 +67,14 @@ function BusinessCard() {
 
         <div className="mt-4 flex flex-col gap-2">
           <p className="pill px-1 bg-background text-muted-foreground">Shared details</p>
-          {shared.map((s) => (
-            <ActionRow key={s.label} icon={s.icon} label={s.label} hint={s.hint} />
-          ))}
-          <p className="px-1 text-1 text-muted-foreground">
-            Hidden fields are never included in shares. Change what's shared in QR settings.
-          </p>
+          {shared.length ? (
+            shared.map((s) => <ActionRow key={s.label} icon={s.icon} label={s.label} hint={s.hint} />)
+          ) : (
+            <p className="px-1 text-1 text-muted-foreground">
+              No contact details on file yet — add a website in Profile edit, or your phone/email
+              come from your sign-in.
+            </p>
+          )}
         </div>
 
         <div className="mt-4 flex gap-2">
@@ -85,16 +84,10 @@ function BusinessCard() {
           <Btn
             variant="outline"
             className="flex-1"
-            onClick={() => void nativeShare({ title: myIdentity.name, url })}
+            onClick={() => void nativeShare({ title: me.name || "MusicLinkd", url })}
           >
             Share Card
           </Btn>
-        </div>
-
-        <div className="mt-3">
-          <BtnLink to="/identity/settings" variant="ghost" className="w-full">
-            Manage Shared Details
-          </BtnLink>
         </div>
       </main>
     </Screen>
