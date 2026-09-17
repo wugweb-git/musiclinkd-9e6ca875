@@ -23,7 +23,7 @@ import { ViewerAvatar } from "@/components/ml/viewer";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { SectionActionLink } from "@/components/ml/links";
 import { useState } from "react";
-import { quickCategories, talents, trending, studios } from "@/data/discover";
+import { quickCategories, talents, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
@@ -172,29 +172,6 @@ function Discover() {
           </div>
         </section>
       ) : null}
-
-      <section className="pb-6">
-        <SectionHeader
-          title="Trending this week"
-          action={<SectionActionLink to="/discover/music">See All</SectionActionLink>}
-        />
-        <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-          {trending.map((t) => (
-            <article
-              key={t.name}
-              className="relative h-40 w-[260px] shrink-0 overflow-hidden rounded-lg border border-border"
-            >
-              <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/85 to-transparent" />
-              <span className="pill absolute left-3 top-3 pill-glass">{t.tag}</span>
-              <div className="absolute bottom-3 left-3 right-3 text-background">
-                <h3 className="text-sm text-background">{t.name}</h3>
-                <p className="text-1 opacity-80">{t.meta}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
 
       {nearby.length > 1 ? (
         <section className="pb-8">

@@ -1,10 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState, Loading, Price } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import { useService } from "@/hooks/use-services";
+import { useAuth } from "@/hooks/use-auth";
+import { conversationWith, sendMessage } from "@/lib/messages.functions";
 import { priceParts } from "@/lib/price";
 
 export const Route = createFileRoute("/services/$id/enquiry")({
@@ -30,11 +35,24 @@ const modes = ["Quick question", "Custom quote"] as const;
 function ServiceEnquiry() {
   const { id } = Route.useParams();
   const { service: s, owner, pending, error, retry } = useService(id);
+  const { signedIn } = useAuth();
   const [mode, setMode] = useState<(typeof modes)[number]>("Quick question");
   const [message, setMessage] = useState("");
   const [budget, setBudget] = useState("");
   const [scope, setScope] = useState("");
   const [sent, setSent] = useState(false);
+
+  const startConversation = useServerFn(conversationWith);
+  const send = useServerFn(sendMessage);
+  const enquire = useMutation({
+    mutationFn: async (body: string) => {
+      if (!s) throw new Error("Service not found");
+      const { id: conversationId } = await startConversation({ data: { profileId: s.profile_id } });
+      await send({ data: { conversationId, body } });
+    },
+    onSuccess: () => setSent(true),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't send. Try again."),
+  });
 
   // A paused service takes no new enquiries; its owner can still preview it.
   if (pending || error || !s || (s.status !== "active" && !owner)) {
@@ -163,9 +181,26 @@ function ServiceEnquiry() {
           </Card>
         )}
 
-        {/* No enquiry is stored or sent yet: there is no enquiry table or message to write to. */}
-        <Btn className="w-full" disabled={!ready} onClick={() => setSent(true)}>
-          {mode === "Custom quote" ? "Request quote" : "Send question"}
+        <Btn
+          className="w-full"
+          disabled={!ready || enquire.isPending}
+          onClick={() => {
+            if (!signedIn) {
+              toast("Sign in to send this");
+              return;
+            }
+            const body =
+              mode === "Quick question"
+                ? `About "${s.name}": ${message.trim()}`
+                : `Custom quote for "${s.name}"\n\n${scope.trim()}\n\nBudget: ${budget.trim()}`;
+            enquire.mutate(body);
+          }}
+        >
+          {enquire.isPending
+            ? "Sending…"
+            : mode === "Custom quote"
+              ? "Request quote"
+              : "Send question"}
         </Btn>
       </div>
     </Screen>
