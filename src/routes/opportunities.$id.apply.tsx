@@ -1,11 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, Price, StatusPill } from "@/components/ml/kit";
 import { getOpportunity, payParts } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { applyToOpportunity } from "@/lib/applications.functions";
+import { listMyPortfolio } from "@/lib/portfolio.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 type Step = "portfolio" | "message" | "review" | "done";
@@ -51,6 +57,34 @@ function ApplyFlow() {
   const [picked, setPicked] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [rate, setRate] = useState("");
+  const { signedIn } = useAuth();
+  const send = useServerFn(applyToOpportunity);
+  const fetchPortfolio = useServerFn(listMyPortfolio);
+
+  // Your own work, so an application carries real pieces. Signed out, the demo set stands in.
+  const portfolio = useQuery({
+    queryKey: ["portfolio", "mine"],
+    queryFn: () => fetchPortfolio(),
+    enabled: signedIn,
+  });
+  const work = signedIn
+    ? (portfolio.data ?? []).map((item) => ({ id: item.id, title: item.title, kind: item.kind }))
+    : demoPortfolio.map((item) => ({ id: item.id, title: item.title, kind: item.kind }));
+
+  const apply = useMutation({
+    mutationFn: () =>
+      send({
+        data: {
+          slug: id,
+          ...(message.trim() ? { message: message.trim() } : {}),
+          // A seed portfolio id is not a real row, so only a signed-in pick is sent.
+          ...(signedIn && picked.length ? { portfolioItemIds: picked } : {}),
+        },
+      }),
+    onSuccess: () =>
+      void nav({ to: "/opportunities/$id/apply", params: { id }, search: { step: "done" } }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't send. Try again."),
+  });
 
   if (!o) {
     return (
@@ -115,7 +149,7 @@ function ApplyFlow() {
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {demoPortfolio.slice(0, 6).map((p) => {
+              {work.slice(0, 6).map((p) => {
                 const on = picked.includes(p.id);
                 return (
                   <button
@@ -203,7 +237,7 @@ function ApplyFlow() {
               ) : (
                 picked.map((pid) => (
                   <p key={pid} className="text-1">
-                    {demoPortfolio.find((p) => p.id === pid)?.title ?? pid}
+                    {work.find((w) => w.id === pid)?.title ?? pid}
                   </p>
                 ))
               )}
@@ -231,7 +265,8 @@ function ApplyFlow() {
           <Btn
             className="flex-1"
             disabled={step === "message" && message.trim().length < 10}
-            onClick={() => go(order[idx + 1]!)}
+            loading={apply.isPending}
+            onClick={() => (step === "review" ? apply.mutate() : go(order[idx + 1]!))}
           >
             {step === "review" ? "Send application" : "Continue"}
           </Btn>

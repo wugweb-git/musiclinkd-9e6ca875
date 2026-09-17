@@ -1,9 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
+import { createOpportunity } from "@/lib/applications.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { categoryIcon } from "@/components/ml/opportunity";
 import { iconSize } from "@/lib/tokens";
 
@@ -76,6 +81,35 @@ function CreateOpportunity() {
   const [budget, setBudget] = useState("");
   const [reqs, setReqs] = useState<string[]>([]);
   const [req, setReq] = useState("");
+  const { signedIn } = useAuth();
+  const post = useServerFn(createOpportunity);
+
+  // Rupees in the box, paise in the database. A budget that is not a number is kept as the note.
+  const budgetPaise = (() => {
+    const digits = budget.replace(/[^0-9]/g, "");
+    return payType === "Paid" && digits ? Number(digits) * 100 : undefined;
+  })();
+
+  const publish = useMutation({
+    mutationFn: () =>
+      post({
+        data: {
+          title: title.trim(),
+          // Stored rows hold the label a person reads ("Cello Player"), not the category key.
+          ...(cat
+            ? {
+                roleRequired: opportunityCategories.find((c) => c.key === cat)?.label ?? cat,
+              }
+            : {}),
+          ...(budgetPaise === undefined ? {} : { budgetPaise }),
+          ...(payType === "Paid" ? {} : { budgetNote: payType }),
+          ...(mode ? { collaborationType: mode } : {}),
+          ...(city.trim() ? { location: city.trim() } : {}),
+        },
+      }),
+    onSuccess: () => void nav({ to: "/opportunities/new", search: { step: "published" } }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't post. Try again."),
+  });
 
   const go = (s: Step) => nav({ to: "/opportunities/new", search: { step: s } });
 
@@ -337,7 +371,12 @@ function CreateOpportunity() {
               Save Draft
             </BtnLink>
           )}
-          <Btn className="flex-1" disabled={!canContinue} onClick={() => go(order[idx + 1]!)}>
+          <Btn
+            className="flex-1"
+            disabled={!canContinue || (step === "preview" && !signedIn)}
+            loading={publish.isPending}
+            onClick={() => (step === "preview" ? publish.mutate() : go(order[idx + 1]!))}
+          >
             {step === "preview" ? "Publish" : "Continue"}
           </Btn>
         </div>

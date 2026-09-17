@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import {
   Bookmark,
@@ -18,14 +20,10 @@ import {
   statusTone,
   useSavedOpportunities,
 } from "@/components/ml/opportunity";
-import {
-  getOpportunity,
-  categoryLabel,
-  payParts,
-  reportReasons,
-  myApplications,
-} from "@/data/opportunities";
+import { getOpportunity, categoryLabel, payParts, reportReasons } from "@/data/opportunities";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { myApplicationTo } from "@/lib/applications.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/$id/")({
@@ -60,6 +58,17 @@ function OpportunityDetail() {
   const [reported, setReported] = useState(false);
   const [share, setShare] = useState(false);
 
+  // Whether this account has already applied, read from the database. Before the missing-opportunity
+  // guard below, so the hooks run in the same order on every render.
+  const { signedIn } = useAuth();
+  const readApplication = useServerFn(myApplicationTo);
+  const mine = useQuery({
+    queryKey: ["application", id],
+    queryFn: () => readApplication({ data: { slug: id } }),
+    enabled: signedIn,
+    retry: false,
+  });
+
   if (!o) {
     return (
       <Screen>
@@ -78,7 +87,7 @@ function OpportunityDetail() {
     );
   }
 
-  const existing = myApplications.find((a) => a.opportunityId === o.id);
+  const applied = mine.data?.status ?? null;
   const saved = has(o.id) || o.saved;
   const tags = [...o.genres, ...o.languages];
 
@@ -214,13 +223,15 @@ function OpportunityDetail() {
               fill={saved ? "currentColor" : "none"}
             />
           </button>
-          {existing ? (
-            <BtnLink
-              to="/opportunities/applications/$aid"
-              params={{ aid: existing.id }}
-              className="min-w-0 flex-1 w-full"
-            >
-              View your application · {existing.status}
+          {applied && applied !== "withdrawn" ? (
+            <BtnLink to="/opportunities/applications" className="min-w-0 flex-1 w-full">
+              {applied === "pending"
+                ? "Applied · view"
+                : applied === "shortlisted"
+                  ? "Shortlisted · view"
+                  : applied === "accepted"
+                    ? "Accepted · view"
+                    : "Not selected · view"}
             </BtnLink>
           ) : o.status === "closed" ? (
             <Btn className="min-w-0 flex-1" disabled>

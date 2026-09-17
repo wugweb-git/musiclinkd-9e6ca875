@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Btn, Screen, TopBar, BtnLink, VerifiedBadge } from "@/components/ml/ui";
 import { Segmented, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
-import { ApplicantCard } from "@/components/ml/opportunity";
 import {
   KanbanBoard,
   KanbanCard,
@@ -10,9 +12,15 @@ import {
   KanbanHeader,
   KanbanProvider,
 } from "@/components/kibo-ui/kanban";
-import { applicants, myOpportunities, getOpportunity } from "@/data/opportunities";
-import type { Applicant } from "@/data/opportunities";
+import { myOpportunities, getOpportunity } from "@/data/opportunities";
+import {
+  listApplicants,
+  setApplicationStatus,
+  type ApplicantSummary,
+} from "@/lib/applications.functions";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { useAuth } from "@/hooks/use-auth";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/")({
   // Ids that are not static opportunities are looked up as stored opportunity slugs. Stored
@@ -43,21 +51,60 @@ export const Route = createFileRoute("/opportunities/$id/applicants/")({
 });
 
 const tabs = ["All", "Shortlisted", "New"] as const;
+const columns = [
+  { id: "pending", name: "New" },
+  { id: "shortlisted", name: "Shortlisted" },
+  { id: "accepted", name: "Accepted" },
+  { id: "rejected", name: "Declined" },
+];
 
+type BoardCard = { id: string; name: string; column: string; applicant: ApplicantSummary };
+
+const personName = (a: ApplicantSummary) =>
+  a.person?.display_name ?? a.person?.username ?? "Applicant";
+
+/**
+ * The people who applied to one of your own opportunities, from the database. The list moves an
+ * application along with a button; the board moves it by dragging — both write the status, so the
+ * column someone sits in is what they will be told.
+ */
 function Applicants() {
   const { id } = Route.useParams();
   const [view, setView] = useState<"List" | "Board">("List");
   const [tab, setTab] = useState<(typeof tabs)[number]>("All");
-  const [loading] = useState(false);
+  const { signedIn } = useAuth();
   const { db } = Route.useLoaderData();
   const o = myOpportunities.find((x) => x.id === id) ?? db ?? undefined;
-  const all = applicants.filter((a) => a.opportunityId === id);
+  const queryClient = useQueryClient();
+  const load = useServerFn(listApplicants);
+  const decide = useServerFn(setApplicationStatus);
+
+  const q = useQuery({
+    queryKey: ["applicants", id],
+    queryFn: () => load({ data: { slug: id } }),
+    enabled: signedIn,
+    retry: false,
+  });
+
+  const move = useMutation({
+    mutationFn: ({
+      applicationId,
+      status,
+    }: {
+      applicationId: string;
+      status: "pending" | "shortlisted" | "accepted" | "rejected";
+    }) => decide({ data: { id: applicationId, status } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["applicants", id] }),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
+  const all = q.data ?? [];
   const list = all.filter((a) =>
     tab === "All"
       ? true
       : tab === "Shortlisted"
         ? a.status === "shortlisted"
-        : a.status === "submitted",
+        : a.status === "pending",
   );
 
   return (
@@ -74,59 +121,137 @@ function Applicants() {
           options={["List", "Board"] as const}
           onChange={setView}
         />
-        {view === "Board" ? <ApplicantBoard applicants={all} /> : null}
-        {view === "List" ? <Segmented value={tab} options={tabs} onChange={setTab} /> : null}
-        {view === "List" && loading ? (
-          <Loading rows={3} />
-        ) : view === "List" && list.length === 0 ? (
-          <EmptyState
-            title="No applicants here yet"
-            body="Sharing your opportunity in a conversation or on your profile usually doubles applications."
-          >
-            <BtnLink
-              to="/opportunities/$id/analytics"
-              params={{ id }}
-              variant="outline"
-              className="w-full"
-            >
-              See Performance
-            </BtnLink>
-          </EmptyState>
-        ) : view === "List" ? (
-          list.map((a) => <ApplicantCard key={a.id} a={a} />)
+
+        {q.isLoading ? <Loading rows={3} /> : null}
+
+        {!q.isLoading && view === "Board" ? (
+          <ApplicantBoard
+            applicants={all}
+            onMove={(applicationId, status) => move.mutate({ applicationId, status })}
+          />
+        ) : null}
+
+        {!q.isLoading && view === "List" ? (
+          <>
+            <Segmented value={tab} options={tabs} onChange={setTab} />
+            {list.length === 0 ? (
+              <EmptyState
+                title="No applicants here yet"
+                body="Sharing your opportunity in a conversation or on your profile usually doubles applications."
+              >
+                <BtnLink
+                  to="/opportunities/$id/analytics"
+                  params={{ id }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  See Performance
+                </BtnLink>
+              </EmptyState>
+            ) : (
+              <ul className="space-y-3">
+                {list.map((a) => (
+                  <li key={a.id} className="rounded-lg bg-subtle p-4">
+                    <div className="flex items-center gap-3">
+                      {a.person?.avatar_url ? (
+                        <img
+                          src={a.person.avatar_url}
+                          alt=""
+                          className="h-12 w-12 shrink-0 rounded-full object-cover"
+                        />
+                      ) : (
+                        <span
+                          aria-hidden
+                          className="h-12 w-12 shrink-0 rounded-full bg-background"
+                        />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{personName(a)}</p>
+                        <p className="truncate text-1 text-muted-foreground">
+                          {joinParts(a.person?.headline ?? "", a.person?.city ?? "")}
+                        </p>
+                      </div>
+                      <span className="pill shrink-0 bg-background text-muted-foreground">
+                        {columns.find((c) => c.id === a.status)?.name ?? a.status}
+                      </span>
+                    </div>
+                    {a.message ? (
+                      <p className="mt-2 line-clamp-3 text-1 text-muted-foreground">{a.message}</p>
+                    ) : null}
+                    <div className="mt-3 flex gap-2">
+                      {a.person?.username ? (
+                        <BtnLink
+                          to="/profile/$username"
+                          params={{ username: a.person.username }}
+                          variant="outline"
+                          className="min-h-10 flex-1 text-1"
+                        >
+                          Profile
+                        </BtnLink>
+                      ) : null}
+                      {a.status === "pending" ? (
+                        <Btn
+                          className="min-h-10 flex-1 text-1"
+                          loading={move.isPending}
+                          onClick={() =>
+                            move.mutate({ applicationId: a.id, status: "shortlisted" })
+                          }
+                        >
+                          Shortlist
+                        </Btn>
+                      ) : null}
+                      {a.status === "shortlisted" ? (
+                        <Btn
+                          className="min-h-10 flex-1 text-1"
+                          loading={move.isPending}
+                          onClick={() => move.mutate({ applicationId: a.id, status: "accepted" })}
+                        >
+                          Accept
+                        </Btn>
+                      ) : null}
+                      {["pending", "shortlisted"].includes(a.status) ? (
+                        <Btn
+                          variant="ghost"
+                          className="min-h-10 flex-1 text-1"
+                          loading={move.isPending}
+                          onClick={() => move.mutate({ applicationId: a.id, status: "rejected" })}
+                        >
+                          Decline
+                        </Btn>
+                      ) : null}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
         ) : null}
       </div>
     </Screen>
   );
 }
 
-/** The four stages an application moves through, as the board's columns. */
-const stages = [
-  { id: "submitted", name: "New" },
-  { id: "shortlisted", name: "Shortlisted" },
-  { id: "accepted", name: "Accepted" },
-  { id: "rejected", name: "Declined" },
-];
+/** Applicants as a pipeline: drag someone to another column and that status is saved. */
+function ApplicantBoard({
+  applicants: all,
+  onMove,
+}: {
+  applicants: ApplicantSummary[];
+  onMove: (
+    applicationId: string,
+    status: "pending" | "shortlisted" | "accepted" | "rejected",
+  ) => void;
+}) {
+  const toCards = (rows: ApplicantSummary[]): BoardCard[] =>
+    rows
+      .filter((a) => a.status !== "withdrawn")
+      .map((a) => ({ id: a.id, name: personName(a), column: a.status, applicant: a }));
+  const [cards, setCards] = useState<BoardCard[]>(() => toCards(all));
 
-type BoardCard = { id: string; name: string; column: string; applicant: Applicant };
-
-/**
- * Applicants as a pipeline rather than a filtered list: drag someone from New to Shortlisted and
- * the board moves them. The move is local to this screen — there is no application_status write
- * behind it yet — so the column reads as where you have put them, not as a decision sent to them.
- */
-function ApplicantBoard({ applicants: all }: { applicants: Applicant[] }) {
-  const initial = useMemo(
-    () =>
-      all.map((a): BoardCard => ({
-        id: a.id,
-        name: a.name,
-        column: a.status === "viewed" || a.status === "withdrawn" ? "submitted" : a.status,
-        applicant: a,
-      })),
-    [all],
-  );
-  const [cards, setCards] = useState<BoardCard[]>(initial);
+  // The board holds its own copy while dragging; a save or a refetch replaces it.
+  useEffect(() => {
+    setCards(toCards(all));
+  }, [all]);
 
   if (!all.length) {
     return (
@@ -140,9 +265,17 @@ function ApplicantBoard({ applicants: all }: { applicants: Applicant[] }) {
   return (
     <div className="rail -mx-5 overflow-x-auto px-5 pb-1 no-scrollbar">
       <KanbanProvider
-        columns={stages}
+        columns={columns}
         data={cards}
-        onDataChange={setCards}
+        onDataChange={(next: BoardCard[]) => {
+          setCards(next);
+          for (const card of next) {
+            const before = cards.find((c) => c.id === card.id);
+            if (before && before.column !== card.column) {
+              onMove(card.id, card.column as "pending" | "shortlisted" | "accepted" | "rejected");
+            }
+          }
+        }}
         className="min-w-[640px] gap-3"
       >
         {(stage) => (
@@ -156,24 +289,19 @@ function ApplicantBoard({ applicants: all }: { applicants: Applicant[] }) {
             <KanbanCards id={stage.id}>
               {(card: BoardCard) => (
                 <KanbanCard key={card.id} {...card}>
-                  <Link
-                    to="/opportunities/$id/applicants/$aid"
-                    params={{ id: card.applicant.opportunityId, aid: card.id }}
-                    className="flex items-center gap-2"
-                  >
-                    <img
-                      src={card.applicant.photo}
-                      alt=""
-                      loading="lazy"
-                      className="h-8 w-8 shrink-0 rounded-full object-cover"
-                    />
-                    <span className="min-w-0">
-                      <span className="block truncate text-1 font-semibold">{card.name}</span>
-                      <span className="block truncate text-1 text-muted-foreground">
-                        {card.applicant.headline}
-                      </span>
+                  {card.applicant.person?.username ? (
+                    <Link
+                      to="/profile/$username"
+                      params={{ username: card.applicant.person.username }}
+                      className="flex items-center gap-2"
+                    >
+                      <BoardFace card={card} />
+                    </Link>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <BoardFace card={card} />
                     </span>
-                  </Link>
+                  )}
                 </KanbanCard>
               )}
             </KanbanCards>
@@ -181,5 +309,32 @@ function ApplicantBoard({ applicants: all }: { applicants: Applicant[] }) {
         )}
       </KanbanProvider>
     </div>
+  );
+}
+
+function BoardFace({ card }: { card: BoardCard }) {
+  const person = card.applicant.person;
+  return (
+    <>
+      {person?.avatar_url ? (
+        <img
+          src={person.avatar_url}
+          alt=""
+          loading="lazy"
+          className="h-8 w-8 shrink-0 rounded-full object-cover"
+        />
+      ) : (
+        <span aria-hidden className="h-8 w-8 shrink-0 rounded-full bg-background" />
+      )}
+      <span className="min-w-0">
+        <span className="flex items-center gap-1">
+          <span className="truncate text-1 font-semibold">{card.name}</span>
+          {person?.is_verified ? <VerifiedBadge size={12} /> : null}
+        </span>
+        <span className="block truncate text-1 text-muted-foreground">
+          {person?.headline ?? ""}
+        </span>
+      </span>
+    </>
   );
 }
