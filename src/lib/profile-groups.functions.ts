@@ -210,6 +210,20 @@ export const getMyBusiness = createServerFn({ method: "GET" })
     return row ? businessRecord(client, row as ProfileBase) : null;
   });
 
+/** The signed-in business updates its own profile_business row (e.g. operating hours). */
+export const updateMyBusiness = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ operating_hours: z.string().max(500).nullable() }).parse(d))
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { error } = await client
+      .from("profile_business")
+      .update({ operating_hours: data.operating_hours } as never)
+      .eq("profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 /** Public business accounts with a username, by name. */
 export const listPublicBusinesses = createServerFn({ method: "GET" }).handler(
   async (): Promise<BusinessSummary[]> => {
@@ -325,6 +339,62 @@ export const listPeopleByRole = createServerFn({ method: "GET" })
       avatarUrl: r.avatar_url,
       verified: Boolean(r.is_verified),
     }));
+  });
+
+/*
+ * Search across people. The text runs over the name, username, headline and city; a role or a
+ * genre narrows it by taxonomy slug. Public profiles only, and the count is the count the
+ * database gives — nothing here estimates.
+ */
+export const searchPeople = createServerFn({ method: "GET" })
+  .inputValidator((d) =>
+    z
+      .object({
+        q: z.string().trim().max(80).optional(),
+        role: z.string().max(60).optional(),
+        genre: z.string().max(60).optional(),
+        verifiedOnly: z.boolean().optional(),
+        limit: z.number().int().min(1).max(60).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }): Promise<{ people: DirectoryPerson[]; total: number }> => {
+    const client = await anonClient();
+    let query = client
+      .from("profiles")
+      .select(PROFILE, { count: "exact" })
+      .eq("visibility", "public");
+
+    // A comma or a bracket would be read as another condition, so neither survives the text.
+    const text = (data.q ?? "").replace(/[,()]/g, " ").trim();
+    if (text) {
+      const like = `%${text}%`;
+      query = query.or(
+        `display_name.ilike.${like},username.ilike.${like},headline.ilike.${like},city.ilike.${like}`,
+      );
+    }
+    if (data.role) query = query.contains("roles", [data.role]);
+    if (data.genre) query = query.contains("genres", [data.genre]);
+    if (data.verifiedOnly) query = query.eq("is_verified", true);
+
+    const { data: rows, count, error } = await query
+      .order("is_verified", { ascending: false })
+      .limit(data.limit ?? 40);
+    if (error) throw new Error(error.message);
+    return {
+      people: ((rows ?? []) as ProfileBase[]).map((r) => ({
+        id: r.id,
+        username: r.username ?? "",
+        name: r.display_name ?? r.username ?? "",
+        headline: r.headline,
+        city: r.city,
+        roles: r.roles ?? [],
+        genres: r.genres ?? [],
+        avatarUrl: r.avatar_url,
+        verified: Boolean(r.is_verified),
+      })),
+      total: count ?? 0,
+    };
   });
 
 /**
