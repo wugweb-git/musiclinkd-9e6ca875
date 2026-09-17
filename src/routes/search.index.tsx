@@ -7,6 +7,7 @@ import { Chip, Screen, SearchBar } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
 import { StateCard } from "@/components/ml/portfolio";
 import { searchPeople } from "@/lib/profile-groups.functions";
+import { rememberSearch } from "@/lib/recent-searches";
 import { talentTypes, useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
@@ -64,6 +65,11 @@ function SearchResults() {
 
   const people = results.data?.people ?? [];
   const total = results.data?.total ?? 0;
+
+  // A search is remembered once it has run and come back, with what it actually found.
+  useEffect(() => {
+    if (term && results.isSuccess) rememberSearch(term, total);
+  }, [term, results.isSuccess, total]);
   // A handful of roles to narrow by; the full list is the categories screen.
   const roles = talentTypes(options?.person_types ?? []).slice(0, 8);
 

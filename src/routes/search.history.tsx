@@ -1,9 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Clock, X } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, Dialog, EmptyState, Row, Segmented } from "@/components/ml/kit";
-import { searchHistory, scopeLabel, timeAgo } from "@/data/search-meta";
+import { Card, Dialog, EmptyState, Row } from "@/components/ml/kit";
+import {
+  forgetAllSearches,
+  forgetSearch,
+  readRecentSearches,
+  sinceThen,
+  type RecentSearch,
+} from "@/lib/recent-searches";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/search/history")({
@@ -23,20 +29,13 @@ export const Route = createFileRoute("/search/history")({
   component: SearchHistory,
 });
 
-const tabs = ["All", "Talent", "Studios", "Market", "Opportunities"] as const;
-type Tab = (typeof tabs)[number];
-
 function SearchHistory() {
-  const [tab, setTab] = useState<Tab>("All");
-  const [cleared, setCleared] = useState(false);
-  const [removed, setRemoved] = useState<string[]>([]);
+  const [list, setList] = useState<RecentSearch[]>([]);
   const [confirm, setConfirm] = useState(false);
+  const [cleared, setCleared] = useState(false);
 
-  const list = cleared
-    ? []
-    : searchHistory
-        .filter((e) => !removed.includes(e.id))
-        .filter((e) => tab === "All" || scopeLabel[e.scope] === tab);
+  // The store is on this device, so it is read after the screen mounts, never on the server.
+  useEffect(() => setList(readRecentSearches()), []);
 
   return (
     <Screen>
@@ -58,26 +57,27 @@ function SearchHistory() {
       />
 
       <div className="space-y-4 px-5 pt-4 pb-6">
-        <Segmented value={tab} options={tabs} onChange={setTab} />
-
         {list.length ? (
           <Card className="p-0">
             {list.map((e) => (
               <div
-                key={e.id}
+                key={e.query}
                 className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-0"
               >
                 <Clock size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
-                <Link to="/search" className="min-w-0 flex-1">
+                <Link to="/search" search={{ q: e.query }} className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{e.query}</p>
                   <p className="truncate text-1 text-muted-foreground">
-                    {scopeLabel[e.scope]} · {e.resultCount} results · {timeAgo(e.searchedAt)}
+                    {e.results} {e.results === 1 ? "result" : "results"} · {sinceThen(e.at)}
                   </p>
                 </Link>
                 <button
                   type="button"
                   aria-label={`Remove ${e.query}`}
-                  onClick={() => setRemoved((r) => [...r, e.id])}
+                  onClick={() => {
+                    forgetSearch(e.query);
+                    setList(readRecentSearches());
+                  }}
                   className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground"
                 >
                   <X size={iconSize.sm} aria-hidden />
@@ -88,7 +88,7 @@ function SearchHistory() {
         ) : (
           <EmptyState
             title={cleared ? "History cleared" : "Nothing here yet"}
-            body="Searches you run appear here so you can pick one back up. Nobody else can see them."
+            body="Searches you run appear here so you can pick one back up. They stay on this device."
           >
             <BtnLink to="/search" className="w-full">
               Start a Search
@@ -107,11 +107,13 @@ function SearchHistory() {
       <Dialog
         open={confirm}
         title="Clear search history?"
-        body="This removes every recent search on this account. Saved searches are not affected."
+        body="This removes every recent search kept on this device. Saved searches are not affected."
         onClose={() => setConfirm(false)}
       >
         <Btn
           onClick={() => {
+            forgetAllSearches();
+            setList([]);
             setCleared(true);
             setConfirm(false);
           }}
