@@ -1,14 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import {
-  Globe,
-  Lock,
-  Mail,
-  MessageCircle,
-  Phone,
-  Plus,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+import { Globe, Plus } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Btn } from "@/components/ml/ui";
 import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
@@ -52,7 +43,6 @@ import {
   availabilityFor,
   citiesByState,
   cityAliases,
-  contactChannels,
   discoveryPrefs,
   experienceLevels,
   intents,
@@ -61,7 +51,6 @@ import {
   steps,
   validateUrl,
   validateUsername,
-  visibilityOptions,
   visibleSteps,
   workModes,
   type OnboardingDraft,
@@ -779,19 +768,6 @@ const linkIcons: Record<string, ReactNode> = {
   soundcloud: <BrandIcon brand="soundcloud" />,
 };
 
-const channelIcons: Record<string, ReactNode> = {
-  messages: <MessageCircle size={iconSize.sm} aria-hidden />,
-  email: <Mail size={iconSize.sm} aria-hidden />,
-  phone: <Phone size={iconSize.sm} aria-hidden />,
-  whatsapp: <BrandIcon brand="whatsapp" size={16} />,
-};
-
-const visibilityIcons: Record<string, LucideIcon> = {
-  public: Globe,
-  members: Users,
-  limited: Lock,
-};
-
 /** Links shown before the person adds more. Any platform that already has a link shows too. */
 const DEFAULT_LINKS = ["instagram", "youtube"];
 
@@ -809,7 +785,6 @@ function ContactStep({
   );
   const [adding, setAdding] = useState(false);
   const hidden = linkPlatforms.filter((p) => !shown.includes(p.key));
-  const visibility = visibilityOptions.find((v) => v.key === d.visibility);
 
   const add = (key: string) => {
     haptic("select");
@@ -868,55 +843,6 @@ function ContactStep({
         ) : null}
       </section>
 
-      <section>
-        <p className="mb-2 text-sm font-medium text-muted-foreground">How people can reach you</p>
-        <ChipPicker
-          options={contactChannels
-            .filter((c) => c.key !== "business")
-            .map((c) => ({ value: c.key, label: c.label, media: channelIcons[c.key] }))}
-          selected={d.contact}
-          onToggle={(k) => toggle("contact", k)}
-        />
-      </section>
-
-      <section>
-        <p className="mb-2 text-sm font-medium text-muted-foreground">Who can see your profile</p>
-        <div
-          role="radiogroup"
-          aria-label="Who can see your profile"
-          className="grid grid-cols-3 gap-2"
-        >
-          {visibilityOptions.map((v) => {
-            const on = d.visibility === v.key;
-            const Icon = visibilityIcons[v.key] ?? Globe;
-            return (
-              <button
-                key={v.key}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                onClick={() => {
-                  haptic("select");
-                  set({ visibility: v.key });
-                }}
-                className={`state-layer flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-lg border px-2 py-3 text-center text-sm font-semibold leading-tight transition-[transform,background-color,border-color,color] duration-200 ease-standard active:scale-97 ${
-                  on
-                    ? "border-transparent bg-selected-bg text-selected-text"
-                    : "border-border bg-card text-foreground"
-                }`}
-              >
-                <Icon size={20} strokeWidth={1.75} aria-hidden />
-                {v.label}
-              </button>
-            );
-          })}
-        </div>
-        {visibility ? (
-          <p key={visibility.key} className="mt-2 animate-message text-1 text-muted-foreground">
-            {visibility.hint}
-          </p>
-        ) : null}
-      </section>
     </div>
   );
 }
