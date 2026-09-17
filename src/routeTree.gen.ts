@@ -172,6 +172,7 @@ import { Route as SearchWhyIdRouteImport } from './routes/search.why.$id'
 import { Route as ServicesIdIndexRouteImport } from './routes/services.$id.index'
 import { Route as ServicesIdEnquiryRouteImport } from './routes/services.$id.enquiry'
 import { Route as ServicesIdManageRouteImport } from './routes/services.$id.manage'
+import { Route as SettingsSecurity2faRouteImport } from './routes/settings.security.2fa'
 import { Route as BusinessBookingsRequestsIndexRouteImport } from './routes/business.bookings.requests.index'
 import { Route as BusinessBookingsRequestsRefRouteImport } from './routes/business.bookings.requests.$ref'
 import { Route as MarketplaceRentActiveIdRouteImport } from './routes/marketplace/rent/active.$id'
@@ -1001,6 +1002,11 @@ const ServicesIdManageRoute = ServicesIdManageRouteImport.update({
   path: '/services/$id/manage',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsSecurity2faRoute = SettingsSecurity2faRouteImport.update({
+  id: '/2fa',
+  path: '/2fa',
+  getParentRoute: () => SettingsSecurityRoute,
+} as any)
 const BusinessBookingsRequestsIndexRoute =
   BusinessBookingsRequestsIndexRouteImport.update({
     id: '/business/bookings/requests/',
@@ -1125,7 +1131,7 @@ export interface FileRoutesByFullPath {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
-  '/settings/security': typeof SettingsSecurityRoute
+  '/settings/security': typeof SettingsSecurityRouteWithChildren
   '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1203,6 +1209,7 @@ export interface FileRoutesByFullPath {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
+  '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
@@ -1298,7 +1305,7 @@ export interface FileRoutesByTo {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
-  '/settings/security': typeof SettingsSecurityRoute
+  '/settings/security': typeof SettingsSecurityRouteWithChildren
   '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1376,6 +1383,7 @@ export interface FileRoutesByTo {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
+  '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id': typeof BandsIdIndexRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/bookings/$ref': typeof BookingsRefIndexRoute
@@ -1473,7 +1481,7 @@ export interface FileRoutesById {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
-  '/settings/security': typeof SettingsSecurityRoute
+  '/settings/security': typeof SettingsSecurityRouteWithChildren
   '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1551,6 +1559,7 @@ export interface FileRoutesById {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
+  '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/bookings/$ref/': typeof BookingsRefIndexRoute
@@ -1727,6 +1736,7 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
+    | '/settings/security/2fa'
     | '/bands/$id/'
     | '/booking/$id/'
     | '/bookings/$ref/'
@@ -1900,6 +1910,7 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
+    | '/settings/security/2fa'
     | '/bands/$id'
     | '/booking/$id'
     | '/bookings/$ref'
@@ -2074,6 +2085,7 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
+    | '/settings/security/2fa'
     | '/bands/$id/'
     | '/booking/$id/'
     | '/bookings/$ref/'
@@ -2171,7 +2183,7 @@ export interface RootRouteChildren {
   SettingsAccountRoute: typeof SettingsAccountRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   SettingsPrivacyRoute: typeof SettingsPrivacyRoute
-  SettingsSecurityRoute: typeof SettingsSecurityRoute
+  SettingsSecurityRoute: typeof SettingsSecurityRouteWithChildren
   SettingsSpotifyRoute: typeof SettingsSpotifyRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
@@ -3411,6 +3423,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIdManageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/security/2fa': {
+      id: '/settings/security/2fa'
+      path: '/2fa'
+      fullPath: '/settings/security/2fa'
+      preLoaderRoute: typeof SettingsSecurity2faRouteImport
+      parentRoute: typeof SettingsSecurityRoute
+    }
     '/business/bookings/requests/': {
       id: '/business/bookings/requests/'
       path: '/business/bookings/requests'
@@ -3499,6 +3518,17 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
   BookingIdRouteChildren,
 )
 
+interface SettingsSecurityRouteChildren {
+  SettingsSecurity2faRoute: typeof SettingsSecurity2faRoute
+}
+
+const SettingsSecurityRouteChildren: SettingsSecurityRouteChildren = {
+  SettingsSecurity2faRoute: SettingsSecurity2faRoute,
+}
+
+const SettingsSecurityRouteWithChildren =
+  SettingsSecurityRoute._addFileChildren(SettingsSecurityRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BandRoute: BandRoute,
@@ -3571,7 +3601,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsAccountRoute: SettingsAccountRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   SettingsPrivacyRoute: SettingsPrivacyRoute,
-  SettingsSecurityRoute: SettingsSecurityRoute,
+  SettingsSecurityRoute: SettingsSecurityRouteWithChildren,
   SettingsSpotifyRoute: SettingsSpotifyRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
