@@ -2,12 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { History, MapPin } from "lucide-react";
-import { Chip, Screen, SearchBar, VerifiedBadge } from "@/components/ml/ui";
+import { History } from "lucide-react";
+import { Chip, Screen, SearchBar } from "@/components/ml/ui";
+import { PersonRow } from "@/components/ml/cards";
 import { StateCard } from "@/components/ml/portfolio";
-import { SavedToggle } from "@/components/ml/saved-toggle";
 import { searchPeople } from "@/lib/profile-groups.functions";
-import { labelFor, talentTypes, useTaxonomy } from "@/lib/taxonomy";
+import { talentTypes, useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
 /*
@@ -135,44 +135,7 @@ function SearchResults() {
             </p>
             <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
               {people.map((p) => (
-                <li key={p.id} className="flex items-center gap-3 px-4 py-3.5">
-                  <Link
-                    to="/profile/$username"
-                    params={{ username: p.username }}
-                    className="state-layer flex min-w-0 flex-1 items-center gap-3"
-                  >
-                    {p.avatarUrl ? (
-                      <img
-                        src={p.avatarUrl}
-                        alt=""
-                        loading="lazy"
-                        className="h-11 w-11 shrink-0 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="h-11 w-11 shrink-0 rounded-full bg-background" aria-hidden />
-                    )}
-                    <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-1">
-                        <span className="truncate text-2 font-semibold">{p.name}</span>
-                        {p.verified ? <VerifiedBadge size={16} /> : null}
-                      </span>
-                      <span className="block truncate text-1 text-muted-foreground">
-                        {p.headline ??
-                          p.roles
-                            .slice(0, 2)
-                            .map((r) => labelFor(options?.person_types, r))
-                            .join(" · ")}
-                      </span>
-                      {p.city ? (
-                        <span className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
-                          <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-                          {p.city}
-                        </span>
-                      ) : null}
-                    </span>
-                  </Link>
-                  <SavedToggle targetType="talent" targetId={p.id} size={36} />
-                </li>
+                <PersonRow key={p.id} person={p} roleLabels={options?.person_types} />
               ))}
             </ul>
           </>

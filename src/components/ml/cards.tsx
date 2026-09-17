@@ -3,6 +3,9 @@ import { Heart, MapPin, Star } from "lucide-react";
 import { availabilityTone, type Talent } from "@/data/discover";
 import { Price, StatusPill } from "./kit";
 import { Btn, VerifiedBadge } from "./ui";
+import { SavedToggle } from "./saved-toggle";
+import type { DirectoryPerson } from "@/lib/profile-groups.functions";
+import { labelFor, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
 /*
@@ -149,5 +152,59 @@ export function TalentGridCard({ t }: { t: Talent }) {
         <Price price={t.rate} className="mt-1" amountClassName="text-1 font-semibold" />
       </div>
     </Link>
+  );
+}
+
+/*
+ * One person from the profiles table, as a row. The directory, search and anywhere else that
+ * lists real people share this — the same name, headline, city and save control in every list.
+ */
+export function PersonRow({
+  person,
+  roleLabels,
+}: {
+  person: DirectoryPerson;
+  /** person_types taxonomy options, so a role shows its label instead of its slug. */
+  roleLabels?: TaxonomyOption[] | undefined;
+}) {
+  return (
+    <li className="flex items-center gap-3 px-4 py-3.5">
+      <Link
+        to="/profile/$username"
+        params={{ username: person.username }}
+        className="state-layer flex min-w-0 flex-1 items-center gap-3"
+      >
+        {person.avatarUrl ? (
+          <img
+            src={person.avatarUrl}
+            alt=""
+            loading="lazy"
+            className="h-11 w-11 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <span className="h-11 w-11 shrink-0 rounded-full bg-background" aria-hidden />
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-1">
+            <span className="truncate text-2 font-semibold">{person.name}</span>
+            {person.verified ? <VerifiedBadge size={16} /> : null}
+          </span>
+          <span className="block truncate text-1 text-muted-foreground">
+            {person.headline ??
+              person.roles
+                .slice(0, 2)
+                .map((r) => labelFor(roleLabels, r))
+                .join(" · ")}
+          </span>
+          {person.city ? (
+            <span className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
+              <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
+              {person.city}
+            </span>
+          ) : null}
+        </span>
+      </Link>
+      <SavedToggle targetType="talent" targetId={person.id} size={36} />
+    </li>
   );
 }
