@@ -1,26 +1,17 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarClock, IndianRupee, Star, TrendingUp } from "lucide-react";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
-import {
-  BookingListCard,
-  BookingSkeleton,
-  EmptyState,
-  ProviderRequestCard,
-} from "@/components/ml/booking";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { CalendarClock, XCircle } from "lucide-react";
+import { Screen, TopBar, Chip } from "@/components/ml/ui";
+import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import {
-  bookings,
-  getBookable,
-  getResource,
-  inr,
-  providerRequests,
-  providerStats,
-  providerToday,
-  type Booking,
-} from "@/data/booking";
+import { formatDate, formatTime, type BookingStatus } from "@/data/booking";
+import { listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
+import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/bookings/")({
@@ -57,16 +48,30 @@ function ProviderBookings() {
 
 function ProviderBookingsContent() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Requests");
-  const [loading, setLoading] = useState(false);
+  const { signedIn } = useAuth();
+  const load = useServerFn(listStudioBookings);
+  const q = useQuery({
+    queryKey: ["studio-bookings"],
+    queryFn: () => load(),
+    enabled: signedIn,
+  });
 
-  const upcoming = bookings.filter((b) => ["upcoming", "confirmed"].includes(b.status));
-  const past = bookings.filter((b) => b.status === "completed");
+  const all = q.data ?? [];
+  const today = new Date().toISOString().slice(0, 10);
+  const pending = all.filter((b) => ["requested", "reviewing"].includes(b.status));
+  const cancelled = all.filter((b) => b.status === "cancelled");
+  const todays = all.filter((b) => b.session_date === today && b.status !== "cancelled");
+  const upcoming = all.filter((b) => b.session_date > today && b.status === "confirmed");
+  const past = all.filter((b) => b.session_date < today || b.status === "completed");
+
+  const list =
+    tab === "Requests" ? pending : tab === "Today" ? todays : tab === "Upcoming" ? upcoming : past;
 
   return (
     <Screen>
       <TopBar
         title="Provider workspace"
-        subtitle="Octave Sound Labs"
+        subtitle="Requests and sessions for the spaces you run"
         right={
           <TextLink
             to="/business/availability"
@@ -82,22 +87,12 @@ function ProviderBookingsContent() {
           <Stat
             icon={<CalendarClock size={iconSize.sm} />}
             label="Pending requests"
-            value={`${providerStats.pending}`}
+            value={`${pending.length}`}
           />
           <Stat
-            icon={<TrendingUp size={iconSize.sm} />}
-            label="Occupancy"
-            value={`${providerStats.utilisation}%`}
-          />
-          <Stat
-            icon={<IndianRupee size={iconSize.sm} />}
-            label="This month"
-            value={inr(providerStats.revenueMonth)}
-          />
-          <Stat
-            icon={<Star size={iconSize.sm} />}
+            icon={<XCircle size={iconSize.sm} />}
             label="Cancellations"
-            value={`${providerStats.cancellations}`}
+            value={`${cancelled.length}`}
           />
         </div>
 
@@ -118,61 +113,60 @@ function ProviderBookingsContent() {
         </div>
 
         <div className="mt-4">
-          {loading ? (
-            <BookingSkeleton />
-          ) : tab === "Requests" ? (
-            providerRequests.length === 0 ? (
-              <EmptyState title="No pending requests" body="New booking requests will land here." />
-            ) : (
-              <div className="space-y-3">
-                {providerRequests.map((bk) => {
-                  const b = getBookable(bk.bookableId);
-                  const r = getResource(b, bk.resourceId);
-                  return (
-                    <ProviderRequestCard
-                      key={bk.ref}
-                      booking={bk}
-                      entityResource={`${b?.name ?? "Your space"} · ${r?.name ?? "Room"}`}
-                    />
-                  );
-                })}
-              </div>
-            )
-          ) : (
-            <List
-              items={tab === "Today" ? providerToday : tab === "Upcoming" ? upcoming : past}
-              emptyTitle={`Nothing ${tab.toLowerCase()}`}
+          {!signedIn ? (
+            <EmptyState
+              title="Sign in to see your bookings"
+              body="Requests for a space you run appear here."
             />
+          ) : q.isLoading ? (
+            <BookingSkeleton />
+          ) : (
+            <List items={list} emptyTitle={`Nothing ${tab.toLowerCase()}`} />
           )}
         </div>
-
-        <Btn variant="ghost" className="mt-6 w-full" onClick={() => setLoading((v) => !v)}>
-          {loading ? "Show content" : "Preview loading state"}
-        </Btn>
       </main>
     </Screen>
   );
 }
 
-function List({ items, emptyTitle }: { items: Booking[]; emptyTitle: string }) {
+function List({ items, emptyTitle }: { items: BookingRequest[]; emptyTitle: string }) {
   if (items.length === 0) {
-    return <EmptyState title={emptyTitle} body="Sessions appear here once they're confirmed." />;
+    return <EmptyState title={emptyTitle} body="Sessions appear here once they're requested." />;
   }
   return (
     <div className="space-y-3">
-      {items.map((bk) => {
-        const b = getBookable(bk.bookableId);
-        const r = getResource(b, bk.resourceId);
-        return (
-          <BookingListCard
-            key={bk.ref}
-            booking={bk}
-            entityName={b?.name ?? "Your space"}
-            resourceName={r?.name ?? "Room"}
-            provider
-          />
-        );
-      })}
+      {items.map((b) => (
+        <article key={b.id} className="rounded-lg bg-subtle p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              {b.requester?.username ? (
+                <Link
+                  to="/profile/$username"
+                  params={{ username: b.requester.username }}
+                  className="truncate text-2 font-semibold"
+                >
+                  {b.requester.display_name ?? b.requester.username}
+                </Link>
+              ) : (
+                <p className="truncate text-2 font-semibold">Someone</p>
+              )}
+              <p className="mt-0.5 truncate text-1 text-muted-foreground">
+                {joinParts(b.studio?.name ?? "Your space", b.room?.name ?? "")}
+              </p>
+            </div>
+            <BookingStatusPill
+              status={(b.status === "declined" ? "rejected" : b.status) as BookingStatus}
+            />
+          </div>
+          <p className="mt-2 text-1 text-muted-foreground">
+            {joinParts(
+              formatDate(b.session_date),
+              b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
+              b.hours ? `${b.hours} hrs` : "",
+            )}
+          </p>
+        </article>
+      ))}
     </div>
   );
 }

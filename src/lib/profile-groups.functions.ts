@@ -224,6 +224,66 @@ export const updateMyBusiness = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Add a row to the signed-in business's own team roster (profile_members, kind 'team'). */
+export const addTeamMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        name: z.string().trim().min(1).max(80),
+        role: z.string().trim().max(60).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ id: string }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data: row, error } = await client
+      .from("profile_members")
+      .insert({
+        profile_id: context.userId,
+        kind: "team",
+        name: data.name,
+        role: data.role ?? null,
+        status: "active",
+      } as never)
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    return row as { id: string };
+  });
+
+/** Change a team roster row's part. Owner only, via RLS. */
+export const updateTeamMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ id: z.string().uuid(), role: z.string().trim().max(60) }).parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { error } = await client
+      .from("profile_members")
+      .update({ role: data.role } as never)
+      .eq("id", data.id)
+      .eq("profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Remove someone from the team roster. */
+export const removeTeamMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { error } = await client
+      .from("profile_members")
+      .delete()
+      .eq("id", data.id)
+      .eq("profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 /** Public business accounts with a username, by name. */
 export const listPublicBusinesses = createServerFn({ method: "GET" }).handler(
   async (): Promise<BusinessSummary[]> => {
@@ -377,9 +437,11 @@ export const searchPeople = createServerFn({ method: "GET" })
     if (data.genre) query = query.contains("genres", [data.genre]);
     if (data.verifiedOnly) query = query.eq("is_verified", true);
 
-    const { data: rows, count, error } = await query
-      .order("is_verified", { ascending: false })
-      .limit(data.limit ?? 40);
+    const {
+      data: rows,
+      count,
+      error,
+    } = await query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);
     if (error) throw new Error(error.message);
     return {
       people: ((rows ?? []) as ProfileBase[]).map((r) => ({

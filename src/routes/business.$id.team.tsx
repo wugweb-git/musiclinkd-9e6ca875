@@ -1,11 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { UserPlus } from "lucide-react";
+import { toast } from "sonner";
 import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { businessRoleLabel, rolePermissions, type BusinessRole } from "@/data/business";
 import { businessView, loadBusiness } from "@/lib/business-view";
-import { joinParts } from "@/lib/utils";
+import { addTeamMember, updateTeamMember, removeTeamMember } from "@/lib/profile-groups.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/business/$id/team")({
@@ -28,10 +32,43 @@ export const Route = createFileRoute("/business/$id/team")({
 
 function TeamScreen() {
   const { id } = Route.useParams();
+  const { user } = useAuth();
+  const router = useRouter();
   const b = businessView(Route.useLoaderData());
-  const [members, setMembers] = useState(b?.members ?? []);
   const [invite, setInvite] = useState(false);
+  const [name, setName] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
+
+  const addMember = useServerFn(addTeamMember);
+  const changeRole = useServerFn(updateTeamMember);
+  const removeMember = useServerFn(removeTeamMember);
+
+  const add = useMutation({
+    mutationFn: (memberName: string) => addMember({ data: { name: memberName } }),
+    onSuccess: async () => {
+      setInvite(false);
+      setName("");
+      await router.invalidate();
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't add them. Try again."),
+  });
+  const setRole = useMutation({
+    mutationFn: (vars: { id: string; role: string }) => changeRole({ data: vars }),
+    onSuccess: async () => {
+      setEditing(null);
+      await router.invalidate();
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+  const remove = useMutation({
+    mutationFn: (memberId: string) => removeMember({ data: { id: memberId } }),
+    onSuccess: async () => {
+      setEditing(null);
+      await router.invalidate();
+    },
+    onError: (e) =>
+      toast.error(e instanceof Error ? e.message : "Couldn't remove them. Try again."),
+  });
 
   if (!b) {
     return (
@@ -44,8 +81,9 @@ function TeamScreen() {
     );
   }
 
-  const active = members;
-  const current = members.find((m) => m.id === editing);
+  const owner = Boolean(user && user.id === b.profileId);
+  const active = b.members;
+  const current = active.find((m) => m.id === editing);
 
   return (
     <Screen>
@@ -53,16 +91,20 @@ function TeamScreen() {
         title="Team"
         subtitle={b.name}
         back={`/business/${id}`}
-        right={
-          <button
-            type="button"
-            onClick={() => setInvite(true)}
-            aria-label="Invite member"
-            className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
-          >
-            <UserPlus size={iconSize.sm} />
-          </button>
-        }
+        {...(owner
+          ? {
+              right: (
+                <button
+                  type="button"
+                  onClick={() => setInvite(true)}
+                  aria-label="Add team member"
+                  className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
+                >
+                  <UserPlus size={iconSize.sm} />
+                </button>
+              ),
+            }
+          : {})}
       />
 
       <div className="space-y-4 px-5 pt-4 pb-6">
@@ -72,8 +114,9 @@ function TeamScreen() {
               <button
                 key={m.id}
                 type="button"
-                onClick={() => setEditing(m.id)}
-                className="flex w-full items-center gap-3 border-b border-border py-2.5 text-left last:border-0"
+                disabled={!owner}
+                onClick={() => owner && setEditing(m.id)}
+                className="flex w-full items-center gap-3 border-b border-border py-2.5 text-left last:border-0 disabled:opacity-100"
               >
                 {m.photo ? (
                   <img
@@ -110,20 +153,26 @@ function TeamScreen() {
         </Card>
       </div>
 
-      <Sheet open={invite} onClose={() => setInvite(false)} title="Invite to team">
+      <Sheet open={invite} onClose={() => setInvite(false)} title="Add team member">
         <div className="space-y-3">
           <label className="block">
-            <span className="pill bg-background text-muted-foreground">Email or @username</span>
+            <span className="pill bg-background text-muted-foreground">Name</span>
             <input
-              placeholder="@kabir"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Kabir Menon"
               className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
             />
           </label>
           <p className="text-1 text-muted-foreground">
-            They keep their own profile and appear on your team page once they accept.
+            They join your team roster right away — set their role from the list after.
           </p>
-          <Btn className="w-full" onClick={() => setInvite(false)}>
-            Send invite
+          <Btn
+            className="w-full"
+            disabled={name.trim().length < 1 || add.isPending}
+            onClick={() => name.trim() && add.mutate(name.trim())}
+          >
+            {add.isPending ? "Adding…" : "Add to Team"}
           </Btn>
         </div>
       </Sheet>
@@ -135,23 +184,8 @@ function TeamScreen() {
               key={r}
               variant={current?.role === businessRoleLabel[r] ? "primary" : "outline"}
               className="w-full"
-              onClick={() => {
-                setMembers((list) =>
-                  list.map((m) =>
-                    m.id === editing
-                      ? {
-                          ...m,
-                          role: businessRoleLabel[r],
-                          detail: joinParts(
-                            businessRoleLabel[r],
-                            m.since ? `since ${m.since}` : "",
-                          ),
-                        }
-                      : m,
-                  ),
-                );
-                setEditing(null);
-              }}
+              disabled={setRole.isPending}
+              onClick={() => editing && setRole.mutate({ id: editing, role: businessRoleLabel[r] })}
             >
               Make {businessRoleLabel[r]}
             </Btn>
@@ -159,10 +193,8 @@ function TeamScreen() {
           <Btn
             variant="ghost"
             className="w-full"
-            onClick={() => {
-              setMembers((list) => list.filter((m) => m.id !== editing));
-              setEditing(null);
-            }}
+            disabled={remove.isPending}
+            onClick={() => editing && remove.mutate(editing)}
           >
             Remove from team
           </Btn>
