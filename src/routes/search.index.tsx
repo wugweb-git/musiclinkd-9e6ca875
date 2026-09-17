@@ -2,17 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { Bookmark, BookmarkCheck, History } from "lucide-react";
+import { History } from "lucide-react";
 import { Chip, Screen, SearchBar } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
 import { StateCard } from "@/components/ml/portfolio";
 import { searchPeople } from "@/lib/profile-groups.functions";
-import {
-  isSearchSaved,
-  rememberSearch,
-  saveSearch,
-  unsaveSearch,
-} from "@/lib/device-history";
+import { rememberSearch } from "@/lib/device-history";
 import { talentTypes, useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
@@ -75,12 +70,6 @@ function SearchResults() {
   useEffect(() => {
     if (term && results.isSuccess) rememberSearch(term, total);
   }, [term, results.isSuccess, total]);
-
-  // Keeping a search is a shortcut back to it; it is stored on this device, and watches nothing.
-  const current = { query: term, role: role || null, verifiedOnly };
-  const [kept, setKept] = useState(false);
-  useEffect(() => setKept(isSearchSaved(current)), [term, role, verifiedOnly]);
-  const somethingToKeep = Boolean(term || role || verifiedOnly);
   // A handful of roles to narrow by; the full list is the categories screen.
   const roles = talentTypes(options?.person_types ?? []).slice(0, 8);
 
@@ -96,28 +85,10 @@ function SearchResults() {
             ←
           </Link>
           <h1 className="text-3">Search</h1>
-          <button
-            type="button"
-            aria-label={kept ? "Remove this saved search" : "Keep this search"}
-            aria-pressed={kept}
-            disabled={!somethingToKeep}
-            onClick={() => {
-              if (kept) unsaveSearch(current);
-              else saveSearch(current);
-              setKept(!kept);
-            }}
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card disabled:opacity-40"
-          >
-            {kept ? (
-              <BookmarkCheck size={iconSize.md} aria-hidden />
-            ) : (
-              <Bookmark size={iconSize.md} aria-hidden />
-            )}
-          </button>
           <Link
             to="/search/history"
             aria-label="Search history"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
           >
             <History size={iconSize.md} aria-hidden />
           </Link>

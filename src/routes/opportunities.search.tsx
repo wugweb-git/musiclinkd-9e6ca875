@@ -4,7 +4,7 @@ import { SlidersHorizontal } from "lucide-react";
 import { Screen, TopBar, SearchBar, Btn, BtnLink, Sheet, Chip } from "@/components/ml/ui";
 import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
-import { opportunities, opportunityCategories } from "@/data/opportunities";
+import { opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { iconSize } from "@/lib/tokens";
 
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/opportunities/search")({
   validateSearch: (s: Record<string, unknown>): Search => ({
     q: typeof s["q"] === "string" ? s["q"] : "",
   }),
-  // Stored opportunities follow the static ones; none when the database is unreachable.
+  // Every opportunity searched here is one somebody posted; none when the database is unreachable.
   loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
@@ -51,7 +51,7 @@ function OpportunitySearch() {
   const { dbOpportunities } = Route.useLoaderData();
 
   const t = term.trim().toLowerCase();
-  let list = [...opportunities, ...dbOpportunities].filter((o) => {
+  let list = dbOpportunities.filter((o) => {
     if (t && !`${o.title} ${o.summary} ${o.city} ${o.genres.join(" ")}`.toLowerCase().includes(t))
       return false;
     if (mode && o.workMode !== mode) return false;

@@ -97,7 +97,6 @@ import { Route as ReviewsIndexRouteImport } from './routes/reviews.index'
 import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
 import { Route as SearchIndexRouteImport } from './routes/search.index'
 import { Route as SearchHistoryRouteImport } from './routes/search.history'
-import { Route as SearchSavedRouteImport } from './routes/search.saved'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
 import { Route as ServicesConflictsRouteImport } from './routes/services.conflicts'
@@ -628,11 +627,6 @@ const SearchIndexRoute = SearchIndexRouteImport.update({
 const SearchHistoryRoute = SearchHistoryRouteImport.update({
   id: '/search/history',
   path: '/search/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchSavedRoute = SearchSavedRouteImport.update({
-  id: '/search/saved',
-  path: '/search/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
@@ -1173,7 +1167,6 @@ export interface FileRoutesByFullPath {
   '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
-  '/search/saved': typeof SearchSavedRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
@@ -1354,7 +1347,6 @@ export interface FileRoutesByTo {
   '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
-  '/search/saved': typeof SearchSavedRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
@@ -1537,7 +1529,6 @@ export interface FileRoutesById {
   '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
-  '/search/saved': typeof SearchSavedRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
@@ -1721,7 +1712,6 @@ export interface FileRouteTypes {
     | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
-    | '/search/saved'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
@@ -1902,7 +1892,6 @@ export interface FileRouteTypes {
     | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
-    | '/search/saved'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
@@ -2084,7 +2073,6 @@ export interface FileRouteTypes {
     | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
-    | '/search/saved'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
@@ -2267,7 +2255,6 @@ export interface RootRouteChildren {
   RecommendationsSwipeRoute: typeof RecommendationsSwipeRoute
   ReviewsRequestRoute: typeof ReviewsRequestRoute
   SearchHistoryRoute: typeof SearchHistoryRoute
-  SearchSavedRoute: typeof SearchSavedRoute
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesConflictsRoute: typeof ServicesConflictsRoute
   ServicesNewRoute: typeof ServicesNewRoute
@@ -2988,13 +2975,6 @@ declare module '@tanstack/react-router' {
       path: '/search/history'
       fullPath: '/search/history'
       preLoaderRoute: typeof SearchHistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search/saved': {
-      id: '/search/saved'
-      path: '/search/saved'
-      fullPath: '/search/saved'
-      preLoaderRoute: typeof SearchSavedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/': {
@@ -3731,7 +3711,6 @@ const rootRouteChildren: RootRouteChildren = {
   RecommendationsSwipeRoute: RecommendationsSwipeRoute,
   ReviewsRequestRoute: ReviewsRequestRoute,
   SearchHistoryRoute: SearchHistoryRoute,
-  SearchSavedRoute: SearchSavedRoute,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesConflictsRoute: ServicesConflictsRoute,
   ServicesNewRoute: ServicesNewRoute,

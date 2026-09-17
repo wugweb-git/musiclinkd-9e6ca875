@@ -1,15 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Plus, Search, Bookmark, Briefcase, Users } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
 import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
-import { opportunities, opportunityCategories, myApplications } from "@/data/opportunities";
+import { opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
+import { listMyApplications } from "@/lib/applications.functions";
+import { getMyProfile } from "@/lib/portfolio.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/")({
-  // Stored opportunities follow the static ones; none when the database is unreachable.
+  // Every opportunity on this screen is one somebody posted; none when the database is unreachable.
   loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
@@ -31,29 +36,42 @@ export const Route = createFileRoute("/opportunities/")({
   component: OpportunitiesHome,
 });
 
-const tabs = ["For you", "Recent", "Nearby"] as const;
+// "For you" would need something that ranks, and nothing does; these two are what the data says.
+const tabs = ["Recent", "Near you"] as const;
 
 function OpportunitiesHome() {
-  const [tab, setTab] = useState<(typeof tabs)[number]>("For you");
-  const [state] = useState<"ready" | "loading" | "empty">("ready");
+  const [tab, setTab] = useState<(typeof tabs)[number]>("Recent");
   const [sheet, setSheet] = useState(false);
   const { has, toggle } = useSavedOpportunities();
-  const { dbOpportunities } = Route.useLoaderData();
-  const all = [...opportunities, ...dbOpportunities];
+  const { dbOpportunities: all } = Route.useLoaderData();
+  const { signedIn } = useAuth();
+
+  // Near you is the viewer's own city, not a city we picked for them.
+  const readProfile = useServerFn(getMyProfile);
+  const profile = useQuery({
+    queryKey: ["profile", "mine"],
+    queryFn: () => readProfile(),
+    enabled: signedIn,
+  });
+  const myCity = (profile.data as { city?: string | null } | null)?.city ?? "";
 
   const list =
-    tab === "For you"
-      ? [...all].sort((a, b) => b.matchScore - a.matchScore)
-      : tab === "Recent"
-        ? all
-        : // Stored locations carry a state ("Mumbai, MH").
-          all.filter((o) => o.city.split(",")[0] === "Mumbai");
+    tab === "Recent"
+      ? all
+      : // Stored locations carry a state ("Mumbai, MH").
+        all.filter((o) => myCity && o.city.split(",")[0]?.trim() === myCity.trim());
 
-  // Counted from the opportunities on this screen, static and stored.
   const openCount = (key: string) =>
     all.filter((o) => o.status === "open" && o.categoryKey === key).length;
 
-  const active = myApplications.filter(
+  // How many applications are still live, from the applications themselves.
+  const readApplications = useServerFn(listMyApplications);
+  const applications = useQuery({
+    queryKey: ["applications", "mine"],
+    queryFn: () => readApplications(),
+    enabled: signedIn,
+  });
+  const active = (applications.data ?? []).filter(
     (a) => a.status !== "rejected" && a.status !== "withdrawn",
   ).length;
 
@@ -87,7 +105,7 @@ function OpportunitiesHome() {
           <Row
             icon={<Briefcase size={iconSize.sm} />}
             title="My applications"
-            subtitle={`${active} active`}
+            subtitle={applications.data ? `${active} active` : "Yours"}
             to="/opportunities/applications"
           />
           <Row
@@ -127,14 +145,22 @@ function OpportunitiesHome() {
 
         <Segmented value={tab} options={tabs} onChange={setTab} />
 
-        {state === "loading" ? (
+        {tab === "Near you" && signedIn && profile.isLoading ? (
           <Loading rows={3} />
         ) : list.length === 0 ? (
           <EmptyState
-            title="Nothing here yet"
-            body="No opportunities match this view. Widen your city or check back tomorrow."
+            title={tab === "Near you" && !myCity ? "We don't know your city" : "Nothing here yet"}
+            body={
+              tab === "Near you" && !myCity
+                ? "Add your city to your profile and this tab will show what is open around you."
+                : "Nobody has posted one that fits this view. Check back tomorrow."
+            }
           >
-            <Btn variant="outline">Change Preferences</Btn>
+            {tab === "Near you" && !myCity ? (
+              <BtnLink to="/profile/edit" variant="outline" className="w-full">
+                Add your city
+              </BtnLink>
+            ) : null}
           </EmptyState>
         ) : (
           <div className="space-y-3 pb-4">

@@ -3,7 +3,6 @@ import { Plus, Eye, Users, Bookmark } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
-import { myOpportunities } from "@/data/opportunities";
 import { useMyDbOpportunities } from "@/hooks/use-my-opportunities";
 import { iconSize } from "@/lib/tokens";
 
@@ -25,9 +24,8 @@ export const Route = createFileRoute("/opportunities/mine")({
 });
 
 function MyOpportunities() {
-  // Signed in: the user's stored opportunities follow the static ones.
-  const { items } = useMyDbOpportunities();
-  const list = [...myOpportunities, ...items];
+  // What this account posted, and nothing else.
+  const { items: list } = useMyDbOpportunities();
   return (
     <Screen>
       <TopBar

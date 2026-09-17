@@ -96,7 +96,6 @@ function SearchHistory() {
           </EmptyState>
         )}
 
-        <Row title="Saved searches" subtitle="Keep a search and get alerts" to="/search/saved" />
         <Row
           title="Recently viewed"
           subtitle="Profiles and listings you opened"

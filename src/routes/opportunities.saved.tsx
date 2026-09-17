@@ -2,11 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
-import { opportunities } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/opportunities/saved")({
-  // Stored opportunities follow the static ones; none when the database is unreachable.
+  // None when the database is unreachable; the screen then has nothing saved to show.
   loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
@@ -24,9 +23,8 @@ export const Route = createFileRoute("/opportunities/saved")({
 function SavedOpportunities() {
   const { ids, has, toggle } = useSavedOpportunities();
   const { dbOpportunities } = Route.useLoaderData();
-  const list = [...opportunities, ...dbOpportunities].filter(
-    (o) => ids.includes(o.id) || (o.saved && !ids.length),
-  );
+  // Saved means this person saved it; nothing arrives here pre-saved.
+  const list = dbOpportunities.filter((o) => ids.includes(o.id));
 
   return (
     <Screen>
@@ -46,7 +44,7 @@ function SavedOpportunities() {
             <OpportunityCard
               key={o.id}
               o={o}
-              saved={has(o.id) || o.saved}
+              saved={has(o.id)}
               onSave={() => toggle(o.id)}
             />
           ))
