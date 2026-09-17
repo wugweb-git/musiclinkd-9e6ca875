@@ -29,5 +29,18 @@ export default defineConfig({
   },
   vite: {
     plugins: [serveGuidePlugin()],
+    build: {
+      rollupOptions: {
+        output: {
+          // Without this, Rollup gives each individually-imported lucide-react icon its own
+          // chunk — 30+ separate ~500-byte JS files on the client, each a full HTTP round trip.
+          // Bundling them into one chunk turns 30+ requests into 1. Verified against production
+          // (app.musiclinkd.com): 52 JS chunks on first load, 32 of them single icons.
+          manualChunks(id) {
+            return id.includes("node_modules/lucide-react") ? "lucide-icons" : undefined;
+          },
+        },
+      },
+    },
   },
 });
