@@ -138,7 +138,7 @@ function ManageBand() {
             <Row
               title="Shows & availability"
               subtitle="Managed with Booking"
-              to="/provider/availability"
+              to="/business/availability"
             />
             <Card className="space-y-3">
               <h2 className="text-sm">Ownership</h2>

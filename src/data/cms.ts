@@ -145,7 +145,7 @@ export const contentPages: ContentPage[] = [
           "Buffer time between sessions",
         ],
       },
-      { type: "cta", label: "Open provider policies", link: { to: "/provider/policies" } },
+      { type: "cta", label: "Open provider policies", link: { to: "/business/policies" } },
     ],
     related: ["review-policy", "how-verification-works"],
   },

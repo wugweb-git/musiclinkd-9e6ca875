@@ -358,6 +358,51 @@ export function Loading({ rows = 3 }: { rows?: number }) {
   );
 }
 
+/**
+ * Gates a business-only screen (business.bookings.*, availability/pricing/policies): renders
+ * children only once useRequireBusiness() confirms the signed-in account has a profile_business
+ * row. See contextual-profile-rule memory for why this exists — nothing enforced it before.
+ */
+export function BusinessOnlyGate({
+  allowed,
+  loading,
+  signedIn,
+  children,
+}: {
+  allowed: boolean;
+  loading: boolean;
+  signedIn: boolean;
+  children: ReactNode;
+}) {
+  if (loading) {
+    return (
+      <div className="px-5 pt-6">
+        <Loading rows={3} />
+      </div>
+    );
+  }
+  if (!allowed) {
+    return (
+      <EmptyState
+        title={signedIn ? "This is for business accounts" : "Sign in with a business account"}
+        body={
+          signedIn
+            ? "Bookings, pricing and availability are managed from a business account, not a talent one."
+            : "This page belongs to your business account's own dashboard."
+        }
+      >
+        <Link
+          to="/welcome"
+          className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+        >
+          {signedIn ? "Switch account" : "Sign in"}
+        </Link>
+      </EmptyState>
+    );
+  }
+  return <>{children}</>;
+}
+
 export function Stars({ value, size = 14 }: { value: number; size?: number }) {
   return (
     <span className="inline-flex items-center gap-0.5" aria-label={`${value} out of 5`}>

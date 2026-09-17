@@ -494,6 +494,69 @@ export function BookingCard({
   );
 }
 
+/**
+ * A real booking (rental_bookings, see rentals.functions.ts) next to a static-seed one: the join
+ * only carries a listing's id/title/photo, never brand/model/location/provider bio the way
+ * Equipment/Provider do — those fields don't exist for a database listing, so this claims only
+ * what the booking actually has rather than filling Equipment/Provider with placeholders.
+ */
+export function RealBookingCard({
+  title,
+  photo,
+  status,
+  startDate,
+  endDate,
+  fulfilment,
+  totalPaise,
+  action,
+}: {
+  title: string;
+  photo: string | null;
+  status: RentalStatus;
+  startDate: string;
+  endDate: string;
+  fulfilment: string;
+  totalPaise: number | null;
+  action?: ReactNode;
+}) {
+  const days = Math.max(
+    1,
+    Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / 86_400_000),
+  );
+  const fulfilmentLabel = fulfilment.replace(/_/g, " ");
+  return (
+    <article className="rounded-lg bg-subtle p-3">
+      <div className="flex gap-3">
+        {photo ? (
+          <img
+            src={photo}
+            alt={title}
+            loading="lazy"
+            className="h-20 w-20 shrink-0 rounded-lg object-cover"
+          />
+        ) : (
+          <div className="h-20 w-20 shrink-0 rounded-lg bg-background" aria-hidden />
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="line-clamp-2 text-1 leading-snug">{title}</h3>
+            <RentalStatusPill status={status} />
+          </div>
+          <p className="mt-1 text-1 font-semibold">
+            {new Date(startDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} →{" "}
+            {new Date(endDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })} ·{" "}
+            {days} {days === 1 ? "day" : "days"}
+          </p>
+          <p className="mt-0.5 text-1 text-muted-foreground capitalize">
+            {fulfilmentLabel} {totalPaise != null ? `· ${inr(Math.round(totalPaise / 100))}` : ""}
+          </p>
+        </div>
+      </div>
+      {action ? <div className="mt-3 flex flex-wrap gap-2">{action}</div> : null}
+    </article>
+  );
+}
+
 export function RentalSkeleton() {
   return (
     <div className="overflow-hidden rounded-lg bg-subtle">

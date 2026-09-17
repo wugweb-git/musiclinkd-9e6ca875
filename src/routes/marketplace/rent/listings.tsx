@@ -1,10 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { Screen, TopBar, Chip, BtnLink, Btn } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
+import { Loading } from "@/components/ml/kit";
 import { EquipmentRow, RentalStatusPill } from "@/components/ml/rental";
 import { equipment, equipmentById, inr, rentalNotifications, rentalRequests } from "@/data/rentals";
 import { TextLink } from "@/components/ml/links";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  listMyIncomingRentalRequests,
+  setRentalBookingStatus,
+  type MyRentalBooking,
+} from "@/lib/rentals.functions";
 
 export const Route = createFileRoute("/marketplace/rent/listings")({
   head: () => ({
@@ -42,6 +52,25 @@ function MyListings() {
   const [tab, setTab] = useState(tabs[0]!);
   const [bucket, setBucket] = useState<string>("Active");
   const shown = equipment.filter((e) => e.listingStatus === bucket);
+  const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
+  const load = useServerFn(listMyIncomingRentalRequests);
+  const setStatus = useServerFn(setRentalBookingStatus);
+  const q = useQuery({
+    queryKey: ["rental-bookings", "incoming"],
+    queryFn: () => load(),
+    enabled: signedIn && tab === "Requests",
+  });
+  const decide = useMutation({
+    mutationFn: (vars: { id: string; status: "confirmed" | "declined" }) =>
+      setStatus({ data: vars }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rental-bookings", "incoming"] });
+      toast.success("Updated.");
+    },
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+  const realRequests = q.data ?? [];
 
   return (
     <Screen>
@@ -100,7 +129,67 @@ function MyListings() {
           </>
         ) : null}
 
+        {tab === "Requests" && signedIn && q.isLoading ? <Loading rows={2} /> : null}
         {tab === "Requests"
+          ? realRequests.map((r) => (
+              <article key={r.id} className="rounded-lg bg-subtle p-4">
+                <div className="flex items-start gap-3">
+                  {r.listingPhoto ? (
+                    <img
+                      src={r.listingPhoto}
+                      alt=""
+                      className="h-14 w-14 shrink-0 rounded-sm object-cover"
+                    />
+                  ) : (
+                    <div className="h-14 w-14 shrink-0 rounded-sm bg-background" aria-hidden />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-1 font-semibold">{r.listingTitle ?? "Listing"}</p>
+                    <p className="truncate text-1 text-muted-foreground">
+                      {new Date(r.startDate).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                      })}{" "}
+                      –{" "}
+                      {new Date(r.endDate).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                      })}{" "}
+                      · {r.quantity} unit{r.quantity > 1 ? "s" : ""}
+                    </p>
+                    {r.totalPaise != null ? (
+                      <p className="mt-1 text-1 font-semibold">{inr(Math.round(r.totalPaise / 100))}</p>
+                    ) : null}
+                  </div>
+                  <RentalStatusPill status={r.status} />
+                </div>
+                {r.status === "Requested" ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Btn
+                      variant="outline"
+                      className="min-h-9 px-3 text-1"
+                      loading={decide.isPending}
+                      onClick={() => decide.mutate({ id: r.id, status: "confirmed" })}
+                    >
+                      Accept
+                    </Btn>
+                    <Btn
+                      variant="ghost"
+                      className="min-h-9 px-3 text-1"
+                      loading={decide.isPending}
+                      onClick={() => decide.mutate({ id: r.id, status: "declined" })}
+                    >
+                      Decline
+                    </Btn>
+                    <Link to="/messages">
+                      <Chip>Message</Chip>
+                    </Link>
+                  </div>
+                ) : null}
+              </article>
+            ))
+          : null}
+        {tab === "Requests" && !q.isLoading
           ? rentalRequests.map((r) => {
               const e = equipmentById(r.equipmentId)!;
               return (

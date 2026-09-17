@@ -8,6 +8,8 @@ import {
   EmptyState,
   ProviderRequestCard,
 } from "@/components/ml/booking";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import {
   bookings,
   getBookable,
@@ -21,7 +23,7 @@ import {
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 
-export const Route = createFileRoute("/provider/bookings/")({
+export const Route = createFileRoute("/business/bookings/")({
   head: () => ({
     meta: [
       { title: "Provider bookings — MusicLinkd" },
@@ -45,6 +47,15 @@ export const Route = createFileRoute("/provider/bookings/")({
 const tabs = ["Requests", "Today", "Upcoming", "Past"] as const;
 
 function ProviderBookings() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <ProviderBookingsContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function ProviderBookingsContent() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Requests");
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +69,7 @@ function ProviderBookings() {
         subtitle="Octave Sound Labs"
         right={
           <TextLink
-            to="/provider/availability"
+            to="/business/availability"
             className="pill bg-background text-muted-foreground"
           >
             Availability
@@ -91,11 +102,11 @@ function ProviderBookings() {
         </div>
 
         <div className="rail no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
-          <WorkspaceLink to="/provider/bookings/requests" label="Requests" />
-          <WorkspaceLink to="/provider/bookings/calendar" label="Calendar" />
-          <WorkspaceLink to="/provider/availability" label="Availability" />
-          <WorkspaceLink to="/provider/pricing" label="Pricing" />
-          <WorkspaceLink to="/provider/policies" label="Policies" />
+          <WorkspaceLink to="/business/bookings/requests" label="Requests" />
+          <WorkspaceLink to="/business/bookings/calendar" label="Calendar" />
+          <WorkspaceLink to="/business/availability" label="Availability" />
+          <WorkspaceLink to="/business/pricing" label="Pricing" />
+          <WorkspaceLink to="/business/policies" label="Policies" />
         </div>
 
         <div className="rail -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
@@ -181,11 +192,11 @@ function WorkspaceLink({
   label,
 }: {
   to:
-    | "/provider/bookings/requests"
-    | "/provider/bookings/calendar"
-    | "/provider/availability"
-    | "/provider/pricing"
-    | "/provider/policies";
+    | "/business/bookings/requests"
+    | "/business/bookings/calendar"
+    | "/business/availability"
+    | "/business/pricing"
+    | "/business/policies";
   label: string;
 }) {
   return (

@@ -661,7 +661,7 @@ export function BookingListCard({
 }) {
   return (
     <Link
-      to={provider ? "/provider/bookings/$ref" : "/bookings/$ref"}
+      to={provider ? "/business/bookings/$ref" : "/bookings/$ref"}
       params={{ ref: booking.ref }}
       className="block rounded-lg bg-subtle p-4"
     >
@@ -727,7 +727,7 @@ export function ProviderRequestCard({
       <div className="mt-3 flex items-center justify-between">
         <span className="text-sm font-bold text-price">{inr(booking.amount)}</span>
         <TextLink
-          to="/provider/bookings/requests/$ref"
+          to="/business/bookings/requests/$ref"
           params={{ ref: booking.ref }}
           className="gap-1 text-1 font-bold"
         >

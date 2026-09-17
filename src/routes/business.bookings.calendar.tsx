@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { BookingStatusPill } from "@/components/ml/booking";
 import {
   bookings,
@@ -15,7 +17,7 @@ import {
   type Booking,
 } from "@/data/booking";
 
-export const Route = createFileRoute("/provider/bookings/calendar")({
+export const Route = createFileRoute("/business/bookings/calendar")({
   head: () => ({
     meta: [
       { title: "Booking calendar — MusicLinkd provider" },
@@ -49,13 +51,22 @@ function bookingsOn(iso: string) {
 }
 
 function ProviderCalendar() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <ProviderCalendarContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function ProviderCalendarContent() {
   const [view, setView] = useState<(typeof views)[number]>("Day");
   const today = new Date();
   const [cursor, setCursor] = useState(isoDate(today));
 
   return (
     <Screen>
-      <TopBar title="Calendar" subtitle="Octave Sound Labs" back="/provider/bookings" />
+      <TopBar title="Calendar" subtitle="Octave Sound Labs" back="/business/bookings" />
 
       <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
         {views.map((v) => (
@@ -113,8 +124,8 @@ function BlockRow({ b }: { b: Booking }) {
     <Link
       // Requests live on their own detail page; the session page only knows confirmed bookings.
       {...(requestRefs.has(b.ref)
-        ? { to: "/provider/bookings/requests/$ref" as const, params: { ref: b.ref } }
-        : { to: "/provider/bookings/$ref" as const, params: { ref: b.ref } })}
+        ? { to: "/business/bookings/requests/$ref" as const, params: { ref: b.ref } }
+        : { to: "/business/bookings/$ref" as const, params: { ref: b.ref } })}
       className="flex min-w-0 items-start gap-3 rounded-lg bg-subtle p-3"
     >
       <span className="w-[62px] shrink-0 text-1 font-bold leading-tight">
@@ -147,7 +158,7 @@ function DayView({ date, onDate }: { date: string; onDate: (d: string) => void }
             This day is completely open. Block it off in Availability if you're not taking sessions.
           </p>
           <Link
-            to="/provider/availability"
+            to="/business/availability"
             className="mt-3 inline-flex min-h-touch items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"
           >
             Edit availability

@@ -60,7 +60,7 @@ export const notifications: NotificationItem[] = [
     when: "1h ago",
     read: false,
     actor: { name: "Kabir Menon", photo: img("photo-1500648767791-00dcc994a43e") },
-    to: "/provider/bookings/requests",
+    to: "/business/bookings/requests",
     cta: "Review request",
   },
   {

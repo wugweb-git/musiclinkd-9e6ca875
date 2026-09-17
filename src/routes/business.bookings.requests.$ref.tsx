@@ -2,6 +2,8 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MessageCircle, ShieldCheck } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { Detail, EmptyState, PriceBreakdownCard, StickyBar } from "@/components/ml/booking";
 import {
   declineReasons,
@@ -15,7 +17,7 @@ import {
 } from "@/data/booking";
 import { iconSize } from "@/lib/tokens";
 
-export const Route = createFileRoute("/provider/bookings/requests/$ref")({
+export const Route = createFileRoute("/business/bookings/requests/$ref")({
   head: () => ({
     meta: [
       { title: "Review booking request — MusicLinkd" },
@@ -37,6 +39,15 @@ export const Route = createFileRoute("/provider/bookings/requests/$ref")({
 });
 
 function RequestReview() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <RequestReviewContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function RequestReviewContent() {
   const { ref } = Route.useParams();
   const bk = providerRequests.find((x) => x.ref === ref);
   const b = getBookable(bk?.bookableId ?? "");
@@ -46,12 +57,12 @@ function RequestReview() {
   if (!bk || !b || !r) {
     return (
       <Screen>
-        <TopBar title="Request" back="/provider/bookings" />
+        <TopBar title="Request" back="/business/bookings" />
         <div className="px-5 pt-4">
           <EmptyState
             title="Request no longer available"
             body="It was withdrawn or already handled."
-            action={<BtnLink to="/provider/bookings">Back to Requests</BtnLink>}
+            action={<BtnLink to="/business/bookings">Back to Requests</BtnLink>}
           />
         </div>
       </Screen>
@@ -63,7 +74,7 @@ function RequestReview() {
   if (decision === "accepted" || decision === "declined") {
     return (
       <Screen>
-        <TopBar title="Request" back="/provider/bookings" />
+        <TopBar title="Request" back="/business/bookings" />
         <main className="px-5 pt-6">
           <div className="rounded-lg bg-subtle p-5">
             <p className="font-semibold">
@@ -74,7 +85,7 @@ function RequestReview() {
                 ? `${bk.customer} has been notified and the slot is now blocked on your calendar.`
                 : `${bk.customer} has been notified and the slot stays open for other bookings.`}
             </p>
-            <BtnLink to="/provider/bookings" className="mt-4 w-full">
+            <BtnLink to="/business/bookings" className="mt-4 w-full">
               Back to Workspace
             </BtnLink>
           </div>
@@ -85,7 +96,7 @@ function RequestReview() {
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
-      <TopBar title={`Request #${bk.ref}`} subtitle={r.name} back="/provider/bookings" />
+      <TopBar title={`Request #${bk.ref}`} subtitle={r.name} back="/business/bookings" />
       <main className="px-5 pt-4">
         <div className="rounded-lg bg-subtle p-4">
           <div className="flex items-center gap-3">

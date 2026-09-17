@@ -104,7 +104,7 @@ function ManageBusiness() {
             icon={<CalendarClock size={iconSize.sm} />}
             title="Availability & bookings"
             subtitle="Calendar, requests, policies"
-            to="/provider/bookings/calendar"
+            to="/business/bookings/calendar"
           />
           <Row
             icon={<ShieldCheck size={iconSize.sm} />}

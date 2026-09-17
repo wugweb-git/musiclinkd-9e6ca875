@@ -239,7 +239,7 @@ function CreateOpportunity() {
                 Confirmed hires can be converted into a booking in one tap — availability stays
                 owned by Booking.
               </p>
-              <BtnLink to="/provider/availability" variant="ghost" className="w-full">
+              <BtnLink to="/business/availability" variant="ghost" className="w-full">
                 Open Availability
               </BtnLink>
             </Card>

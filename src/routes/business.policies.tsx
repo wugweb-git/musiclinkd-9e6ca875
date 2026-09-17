@@ -2,10 +2,12 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { StickyBar } from "@/components/ml/booking";
 import { getBookable } from "@/data/booking";
 
-export const Route = createFileRoute("/provider/policies")({
+export const Route = createFileRoute("/business/policies")({
   head: () => ({
     meta: [
       { title: "Booking policies — MusicLinkd provider" },
@@ -57,6 +59,15 @@ const sections = [
 ] as const;
 
 function Policies() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <PoliciesContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function PoliciesContent() {
   const entity = getBookable("octave-sound-labs");
   const [window, setWindow] = useState<(typeof cancellationWindows)[number]>("Moderate · 48 hrs");
   const [text, setText] = useState<Record<string, string>>(() => {
@@ -70,7 +81,7 @@ function Policies() {
 
   return (
     <Screen bottomNav={false}>
-      <TopBar title="Policies" subtitle={entity?.name ?? "Your space"} back="/provider/bookings" />
+      <TopBar title="Policies" subtitle={entity?.name ?? "Your space"} back="/business/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
         <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">

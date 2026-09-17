@@ -156,7 +156,7 @@ function Availability() {
             Changing hours never cancels a confirmed booking — manage those in your provider
             calendar.
           </p>
-          <BtnLink to="/provider/bookings/calendar" variant="ghost" className="w-full">
+          <BtnLink to="/business/bookings/calendar" variant="ghost" className="w-full">
             Open Calendar
           </BtnLink>
         </Card>

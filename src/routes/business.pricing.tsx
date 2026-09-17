@@ -2,10 +2,12 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { StickyBar } from "@/components/ml/booking";
 import { getBookable, inr } from "@/data/booking";
 
-export const Route = createFileRoute("/provider/pricing")({
+export const Route = createFileRoute("/business/pricing")({
   head: () => ({
     meta: [
       { title: "Pricing — MusicLinkd provider" },
@@ -24,6 +26,15 @@ export const Route = createFileRoute("/provider/pricing")({
 });
 
 function Pricing() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <PricingContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function PricingContent() {
   const entity = getBookable("octave-sound-labs");
   const [rates, setRates] = useState<Record<string, number>>(() => {
     const out: Record<string, number> = {};
@@ -40,7 +51,7 @@ function Pricing() {
 
   return (
     <Screen bottomNav={false}>
-      <TopBar title="Pricing" subtitle={entity.name} back="/provider/bookings" />
+      <TopBar title="Pricing" subtitle={entity.name} back="/business/bookings" />
 
       <main className="space-y-6 px-5 pb-40 pt-4">
         <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">

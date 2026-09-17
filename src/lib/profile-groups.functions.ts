@@ -326,3 +326,22 @@ export const listPeopleByRole = createServerFn({ method: "GET" })
       verified: Boolean(r.is_verified),
     }));
   });
+
+/**
+ * Whether the signed-in account is a business — the same signal this file's own comment
+ * establishes ("an account is a business when it has a profile_business row"), as a cheap
+ * boolean instead of the full getMyBusiness() record. For gating business-only screens
+ * (business.bookings.*, business.availability/pricing/policies) — see contextual-profile-rule.
+ */
+export const isMyAccountBusiness = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<boolean> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data, error } = await client
+      .from("profile_business")
+      .select("profile_id")
+      .eq("profile_id", context.userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return Boolean(data);
+  });

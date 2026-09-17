@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MessageCircle, Users } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import {
   BookingStatusPill,
   BookingTimeline,
@@ -20,7 +22,7 @@ import {
 } from "@/data/booking";
 import { iconSize } from "@/lib/tokens";
 
-export const Route = createFileRoute("/provider/bookings/$ref")({
+export const Route = createFileRoute("/business/bookings/$ref")({
   head: () => ({
     meta: [
       { title: "Session detail — MusicLinkd provider" },
@@ -41,6 +43,15 @@ export const Route = createFileRoute("/provider/bookings/$ref")({
 });
 
 function ProviderBookingDetail() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <ProviderBookingDetailContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function ProviderBookingDetailContent() {
   const { ref } = Route.useParams();
   const bk = [...bookings, ...providerToday].find((x) => x.ref === ref);
   const b = getBookable(bk?.bookableId ?? "");
@@ -49,12 +60,12 @@ function ProviderBookingDetail() {
   if (!bk || !b || !r) {
     return (
       <Screen>
-        <TopBar title="Session" back="/provider/bookings" />
+        <TopBar title="Session" back="/business/bookings" />
         <div className="px-5 pt-4">
           <EmptyState
             title="Session not found"
             body="It may have been cancelled or moved."
-            action={<BtnLink to="/provider/bookings">Back to Workspace</BtnLink>}
+            action={<BtnLink to="/business/bookings">Back to Workspace</BtnLink>}
           />
         </div>
       </Screen>
@@ -65,7 +76,7 @@ function ProviderBookingDetail() {
 
   return (
     <Screen>
-      <TopBar title={`#${bk.ref}`} subtitle={r.name} back="/provider/bookings" />
+      <TopBar title={`#${bk.ref}`} subtitle={r.name} back="/business/bookings" />
       <main className="px-5 pt-4">
         <div className="flex flex-wrap items-center gap-2">
           <BookingStatusPill status={bk.status} />
@@ -117,7 +128,7 @@ function ProviderBookingDetail() {
             <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message{" "}
             {bk.customer.split(" ")[0]}
           </BtnLink>
-          <BtnLink to="/provider/availability" variant="ghost" className="w-full">
+          <BtnLink to="/business/availability" variant="ghost" className="w-full">
             Block or Adjust This Room's Calendar
           </BtnLink>
         </div>

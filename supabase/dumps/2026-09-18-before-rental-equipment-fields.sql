@@ -1,0 +1,19 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project gsqeymhtyzepwcnorjun)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918110000
+-- (rental equipment fields on marketplace_listings).
+--
+-- Scope: row count only. The migration only adds nullable/defaulted columns to an existing
+-- table (marketplace_listings, 8 rows) — no column is altered, dropped, or has its type
+-- changed, and no row is touched. Nothing existing is at risk.
+--
+-- To undo: ALTER TABLE public.marketplace_listings
+--   DROP COLUMN brand, DROP COLUMN model, DROP COLUMN weekly_price_paise,
+--   DROP COLUMN monthly_price_paise, DROP COLUMN deposit_paise, DROP COLUMN quantity_available,
+--   DROP COLUMN pickup_available, DROP COLUMN delivery_available, DROP COLUMN delivery_fee_paise,
+--   DROP COLUMN delivery_note, DROP COLUMN pickup_location, DROP COLUMN min_days,
+--   DROP COLUMN max_days, DROP COLUMN notice_period, DROP COLUMN unavailable_dates,
+--   DROP COLUMN listing_description, DROP COLUMN specs, DROP COLUMN included;
+--
+-- Last applied migration at snapshot time: 20260918100000 (rental_bookings).
+--
+-- marketplace_listings: 8 rows (unchanged by this migration)

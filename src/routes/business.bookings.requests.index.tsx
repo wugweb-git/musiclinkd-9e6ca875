@@ -4,13 +4,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Btn, Screen, TopBar, Chip } from "@/components/ml/ui";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
 import { formatDate, formatTime, type BookingStatus } from "@/data/booking";
 import { answerBooking, listStudioBookings } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
 
-export const Route = createFileRoute("/provider/bookings/requests/")({
+export const Route = createFileRoute("/business/bookings/requests/")({
   head: () => ({
     meta: [
       { title: "Booking requests — MusicLinkd provider" },
@@ -35,6 +37,15 @@ const tabs = ["All", "New", "In review"] as const;
 
 /** The requests people have sent to studios this account owns, and the reply to each. */
 function Requests() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <RequestsContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function RequestsContent() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("All");
   const { signedIn, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
@@ -72,7 +83,7 @@ function Requests() {
         subtitle={
           waiting.length ? `${waiting.length} awaiting your reply` : "Requests for your space"
         }
-        back="/provider/bookings"
+        back="/business/bookings"
       />
 
       <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">

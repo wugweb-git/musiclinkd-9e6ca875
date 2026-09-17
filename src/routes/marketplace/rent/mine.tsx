@@ -1,10 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
-import { BookingCard } from "@/components/ml/rental";
-import { bookings, equipmentById, providerById } from "@/data/rentals";
+import { Loading } from "@/components/ml/kit";
+import { BookingCard, RealBookingCard } from "@/components/ml/rental";
+import { bookings, equipmentById, providerById, type RentalStatus } from "@/data/rentals";
+import { listMyRentalBookings } from "@/lib/rentals.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
+
+const tabs = ["Upcoming", "Active", "Completed", "Cancelled"] as const;
+
+/** Real statuses don't carry a bucket the way seed bookings do — derive the same grouping. */
+function bucketOf(status: RentalStatus): (typeof tabs)[number] {
+  if (status === "Active") return "Active";
+  if (status === "Completed") return "Completed";
+  if (status === "Cancelled" || status === "Declined") return "Cancelled";
+  return "Upcoming";
+}
 
 export const Route = createFileRoute("/marketplace/rent/mine")({
   head: () => ({
@@ -21,11 +36,18 @@ export const Route = createFileRoute("/marketplace/rent/mine")({
   component: MyRentals,
 });
 
-const tabs = ["Upcoming", "Active", "Completed", "Cancelled"] as const;
-
 function MyRentals() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Upcoming");
+  const { signedIn } = useAuth();
+  const load = useServerFn(listMyRentalBookings);
+  const q = useQuery({
+    queryKey: ["rental-bookings", "mine"],
+    queryFn: () => load(),
+    enabled: signedIn,
+  });
+  const real = (q.data ?? []).filter((b) => bucketOf(b.status) === tab);
   const list = bookings.filter((b) => b.bucket === tab);
+  const empty = list.length === 0 && real.length === 0;
 
   return (
     <Screen>
@@ -48,7 +70,32 @@ function MyRentals() {
       </div>
 
       <div className="space-y-3 px-5 pb-6">
-        {list.length ? (
+        {signedIn && q.isLoading ? <Loading rows={2} /> : null}
+        {real.map((b) => (
+          <RealBookingCard
+            key={b.id}
+            title={b.listingTitle ?? "Rental"}
+            photo={b.listingPhoto}
+            status={b.status}
+            startDate={b.startDate}
+            endDate={b.endDate}
+            fulfilment={b.fulfilment}
+            totalPaise={b.totalPaise}
+            action={
+              <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
+                <Chip>View</Chip>
+              </Link>
+            }
+          />
+        ))}
+        {empty ? (
+          <EmptyState
+            emoji="📭"
+            title={`No ${tab.toLowerCase()} rentals`}
+            body="When you rent equipment through MusicLinkd, it will appear here with dates, deposits and return reminders."
+            action={<BtnLink to="/marketplace/rent">Explore Equipment</BtnLink>}
+          />
+        ) : (
           list.map((b) => {
             const e = equipmentById(b.equipmentId)!;
             const p = providerById(e.providerId)!;
@@ -86,13 +133,6 @@ function MyRentals() {
               />
             );
           })
-        ) : (
-          <EmptyState
-            emoji="📭"
-            title={`No ${tab.toLowerCase()} rentals`}
-            body="When you rent equipment through MusicLinkd, it will appear here with dates, deposits and return reminders."
-            action={<BtnLink to="/marketplace/rent">Explore Equipment</BtnLink>}
-          />
         )}
       </div>
     </Screen>

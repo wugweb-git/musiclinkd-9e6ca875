@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { BusinessOnlyGate } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { AvailabilityCalendar, PolicyCard } from "@/components/ml/booking";
 import { bookables, formatDate, inr } from "@/data/booking";
 
-export const Route = createFileRoute("/provider/availability")({
+export const Route = createFileRoute("/business/availability")({
   head: () => ({
     meta: [
       { title: "Manage availability — MusicLinkd provider" },
@@ -29,6 +31,15 @@ export const Route = createFileRoute("/provider/availability")({
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function Availability() {
+  const gate = useRequireBusiness();
+  return (
+    <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+      <AvailabilityContent />
+    </BusinessOnlyGate>
+  );
+}
+
+function AvailabilityContent() {
   const b = bookables[0]!;
   const [resourceId, setResourceId] = useState(b.resources[0]!.id);
   const [open, setOpen] = useState<string[]>(days.slice(0, 6));
@@ -63,7 +74,7 @@ function Availability() {
 
   return (
     <Screen>
-      <TopBar title="Availability" subtitle={b.name} back="/provider/bookings" />
+      <TopBar title="Availability" subtitle={b.name} back="/business/bookings" />
       <main className="px-5 pt-2">
         <div className="rail -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
           {b.resources.map((x) => (
@@ -177,7 +188,7 @@ function Availability() {
         <Btn className="mt-6 w-full" onClick={save}>
           Save Availability
         </Btn>
-        <BtnLink to="/provider/bookings" variant="ghost" className="mt-2 w-full">
+        <BtnLink to="/business/bookings" variant="ghost" className="mt-2 w-full">
           Back to Workspace
         </BtnLink>
       </main>
