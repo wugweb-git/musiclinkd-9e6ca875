@@ -1,0 +1,70 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project gsqeymhtyzepwcnorjun)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918150000 (collab invitations).
+--
+-- Scope: row counts only, deliberately. That migration adds a status column to collab_members
+-- (every one of the 11 rows there becomes 'active', which is what they are), two notification
+-- kinds, a trigger that tells someone they were invited, and the policies that let the invited
+-- person answer. No row is deleted and no other table changes.
+-- Nothing existing is at risk, so there is nothing of it to restore. The last full data dump is
+-- supabase/dumps/2026-09-17-before-20260917100000.sql, and the band tables (renamed to collabs the
+-- same day) are in supabase/dumps/2026-09-17-before-collabs.sql.
+--
+-- It also adds collabs.project_type, which holds a taxonomy_options slug from the project_types
+-- category the database already carries (Song, Album, EP, Podcast, DJ Mix, Film Score, Commercial
+-- Jingle, Live Performance, Music Video, Custom Project). All 3 collabs stored today are bands, so
+-- every existing row keeps it null.
+--
+-- To undo the migration: ALTER TABLE public.collab_members DROP COLUMN status, ALTER TABLE
+-- public.collabs DROP COLUMN project_type, drop the notify_collab_member trigger and its function,
+-- and restore the previous collab_members policies.
+--
+-- Last applied migration at snapshot time: 20260918140000.
+--
+-- Row counts, every public table:
+-- connections: 1 row
+-- conversation_members: 2 rows
+-- conversations: 1 row
+-- follows: 1 row
+-- messages: 2 rows
+-- booking_requests: 1 row
+-- cms_pages: 9 rows
+-- collab_events: 7 rows
+-- collab_members: 11 rows
+-- collab_releases: 3 rows
+-- collabs: 3 rows
+-- feed_posts: 5 rows
+-- genre_languages: 43 rows
+-- marketplace_listings: 8 rows
+-- opportunities: 9 rows
+-- opportunity_applications: 2 rows
+-- person_type_instruments: 199 rows
+-- person_type_service_categories: 53 rows
+-- portfolio_item_plays: 0 rows
+-- portfolio_items: 85 rows
+-- profile_business: 21 rows
+-- profile_events: 3 rows
+-- profile_experience: 18 rows
+-- profile_gallery: 30 rows
+-- profile_members: 12 rows
+-- profile_private: 84 rows
+-- profile_role_details: 71 rows
+-- profile_service_addons: 0 rows
+-- profile_service_packages: 0 rows
+-- profile_services: 31 rows
+-- profiles: 102 rows
+-- reserved_usernames: 63 rows
+-- notifications: 1 row
+-- reviews: 35 rows
+-- service_category_specialties: 4 rows
+-- spotify_connections: 0 rows
+-- studio_equipment: 16 rows
+-- studio_rooms: 7 rows
+-- studios: 12 rows
+-- taxonomy_categories: 39 rows
+-- taxonomy_options: 380 rows
+-- verification_request_items: 0 rows
+-- verification_request_private: 0 rows
+-- verification_requests: 0 rows
+-- verification_requirements: 12 rows
+-- verification_type_details: 4 rows
+-- verification_type_person_types: 81 rows
