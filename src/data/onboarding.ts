@@ -601,9 +601,9 @@ export const steps: StepDef[] = [
   {
     id: "contact",
     group: "Reach",
-    title: "How people find and reach you",
-    subtitle: "Links, contact options and who can see your profile.",
-    why: "Nothing private is published. You choose what to share per enquiry.",
+    title: "Where people can find your work",
+    subtitle: "Links to your music, socials and site.",
+    why: "How people reach you and who sees your profile live in Settings, once you're set up.",
     optional: false,
     contract: contract(
       "ONB-15",
