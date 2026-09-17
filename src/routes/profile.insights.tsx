@@ -40,6 +40,12 @@ function Insights() {
       <TopBar title="Profile insights" subtitle={i.range} back="/profile" />
 
       <main className="px-5 pt-4">
+        {!sample && !loading ? (
+          <p className="mb-3 text-1 text-muted-foreground">
+            Insights aren't tracked yet for real accounts — the dashes below will start filling in
+            once that's built.
+          </p>
+        ) : null}
         <div className="grid grid-cols-2 gap-3">
           {i.headline.map((m) => {
             const up = m.delta.startsWith("+");

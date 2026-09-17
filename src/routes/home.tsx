@@ -317,13 +317,22 @@ function Body({ home }: { home: Home }) {
             icon={<QrCode size={iconSize.sm} />}
             label="QR & digital card"
           />
-          <ToolLink to="/search" icon={<Search size={iconSize.sm} />} label="Search talent" />
+          <ToolLink to="/search" icon={<Search size={iconSize.sm} />} label="Search talent" soon />
           <ToolLink to="/studio" icon={<Building2 size={iconSize.sm} />} label="Find a studio" />
-          <ToolLink to="/bookings" icon={<Calendar size={iconSize.sm} />} label="My bookings" />
-          <ToolLink to="/recommendations" icon={<Sparkles size={iconSize.sm} />} label="For you" />
-          <ToolLink to="/help" icon={<LifeBuoy size={iconSize.sm} />} label="Help & guides" />
+          <ToolLink to="/bookings" icon={<Calendar size={iconSize.sm} />} label="My bookings" soon />
+          <ToolLink
+            to="/recommendations"
+            icon={<Sparkles size={iconSize.sm} />}
+            label="For you"
+            soon
+          />
+          <ToolLink to="/help" icon={<LifeBuoy size={iconSize.sm} />} label="Help & guides" soon />
           <ToolLink icon={<Users size={iconSize.sm} />} label="My bands" soon />
-          <ToolLink icon={<BadgeCheck size={iconSize.sm} />} label="Verification" soon />
+          <ToolLink
+            to="/verification"
+            icon={<BadgeCheck size={iconSize.sm} />}
+            label="Verification"
+          />
         </div>
       </section>
       <QrSheet open={qrOpen} onClose={() => setQrOpen(false)} />
@@ -579,7 +588,13 @@ function usePeers(roleSlug: string | null) {
 }
 
 type ToolDestination =
-  "/portfolio/new" | "/search" | "/studio" | "/bookings" | "/recommendations" | "/help";
+  | "/portfolio/new"
+  | "/search"
+  | "/studio"
+  | "/bookings"
+  | "/recommendations"
+  | "/help"
+  | "/verification";
 
 /** A tool tile: icon, label, chevron. Two to a row under Your tools. `soon` makes it inert. */
 function ToolLink({

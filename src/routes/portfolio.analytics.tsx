@@ -63,6 +63,12 @@ function PortfolioAnalytics() {
 
         {!q.isLoading && !q.isError ? (
           <>
+            {signedIn ? (
+              <p className="mb-3 text-1 text-muted-foreground">
+                There's no analytics table yet, so these figures aren't tracked — they'll start
+                counting once that's built, not reflect a lack of engagement.
+              </p>
+            ) : null}
             <WorkAnalytics figures={totals} />
 
             {/* The same 30 days as the totals above, drawn. */}
