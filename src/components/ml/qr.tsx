@@ -12,7 +12,7 @@ import { StateCard as BaseStateCard } from "@/components/ml/kit";
 import { Btn, BtnLink, Sheet, VerifiedBadge } from "./ui";
 import { useViewer } from "./viewer";
 import { Price, SoonBadge } from "./kit";
-import { canonicalUrl, styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
+import { styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
 
 /* ------------------------------------------------------------------ */
@@ -105,7 +105,7 @@ export function QrIdentityCard({
   photo,
   verified,
   handle,
-  code,
+  url,
   style = "light",
   tagline,
   compact,
@@ -115,7 +115,8 @@ export function QrIdentityCard({
   photo: string;
   verified?: boolean;
   handle: string;
-  code: string;
+  /** The real address a scan lands on — no `/q/$code` resolver exists, so this is shown as-is. */
+  url: string;
   style?: QrStyle;
   tagline?: string;
   compact?: boolean;
@@ -148,15 +149,15 @@ export function QrIdentityCard({
 
       <div className="mt-5 flex justify-center">
         <QrCode
-          value={canonicalUrl(code)}
+          value={url}
           size={compact ? 160 : 200}
           style={style}
           label={`MusicLinkd QR for ${name}`}
         />
       </div>
 
-      <p className={`mt-4 text-1 font-semibold ${onInk ? "opacity-85" : "opacity-70"}`}>
-        musiclinkd.app/q/{code}
+      <p className={`mt-4 truncate text-1 font-semibold ${onInk ? "opacity-85" : "opacity-70"}`}>
+        {url.replace(/^https?:\/\//, "")}
       </p>
       <p className="text-1 opacity-50">@{handle}</p>
     </article>

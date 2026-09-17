@@ -8,8 +8,9 @@ import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { QrCode, DownloadNote } from "@/components/ml/qr";
-import { myBusiness, printFormats } from "@/data/identity";
+import { printFormats } from "@/data/identity";
 import { useMyIdentity } from "@/hooks/use-my-identity";
+import { useMyBusinessIdentity } from "@/hooks/use-my-business-identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/print")({
@@ -30,12 +31,13 @@ export const Route = createFileRoute("/identity/print")({
 
 function PrintPreview() {
   const me = useMyIdentity();
+  const business = useMyBusinessIdentity();
   const [format, setFormat] = useState<string>(printFormats[0]!.id);
   const [subject, setSubject] = useState<"me" | "business">("me");
-  const name = subject === "me" ? me.name : myBusiness.name;
-  const line = subject === "me" ? me.role : myBusiness.category;
-  const url = subject === "me" ? me.url : `https://musiclinkd.app/q/${myBusiness.code}`;
-  const shortAddress = subject === "me" ? `musiclinkd.app/${me.username ?? ""}` : `musiclinkd.app/q/${myBusiness.code}`;
+  const name = subject === "me" ? me.name : business.name;
+  const line = subject === "me" ? me.role : business.category;
+  const url = subject === "me" ? me.url : business.url;
+  const shortAddress = url.replace(/^https?:\/\//, "");
   const active = printFormats.find((f) => f.id === format)!;
 
   return (

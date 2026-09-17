@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, SearchBar, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Row, Dialog, EmptyState } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
-import { talents } from "@/data/discover";
+import { listPeopleByRole } from "@/lib/profile-groups.functions";
 
 export const Route = createFileRoute("/bands/$id/invite")({
   loader: ({ params }) => loadBand(params.id),
@@ -30,8 +32,16 @@ function InviteMembers() {
   const [invited, setInvited] = useState<string[]>([]);
   const [sent, setSent] = useState(false);
 
-  const results = talents.filter((t) =>
-    q ? `${t.name} ${t.role} ${t.location}`.toLowerCase().includes(q.toLowerCase()) : true,
+  const list = useServerFn(listPeopleByRole);
+  const people = useQuery({
+    queryKey: ["people", "invite-candidates"],
+    queryFn: () => list({ data: {} }),
+  });
+
+  const results = (people.data ?? []).filter((p) =>
+    q
+      ? `${p.name} ${p.roles.join(" ")} ${p.city ?? ""}`.toLowerCase().includes(q.toLowerCase())
+      : true,
   );
 
   return (
@@ -49,20 +59,31 @@ function InviteMembers() {
           </BtnLink>
         </Card>
 
-        {results.length ? (
+        {people.isLoading ? (
+          <ul className="space-y-3" aria-hidden>
+            {[0, 1, 2].map((i) => (
+              <li key={i} className="h-16 animate-pulse rounded-lg bg-subtle" />
+            ))}
+          </ul>
+        ) : people.isError ? (
+          <EmptyState
+            title="Couldn't load people"
+            body="Check your connection and try again."
+          />
+        ) : results.length ? (
           results.map((t) => (
             <Row
               key={t.id}
               icon={
                 <img
-                  src={t.photo}
+                  src={t.avatarUrl ?? ""}
                   alt=""
                   loading="lazy"
                   className="h-10 w-10 rounded-full object-cover"
                 />
               }
               title={t.name}
-              subtitle={`${t.role} · ${t.location}`}
+              subtitle={[t.roles[0], t.city].filter(Boolean).join(" · ")}
               right={
                 <span className="flex shrink-0 items-center gap-2">
                   {t.verified ? <VerifiedBadge size={16} /> : null}

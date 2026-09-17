@@ -3,10 +3,10 @@
  * Privacy controls that decide what any share can contain.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { myIdentity } from "@/data/identity";
+import { useMyIdentity } from "@/hooks/use-my-identity";
 
 export const Route = createFileRoute("/identity/settings")({
   head: () => ({
@@ -52,16 +52,29 @@ function Toggle({
 }
 
 function QrSettings() {
+  const me = useMyIdentity();
   const [state, setState] = useState({
     active: true,
-    phone: myIdentity.contact.phone.shared,
-    email: myIdentity.contact.email.shared,
-    website: myIdentity.contact.website.shared,
-    company: myIdentity.contact.company.shared,
+    phone: false,
+    email: false,
+    website: false,
+    company: false,
     analytics: true,
     discoverable: true,
   });
   const set = (k: keyof typeof state) => (v: boolean) => setState((s) => ({ ...s, [k]: v }));
+
+  // Default each share toggle on only for a contact field the real profile actually has —
+  // there is nothing to share, or fabricate a preference for, on an empty field.
+  useEffect(() => {
+    if (!me.ready) return;
+    setState((s) => ({
+      ...s,
+      phone: Boolean(me.phone),
+      email: Boolean(me.email),
+      website: Boolean(me.website),
+    }));
+  }, [me.ready, me.phone, me.email, me.website]);
 
   return (
     <Screen>
