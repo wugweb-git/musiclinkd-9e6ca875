@@ -12,6 +12,7 @@ import { anonClient, type TaxonomyLabels } from "@/lib/portfolio.functions";
  */
 
 export type OwnerSummary = {
+  id: string;
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
@@ -90,7 +91,7 @@ export type ListingRow = {
   seller: OwnerSummary | null;
 };
 
-const OWNER = "username, display_name, avatar_url, city, is_verified";
+const OWNER = "id, username, display_name, avatar_url, city, is_verified";
 const STUDIO = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
   console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
   owner:profiles!studios_owner_profile_id_fkey(${OWNER}),
@@ -231,6 +232,20 @@ export const getListing = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     return (row ?? null) as unknown as ListingRow | null;
+  });
+
+/** One seller's public listings (any category), newest first — for their profile page. */
+export const getSellerListings = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ sellerProfileId: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    const client = await anonClient();
+    const { data: rows, error } = await client
+      .from("marketplace_listings")
+      .select(LISTING)
+      .eq("seller_profile_id", data.sellerProfileId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as unknown as ListingRow[];
   });
 
 const listingSlug = (title: string) =>

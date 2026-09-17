@@ -1,0 +1,12 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918200000_enquiries.sql.
+--
+-- Scope: row counts only. That migration is purely additive: a new enquiries table with its own
+-- owner-only RLS policies (sender writes their own; the business reads/updates its own inbox).
+-- Nothing existing is read, altered, or referenced by a trigger.
+--
+-- To undo: DROP TABLE public.enquiries CASCADE;
+--
+-- Row counts:
+-- profiles: 102 rows
+-- profile_business: 21 rows

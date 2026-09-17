@@ -1,9 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
-import { leadStatusTone, type BusinessLead } from "@/data/business";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Card, EmptyState, Loading, StatusPill } from "@/components/ml/kit";
+import { leadStatusTone } from "@/data/business";
 import { businessView, loadBusiness } from "@/lib/business-view";
+import { listMyLeads, setLeadStatus, type EnquiryStatus } from "@/lib/enquiries.functions";
 
 export const Route = createFileRoute("/business/$id/leads")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -29,6 +33,24 @@ const filters = ["All", "New", "Replied", "Booked"] as const;
 function BusinessLeads() {
   const b = businessView(Route.useLoaderData());
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
+  const queryClient = useQueryClient();
+  const load = useServerFn(listMyLeads);
+  const q = useQuery({ queryKey: ["leads", "mine"], queryFn: () => load() });
+  const answer = useServerFn(setLeadStatus);
+  const [updating, setUpdating] = useState<string | null>(null);
+
+  async function updateStatus(id: string, status: EnquiryStatus) {
+    if (status !== "replied" && status !== "booked" && status !== "closed") return;
+    setUpdating(id);
+    try {
+      await answer({ data: { id, status } });
+      await queryClient.invalidateQueries({ queryKey: ["leads", "mine"] });
+    } catch {
+      toast.error("Couldn't update that — try again");
+    } finally {
+      setUpdating(null);
+    }
+  }
 
   if (!b) {
     return (
@@ -44,10 +66,9 @@ function BusinessLeads() {
     );
   }
 
-  // Enquiries are not stored yet, so the queue is empty.
-  const leads: BusinessLead[] = [];
+  const leads = q.data ?? [];
   const list = leads.filter(
-    (l) => filter === "All" || l.status === (filter.toLowerCase() as BusinessLead["status"]),
+    (l) => filter === "All" || l.status === (filter.toLowerCase() as EnquiryStatus),
   );
 
   return (
@@ -63,34 +84,55 @@ function BusinessLeads() {
           ))}
         </div>
 
-        {list.length ? (
+        {q.isLoading ? (
+          <Loading rows={3} />
+        ) : list.length ? (
           <div className="space-y-3">
             {list.map((l) => (
               <Card key={l.id}>
                 <div className="flex items-center gap-3">
-                  <img
-                    src={l.photo}
-                    alt=""
-                    className="h-10 w-10 rounded-full object-cover"
-                    loading="lazy"
-                  />
+                  {l.sender?.avatar_url ? (
+                    <img
+                      src={l.sender.avatar_url}
+                      alt=""
+                      className="h-10 w-10 rounded-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className="h-10 w-10 shrink-0 rounded-full bg-subtle" aria-hidden />
+                  )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{l.name}</p>
+                    <p className="truncate text-sm font-semibold">
+                      {l.sender?.display_name ?? l.sender?.username ?? "Someone"}
+                    </p>
                     <p className="truncate text-1 text-muted-foreground">
-                      {l.intent} · {l.at}
+                      {l.intent} · {new Date(l.created_at).toLocaleDateString("en-IN")}
                     </p>
                   </div>
                   <StatusPill label={l.status} tone={leadStatusTone[l.status]} />
                 </div>
                 <p className="mt-3 text-1">{l.message}</p>
-                <div className="mt-3 flex gap-2">
-                  <BtnLink to="/messages" className="flex-1 w-full">
-                    Reply
-                  </BtnLink>
-                  <Btn variant="ghost" className="flex-1">
-                    Mark closed
-                  </Btn>
-                </div>
+                {l.status === "new" || l.status === "replied" ? (
+                  <div className="mt-3 flex gap-2">
+                    {l.status === "new" ? (
+                      <Btn
+                        className="flex-1"
+                        disabled={updating === l.id}
+                        onClick={() => void updateStatus(l.id, "replied")}
+                      >
+                        Mark replied
+                      </Btn>
+                    ) : null}
+                    <Btn
+                      variant="ghost"
+                      className="flex-1"
+                      disabled={updating === l.id}
+                      onClick={() => void updateStatus(l.id, "closed")}
+                    >
+                      Mark closed
+                    </Btn>
+                  </div>
+                ) : null}
               </Card>
             ))}
           </div>

@@ -75,6 +75,7 @@ function postedAt(createdAt: string, now: number) {
 function ownerOf(row: ListingRow): Listing["owner"] {
   if (row.seller) {
     return {
+      id: row.seller.id,
       name: row.seller.display_name ?? row.seller.username ?? row.seller_name ?? "",
       username: row.seller.username,
       photo: row.seller.avatar_url ?? "",

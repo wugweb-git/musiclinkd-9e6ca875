@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarPlus, CheckCircle2, Clock, MessageCircle, Share2 } from "lucide-react";
+import { toast } from "sonner";
+import { CalendarPlus, CheckCircle2, Clock, MessageCircle, Share2, XCircle } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
-import { Loading } from "@/components/ml/kit";
+import { Dialog, Loading } from "@/components/ml/kit";
 import { formatDate, formatTime } from "@/data/booking";
-import { getBookingRequest } from "@/lib/bookings.functions";
+import { cancelBooking, getBookingRequest } from "@/lib/bookings.functions";
 import { addToCalendar, shareLink } from "@/lib/booking-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
@@ -35,6 +37,7 @@ export const Route = createFileRoute("/booking/confirmed/$ref")({
 function Confirmed() {
   const { ref } = Route.useParams();
   const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
   const load = useServerFn(getBookingRequest);
   const q = useQuery({
     queryKey: ["booking", ref],
@@ -44,22 +47,57 @@ function Confirmed() {
   });
   const b = q.data ?? null;
   const confirmed = b?.status === "confirmed";
+  const settled = b && ["declined", "cancelled", "completed"].includes(b.status);
+  const cancellable = b && ["requested", "reviewing", "confirmed"].includes(b.status);
+  const cancel = useServerFn(cancelBooking);
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+
+  async function doCancel() {
+    setCancelling(true);
+    try {
+      await cancel({ data: { id: ref } });
+      await queryClient.invalidateQueries({ queryKey: ["booking", ref] });
+      await queryClient.invalidateQueries({ queryKey: ["bookings", "mine"] });
+      setConfirmCancel(false);
+    } catch {
+      toast.error("Couldn't cancel that — try again");
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-14">
       <div>
         {confirmed ? (
           <CheckCircle2 size={44} className="text-primary" />
+        ) : settled ? (
+          <XCircle size={44} className="text-muted-foreground" />
         ) : (
           <Clock size={44} className="text-primary" />
         )}
         <h1 className="mt-4 text-3 leading-tight">
-          {confirmed ? "Booking confirmed" : "Booking request sent"}
+          {confirmed
+            ? "Booking confirmed"
+            : b?.status === "cancelled"
+              ? "Booking cancelled"
+              : b?.status === "declined"
+                ? "Booking declined"
+                : b?.status === "completed"
+                  ? "Booking completed"
+                  : "Booking request sent"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {confirmed
             ? `${b?.studio?.name ?? "The studio"} has confirmed your session. Settle payment with them directly.`
-            : `${b?.studio?.name ?? "The studio"} will review your request and reply. Nothing is confirmed yet.`}
+            : b?.status === "cancelled"
+              ? "You cancelled this request."
+              : b?.status === "declined"
+                ? `${b?.studio?.name ?? "The studio"} declined this request.`
+                : b?.status === "completed"
+                  ? "This session has already happened."
+                  : `${b?.studio?.name ?? "The studio"} will review your request and reply. Nothing is confirmed yet.`}
         </p>
 
         {q.isLoading ? (
@@ -132,6 +170,12 @@ function Confirmed() {
             </Btn>
           </div>
         ) : null}
+
+        {cancellable ? (
+          <Btn variant="ghost" className="mt-3 w-full" onClick={() => setConfirmCancel(true)}>
+            <XCircle size={iconSize.sm} className="mr-1.5" /> Cancel this booking
+          </Btn>
+        ) : null}
       </div>
 
       <div className="mt-8 space-y-2">
@@ -142,6 +186,20 @@ function Confirmed() {
           <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message Provider
         </BtnLink>
       </div>
+
+      <Dialog
+        open={confirmCancel}
+        title="Cancel this booking?"
+        body="The studio will see that you cancelled. This can't be undone."
+        onClose={() => setConfirmCancel(false)}
+      >
+        <Btn onClick={() => void doCancel()} disabled={cancelling}>
+          {cancelling ? "Cancelling…" : "Cancel booking"}
+        </Btn>
+        <Btn variant="ghost" onClick={() => setConfirmCancel(false)} disabled={cancelling}>
+          Keep it
+        </Btn>
+      </Dialog>
     </div>
   );
 }

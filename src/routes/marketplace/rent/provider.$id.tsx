@@ -1,26 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, Chip, VerifiedBadge } from "@/components/ml/ui";
 import { EmptyState, Rating } from "@/components/ml/market";
+import { Loading } from "@/components/ml/kit";
 import { EquipmentRow, RentalReportSheet } from "@/components/ml/rental";
-import { equipmentByProvider, providerById, rentalReviews } from "@/data/rentals";
+import { getRentalProvider } from "@/lib/rentals.functions";
+import { getSellerListings } from "@/lib/catalog.functions";
+import { rentalFromRow } from "@/lib/market-view";
+import { listReviewsFor } from "@/lib/reviews.functions";
+import { getTaxonomyLabels } from "@/lib/portfolio.functions";
 
 export const Route = createFileRoute("/marketplace/rent/provider/$id")({
-  head: ({ params }) => {
-    const p = providerById(params.id);
-    const title = p ? `${p.name} — Rental Provider | MusicLinkd` : "Provider | MusicLinkd";
-    const desc = p
-      ? `${p.role} in ${p.location}. ${p.completedRentals} completed rentals, ${p.rating}★ from ${p.reviews} reviews.`
-      : "Rental provider on MusicLinkd.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-      ],
-    };
-  },
+  head: () => ({
+    meta: [
+      { title: "Rental Provider | MusicLinkd" },
+      { name: "description", content: "Rental provider on MusicLinkd." },
+    ],
+  }),
   component: ProviderProfile,
 });
 
@@ -28,10 +26,40 @@ const tabs = ["Equipment", "Reviews", "About"];
 
 function ProviderProfile() {
   const { id } = Route.useParams();
-  const p = providerById(id);
   const [tab, setTab] = useState(tabs[0]!);
   const [report, setReport] = useState(false);
 
+  const loadProvider = useServerFn(getRentalProvider);
+  const loadListings = useServerFn(getSellerListings);
+  const loadReviews = useServerFn(listReviewsFor);
+  const loadLabels = useServerFn(getTaxonomyLabels);
+
+  const provider = useQuery({
+    queryKey: ["rent", "provider", id],
+    queryFn: () => loadProvider({ data: { profileId: id } }),
+  });
+  const listings = useQuery({
+    queryKey: ["rent", "provider", id, "listings"],
+    queryFn: () => loadListings({ data: { sellerProfileId: id } }),
+  });
+  const reviews = useQuery({
+    queryKey: ["rent", "provider", id, "reviews"],
+    queryFn: () => loadReviews({ data: { profileId: id } }),
+  });
+  const labels = useQuery({ queryKey: ["taxonomy", "labels"], queryFn: () => loadLabels() });
+
+  if (provider.isLoading) {
+    return (
+      <Screen>
+        <TopBar title="Provider" back="/marketplace/rent" />
+        <div className="px-5 py-6">
+          <Loading rows={3} />
+        </div>
+      </Screen>
+    );
+  }
+
+  const p = provider.data;
   if (!p) {
     return (
       <Screen>
@@ -43,7 +71,9 @@ function ProviderProfile() {
     );
   }
 
-  const items = equipmentByProvider(p.id);
+  const items = (listings.data ?? [])
+    .filter((row) => row.category === "gear_rental")
+    .map((row) => rentalFromRow(row, labels.data ?? {}));
 
   return (
     <Screen>
@@ -51,45 +81,33 @@ function ProviderProfile() {
 
       <div className="px-5 py-4">
         <div className="flex items-start gap-3">
-          <img src={p.photo} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg object-cover" />
+          {p.photo ? (
+            <img src={p.photo} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg object-cover" />
+          ) : (
+            <span className="h-20 w-20 shrink-0 rounded-lg bg-subtle" aria-hidden />
+          )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <h1 className="truncate text-3 leading-tight">{p.name}</h1>
               {p.verified ? <VerifiedBadge size={16} /> : null}
             </div>
-            <p className="mt-0.5 text-1 text-muted-foreground">{p.role}</p>
-            {p.business ? <p className="text-1 text-muted-foreground">{p.business}</p> : null}
+            {p.role ? <p className="mt-0.5 text-1 text-muted-foreground">{p.role}</p> : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
-              <Rating value={p.rating} count={p.reviews} />
-              <span className="text-1 text-muted-foreground">{p.location}</span>
+              {p.rating ? <Rating value={p.rating} count={p.reviews} /> : null}
+              {p.location ? <span className="text-1 text-muted-foreground">{p.location}</span> : null}
             </div>
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          {p.badges.map((b) => (
-            <span
-              key={b}
-              className="rounded-full px-2.5 py-1 text-1 font-semibold"
-              style={{ background: "var(--purple-container)", color: "var(--purple)" }}
-            >
-              {b}
-            </span>
-          ))}
-        </div>
-
-        <div className="mt-4 grid grid-cols-4 gap-2 text-center">
-          {[
-            { k: "Rentals", v: `${p.completedRentals}` },
-            { k: "Response", v: p.responseRate },
-            { k: "Replies", v: p.responseTime.replace("Under ", "<") },
-            { k: "Active", v: `${p.years} yrs` },
-          ].map((x) => (
-            <div key={x.k} className="rounded-lg bg-subtle px-1 py-2">
-              <p className="truncate text-1 font-bold">{x.v}</p>
-              <p className="text-1 text-muted-foreground">{x.k}</p>
-            </div>
-          ))}
+        <div className="mt-4 grid grid-cols-2 gap-2 text-center">
+          <div className="rounded-lg bg-subtle px-1 py-2">
+            <p className="truncate text-1 font-bold">{p.completedRentals}</p>
+            <p className="text-1 text-muted-foreground">Completed rentals</p>
+          </div>
+          <div className="rounded-lg bg-subtle px-1 py-2">
+            <p className="truncate text-1 font-bold">{items.length}</p>
+            <p className="text-1 text-muted-foreground">Listed now</p>
+          </div>
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
@@ -112,7 +130,9 @@ function ProviderProfile() {
 
       <div className="space-y-3 px-5 pb-6">
         {tab === "Equipment" ? (
-          items.length ? (
+          listings.isLoading ? (
+            <Loading rows={2} />
+          ) : items.length ? (
             items.map((e) => <EquipmentRow key={e.id} e={e} />)
           ) : (
             <EmptyState
@@ -123,14 +143,17 @@ function ProviderProfile() {
           )
         ) : null}
 
-        {tab === "Reviews"
-          ? rentalReviews.map((r) => (
+        {tab === "Reviews" ? (
+          reviews.isLoading ? (
+            <Loading rows={2} />
+          ) : reviews.data?.length ? (
+            reviews.data.map((r) => (
               <article key={r.id} className="rounded-lg bg-subtle p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-1 font-semibold">{r.name}</p>
+                    <p className="truncate text-1 font-semibold">{r.author_name}</p>
                     <p className="truncate text-1 text-muted-foreground">
-                      {r.context} · {r.date}
+                      {new Date(r.created_at).toLocaleDateString("en-IN")}
                     </p>
                   </div>
                   <Rating value={r.rating} />
@@ -143,19 +166,26 @@ function ProviderProfile() {
                 ) : null}
               </article>
             ))
-          : null}
+          ) : (
+            <EmptyState
+              emoji="⭐"
+              title="No reviews yet"
+              body="Reviews left for this provider show up here."
+            />
+          )
+        ) : null}
 
         {tab === "About" ? (
           <>
-            <p className="rounded-lg bg-subtle p-4 text-1 leading-relaxed text-muted-foreground">
-              {p.bio}
-            </p>
+            {p.bio ? (
+              <p className="rounded-lg bg-subtle p-4 text-1 leading-relaxed text-muted-foreground">
+                {p.bio}
+              </p>
+            ) : null}
             <dl className="divide-y divide-border rounded-lg border border-border">
               {[
-                { k: "Based in", v: p.location },
-                { k: "On MusicLinkd", v: `${p.years} years` },
+                ...(p.location ? [{ k: "Based in", v: p.location }] : []),
                 { k: "Completed rentals", v: `${p.completedRentals}` },
-                { k: "Response rate", v: p.responseRate },
               ].map((r) => (
                 <div key={r.k} className="flex items-center justify-between gap-3 px-4 py-3">
                   <dt className="text-1 text-muted-foreground">{r.k}</dt>

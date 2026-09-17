@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, SegmentedField } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
+import { sendEnquiry } from "@/lib/enquiries.functions";
 
 export const Route = createFileRoute("/business/$id/enquiry")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -34,6 +37,21 @@ function BusinessEnquiry() {
   const [intent, setIntent] = useState(intents[0]!);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const submit = useServerFn(sendEnquiry);
+
+  async function send() {
+    if (!b) return;
+    setSending(true);
+    try {
+      await submit({ data: { businessProfileId: b.id, intent, message: message.trim() } });
+      setSent(true);
+    } catch {
+      toast.error("Couldn't send that — try again");
+    } finally {
+      setSending(false);
+    }
+  }
 
   if (!b) {
     return (
@@ -58,13 +76,9 @@ function BusinessEnquiry() {
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
             <h2 className="mt-3 text-3 leading-tight">Your enquiry is with {b.name}</h2>
             <p className="mt-2 text-1 text-muted-foreground">
-              They usually reply within a couple of hours. You will get a notification and the
-              thread appears in Connections.
+              It's in their leads inbox now. They'll reach out directly to reply.
             </p>
           </Card>
-          <BtnLink to="/messages" className="w-full">
-            Open Connections
-          </BtnLink>
           <BtnLink to="/business/$id" params={{ id: b.id }} variant="ghost" className="w-full">
             Back to {b.name}
           </BtnLink>
@@ -107,8 +121,12 @@ function BusinessEnquiry() {
           </p>
         </Card>
 
-        <Btn className="w-full" disabled={message.trim().length < 8} onClick={() => setSent(true)}>
-          Send Enquiry
+        <Btn
+          className="w-full"
+          disabled={message.trim().length < 8 || sending}
+          onClick={() => void send()}
+        >
+          {sending ? "Sending…" : "Send Enquiry"}
         </Btn>
       </div>
     </Screen>

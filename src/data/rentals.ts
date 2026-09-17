@@ -80,7 +80,7 @@ export type RentalItem = Pick<Equipment, "id" | "name" | "photos"> &
     /** Price text stored beside the amount ("+ ₹5,000 deposit"). */
     priceNote?: string;
     /** Database rentals: the provider's profile (username set) or only a name. */
-    owner?: { name: string; username: string | null; photo: string; verified: boolean };
+    owner?: { id?: string | null; name: string; username: string | null; photo: string; verified: boolean };
   };
 
 const img = (id: string, w = 900) =>

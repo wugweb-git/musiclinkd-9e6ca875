@@ -47,11 +47,11 @@ const controlIcons: Record<string, LucideIcon> = {
 };
 
 /*
- * Only "Profile visibility" (profiles.visibility) and "Appear in Discover"
- * (profiles.discovery_prefs.appear) are backed by real columns. "Who can message you" and
- * "Show phone number" have no schema yet, so they stay local/soon rather than pretending to save.
+ * "Profile visibility" is its own column. Everything else here lives in the same
+ * profiles.discovery_prefs jsonb, so a save always sends the whole object back — a plain
+ * upsert would otherwise silently drop whichever key isn't part of this particular change.
  */
-const LIVE_KEYS = new Set(["visibility", "discovery"]);
+const LIVE_KEYS = new Set(["visibility", "discovery", "contact", "phone"]);
 
 const visibilityToDb: Record<string, string> = {
   Public: "public",
@@ -64,13 +64,25 @@ const visibilityFromDb: Record<string, string> = {
   limited: "Limited",
 };
 
+const contactToDb: Record<string, string> = { Anyone: "anyone", Connections: "connections", Nobody: "nobody" };
+const contactFromDb: Record<string, string> = { anyone: "Anyone", connections: "Connections", nobody: "Nobody" };
+const phoneToDb: Record<string, string> = { Never: "never", Booked: "booked", Always: "always" };
+const phoneFromDb: Record<string, string> = { never: "Never", booked: "Booked", always: "Always" };
+
 function PrivacyScreen() {
   const queryClient = useQueryClient();
   const load = useServerFn(getMyProfile);
   const save = useServerFn(saveMyProfile);
   const profile = useQuery({ queryKey: ["profile", "me"], queryFn: () => load() });
   const row = profile.data as
-    | { visibility?: string | null; discovery_prefs?: { appear?: boolean } | null }
+    | {
+        visibility?: string | null;
+        discovery_prefs?: {
+          appear?: boolean;
+          who_can_message?: string;
+          show_phone?: string;
+        } | null;
+      }
     | null
     | undefined;
 
@@ -83,6 +95,8 @@ function PrivacyScreen() {
       ...v,
       visibility: visibilityFromDb[row.visibility ?? "public"] ?? "Public",
       discovery: row.discovery_prefs?.appear === false ? "No" : "Yes",
+      contact: contactFromDb[row.discovery_prefs?.who_can_message ?? "anyone"] ?? "Anyone",
+      phone: phoneFromDb[row.discovery_prefs?.show_phone ?? "booked"] ?? "Booked",
     }));
   }, [row]);
 
@@ -90,14 +104,23 @@ function PrivacyScreen() {
   const open = privacyControls.find((c) => c.key === editing);
 
   async function choose(key: string, option: string) {
-    setValues((v) => ({ ...v, [key]: option }));
+    const next = { ...values, [key]: option };
+    setValues(next);
     setEditing(null);
     if (!LIVE_KEYS.has(key)) return;
     try {
       if (key === "visibility") {
         await save({ data: { visibility: visibilityToDb[option] ?? "public" } });
-      } else if (key === "discovery") {
-        await save({ data: { discovery_prefs: { appear: option === "Yes" } } });
+      } else {
+        await save({
+          data: {
+            discovery_prefs: {
+              appear: next["discovery"] !== "No",
+              who_can_message: contactToDb[next["contact"] ?? "Anyone"] ?? "anyone",
+              show_phone: phoneToDb[next["phone"] ?? "Booked"] ?? "booked",
+            },
+          },
+        });
       }
       await queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
       toast.success("Saved");

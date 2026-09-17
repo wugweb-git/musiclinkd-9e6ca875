@@ -197,9 +197,8 @@ export const securityRows = [
   {
     key: "2fa",
     label: "Two-step verification",
-    hint: "Not available yet",
-    to: "/auth/phone",
-    soon: true,
+    hint: "Add an authenticator app",
+    to: "/settings/security/2fa",
   },
   {
     key: "delete",

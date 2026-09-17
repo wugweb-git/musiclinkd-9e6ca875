@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Share2, Flag } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
@@ -14,9 +16,11 @@ import {
   SellerSummary,
   TrustPill,
 } from "@/components/ml/market";
+import { EmptyState, Loading } from "@/components/ml/kit";
 import { byId, listings, reviews, sellerById } from "@/data/market";
 import { loadCatalogListings } from "@/lib/market-view";
 import { useSavedListings } from "@/hooks/use-saved-listings";
+import { listReviewsFor } from "@/lib/reviews.functions";
 import { priceText } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 
@@ -68,6 +72,13 @@ function ListingDetail() {
   const [offer, setOffer] = useState(false);
   const [report, setReport] = useState(false);
   const [shot, setShot] = useState(0);
+  const loadReviews = useServerFn(listReviewsFor);
+  const ownerId = l && "owner" in l ? l.owner?.id : undefined;
+  const realReviews = useQuery({
+    queryKey: ["marketplace", "listing-owner-reviews", ownerId],
+    queryFn: () => loadReviews({ data: { profileId: ownerId! } }),
+    enabled: !!ownerId,
+  });
 
   if (!l) {
     return (
@@ -219,7 +230,38 @@ function ListingDetail() {
           </div>
         ) : null}
 
-        {fromCatalog ? null : (
+        {fromCatalog ? (
+          ownerId ? (
+            <>
+              <h2 className="mt-6 text-2">Reviews</h2>
+              <div className="mt-2 space-y-3">
+                {realReviews.isLoading ? (
+                  <Loading rows={2} />
+                ) : realReviews.data?.length ? (
+                  realReviews.data.map((r) => (
+                    <article key={r.id} className="rounded-lg bg-subtle p-4">
+                      <div className="flex items-center justify-between">
+                        <p className="text-1 font-semibold">{r.author_name}</p>
+                        <Rating value={r.rating} />
+                      </div>
+                      <p className="text-1 text-muted-foreground">
+                        {new Date(r.created_at).toLocaleDateString("en-IN")}
+                      </p>
+                      <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
+                      {r.response ? (
+                        <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
+                          Seller: {r.response}
+                        </p>
+                      ) : null}
+                    </article>
+                  ))
+                ) : (
+                  <EmptyState title="No reviews yet" body="Reviews left for this seller show up here." />
+                )}
+              </div>
+            </>
+          ) : null
+        ) : (
           <>
             <h2 className="mt-6 text-2">Reviews</h2>
             <div className="mt-2 space-y-3">
