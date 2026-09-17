@@ -1,18 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  BadgeCheck,
-  CalendarDays,
-  Clock3,
-  Lock,
-  ShieldCheck,
-  Star,
-  type LucideIcon,
-} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { BadgeCheck, Lock, ShieldCheck, Star, type LucideIcon } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, Row } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import { formatDay, gateFor, useMyVerification } from "@/hooks/use-my-verification";
-import { statusLabel, statusTone, trustSignals, overallStatus } from "@/data/verification";
+import { statusLabel, statusTone, overallStatus } from "@/data/verification";
+import { listReviewsAboutMe } from "@/lib/reviews.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/verification/")({
@@ -59,19 +55,54 @@ const overallCopy: Record<string, { title: string; body: string }> = {
   },
 };
 
-/** Trust signals as a bento: the two badges lead full width, the everyday signals share a row. */
+/** Trust signals as a bento: a verified badge leads full width, everyday signals share a row. */
 const signalTiles: Record<string, { Icon: LucideIcon; wide: boolean }> = {
   identity: { Icon: ShieldCheck, wide: true },
   professional: { Icon: BadgeCheck, wide: false },
-  response: { Icon: Clock3, wide: false },
+  business: { Icon: BadgeCheck, wide: false },
+  studio: { Icon: BadgeCheck, wide: false },
   reviews: { Icon: Star, wide: false },
-  since: { Icon: CalendarDays, wide: false },
 };
 
 function VerificationHub() {
-  const { types, requests, history, error, retry } = useMyVerification();
+  const { signedIn } = useAuth();
+  const { types, allTypes, requests, history, error, retry } = useMyVerification();
   const overall = overallStatus(requests);
   const copy = overallCopy[overall]!;
+
+  const loadReviews = useServerFn(listReviewsAboutMe);
+  const reviews = useQuery({
+    queryKey: ["reviews", "about-me"],
+    queryFn: () => loadReviews(),
+    enabled: signedIn,
+  });
+
+  // Only what this account has actually earned or been told — nothing invented per viewer.
+  const trustSignals = [
+    ...requests
+      .filter((r) => r.status === "verified")
+      .map((r) => {
+        const t = allTypes?.find((x) => x.key === r.type);
+        return {
+          key: r.type,
+          label: `${t?.title ?? r.type} verified`,
+          detail: t?.whatOthersSee ?? "",
+        };
+      }),
+    ...(reviews.data && reviews.data.length > 0
+      ? [
+          {
+            key: "reviews",
+            label: `${(
+              reviews.data.reduce((sum, rv) => sum + rv.rating, 0) / reviews.data.length
+            ).toFixed(
+              1,
+            )} from ${reviews.data.length} review${reviews.data.length === 1 ? "" : "s"}`,
+            detail: "Reviews only from completed bookings.",
+          },
+        ]
+      : []),
+  ];
 
   return (
     <Screen>
@@ -151,25 +182,31 @@ function VerificationHub() {
 
         <section>
           <h2 className="text-2">Trust signals people see</h2>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {trustSignals.map((sig) => {
-              const tile = signalTiles[sig.key] ?? { Icon: ShieldCheck, wide: false };
-              return (
-                <div
-                  key={sig.key}
-                  className={`flex flex-col rounded-lg bg-subtle p-4 ${
-                    tile.wide ? "col-span-2" : ""
-                  }`}
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-background text-foreground">
-                    <tile.Icon size={20} strokeWidth={1.75} aria-hidden />
-                  </span>
-                  <p className="mt-3 text-sm font-semibold leading-snug">{sig.label}</p>
-                  <p className="mt-1 text-1 text-muted-foreground">{sig.detail}</p>
-                </div>
-              );
-            })}
-          </div>
+          {trustSignals.length === 0 ? (
+            <p className="mt-3 text-1 text-muted-foreground">
+              Verify a badge or complete a booking to start building trust signals here.
+            </p>
+          ) : (
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {trustSignals.map((sig) => {
+                const tile = signalTiles[sig.key] ?? { Icon: ShieldCheck, wide: false };
+                return (
+                  <div
+                    key={sig.key}
+                    className={`flex flex-col rounded-lg bg-subtle p-4 ${
+                      tile.wide ? "col-span-2" : ""
+                    }`}
+                  >
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-background text-foreground">
+                      <tile.Icon size={20} strokeWidth={1.75} aria-hidden />
+                    </span>
+                    <p className="mt-3 text-sm font-semibold leading-snug">{sig.label}</p>
+                    <p className="mt-1 text-1 text-muted-foreground">{sig.detail}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         <section className="space-y-2 pb-4">
