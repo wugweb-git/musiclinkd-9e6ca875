@@ -378,6 +378,7 @@ export function PasswordInput({
 
 export type PasswordCheck = { label: string; hint: string; ok: boolean };
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function passwordChecks(pw: string): PasswordCheck[] {
   return [
     { label: "At least 8 characters", hint: "Use at least 8 characters", ok: pw.length >= 8 },
@@ -387,6 +388,7 @@ export function passwordChecks(pw: string): PasswordCheck[] {
   ];
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function passwordScore(pw: string) {
   return passwordChecks(pw).filter((c) => c.ok).length;
 }
@@ -438,6 +440,7 @@ export function IndiaFlag({ className }: { className?: string }) {
 }
 
 /** "9876543210" → "98765 43210". */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function formatIndianMobile(digits: string) {
   const d = digits.replace(/\D/g, "").slice(0, 10);
   return d.length > 5 ? `${d.slice(0, 5)} ${d.slice(5)}` : d;
@@ -577,6 +580,7 @@ export function CodeInput({
 }
 
 /** Seconds until "Resend code" is allowed again. */
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useCountdown(start: number) {
   const [seconds, setSeconds] = useState(start);
   useEffect(() => {
@@ -594,6 +598,7 @@ export function useCountdown(start: number) {
  * never in the URL.
  */
 const EMAIL_CARRY = "ml.auth.email";
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function carryEmail(email: string) {
   try {
     window.sessionStorage.setItem(EMAIL_CARRY, email.trim());
@@ -601,6 +606,7 @@ export function carryEmail(email: string) {
     /* storage may be unavailable */
   }
 }
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function carriedEmail(): string {
   try {
     return typeof window === "undefined" ? "" : (window.sessionStorage.getItem(EMAIL_CARRY) ?? "");
@@ -615,6 +621,7 @@ export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  * Show a field's error after the person leaves it or submits, then keep it live while they fix it.
  * `touch(name)` on blur; `submitted()` before sending; `errorFor(name, message)` returns what to show.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useFieldErrors<N extends string>() {
   const [touched, setTouched] = useState<Partial<Record<N, true>>>({});
   const [tried, setTried] = useState(false);
@@ -727,6 +734,7 @@ export type AuthErrorKind =
   | "network"
   | "unknown";
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function classifyAuthError(message: string): {
   kind: AuthErrorKind;
   title: string;

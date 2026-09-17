@@ -704,6 +704,7 @@ function RentalSwitch({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
 export const rentalSortOptions = [
   "Recommended",
   "Nearest",

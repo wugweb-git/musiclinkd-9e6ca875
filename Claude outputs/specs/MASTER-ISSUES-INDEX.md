@@ -1,48 +1,47 @@
 ---
 doc: MASTER-ISSUES-INDEX
-version: 1.0
+version: 2.0
 status: CURRENT
-updated: 2026-09-16
+updated: 2026-09-18
 folder: specs
 originally: new
 ---
 
-# MusicLinkd — issue index, 16 Sep 2026
+# MusicLinkd — issue index, updated 18 Sep 2026 (status pass)
 
-One line per issue, its spec file, and its reference screenshots where any exist. Full detail is
-in each `SPEC-*.md` — this is the map, not a replacement for reading them.
+One line per issue and its status. Spec files for done/superseded issues have been deleted
+(their decisions are now either live in the app or recorded here) — this index is now the only
+record for those, so treat the verdict column as authoritative for them.
 
-| # | Issue | Spec file | Screenshots |
+| # | Issue | Spec file | Status |
 |---|---|---|---|
-| 1 | Feature 1 — connect Spotify (flow, scopes, states) | `SPEC-feature1-spotify-connect.md` | Snapchat reference screenshots (settings entry + OAuth consent) shown earlier in this thread — not available as files in this delivery; described in the spec instead. |
-| 2 | Icon language audit — MusicLinkd Settings vs. Facebook | `SPEC-icon-language-audit.md` | `issue2-musiclinkd-settings.png`, `issue2-facebook-settings.png`, `issue2-facebook-friends.png` |
-| 3 | Marketplace top nav, category drawer, location picker (reference pattern) | `SPEC-marketplace-nav-and-location-picker.md` | `issue3-facebook-marketplace-topnav.png`, `issue3-facebook-category-drawer.png`, `issue3-facebook-location-picker.png` |
-| 4 | Platform — domain app.musiclinkd.com, PWA/Android now, Capacitor later, edge-to-edge, gestures | `SPEC-platform-android-pwa.md` | none |
-| 5 | QR/card screens as bottom drawers; bottom navbar visibility table | `SPEC-bottom-sheet-and-navbar-visibility.md` | none |
-| 6 | No in-app financial transactions — bookings/sales end at "Confirmed" | `SPEC-no-financial-transactions.md` | none |
-| 7 | Overlay pattern rule — bottom drawer / side drawer / modal, when to use which | `SPEC-overlay-pattern-selection.md` | none |
-| 8 | Bundle: hide Earnings, Bands → Phase 4 + "Soon" badge, Home merge (blocked on your screenshot), 2 bugs (notifications, profile save), name field split | `SPEC-issue8-earnings-bands-home-profile.md` | none yet — Home screenshot still needed for the merge part |
-| 14 | Portfolio item URL ingestion (audio/video/lyrics/reel), card states, redirect priority, Discover "trending" idea | `SPEC-issue14-portfolio-url-ingestion-and-playback.md` | none |
-| 15 | Persistent login on device (Supabase Auth session/refresh config) | `SPEC-issue15-persistent-session.md` | none |
-| 16 | Verification → Phase 3 + "Soon" badge (reuses Issue 8's badge pattern) | `SPEC-issue16-verification-soon-badge.md` | none |
+| 2 | Icon language audit — MusicLinkd Settings vs. Facebook | `SPEC-icon-language-audit.md` | ⚠️ Unclear — later token commits (five icon sizes) suggest partial action, but the specific chip-background fix isn't independently verified |
+| 4 | Platform — domain app.musiclinkd.com, PWA/Android now, Capacitor later, edge-to-edge, gestures | `SPEC-platform-android-pwa.md` | 🔲 Open — aspirational, not started (standing decision: Capacitor wrap later, nothing now) |
+| 5 | QR/card screens as bottom drawers; bottom navbar visibility table | `SPEC-bottom-sheet-and-navbar-visibility.md` | 🔲 Not implemented as specced — `identity.qr.tsx` renders as a full `Screen`, not a bottom drawer (it does use `Sheet` internally for share/look sub-actions only); no dedicated navbar-visibility mechanism found |
+| 6 | No in-app financial transactions — bookings/sales end at "Confirmed" | *(deleted, done)* | ✅ Done — matches shipped behavior exactly (`booking.$id.review` → `booking.confirmed.$ref`, no `/pay` step) |
+| 7 | Overlay pattern rule — bottom drawer / side drawer / modal, when to use which | `SPEC-overlay-pattern-selection.md` | 🔁 Evergreen guidance, not a one-time task |
+| 8a | Hide Earnings from Profile/Home | *(was in deleted SPEC-issue8)* | ✅ Done — Earnings/Plans routes removed entirely |
+| 8b | Bands → Phase 4 + "Soon" badge | *(was in deleted SPEC-issue8)* | ✅ Superseded — Bands shipped in full instead, never gated behind a badge |
+| 8c | Name field split (first/last) | *(was in deleted SPEC-issue8)* | ✅ Done — migration `20260917100100` |
+| 8d | Home — merge "Shortcuts" and "Tools" | *(was in deleted SPEC-issue8)* | 🔲 Still open — blocked on a Home screenshot that was never provided |
+| 8e | Bug — notifications not working on Home | *(was in deleted SPEC-issue8)* | ✅ Confirmed fixed, 18 Sep — `unreadCount` (`src/lib/notifications.functions.ts`) queries a real `notifications` table (`read_at IS NULL`), not mock data; stale "no live backend yet" comment in `tab-header.tsx` removed |
+| 8f | Bug — profile edits not saving | *(was in deleted SPEC-issue8)* | ✅ Confirmed fixed, 18 Sep — `saveMyProfile` (`src/lib/portfolio.functions.ts`) does a real Supabase upsert to `profiles` and throws on error; `profile.edit.tsx` catches and surfaces failures via a status state, never silently swallows them |
+| 14 | Portfolio item URL ingestion (audio/video/lyrics/reel), card states, redirect priority | *(deleted, done)* | ✅ Done — link-first ingestion with oEmbed/Open Graph metadata shipped 15 Sep |
+| 15 | Persistent login on device (Supabase Auth session/refresh config) | *(deleted, done)* | ✅ Done — `persistSession: true`, `autoRefreshToken: true` in `src/integrations/supabase/client.ts` |
+| 16 | Verification → Phase 3 + "Soon" badge | *(deleted, superseded)* | ✅ Superseded — Verification shipped in full (`verification.$type`, `.choose`, `.badge`, `.privacy`), never gated behind a badge |
 
-**Numbering note, for honesty:** issues 9–13 were sub-items bundled inside Issue 8 (earnings,
-Bands, Home merge, the two bugs, name split), not separate files — that's why the file list jumps
-from 8 to 14. 13 distinct actionable items total across 11 files, plus 2 open items (Home
-screenshot, Feature 1's original mockup artifact) not yet resolved.
+**Numbering note:** issues 9–13 were sub-items bundled inside the original Issue 8, not separate
+files — now split into 8a–8f above since the parent spec file is gone.
 
-## Standing blockers across the batch
+## Still open, needing a decision or a screenshot
+- **8d** — Home Shortcuts/Tools merge: send a current Home screenshot to unblock.
+- **4, 5** — not started; revisit when platform/PWA work or the QR/card screen redesign is
+  actually scheduled.
+- **2** — needs a direct check of the chip-background fix against the icon-language audit's
+  original findings.
 
-- **Notion (Release Phases page) is not updated yet.** Two attempts to record the Bands →
-  Phase 4 move and the Verification → Phase 3 placement were both blocked/denied on this end.
-  The live Notion doc still reflects the pre-16-Sep phase assignments for both. Needs a third
-  attempt or a check on what's declining the write.
-- **Your computer isn't linked this session**, so none of these `.md` files are in the repo's
-  `Claude outputs/` folder yet — they only exist as chat deliveries so far. Link it and I'll
-  commit all 11 files there in one pass so Claude Code can pick up the whole batch at once.
-- **Issue 3 and Issue 8's Home item are waiting on your MusicLinkd screenshots** — Issue 3 has
-  the Facebook reference but nothing of yours to diff against yet; Issue 8's Home merge has
-  neither.
-
-Send the 2–3 more screenshots whenever — I'll map each to whichever issue it belongs to (new or
-existing) the same way as above.
+## Historical blockers (resolved, kept for record)
+The original version of this doc recorded two standing blockers: Notion writes for the Bands/
+Verification phase moves being blocked, and the repo not being linked yet. Both are moot now —
+the repo has been linked and worked in directly since, and Bands/Verification shipped in full
+rather than needing the phase-move recorded at all.

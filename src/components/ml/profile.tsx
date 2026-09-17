@@ -291,11 +291,13 @@ export function VerifiedMark({ tier, size = 20 }: { tier: string; size?: number 
 }
 
 /** Busy and Touring mean the person is not taking work; everything else is open. */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function isOpenForWork(status?: string | undefined) {
   return Boolean(status) && status !== "Busy" && status !== "Touring";
 }
 
 /** Said, in so many words, that they are not taking work. An unset status is not a no. */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function isUnavailableForWork(status?: string | undefined) {
   return status === "Busy" || status === "Touring";
 }

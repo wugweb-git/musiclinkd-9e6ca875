@@ -33,6 +33,7 @@ const withRouter: Decorator = (Story) => {
  * (e.g. the useServerFn stub throwing, see .storybook/stubs) settles immediately instead of
  * retrying for several seconds.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- Storybook decorator, not app HMR path
 function StoryQueryClient({ children }: { children: ReactNode }) {
   const [client] = useState(
     () => new QueryClient({ defaultOptions: { queries: { retry: false } } }),

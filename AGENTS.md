@@ -58,7 +58,7 @@ same page, being rebuilt under this naming.
   safe-area, animation delays).
 - Icons from `lucide-react` (brands: `ml/brand-icons.tsx`). Never emoji.
 
-**Tokens.** `README.md` is stale.
+**Tokens.**
 
 - Radius by role: `sm` 8 controls, `md` 12 inputs/thumbnails, `lg` 16 cards, `xl` 20, `2xl` 28
   sheets, `3xl` hero, `full` buttons/chips/pills. No arbitrary `rounded-[…]`.

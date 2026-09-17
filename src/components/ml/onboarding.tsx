@@ -348,12 +348,14 @@ function prune(d: OnboardingDraft): Partial<OnboardingDraft> {
   return out as Partial<OnboardingDraft>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useOnboarding(): Store {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error("useOnboarding must be used inside OnboardingProvider");
   return ctx;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function resumeTarget(draft: OnboardingDraft, bucket: PersonaBucket | null = null): string {
   const list = visibleSteps(draft, bucket);
   const next = list.find((s) => !draft.completedSteps.includes(s.id));
@@ -384,6 +386,7 @@ function useTucked(ref: RefObject<HTMLElement | null>) {
 }
 
 /** Whether content sits under the top bar, and whether more of it waits under the bottom bar. */
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useScrollEdges() {
   const [edges, setEdges] = useState({ top: false, bottom: false });
   useEffect(() => {

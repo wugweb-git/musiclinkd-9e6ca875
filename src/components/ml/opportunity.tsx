@@ -64,8 +64,10 @@ const categoryIcons: Record<string, LucideIcon> = {
   event: CalendarDays,
 };
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export const categoryIcon = (key: string): LucideIcon => categoryIcons[key] ?? Music;
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function statusTone(s: OpportunityStatus): Tone {
   if (s === "open") return "good";
   if (s === "reviewing") return "brand";
@@ -75,6 +77,7 @@ export function statusTone(s: OpportunityStatus): Tone {
 }
 
 /** Local-only shortlist of opportunities (design-only, no backend). */
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useSavedOpportunities() {
   const [ids, setIds] = useState<string[]>([]);
   useEffect(() => {

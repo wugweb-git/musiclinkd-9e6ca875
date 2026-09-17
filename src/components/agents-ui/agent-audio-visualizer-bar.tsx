@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
  * Excess values are trimmed from the end; if there are too few, the last
  * value is duplicated to fill the remainder. An empty array is padded with 0s.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- shared helper intentionally co-located with its component
 export function normalizeVolumeBands(bands: number[], count: number): number[] {
   if (bands.length === count) return bands;
   if (bands.length > count) return bands.slice(0, count);

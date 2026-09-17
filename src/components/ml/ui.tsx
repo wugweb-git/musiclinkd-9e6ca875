@@ -53,6 +53,7 @@ import { SoonBadge } from "./kit";
  * (detail, form, settings sub-page, flow). A sheet opened over a tab root leaves it as it was.
  * `bottomNav` overrides the rule; `className` carries a screen's own bottom clearance.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function isTabRoot(path: string) {
   const p = path.length > 1 ? path.replace(/\/+$/, "") : path;
   return navItems.some((item) => item.to === p);
@@ -78,6 +79,7 @@ export function Screen({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
 export const navItems = [
   { to: "/home", label: "Home", icon: Home },
   { to: "/discover", label: "Discover", icon: Compass },

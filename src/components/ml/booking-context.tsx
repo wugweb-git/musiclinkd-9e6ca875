@@ -27,6 +27,7 @@ type Ctx = {
 
 const BookingCtx = createContext<Ctx | null>(null);
 
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its provider
 export function useBookingDraft() {
   const ctx = useContext(BookingCtx);
   if (!ctx) throw new Error("useBookingDraft must be used inside BookingDraftProvider");

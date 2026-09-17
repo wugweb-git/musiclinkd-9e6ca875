@@ -16,6 +16,7 @@ import type { ProfileRow } from "@/lib/profile-map";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function initialsOf(name: string | null): string {
   if (!name) return "";
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -25,6 +26,7 @@ export function initialsOf(name: string | null): string {
 }
 
 /** First name only — for greetings. Null when we do not know who this is. */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function firstNameOf(name: string | null): string | null {
   if (!name) return null;
   return name.trim().split(/\s+/).filter(Boolean)[0] ?? null;
@@ -46,6 +48,7 @@ export type Viewer = {
  * it is NOT acceptable for a redirect, which is why the entry gate needs a
  * server-readable session instead.
  */
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useViewer(): Viewer {
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);

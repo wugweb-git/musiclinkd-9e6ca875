@@ -43,6 +43,7 @@ export function BrandIcon({
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function isBrand(key: string): key is BrandKey {
   return key in paths;
 }

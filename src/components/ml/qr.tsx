@@ -378,6 +378,7 @@ export function CopyLinkRow({ url }: { url: string }) {
 }
 
 /** Share / download use native capabilities where available, with honest fallbacks. */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export async function nativeShare(payload: { title: string; text?: string; url: string }) {
   const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
   if (nav.share) {

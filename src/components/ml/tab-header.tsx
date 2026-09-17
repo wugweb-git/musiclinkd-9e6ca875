@@ -11,10 +11,6 @@ import { iconSize } from "@/lib/tokens";
  * The notifications bell, sized and styled to sit beside SearchIconButton in a tab screen's
  * header. Home and Discover both had their own; Discover's was a bare 🔔 with no label and
  * nothing behind it.
- *
- * There is no live notifications backend yet, so this no longer shows an unread count (that
- * number came from static seed data and would have looked real). A neutral dot marks the module
- * as not live yet, matching the bottom-nav "Connections" tab.
  */
 export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }) {
   const surface =

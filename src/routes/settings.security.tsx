@@ -31,18 +31,19 @@ function SecurityScreen() {
         <Card className="p-0">
           {securityRows.map((r) =>
             r.soon ? (
-              <div
+              <button
                 key={r.key}
+                type="button"
                 aria-disabled="true"
                 onClick={() => toast(`${r.label} — coming soon`)}
-                className="flex items-center gap-3 border-b border-border p-4 last:border-0"
+                className="flex w-full items-center gap-3 border-b border-border p-4 text-left last:border-0"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block text-1 font-semibold">{r.label}</span>
                   <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
                 </span>
                 <SoonBadge />
-              </div>
+              </button>
             ) : (
               <Link
                 key={r.key}

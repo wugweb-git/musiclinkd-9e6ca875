@@ -7,7 +7,9 @@ bookings, and messaging for musicians, bands, studios, labels, and venues.
 - **Live preview**: https://musiclinkd.lovable.app
 - **Rules for working in this repo**: see [`AGENTS.md`](./AGENTS.md) — the GitHub↔Lovable sync
   protocol and code conventions. Read it before making changes.
-- **Brand palette**: pink `#EA4C89` (primary), navy `#0D0B26`. Radius scale is 8 / 16 / 32 / pill.
+- **Brand palette**: ink `#0D0D0D` (primary), black/greys/white. Brand pink `#EA4C89` is a rare
+  accent only (logo, unread dots, Welcome tagline) — never buttons, links, selection, icons or body
+  text. Radius by role: `sm` 8, `md` 12, `lg` 16, `xl` 20, `2xl` 28, `3xl` hero, `full` pill.
 
 This project was built with [Lovable](https://lovable.dev).
 
