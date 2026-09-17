@@ -41,6 +41,7 @@ import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as CategoriesIndexRouteImport } from './routes/categories.index'
 import { Route as CategoriesSlugRouteImport } from './routes/categories.$slug'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
+import { Route as ConversationIdRouteImport } from './routes/conversation.$id'
 import { Route as DevNewUserRouteImport } from './routes/dev.new-user'
 import { Route as DiscoverIndexRouteImport } from './routes/discover.index'
 import { Route as DiscoverCommunityRouteImport } from './routes/discover.community'
@@ -374,6 +375,11 @@ const CategoriesSlugRoute = CategoriesSlugRouteImport.update({
 const CollabIndexRoute = CollabIndexRouteImport.update({
   id: '/collab/',
   path: '/collab/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConversationIdRoute = ConversationIdRouteImport.update({
+  id: '/conversation/$id',
+  path: '/conversation/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DevNewUserRoute = DevNewUserRouteImport.update({
@@ -1287,6 +1293,7 @@ export interface FileRoutesByFullPath {
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
   '/categories/$slug': typeof CategoriesSlugRoute
+  '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
@@ -1494,6 +1501,7 @@ export interface FileRoutesByTo {
   '/bands/new': typeof BandsNewRoute
   '/business/new': typeof BusinessNewRoute
   '/categories/$slug': typeof CategoriesSlugRoute
+  '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
@@ -1703,6 +1711,7 @@ export interface FileRoutesById {
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/new': typeof BusinessNewRoute
   '/categories/$slug': typeof CategoriesSlugRoute
+  '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
   '/discover/community': typeof DiscoverCommunityRoute
   '/discover/music': typeof DiscoverMusicRoute
@@ -1913,6 +1922,7 @@ export interface FileRouteTypes {
     | '/booking/$id'
     | '/business/new'
     | '/categories/$slug'
+    | '/conversation/$id'
     | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
@@ -2120,6 +2130,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/business/new'
     | '/categories/$slug'
+    | '/conversation/$id'
     | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
@@ -2328,6 +2339,7 @@ export interface FileRouteTypes {
     | '/booking/$id'
     | '/business/new'
     | '/categories/$slug'
+    | '/conversation/$id'
     | '/dev/new-user'
     | '/discover/community'
     | '/discover/music'
@@ -2537,6 +2549,7 @@ export interface RootRouteChildren {
   BookingIdRoute: typeof BookingIdRouteWithChildren
   BusinessNewRoute: typeof BusinessNewRoute
   CategoriesSlugRoute: typeof CategoriesSlugRoute
+  ConversationIdRoute: typeof ConversationIdRoute
   DevNewUserRoute: typeof DevNewUserRoute
   DiscoverCommunityRoute: typeof DiscoverCommunityRoute
   DiscoverMusicRoute: typeof DiscoverMusicRoute
@@ -2937,6 +2950,13 @@ declare module '@tanstack/react-router' {
       path: '/collab'
       fullPath: '/collab/'
       preLoaderRoute: typeof CollabIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conversation/$id': {
+      id: '/conversation/$id'
+      path: '/conversation/$id'
+      fullPath: '/conversation/$id'
+      preLoaderRoute: typeof ConversationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dev/new-user': {
@@ -4209,6 +4229,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookingIdRoute: BookingIdRouteWithChildren,
   BusinessNewRoute: BusinessNewRoute,
   CategoriesSlugRoute: CategoriesSlugRoute,
+  ConversationIdRoute: ConversationIdRoute,
   DevNewUserRoute: DevNewUserRoute,
   DiscoverCommunityRoute: DiscoverCommunityRoute,
   DiscoverMusicRoute: DiscoverMusicRoute,

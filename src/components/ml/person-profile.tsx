@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
   BadgeCheck,
@@ -79,6 +79,7 @@ import {
   setFollowing as setFollowingFn,
   type ConnectionState,
 } from "@/lib/connections.functions";
+import { conversationWith } from "@/lib/messages.functions";
 import { BottomCta } from "./marketing";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
@@ -273,6 +274,8 @@ function ViewerActions({
   const answer = useServerFn(answerConnection);
   const remove = useServerFn(removeConnection);
   const follow = useServerFn(setFollowingFn);
+  const openConversation = useServerFn(conversationWith);
+  const navigate = useNavigate();
   const live = Boolean(signedIn && profileId);
   const key = ["connection", profileId] as const;
 
@@ -283,6 +286,13 @@ function ViewerActions({
   });
   const state: ConnectionState = q.data?.state ?? "none";
   const following = q.data?.following ?? false;
+
+  // Message opens the thread with this person, starting it if this is the first message.
+  const message = useMutation({
+    mutationFn: () => openConversation({ data: { profileId: profileId ?? "" } }),
+    onSuccess: ({ id }) => void navigate({ to: "/conversation/$id", params: { id } }),
+    onError: () => toast.error("Couldn't open that conversation. Try again."),
+  });
 
   const act = useMutation({
     mutationFn: async (what: "ask" | "accept" | "remove" | "follow" | "unfollow") => {
@@ -377,14 +387,15 @@ function ViewerActions({
       >
         {connectLabel}
       </Btn>
-      <BtnLink
-        to="/messages"
+      <Btn
         variant="outline"
         className="min-w-0 flex-1 px-3"
         icon={<Send size={iconSize.sm} aria-hidden />}
+        loading={message.isPending}
+        onClick={() => message.mutate()}
       >
         Message
-      </BtnLink>
+      </Btn>
       {/* Hire stays an icon until you are connected; then it earns its word. */}
       {onHire && state === "connected" ? (
         <Btn

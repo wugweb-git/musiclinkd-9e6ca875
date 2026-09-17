@@ -7,24 +7,24 @@ import { Btn, Screen, TopBar } from "@/components/ml/ui";
 import { EmptyState, Loading } from "@/components/ml/kit";
 import { TextLink } from "@/components/ml/links";
 import { answerConnection, listMyConnections } from "@/lib/connections.functions";
+import { listConversations } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
 /*
- * Connections: the people who asked to connect, and the ones you are connected to — both read from
- * the database. Messaging itself is not built yet, so this screen does not pretend to hold
- * conversations.
+ * Messages and connections, both read from the database: the conversations you are in, the people
+ * who asked to connect, and the ones you are connected to.
  */
 export const Route = createFileRoute("/messages")({
   head: () => ({
     meta: [
-      { title: "Connections | MusicLinkd" },
+      { title: "Messages | MusicLinkd" },
       {
         name: "description",
         content: "Requests to connect, and the artists, studios and labels you are connected to.",
       },
-      { property: "og:title", content: "Connections | MusicLinkd" },
+      { property: "og:title", content: "Messages | MusicLinkd" },
       { property: "og:description", content: "Your connections on MusicLinkd." },
     ],
   }),
@@ -82,11 +82,18 @@ function Connections() {
   const { signedIn, loading } = useAuth();
   const queryClient = useQueryClient();
   const load = useServerFn(listMyConnections);
+  const loadConversations = useServerFn(listConversations);
   const answer = useServerFn(answerConnection);
 
   const q = useQuery({
     queryKey: ["connections", "mine"],
     queryFn: () => load(),
+    enabled: signedIn,
+  });
+
+  const threads = useQuery({
+    queryKey: ["conversations", "mine"],
+    queryFn: () => loadConversations(),
     enabled: signedIn,
   });
 
@@ -104,7 +111,7 @@ function Connections() {
   return (
     <Screen>
       <TopBar
-        title="Connections"
+        title="Messages"
         subtitle={connected.length ? `${connected.length} connected` : "People you work with"}
         right={
           <TextLink to="/collab" className="pill bg-background text-muted-foreground">
@@ -121,7 +128,47 @@ function Connections() {
           />
         ) : null}
 
-        {signedIn && q.isLoading ? <Loading rows={3} /> : null}
+        {signedIn && (q.isLoading || threads.isLoading) ? <Loading rows={3} /> : null}
+
+        {threads.data?.length ? (
+          <section>
+            <h2 className="mb-1 text-sm">Messages</h2>
+            <ul className="divide-y divide-border">
+              {threads.data.map((t) => (
+                <li key={t.id}>
+                  <Link
+                    to="/conversation/$id"
+                    params={{ id: t.id }}
+                    className="state-layer flex items-center gap-3 py-3"
+                  >
+                    {t.person?.avatar_url ? (
+                      <img
+                        src={t.person.avatar_url}
+                        alt=""
+                        className="h-12 w-12 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-background" />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {t.person?.display_name ?? t.person?.username ?? "Conversation"}
+                      </span>
+                      <span className="block truncate text-1 text-muted-foreground">
+                        {t.lastMessage ?? "No messages yet"}
+                      </span>
+                    </span>
+                    {t.unread ? (
+                      <span className="pill shrink-0 bg-pink-container text-pink-strong">
+                        {t.unread}
+                      </span>
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         {received.length ? (
           <section>
