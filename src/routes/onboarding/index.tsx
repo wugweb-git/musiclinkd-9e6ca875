@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Sparkles, Compass, ShieldCheck } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { Segmented } from "@/components/ml/kit";
@@ -35,7 +35,75 @@ export const Route = createFileRoute("/onboarding/")({
   ),
 });
 
-const kinds = ["Talent", "Business"] as const;
+/*
+ * Which journey an account takes, picked once, right after auth (owner, 18 Sep 2026: no
+ * switching between them once chosen — see person-type-journey-lock memory). This list is meant
+ * to grow — a band or agency kind, say — so each one is a row in this map, not a branch in the
+ * JSX below. Adding a kind means adding an entry here.
+ */
+const kindOrder = ["Talent", "Business"] as const;
+type AccountKind = (typeof kindOrder)[number];
+
+const kindInfo: Record<
+  AccountKind,
+  {
+    /** Shown under the toggle. */
+    pitch: ReactNode;
+    /** The primary button's label and destination. */
+    cta: string;
+    /** Only Business needs this today; Talent's primary action runs onboarding logic instead. */
+    goTo?: { to: "/business/new"; search: { step: "type" } };
+    /** Skip for Now only makes sense for the flow it actually skips (talent onboarding). */
+    skippable: boolean;
+  }
+> = {
+  Talent: {
+    pitch: (
+      <ul className="mt-8 space-y-5">
+        {[
+          {
+            icon: <Compass size={iconSize.md} />,
+            title: "Get found for the right work",
+            body: "Role, genres, languages and city power discovery.",
+          },
+          {
+            icon: <Sparkles size={iconSize.md} />,
+            title: "A feed that fits you",
+            body: "We shape recommendations around what you're here for.",
+          },
+          {
+            icon: <ShieldCheck size={iconSize.md} />,
+            title: "Private by default",
+            body: "Contact details stay hidden until you share them.",
+          },
+        ].map((f) => (
+          <li key={f.title} className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card text-foreground">
+              {f.icon}
+            </span>
+            <span>
+              <span className="block text-sm font-semibold">{f.title}</span>
+              <span className="mt-0.5 block text-1 text-muted-foreground">{f.body}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    ),
+    cta: "Let's Start",
+    skippable: true,
+  },
+  Business: {
+    pitch: (
+      <p className="mt-8 text-2 leading-relaxed text-muted-foreground">
+        A business profile is separate from you — its own team, spaces and bookings. Set up the
+        studio, label, venue or agency next.
+      </p>
+    ),
+    cta: "Set Up Your Business",
+    goTo: { to: "/business/new", search: { step: "type" } },
+    skippable: false,
+  },
+};
 
 function Welcome() {
   const { draft, hydrated, bucket } = useOnboarding();
@@ -44,10 +112,8 @@ function Welcome() {
   const started = draft.completedSteps.length > 0;
   const rise = useArrival("onboarding-intro") ? "animate-rise" : "";
 
-  // Which journey this account takes — picked once, right after auth (owner, 18 Sep 2026: no
-  // switching between them once chosen). Talent is the default because sign-up assumes it today;
-  // a business pick here skips talent onboarding and starts the business flow instead.
-  const [kind, setKind] = useState<(typeof kinds)[number]>("Talent");
+  const [kind, setKind] = useState<AccountKind>("Talent");
+  const info = kindInfo[kind];
 
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
@@ -68,70 +134,34 @@ function Welcome() {
 
         <div className={cn("mt-6", rise)} style={beat(2.5)}>
           <p className="mb-1.5 text-1 font-semibold">What are you setting up?</p>
-          <Segmented value={kind} options={kinds} onChange={setKind} />
+          <Segmented value={kind} options={kindOrder} onChange={setKind} />
         </div>
 
-        {kind === "Talent" ? (
-          <ul className="mt-8 space-y-5">
-            {[
-              {
-                icon: <Compass size={iconSize.md} />,
-                title: "Get found for the right work",
-                body: "Role, genres, languages and city power discovery.",
-              },
-              {
-                icon: <Sparkles size={iconSize.md} />,
-                title: "A feed that fits you",
-                body: "We shape recommendations around what you're here for.",
-              },
-              {
-                icon: <ShieldCheck size={iconSize.md} />,
-                title: "Private by default",
-                body: "Contact details stay hidden until you share them.",
-              },
-            ].map((f, i) => (
-              <li key={f.title} className={cn("flex items-start gap-3", rise)} style={beat(3 + i)}>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card text-foreground">
-                  {f.icon}
-                </span>
-                <span>
-                  <span className="block text-sm font-semibold">{f.title}</span>
-                  <span className="mt-0.5 block text-1 text-muted-foreground">{f.body}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p
-            className={cn("mt-8 text-2 leading-relaxed text-muted-foreground", rise)}
-            style={beat(3)}
-          >
-            A business profile is separate from you — its own team, spaces and bookings. Set up the
-            studio, label, venue or agency next.
-          </p>
-        )}
+        <div className={rise} style={beat(3)}>
+          {info.pitch}
+        </div>
       </div>
 
       <div className={cn("mt-8 space-y-2", rise)} style={beat(6)}>
-        {kind === "Business" ? (
-          <BtnLink to="/business/new" search={{ step: "type" }} className="w-full">
-            Set Up Your Business
-          </BtnLink>
-        ) : hydrated && started ? (
+        {kind === "Talent" && hydrated && started ? (
           <BtnLink to="/onboarding/resume" className="w-full">
             Continue Setup
           </BtnLink>
-        ) : (
+        ) : kind === "Talent" ? (
           <Btn
             className="w-full"
             onClick={() =>
               navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft, bucket) } })
             }
           >
-            Let's Start
+            {info.cta}
           </Btn>
-        )}
-        {kind === "Talent" ? (
+        ) : info.goTo ? (
+          <BtnLink to={info.goTo.to} search={info.goTo.search} className="w-full">
+            {info.cta}
+          </BtnLink>
+        ) : null}
+        {info.skippable ? (
           <p className="flex justify-center pt-2 text-sm">
             <AuthLink to="/onboarding/skip" className="text-muted-foreground">
               Skip for Now
