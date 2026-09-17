@@ -170,6 +170,8 @@
   --animate-message: message 200ms var(--easing-enter) both;
   /* Arrival screens land on a beat: each block rises in, delayed by beat(n) (flow-motion.ts). */
   --animate-rise: rise 480ms var(--easing-enter) both;
+  /* The Soon label: a slow light passes across it, so a later feature reads as on its way. */
+  --animate-soon: soon 2.4s ease-in-out infinite;
   /* Splash: the mark breathes in from the brand ground and settles. */
   --animate-splash-mark: splash-mark 900ms var(--easing-enter) both;
   @keyframes splash-mark {
@@ -198,6 +200,15 @@
   @keyframes marquee {
     to {
       transform: translateX(-50%);
+    }
+  }
+
+  @keyframes soon {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
     }
   }
 

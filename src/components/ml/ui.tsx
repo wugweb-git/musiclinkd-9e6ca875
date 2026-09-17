@@ -20,8 +20,30 @@ import {
   ArrowLeft,
   Mic,
   Search,
+  Menu,
+  Bell,
+  FolderKanban,
+  BriefcaseBusiness,
+  Handshake,
+  UsersRound,
+  Package,
+  CalendarCheck,
+  Building2,
+  Star,
+  BadgeCheck,
+  Sparkles,
+  Bookmark,
+  History,
+  LayoutGrid,
+  QrCode,
+  Mic2,
+  Settings,
+  CircleHelp,
+  Megaphone,
+  type LucideIcon,
 } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
+import { SoonBadge } from "./kit";
 
 /*
  * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
@@ -64,41 +86,154 @@ export const navItems = [
   { to: "/profile", label: "Profile", icon: User },
 ];
 
+/** Every module, grouped, for the menu. The five tabs are here too, so the menu is complete. */
+const menuGroups: {
+  title: string;
+  items: { to: string; label: string; icon: LucideIcon; soon?: boolean }[];
+}[] = [
+  {
+    title: "Main",
+    items: [
+      { to: "/home", label: "Home", icon: Home },
+      { to: "/discover", label: "Discover", icon: Compass },
+      { to: "/search", label: "Search", icon: Search },
+      { to: "/messages", label: "Connections", icon: MessageCircle },
+      { to: "/notifications", label: "Notifications", icon: Bell },
+      { to: "/profile", label: "Profile", icon: User },
+    ],
+  },
+  {
+    title: "Your work",
+    items: [
+      { to: "/portfolio", label: "Portfolio", icon: FolderKanban },
+      { to: "/services", label: "Services", icon: BriefcaseBusiness },
+      { to: "/opportunities", label: "Opportunities", icon: Megaphone },
+      { to: "/collab", label: "Collaborations", icon: Handshake },
+      { to: "/bands", label: "Bands", icon: UsersRound, soon: true },
+      { to: "/reviews", label: "Reviews", icon: Star },
+      { to: "/verification", label: "Verification", icon: BadgeCheck, soon: true },
+      { to: "/identity/qr", label: "QR & Card", icon: QrCode },
+    ],
+  },
+  {
+    title: "Market & bookings",
+    items: [
+      { to: "/marketplace", label: "Market", icon: Store },
+      { to: "/marketplace/rent", label: "Rentals", icon: Package },
+      { to: "/bookings", label: "Bookings", icon: CalendarCheck },
+      { to: "/studio", label: "Studios", icon: Mic2 },
+      { to: "/business", label: "Business", icon: Building2 },
+      { to: "/categories", label: "Categories", icon: LayoutGrid },
+    ],
+  },
+  {
+    title: "For you",
+    items: [
+      { to: "/recommendations", label: "Recommendations", icon: Sparkles },
+      { to: "/saved", label: "Saved", icon: Bookmark },
+      { to: "/recently-viewed", label: "Recently viewed", icon: History },
+    ],
+  },
+  {
+    title: "Account",
+    items: [
+      { to: "/settings", label: "Settings", icon: Settings },
+      { to: "/help", label: "Help", icon: CircleHelp },
+    ],
+  },
+];
+
+/**
+ * Five tabs and a menu. A tab shows only its icon until it is the one you are on; then its label
+ * opens beside the icon. The menu holds every module, so nothing depends on finding a shortcut.
+ */
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app border-t border-border bg-card/95 backdrop-blur">
-      <ul className="flex items-stretch justify-between px-2 pb-[env(safe-area-inset-bottom)]">
-        {navItems.map((item) => {
-          const active = path === item.to;
-          const Icon = item.icon;
-          return (
-            <li key={item.to} className="flex-1">
-              <Link to={item.to} className="flex h-16 flex-col items-center justify-center gap-1">
-                <span
-                  className={
-                    active
-                      ? "flex h-7 w-12 items-center justify-center rounded-full bg-background"
-                      : "flex h-7 w-12 items-center justify-center"
-                  }
+    <>
+      <nav className="fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app border-t border-border bg-card/95 backdrop-blur">
+        <ul className="flex items-stretch justify-between gap-1 px-2 pb-[env(safe-area-inset-bottom)]">
+          {navItems.map((item) => {
+            const active = path === item.to || path.startsWith(`${item.to}/`);
+            const Icon = item.icon;
+            return (
+              <li key={item.to} className={active ? "flex-[2]" : "flex-1"}>
+                <Link
+                  to={item.to}
+                  aria-label={item.label}
+                  aria-current={active ? "page" : undefined}
+                  className="flex h-16 items-center justify-center"
                 >
-                  <Icon
-                    size={20}
-                    className={active ? "text-primary" : "text-muted-foreground"}
-                    strokeWidth={active ? 2.4 : 1.8}
-                  />
-                </span>
-                <span
-                  className={`text-1 font-semibold ${active ? "text-foreground" : "text-muted-foreground"}`}
-                >
-                  {item.label}
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+                  <span
+                    className={`flex h-10 items-center justify-center gap-2 rounded-full transition-[background-color,padding] duration-200 ease-standard ${
+                      active ? "bg-background px-4" : "w-10"
+                    }`}
+                  >
+                    <Icon
+                      size={iconSize.md}
+                      className="shrink-0 text-foreground"
+                      strokeWidth={active ? 2.4 : 1.8}
+                      aria-hidden
+                    />
+                    {active ? (
+                      <span className="whitespace-nowrap text-sm font-semibold text-foreground">
+                        {item.label}
+                      </span>
+                    ) : null}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+          <li className="flex-1">
+            <button
+              type="button"
+              aria-label="Menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(true)}
+              className="flex h-16 w-full items-center justify-center"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-full">
+                <Menu
+                  size={iconSize.md}
+                  className="text-foreground"
+                  strokeWidth={1.8}
+                  aria-hidden
+                />
+              </span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title="Menu">
+        <div className="space-y-5 pb-2">
+          {menuGroups.map((group) => (
+            <section key={group.title}>
+              <h2 className="mb-1 text-1 font-semibold text-muted-foreground">{group.title}</h2>
+              <ul className="divide-y divide-border">
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.to}>
+                      <Link
+                        to={item.to}
+                        onClick={() => setMenuOpen(false)}
+                        className="state-layer flex min-h-control items-center gap-3 py-2 text-sm font-semibold text-foreground"
+                      >
+                        <Icon size={iconSize.md} className="shrink-0" aria-hidden />
+                        <span className="min-w-0 flex-1">{item.label}</span>
+                        {item.soon ? <SoonBadge /> : null}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </Sheet>
+    </>
   );
 }
 

@@ -1,14 +1,28 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type CSSProperties } from "react";
 
+import { Linkedin } from "lucide-react";
 import {
   AuthLink,
   AuthNotice,
   AuthScreen,
   Brand,
+  Divider,
+  EMAIL_PATTERN,
   GoogleIcon,
   LegalNote,
+  PasswordInput,
+  PasswordRequirements,
+  TextField,
+  carriedEmail,
+  carryEmail,
+  classifyAuthError,
+  passwordScore,
+  useFieldErrors,
 } from "@/components/ml/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/haptics";
+import { iconSize } from "@/lib/tokens";
 import { Btn } from "@/components/ml/ui";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
@@ -127,17 +141,90 @@ function RoleTicker({ className, style }: { className?: string; style?: CSSPrope
   );
 }
 
+type Mode = "signup" | "signin";
+
 function WelcomeScreen() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
-  const [busy, setBusy] = useState(false);
-  const [googleFailed, setGoogleFailed] = useState(false);
+  // A new talent account is a sign-up, so that is where Welcome starts; Sign In is one tap away.
+  const [mode, setMode] = useState<Mode>("signup");
+  const [email, setEmail] = useState(carriedEmail);
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState<"email" | "google" | "linkedin" | null>(null);
+  const [error, setError] = useState<{ title: string; body: string } | null>(null);
+  const fields = useFieldErrors<"email" | "password">();
   const arrive = useArrival("welcome");
   const rise = arrive ? "animate-rise" : "";
 
   useEffect(() => {
     if (!loading && signedIn) void navigate({ to: "/", replace: true });
   }, [loading, signedIn, navigate]);
+
+  const emailProblem = !email.trim()
+    ? "Enter your email address."
+    : !EMAIL_PATTERN.test(email.trim())
+      ? "Enter an email like name@example.com."
+      : null;
+  const passwordProblem = !password
+    ? "Enter a password."
+    : mode === "signup" && passwordScore(password) < 3
+      ? "Use at least 8 characters with an uppercase letter and a number."
+      : null;
+
+  function switchMode(next: Mode) {
+    setMode(next);
+    setError(null);
+  }
+
+  async function submit() {
+    setError(null);
+    fields.submitted();
+    if (emailProblem || passwordProblem) {
+      haptic("error");
+      return;
+    }
+    setBusy("email");
+    if (mode === "signup") {
+      const { data, error: err } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      setBusy(null);
+      if (err) {
+        haptic("error");
+        const problem = classifyAuthError(err.message);
+        if (problem.kind === "account_exists") setMode("signin");
+        setError(problem);
+        return;
+      }
+      haptic("confirm");
+      // With email confirmation on, there is no session yet: the code that was just sent finishes it.
+      if (!data.session) {
+        void navigate({ to: "/auth/verify-email", search: { email: email.trim() } });
+        return;
+      }
+      void navigate({ to: "/", replace: true });
+      return;
+    }
+    const { error: err } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    setBusy(null);
+    if (err) {
+      haptic("error");
+      const problem = classifyAuthError(err.message);
+      if (problem.kind === "unconfirmed") {
+        void navigate({ to: "/auth/verify-email", search: { email: email.trim() } });
+        return;
+      }
+      setError(problem);
+      return;
+    }
+    haptic("confirm");
+    void navigate({ to: "/", replace: true });
+  }
 
   async function google() {
     // Local dev server: Google can't return to localhost, so continue as a new test account
@@ -146,19 +233,42 @@ function WelcomeScreen() {
       void navigate({ to: "/dev/new-user" });
       return;
     }
-    setBusy(true);
-    setGoogleFailed(false);
+    setBusy("google");
+    setError(null);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      setBusy(false);
-      setGoogleFailed(true);
+      setBusy(null);
+      setError({
+        title: "Google sign-in didn't finish",
+        body: "Try again, or use your email and password.",
+      });
       return;
     }
     if (result.redirected) return;
     void navigate({ to: "/", replace: true });
   }
+
+  async function linkedin() {
+    setBusy("linkedin");
+    setError(null);
+    // LinkedIn goes through the project's own auth provider (linkedin_oidc); Lovable's managed
+    // sign-in covers Google, Apple and Microsoft only.
+    const { error: err } = await supabase.auth.signInWithOAuth({
+      provider: "linkedin_oidc",
+      options: { redirectTo: window.location.origin },
+    });
+    if (err) {
+      setBusy(null);
+      setError({
+        title: "LinkedIn sign-in didn't finish",
+        body: "Try again, or use your email and password.",
+      });
+    }
+  }
+
+  const signup = mode === "signup";
 
   return (
     <AuthScreen brand={false} className="bg-card">
@@ -166,8 +276,7 @@ function WelcomeScreen() {
         {/* The splash mark glides here (view transition "brand"), so it does not play again. */}
         <Brand compact className="vt-brand pt-2" />
 
-        {/* The hero sits centred between the mark and the buttons on any phone height. */}
-        <div className="flex flex-1 flex-col justify-center py-6">
+        <div className="py-6">
           <p className={cn("text-sm font-semibold text-pink-strong", rise)} style={beat(1)}>
             Professional network for music
           </p>
@@ -181,13 +290,6 @@ function WelcomeScreen() {
             ))}
           </h1>
 
-          <p
-            className={cn("mt-5 text-2 leading-relaxed text-muted-foreground", rise)}
-            style={beat(5)}
-          >
-            Build your profile, discover opportunities, connect with the music industry.
-          </p>
-
           {/* Screen readers get the three lines; the ticker below is the visual version. */}
           <ul className="sr-only">
             {audience.map((a) => (
@@ -195,31 +297,97 @@ function WelcomeScreen() {
             ))}
           </ul>
 
-          <RoleTicker className={cn("-mx-5 mt-9", rise)} style={beat(6)} />
+          <RoleTicker className={cn("-mx-5 mt-7", rise)} style={beat(5)} />
         </div>
 
         {/*
-         * Welcome is the sign-in screen: Google, or Sign in (mobile with a code, email on the next
-         * screen). New and returning people take the same way in; a new account is made on sign-in.
+         * Email and password first, then Google and LinkedIn. New talent signs up here; returning
+         * people switch to Sign In. Both routes end on the splash, which sends a new account to
+         * onboarding and a returning one home.
          */}
-        <div className={cn("space-y-3", rise)} style={beat(7.5)}>
-          {googleFailed ? (
-            <AuthNotice title="Google sign-in didn't finish">
-              Try again, or sign in with your mobile number.
-            </AuthNotice>
-          ) : null}
-          <Btn
-            variant="outline"
-            className="w-full"
-            icon={<GoogleIcon />}
-            loading={busy}
-            onClick={() => void google()}
+        <div className={cn(rise)} style={beat(6.5)}>
+          <form
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!busy) void submit();
+            }}
           >
-            Continue with Google
-          </Btn>
-          <Btn className="w-full" onClick={() => void navigate({ to: "/auth/phone" })}>
-            Sign In
-          </Btn>
+            <h2 className="mb-4 text-3 font-semibold">
+              {signup ? "Create your account" : "Sign in"}
+            </h2>
+
+            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+
+            <TextField
+              label="Email"
+              value={email}
+              onChange={(v) => {
+                setEmail(v);
+                carryEmail(v);
+              }}
+              onBlur={() => fields.touch("email")}
+              error={fields.errorFor("email", emailProblem)}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              enterKeyHint="next"
+              placeholder="name@example.com"
+            />
+            <PasswordInput
+              value={password}
+              onChange={setPassword}
+              onBlur={() => fields.touch("password")}
+              error={fields.errorFor("password", passwordProblem)}
+              placeholder={signup ? "Create a password" : "Your password"}
+              autoComplete={signup ? "new-password" : "current-password"}
+              below={signup ? <PasswordRequirements value={password} /> : null}
+            />
+
+            {signup ? null : (
+              <p className="-mt-2 mb-4 text-right text-sm">
+                <AuthLink to="/auth/forgot">Forgot Password</AuthLink>
+              </p>
+            )}
+
+            <Btn type="submit" className="w-full" loading={busy === "email"}>
+              {signup ? "Create Account" : "Sign In"}
+            </Btn>
+          </form>
+
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            {signup ? "Already have an account? " : "New to MusicLinkd? "}
+            <button
+              type="button"
+              className="link-action font-semibold text-foreground"
+              onClick={() => switchMode(signup ? "signin" : "signup")}
+            >
+              {signup ? "Sign In" : "Create Account"}
+            </button>
+          </p>
+
+          <Divider label="or" />
+
+          <div className="space-y-3">
+            <Btn
+              variant="outline"
+              className="w-full"
+              icon={<GoogleIcon />}
+              loading={busy === "google"}
+              onClick={() => void google()}
+            >
+              Continue with Google
+            </Btn>
+            <Btn
+              variant="outline"
+              className="w-full"
+              icon={<Linkedin size={iconSize.md} aria-hidden />}
+              loading={busy === "linkedin"}
+              onClick={() => void linkedin()}
+            >
+              Continue with LinkedIn
+            </Btn>
+          </div>
 
           <LegalNote />
           <MadeByWugweb />
