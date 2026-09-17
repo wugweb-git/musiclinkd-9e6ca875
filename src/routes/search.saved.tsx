@@ -1,25 +1,32 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Bell, BellOff, Search, Trash2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Search, Trash2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
-import { savedSearches, timeAgo } from "@/data/search-meta";
+import { EmptyState, Row } from "@/components/ml/kit";
+import {
+  readSavedSearches,
+  sinceThen,
+  unsaveSearch,
+  type SavedSearch,
+} from "@/lib/device-history";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
+/*
+ * The searches someone kept, on this device (see src/lib/device-history.ts). A saved search is a
+ * shortcut back to a search, and nothing more: nothing watches it and nothing sends a digest, so
+ * this screen promises neither.
+ */
 export const Route = createFileRoute("/search/saved")({
   head: () => ({
     meta: [
-      { title: "Saved searches & alerts | MusicLinkd" },
+      { title: "Saved searches | MusicLinkd" },
       {
         name: "description",
-        content:
-          "Keep the searches you run often, and get alerted when new talent, studios or gear match them.",
+        content: "The searches you kept, ready to run again.",
       },
-      { property: "og:title", content: "Saved searches & alerts | MusicLinkd" },
-      {
-        property: "og:description",
-        content: "Save a search once and let MusicLinkd tell you when something new matches.",
-      },
+      { property: "og:title", content: "Saved searches | MusicLinkd" },
+      { property: "og:description", content: "Keep a search and run it again in one tap." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -28,87 +35,67 @@ export const Route = createFileRoute("/search/saved")({
 });
 
 function SavedSearches() {
-  const [alerts, setAlerts] = useState<Record<string, boolean>>(
-    Object.fromEntries(savedSearches.map((s) => [s.id, s.alerts])),
-  );
-  const [removed, setRemoved] = useState<string[]>([]);
-  const list = savedSearches.filter((s) => !removed.includes(s.id));
+  const [list, setList] = useState<SavedSearch[]>([]);
+  const { options } = useTaxonomy();
+  useEffect(() => setList(readSavedSearches()), []);
 
   return (
     <Screen>
       <TopBar
         title="Saved searches"
-        subtitle={`${list.length} saved · ${Object.values(alerts).filter(Boolean).length} with alerts`}
+        subtitle={list.length ? `${list.length} kept on this device` : "Kept on this device"}
         back="/search"
       />
 
       <div className="space-y-4 px-5 pt-4 pb-6">
         {list.length ? (
-          list.map((s) => (
-            <Card key={s.id} className="space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="truncate text-2 leading-tight">{s.label}</h2>
-                  <p className="mt-1 text-1 text-muted-foreground">Saved {timeAgo(s.createdAt)}</p>
-                </div>
-                {s.newCount ? <StatusPill label={`${s.newCount} new`} tone="brand" /> : null}
-              </div>
-
-              <div className="flex flex-wrap gap-1.5">
-                {s.filters.map((f) => (
-                  <span
-                    key={f}
-                    className="rounded-full bg-background px-2.5 py-1 text-1 font-semibold text-muted-foreground"
-                  >
-                    {f}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between gap-3 rounded-lg bg-subtle px-4 py-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  {alerts[s.id] ? (
-                    <Bell size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
-                  ) : (
-                    <BellOff
-                      size={iconSize.sm}
-                      className="shrink-0 text-muted-foreground"
-                      aria-hidden
-                    />
-                  )}
-                  <p className="min-w-0 text-1 font-semibold">
-                    {alerts[s.id] ? "Alerts on — weekly digest" : "Alerts off"}
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+            {list.map((s) => (
+              <li key={`${s.query}-${s.role}-${s.verifiedOnly}`} className="flex items-center gap-3 px-4 py-3.5">
+                <Link
+                  to="/search"
+                  search={s.query ? { q: s.query } : {}}
+                  className="state-layer min-w-0 flex-1"
+                >
+                  <p className="truncate text-sm font-semibold">
+                    {s.query || "Everyone"}
                   </p>
-                </div>
+                  <p className="truncate text-1 text-muted-foreground">
+                    {[
+                      s.role ? labelFor(options?.person_types, s.role) : "",
+                      s.verifiedOnly ? "Verified" : "",
+                      `saved ${sinceThen(s.at)}`,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                </Link>
+                <Link
+                  to="/search"
+                  search={s.query ? { q: s.query } : {}}
+                  aria-label={`Run ${s.query || "this search"}`}
+                  className="state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                >
+                  <Search size={iconSize.sm} aria-hidden />
+                </Link>
                 <button
                   type="button"
-                  onClick={() => setAlerts((a) => ({ ...a, [s.id]: !a[s.id] }))}
-                  className="shrink-0 text-1 font-semibold text-foreground"
-                >
-                  {alerts[s.id] ? "Turn off" : "Turn on"}
-                </button>
-              </div>
-
-              <div className="flex gap-2">
-                <BtnLink to="/search" className="flex-1 w-full">
-                  <span className="inline-flex items-center gap-2">
-                    <Search size={iconSize.sm} aria-hidden /> Run Search
-                  </span>
-                </BtnLink>
-                <Btn
-                  variant="outline"
-                  aria-label={`Delete ${s.label}`}
-                  onClick={() => setRemoved((r) => [...r, s.id])}
+                  aria-label={`Remove ${s.query || "this search"}`}
+                  onClick={() => {
+                    unsaveSearch(s);
+                    setList(readSavedSearches());
+                  }}
+                  className="state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground"
                 >
                   <Trash2 size={iconSize.sm} aria-hidden />
-                </Btn>
-              </div>
-            </Card>
-          ))
+                </button>
+              </li>
+            ))}
+          </ul>
         ) : (
           <EmptyState
             title="No saved searches"
-            body="Run a search, apply the filters that matter, then save it. We will tell you when something new matches."
+            body="Run a search, pick the filters that matter, then keep it — it will be here to run again."
           >
             <BtnLink to="/search" className="w-full">
               Start a Search
@@ -116,15 +103,23 @@ function SavedSearches() {
           </EmptyState>
         )}
 
+        {list.length ? (
+          <Btn
+            variant="ghost"
+            className="w-full"
+            onClick={() => {
+              for (const s of list) unsaveSearch(s);
+              setList([]);
+            }}
+          >
+            Clear this list
+          </Btn>
+        ) : null}
+
         <Row
           title="Search history"
           subtitle="Everything you searched recently"
           to="/search/history"
-        />
-        <Row
-          title="Notification settings"
-          subtitle="Choose how alerts reach you"
-          to="/notifications/settings"
         />
       </div>
     </Screen>
