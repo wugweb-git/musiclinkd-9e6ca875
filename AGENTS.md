@@ -35,6 +35,19 @@ router links; if `to` won't type-check, the route is wrong.
 before creating anything; reuse and restyle, don't add siblings. Use shadcn `dialog`/`sheet`/`drawer`
 for overlays (focus trap, Escape, scroll lock).
 
+**Primitive vs Component vs Block.** `src/components/ui/` (shadcn) is the Primitive layer:
+domain-agnostic, atomic, would look the same in any app (`Button`, `Chip`, badges, `Card` the bare
+shape). `src/components/ml/` is where Components and Blocks live, grouped by product domain, not one
+file per export:
+- **Component** — a small domain-aware grouping that isn't yet a standalone unit (a price + unit
+  line, an avatar + name pairing).
+- **Block** — the standalone, feature-level unit: bundles two or more data fields (often plus a named
+  action) to represent one entity — `ArtistCard`, `BookingCard`, `TrackCard`, `HireContactModal`,
+  `AdvancedFiltersBottomSheet`. The `Card` suffix is a shape, not a demotion — cards are Blocks.
+
+Don't use "Widget" for this tier — retired, see Notion 🧩 Master Widgets for why. Canonical directory:
+same page, being rebuilt under this naming.
+
 - Fields: `TextField` (sentence-case label, not bold), `PhoneField`, `CodeInput`, `InlineField`.
   Errors under the field on blur or submit (`useFieldErrors`); `AuthNotice` only for whole-form problems.
 - Buttons: `Btn`, `Btn icon`, `IconBtn label` (and `BtnLink`, `IconBtnLink`). Use `loading`, not

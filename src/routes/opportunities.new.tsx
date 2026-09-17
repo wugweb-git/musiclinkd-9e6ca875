@@ -136,7 +136,7 @@ function CreateOpportunity() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Female playback singer for indie-pop single"
-                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
+                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Field label="Requirement type">
@@ -174,7 +174,7 @@ function CreateOpportunity() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="Mumbai"
-                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
+                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Field label="Work mode">
@@ -196,7 +196,7 @@ function CreateOpportunity() {
                 value={dates}
                 onChange={(e) => setDates(e.target.value)}
                 placeholder="18–22 Sep 2026"
-                className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
+                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             </Field>
             <Card className="space-y-1">
@@ -229,7 +229,7 @@ function CreateOpportunity() {
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="₹25,000–₹40,000 per song"
-                  className="w-full rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
+                  className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
                 />
               </Field>
             ) : (
@@ -251,7 +251,7 @@ function CreateOpportunity() {
                   value={req}
                   onChange={(e) => setReq(e.target.value)}
                   placeholder="Hindi + English diction"
-                  className="min-w-0 flex-1 rounded-[16px] border border-border bg-card px-4 py-3 text-sm outline-none"
+                  className="min-w-0 flex-1 rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
                 />
                 <Btn
                   onClick={() => {
@@ -272,7 +272,7 @@ function CreateOpportunity() {
                 reqs.map((r, i) => (
                   <div
                     key={`${r}-${i}`}
-                    className="flex items-center gap-2 rounded-[16px] bg-subtle px-4 py-3"
+                    className="flex items-center gap-2 rounded-lg bg-subtle px-4 py-3"
                   >
                     <span className="min-w-0 flex-1 truncate text-1">{r}</span>
                     <button

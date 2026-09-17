@@ -184,7 +184,7 @@ function ApplyFlow() {
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
                 placeholder="e.g. ₹32,000 per song"
-                className="w-full rounded-[16px] border border-border bg-background px-4 py-3 text-sm outline-none"
+                className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm outline-none"
               />
             </Card>
           </>
