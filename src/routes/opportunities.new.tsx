@@ -90,25 +90,32 @@ function CreateOpportunity() {
     return payType === "Paid" && digits ? Number(digits) * 100 : undefined;
   })();
 
+  // Stored rows hold the label a person reads ("Cello Player"), not the category key.
+  const payload = (status: "draft" | "open") => ({
+    title: title.trim(),
+    status,
+    ...(cat
+      ? { roleRequired: opportunityCategories.find((c) => c.key === cat)?.label ?? cat }
+      : {}),
+    ...(budgetPaise === undefined ? {} : { budgetPaise }),
+    ...(payType === "Paid" ? {} : { budgetNote: payType }),
+    ...(mode ? { collaborationType: mode } : {}),
+    ...(city.trim() ? { location: city.trim() } : {}),
+  });
+
   const publish = useMutation({
-    mutationFn: () =>
-      post({
-        data: {
-          title: title.trim(),
-          // Stored rows hold the label a person reads ("Cello Player"), not the category key.
-          ...(cat
-            ? {
-                roleRequired: opportunityCategories.find((c) => c.key === cat)?.label ?? cat,
-              }
-            : {}),
-          ...(budgetPaise === undefined ? {} : { budgetPaise }),
-          ...(payType === "Paid" ? {} : { budgetNote: payType }),
-          ...(mode ? { collaborationType: mode } : {}),
-          ...(city.trim() ? { location: city.trim() } : {}),
-        },
-      }),
+    mutationFn: () => post({ data: payload("open") }),
     onSuccess: () => void nav({ to: "/opportunities/new", search: { step: "published" } }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't post. Try again."),
+  });
+
+  const saveDraft = useMutation({
+    mutationFn: () => post({ data: payload("draft") }),
+    onSuccess: () => {
+      toast.success("Saved as a draft");
+      void nav({ to: "/opportunities/mine" });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
 
   const go = (s: Step) => nav({ to: "/opportunities/new", search: { step: s } });
@@ -367,9 +374,15 @@ function CreateOpportunity() {
               Back
             </Btn>
           ) : (
-            <BtnLink to="/opportunities/mine" variant="outline" className="flex-1 w-full">
+            <Btn
+              variant="outline"
+              className="flex-1"
+              disabled={title.trim().length < 3 || !signedIn || saveDraft.isPending}
+              loading={saveDraft.isPending}
+              onClick={() => saveDraft.mutate()}
+            >
               Save Draft
-            </BtnLink>
+            </Btn>
           )}
           <Btn
             className="flex-1"

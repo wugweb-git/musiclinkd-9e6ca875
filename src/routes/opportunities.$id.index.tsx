@@ -2,25 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import {
-  Bookmark,
-  Flag,
-  Share2,
-  CalendarDays,
-  MapPin,
-  Wallet,
-  CheckCircle2,
-  Circle,
-} from "lucide-react";
+import { Bookmark, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Dialog, Price } from "@/components/ml/kit";
+import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import {
   MatchBar,
   PosterRow,
   statusTone,
   useSavedOpportunities,
 } from "@/components/ml/opportunity";
-import { getOpportunity, categoryLabel, payParts, reportReasons } from "@/data/opportunities";
+import { getOpportunity, categoryLabel, payParts } from "@/data/opportunities";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
 import { myApplicationTo } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -54,8 +45,6 @@ function OpportunityDetail() {
   const { db } = Route.useLoaderData();
   const o = getOpportunity(id) ?? db ?? undefined;
   const { has, toggle } = useSavedOpportunities();
-  const [report, setReport] = useState(false);
-  const [reported, setReported] = useState(false);
   const [share, setShare] = useState(false);
 
   // Whether this account has already applied, read from the database. Before the missing-opportunity
@@ -199,14 +188,6 @@ function OpportunityDetail() {
           <h2 className="mb-2 text-sm">Posted by</h2>
           <PosterRow o={o} />
         </div>
-
-        <button
-          type="button"
-          onClick={() => setReport(true)}
-          className="inline-flex items-center gap-2 text-1 font-semibold text-muted-foreground"
-        >
-          <Flag size={iconSize.xs} /> Report this opportunity
-        </button>
       </div>
 
       <div className="fixed inset-x-0 bottom-16 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
@@ -263,33 +244,6 @@ function OpportunityDetail() {
           </BtnLink>
         </div>
       </Sheet>
-
-      <Sheet open={report} onClose={() => setReport(false)} title="Report opportunity">
-        <div className="space-y-2">
-          {reportReasons.map((r) => (
-            <Btn
-              key={r}
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                setReport(false);
-                setReported(true);
-              }}
-            >
-              {r}
-            </Btn>
-          ))}
-        </div>
-      </Sheet>
-
-      <Dialog
-        open={reported}
-        title="Report sent"
-        body="Our trust team reviews reports within 24 hours. You won't see this opportunity in your feed."
-        onClose={() => setReported(false)}
-      >
-        <Btn onClick={() => setReported(false)}>Done</Btn>
-      </Dialog>
     </Screen>
   );
 }

@@ -197,7 +197,7 @@ function slugFor(title: string) {
   return `${base || "opportunity"}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-/** Post an opportunity. The poster is this account; status starts open. */
+/** Post an opportunity, or save it as a draft only the poster can see. */
 export const createOpportunity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
@@ -211,6 +211,7 @@ export const createOpportunity = createServerFn({ method: "POST" })
         budgetNote: z.string().max(200).optional(),
         collaborationType: z.string().max(60).optional(),
         location: z.string().max(120).optional(),
+        status: z.enum(["draft", "open"]).default("open"),
       })
       .parse(d),
   )
@@ -228,6 +229,7 @@ export const createOpportunity = createServerFn({ method: "POST" })
         budget_note: data.budgetNote ?? null,
         collaboration_type: data.collaborationType ?? null,
         location: data.location ?? null,
+        status: data.status,
       } as never)
       .select("id, slug")
       .single();

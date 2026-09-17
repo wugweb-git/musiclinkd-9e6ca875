@@ -1,0 +1,18 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918180000 (opportunity_drafts).
+--
+-- Scope: the one constraint being widened, and the table's current status breakdown. The
+-- migration only adds 'draft' to opportunities.status's allowed values; every existing row is
+-- 'open' and untouched.
+--
+-- Current constraint:
+--   opportunities_status_check: CHECK ((status = ANY (ARRAY['open'::text, 'closed'::text, 'filled'::text])))
+--
+-- opportunities status breakdown at time of snapshot:
+--   open: 9 rows
+--
+-- To undo the migration:
+--   ALTER TABLE public.opportunities DROP CONSTRAINT opportunities_status_check;
+--   ALTER TABLE public.opportunities ADD CONSTRAINT opportunities_status_check
+--     CHECK (status IN ('open', 'closed', 'filled'));
+--   (only safe if no row has been saved with status = 'draft' since this migration ran)
