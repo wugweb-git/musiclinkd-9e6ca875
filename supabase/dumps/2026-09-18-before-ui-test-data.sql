@@ -1,0 +1,39 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-18 via Lovable query_database, before adding UI-testing rows per owner request
+-- ("add relevant data and links to those tables to make UI testing easier... behave like real
+-- prod data, no tagging").
+--
+-- Scope: inserts only, into previously-empty/sparse tables, linked to real existing profiles,
+-- listings, services and studios. Nothing existing is altered or deleted.
+--
+-- Row counts before this change:
+--   marketplace_offers: 0
+--   rental_bookings: 0
+--   saved_items: 0
+--   profile_service_addons: 0
+--   profile_service_packages: 0
+--   booking_requests: 1
+--
+-- Explicitly NOT populated: verification_requests / verification_request_items /
+-- verification_request_private — the private table stores real ID-document numbers and phone
+-- numbers, and fabricating realistic-looking government ID data felt like the wrong kind of
+-- "realistic" even under a no-tagging instruction. Flagged to the owner rather than done silently.
+--
+-- Result: 4 marketplace_offers, 2 rental_bookings, 5 saved_items, 2 profile_service_addons,
+-- 2 profile_service_packages, 3 booking_requests (on top of the 1 pre-existing real row) inserted,
+-- all linked to real existing profiles/listings/services/studios. No schema changes.
+--
+-- To undo (data-only, no DDL to reverse):
+--   DELETE FROM marketplace_offers WHERE listing_id IN (
+--     '15997341-d8ce-5275-a4de-20647cefc5ca','2de0417c-ceac-59c4-bbe3-b8b62b548c2c',
+--     'e30e2d0f-d5a1-5021-ba7b-f8ac8103be22','a3a64680-f934-5e42-9cf4-10d161dacac8')
+--     AND created_at::date = '2026-09-18';
+--   DELETE FROM rental_bookings WHERE listing_id IN (
+--     'faef91c2-e4dd-59c6-9f1d-b143eb35d144','4d7bd28f-6f1c-5bde-a8bd-e068eedabc81')
+--     AND created_at::date = '2026-09-18';
+--   DELETE FROM saved_items WHERE created_at::date = '2026-09-18';
+--   DELETE FROM profile_service_addons WHERE created_at::date = '2026-09-18';
+--   DELETE FROM profile_service_packages WHERE created_at::date = '2026-09-18';
+--   DELETE FROM booking_requests WHERE studio_id IN (
+--     '29833230-3ca8-58e3-b0c2-f87756c18008','3b0324b2-a7e7-5ba3-b3fc-a64a0b87b348',
+--     '76f7d7c8-274e-5109-89e6-63ed65658c05') AND created_at::date = '2026-09-18';

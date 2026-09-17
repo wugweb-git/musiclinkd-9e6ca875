@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, SearchBar, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Row, Dialog, EmptyState } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
+import { addCollabMember } from "@/lib/collabs.functions";
 
 export const Route = createFileRoute("/bands/$id/invite")({
   loader: ({ params }) => loadBand(params.id),
@@ -28,11 +29,33 @@ function InviteMembers() {
   const { band: row, labels } = Route.useLoaderData();
   const { user } = useAuth();
   const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
+  const queryClient = useQueryClient();
   const [q, setQ] = useState("");
   const [invited, setInvited] = useState<string[]>([]);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<{ asked: number; failed: number } | null>(null);
+  const [sending, setSending] = useState(false);
 
   const list = useServerFn(listPeopleByRole);
+  const ask = useServerFn(addCollabMember);
+
+  /* A band is a collab of type "band", so asking someone in is addCollabMember — it writes a
+     collab_members row with status "invited", which they answer from their own side. */
+  async function sendInvites(people: { id: string; username: string }[]) {
+    if (!row) return;
+    setSending(true);
+    let failed = 0;
+    for (const p of people) {
+      try {
+        await ask({ data: { id: row.id, username: p.username } });
+      } catch {
+        failed++;
+      }
+    }
+    await queryClient.invalidateQueries({ queryKey: ["band", row.slug] });
+    setInvited([]);
+    setSent({ asked: people.length - failed, failed });
+    setSending(false);
+  }
   const people = useQuery({
     queryKey: ["people", "invite-candidates"],
     queryFn: () => list({ data: {} }),
@@ -66,10 +89,7 @@ function InviteMembers() {
             ))}
           </ul>
         ) : people.isError ? (
-          <EmptyState
-            title="Couldn't load people"
-            body="Check your connection and try again."
-          />
+          <EmptyState title="Couldn't load people" body="Check your connection and try again." />
         ) : results.length ? (
           results.map((t) => (
             <Row
@@ -109,20 +129,36 @@ function InviteMembers() {
 
       {invited.length ? (
         <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-app border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
-          <Btn className="w-full" onClick={() => setSent(true)}>
-            Send {invited.length} invitation{invited.length === 1 ? "" : "s"}
+          <Btn
+            className="w-full"
+            disabled={sending}
+            onClick={() =>
+              void sendInvites(
+                results
+                  .filter((t) => invited.includes(t.id) && t.username)
+                  .map((t) => ({ id: t.id, username: t.username })),
+              )
+            }
+          >
+            {sending
+              ? "Sending…"
+              : `Send ${invited.length} invitation${invited.length === 1 ? "" : "s"}`}
           </Btn>
         </div>
       ) : null}
 
       <Dialog
-        open={sent}
-        title="Invitations sent"
-        body="They will see the invite in Notifications and can accept or decline from their profile."
-        onClose={() => setSent(false)}
+        open={sent !== null}
+        title={sent?.asked ? "Invitations sent" : "Nothing sent"}
+        body={
+          sent?.failed
+            ? `${sent.asked} asked in. ${sent.failed} couldn't be — they may already be in this band.`
+            : "They answer from their own side; the line-up updates when they accept."
+        }
+        onClose={() => setSent(null)}
       >
         <BtnLink to="/bands/$id/manage" params={{ id }} className="w-full">
-          View Invitations
+          View Line-up
         </BtnLink>
       </Dialog>
     </Screen>

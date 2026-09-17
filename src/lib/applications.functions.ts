@@ -171,6 +171,30 @@ export const setApplicationStatus = createServerFn({ method: "POST" })
     return { status: data.status };
   });
 
+export type AttachedWork = {
+  id: string;
+  title: string;
+  kind: string | null;
+  cover_url: string | null;
+};
+
+/** The published work an applicant attached to their application, in the order they chose. */
+export const listAttachedWork = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(20) }).parse(d))
+  .handler(async ({ context, data }): Promise<AttachedWork[]> => {
+    if (!data.ids.length) return [];
+    const { data: rows, error } = await db(context.supabase)
+      .from("portfolio_items")
+      .select("id, title, kind, cover_url")
+      .in("id", data.ids)
+      .eq("published", true);
+    if (error) throw new Error(error.message);
+    const items = (rows ?? []) as unknown as AttachedWork[];
+    // The applicant's own order, not the database's.
+    return data.ids.flatMap((id) => items.filter((i) => i.id === id));
+  });
+
 /** The applicant pulls out. The row stays, so the poster sees what happened. */
 export const withdrawApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

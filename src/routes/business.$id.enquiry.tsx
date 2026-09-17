@@ -44,7 +44,7 @@ function BusinessEnquiry() {
     if (!b) return;
     setSending(true);
     try {
-      await submit({ data: { businessProfileId: b.id, intent, message: message.trim() } });
+      await submit({ data: { businessProfileId: b.profileId, intent, message: message.trim() } });
       setSent(true);
     } catch {
       toast.error("Couldn't send that — try again");

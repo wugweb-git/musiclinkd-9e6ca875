@@ -652,51 +652,6 @@ export function Detail({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-export function BookingListCard({
-  booking,
-  entityName,
-  resourceName,
-  provider,
-}: {
-  booking: Booking;
-  entityName: string;
-  resourceName: string;
-  provider?: boolean | undefined;
-}) {
-  return (
-    <Link
-      to={provider ? "/business/bookings/$ref" : "/bookings/$ref"}
-      params={{ ref: booking.ref }}
-      className="block rounded-lg bg-subtle p-4"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate font-semibold">{provider ? booking.customer : entityName}</p>
-          <p className="truncate text-1 text-muted-foreground">
-            {resourceName} · {booking.purpose}
-          </p>
-        </div>
-        <BookingStatusPill status={booking.status} />
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
-          <Calendar size={iconSize.xs} /> {formatDate(booking.date)}
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Clock size={iconSize.xs} /> {formatTime(booking.start)} – {formatTime(booking.end)}
-        </span>
-        <span className="font-semibold text-price">{inr(booking.amount)}</span>
-      </div>
-      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-        <span className="text-1 text-muted-foreground">#{booking.ref}</span>
-        <span className="inline-flex items-center gap-1 text-1 font-bold text-foreground">
-          View booking <ChevronRight size={iconSize.sm} />
-        </span>
-      </div>
-    </Link>
-  );
-}
-
 export function ProviderRequestCard({
   booking,
   entityResource,

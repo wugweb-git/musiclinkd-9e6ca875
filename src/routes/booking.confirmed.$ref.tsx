@@ -3,12 +3,20 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { CalendarPlus, CheckCircle2, Clock, MessageCircle, Share2, XCircle } from "lucide-react";
-import { Btn, BtnLink } from "@/components/ml/ui";
+import {
+  CalendarPlus,
+  CalendarClock,
+  CheckCircle2,
+  Clock,
+  MessageCircle,
+  Share2,
+  XCircle,
+} from "lucide-react";
+import { Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
 import { Dialog, Loading } from "@/components/ml/kit";
 import { formatDate, formatTime } from "@/data/booking";
-import { cancelBooking, getBookingRequest } from "@/lib/bookings.functions";
+import { cancelBooking, getBookingRequest, rescheduleBooking } from "@/lib/bookings.functions";
 import { addToCalendar, shareLink } from "@/lib/booking-actions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
@@ -64,6 +72,34 @@ function Confirmed() {
       toast.error("Couldn't cancel that — try again");
     } finally {
       setCancelling(false);
+    }
+  }
+
+  const move = useServerFn(rescheduleBooking);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [moveDate, setMoveDate] = useState("");
+  const [moveStart, setMoveStart] = useState("");
+  const [moving, setMoving] = useState(false);
+
+  async function doReschedule() {
+    if (!moveDate) return;
+    setMoving(true);
+    try {
+      await move({
+        data: {
+          id: ref,
+          date: moveDate,
+          ...(moveStart ? { startTime: moveStart } : {}),
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["booking", ref] });
+      await queryClient.invalidateQueries({ queryKey: ["bookings", "mine"] });
+      setMoveOpen(false);
+      toast.success("New time sent — the studio answers again");
+    } catch {
+      toast.error("Couldn't move that — try again");
+    } finally {
+      setMoving(false);
     }
   }
 
@@ -172,9 +208,22 @@ function Confirmed() {
         ) : null}
 
         {cancellable ? (
-          <Btn variant="ghost" className="mt-3 w-full" onClick={() => setConfirmCancel(true)}>
-            <XCircle size={iconSize.sm} className="mr-1.5" /> Cancel this booking
-          </Btn>
+          <div className="mt-3 space-y-2">
+            <Btn
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setMoveDate(b?.session_date ?? "");
+                setMoveStart(b?.start_time?.slice(0, 5) ?? "");
+                setMoveOpen(true);
+              }}
+            >
+              <CalendarClock size={iconSize.sm} className="mr-1.5" /> Ask for another time
+            </Btn>
+            <Btn variant="ghost" className="w-full" onClick={() => setConfirmCancel(true)}>
+              <XCircle size={iconSize.sm} className="mr-1.5" /> Cancel this booking
+            </Btn>
+          </div>
         ) : null}
       </div>
 
@@ -186,6 +235,40 @@ function Confirmed() {
           <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message Provider
         </BtnLink>
       </div>
+
+      <Sheet open={moveOpen} onClose={() => setMoveOpen(false)} title="Ask for another time">
+        <div className="space-y-4">
+          <p className="text-1 text-muted-foreground">
+            The studio answers again — a confirmed session goes back to pending when the time
+            changes.
+          </p>
+          <label className="block">
+            <span className="text-1 font-semibold">New date</span>
+            <input
+              type="date"
+              value={moveDate}
+              onChange={(e) => setMoveDate(e.target.value)}
+              className="mt-2 h-12 w-full rounded-sm border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <label className="block">
+            <span className="text-1 font-semibold">Start time (optional)</span>
+            <input
+              type="time"
+              value={moveStart}
+              onChange={(e) => setMoveStart(e.target.value)}
+              className="mt-2 h-12 w-full rounded-sm border border-border bg-background px-4 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          <Btn
+            className="w-full"
+            disabled={!moveDate || moving}
+            onClick={() => void doReschedule()}
+          >
+            {moving ? "Sending…" : "Send new time"}
+          </Btn>
+        </div>
+      </Sheet>
 
       <Dialog
         open={confirmCancel}

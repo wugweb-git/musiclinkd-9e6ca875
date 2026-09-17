@@ -195,3 +195,44 @@ export const cancelBooking = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { status: "cancelled" as const };
   });
+
+/**
+ * The requester asks for a different time. A confirmed session goes back to "requested" — the
+ * studio agreed to the old slot, not this one, so it has to answer again.
+ */
+export const rescheduleBooking = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        startTime: z
+          .string()
+          .regex(/^\d{2}:\d{2}$/)
+          .optional(),
+        endTime: z
+          .string()
+          .regex(/^\d{2}:\d{2}$/)
+          .optional(),
+        hours: z.number().int().min(1).max(24).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("booking_requests")
+      .update({
+        session_date: data.date,
+        start_time: data.startTime ?? null,
+        end_time: data.endTime ?? null,
+        hours: data.hours ?? null,
+        status: "requested",
+        reply: null,
+      } as never)
+      .eq("id", data.id)
+      .eq("requester_profile_id", context.userId)
+      .in("status", ["requested", "reviewing", "confirmed"]);
+    if (error) throw new Error(error.message);
+    return { status: "requested" as const };
+  });

@@ -119,9 +119,6 @@ import { Route as BookingIdReviewRouteImport } from './routes/booking.$id.review
 import { Route as BookingIdScheduleRouteImport } from './routes/booking.$id.schedule'
 import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.service'
 import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confirmed.$ref'
-import { Route as BookingsRefIndexRouteImport } from './routes/bookings.$ref.index'
-import { Route as BookingsRefCancelRouteImport } from './routes/bookings.$ref.cancel'
-import { Route as BookingsRefRescheduleRouteImport } from './routes/bookings.$ref.reschedule'
 import { Route as BusinessIdIndexRouteImport } from './routes/business.$id.index'
 import { Route as BusinessIdAnalyticsRouteImport } from './routes/business.$id.analytics'
 import { Route as BusinessIdAvailabilityRouteImport } from './routes/business.$id.availability'
@@ -733,21 +730,6 @@ const BookingConfirmedRefRoute = BookingConfirmedRefRouteImport.update({
   path: '/booking/confirmed/$ref',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BookingsRefIndexRoute = BookingsRefIndexRouteImport.update({
-  id: '/bookings/$ref/',
-  path: '/bookings/$ref/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookingsRefCancelRoute = BookingsRefCancelRouteImport.update({
-  id: '/bookings/$ref/cancel',
-  path: '/bookings/$ref/cancel',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BookingsRefRescheduleRoute = BookingsRefRescheduleRouteImport.update({
-  id: '/bookings/$ref/reschedule',
-  path: '/bookings/$ref/reschedule',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BusinessIdIndexRoute = BusinessIdIndexRouteImport.update({
   id: '/business/$id/',
   path: '/business/$id/',
@@ -1168,8 +1150,6 @@ export interface FileRoutesByFullPath {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
-  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
-  '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
   '/business/$id/dashboard': typeof BusinessIdDashboardRoute
@@ -1212,7 +1192,6 @@ export interface FileRoutesByFullPath {
   '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
-  '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
   '/business/bookings/': typeof BusinessBookingsIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
@@ -1342,8 +1321,6 @@ export interface FileRoutesByTo {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
-  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
-  '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
   '/business/$id/dashboard': typeof BusinessIdDashboardRoute
@@ -1386,7 +1363,6 @@ export interface FileRoutesByTo {
   '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id': typeof BandsIdIndexRoute
   '/booking/$id': typeof BookingIdIndexRoute
-  '/bookings/$ref': typeof BookingsRefIndexRoute
   '/business/$id': typeof BusinessIdIndexRoute
   '/business/bookings': typeof BusinessBookingsIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
@@ -1518,8 +1494,6 @@ export interface FileRoutesById {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
-  '/bookings/$ref/cancel': typeof BookingsRefCancelRoute
-  '/bookings/$ref/reschedule': typeof BookingsRefRescheduleRoute
   '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
   '/business/$id/dashboard': typeof BusinessIdDashboardRoute
@@ -1562,7 +1536,6 @@ export interface FileRoutesById {
   '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
-  '/bookings/$ref/': typeof BookingsRefIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
   '/business/bookings/': typeof BusinessBookingsIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
@@ -1695,8 +1668,6 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
-    | '/bookings/$ref/cancel'
-    | '/bookings/$ref/reschedule'
     | '/business/$id/analytics'
     | '/business/$id/availability'
     | '/business/$id/dashboard'
@@ -1739,7 +1710,6 @@ export interface FileRouteTypes {
     | '/settings/security/2fa'
     | '/bands/$id/'
     | '/booking/$id/'
-    | '/bookings/$ref/'
     | '/business/$id/'
     | '/business/bookings/'
     | '/collab/$id/'
@@ -1869,8 +1839,6 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
-    | '/bookings/$ref/cancel'
-    | '/bookings/$ref/reschedule'
     | '/business/$id/analytics'
     | '/business/$id/availability'
     | '/business/$id/dashboard'
@@ -1913,7 +1881,6 @@ export interface FileRouteTypes {
     | '/settings/security/2fa'
     | '/bands/$id'
     | '/booking/$id'
-    | '/bookings/$ref'
     | '/business/$id'
     | '/business/bookings'
     | '/collab/$id'
@@ -2044,8 +2011,6 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
-    | '/bookings/$ref/cancel'
-    | '/bookings/$ref/reschedule'
     | '/business/$id/analytics'
     | '/business/$id/availability'
     | '/business/$id/dashboard'
@@ -2088,7 +2053,6 @@ export interface FileRouteTypes {
     | '/settings/security/2fa'
     | '/bands/$id/'
     | '/booking/$id/'
-    | '/bookings/$ref/'
     | '/business/$id/'
     | '/business/bookings/'
     | '/collab/$id/'
@@ -2215,8 +2179,6 @@ export interface RootRouteChildren {
   BandsIdManageRoute: typeof BandsIdManageRoute
   BandsIdPortfolioRoute: typeof BandsIdPortfolioRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
-  BookingsRefCancelRoute: typeof BookingsRefCancelRoute
-  BookingsRefRescheduleRoute: typeof BookingsRefRescheduleRoute
   BusinessIdAnalyticsRoute: typeof BusinessIdAnalyticsRoute
   BusinessIdAvailabilityRoute: typeof BusinessIdAvailabilityRoute
   BusinessIdDashboardRoute: typeof BusinessIdDashboardRoute
@@ -2257,7 +2219,6 @@ export interface RootRouteChildren {
   ServicesIdEnquiryRoute: typeof ServicesIdEnquiryRoute
   ServicesIdManageRoute: typeof ServicesIdManageRoute
   BandsIdIndexRoute: typeof BandsIdIndexRoute
-  BookingsRefIndexRoute: typeof BookingsRefIndexRoute
   BusinessIdIndexRoute: typeof BusinessIdIndexRoute
   BusinessBookingsIndexRoute: typeof BusinessBookingsIndexRoute
   CollabIdIndexRoute: typeof CollabIdIndexRoute
@@ -3052,27 +3013,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingConfirmedRefRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bookings/$ref/': {
-      id: '/bookings/$ref/'
-      path: '/bookings/$ref'
-      fullPath: '/bookings/$ref/'
-      preLoaderRoute: typeof BookingsRefIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bookings/$ref/cancel': {
-      id: '/bookings/$ref/cancel'
-      path: '/bookings/$ref/cancel'
-      fullPath: '/bookings/$ref/cancel'
-      preLoaderRoute: typeof BookingsRefCancelRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bookings/$ref/reschedule': {
-      id: '/bookings/$ref/reschedule'
-      path: '/bookings/$ref/reschedule'
-      fullPath: '/bookings/$ref/reschedule'
-      preLoaderRoute: typeof BookingsRefRescheduleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/business/$id/': {
       id: '/business/$id/'
       path: '/business/$id'
@@ -3633,8 +3573,6 @@ const rootRouteChildren: RootRouteChildren = {
   BandsIdManageRoute: BandsIdManageRoute,
   BandsIdPortfolioRoute: BandsIdPortfolioRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
-  BookingsRefCancelRoute: BookingsRefCancelRoute,
-  BookingsRefRescheduleRoute: BookingsRefRescheduleRoute,
   BusinessIdAnalyticsRoute: BusinessIdAnalyticsRoute,
   BusinessIdAvailabilityRoute: BusinessIdAvailabilityRoute,
   BusinessIdDashboardRoute: BusinessIdDashboardRoute,
@@ -3675,7 +3613,6 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIdEnquiryRoute: ServicesIdEnquiryRoute,
   ServicesIdManageRoute: ServicesIdManageRoute,
   BandsIdIndexRoute: BandsIdIndexRoute,
-  BookingsRefIndexRoute: BookingsRefIndexRoute,
   BusinessIdIndexRoute: BusinessIdIndexRoute,
   BusinessBookingsIndexRoute: BusinessBookingsIndexRoute,
   CollabIdIndexRoute: CollabIdIndexRoute,
