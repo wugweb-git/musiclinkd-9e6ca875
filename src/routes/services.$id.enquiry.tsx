@@ -127,7 +127,7 @@ function ServiceEnquiry() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Turnaround, revisions, whether stems are included…"
-              className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+              className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
             />
           </Card>
         ) : (
@@ -142,7 +142,7 @@ function ServiceEnquiry() {
                 value={scope}
                 onChange={(e) => setScope(e.target.value)}
                 placeholder="Number of songs, current state of the material, deadline."
-                className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+                className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
               />
             </div>
             <div>
@@ -154,7 +154,7 @@ function ServiceEnquiry() {
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
                 placeholder="e.g. ₹20,000 – ₹30,000"
-                className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+                className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
               />
             </div>
             <p className="text-1 text-muted-foreground">

@@ -59,7 +59,7 @@ function PrintPreview() {
 
         <section className="mt-4 rounded-[24px] border border-border bg-subtle p-5">
           <div
-            className={`mx-auto flex items-center gap-4 rounded-[16px] bg-card p-5 shadow-sm ${
+            className={`mx-auto flex items-center gap-4 rounded-lg bg-card p-5 shadow-sm ${
               format === "poster" ? "flex-col text-center" : ""
             }`}
             style={{

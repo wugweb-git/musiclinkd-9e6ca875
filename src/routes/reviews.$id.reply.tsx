@@ -73,7 +73,7 @@ function ReplyToReview() {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Short, factual and calm reads better than a defence."
-            className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
           />
           <p className="mt-2 text-1 text-muted-foreground">
             {body.length}/600 · one response per review

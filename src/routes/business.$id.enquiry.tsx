@@ -100,7 +100,7 @@ function BusinessEnquiry() {
             onChange={(e) => setMessage(e.target.value)}
             rows={5}
             placeholder="Dates, how many people, what you need from the room."
-            className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
           />
           <p className="mt-2 text-1 text-muted-foreground">
             Sharing rough dates gets a faster answer than "are you free?".

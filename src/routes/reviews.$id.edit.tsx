@@ -63,7 +63,7 @@ function EditReview() {
             rows={6}
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
           />
         </Card>
 

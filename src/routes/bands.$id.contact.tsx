@@ -95,7 +95,7 @@ function BandContact() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Date, venue, set length and what you can pay."
-            className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
           />
         </Card>
 

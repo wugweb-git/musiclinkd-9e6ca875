@@ -91,7 +91,7 @@ function ChooseType() {
               </dl>
 
               {locked ? (
-                <p className="rounded-[16px] bg-subtle px-3 py-2 text-1 text-muted-foreground">
+                <p className="rounded-lg bg-subtle px-3 py-2 text-1 text-muted-foreground">
                   {gate.reason}
                 </p>
               ) : (

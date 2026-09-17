@@ -122,7 +122,7 @@ function Card({
 }) {
   return (
     <article
-      className={`absolute inset-0 overflow-hidden rounded-[32px] bg-subtle transition-all duration-200 ${className}`}
+      className={`absolute inset-0 overflow-hidden rounded-3xl bg-subtle transition-all duration-200 ${className}`}
     >
       <img src={t.photo} alt={t.name} className="h-[300px] w-full object-cover" />
       <div className="absolute left-4 top-4">

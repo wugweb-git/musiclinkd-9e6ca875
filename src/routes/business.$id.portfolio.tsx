@@ -89,7 +89,7 @@ function BusinessPortfolio() {
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
               {b.gallery.map((g) => (
-                <div key={g} className="overflow-hidden rounded-[16px] border border-border">
+                <div key={g} className="overflow-hidden rounded-lg border border-border">
                   <img
                     src={g}
                     alt={`${b.name} space`}

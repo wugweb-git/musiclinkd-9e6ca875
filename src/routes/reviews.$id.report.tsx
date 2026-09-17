@@ -89,7 +89,7 @@ function ReportReview() {
             rows={4}
             value={detail}
             onChange={(e) => setDetail(e.target.value)}
-            className="mt-2 w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
           />
         </Card>
 

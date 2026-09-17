@@ -205,7 +205,7 @@ function VerificationRequestScreen() {
               {existing.expiresAt ? ` Renew by ${formatDay(existing.expiresAt)}.` : ""}
             </p>
             {v.name ? (
-              <div className="flex items-center justify-center gap-2 rounded-[16px] bg-subtle px-3 py-2">
+              <div className="flex items-center justify-center gap-2 rounded-lg bg-subtle px-3 py-2">
                 <span className="text-sm font-semibold">{v.name}</span>
                 <VerifiedBadge size={16} />
               </div>
@@ -616,7 +616,7 @@ function Wizard({
                   <span className="text-1 font-semibold">{r.label}</span>
                   <span className="mt-0.5 block text-1 text-muted-foreground">{r.why}</span>
                   {r.privateField === "phone" ? (
-                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-[16px] bg-subtle px-4 focus-within:border-primary">
+                    <span className="mt-2 flex h-12 w-full items-center gap-2 rounded-lg bg-subtle px-4 focus-within:border-primary">
                       <span className="text-sm text-muted-foreground">+91</span>
                       <input
                         value={values[r.id] ?? ""}
@@ -633,7 +633,7 @@ function Wizard({
                       value={values[r.id] ?? ""}
                       onChange={(e) => setValues((v) => ({ ...v, [r.id]: e.target.value }))}
                       maxLength={140}
-                      className="mt-2 h-12 w-full rounded-[16px] border border-border bg-card px-4 text-sm outline-none focus:border-primary"
+                      className="mt-2 h-12 w-full rounded-lg border border-border bg-card px-4 text-sm outline-none focus:border-primary"
                       placeholder="Type here"
                     />
                   )}

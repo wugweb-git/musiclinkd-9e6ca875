@@ -68,7 +68,7 @@ function BusinessReviews() {
                 <p className="mt-3 text-1">{r.body}</p>
 
                 {response ? (
-                  <div className="mt-3 rounded-[16px] bg-subtle p-3">
+                  <div className="mt-3 rounded-lg bg-subtle p-3">
                     <p className="text-1 font-semibold">{b.name} replied</p>
                     <p className="mt-1 text-1 text-muted-foreground">{response}</p>
                   </div>
@@ -79,7 +79,7 @@ function BusinessReviews() {
                       onChange={(e) => setDrafts({ ...drafts, [r.id]: e.target.value })}
                       rows={3}
                       placeholder="Reply once, publicly. Keep it short and factual."
-                      className="w-full rounded-[16px] border border-border bg-background p-3 text-sm outline-none"
+                      className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
                     />
                     <div className="mt-2 flex gap-2">
                       <Btn
