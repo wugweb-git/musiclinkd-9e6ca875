@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Screen, TopBar, BtnLink, Chip } from "@/components/ml/ui";
 import {
-  BookingListCard,
   BookingSkeleton,
+  BookingStatusPill,
   EmptyState,
   ErrorState,
-  OfflineBanner,
 } from "@/components/ml/booking";
-import { bookings, getBookable, getResource, type BookingStatus } from "@/data/booking";
-import { showDemoControls } from "@/lib/dev";
+import { formatDate, formatTime, type BookingStatus } from "@/data/booking";
+import { listMyBookings } from "@/lib/bookings.functions";
+import { useAuth } from "@/hooks/use-auth";
+import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/bookings/")({
   head: () => ({
@@ -33,37 +36,30 @@ export const Route = createFileRoute("/bookings/")({
 });
 
 const tabs: { key: string; label: string; match: BookingStatus[] }[] = [
-  { key: "upcoming", label: "Upcoming", match: ["upcoming", "confirmed", "inProgress"] },
+  { key: "upcoming", label: "Upcoming", match: ["confirmed"] },
   { key: "pending", label: "Pending", match: ["requested", "reviewing"] },
   { key: "completed", label: "Completed", match: ["completed"] },
-  { key: "cancelled", label: "Cancelled", match: ["cancelled", "rejected", "expired", "noShow"] },
+  { key: "cancelled", label: "Cancelled", match: ["cancelled", "rejected"] },
 ];
 
-type Sim = "ok" | "loading" | "error" | "offline" | "empty";
-
+/** Your own booking requests, from the database: what you asked for and where each one stands. */
 function MyBookings() {
   const [tab, setTab] = useState(tabs[0]!.key);
-  const [sim, setSim] = useState<Sim>("ok");
+  const { signedIn, loading: authLoading } = useAuth();
+  const load = useServerFn(listMyBookings);
+  const q = useQuery({
+    queryKey: ["bookings", "mine"],
+    queryFn: () => load(),
+    enabled: signedIn,
+  });
   const active = tabs.find((t) => t.key === tab)!;
-  const list = sim === "empty" ? [] : bookings.filter((b) => active.match.includes(b.status));
+  const list = (q.data ?? []).filter((b) =>
+    active.match.includes((b.status === "declined" ? "rejected" : b.status) as BookingStatus),
+  );
 
   return (
     <Screen>
-      <TopBar
-        title="My bookings"
-        subtitle="Studios, rooms and sessions"
-        right={
-          showDemoControls ? (
-            <button
-              type="button"
-              onClick={() => setSim(sim === "ok" ? "empty" : "ok")}
-              className="pill bg-background text-muted-foreground"
-            >
-              {sim === "ok" ? "States" : "Reset"}
-            </button>
-          ) : undefined
-        }
-      />
+      <TopBar title="My bookings" subtitle="Studios, rooms and sessions" />
 
       <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
         {tabs.map((t) => (
@@ -74,51 +70,60 @@ function MyBookings() {
       </div>
 
       <main className="px-5">
-        {sim === "offline" ? <OfflineBanner onRetry={() => setSim("ok")} /> : null}
-
-        {sim === "loading" ? (
+        {!signedIn && !authLoading ? (
+          <EmptyState
+            title="Sign in to see your bookings"
+            body="Requests you send to studios are tracked here."
+            action={<BtnLink to="/welcome">Sign In</BtnLink>}
+          />
+        ) : q.isLoading ? (
           <BookingSkeleton />
-        ) : sim === "error" ? (
+        ) : q.isError ? (
           <ErrorState
             message="We couldn't load your bookings just now."
-            onRetry={() => setSim("ok")}
+            onRetry={() => void q.refetch()}
           />
         ) : list.length === 0 ? (
           <EmptyState
             title="No bookings yet"
-            body="When you book a studio, jam room or session it shows up here."
+            body="When you ask a studio for a session it shows up here."
             action={<BtnLink to="/studio">Discover Studios &amp; Spaces</BtnLink>}
           />
         ) : (
-          <div className="space-y-3">
-            {list.map((bk) => {
-              const b = getBookable(bk.bookableId);
-              const r = getResource(b, bk.resourceId);
-              return (
-                <BookingListCard
-                  key={bk.ref}
-                  booking={bk}
-                  entityName={b?.name ?? "Provider"}
-                  resourceName={r?.name ?? "Room"}
-                />
-              );
-            })}
-          </div>
+          <ul className="space-y-3">
+            {list.map((b) => (
+              <li key={b.id}>
+                <Link
+                  to="/booking/confirmed/$ref"
+                  params={{ ref: b.id }}
+                  className="state-layer block rounded-lg bg-subtle p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-2 font-semibold">{b.studio?.name ?? "Studio"}</p>
+                      <p className="mt-0.5 truncate text-1 text-muted-foreground">
+                        {joinParts(b.room?.name ?? "", b.studio?.location ?? "")}
+                      </p>
+                    </div>
+                    <BookingStatusPill
+                      status={(b.status === "declined" ? "rejected" : b.status) as BookingStatus}
+                    />
+                  </div>
+                  <p className="mt-2 text-1 text-muted-foreground">
+                    {joinParts(
+                      formatDate(b.session_date),
+                      b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
+                      b.hours ? `${b.hours} hrs` : "",
+                    )}
+                  </p>
+                  {b.reply ? (
+                    <p className="mt-2 line-clamp-2 text-1 text-muted-foreground">{b.reply}</p>
+                  ) : null}
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
-
-        {showDemoControls ? (
-          <div className="mt-6 flex gap-2">
-            <Btn variant="ghost" className="flex-1" onClick={() => setSim("loading")}>
-              Loading
-            </Btn>
-            <Btn variant="ghost" className="flex-1" onClick={() => setSim("error")}>
-              Error
-            </Btn>
-            <Btn variant="ghost" className="flex-1" onClick={() => setSim("offline")}>
-              Offline
-            </Btn>
-          </div>
-        ) : null}
 
         <Link to="/provider/bookings" className="mt-6 block rounded-lg bg-subtle p-4">
           <p className="text-sm font-semibold">Manage a space you run</p>

@@ -10,7 +10,12 @@ import {
   StepDots,
   StickyBar,
 } from "@/components/ml/booking";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
+import { requestBooking } from "@/lib/bookings.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { inr } from "@/data/booking";
 
 export const Route = createFileRoute("/booking/$id/review")({
@@ -42,8 +47,30 @@ function ReviewStep() {
 function Review() {
   const { bookable: b, resource: r, draft, price, endTime } = useBookingDraft();
   const navigate = useNavigate();
+  const { signedIn } = useAuth();
+  const send = useServerFn(requestBooking);
+
+  // The request is the booking: the studio answers it, and the two of them settle payment.
+  const ask = useMutation({
+    mutationFn: () =>
+      send({
+        data: {
+          studioSlug: b.id,
+          // Database rooms carry their own id; a seeded room has no row to point at.
+          ...(/^[0-9a-f-]{36}$/i.test(draft.resourceId) ? { roomId: draft.resourceId } : {}),
+          date: draft.date ?? "",
+          ...(draft.start ? { startTime: draft.start } : {}),
+          ...(endTime ? { endTime } : {}),
+          hours: draft.hours,
+          people: draft.people,
+          ...(draft.purpose ? { purpose: draft.purpose } : {}),
+          ...(draft.notes ? { notes: draft.notes } : {}),
+        },
+      }),
+    onSuccess: ({ id }) => void navigate({ to: "/booking/confirmed/$ref", params: { ref: id } }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't send. Try again."),
+  });
   const [ack, setAck] = useState(false);
-  const instant = r.model === "instant";
   const ready = Boolean(draft.date && draft.start) && ack;
 
   return (
@@ -129,15 +156,10 @@ function Review() {
 
       <StickyBar
         price={inr(price.total)}
-        disabled={!ready}
-        primaryLabel={instant ? "Confirm booking" : "Request booking"}
+        disabled={!ready || ask.isPending || !signedIn}
+        primaryLabel={signedIn ? "Request booking" : "Sign in to request"}
         // Bookings end at Confirmed: payment happens between the two people, off MusicLinkd.
-        onPrimary={() =>
-          navigate({
-            to: "/booking/confirmed/$ref",
-            params: { ref: instant ? "MLB-NEW-C" : "MLB-NEW-R" },
-          })
-        }
+        onPrimary={() => (signedIn ? ask.mutate() : void navigate({ to: "/welcome" }))}
       />
     </div>
   );
