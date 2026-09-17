@@ -1,170 +1,105 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Btn, Screen, VerifiedBadge } from "@/components/ml/ui";
-import { HireModal } from "@/components/ml/hire-modal";
-import { Price } from "@/components/ml/kit";
+import { MapPin, Star } from "lucide-react";
+import { Screen, TopBar } from "@/components/ml/ui";
+import { EmptyState, Price } from "@/components/ml/kit";
+import { listStudios } from "@/lib/catalog.functions";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { discoverStudioFromRow, type DiscoverStudio } from "@/lib/studio-view";
+import { iconSize } from "@/lib/tokens";
+import { joinParts } from "@/lib/utils";
 
+/*
+ * Every studio. A studio is a business account with a username, so each row opens that business
+ * profile; a studio whose owner has no username yet opens its booking page instead.
+ */
 export const Route = createFileRoute("/studio")({
+  loader: async () => {
+    const [rows, labels] = await Promise.all([
+      listStudios().catch(() => []),
+      getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+    ]);
+    return { studios: rows.map((row) => discoverStudioFromRow(row, labels)) };
+  },
   head: () => ({
     meta: [
-      { title: "Yash Raj Sound Studios | MusicLinkd" },
+      { title: "Studios | MusicLinkd" },
       {
         name: "description",
-        content:
-          "Dolby Atmos recording studio in Andheri West, Mumbai — equipment, rates, photos and live availability.",
+        content: "Recording studios and rehearsal spaces on MusicLinkd, with their rates.",
       },
-      { property: "og:title", content: "Yash Raj Sound Studios | MusicLinkd" },
-      {
-        property: "og:description",
-        content: "Book a Dolby Atmos 7.1.4 room in Mumbai with instant availability.",
-      },
+      { property: "og:title", content: "Studios | MusicLinkd" },
+      { property: "og:description", content: "Recording studios and rehearsal spaces." },
     ],
   }),
-  component: Studio,
+  component: Studios,
 });
 
-const photos = [
-  "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1519508234439-4f23643125c1?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=600&q=80",
-];
+function StudioRow({ s }: { s: DiscoverStudio }) {
+  const body = (
+    <>
+      {s.photo ? (
+        <img
+          src={s.photo}
+          alt=""
+          loading="lazy"
+          className="h-14 w-14 shrink-0 rounded-sm object-cover"
+        />
+      ) : (
+        <span aria-hidden className="h-14 w-14 shrink-0 rounded-sm bg-background" />
+      )}
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-2 font-semibold">{s.name}</span>
+        <span className="mt-0.5 flex items-center gap-1 truncate text-1 text-muted-foreground">
+          {s.location ? <MapPin size={iconSize.xs} className="shrink-0" aria-hidden /> : null}
+          <span className="truncate">
+            {joinParts(s.location, s.rating == null ? "" : `${s.rating.toFixed(1)}`)}
+          </span>
+          {s.rating == null ? null : (
+            <Star size={iconSize.xs} fill="currentColor" className="shrink-0" aria-hidden />
+          )}
+        </span>
+      </span>
+      <Price
+        price={s.rate}
+        align="end"
+        amountClassName="text-sm font-semibold"
+        unitClassName="text-1"
+      />
+    </>
+  );
+  const cls = "state-layer flex items-center gap-3 px-4 py-3.5";
+  return s.username ? (
+    <Link to="/profile/$username" params={{ username: s.username }} className={cls}>
+      {body}
+    </Link>
+  ) : (
+    <Link to="/booking/$id" params={{ id: s.slug }} className={cls}>
+      {body}
+    </Link>
+  );
+}
 
-function Studio() {
-  const [hire, setHire] = useState(false);
+function Studios() {
+  const { studios } = Route.useLoaderData();
   return (
     <Screen>
-      <div className="relative h-64">
-        <img src={photos[0]} alt="Studio control room" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink to-transparent" />
-        <Link
-          to="/discover"
-          className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
-        >
-          ←
-        </Link>
-        <span className="pill absolute bottom-5 left-5 pill-glass">Dolby Atmos 7.1.4</span>
-      </div>
-
+      <TopBar title="Studios" subtitle="Recording and rehearsal spaces" back="/home" />
       <div className="px-5 pt-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="text-3">Yash Raj Sound Studios</h1>
-              <VerifiedBadge />
-            </div>
-            <p className="text-1 text-muted-foreground">Andheri West, Mumbai · 3 live rooms</p>
-          </div>
-          <span className="rounded-full bg-background px-3 py-1.5 text-1 font-bold text-warn">
-            4.9 ★
-          </span>
-        </div>
-
-        <div className="mt-4 grid grid-cols-3 divide-x divide-border rounded-lg bg-subtle py-3 text-center">
-          <Price
-            price={{ amount: "₹1,800", unit: "hour" }}
-            align="center"
-            amountClassName="text-sm font-bold"
-            unitClassName="text-1 uppercase"
-          />
-          <Price
-            price={{ amount: "₹12,000", unit: "day" }}
-            align="center"
-            amountClassName="text-sm font-bold"
-            unitClassName="text-1 uppercase"
-          />
-          <div>
-            <p className="text-sm font-bold">312</p>
-            <p className="text-1 uppercase text-muted-foreground">Sessions</p>
-          </div>
-        </div>
-      </div>
-
-      <section className="px-5 pt-6">
-        <h2 className="mb-3 text-sm">Equipment overview</h2>
-        <div className="flex flex-wrap gap-2">
-          {[
-            "SSL Duality δelta",
-            "Neumann U87 ×4",
-            "Genelec 8351B",
-            "Pro Tools Ultimate",
-            "Steinway Model B",
-            "Universal Audio Apollo",
-          ].map((g) => (
-            <span
-              key={g}
-              className="rounded-full border border-border bg-card px-3 py-2 text-1 font-semibold"
-            >
-              {g}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      <section className="pt-6">
-        <h2 className="mb-3 px-5 text-sm">Studio photos</h2>
-        <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-          {photos.map((p) => (
-            <img
-              key={p}
-              src={p}
-              alt="Studio room"
-              className="h-32 w-[220px] shrink-0 rounded-lg border border-border object-cover"
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="px-5 pt-6">
-        <h2 className="mb-3 text-sm">Availability · August 2026</h2>
-        <div className="rounded-lg bg-subtle p-4">
-          <div className="grid grid-cols-7 gap-1.5 text-center">
-            {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-              <span key={i} className="text-1 font-bold text-muted-foreground">
-                {d}
-              </span>
+        {studios.length ? (
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+            {studios.map((s) => (
+              <li key={s.slug}>
+                <StudioRow s={s} />
+              </li>
             ))}
-            {Array.from({ length: 28 }).map((_, i) => {
-              const busy = [3, 4, 9, 15, 16, 17, 22].includes(i);
-              const sel = i === 11;
-              return (
-                <span
-                  key={i}
-                  className={`flex h-9 items-center justify-center rounded-sm text-1 font-semibold ${
-                    sel
-                      ? "bg-primary text-primary-foreground"
-                      : busy
-                        ? "bg-background text-muted-foreground line-through"
-                        : "border border-border"
-                  }`}
-                >
-                  {i + 1}
-                </span>
-              );
-            })}
-          </div>
-          <p className="mt-3 text-1 text-muted-foreground">
-            12 Aug · North Room · 10:00–18:00 available
-          </p>
-        </div>
-      </section>
-
-      <div className="grid grid-cols-4 gap-2 px-5 py-6">
-        <Btn className="col-span-2" onClick={() => setHire(true)}>
-          Book studio
-        </Btn>
-        <Btn variant="outline" className="col-span-1 px-0 text-1">
-          Message
-        </Btn>
-        <Btn variant="ghost" className="col-span-1 px-0 text-1">
-          Share
-        </Btn>
+          </ul>
+        ) : (
+          <EmptyState
+            title="No studios yet"
+            body="Studios appear here as soon as their business profiles are live."
+          />
+        )}
       </div>
-
-      <HireModal
-        open={hire}
-        onClose={() => setHire(false)}
-        subject={{ name: "Yash Raj Sound Studios", detail: "Andheri West, Mumbai" }}
-      />
     </Screen>
   );
 }

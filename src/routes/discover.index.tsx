@@ -287,8 +287,8 @@ function Discover() {
           {dbStudios.map((s) => (
             <Link
               key={s.slug}
-              to="/booking/$id"
-              params={{ id: s.slug }}
+              to={s.username ? "/profile/$username" : "/booking/$id"}
+              params={s.username ? { username: s.username } : { id: s.slug }}
               className="flex items-center gap-3 rounded-lg bg-subtle p-3"
             >
               {s.photo ? (

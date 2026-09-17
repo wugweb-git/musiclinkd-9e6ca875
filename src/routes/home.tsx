@@ -436,7 +436,11 @@ function Body({ home }: { home: Home }) {
           <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
             {studios.map((st) => (
               <li key={st.slug}>
-                <Link to="/studio" className="state-layer flex items-center gap-3 px-4 py-3.5">
+                <Link
+                  to={st.username ? "/profile/$username" : "/studio"}
+                  params={st.username ? { username: st.username } : {}}
+                  className="state-layer flex items-center gap-3 px-4 py-3.5"
+                >
                   {st.photo ? (
                     <img
                       src={st.photo}

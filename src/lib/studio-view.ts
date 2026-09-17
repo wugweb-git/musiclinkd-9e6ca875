@@ -11,6 +11,8 @@ import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 
 export type DiscoverStudio = {
   slug: string;
+  /** The owning business account's username, which is the studio's profile. */
+  username: string;
   name: string;
   location: string;
   rating: number | null;
@@ -22,6 +24,7 @@ export type DiscoverStudio = {
 export function discoverStudioFromRow(row: StudioRow, labels: TaxonomyLabels): DiscoverStudio {
   return {
     slug: row.slug,
+    username: row.owner?.username ?? "",
     name: row.name,
     location: row.location ?? "",
     rating: row.rating == null ? null : Number(row.rating),
