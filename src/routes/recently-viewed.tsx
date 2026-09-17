@@ -1,18 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
-import { studios, talents } from "@/data/discover";
+import { EmptyState } from "@/components/ml/kit";
+import { forgetVisits, readVisits, sinceThen, type Visit } from "@/lib/device-history";
 
+/*
+ * The pages this person opened, kept on this device (see src/lib/device-history.ts). Nothing is
+ * stored about it anywhere else, so the list is only ever as long as this browser remembers.
+ */
 export const Route = createFileRoute("/recently-viewed")({
   head: () => ({
     meta: [
       { title: "Recently viewed | MusicLinkd" },
       {
         name: "description",
-        content: "The profiles, studios and listings you looked at, so you can get back to them.",
+        content: "The profiles and studios you opened, so you can get back to them.",
       },
       { property: "og:title", content: "Recently viewed | MusicLinkd" },
-      { property: "og:description", content: "Profiles and listings you looked at recently." },
+      { property: "og:description", content: "Profiles and studios you opened recently." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -21,79 +26,61 @@ export const Route = createFileRoute("/recently-viewed")({
 });
 
 function RecentlyViewed() {
-  const people = talents.slice(0, 4);
-  const spaces = studios.slice(0, 2);
-  const empty = people.length === 0 && spaces.length === 0;
+  const [visits, setVisits] = useState<Visit[]>([]);
+  useEffect(() => setVisits(readVisits()), []);
 
   return (
     <Screen>
-      <TopBar title="Recently viewed" subtitle="Last 30 days" back="/discover" />
+      <TopBar title="Recently viewed" subtitle="Kept on this device" back="/discover" />
 
       <div className="space-y-5 px-5 pt-4 pb-8">
-        {empty ? (
+        {!visits.length ? (
           <EmptyState
             title="Nothing here yet"
-            body="Profiles and studios you open will be listed here for a month."
+            body="Profiles and studios you open are listed here, on this device only."
           >
             <BtnLink to="/discover">Start Discovering</BtnLink>
           </EmptyState>
         ) : (
           <>
-            <section>
-              <p className="mb-2 text-sm font-semibold">People</p>
-              <div className="space-y-3">
-                {people.map((t) => (
+            <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+              {visits.map((v) => (
+                <li key={`${v.kind}-${v.handle}`}>
                   <Link
-                    key={t.id}
                     to="/profile/$username"
-                    params={{ username: t.id }}
-                    className="block"
+                    params={{ username: v.handle }}
+                    className="state-layer flex items-center gap-3 px-4 py-3.5"
                   >
-                    <Card>
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={t.photo}
-                          alt=""
-                          className="h-11 w-11 rounded-full object-cover"
-                          loading="lazy"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold">{t.name}</p>
-                          <p className="truncate text-1 text-muted-foreground">
-                            {t.role} · {t.location}
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <p className="mb-2 text-sm font-semibold">Studios</p>
-              <div className="space-y-3">
-                {spaces.map((s) => (
-                  <Card key={s.name}>
-                    <div className="flex items-center gap-3">
+                    {v.avatarUrl ? (
                       <img
-                        src={s.photo}
+                        src={v.avatarUrl}
                         alt=""
-                        className="h-11 w-11 rounded-[14px] object-cover"
                         loading="lazy"
+                        className="h-11 w-11 shrink-0 rounded-full object-cover"
                       />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{s.name}</p>
-                        <p className="truncate text-1 text-muted-foreground">{s.location}</p>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </section>
+                    ) : (
+                      <span className="h-11 w-11 shrink-0 rounded-full bg-background" aria-hidden />
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">{v.name}</span>
+                      <span className="block truncate text-1 text-muted-foreground">
+                        {[v.detail, sinceThen(v.at)].filter(Boolean).join(" · ")}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
 
-            <Btn variant="ghost" className="w-full">
-              Clear History
+            <Btn
+              variant="ghost"
+              className="w-full"
+              onClick={() => {
+                forgetVisits();
+                setVisits([]);
+              }}
+            >
+              Clear this list
             </Btn>
           </>
         )}

@@ -9,7 +9,7 @@ import {
   readRecentSearches,
   sinceThen,
   type RecentSearch,
-} from "@/lib/recent-searches";
+} from "@/lib/device-history";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/search/history")({

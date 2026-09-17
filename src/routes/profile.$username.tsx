@@ -1,4 +1,5 @@
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { BusinessProfileExperience } from "@/components/ml/business-profile";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
 import { getProfile } from "@/data/profile";
@@ -13,6 +14,7 @@ import {
 import { getPublicBusiness } from "@/lib/profile-groups.functions";
 import { mergeProfileRow, mergeSections, profileFromRow } from "@/lib/profile-view";
 import type { ProfileRow } from "@/lib/profile-map";
+import { rememberVisit } from "@/lib/device-history";
 
 export const Route = createFileRoute("/profile/$username")({
   // One username namespace for both account kinds. A business account (it has a profile_business
@@ -82,8 +84,25 @@ function profileView(
 function ProfileRoute() {
   const { username } = Route.useParams();
   const { row, business, labels, sections } = Route.useLoaderData();
-  if (business) {
-    return <BusinessProfileExperience b={businessViewFromRecord(business, labels)} />;
-  }
-  return <PersonProfileExperience p={profileView(username, row, labels, sections)} />;
+  const view = business ? businessViewFromRecord(business, labels) : null;
+  const person = business ? null : profileView(username, row, labels, sections);
+
+  // Opening a page is what makes it recently viewed; the note stays on this device.
+  const name = view?.name ?? person?.name ?? "";
+  const detail = view?.typeLabel ?? person?.primaryRole ?? null;
+  const avatar = view?.logo || person?.photo || null;
+  const isBusiness = Boolean(business);
+  useEffect(() => {
+    if (!name) return;
+    rememberVisit({
+      kind: isBusiness ? "studio" : "person",
+      handle: username,
+      name,
+      detail,
+      avatarUrl: avatar,
+    });
+  }, [username, name, detail, avatar, isBusiness]);
+
+  if (view) return <BusinessProfileExperience b={view} />;
+  return <PersonProfileExperience p={person!} />;
 }

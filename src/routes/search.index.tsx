@@ -7,7 +7,7 @@ import { Chip, Screen, SearchBar } from "@/components/ml/ui";
 import { PersonRow } from "@/components/ml/cards";
 import { StateCard } from "@/components/ml/portfolio";
 import { searchPeople } from "@/lib/profile-groups.functions";
-import { rememberSearch } from "@/lib/recent-searches";
+import { rememberSearch } from "@/lib/device-history";
 import { talentTypes, useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
