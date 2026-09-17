@@ -34,6 +34,7 @@ const tabs: { label: string; type: SavedTargetType }[] = [
   { label: "Studios", type: "studio" },
   { label: "Businesses", type: "business" },
   { label: "Events", type: "event" },
+  { label: "Listings", type: "listing" },
 ];
 
 function Saved() {

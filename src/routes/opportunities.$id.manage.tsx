@@ -1,11 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { BarChart3, Users, Pencil, PauseCircle, XCircle } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { BarChart3, Users, Pencil, XCircle } from "lucide-react";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, StatusPill, EmptyState, Dialog, Loading } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
-import { myOpportunities, closeReasons } from "@/data/opportunities";
+import { myOpportunities } from "@/data/opportunities";
 import { useMyDbOpportunities } from "@/hooks/use-my-opportunities";
+import { setOpportunityStatus } from "@/lib/catalog.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/$id/manage")({
@@ -24,12 +28,33 @@ export const Route = createFileRoute("/opportunities/$id/manage")({
 
 function ManageOpportunity() {
   const { id } = Route.useParams();
+  const queryClient = useQueryClient();
   // Signed in: the user's own stored opportunities resolve too.
   const mine = useMyDbOpportunities();
-  const o = myOpportunities.find((x) => x.id === id) ?? mine.items.find((x) => x.id === id);
+  const isReal = mine.items.some((x) => x.id === id);
+  const o = mine.items.find((x) => x.id === id) ?? myOpportunities.find((x) => x.id === id);
+  const setStatus = useServerFn(setOpportunityStatus);
   const [close, setClose] = useState(false);
-  const [closed, setClosed] = useState<string | null>(null);
-  const [paused, setPaused] = useState(false);
+  const [closed, setClosed] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function closeIt() {
+    setClose(false);
+    if (!isReal) {
+      setClosed(true);
+      return;
+    }
+    setBusy(true);
+    try {
+      await setStatus({ data: { id, status: "closed" } });
+      await queryClient.invalidateQueries({ queryKey: ["opportunities", "mine"] });
+      setClosed(true);
+    } catch {
+      toast.error("Couldn't close that — try again");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   if (!o) {
     return (
@@ -52,10 +77,7 @@ function ManageOpportunity() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <StatusPill
-              label={paused ? "paused" : o.status}
-              tone={paused ? "warn" : statusTone(o.status)}
-            />
+            <StatusPill label={o.status} tone={statusTone(o.status)} />
             {o.closesAt ? <span className="text-1 text-muted-foreground">{o.closesAt}</span> : null}
           </div>
           <div className="grid grid-cols-3 gap-2 pt-1">
@@ -97,24 +119,9 @@ function ManageOpportunity() {
             to="/opportunities/new"
           />
           <Row
-            icon={<PauseCircle size={iconSize.sm} />}
-            title={paused ? "Resume opportunity" : "Pause applications"}
-            subtitle={
-              paused
-                ? "Visible and accepting applications"
-                : "Stays visible, stops new applications"
-            }
-            onClick={() => setPaused((p) => !p)}
-            right={
-              <span className="text-1 font-semibold text-foreground">
-                {paused ? "Resume" : "Pause"}
-              </span>
-            }
-          />
-          <Row
             icon={<XCircle size={iconSize.sm} />}
             title="Close opportunity"
-            subtitle="Tell applicants the outcome"
+            subtitle="Stops new applications"
             onClick={() => setClose(true)}
             right={<span className="text-1 font-semibold text-foreground">Close</span>}
           />
@@ -132,29 +139,25 @@ function ManageOpportunity() {
         </Card>
       </div>
 
-      <Sheet open={close} onClose={() => setClose(false)} title="Why are you closing?">
-        <div className="space-y-2">
-          {closeReasons.map((r) => (
-            <Btn
-              key={r}
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                setClose(false);
-                setClosed(r);
-              }}
-            >
-              {r}
-            </Btn>
-          ))}
-        </div>
-      </Sheet>
+      <Dialog
+        open={close}
+        title="Close this opportunity?"
+        body="It stops accepting new applications. Existing applications stay visible."
+        onClose={() => setClose(false)}
+      >
+        <Btn onClick={() => void closeIt()} disabled={busy}>
+          {busy ? "Closing…" : "Close opportunity"}
+        </Btn>
+        <Btn variant="ghost" onClick={() => setClose(false)} disabled={busy}>
+          Keep it open
+        </Btn>
+      </Dialog>
 
       <Dialog
-        open={closed !== null}
+        open={closed}
         title="Opportunity closed"
-        body={`Applicants were notified: ${closed ?? ""}. It stays in your archive with all applications.`}
-        onClose={() => setClosed(null)}
+        body="It stays in your archive with all applications."
+        onClose={() => setClosed(false)}
       >
         <BtnLink to="/opportunities/mine" className="w-full">
           Back to My Opportunities

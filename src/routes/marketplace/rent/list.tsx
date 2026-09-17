@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Camera, Star } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Price } from "@/components/ml/kit";
-import { ConditionBadge, LocationRow, MarketCategoryIcon } from "@/components/ml/market";
-import { RentalAvailabilityBadge, RentalCalendar } from "@/components/ml/rental";
+import { ConditionBadge, MarketCategoryIcon } from "@/components/ml/market";
 import { equipment, rentalCategories } from "@/data/rentals";
+import { createListing } from "@/lib/catalog.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/list")({
@@ -29,18 +31,70 @@ export const Route = createFileRoute("/marketplace/rent/list")({
 
 const steps = ["Category", "Media", "Details", "Availability", "Review"];
 const sample = equipment[0]!;
+const conditions = [
+  { label: "New", value: "new" },
+  { label: "Like New", value: "like_new" },
+  { label: "Used", value: "used" },
+] as const;
 
 function ListForRent() {
+  const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [cat, setCat] = useState("audio");
+  const [cat, setCat] = useState<(typeof rentalCategories)[number]["slug"]>("audio");
   const [cover, setCover] = useState(0);
-  const [condition, setCondition] = useState("Excellent");
+  const [name, setName] = useState("");
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const [sub, setSub] = useState<string | null>(null);
+  const [condition, setCondition] = useState<(typeof conditions)[number]["value"]>("used");
+  const [description, setDescription] = useState("");
+  const [dailyPrice, setDailyPrice] = useState("");
+  const [weeklyPrice, setWeeklyPrice] = useState("");
+  const [monthlyPrice, setMonthlyPrice] = useState("");
+  const [deposit, setDeposit] = useState("");
   const [fulfilment, setFulfilment] = useState<string[]>(["Pickup"]);
-  const [start, setStart] = useState<number | null>(16);
-  const [end, setEnd] = useState<number | null>(30);
+  const [minDays, setMinDays] = useState("1 day");
+  const [maxDays, setMaxDays] = useState("30 days");
+  const [noticePeriod, setNoticePeriod] = useState("Same day");
+  const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
 
   const category = rentalCategories.find((c) => c.slug === cat);
+  const rupees = (v: string) => Number(v.replace(/[^0-9]/g, ""));
+  const daysFrom = (label: string) => parseInt(label, 10) || 1;
+
+  async function publish() {
+    setPublishing(true);
+    try {
+      await submit({
+        data: {
+          category: "gear_rental",
+          itemCategoryKind: cat === "instruments" ? "instrument" : "equipment",
+          ...(sub ? { itemCategory: sub } : {}),
+          title: name.trim() || "Untitled rental",
+          ...(brand.trim() ? { brand: brand.trim() } : {}),
+          ...(model.trim() ? { model: model.trim() } : {}),
+          ...(description.trim() ? { description: description.trim() } : {}),
+          pricePaise: rupees(dailyPrice) * 100,
+          priceUnit: "day",
+          condition,
+          ...(weeklyPrice ? { weeklyPricePaise: rupees(weeklyPrice) * 100 } : {}),
+          ...(monthlyPrice ? { monthlyPricePaise: rupees(monthlyPrice) * 100 } : {}),
+          ...(deposit ? { depositPaise: rupees(deposit) * 100 } : {}),
+          pickupAvailable: fulfilment.includes("Pickup"),
+          deliveryAvailable: fulfilment.includes("Delivery"),
+          minDays: daysFrom(minDays),
+          maxDays: daysFrom(maxDays),
+          noticePeriod,
+        },
+      });
+      setPublished(true);
+    } catch {
+      toast.error("Couldn't publish that — try again");
+    } finally {
+      setPublishing(false);
+    }
+  }
 
   return (
     <Screen>
@@ -152,16 +206,17 @@ function ListForRent() {
             <h2 className="text-2">Equipment details</h2>
             <div className="mt-4 space-y-3">
               {[
-                { label: "Equipment name", ph: "Shure SM7B" },
-                { label: "Brand", ph: "Shure" },
-                { label: "Model", ph: "SM7B" },
-                { label: "Location", ph: "Andheri West, Mumbai" },
+                { label: "Equipment name", ph: "Shure SM7B", value: name, set: setName },
+                { label: "Brand", ph: "Shure", value: brand, set: setBrand },
+                { label: "Model", ph: "SM7B", value: model, set: setModel },
               ].map((f) => (
                 <div key={f.label}>
                   <label className="mb-1.5 block text-1 font-medium text-muted-foreground">
                     {f.label}
                   </label>
                   <input
+                    value={f.value}
+                    onChange={(e) => f.set(e.target.value)}
                     placeholder={f.ph}
                     className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
                   />
@@ -180,7 +235,9 @@ function ListForRent() {
                   aria-labelledby="grp-subcategory"
                 >
                   {(category?.subs ?? []).slice(0, 8).map((s) => (
-                    <Chip key={s}>{s}</Chip>
+                    <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
+                      {s}
+                    </Chip>
                   ))}
                 </div>
               </div>
@@ -192,9 +249,13 @@ function ListForRent() {
                   Condition
                 </span>
                 <div className="flex flex-wrap gap-2" role="group" aria-labelledby="grp-condition">
-                  {["New", "Like New", "Excellent", "Good", "Fair"].map((c) => (
-                    <Chip key={c} active={condition === c} onClick={() => setCondition(c)}>
-                      {c}
+                  {conditions.map((c) => (
+                    <Chip
+                      key={c.value}
+                      active={condition === c.value}
+                      onClick={() => setCondition(c.value)}
+                    >
+                      {c.label}
                     </Chip>
                   ))}
                 </div>
@@ -209,18 +270,26 @@ function ListForRent() {
                 <textarea
                   id="description-included-accessories"
                   rows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder="Serviced between rentals. Includes windscreen, yoke mount, XLR cable and padded case."
                   className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
                 />
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {["Daily ₹", "Weekly ₹", "Monthly ₹"].map((f) => (
-                  <div key={f}>
+                {[
+                  { label: "Daily ₹", value: dailyPrice, set: setDailyPrice },
+                  { label: "Weekly ₹", value: weeklyPrice, set: setWeeklyPrice },
+                  { label: "Monthly ₹", value: monthlyPrice, set: setMonthlyPrice },
+                ].map((f) => (
+                  <div key={f.label}>
                     <label className="mb-1.5 block text-1 font-medium text-muted-foreground">
-                      {f}
+                      {f.label}
                     </label>
                     <input
                       inputMode="numeric"
+                      value={f.value}
+                      onChange={(e) => f.set(e.target.value)}
                       placeholder="0"
                       className="w-full rounded-lg border border-border bg-card px-3 py-3 text-sm outline-none focus:border-primary"
                     />
@@ -237,6 +306,8 @@ function ListForRent() {
                 <input
                   id="security-deposit"
                   inputMode="numeric"
+                  value={deposit}
+                  onChange={(e) => setDeposit(e.target.value)}
                   placeholder="₹15,000"
                   className="w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
                 />
@@ -249,7 +320,7 @@ function ListForRent() {
                   Fulfilment
                 </span>
                 <div className="flex flex-wrap gap-2" role="group" aria-labelledby="grp-fulfilment">
-                  {["Pickup", "Provider delivery", "Courier"].map((f) => (
+                  {["Pickup", "Delivery"].map((f) => (
                     <Chip
                       key={f}
                       active={fulfilment.includes(f)}
@@ -270,32 +341,36 @@ function ListForRent() {
           <>
             <h2 className="text-2">Availability</h2>
             <p className="mt-1 text-1 text-muted-foreground">
-              Tap dates to mark when the equipment is available. Blocked dates stay hidden from
-              renters.
+              Blocking specific dates comes after publishing, from your listing's own page.
             </p>
-            <div className="mt-4">
-              <RentalCalendar
-                e={sample}
-                start={start}
-                end={end}
-                onSelect={(d) =>
-                  start === null || end !== null ? (setStart(d), setEnd(null)) : setEnd(d)
-                }
-              />
-            </div>
             <div className="mt-4 space-y-3">
               {[
-                { label: "Minimum rental duration", options: ["1 day", "2 days", "1 week"] },
-                { label: "Maximum rental duration", options: ["14 days", "30 days", "90 days"] },
-                { label: "Notice period", options: ["Same day", "24 hours", "48 hours"] },
+                {
+                  label: "Minimum rental duration",
+                  options: ["1 day", "2 days", "1 week"],
+                  value: minDays,
+                  set: setMinDays,
+                },
+                {
+                  label: "Maximum rental duration",
+                  options: ["14 days", "30 days", "90 days"],
+                  value: maxDays,
+                  set: setMaxDays,
+                },
+                {
+                  label: "Notice period",
+                  options: ["Same day", "24 hours", "48 hours"],
+                  value: noticePeriod,
+                  set: setNoticePeriod,
+                },
               ].map((f) => (
                 <div key={f.label}>
                   <label className="mb-1.5 block text-1 font-medium text-muted-foreground">
                     {f.label}
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {f.options.map((o, i) => (
-                      <Chip key={o} active={i === 0}>
+                    {f.options.map((o) => (
+                      <Chip key={o} active={f.value === o} onClick={() => f.set(o)}>
                         {o}
                       </Chip>
                     ))}
@@ -316,21 +391,20 @@ function ListForRent() {
               <img src={sample.photos[cover]} alt="" className="h-44 w-full object-cover" />
               <div className="p-4">
                 <Price
-                  price={{ amount: "₹900", unit: "day" }}
+                  price={{ amount: dailyPrice ? `₹${dailyPrice}` : "₹0", unit: "day" }}
                   amountClassName="text-sm font-bold"
                   unitClassName="text-1"
                 />
-                <h3 className="mt-1 text-sm leading-snug">Shure SM7B</h3>
-                <p className="text-1 text-muted-foreground">Shure · SM7B</p>
+                <h3 className="mt-1 text-sm leading-snug">{name || "Untitled rental"}</h3>
+                <p className="text-1 text-muted-foreground">
+                  {[brand, model].filter(Boolean).join(" · ")}
+                </p>
                 <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                  <RentalAvailabilityBadge text="Available Aug 16–30" />
-                  <ConditionBadge value={condition} />
-                </div>
-                <div className="mt-2.5">
-                  <LocationRow text="Andheri West, Mumbai · 6.8 km away" />
+                  <ConditionBadge value={conditions.find((c) => c.value === condition)!.label} />
                 </div>
                 <p className="mt-2 text-1 text-muted-foreground">
-                  Deposit ₹15,000 · {fulfilment.join(" or ") || "Pickup"} · min 1 day
+                  {deposit ? `Deposit ₹${deposit} · ` : ""}
+                  {fulfilment.join(" or ") || "Pickup"} · min {minDays}
                 </p>
               </div>
             </article>
@@ -341,22 +415,22 @@ function ListForRent() {
           <div className="mt-6 space-y-2">
             <Btn
               className="w-full"
+              disabled={publishing || (step === steps.length - 1 && (!name.trim() || !dailyPrice))}
               onClick={() =>
-                step === steps.length - 1 ? setPublished(true) : setStep((s) => s + 1)
+                step === steps.length - 1 ? void publish() : setStep((s) => s + 1)
               }
             >
-              {step === steps.length - 1 ? "Publish rental" : "Continue"}
+              {step === steps.length - 1
+                ? publishing
+                  ? "Publishing…"
+                  : "Publish rental"
+                : "Continue"}
             </Btn>
-            <div className="flex gap-2">
-              {step > 0 ? (
-                <Btn variant="outline" className="flex-1" onClick={() => setStep((s) => s - 1)}>
-                  Back
-                </Btn>
-              ) : null}
-              <Btn variant="ghost" className="flex-1">
-                Save Draft
+            {step > 0 ? (
+              <Btn variant="outline" className="w-full" onClick={() => setStep((s) => s - 1)}>
+                Back
               </Btn>
-            </div>
+            ) : null}
           </div>
         ) : null}
       </div>

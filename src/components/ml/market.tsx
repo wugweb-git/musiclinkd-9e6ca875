@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { makeOffer } from "@/lib/offers.functions";
 import {
   Heart,
   MapPin,
@@ -227,8 +229,17 @@ export function ListingCard({
   );
 }
 
-export function ListingTile({ l }: { l: Listing }) {
-  const [saved, setSaved] = useState(false);
+export function ListingTile({
+  l,
+  saved,
+  onSave,
+}: {
+  l: Listing;
+  saved?: boolean;
+  onSave?: () => void;
+}) {
+  const [localSaved, setLocalSaved] = useState(false);
+  const isSaved = saved ?? localSaved;
   return (
     <Link
       to="/marketplace/l/$id"
@@ -247,7 +258,11 @@ export function ListingTile({ l }: { l: Listing }) {
           <div className="h-full w-full bg-background" />
         )}
         <div className="absolute right-1.5 top-1.5">
-          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
+          <SaveButton
+            saved={isSaved}
+            onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
+            size={32}
+          />
         </div>
       </div>
       <div className="p-3">
@@ -373,11 +388,13 @@ export function ListingSkeleton() {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
 export const marketCities = ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Pune", "Goa"];
 
 const CITY_KEY = "ml.market.city";
 
 /** The Market's chosen place, kept on this device. */
+// eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useMarketCity() {
   const [city, setCity] = useState("Mumbai");
   useEffect(() => {
@@ -667,11 +684,35 @@ export function OfferSheet({
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const send = useServerFn(makeOffer);
 
   const close = () => {
     setSent(false);
+    setAmount("");
+    setMessage("");
     onClose();
   };
+
+  async function submit() {
+    const rupees = Number(amount.replace(/[^0-9]/g, ""));
+    if (!rupees) return;
+    setSending(true);
+    try {
+      await send({
+        data: {
+          listingId: listing.id,
+          amountPaise: rupees * 100,
+          ...(message.trim() ? { message: message.trim() } : {}),
+        },
+      });
+      setSent(true);
+    } catch {
+      /* Sheet stays open with the form intact so they can just try again. */
+    } finally {
+      setSending(false);
+    }
+  }
 
   return (
     <Sheet open={open} onClose={close}>
@@ -682,10 +723,10 @@ export function OfferSheet({
           </div>
           <h2 className="text-3">Offer sent</h2>
           <p className="mx-auto mt-2 max-w-[260px] text-sm text-muted-foreground">
-            Your offer is pending. It expires in 48 hours and continues in Connections.
+            Your offer is pending. The seller can accept or decline it from their side.
           </p>
           <Btn className="mt-6 w-full" onClick={close}>
-            Open Conversation
+            Done
           </Btn>
         </div>
       ) : (
@@ -732,11 +773,11 @@ export function OfferSheet({
             className="mb-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
           />
           <p className="mb-5 text-1 text-muted-foreground">
-            Offers expire after 48 hours. Payment is arranged directly with the seller.
+            Payment is arranged directly with the seller.
           </p>
 
-          <Btn className="w-full" onClick={() => setSent(true)}>
-            Send Offer
+          <Btn className="w-full" disabled={!amount || sending} onClick={() => void submit()}>
+            {sending ? "Sending…" : "Send Offer"}
           </Btn>
         </>
       )}

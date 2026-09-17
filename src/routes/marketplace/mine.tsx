@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { Screen, TopBar, Chip, BtnLink, Btn } from "@/components/ml/ui";
 import { EmptyState, ListingRow } from "@/components/ml/market";
-import { offers } from "@/data/market";
 import { loadMyCatalogListings } from "@/lib/market-view";
+import { answerOffer, listOffersOnMyListings } from "@/lib/offers.functions";
+import { inr } from "@/lib/price";
 import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
 
@@ -31,12 +34,33 @@ const tabs = ["Active", "Drafts", "Offers"];
 function Mine() {
   const [tab, setTab] = useState(tabs[0]!);
   const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
   const mine = useQuery({
     queryKey: ["marketplace", "mine"],
     queryFn: loadMyCatalogListings,
     enabled: signedIn,
   });
   const listings = mine.data ?? [];
+
+  const fetchOffers = useServerFn(listOffersOnMyListings);
+  const offersQuery = useQuery({
+    queryKey: ["marketplace", "offers", "received"],
+    queryFn: () => fetchOffers(),
+    enabled: signedIn && tab === "Offers",
+  });
+  const answer = useServerFn(answerOffer);
+  const [answering, setAnswering] = useState<string | null>(null);
+  async function respond(id: string, status: "accepted" | "declined") {
+    setAnswering(id);
+    try {
+      await answer({ data: { id, status } });
+      await queryClient.invalidateQueries({ queryKey: ["marketplace", "offers", "received"] });
+    } catch {
+      toast.error("Couldn't save that — try again");
+    } finally {
+      setAnswering(null);
+    }
+  }
 
   return (
     <Screen>
@@ -91,22 +115,62 @@ function Mine() {
           />
         ) : null}
 
-        {tab === "Offers"
-          ? offers.map((o) => (
-              <article
-                key={o.id}
-                className="flex items-center justify-between rounded-lg bg-subtle p-4"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-1 font-semibold">{o.listing}</p>
-                  <p className="text-1 text-muted-foreground">Offer {o.amount}</p>
+        {tab === "Offers" ? (
+          offersQuery.isLoading ? (
+            <div className="space-y-3" aria-busy>
+              {[0, 1].map((i) => (
+                <div key={i} className="h-20 animate-pulse rounded-lg bg-subtle" />
+              ))}
+            </div>
+          ) : (offersQuery.data ?? []).length ? (
+            (offersQuery.data ?? []).map((o) => (
+              <article key={o.id} className="rounded-lg bg-subtle p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-1 font-semibold">
+                      {o.listing?.title ?? "Listing"}
+                    </p>
+                    <p className="text-1 text-muted-foreground">
+                      {inr(Math.round(o.amount_paise / 100))} from{" "}
+                      {o.buyer?.display_name ?? o.buyer?.username ?? "a buyer"}
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-background pill text-muted-foreground">
+                    {o.status}
+                  </span>
                 </div>
-                <span className="rounded-full bg-background pill text-muted-foreground">
-                  {o.status}
-                </span>
+                {o.message ? (
+                  <p className="mt-2 text-1 text-muted-foreground">{o.message}</p>
+                ) : null}
+                {o.status === "pending" ? (
+                  <div className="mt-3 flex gap-2">
+                    <Btn
+                      className="flex-1 text-1"
+                      disabled={answering === o.id}
+                      onClick={() => void respond(o.id, "accepted")}
+                    >
+                      Accept
+                    </Btn>
+                    <Btn
+                      variant="outline"
+                      className="flex-1 text-1"
+                      disabled={answering === o.id}
+                      onClick={() => void respond(o.id, "declined")}
+                    >
+                      Decline
+                    </Btn>
+                  </div>
+                ) : null}
               </article>
             ))
-          : null}
+          ) : (
+            <EmptyState
+              emoji="🤝"
+              title="No offers yet"
+              body="Offers buyers make on your listings show up here."
+            />
+          )
+        ) : null}
       </div>
     </Screen>
   );

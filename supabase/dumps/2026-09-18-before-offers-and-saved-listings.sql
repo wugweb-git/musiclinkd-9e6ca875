@@ -1,0 +1,25 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-18 via Lovable query_database, before two migrations:
+--   20260918170000_marketplace_offers.sql  — new table, purely additive.
+--   20260918170100_saved_items_listing_type.sql — widens saved_items' target_type CHECK
+--     constraint to also allow 'listing' (marketplace + rental listings share one table).
+--
+-- Scope: row counts of every table touched, plus saved_items' current constraint set (the one
+-- being altered). Nothing existing is dropped or narrowed — the offers table is new, and the
+-- saved_items change only adds an allowed value to an existing CHECK. Nothing is at risk.
+--
+-- To undo: DROP TABLE public.marketplace_offers CASCADE;
+--          alter table public.saved_items drop constraint saved_items_target_type_check,
+--            add constraint saved_items_target_type_check
+--            check (target_type = any (array['talent','band','studio','business','event']));
+--
+-- Row counts:
+-- marketplace_listings: 8 rows
+-- saved_items: 0 rows
+-- profiles: 102 rows
+--
+-- saved_items constraints before this change:
+-- saved_items_pkey: PRIMARY KEY (id)
+-- saved_items_target_type_check: CHECK ((target_type = ANY (ARRAY['talent'::text, 'band'::text, 'studio'::text, 'business'::text, 'event'::text])))
+-- saved_items_user_id_fkey: FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE
+-- saved_items_user_id_target_type_target_id_key: UNIQUE (user_id, target_type, target_id)

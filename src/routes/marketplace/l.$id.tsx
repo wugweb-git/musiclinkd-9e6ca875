@@ -16,6 +16,7 @@ import {
 } from "@/components/ml/market";
 import { byId, listings, reviews, sellerById } from "@/data/market";
 import { loadCatalogListings } from "@/lib/market-view";
+import { useSavedListings } from "@/hooks/use-saved-listings";
 import { priceText } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 
@@ -60,7 +61,10 @@ function ListingDetail() {
   const { catalog, all } = Route.useLoaderData();
   const fromCatalog = !byId(id);
   const l = byId(id) ?? catalog ?? undefined;
-  const [saved, setSaved] = useState(false);
+  const { has: isSaved, toggle: toggleSave } = useSavedListings();
+  const [localSaved, setLocalSaved] = useState(false);
+  const saved = fromCatalog ? isSaved(id) : localSaved;
+  const toggleSaved = () => (fromCatalog ? toggleSave(id) : setLocalSaved((s) => !s));
   const [offer, setOffer] = useState(false);
   const [report, setReport] = useState(false);
   const [shot, setShot] = useState(0);
@@ -100,7 +104,7 @@ function ListingDetail() {
             >
               <Share2 size={iconSize.sm} />
             </button>
-            <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={40} />
+            <SaveButton saved={saved} onToggle={toggleSaved} size={40} />
           </div>
         }
       />

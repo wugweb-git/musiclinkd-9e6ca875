@@ -15,6 +15,7 @@ import {
 } from "@/components/ml/market";
 import { listings, marketCategories } from "@/data/market";
 import { loadCatalogListings } from "@/lib/market-view";
+import { useSavedListings } from "@/hooks/use-saved-listings";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 
@@ -60,9 +61,13 @@ function MarketHome() {
   const [view, setView] = useState<(typeof views)[number]["label"]>("For You");
   const navigate = useNavigate();
   const catalog = Route.useLoaderData();
+  const { has: isSaved, toggle: toggleSave } = useSavedListings();
   const all = [...listings, ...catalog];
   const recommended = all.filter((l) => l.reason);
   const nearby = all.slice(0, 4);
+  const isRealListing = (id: string) => catalog.some((c) => c.id === id);
+  const saveProps = (id: string) =>
+    isRealListing(id) ? { saved: isSaved(id), onSave: () => toggleSave(id) } : {};
   const trending = [...all].sort((a, b) => b.saves - a.saves).slice(0, 5);
 
   return (
@@ -151,7 +156,7 @@ function MarketHome() {
       >
         <div className="space-y-3 px-5">
           {recommended.map((l) => (
-            <ListingCard key={l.id} l={l} />
+            <ListingCard key={l.id} l={l} {...saveProps(l.id)} />
           ))}
         </div>
       </SectionRow>
@@ -159,7 +164,7 @@ function MarketHome() {
       <SectionRow title="Near you" hint="Within 10 km of Dadar" to="/marketplace/nearby">
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {nearby.map((l) => (
-            <ListingTile key={l.id} l={l} />
+            <ListingTile key={l.id} l={l} {...saveProps(l.id)} />
           ))}
         </div>
       </SectionRow>
@@ -167,7 +172,7 @@ function MarketHome() {
       <SectionRow title="Trending in Mumbai" hint="Most saved this week">
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {trending.map((l) => (
-            <ListingTile key={l.id} l={l} />
+            <ListingTile key={l.id} l={l} {...saveProps(l.id)} />
           ))}
         </div>
       </SectionRow>

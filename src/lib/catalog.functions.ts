@@ -179,6 +179,23 @@ export const getOpportunityRow = createServerFn({ method: "GET" })
     return (row ?? null) as unknown as OpportunityRow | null;
   });
 
+/** The poster closes, fills or reopens their own listing. There is no "paused" status in the schema. */
+export const setOpportunityStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ id: z.string().uuid(), status: z.enum(["open", "closed", "filled"]) }).parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { error } = await client
+      .from("opportunities")
+      .update({ status: data.status } as never)
+      .eq("id", data.id)
+      .eq("creator_profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const listListings = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
   const { data, error } = await client
@@ -214,6 +231,72 @@ export const getListing = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     return (row ?? null) as unknown as ListingRow | null;
+  });
+
+const listingSlug = (title: string) =>
+  `${title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 80)}-${Math.random().toString(36).slice(2, 7)}`;
+
+/** Sell, rent out or offer a service. "Studio" isn't here — a studio is its own richer entity. */
+export const createListing = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        category: z.enum(["gear_sale", "gear_rental", "creative_services"]),
+        itemCategoryKind: z.enum(["instrument", "equipment"]).optional(),
+        itemCategory: z.string().max(60).optional(),
+        title: z.string().trim().min(1).max(200),
+        brand: z.string().trim().max(100).optional(),
+        model: z.string().trim().max(100).optional(),
+        description: z.string().trim().max(2000).optional(),
+        pricePaise: z.number().int().min(0),
+        priceUnit: z.string().max(20).optional(),
+        condition: z.enum(["new", "like_new", "used"]).optional(),
+        // Rentals only.
+        weeklyPricePaise: z.number().int().min(0).optional(),
+        monthlyPricePaise: z.number().int().min(0).optional(),
+        depositPaise: z.number().int().min(0).optional(),
+        pickupAvailable: z.boolean().optional(),
+        deliveryAvailable: z.boolean().optional(),
+        minDays: z.number().int().min(1).optional(),
+        maxDays: z.number().int().min(1).optional(),
+        noticePeriod: z.string().max(60).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ slug: string }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const slug = listingSlug(data.title);
+    const { error } = await client
+      .from("marketplace_listings")
+      .insert({
+        slug,
+        seller_profile_id: context.userId,
+        title: data.title,
+        category: data.category,
+        item_category_kind: data.itemCategoryKind ?? null,
+        item_category: data.itemCategory ?? null,
+        brand: data.brand ?? null,
+        model: data.model ?? null,
+        condition: data.condition ?? null,
+        price_paise: data.pricePaise,
+        price_unit: data.priceUnit ?? null,
+        listing_description: data.description ?? null,
+        ...(data.weeklyPricePaise != null ? { weekly_price_paise: data.weeklyPricePaise } : {}),
+        ...(data.monthlyPricePaise != null ? { monthly_price_paise: data.monthlyPricePaise } : {}),
+        ...(data.depositPaise != null ? { deposit_paise: data.depositPaise } : {}),
+        ...(data.pickupAvailable != null ? { pickup_available: data.pickupAvailable } : {}),
+        ...(data.deliveryAvailable != null ? { delivery_available: data.deliveryAvailable } : {}),
+        ...(data.minDays != null ? { min_days: data.minDays } : {}),
+        ...(data.maxDays != null ? { max_days: data.maxDays } : {}),
+        ...(data.noticePeriod ? { notice_period: data.noticePeriod } : {}),
+      } as never);
+    if (error) throw new Error(error.message);
+    return { slug };
   });
 
 /** Label for a taxonomy slug, or the slug when the label is not loaded. */

@@ -1,9 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
+import { Loading } from "@/components/ml/kit";
 import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
-import { equipment, providers, recentRentalSearches } from "@/data/rentals";
+import { providers, recentRentalSearches } from "@/data/rentals";
+import { loadCatalogRentals } from "@/lib/market-view";
+import { listMySavedIds } from "@/lib/saved.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/marketplace/rent/saved")({
   head: () => ({
@@ -27,10 +33,25 @@ const tabs = ["Equipment", "Providers", "Searches", "Spaces", "Recently viewed"]
 
 function SavedRentals() {
   const [tab, setTab] = useState(tabs[0]!);
+  const { signedIn } = useAuth();
+  const fetchIds = useServerFn(listMySavedIds);
+  const savedIds = useQuery({
+    queryKey: ["rent", "saved-ids"],
+    queryFn: () => fetchIds({ data: { targetType: "listing" } }),
+    enabled: signedIn && tab === "Equipment",
+  });
+  const allRentals = useQuery({
+    queryKey: ["rent", "catalog"],
+    queryFn: loadCatalogRentals,
+    enabled: signedIn && tab === "Equipment",
+  });
+  const savedEquipment = (allRentals.data ?? []).filter((e) =>
+    (savedIds.data ?? []).includes(e.id),
+  );
 
   return (
     <Screen>
-      <TopBar title="Saved rentals" subtitle="6 items · 3 searches" back="/marketplace/rent" />
+      <TopBar title="Saved rentals" back="/marketplace/rent" />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {tabs.map((t) => (
           <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
@@ -40,9 +61,20 @@ function SavedRentals() {
       </div>
 
       <div className="space-y-3 px-5 pb-6">
-        {tab === "Equipment"
-          ? equipment.slice(0, 3).map((e) => <EquipmentRow key={e.id} e={e} />)
-          : null}
+        {tab === "Equipment" ? (
+          savedIds.isLoading || allRentals.isLoading ? (
+            <Loading rows={3} />
+          ) : savedEquipment.length ? (
+            savedEquipment.map((e) => <EquipmentRow key={e.id} e={e} />)
+          ) : (
+            <EmptyState
+              emoji="🎛️"
+              title="No saved equipment yet"
+              body="Tap the heart on a listing to keep it here."
+              action={<BtnLink to="/marketplace/rent">Explore Rentals</BtnLink>}
+            />
+          )
+        ) : null}
 
         {tab === "Providers"
           ? providers.slice(0, 3).map((p) => <ProviderCard key={p.id} p={p} />)
@@ -74,22 +106,13 @@ function SavedRentals() {
           />
         ) : null}
 
-        {tab === "Recently viewed"
-          ? equipment.slice(2, 6).map((e) => (
-              <EquipmentRow
-                key={e.id}
-                e={e}
-                action={
-                  <div className="flex gap-2">
-                    <Link to="/marketplace/rent/request/$id" params={{ id: e.id }}>
-                      <Chip>Check dates</Chip>
-                    </Link>
-                    <Chip>Remove</Chip>
-                  </div>
-                }
-              />
-            ))
-          : null}
+        {tab === "Recently viewed" ? (
+          <EmptyState
+            emoji="🕓"
+            title="No view history yet"
+            body="MusicLinkd doesn't track browsing history yet — coming soon."
+          />
+        ) : null}
       </div>
     </Screen>
   );

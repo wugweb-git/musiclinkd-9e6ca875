@@ -1,8 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { PriceBlock, TrustPill } from "@/components/ml/market";
-import { sellers } from "@/data/market";
+import { createListing } from "@/lib/catalog.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/marketplace/sell")({
   head: () => ({
@@ -24,23 +27,55 @@ export const Route = createFileRoute("/marketplace/sell")({
 });
 
 const types = [
-  { label: "Instrument", emoji: "🎸" },
-  { label: "Audio equipment", emoji: "🎙" },
-  { label: "Rental", emoji: "📦" },
-  { label: "Service", emoji: "🎚" },
-  { label: "Studio", emoji: "🏢" },
-];
+  { label: "Instrument", emoji: "🎸", category: "gear_sale", itemCategoryKind: "instrument" },
+  { label: "Audio equipment", emoji: "🎙", category: "gear_sale", itemCategoryKind: "equipment" },
+  { label: "Rental", emoji: "📦", category: "gear_rental", itemCategoryKind: "equipment" },
+  { label: "Service", emoji: "🎚", category: "creative_services" },
+] as const;
 
-const conditions = ["New", "Like New", "Excellent", "Good", "Fair"];
+// Only the conditions the real schema stores; a service or rental has no condition.
+const conditions = [
+  { label: "New", value: "new" },
+  { label: "Like New", value: "like_new" },
+  { label: "Used", value: "used" },
+] as const;
 
 function Sell() {
+  const navigate = useNavigate();
+  const { signedIn } = useAuth();
+  const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [type, setType] = useState("Instrument");
+  const [type, setType] = useState<(typeof types)[number]["label"]>("Instrument");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [condition, setCondition] = useState("Excellent");
-  const seller = sellers[0]!;
+  const [description, setDescription] = useState("");
+  const [condition, setCondition] = useState<(typeof conditions)[number]["value"]>("used");
+  const [publishing, setPublishing] = useState(false);
   const labels = ["What are you offering?", "Add photos", "Listing details", "Preview"];
+  const selectedType = types.find((t) => t.label === type)!;
+
+  async function publish() {
+    const rupees = Number(price.replace(/[^0-9]/g, ""));
+    setPublishing(true);
+    try {
+      const { slug } = await submit({
+        data: {
+          category: selectedType.category,
+          ...("itemCategoryKind" in selectedType
+            ? { itemCategoryKind: selectedType.itemCategoryKind }
+            : {}),
+          title: title.trim() || "Untitled listing",
+          pricePaise: rupees * 100,
+          ...(description.trim() ? { description: description.trim() } : {}),
+          ...(selectedType.category === "gear_sale" ? { condition } : {}),
+        },
+      });
+      void navigate({ to: "/marketplace/l/$id", params: { id: slug } });
+    } catch {
+      toast.error("Couldn't publish that — try again");
+      setPublishing(false);
+    }
+  }
 
   return (
     <Screen>
@@ -123,12 +158,16 @@ function Sell() {
                 className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
               />
             </Field>
-            {type !== "Service" && type !== "Studio" ? (
+            {selectedType.category === "gear_sale" ? (
               <Field label="Condition">
                 <div className="flex flex-wrap gap-2">
                   {conditions.map((c) => (
-                    <Chip key={c} active={condition === c} onClick={() => setCondition(c)}>
-                      {c}
+                    <Chip
+                      key={c.value}
+                      active={condition === c.value}
+                      onClick={() => setCondition(c.value)}
+                    >
+                      {c.label}
                     </Chip>
                   ))}
                 </div>
@@ -137,14 +176,10 @@ function Sell() {
             <Field label="Description">
               <textarea
                 rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="Condition, history, what's included..."
                 className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
-              />
-            </Field>
-            <Field label="Location">
-              <input
-                defaultValue="Dadar, Mumbai"
-                className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
               />
             </Field>
           </div>
@@ -156,20 +191,16 @@ function Sell() {
               Cover photo
             </div>
             <div className="p-4">
-              <PriceBlock price={{ amount: price ? `₹${price}` : "₹1,84,000" }} size="lg" />
-              <h2 className="mt-1 text-2">{title || "Fender Stratocaster, 2022"}</h2>
+              <PriceBlock price={{ amount: price ? `₹${price}` : "₹0" }} size="lg" />
+              <h2 className="mt-1 text-2">{title || "Untitled listing"}</h2>
               <p className="text-1 text-muted-foreground">
-                {type} · {condition} · Dadar, Mumbai
+                {type}
+                {selectedType.category === "gear_sale"
+                  ? ` · ${conditions.find((c) => c.value === condition)!.label}`
+                  : ""}
               </p>
-              <div className="mt-3 flex items-center gap-3 rounded-lg bg-subtle p-3">
-                <img src={seller.photo} alt="" className="h-10 w-10 rounded-sm object-cover" />
-                <div>
-                  <p className="text-1 font-semibold">{seller.name}</p>
-                  <p className="text-1 text-muted-foreground">{seller.role}</p>
-                </div>
-              </div>
               <div className="mt-3">
-                <TrustPill label="Verified identity" />
+                <TrustPill label="Posted as you" />
               </div>
             </div>
           </div>
@@ -182,14 +213,13 @@ function Sell() {
             Continue
           </Btn>
         ) : (
-          <>
-            <BtnLink to="/marketplace/mine" className="w-full">
-              Publish Listing
-            </BtnLink>
-            <Btn variant="outline" className="mt-2 w-full">
-              Save Draft
-            </Btn>
-          </>
+          <Btn
+            className="w-full"
+            disabled={!title.trim() || !price || publishing || !signedIn}
+            onClick={() => void publish()}
+          >
+            {publishing ? "Publishing…" : "Publish Listing"}
+          </Btn>
         )}
         {step > 0 ? (
           <Btn variant="ghost" className="mt-2 w-full" onClick={() => setStep(step - 1)}>

@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState, ListingRow } from "@/components/ml/market";
-import { listings, sellers } from "@/data/market";
+import { Loading } from "@/components/ml/kit";
+import { sellers } from "@/data/market";
+import { loadCatalogListings } from "@/lib/market-view";
+import { listMySavedIds } from "@/lib/saved.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/marketplace/saved")({
   head: () => ({
@@ -23,9 +29,25 @@ const tabs = ["Listings", "Searches", "Sellers", "Studios"];
 
 function SavedMarket() {
   const [tab, setTab] = useState(tabs[0]!);
+  const { signedIn } = useAuth();
+  const fetchIds = useServerFn(listMySavedIds);
+  const savedIds = useQuery({
+    queryKey: ["marketplace", "saved-ids"],
+    queryFn: () => fetchIds({ data: { targetType: "listing" } }),
+    enabled: signedIn && tab === "Listings",
+  });
+  const allListings = useQuery({
+    queryKey: ["marketplace", "catalog"],
+    queryFn: loadCatalogListings,
+    enabled: signedIn && tab === "Listings",
+  });
+  const savedListings = (allListings.data ?? []).filter((l) =>
+    (savedIds.data ?? []).includes(l.id),
+  );
+
   return (
     <Screen>
-      <TopBar title="Saved" subtitle="12 items · 3 searches" back="/marketplace" />
+      <TopBar title="Saved" back="/marketplace" />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {tabs.map((t) => (
           <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
@@ -34,9 +56,20 @@ function SavedMarket() {
         ))}
       </div>
       <div className="space-y-3 px-5">
-        {tab === "Listings"
-          ? listings.slice(0, 3).map((l) => <ListingRow key={l.id} l={l} />)
-          : null}
+        {tab === "Listings" ? (
+          savedIds.isLoading || allListings.isLoading ? (
+            <Loading rows={3} />
+          ) : savedListings.length ? (
+            savedListings.map((l) => <ListingRow key={l.id} l={l} />)
+          ) : (
+            <EmptyState
+              emoji="🛍️"
+              title="No saved listings yet"
+              body="Tap the heart on a listing to keep it here."
+              action={<BtnLink to="/marketplace">Explore Market</BtnLink>}
+            />
+          )
+        ) : null}
         {tab === "Searches"
           ? ["condenser microphone · Mumbai", "sitar under ₹80,000", "jam room Bandra"].map((s) => (
               <article
