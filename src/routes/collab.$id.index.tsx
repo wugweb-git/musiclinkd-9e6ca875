@@ -8,7 +8,9 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
 import {
   addCollabMember,
+  answerCollabInvite,
   getCollab,
+  listProjectTypes,
   leaveCollab,
   removeMember,
   setCollabStatus,
@@ -59,6 +61,7 @@ function CollabRoom() {
   const takeOut = useServerFn(removeMember);
   const handOver = useServerFn(transferCollab);
   const changeVisibility = useServerFn(setCollabVisibility);
+  const answer = useServerFn(answerCollabInvite);
   const [username, setUsername] = useState("");
 
   const q = useQuery({
@@ -74,10 +77,36 @@ function CollabRoom() {
     enabled: signedIn,
   });
 
+  const readTypes = useServerFn(listProjectTypes);
+  const types = useQuery({ queryKey: ["project-types"], queryFn: () => readTypes() });
+
   const c = q.data ?? null;
   const myId = (profile.data as { id?: string } | null)?.id;
   const myMembership = c?.members.find((m) => m.profile_id === myId);
-  const canManage = myMembership ? ["owner", "admin"].includes(myMembership.role) : false;
+  const invited = myMembership?.status === "invited";
+  const canManage =
+    myMembership && myMembership.status === "active"
+      ? ["owner", "admin"].includes(myMembership.role)
+      : false;
+  const inRoom = c?.members.filter((m) => m.status === "active") ?? [];
+  const asked = c?.members.filter((m) => m.status === "invited") ?? [];
+  const kind = c?.project_type
+    ? (types.data?.find((t) => t.slug === c.project_type)?.label ?? c.project_type)
+    : "";
+
+  // Being asked in is a yes or a no, and nothing else happens until one of them.
+  const decide = useMutation({
+    mutationFn: (a: "join" | "no") => answer({ data: { id, answer: a } }),
+    onSuccess: (_r, a) => {
+      if (a === "no") {
+        void navigate({ to: "/collab" });
+        return;
+      }
+      void queryClient.invalidateQueries({ queryKey: ["collab", id] });
+      void queryClient.invalidateQueries({ queryKey: ["collabs", "mine"] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
 
   const invite = useMutation({
     mutationFn: () => add({ data: { id, username: username.trim().replace(/^@/, "") } }),
@@ -167,7 +196,7 @@ function CollabRoom() {
       <TopBar
         title={c.name}
         subtitle={joinParts(
-          c.type === "band" ? "Band" : "Project",
+          c.type === "band" ? "Band" : kind || "Project",
           c.visibility === "private" ? "Private" : "Public",
           c.city ?? "",
         )}
@@ -175,14 +204,42 @@ function CollabRoom() {
       />
 
       <div className="space-y-6 px-5 pt-4 pb-8">
+        {invited ? (
+          <section className="space-y-3 rounded-lg bg-subtle p-4">
+            <p className="text-sm">
+              {joinParts(
+                myMembership?.role === "admin" ? "You were asked in as an admin" : "You were asked to join",
+                c.name,
+              )}
+            </p>
+            <div className="flex gap-2">
+              <Btn
+                className="flex-1"
+                loading={decide.isPending && decide.variables === "join"}
+                onClick={() => decide.mutate("join")}
+              >
+                Join
+              </Btn>
+              <Btn
+                variant="outline"
+                className="flex-1"
+                loading={decide.isPending && decide.variables === "no"}
+                onClick={() => decide.mutate("no")}
+              >
+                No thanks
+              </Btn>
+            </div>
+          </section>
+        ) : null}
+
         {c.bio ? <p className="text-sm leading-relaxed">{c.bio}</p> : null}
 
         <section className="space-y-2">
           <h2 className="text-sm">
-            {c.members.length} {c.members.length === 1 ? "person" : "people"}
+            {inRoom.length} {inRoom.length === 1 ? "person" : "people"}
           </h2>
           <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
-            {c.members.map((m) => (
+            {inRoom.map((m) => (
               <li key={m.profile_id} className="flex items-center gap-3 px-4 py-3">
                 {m.profile?.avatar_url ? (
                   <img
@@ -232,6 +289,29 @@ function CollabRoom() {
             ))}
           </ul>
 
+          {/* Asked, not answered: they are not in the room until they say yes. */}
+          {asked.length ? (
+            <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+              {asked.map((m) => (
+                <li key={m.profile_id} className="flex items-center gap-3 px-4 py-3">
+                  <span className="min-w-0 flex-1 truncate text-sm">
+                    {m.profile?.display_name ?? m.profile?.username ?? "Someone"}
+                  </span>
+                  <span className="pill shrink-0 bg-background text-muted-foreground">Asked</span>
+                  {canManage ? (
+                    <button
+                      type="button"
+                      className="state-layer shrink-0 rounded-lg px-2 py-1 text-1 font-semibold text-destructive"
+                      onClick={() => person.mutate({ profileId: m.profile_id, what: "remove" })}
+                    >
+                      Undo
+                    </button>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
           {canManage ? (
             <form
               className="flex gap-2 pt-1"
@@ -257,9 +337,14 @@ function CollabRoom() {
                 icon={<UserRoundPlus size={iconSize.sm} aria-hidden />}
                 loading={invite.isPending}
               >
-                Add
+                Ask
               </Btn>
             </form>
+          ) : null}
+          {canManage ? (
+            <p className="text-1 text-muted-foreground">
+              They get asked, and are in once they say yes.
+            </p>
           ) : null}
         </section>
 

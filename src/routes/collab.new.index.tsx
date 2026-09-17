@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { SegmentedField } from "@/components/ml/kit";
-import { createCollab } from "@/lib/collabs.functions";
+import { createCollab, listProjectTypes } from "@/lib/collabs.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 /*
@@ -37,6 +37,11 @@ function NewCollab() {
   const [who, setWho] = useState<"Only the people in it" | "Anyone on MusicLinkd">(
     "Only the people in it",
   );
+  const [kind, setKind] = useState("");
+
+  // What kind of project it is comes from the taxonomy, not from a list written here.
+  const readTypes = useServerFn(listProjectTypes);
+  const types = useQuery({ queryKey: ["project-types"], queryFn: () => readTypes() });
 
   const start = useMutation({
     mutationFn: () =>
@@ -46,6 +51,7 @@ function NewCollab() {
           ...(about.trim() ? { bio: about.trim() } : {}),
           ...(city.trim() ? { city: city.trim() } : {}),
           visibility: who === "Anyone on MusicLinkd" ? "public" : "private",
+          ...(kind ? { projectType: kind } : {}),
         },
       }),
     onSuccess: ({ id }) => void navigate({ to: "/collab/$id", params: { id } }),
@@ -74,6 +80,23 @@ function NewCollab() {
             maxLength={80}
             className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
           />
+        </div>
+
+        <div>
+          <p className="text-1 font-semibold">
+            What kind <span className="font-normal text-muted-foreground">· optional</span>
+          </p>
+          <div className="mt-1.5 flex flex-wrap gap-2">
+            {(types.data ?? []).map((t) => (
+              <Chip
+                key={t.slug}
+                active={kind === t.slug}
+                onClick={() => setKind(kind === t.slug ? "" : t.slug)}
+              >
+                {t.label}
+              </Chip>
+            ))}
+          </div>
         </div>
 
         <div>
@@ -124,7 +147,7 @@ function NewCollab() {
           {signedIn ? "Start project" : "Sign in to start"}
         </Btn>
         <p className="text-1 text-muted-foreground">
-          You can add the people you are working with on the next screen.
+          You can ask the people you are working with on the next screen. They join once they say yes.
         </p>
       </form>
     </Screen>

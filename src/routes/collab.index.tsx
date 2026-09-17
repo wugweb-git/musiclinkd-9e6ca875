@@ -59,7 +59,9 @@ function CollabRow({ c }: { c: Collab }) {
           )}
         </span>
       </span>
-      {c.status === "active" ? null : (
+      {c.my_status === "invited" ? (
+        <span className="pill shrink-0 bg-background text-muted-foreground">Asked</span>
+      ) : c.status === "active" ? null : (
         <span className="pill shrink-0 bg-background text-muted-foreground">{c.status}</span>
       )}
     </Link>

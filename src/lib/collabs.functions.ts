@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { anonClient } from "@/lib/portfolio.functions";
 
 /*
  * Collabs of type 'project': a group of talent working on one thing, for as long as it takes.
@@ -17,6 +18,8 @@ export type CollabStatus = "active" | "paused" | "completed" | "archived";
 export type CollabMember = {
   profile_id: string;
   role: "owner" | "admin" | "member";
+  /** Invited people are not in the collab yet; they decide first. */
+  status: "invited" | "active";
   instrument: string | null;
   profile: {
     username: string | null;
@@ -35,15 +38,36 @@ export type Collab = {
   cover_url: string | null;
   avatar_url: string | null;
   type: "band" | "project";
+  /** A taxonomy slug from project_types. Null for a band, and for a project that has not said. */
+  project_type: string | null;
   visibility: "public" | "private";
   status: CollabStatus;
   ends_on: string | null;
   created_at: string;
   members: CollabMember[];
+  /** Where this account stands with it, on the list screen. */
+  my_status?: "invited" | "active";
 };
 
-const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, visibility, status, ends_on, created_at,
-  members:collab_members(profile_id, role, instrument, profile:profiles(username, display_name, avatar_url))`;
+const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, project_type, visibility, status, ends_on, created_at,
+  members:collab_members(profile_id, role, status, instrument, profile:profiles(username, display_name, avatar_url))`;
+
+/** What kind of project it is, from the taxonomy the database already carries. */
+export const listProjectTypes = createServerFn({ method: "GET" }).handler(
+  async (): Promise<{ slug: string; label: string }[]> => {
+    const client = await anonClient();
+    const { data, error } = await client
+      .from("taxonomy_options" as never)
+      .select("slug, label, sort_order")
+      .eq("category_key", "project_types")
+      .order("sort_order");
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as unknown as { slug: string; label: string }[]).map(({ slug, label }) => ({
+      slug,
+      label,
+    }));
+  },
+);
 
 /** Start a project room. You are its owner; private unless you say otherwise. */
 export const createCollab = createServerFn({ method: "POST" })
@@ -56,6 +80,7 @@ export const createCollab = createServerFn({ method: "POST" })
         city: z.string().max(80).optional(),
         visibility: z.enum(["public", "private"]).default("private"),
         type: z.enum(["project", "band"]).default("project"),
+        projectType: z.string().trim().max(60).optional(),
         endsOn: z
           .string()
           .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -75,6 +100,13 @@ export const createCollab = createServerFn({ method: "POST" })
       p_ends_on: data.endsOn ?? null,
     });
     if (error) throw new Error(error.message);
+    // What kind of project it is is a plain column, so it is set right after it exists.
+    if (data.projectType) {
+      await db(context.supabase)
+        .from("collabs")
+        .update({ project_type: data.projectType } as never)
+        .eq("id", id as string);
+    }
     return { id: id as string };
   });
 
@@ -85,18 +117,25 @@ export const listMyCollabs = createServerFn({ method: "GET" })
     const client = db(context.supabase);
     const { data: mine, error: mineError } = await client
       .from("collab_members")
-      .select("collab_id")
+      .select("collab_id, status")
       .eq("profile_id", context.userId);
     if (mineError) throw new Error(mineError.message);
-    const ids = ((mine ?? []) as { collab_id: string }[]).map((m) => m.collab_id);
-    if (!ids.length) return [];
+    const rows = (mine ?? []) as { collab_id: string; status: "invited" | "active" }[];
+    if (!rows.length) return [];
     const { data, error } = await client
       .from("collabs")
       .select(SELECT)
-      .in("id", ids)
+      .in(
+        "id",
+        rows.map((m) => m.collab_id),
+      )
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return (data ?? []) as unknown as Collab[];
+    const standing = new Map(rows.map((m) => [m.collab_id, m.status]));
+    return ((data ?? []) as unknown as Collab[]).map((c) => ({
+      ...c,
+      my_status: standing.get(c.id) ?? "active",
+    }));
   });
 
 /** One project room. Private ones are readable only by their members. */
@@ -113,7 +152,10 @@ export const getCollab = createServerFn({ method: "GET" })
     return (row ?? null) as unknown as Collab | null;
   });
 
-/** Bring someone in by username. Owners and admins can. */
+/**
+ * Ask someone to join, by username. Owners and admins can (owner, 18 Sep 2026): being added is an
+ * invitation, not a fact, so the row is 'invited' until they say yes. The database tells them.
+ */
 export const addCollabMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
@@ -142,14 +184,42 @@ export const addCollabMember = createServerFn({ method: "POST" })
       profile_id: profileId,
       role: data.role,
       instrument: data.instrument ?? null,
+      status: "invited",
+      invited_by: context.userId,
     } as never);
     if (error) {
-      if (error.code === "23505") throw new Error("They are already in this project.");
+      if (error.code === "23505") throw new Error("They are already in this project, or asked.");
       throw new Error(
-        error.code === "42501" ? "Only an owner or admin can add people." : error.message,
+        error.code === "42501" ? "Only an owner or admin can ask people in." : error.message,
       );
     }
-    return { added: true };
+    return { invited: true };
+  });
+
+/** Your answer to an invitation: join, or say no and the row goes. */
+export const answerCollabInvite = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ id: z.string().uuid(), answer: z.enum(["join", "no"]) }).parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const client = db(context.supabase);
+    const { error } =
+      data.answer === "join"
+        ? await client
+            .from("collab_members")
+            .update({ status: "active" } as never)
+            .eq("collab_id", data.id)
+            .eq("profile_id", context.userId)
+            .eq("status", "invited")
+        : await client
+            .from("collab_members")
+            .delete()
+            .eq("collab_id", data.id)
+            .eq("profile_id", context.userId)
+            .eq("status", "invited");
+    if (error) throw new Error(error.message);
+    return { answered: data.answer };
   });
 
 /** Change what someone is in the room, or take them out. Owners and admins can. */

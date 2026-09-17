@@ -22,7 +22,9 @@ export type NotificationKind =
   | "booking_requested"
   | "booking_answered"
   | "review_received"
-  | "review_reply";
+  | "review_reply"
+  | "collab_invite"
+  | "collab_joined";
 
 export type Notification = {
   id: string;

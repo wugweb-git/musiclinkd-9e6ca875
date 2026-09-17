@@ -8,6 +8,7 @@ import {
   CalendarCheck,
   MessageCircle,
   Star,
+  UsersRound,
   UserRoundPlus,
   type LucideIcon,
 } from "lucide-react";
@@ -52,6 +53,8 @@ const kindIcon: Record<NotificationKind, LucideIcon> = {
   booking_answered: CalendarCheck,
   review_received: Star,
   review_reply: Star,
+  collab_invite: UsersRound,
+  collab_joined: UsersRound,
 };
 
 const groupOf: Record<NotificationKind, (typeof filters)[number]> = {
@@ -64,6 +67,8 @@ const groupOf: Record<NotificationKind, (typeof filters)[number]> = {
   booking_answered: "Bookings",
   review_received: "All",
   review_reply: "All",
+  collab_invite: "All",
+  collab_joined: "All",
 };
 
 /** "4 minutes ago" is a lie the moment the tab sits idle; this says the day and time instead. */
