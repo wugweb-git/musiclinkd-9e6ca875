@@ -1,16 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Flag, Pencil, ShieldCheck } from "lucide-react";
-import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { Card, Segmented, Stars, StatusPill, EmptyState, Meter, Row } from "@/components/ml/kit";
+import { ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { Card, Segmented, Stars, EmptyState, Loading, Meter, Row } from "@/components/ml/kit";
+import { reviewPolicy } from "@/data/reviews";
 import {
-  receivedReviews,
-  givenReviews,
-  pendingReviews,
-  ratingSummary,
-  reviewPolicy,
-  type Review,
-} from "@/data/reviews";
+  listMyReviews,
+  listReviewable,
+  listReviewsAboutMe,
+  replyToReview,
+  type ReviewRow,
+} from "@/lib/reviews.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/reviews/")({
@@ -32,101 +36,148 @@ export const Route = createFileRoute("/reviews/")({
 
 const tabs = ["Received", "To review", "Given"] as const;
 
+/** Reviews, all from the database: what people wrote about you, who you can review, what you wrote. */
 function ReviewsHub() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Received");
+  const { signedIn, loading: authLoading } = useAuth();
+  const loadAbout = useServerFn(listReviewsAboutMe);
+  const loadMine = useServerFn(listMyReviews);
+  const loadReviewable = useServerFn(listReviewable);
+
+  const about = useQuery({
+    queryKey: ["reviews", "about-me"],
+    queryFn: () => loadAbout(),
+    enabled: signedIn,
+  });
+  const mine = useQuery({
+    queryKey: ["reviews", "mine"],
+    queryFn: () => loadMine(),
+    enabled: signedIn,
+  });
+  const reviewable = useQuery({
+    queryKey: ["reviewable"],
+    queryFn: () => loadReviewable(),
+    enabled: signedIn,
+  });
+
+  const received = about.data ?? [];
+  const total = received.length;
+  const average = total
+    ? Math.round((received.reduce((sum, r) => sum + Number(r.rating), 0) / total) * 10) / 10
+    : 0;
+  const distribution = [5, 4, 3, 2, 1].map((stars) => ({
+    stars,
+    count: received.filter((r) => Math.round(Number(r.rating)) === stars).length,
+  }));
 
   return (
     <Screen>
       <TopBar title="Reviews" subtitle="Only from completed work" back="/profile" />
       <div className="space-y-4 px-5 pt-4">
-        <Card className="space-y-3">
-          <div className="flex items-end gap-3">
-            <p className="text-4 font-bold leading-none">{ratingSummary.average}</p>
-            <div className="min-w-0 flex-1 pb-1">
-              <Stars value={ratingSummary.average} />
-              <p className="mt-1 truncate text-1 text-muted-foreground">
-                {ratingSummary.total} reviews · verified transactions only
-              </p>
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            {ratingSummary.distribution.map((d) => (
-              <Meter
-                key={d.stars}
-                label={`${d.stars} star`}
-                value={d.count}
-                max={ratingSummary.total}
-                hint={`${d.count}`}
-              />
-            ))}
-          </div>
-          <div className="grid grid-cols-3 gap-2 pt-1">
-            {ratingSummary.criteria.map((c) => (
-              <div key={c.label} className="rounded-lg bg-subtle p-3">
-                <p className="truncate text-1 text-muted-foreground">{c.label}</p>
-                <p className="mt-1 text-2 font-bold">{c.value}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Segmented value={tab} options={tabs} onChange={setTab} />
-
-        {tab === "Received" ? (
-          receivedReviews.length ? (
-            receivedReviews.map((r) => <ReviewCard key={r.id} r={r} mine={false} />)
-          ) : (
-            <EmptyState
-              title="No reviews yet"
-              body="Complete your first booking and the client can leave a review."
-            />
-          )
-        ) : null}
-
-        {tab === "To review" ? (
-          pendingReviews.length ? (
-            pendingReviews.map((p) => (
-              <Card key={p.id} className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={p.photo}
-                    alt=""
-                    loading="lazy"
-                    className="h-12 w-12 shrink-0 rounded-sm object-cover"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{p.title}</p>
-                    <p className="truncate text-1 text-muted-foreground">{p.subtitle}</p>
-                  </div>
+        {!signedIn && !authLoading ? (
+          <EmptyState
+            title="Sign in to see your reviews"
+            body="Reviews of your work, and the ones you can write, live here."
+          >
+            <BtnLink to="/welcome" className="w-full">
+              Sign In
+            </BtnLink>
+          </EmptyState>
+        ) : (
+          <>
+            <Card className="space-y-3">
+              <div className="flex items-end gap-3">
+                <p className="text-4 font-bold leading-none">{total ? average : "—"}</p>
+                <div className="min-w-0 flex-1 pb-1">
+                  <Stars value={average} />
+                  <p className="mt-1 truncate text-1 text-muted-foreground">
+                    {total ? `${total} ${total === 1 ? "review" : "reviews"}` : "No reviews yet"}
+                  </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {p.criteria.map((c) => (
-                    <StatusPill key={c} label={c} />
+              </div>
+              {total ? (
+                <div className="space-y-1.5">
+                  {distribution.map((d) => (
+                    <Meter
+                      key={d.stars}
+                      label={`${d.stars} star`}
+                      value={d.count}
+                      max={total}
+                      hint={`${d.count}`}
+                    />
                   ))}
                 </div>
-                <BtnLink to="/reviews/write/$id" params={{ id: p.id }} className="w-full">
-                  Write Review
-                </BtnLink>
-              </Card>
-            ))
-          ) : (
-            <EmptyState
-              title="Nothing to review"
-              body="Reviews open once a booking, order or rental is completed."
-            />
-          )
-        ) : null}
+              ) : null}
+            </Card>
 
-        {tab === "Given" ? (
-          givenReviews.length ? (
-            givenReviews.map((r) => <ReviewCard key={r.id} r={r} mine />)
-          ) : (
-            <EmptyState
-              title="You have not reviewed anyone yet"
-              body="Your reviews help other professionals get booked."
-            />
-          )
-        ) : null}
+            <Segmented value={tab} options={tabs} onChange={setTab} />
+
+            {tab === "Received" ? (
+              about.isLoading ? (
+                <Loading rows={2} />
+              ) : received.length ? (
+                received.map((r) => <ReceivedReview key={r.id} r={r} />)
+              ) : (
+                <EmptyState
+                  title="No reviews yet"
+                  body="Finish a session or an accepted application and the other side can review you."
+                />
+              )
+            ) : null}
+
+            {tab === "To review" ? (
+              reviewable.isLoading ? (
+                <Loading rows={2} />
+              ) : (reviewable.data ?? []).length ? (
+                (reviewable.data ?? []).map((s) => (
+                  <Card key={s.id} className="space-y-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{s.name}</p>
+                      <p className="truncate text-1 text-muted-foreground">{s.context}</p>
+                    </div>
+                    <BtnLink to="/reviews/write/$id" params={{ id: s.id }} className="w-full">
+                      Write Review
+                    </BtnLink>
+                  </Card>
+                ))
+              ) : (
+                <EmptyState
+                  title="Nothing to review"
+                  body="A review follows real work: a confirmed studio session, or an application one of you accepted."
+                />
+              )
+            ) : null}
+
+            {tab === "Given" ? (
+              mine.isLoading ? (
+                <Loading rows={2} />
+              ) : (mine.data ?? []).length ? (
+                (mine.data ?? []).map((r) => (
+                  <Card key={r.id} className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="truncate text-1 text-muted-foreground">
+                        {r.context ?? "Your review"}
+                      </p>
+                      <Stars value={Number(r.rating)} />
+                    </div>
+                    <p className="text-1 leading-relaxed">{r.body}</p>
+                    {r.response ? (
+                      <div className="rounded-lg bg-background p-3">
+                        <p className="pill bg-subtle text-muted-foreground">Their reply</p>
+                        <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
+                      </div>
+                    ) : null}
+                  </Card>
+                ))
+              ) : (
+                <EmptyState
+                  title="You have not reviewed anyone yet"
+                  body="Your reviews help other professionals get booked."
+                />
+              )
+            ) : null}
+          </>
+        )}
 
         <section className="space-y-2 pb-4">
           <Card className="space-y-2">
@@ -143,11 +194,6 @@ function ReviewsHub() {
             </ul>
           </Card>
           <Row
-            title="Ask for a review"
-            subtitle="From clients you have completed work with"
-            to="/reviews/request"
-          />
-          <Row
             title="Full review policy"
             subtitle="Trust & safety"
             to="/help/$slug"
@@ -159,79 +205,77 @@ function ReviewsHub() {
   );
 }
 
-function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
+/** One review about you, with the reply box until you have answered it. */
+function ReceivedReview({ r }: { r: ReviewRow }) {
+  const queryClient = useQueryClient();
+  const reply = useServerFn(replyToReview);
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+
+  const answer = useMutation({
+    mutationFn: () => reply({ data: { id: r.id, response: text.trim() } }),
+    onSuccess: () => {
+      setOpen(false);
+      setText("");
+      void queryClient.invalidateQueries({ queryKey: ["reviews", "about-me"] });
+    },
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
   return (
-    <Card className="space-y-3">
-      <div className="flex items-center gap-3">
-        <img
-          src={r.authorPhoto}
-          alt=""
-          loading="lazy"
-          className="h-10 w-10 shrink-0 rounded-full object-cover"
-        />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{r.authorName}</p>
-          <p className="truncate text-1 text-muted-foreground">
-            {r.sourceLabel} · {r.createdAt}
-          </p>
+    <Card className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold">{r.author_name}</p>
+          {r.context ? <p className="truncate text-1 text-muted-foreground">{r.context}</p> : null}
         </div>
-        <Stars value={r.rating} />
+        <Stars value={Number(r.rating)} />
       </div>
-      <StatusPill label="Verified transaction" tone="good" />
-      <p className="text-1 text-muted-foreground">{r.body}</p>
-      <div className="flex flex-wrap gap-2">
-        {r.criteria.map((c) => (
-          <span
-            key={c.key}
-            className="rounded-full bg-background px-2.5 py-1 text-1 font-semibold text-muted-foreground"
-          >
-            {c.label} {c.value}
-          </span>
-        ))}
-      </div>
+      <p className="text-1 leading-relaxed">{r.body}</p>
+
       {r.response ? (
-        <div className="rounded-lg bg-subtle p-3">
-          <p className="pill bg-background text-muted-foreground">
-            Your response · {r.response.at}
-          </p>
-          <p className="mt-1 text-1 text-muted-foreground">{r.response.body}</p>
+        <div className="rounded-lg bg-background p-3">
+          <p className="pill bg-subtle text-muted-foreground">Your reply</p>
+          <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
         </div>
-      ) : null}
-      <div className="flex items-center gap-2">
-        {mine ? (
-          <BtnLink
-            to="/reviews/$id/edit"
-            params={{ id: r.id }}
-            variant="outline"
-            className="flex-1 gap-1 text-1"
-          >
-            <Pencil size={iconSize.xs} aria-hidden />
-            Edit
-          </BtnLink>
-        ) : (
-          <>
-            {!r.response ? (
-              <BtnLink
-                to="/reviews/$id/reply"
-                params={{ id: r.id }}
-                variant="outline"
-                className="flex-1 text-1"
-              >
-                Respond
-              </BtnLink>
-            ) : null}
-            <BtnLink
-              to="/reviews/$id/report"
-              params={{ id: r.id }}
-              variant="ghost"
-              className="flex-1 gap-1 text-1"
+      ) : open ? (
+        <form
+          className="space-y-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (text.trim() && !answer.isPending) answer.mutate();
+          }}
+        >
+          <label className="sr-only" htmlFor={`reply-${r.id}`}>
+            Your reply
+          </label>
+          <textarea
+            id={`reply-${r.id}`}
+            rows={3}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Answer publicly, once."
+            className="w-full resize-none rounded-lg border border-border bg-card p-3 text-1 outline-none"
+          />
+          <div className="flex gap-2">
+            <Btn variant="ghost" className="min-h-10 flex-1 text-1" onClick={() => setOpen(false)}>
+              Cancel
+            </Btn>
+            <Btn
+              type="submit"
+              className="min-h-10 flex-1 text-1"
+              disabled={!text.trim()}
+              loading={answer.isPending}
             >
-              <Flag size={iconSize.xs} aria-hidden />
-              Report
-            </BtnLink>
-          </>
-        )}
-      </div>
+              Reply
+            </Btn>
+          </div>
+        </form>
+      ) : (
+        <Btn variant="outline" className="min-h-10 w-full text-1" onClick={() => setOpen(true)}>
+          Respond
+        </Btn>
+      )}
     </Card>
   );
 }

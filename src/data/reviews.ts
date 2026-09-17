@@ -129,11 +129,13 @@ export const ratingSummary = {
   ],
 };
 
+// What the app actually does. Blind reviews and a 14-day window were described here before either
+// existed; a review now publishes when it is written, and the database decides who may write one.
 export const reviewPolicy = [
-  "Only completed bookings, orders and rentals can be reviewed.",
-  "Both sides submit blind — reviews publish after both are in or after 14 days.",
-  "Ratings cannot be edited after publishing; you can add one response.",
-  "Contact details, abuse and off-platform payment requests are removed.",
+  "You can review a studio you had a confirmed session with, or someone whose application you accepted.",
+  "A review publishes as soon as you write it, and the person reviewed can reply once.",
+  "One review per studio or person; you can edit your own.",
+  "Contact details, abuse and off-platform payment requests do not belong in a review.",
 ];
 
 export const flagReasons = [
