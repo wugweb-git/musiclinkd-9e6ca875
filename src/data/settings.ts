@@ -36,7 +36,6 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "Identity and professional badges",
         to: "/verification",
         icon: "badge-check",
-        soon: true,
       },
     ],
   },
@@ -64,6 +63,7 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "Visibility and ordering",
         to: "/portfolio/settings",
         icon: "folder",
+        soon: true,
       },
     ],
   },
@@ -75,7 +75,7 @@ export const settingsGroups: SettingsGroup[] = [
         key: "spotify",
         label: "Spotify",
         hint: "Connect your account",
-        to: "/settings",
+        to: "/settings/spotify",
         icon: "music",
       },
     ],
@@ -104,6 +104,7 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "Channels and quiet hours",
         to: "/notifications/settings",
         icon: "bell",
+        soon: true,
       },
       {
         key: "discovery",
@@ -111,6 +112,7 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "What you get recommended",
         to: "/recommendations/settings",
         icon: "compass",
+        soon: true,
       },
     ],
   },
@@ -150,26 +152,6 @@ export const settingsGroups: SettingsGroup[] = [
   },
 ];
 
-export const accountFields = [
-  {
-    key: "email",
-    label: "Email",
-    value: "ananya@musiclinkd.app",
-    verified: true,
-    action: "Change",
-  },
-  { key: "phone", label: "Phone", value: "+91 98••• ••210", verified: true, action: "Change" },
-  { key: "username", label: "Username", value: "@ananya", verified: false, action: "Edit" },
-  {
-    key: "language",
-    label: "Language",
-    value: "English (India)",
-    verified: false,
-    action: "Change",
-  },
-  { key: "currency", label: "Currency", value: "INR ₹", verified: false, action: "Change" },
-];
-
 export const privacyControls = [
   {
     key: "visibility",
@@ -205,36 +187,26 @@ export const privacyControls = [
   },
 ];
 
-export const sessions = [
-  { id: "s-1", device: "Pixel 8 · Chrome", place: "Mumbai, IN", when: "Active now", current: true },
-  {
-    id: "s-2",
-    device: "MacBook Air · Safari",
-    place: "Mumbai, IN",
-    when: "2 days ago",
-    current: false,
-  },
-  { id: "s-3", device: "iPad · Chrome", place: "Pune, IN", when: "3 weeks ago", current: false },
-];
-
 export const securityRows = [
   {
     key: "password",
     label: "Change password",
-    hint: "Last changed 4 months ago",
+    hint: "Sends a reset link to your email",
     to: "/auth/forgot",
   },
   {
     key: "2fa",
     label: "Two-step verification",
-    hint: "Off — recommended for sellers",
+    hint: "Not available yet",
     to: "/auth/phone",
+    soon: true,
   },
   {
     key: "delete",
     label: "Delete account",
     hint: "Permanently remove your data",
     to: "/settings/delete-account",
+    soon: true,
   },
 ];
 

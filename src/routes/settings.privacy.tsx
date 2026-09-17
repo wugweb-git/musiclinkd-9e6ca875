@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import {
   Check,
   ChevronRight,
@@ -14,7 +17,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { SoonBadge } from "@/components/ml/kit";
 import { privacyControls } from "@/data/settings";
+import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/settings/privacy")({
@@ -41,12 +46,65 @@ const controlIcons: Record<string, LucideIcon> = {
   compass: Compass,
 };
 
+/*
+ * Only "Profile visibility" (profiles.visibility) and "Appear in Discover"
+ * (profiles.discovery_prefs.appear) are backed by real columns. "Who can message you" and
+ * "Show phone number" have no schema yet, so they stay local/soon rather than pretending to save.
+ */
+const LIVE_KEYS = new Set(["visibility", "discovery"]);
+
+const visibilityToDb: Record<string, string> = {
+  Public: "public",
+  Members: "members",
+  Limited: "limited",
+};
+const visibilityFromDb: Record<string, string> = {
+  public: "Public",
+  members: "Members",
+  limited: "Limited",
+};
+
 function PrivacyScreen() {
+  const queryClient = useQueryClient();
+  const load = useServerFn(getMyProfile);
+  const save = useServerFn(saveMyProfile);
+  const profile = useQuery({ queryKey: ["profile", "me"], queryFn: () => load() });
+  const row = profile.data as
+    | { visibility?: string | null; discovery_prefs?: { appear?: boolean } | null }
+    | null
+    | undefined;
+
   const [values, setValues] = useState<Record<string, string>>(
     Object.fromEntries(privacyControls.map((c) => [c.key, c.value])),
   );
+  useEffect(() => {
+    if (!row) return;
+    setValues((v) => ({
+      ...v,
+      visibility: visibilityFromDb[row.visibility ?? "public"] ?? "Public",
+      discovery: row.discovery_prefs?.appear === false ? "No" : "Yes",
+    }));
+  }, [row]);
+
   const [editing, setEditing] = useState<string | null>(null);
   const open = privacyControls.find((c) => c.key === editing);
+
+  async function choose(key: string, option: string) {
+    setValues((v) => ({ ...v, [key]: option }));
+    setEditing(null);
+    if (!LIVE_KEYS.has(key)) return;
+    try {
+      if (key === "visibility") {
+        await save({ data: { visibility: visibilityToDb[option] ?? "public" } });
+      } else if (key === "discovery") {
+        await save({ data: { discovery_prefs: { appear: option === "Yes" } } });
+      }
+      await queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
+      toast.success("Saved");
+    } catch {
+      toast.error("Couldn't save that — try again");
+    }
+  }
 
   return (
     <Screen>
@@ -56,11 +114,15 @@ function PrivacyScreen() {
         <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
           {privacyControls.map((c) => {
             const Icon = controlIcons[c.icon] ?? Circle;
+            const live = LIVE_KEYS.has(c.key);
             return (
               <li key={c.key}>
                 <button
                   type="button"
-                  onClick={() => setEditing(c.key)}
+                  onClick={() =>
+                    live ? setEditing(c.key) : toast(`${c.label} — coming soon`)
+                  }
+                  aria-disabled={!live}
                   className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
                 >
                   <span className="flex h-10 w-7 shrink-0 items-center justify-center">
@@ -70,12 +132,20 @@ function PrivacyScreen() {
                     <span className="block text-2 font-semibold">{c.label}</span>
                     <span className="block text-1 text-muted-foreground">{c.hint}</span>
                   </span>
-                  <span className="shrink-0 text-1 font-semibold">{values[c.key] ?? c.value}</span>
-                  <ChevronRight
-                    size={iconSize.md}
-                    className="shrink-0 text-muted-foreground"
-                    aria-hidden
-                  />
+                  {live ? (
+                    <>
+                      <span className="shrink-0 text-1 font-semibold">
+                        {values[c.key] ?? c.value}
+                      </span>
+                      <ChevronRight
+                        size={iconSize.md}
+                        className="shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                    </>
+                  ) : (
+                    <SoonBadge />
+                  )}
                 </button>
               </li>
             );
@@ -104,6 +174,7 @@ function PrivacyScreen() {
               variant="outline"
               className="min-w-0 flex-1 px-3"
               icon={<Download size={iconSize.sm} aria-hidden />}
+              onClick={() => toast("Request copy — coming soon")}
             >
               Request Copy
             </Btn>
@@ -133,10 +204,7 @@ function PrivacyScreen() {
                   type="button"
                   role="radio"
                   aria-checked={checked}
-                  onClick={() => {
-                    setValues((v) => ({ ...v, [open.key]: o }));
-                    setEditing(null);
-                  }}
+                  onClick={() => void choose(open.key, o)}
                   className="state-layer flex w-full items-center justify-between py-3.5 text-left text-sm font-semibold"
                 >
                   {o}
