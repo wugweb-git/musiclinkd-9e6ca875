@@ -67,6 +67,7 @@ import {
   type OnboardingDraft,
   type StepDef,
 } from "@/data/onboarding";
+import { instrumentIcon } from "@/lib/instrument-icons";
 import { iconSize } from "@/lib/tokens";
 
 function typeIcon(o: TaxonomyOption) {
@@ -79,11 +80,13 @@ function withSelected(
   shown: TaxonomyOption[],
   selected: string[],
   catalogue: TaxonomyOption[] | undefined,
+  icon?: (slug: string) => ReactNode,
 ) {
+  const media = (slug: string) => icon?.(slug);
   const extra = selected
     .filter((slug) => !shown.some((o) => o.slug === slug))
-    .map((slug) => ({ value: slug, label: labelFor(catalogue, slug) }));
-  return [...shown.map((o) => ({ value: o.slug, label: o.label })), ...extra];
+    .map((slug) => ({ value: slug, label: labelFor(catalogue, slug), media: media(slug) }));
+  return [...shown.map((o) => ({ value: o.slug, label: o.label, media: media(o.slug) })), ...extra];
 }
 
 /**
@@ -631,7 +634,15 @@ function StepBody({
       if (roleStage === "primary" || !d.instruments.length) {
         return (
           <ChipPicker
-            options={withSelected(bucket?.instruments ?? [], d.instruments, tx?.instruments)}
+            options={withSelected(
+              bucket?.instruments ?? [],
+              d.instruments,
+              tx?.instruments,
+              (slug) => {
+                const Icon = instrumentIcon(slug);
+                return <Icon size={16} aria-hidden />;
+              },
+            )}
             selected={d.instruments}
             max={2}
             onToggle={(slug) => {
