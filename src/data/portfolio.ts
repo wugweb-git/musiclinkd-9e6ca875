@@ -290,12 +290,13 @@ export const contributorDirectory: Contributor[] = [
 /* ------------------------------------------------------------------ */
 
 export type WorkAnalyticsFigures = {
-  views: number;
-  plays: number;
-  shares: number;
-  saves: number;
-  profileClicks: number;
-  linkClicks: number;
+  /** null where nothing counts this yet — the screen shows an em-dash, never a zero. */
+  views: number | null;
+  plays: number | null;
+  shares: number | null;
+  saves: number | null;
+  profileClicks: number | null;
+  linkClicks: number | null;
 };
 
 export const workAnalytics: Record<string, WorkAnalyticsFigures> = {
@@ -334,13 +335,14 @@ export function portfolioTotals(ids: string[]): WorkAnalyticsFigures {
   return ids.reduce<WorkAnalyticsFigures>(
     (acc, id) => {
       const a = analyticsFor(id);
+      const add = (x: number | null, y: number | null) => (x ?? 0) + (y ?? 0);
       return {
-        views: acc.views + a.views,
-        plays: acc.plays + a.plays,
-        shares: acc.shares + a.shares,
-        saves: acc.saves + a.saves,
-        profileClicks: acc.profileClicks + a.profileClicks,
-        linkClicks: acc.linkClicks + a.linkClicks,
+        views: add(acc.views, a.views),
+        plays: add(acc.plays, a.plays),
+        shares: add(acc.shares, a.shares),
+        saves: add(acc.saves, a.saves),
+        profileClicks: add(acc.profileClicks, a.profileClicks),
+        linkClicks: add(acc.linkClicks, a.linkClicks),
       };
     },
     { views: 0, plays: 0, shares: 0, saves: 0, profileClicks: 0, linkClicks: 0 },

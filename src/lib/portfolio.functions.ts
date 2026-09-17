@@ -33,6 +33,35 @@ export const listMyPortfolio = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+/**
+ * Plays per work, for the account's own performance screen. The database counts a play when
+ * somebody opens the work (record_portfolio_play); nothing else about a work is counted yet, so
+ * nothing else is returned.
+ */
+export const myPortfolioPlays = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<Record<string, number>> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data: mine, error: mineError } = await client
+      .from("portfolio_items")
+      .select("id")
+      .eq("user_id", context.userId);
+    if (mineError) throw new Error(mineError.message);
+    const ids = ((mine ?? []) as { id: string }[]).map((m) => m.id);
+    if (!ids.length) return {};
+
+    const { data, error } = await client
+      .from("portfolio_item_plays")
+      .select("item_id")
+      .in("item_id", ids);
+    if (error) throw new Error(error.message);
+    const counts: Record<string, number> = Object.fromEntries(ids.map((id) => [id, 0]));
+    for (const row of (data ?? []) as { item_id: string }[]) {
+      counts[row.item_id] = (counts[row.item_id] ?? 0) + 1;
+    }
+    return counts;
+  });
+
 export const getMyPortfolioItem = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))

@@ -11,7 +11,7 @@ import {
   type PortfolioItem,
 } from "@/data/portfolio";
 import { SignalLine } from "@/components/charts/recharts/line-signal";
-import { listMyPortfolio } from "@/lib/portfolio.functions";
+import { listMyPortfolio, myPortfolioPlays } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/portfolio/analytics")({
@@ -35,6 +35,9 @@ export const Route = createFileRoute("/portfolio/analytics")({
   component: PortfolioAnalytics,
 });
 
+/** A number that is counted, or an em-dash for one that is not. */
+const show = (n: number | null) => (n === null ? "—" : n.toLocaleString("en-IN"));
+
 function PortfolioAnalytics() {
   const { signedIn } = useAuth();
   const fetchItems = useServerFn(listMyPortfolio);
@@ -44,7 +47,26 @@ function PortfolioAnalytics() {
     enabled: signedIn,
   });
   const items: PortfolioItem[] = signedIn ? (q.data ?? []) : demoPortfolio;
-  const totals = portfolioTotals(items.map((i) => i.id));
+
+  // Plays are counted in the database; the rest of the figures are not counted anywhere yet.
+  const fetchPlays = useServerFn(myPortfolioPlays);
+  const plays = useQuery({
+    queryKey: ["portfolio", "plays"],
+    queryFn: () => fetchPlays(),
+    enabled: signedIn,
+  });
+  const playsFor = (id: string) => (signedIn ? (plays.data?.[id] ?? null) : analyticsFor(id).plays);
+
+  const totals = signedIn
+    ? {
+        views: null,
+        plays: plays.data ? items.reduce((n, i) => n + (plays.data?.[i.id] ?? 0), 0) : null,
+        shares: null,
+        saves: null,
+        profileClicks: null,
+        linkClicks: null,
+      }
+    : portfolioTotals(items.map((i) => i.id));
 
   return (
     <Screen bottomNav={false} className="pb-28">
@@ -114,8 +136,9 @@ function PortfolioAnalytics() {
                   >
                     <p className="truncate text-sm font-semibold">{item.title}</p>
                     <p className="mt-1 text-1 text-muted-foreground">
-                      {a.views.toLocaleString("en-IN")} views · {a.plays.toLocaleString("en-IN")}{" "}
-                      plays · {a.saves} saves · {a.profileClicks} profile clicks
+                      {show(signedIn ? null : a.views)} views · {show(playsFor(item.id))} plays ·{" "}
+                      {show(signedIn ? null : a.saves)} saves ·{" "}
+                      {show(signedIn ? null : a.profileClicks)} profile clicks
                     </p>
                   </Link>
                 );

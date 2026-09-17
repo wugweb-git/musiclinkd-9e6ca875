@@ -680,7 +680,8 @@ export function ReorderList({
 /* ---------------- Analytics --------------------------------------------- */
 
 export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
-  const rows: [string, number][] = [
+  // A figure nothing counts yet is null, and shows an em-dash rather than a zero it cannot mean.
+  const rows: [string, number | null][] = [
     ["Views", figures.views],
     ["Plays", figures.plays],
     ["Saves", figures.saves],
@@ -692,7 +693,9 @@ export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
     <div className="grid grid-cols-2 gap-3">
       {rows.map(([label, n]) => (
         <div key={label} className="rounded-lg bg-subtle p-4">
-          <p className="text-3 leading-none tabular-nums">{n.toLocaleString("en-IN")}</p>
+          <p className="text-3 leading-none tabular-nums">
+            {n === null ? "—" : n.toLocaleString("en-IN")}
+          </p>
           <p className="mt-1 text-1 text-muted-foreground">{label}</p>
         </div>
       ))}
