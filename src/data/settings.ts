@@ -69,9 +69,16 @@ export const settingsGroups: SettingsGroup[] = [
     ],
   },
   {
-    key: "music",
-    title: "Music & listening",
+    key: "integrations",
+    title: "Integrations",
     rows: [
+      {
+        key: "sign-in-methods",
+        label: "Sign-in methods",
+        hint: "Google, LinkedIn, email",
+        to: "/settings",
+        icon: "key",
+      },
       {
         key: "spotify",
         label: "Spotify",

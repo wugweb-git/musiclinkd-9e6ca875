@@ -13,6 +13,7 @@ import {
   LifeBuoy,
   Lock,
   LogOut,
+  KeyRound,
   ScrollText,
   Shield,
   User,
@@ -22,6 +23,7 @@ import {
 import { Screen, TopBar } from "@/components/ml/ui";
 import { MadeByWugweb, SoonBadge } from "@/components/ml/kit";
 import { SpotifyRow } from "@/components/ml/spotify";
+import { SignInMethodsRow } from "@/components/ml/identities";
 import { settingsGroups } from "@/data/settings";
 import { iconSize } from "@/lib/tokens";
 
@@ -34,6 +36,7 @@ const rowIcons: Record<string, LucideIcon> = {
   building: Building2,
   folder: FolderKanban,
   music: Music,
+  key: KeyRound,
   lock: Lock,
   shield: Shield,
   bell: Bell,
@@ -76,6 +79,13 @@ function SettingsScreen() {
                   return (
                     <li key={r.key}>
                       <SpotifyRow />
+                    </li>
+                  );
+                }
+                if (r.key === "sign-in-methods") {
+                  return (
+                    <li key={r.key}>
+                      <SignInMethodsRow />
                     </li>
                   );
                 }
