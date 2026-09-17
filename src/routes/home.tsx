@@ -6,31 +6,23 @@ import {
   ChevronRight,
   WifiOff,
   RefreshCw,
-  Plus,
-  Search,
-  Building2,
-  BadgeCheck,
-  Calendar,
   Compass,
   Megaphone,
   Rss,
-  Users,
   Star,
-  LifeBuoy,
   MapPin,
-  QrCode,
   Settings,
   Sparkles,
 } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { Switch } from "@/components/ui/switch";
-import { EmptyState, Loading, Price, SoonBadge } from "@/components/ml/kit";
+import { EmptyState, Loading, Price } from "@/components/ml/kit";
 import { toast } from "sonner";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { StatRow } from "@/components/ml/profile";
+import { StudioCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
-import { QrSheet } from "@/components/ml/qr";
 import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -304,33 +296,6 @@ function Body({ home }: { home: Home }) {
         <StatRow stats={{ connections: "", followers: "", plays: "", credits: 0 }} />
       </section>
 
-      {/*
-       * Your tools: the owner's own instruments and shortcuts, one list, two to a row. Bands and
-       * Verification are placed in later phases, so they show and do nothing yet.
-       */}
-      <section className="pt-7">
-        <SectionHeader title="Your tools" />
-        <div className="grid grid-cols-2 gap-2 px-5">
-          <ToolLink to="/portfolio/new" icon={<Plus size={iconSize.sm} />} label="Add track" />
-          <ToolLink
-            onClick={() => setQrOpen(true)}
-            icon={<QrCode size={iconSize.sm} />}
-            label="QR & digital card"
-          />
-          <ToolLink to="/search" icon={<Search size={iconSize.sm} />} label="Search talent" soon />
-          <ToolLink to="/studio" icon={<Building2 size={iconSize.sm} />} label="Find a studio" />
-          <ToolLink to="/bookings" icon={<Calendar size={iconSize.sm} />} label="My bookings" soon />
-          <ToolLink to="/help" icon={<LifeBuoy size={iconSize.sm} />} label="Help & guides" soon />
-          <ToolLink icon={<Users size={iconSize.sm} />} label="My bands" soon />
-          <ToolLink
-            to="/verification"
-            icon={<BadgeCheck size={iconSize.sm} />}
-            label="Verification"
-          />
-        </div>
-      </section>
-      <QrSheet open={qrOpen} onClose={() => setQrOpen(false)} />
-
       {/* Roles being cast: the live opportunities table, newest first. */}
       <section className="pt-7">
         <SectionHeader
@@ -443,41 +408,11 @@ function Body({ home }: { home: Home }) {
             title="Studios to book"
             action={<SectionActionLink to="/studio">See All</SectionActionLink>}
           />
-          <ul className="mx-5 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {studios.map((st) => (
-              <li key={st.slug}>
-                <Link
-                  to={st.username ? "/profile/$username" : "/studio"}
-                  params={st.username ? { username: st.username } : {}}
-                  className="state-layer flex items-center gap-3 px-4 py-3.5"
-                >
-                  {st.photo ? (
-                    <img
-                      src={st.photo}
-                      alt=""
-                      loading="lazy"
-                      className="h-11 w-11 shrink-0 rounded-sm object-cover"
-                    />
-                  ) : (
-                    <span aria-hidden className="h-11 w-11 shrink-0 rounded-sm bg-subtle" />
-                  )}
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-2 font-semibold">{st.name}</span>
-                    <span className="mt-0.5 flex items-center gap-1 truncate text-1 text-muted-foreground">
-                      <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-                      {st.location}
-                    </span>
-                  </span>
-                  <Price
-                    price={st.rate}
-                    align="end"
-                    amountClassName="text-sm font-semibold"
-                    unitClassName="text-1"
-                  />
-                </Link>
-              </li>
+              <StudioCard key={st.slug} studio={st} />
             ))}
-          </ul>
+          </div>
         </section>
       ) : null}
 
@@ -579,58 +514,6 @@ function usePeers(roleSlug: string | null) {
     };
   }, [list, roleSlug]);
   return people;
-}
-
-type ToolDestination =
-  | "/portfolio/new"
-  | "/search"
-  | "/studio"
-  | "/bookings"
-  | "/help"
-  | "/verification";
-
-/** A tool tile: icon, label, chevron. Two to a row under Your tools. `soon` makes it inert. */
-function ToolLink({
-  to,
-  icon,
-  label,
-  soon = false,
-  onClick,
-}: {
-  to?: ToolDestination;
-  onClick?: () => void;
-  icon: ReactNode;
-  label: string;
-  soon?: boolean;
-}) {
-  const cls = "flex min-w-0 items-center gap-2 rounded-lg bg-subtle px-3 py-3.5";
-  if (onClick && !soon) {
-    return (
-      <button type="button" onClick={onClick} className={`state-layer text-left ${cls}`}>
-        <span className="shrink-0 text-muted-foreground">{icon}</span>
-        <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
-        <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
-      </button>
-    );
-  }
-  if (soon || !to) {
-    return (
-      <div aria-disabled="true" className={cls}>
-        <span className="shrink-0 text-muted-foreground">{icon}</span>
-        <span className="min-w-0 flex-1 truncate text-1 font-semibold text-muted-foreground">
-          {label}
-        </span>
-        <SoonBadge />
-      </div>
-    );
-  }
-  return (
-    <Link to={to} className={`state-layer ${cls}`}>
-      <span className="shrink-0 text-muted-foreground">{icon}</span>
-      <span className="min-w-0 flex-1 truncate text-1 font-semibold">{label}</span>
-      <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
-    </Link>
-  );
 }
 
 function StateBlock({
