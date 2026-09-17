@@ -31,6 +31,8 @@ export type PortfolioItem = {
   release_year: number | null;
   published: boolean;
   sort_order: number;
+  /** Leads the owner's profile — at most FEATURED_LIMIT of them. */
+  featured?: boolean;
   created_at?: string;
 };
 

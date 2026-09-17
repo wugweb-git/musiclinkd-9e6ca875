@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { FEATURED_LIMIT } from "@/data/portfolio";
 import type { ListingRow } from "@/lib/catalog.functions";
 
 export type PortfolioKind = "track" | "ep" | "album" | "video" | "credit" | "live";
@@ -63,26 +64,35 @@ export const myPortfolioPlays = createServerFn({ method: "GET" })
   });
 
 /**
- * The order the account's work appears in. Order lives on each work (portfolio_items.sort_order),
- * so saving one is writing the new position to every work in the list.
+ * What leads the account's profile and what follows it. Both live on each work
+ * (portfolio_items.sort_order and .featured), so saving writes every work in the list its new
+ * position and whether it is featured. At most FEATURED_LIMIT works can lead.
  */
 export const reorderPortfolio = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ ids: z.array(z.string().uuid()).max(200) }).parse(d))
+  .inputValidator((d) =>
+    z
+      .object({
+        ids: z.array(z.string().uuid()).max(200),
+        featured: z.array(z.string().uuid()).max(FEATURED_LIMIT).optional(),
+      })
+      .parse(d),
+  )
   .handler(async ({ context, data }) => {
     const client = context.supabase as unknown as SupabaseClient;
+    const leads = new Set(data.featured ?? []);
     // One update per work, and only ever the account's own: the user_id filter is the guard.
     const writes = data.ids.map((id, index) =>
       client
         .from("portfolio_items")
-        .update({ sort_order: index })
+        .update({ sort_order: index, featured: leads.has(id) })
         .eq("id", id)
         .eq("user_id", context.userId),
     );
     const results = await Promise.all(writes);
     const failed = results.find((r) => r.error);
     if (failed?.error) throw new Error(failed.error.message);
-    return { ordered: data.ids.length };
+    return { ordered: data.ids.length, featured: leads.size };
   });
 
 export const getMyPortfolioItem = createServerFn({ method: "GET" })
@@ -497,6 +507,8 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
       )
       .eq("user_id", profileId)
       .eq("published", true)
+      // Featured work leads the profile, which is what the Reorder screen promises.
+      .order("featured", { ascending: false })
       .order("sort_order")
       .order("created_at", { ascending: false }),
     client

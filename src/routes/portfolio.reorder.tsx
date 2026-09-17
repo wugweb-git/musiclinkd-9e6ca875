@@ -45,14 +45,21 @@ function Reorder() {
   }, [q.data, signedIn]);
 
   const [featured, setFeatured] = useState<string[]>([]);
+  // Which works lead is stored on the works themselves, so the screen opens on what is stored.
+  useEffect(() => {
+    const stored = (signedIn ? (q.data ?? []) : demoPortfolio)
+      .filter((i) => i.featured)
+      .map((i) => i.id);
+    setFeatured(stored.slice(0, FEATURED_LIMIT));
+  }, [q.data, signedIn]);
 
-  // The order is kept on each work, so saving writes every work's new position.
+  // Order and featuring both live on each work, so one save writes both to every work.
   const saveOrder = useServerFn(reorderPortfolio);
   const save = useMutation({
-    mutationFn: () => saveOrder({ data: { ids: order.map((i) => i.id) } }),
+    mutationFn: () => saveOrder({ data: { ids: order.map((i) => i.id), featured } }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["portfolio", "mine"] });
-      toast.success("Order saved");
+      toast.success(featured.length ? "Order and featured work saved" : "Order saved");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
