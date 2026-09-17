@@ -38,7 +38,7 @@ function WhyThisResult() {
 
   return (
     <Screen>
-      <TopBar title="Why am I seeing this" subtitle={why.subject} back="/recommendations" />
+      <TopBar title="Why am I seeing this" subtitle={why.subject} back="/discover" />
 
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-2">
@@ -100,7 +100,7 @@ function WhyThisResult() {
         <Row
           title="Recommendation settings"
           subtitle="Choose which signals we may use"
-          to="/recommendations/settings"
+          to="/settings"
         />
         <Row
           title="Privacy settings"
@@ -115,7 +115,7 @@ function WhyThisResult() {
         body={`We will show fewer results like this. Reason recorded: ${sent ?? ""}.`}
         onClose={() => setSent(null)}
       >
-        <BtnLink to="/recommendations" className="w-full">
+        <BtnLink to="/discover" className="w-full">
           Back to Recommendations
         </BtnLink>
         <Btn variant="ghost" onClick={() => setSent(null)}>

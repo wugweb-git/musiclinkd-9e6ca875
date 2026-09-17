@@ -106,14 +106,6 @@ export const settingsGroups: SettingsGroup[] = [
         icon: "bell",
         soon: true,
       },
-      {
-        key: "discovery",
-        label: "Discovery preferences",
-        hint: "What you get recommended",
-        to: "/recommendations/settings",
-        icon: "compass",
-        soon: true,
-      },
     ],
   },
   {

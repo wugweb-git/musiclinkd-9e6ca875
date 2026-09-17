@@ -320,12 +320,6 @@ function Body({ home }: { home: Home }) {
           <ToolLink to="/search" icon={<Search size={iconSize.sm} />} label="Search talent" soon />
           <ToolLink to="/studio" icon={<Building2 size={iconSize.sm} />} label="Find a studio" />
           <ToolLink to="/bookings" icon={<Calendar size={iconSize.sm} />} label="My bookings" soon />
-          <ToolLink
-            to="/recommendations"
-            icon={<Sparkles size={iconSize.sm} />}
-            label="For you"
-            soon
-          />
           <ToolLink to="/help" icon={<LifeBuoy size={iconSize.sm} />} label="Help & guides" soon />
           <ToolLink icon={<Users size={iconSize.sm} />} label="My bands" soon />
           <ToolLink
@@ -592,7 +586,6 @@ type ToolDestination =
   | "/search"
   | "/studio"
   | "/bookings"
-  | "/recommendations"
   | "/help"
   | "/verification";
 

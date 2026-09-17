@@ -7,7 +7,7 @@ export type Stat = {
   label: string;
   value: number;
   hint: string;
-  to: "/messages" | "/profile" | "/recommendations/swipe" | "/saved" | "/opportunities";
+  to: "/messages" | "/profile" | "/discover" | "/saved" | "/opportunities";
 };
 
 /** Open opportunities: the one list both the headline update and the Opportunities tiles count. */
@@ -178,7 +178,6 @@ export type DashLink =
   | "/discover"
   | "/messages"
   | "/profile"
-  | "/recommendations/swipe"
   | "/saved"
   | "/search"
   | "/studio"

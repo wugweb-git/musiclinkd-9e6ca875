@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, MapPin, Star } from "lucide-react";
 import { availabilityTone, type Talent } from "@/data/discover";
 import { Price, StatusPill } from "./kit";
+import type { PriceParts } from "@/lib/price";
 import { Btn, VerifiedBadge } from "./ui";
 import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
@@ -206,5 +207,100 @@ export function PersonRow({
       </Link>
       <SavedToggle targetType="talent" targetId={person.id} size={36} />
     </li>
+  );
+}
+
+/*
+ * One person as a card, for a rail. The same data as PersonRow, laid out for sideways scrolling:
+ * Discover uses it, and anywhere else that shows a few people beside each other.
+ */
+export function PersonCard({
+  person,
+  roleLabels,
+}: {
+  person: DirectoryPerson;
+  roleLabels?: TaxonomyOption[] | undefined;
+}) {
+  const detail =
+    person.headline ??
+    person.roles
+      .slice(0, 2)
+      .map((r) => labelFor(roleLabels, r))
+      .join(" · ");
+  return (
+    <Link
+      to="/profile/$username"
+      params={{ username: person.username }}
+      className="state-layer w-[160px] shrink-0 rounded-lg bg-subtle p-4"
+    >
+      {person.avatarUrl ? (
+        <img
+          src={person.avatarUrl}
+          alt=""
+          loading="lazy"
+          className="h-14 w-14 rounded-full object-cover"
+        />
+      ) : (
+        <span className="block h-14 w-14 rounded-full bg-background" aria-hidden />
+      )}
+      <span className="mt-3 flex items-center gap-1">
+        <span className="truncate text-sm font-semibold">{person.name}</span>
+        {person.verified ? <VerifiedBadge size={14} /> : null}
+      </span>
+      {detail ? (
+        <span className="mt-0.5 line-clamp-2 block text-1 text-muted-foreground">{detail}</span>
+      ) : null}
+      {person.city ? (
+        <span className="mt-1 flex items-center gap-1 text-1 text-muted-foreground">
+          <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
+          <span className="truncate">{person.city}</span>
+        </span>
+      ) : null}
+    </Link>
+  );
+}
+
+/** One studio as a card, for the same kind of rail. */
+export function StudioCard({
+  studio,
+}: {
+  studio: {
+    slug: string;
+    username: string | null;
+    name: string;
+    photo: string;
+    location: string;
+    rating: number | null;
+    rate: PriceParts | null;
+  };
+}) {
+  return (
+    <Link
+      to={studio.username ? "/profile/$username" : "/booking/$id"}
+      params={studio.username ? { username: studio.username } : { id: studio.slug }}
+      className="state-layer w-[200px] shrink-0 overflow-hidden rounded-lg bg-subtle"
+    >
+      {studio.photo ? (
+        <img src={studio.photo} alt="" loading="lazy" className="h-28 w-full object-cover" />
+      ) : (
+        <span className="block h-28 w-full bg-background" aria-hidden />
+      )}
+      <span className="block p-3">
+        <span className="block truncate text-sm font-semibold">{studio.name}</span>
+        <span className="mt-0.5 block truncate text-1 text-muted-foreground">
+          {[studio.location, studio.rating == null ? "" : `${studio.rating} out of 5`]
+            .filter(Boolean)
+            .join(" · ")}
+        </span>
+        {studio.rate ? (
+          <Price
+            price={studio.rate}
+            className="mt-2"
+            amountClassName="text-1 font-semibold"
+            unitClassName="text-1"
+          />
+        ) : null}
+      </span>
+    </Link>
   );
 }

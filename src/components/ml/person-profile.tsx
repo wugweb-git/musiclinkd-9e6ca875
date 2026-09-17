@@ -533,7 +533,6 @@ type OwnerDestination =
   | "/verification"
   | "/reviews"
   | "/bands"
-  | "/recommendations"
   | "/help";
 
 function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode; label: string }) {

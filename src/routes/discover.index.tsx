@@ -26,6 +26,9 @@ import { useState } from "react";
 import { quickCategories, talents, trending, studios } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
+import { PersonCard, PersonRow, StudioCard } from "@/components/ml/cards";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { recordPlay } from "@/lib/plays";
 import { MediaEmbed } from "@/components/ml/media-embed";
 import { NoCover } from "@/components/ml/profile";
@@ -51,14 +54,21 @@ export const Route = createFileRoute("/discover/")({
       },
     ],
   }),
-  // Database studios follow the seeded ones; without them the lists show seed data only.
+  // The people and studios here are the stored ones; an unreachable database leaves them empty.
   loader: async () => {
-    const [rows, labels, trendingWork] = await Promise.all([
+    const [rows, labels, trendingWork, people] = await Promise.all([
       listStudios().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
       listTrendingWork().catch((): TrendingItem[] => []),
+      searchPeople({ data: { limit: 12 } })
+        .then((r) => r.people)
+        .catch((): DirectoryPerson[] => []),
     ]);
-    return { dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)), trendingWork };
+    return {
+      dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)),
+      trendingWork,
+      people,
+    };
   },
   component: Discover,
 });
@@ -81,8 +91,13 @@ function categoryIcon(label: string) {
 }
 
 function Discover() {
-  const { dbStudios, trendingWork } = Route.useLoaderData();
+  const { dbStudios, trendingWork, people } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
+  const { options } = useTaxonomy();
+  // Recommendations used to be three screens of invented reasons (owner, 18 Sep). They are a
+  // section here instead: the people on MusicLinkd, and the ones near the viewer.
+  const myCity = people[0]?.city ?? "";
+  const nearby = myCity ? people.filter((p) => p.city === myCity) : [];
   return (
     <Screen>
       <header className="px-5 pb-4 pt-6">
@@ -133,17 +148,19 @@ function Discover() {
         })}
       </div>
 
-      <section className="pb-6">
-        <SectionHeader
-          title="Featured talent"
-          action={<SectionActionLink to="/search">See All</SectionActionLink>}
-        />
-        <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-          {talents.slice(0, 4).map((t) => (
-            <TalentCard key={t.id} t={t} />
-          ))}
-        </div>
-      </section>
+      {people.length ? (
+        <section className="pb-6">
+          <SectionHeader
+            title="People to work with"
+            action={<SectionActionLink to="/search">See All</SectionActionLink>}
+          />
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+            {people.slice(0, 8).map((p) => (
+              <PersonCard key={p.id} person={p} roleLabels={options?.person_types} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {trendingWork.length ? (
         <section className="pb-6">
@@ -179,138 +196,37 @@ function Discover() {
         </div>
       </section>
 
-      <section className="pb-6">
-        <SectionHeader
-          title="Recommended for you"
-          action={
-            <SectionActionLink to="/recommendations" icon={<Sparkles size={iconSize.sm} />}>
-              For You
-            </SectionActionLink>
-          }
-        />
-        <div className="space-y-3 px-5">
-          <Link
-            to="/recommendations/swipe"
-            className="flex items-center gap-4 rounded-lg border border-border bg-ink p-4 text-background"
-          >
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm bg-background/10">
-              <Sparkles size={iconSize.lg} aria-hidden />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h3 className="text-sm text-background">Swipe through matches</h3>
-            </div>
-            <ArrowRight size={iconSize.md} className="shrink-0" aria-hidden />
-          </Link>
-          <div className="grid grid-cols-2 gap-3">
-            <Link to="/recommendations" className="min-w-0 rounded-lg bg-subtle p-4">
-              <p className="truncate text-1 font-semibold">Why you see this</p>
-              <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
-                Explainable picks across people, spaces, gear and work
-              </p>
-            </Link>
-            <div aria-disabled="true" className="min-w-0 rounded-lg bg-subtle p-4">
-              <p className="flex items-center gap-2 text-1 font-semibold">
-                <span className="truncate">Bands near you</span>
-                <SoonBadge />
-              </p>
-              <p className="mt-1 line-clamp-2 text-1 text-muted-foreground">
-                Line-ups looking for members and shows
-              </p>
-            </div>
+      {nearby.length > 1 ? (
+        <section className="pb-8">
+          <SectionHeader
+            title="Around you"
+            action={
+              <SectionActionLink to="/discover/nearby" icon={<MapPin size={iconSize.sm} />}>
+                {myCity}
+              </SectionActionLink>
+            }
+          />
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+            {nearby.slice(0, 8).map((p) => (
+              <PersonCard key={p.id} person={p} roleLabels={options?.person_types} />
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
-      <section className="pb-8">
-        <SectionHeader
-          title="Nearby professionals"
-          action={
-            <SectionActionLink to="/discover/nearby" icon={<MapPin size={iconSize.sm} />}>
-              Mumbai
-            </SectionActionLink>
-          }
-        />
-        <div className="space-y-3 px-5">
-          {talents.slice(0, 2).map((t) => (
-            <Link
-              key={t.id}
-              to="/profile/$username"
-              params={{ username: t.id }}
-              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
-            >
-              <img src={t.photo} alt={t.name} className="h-14 w-14 rounded-sm object-cover" />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1">
-                  <h3 className="truncate text-sm">{t.name}</h3>
-                  {t.verified ? <VerifiedBadge size={16} /> : null}
-                </div>
-                <p className="truncate text-1 text-muted-foreground">
-                  {t.role} · {t.location}
-                </p>
-              </div>
-              <Price
-                price={t.rate}
-                align="end"
-                className="shrink-0"
-                amountClassName="text-1 font-semibold"
-                unitClassName="text-1"
-              />
-            </Link>
-          ))}
-          {studios.slice(0, 1).map((s) => (
-            <Link
-              key={s.name}
-              to="/studio"
-              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
-            >
-              <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate text-sm">{s.name}</h3>
-                <p className="flex min-w-0 items-center gap-1 truncate text-1 text-muted-foreground">
-                  <span className="truncate">{s.location}</span>
-                  <span aria-hidden>·</span>
-                  <span className="inline-flex shrink-0 items-center gap-0.5">
-                    {s.rating}
-                    <Star size={iconSize.xs} fill="currentColor" aria-hidden />
-                  </span>
-                </p>
-              </div>
-              <Price
-                price={s.rate}
-                align="end"
-                className="shrink-0"
-                amountClassName="text-1 font-semibold"
-                unitClassName="text-1"
-              />
-            </Link>
-          ))}
-          {dbStudios.map((s) => (
-            <Link
-              key={s.slug}
-              to={s.username ? "/profile/$username" : "/booking/$id"}
-              params={s.username ? { username: s.username } : { id: s.slug }}
-              className="flex items-center gap-3 rounded-lg bg-subtle p-3"
-            >
-              {s.photo ? (
-                <img src={s.photo} alt={s.name} className="h-14 w-14 rounded-sm object-cover" />
-              ) : null}
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate text-sm">{s.name}</h3>
-                <p className="truncate text-1 text-muted-foreground">
-                  {joinParts(s.location, s.rating == null ? "" : `${s.rating} out of 5`)}
-                </p>
-              </div>
-              <Price
-                price={s.rate}
-                align="end"
-                className="shrink-0"
-                amountClassName="text-1 font-semibold"
-                unitClassName="text-1"
-              />
-            </Link>
-          ))}
-        </div>
-      </section>
+      {dbStudios.length ? (
+        <section className="pb-8">
+          <SectionHeader
+            title="Studios"
+            action={<SectionActionLink to="/studio">See All</SectionActionLink>}
+          />
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+            {dbStudios.map((s) => (
+              <StudioCard key={s.slug} studio={s} />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </Screen>
   );
 }
