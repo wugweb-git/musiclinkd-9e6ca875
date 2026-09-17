@@ -1,17 +1,18 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Bell, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { unreadCount, withStoredRead } from "@/data/notifications";
 import { iconSize } from "@/lib/tokens";
 
 /*
  * The notifications bell, sized and styled to sit beside SearchIconButton in a tab screen's
  * header. Home and Discover both had their own; Discover's was a bare 🔔 with no label and
  * nothing behind it.
+ *
+ * There is no live notifications backend yet, so this no longer shows an unread count (that
+ * number came from static seed data and would have looked real). A neutral dot marks the module
+ * as not live yet, matching the bottom-nav "Connections" tab.
  */
 export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }) {
-  const [unread, setUnread] = useState(0);
-  useEffect(() => setUnread(unreadCount(withStoredRead())), []);
   const surface =
     tone === "onInk"
       ? "border-background/25 bg-background/10 text-background backdrop-blur"
@@ -19,18 +20,11 @@ export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }
   return (
     <Link
       to="/notifications"
-      aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+      aria-label="Notifications — coming soon"
       className={`hit-area state-layer relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-transform duration-125 ease-standard active:scale-97 ${surface}`}
     >
       <Bell size={iconSize.md} aria-hidden />
-      {unread ? (
-        <span
-          aria-hidden
-          className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold leading-none text-white"
-        >
-          {unread > 9 ? "9+" : unread}
-        </span>
-      ) : null}
+      <span aria-hidden className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground" />
     </Link>
   );
 }

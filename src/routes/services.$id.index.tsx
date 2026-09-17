@@ -219,9 +219,13 @@ function ServiceDetail() {
           ) : null}
 
           <div className="grid grid-cols-2 gap-2">
-            <BtnLink to="/services/availability" variant="outline" className="w-full">
+            <Btn
+              variant="outline"
+              className="w-full"
+              onClick={() => toast("Availability — coming soon")}
+            >
               Availability
-            </BtnLink>
+            </Btn>
             <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
               Preview Booking
             </BtnLink>

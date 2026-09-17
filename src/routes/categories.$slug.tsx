@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { MapPin } from "lucide-react";
@@ -16,6 +16,9 @@ import { iconSize } from "@/lib/tokens";
  */
 export const Route = createFileRoute("/categories/$slug")({
   loader: ({ params }) => {
+    // Studios are a dedicated table (public.studios), not a profiles.roles tag, so the
+    // people-by-role query here would always come back empty. /studio is the real listing.
+    if (params.slug === "studios") throw redirect({ to: "/studio", replace: true });
     const category = categories.find((c) => c.slug === params.slug);
     if (!category) throw notFound();
     return { category };

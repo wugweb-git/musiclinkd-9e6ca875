@@ -10,7 +10,7 @@ import { Camera, Check, Copy, Download, Image as ImageIcon, Share2, Zap } from "
 import { toast } from "sonner";
 import { Btn, BtnLink, Sheet, VerifiedBadge } from "./ui";
 import { useViewer } from "./viewer";
-import { Price } from "./kit";
+import { Price, SoonBadge } from "./kit";
 import { canonicalUrl, styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
 
@@ -304,12 +304,15 @@ export function ActionRow({
   hint,
   onClick,
   to,
+  soon,
 }: {
   icon: ReactNode;
   label: string;
   hint?: string;
   onClick?: () => void;
   to?: LinkProps["to"];
+  /** Screen exists but has no backend yet — show, but don't link. */
+  soon?: boolean;
 }) {
   const inner = (
     <>
@@ -323,6 +326,14 @@ export function ActionRow({
     </>
   );
   const cls = "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-left";
+  if (soon) {
+    return (
+      <div aria-disabled="true" className={cls}>
+        {inner}
+        <SoonBadge />
+      </div>
+    );
+  }
   if (to) {
     return (
       <Link to={to} className={cls}>

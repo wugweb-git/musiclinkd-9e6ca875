@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarClock, Plus, Settings2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Loading, Price, Row } from "@/components/ml/kit";
+import { Card, StatusPill, EmptyState, Loading, Price, Row, SoonBadge } from "@/components/ml/kit";
+import { toast } from "sonner";
 import { StateCard } from "@/components/ml/portfolio";
 import { serviceStatusTone } from "@/data/services";
 import { categoryEmoji, optionLabel, useMyServices, useServiceOptions } from "@/hooks/use-services";
@@ -74,13 +75,15 @@ function ServicesHome() {
             icon={<CalendarClock size={iconSize.sm} />}
             title="Availability"
             subtitle="Weekly hours, notice period, time off"
-            to="/services/availability"
+            onClick={() => toast("Availability — coming soon")}
+            right={<SoonBadge />}
           />
           <Row
             icon={<Settings2 size={iconSize.sm} />}
             title="Booking policies"
             subtitle="Deposits, cancellation, rescheduling"
-            to="/provider/policies"
+            onClick={() => toast("Booking policies — coming soon")}
+            right={<SoonBadge />}
           />
         </div>
 

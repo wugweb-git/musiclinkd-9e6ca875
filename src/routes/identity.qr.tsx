@@ -147,13 +147,15 @@ function DigitalId() {
           >
             <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
-          <Link
-            to="/identity/settings"
+          <button
+            type="button"
             aria-label="QR settings"
+            aria-disabled="true"
+            onClick={() => toast("QR settings — coming soon")}
             className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10"
           >
             <Settings2 size={iconSize.sm} aria-hidden />
-          </Link>
+          </button>
         </div>
 
         {phase === "loading" || !me.ready ? (
@@ -246,35 +248,41 @@ function DigitalId() {
               label="Scan a MusicLinkd QR"
               hint="Point the camera at someone's code"
               to="/identity/scan"
+              soon
             />
             <ActionRow
               icon={<IdCard size={iconSize.sm} />}
               label="Digital business card"
               hint="Name, role, the contact details you choose to share"
               to="/identity/contact"
+              soon
             />
             <ActionRow
               icon={<Building2 size={iconSize.sm} />}
               label="Business QR"
               hint="A code for a studio, label or venue you run"
               to="/identity/business"
+              soon
             />
             <ActionRow
               icon={<Printer size={iconSize.sm} />}
               label="Print preview"
               hint="Card, poster, studio sign, badge"
               to="/identity/print"
+              soon
             />
             <ActionRow
               icon={<History size={iconSize.sm} />}
               label="Scan history"
               to="/identity/history"
+              soon
             />
             <ActionRow
               icon={<BarChart3 size={iconSize.sm} />}
               label="QR analytics"
               hint="Scans, visits, conversions"
               to="/identity/analytics"
+              soon
             />
           </div>
 

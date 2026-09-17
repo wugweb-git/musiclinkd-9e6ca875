@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
-import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
+import { toast } from "sonner";
+import { Screen, SearchBar, Chip, Btn } from "@/components/ml/ui";
 import {
   CategorySheet,
   CategoryTile,
@@ -81,12 +82,13 @@ function RentHome() {
             </button>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <Link
-              to="/marketplace/rent/list"
+            <button
+              type="button"
+              onClick={() => toast("Rent out equipment — coming soon")}
               className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-3.5 text-1 font-semibold text-background"
             >
               <Plus size={iconSize.sm} /> Rent out
-            </Link>
+            </button>
             <button
               aria-label="Filters"
               onClick={() => setFilters(true)}
@@ -163,7 +165,7 @@ function RentHome() {
         </div>
       </SectionRow>
 
-      <SectionRow title="Recently viewed" to="/marketplace/rent/saved">
+      <SectionRow title="Recently viewed">
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {equipment.slice(2, 6).map((e) => (
             <EquipmentTile key={e.id} e={e} />
@@ -171,7 +173,7 @@ function RentHome() {
         </div>
       </SectionRow>
 
-      <SectionRow title="Saved rentals" to="/marketplace/rent/saved">
+      <SectionRow title="Saved rentals">
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
           {equipment.slice(0, 3).map((e) => (
             <EquipmentTile key={e.id} e={e} />
@@ -186,12 +188,16 @@ function RentHome() {
             Rent it out to 72,000+ verified music professionals. You set the dates, deposit and
             terms.
           </p>
-          <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">
+          <Btn className="mt-4 w-full" onClick={() => toast("Rent out equipment — coming soon")}>
             Rent Out Equipment
-          </BtnLink>
+          </Btn>
           <div className="mt-2 flex justify-center gap-4 text-1 font-semibold text-foreground">
-            <Link to="/marketplace/rent/mine">My rentals</Link>
-            <Link to="/marketplace/rent/listings">My listings</Link>
+            <button type="button" onClick={() => toast("My rentals — coming soon")}>
+              My rentals
+            </button>
+            <button type="button" onClick={() => toast("My listings — coming soon")}>
+              My listings
+            </button>
           </div>
         </div>
       </div>

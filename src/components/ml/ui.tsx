@@ -81,7 +81,7 @@ export function Screen({
 export const navItems = [
   { to: "/home", label: "Home", icon: Home },
   { to: "/discover", label: "Discover", icon: Compass },
-  { to: "/messages", label: "Connections", icon: MessageCircle },
+  { to: "/messages", label: "Connections", icon: MessageCircle, soon: true },
   { to: "/marketplace", label: "Market", icon: Store },
   { to: "/profile", label: "Profile", icon: User },
 ];
@@ -96,9 +96,9 @@ const menuGroups: {
     items: [
       { to: "/home", label: "Home", icon: Home },
       { to: "/discover", label: "Discover", icon: Compass },
-      { to: "/search", label: "Search", icon: Search },
-      { to: "/messages", label: "Connections", icon: MessageCircle },
-      { to: "/notifications", label: "Notifications", icon: Bell },
+      { to: "/search", label: "Search", icon: Search, soon: true },
+      { to: "/messages", label: "Connections", icon: MessageCircle, soon: true },
+      { to: "/notifications", label: "Notifications", icon: Bell, soon: true },
       { to: "/profile", label: "Profile", icon: User },
     ],
   },
@@ -108,10 +108,10 @@ const menuGroups: {
       { to: "/portfolio", label: "Portfolio", icon: FolderKanban },
       { to: "/services", label: "Services", icon: BriefcaseBusiness },
       { to: "/opportunities", label: "Opportunities", icon: Megaphone },
-      { to: "/collab", label: "Collaborations", icon: Handshake },
+      { to: "/collab", label: "Collaborations", icon: Handshake, soon: true },
       { to: "/bands", label: "Bands", icon: UsersRound, soon: true },
-      { to: "/reviews", label: "Reviews", icon: Star },
-      { to: "/verification", label: "Verification", icon: BadgeCheck, soon: true },
+      { to: "/reviews", label: "Reviews", icon: Star, soon: true },
+      { to: "/verification", label: "Verification", icon: BadgeCheck },
       { to: "/identity/qr", label: "QR & Card", icon: QrCode },
     ],
   },
@@ -120,7 +120,7 @@ const menuGroups: {
     items: [
       { to: "/marketplace", label: "Market", icon: Store },
       { to: "/marketplace/rent", label: "Rentals", icon: Package },
-      { to: "/bookings", label: "Bookings", icon: CalendarCheck },
+      { to: "/bookings", label: "Bookings", icon: CalendarCheck, soon: true },
       { to: "/studio", label: "Studios", icon: Mic2 },
       { to: "/business", label: "Business", icon: Building2 },
       { to: "/categories", label: "Categories", icon: LayoutGrid },
@@ -129,16 +129,16 @@ const menuGroups: {
   {
     title: "For you",
     items: [
-      { to: "/recommendations", label: "Recommendations", icon: Sparkles },
-      { to: "/saved", label: "Saved", icon: Bookmark },
-      { to: "/recently-viewed", label: "Recently viewed", icon: History },
+      { to: "/recommendations", label: "Recommendations", icon: Sparkles, soon: true },
+      { to: "/saved", label: "Saved", icon: Bookmark, soon: true },
+      { to: "/recently-viewed", label: "Recently viewed", icon: History, soon: true },
     ],
   },
   {
     title: "Account",
     items: [
       { to: "/settings", label: "Settings", icon: Settings },
-      { to: "/help", label: "Help", icon: CircleHelp },
+      { to: "/help", label: "Help", icon: CircleHelp, soon: true },
     ],
   },
 ];
@@ -166,7 +166,7 @@ export function BottomNav() {
                   className="flex h-16 items-center justify-center"
                 >
                   <span
-                    className={`flex h-10 items-center justify-center gap-2 rounded-full transition-[background-color,padding] duration-200 ease-standard ${
+                    className={`relative flex h-10 items-center justify-center gap-2 rounded-full transition-[background-color,padding] duration-200 ease-standard ${
                       active ? "bg-background px-4" : "w-10"
                     }`}
                   >
@@ -180,6 +180,12 @@ export function BottomNav() {
                       <span className="whitespace-nowrap text-sm font-semibold text-foreground">
                         {item.label}
                       </span>
+                    ) : null}
+                    {item.soon ? (
+                      <span
+                        aria-hidden
+                        className="absolute right-2.5 top-2 h-1.5 w-1.5 rounded-full bg-muted-foreground"
+                      />
                     ) : null}
                   </span>
                 </Link>

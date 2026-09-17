@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type ReactNode } from "react";
 import { CalendarDays, Package, Truck, MapPin } from "lucide-react";
+import { toast } from "sonner";
 import { Btn, BtnLink, Chip, Sheet, VerifiedBadge } from "./ui";
 import { ConditionBadge, LocationRow, Rating, SaveButton } from "./market";
 import { Price } from "./kit";
@@ -14,7 +15,7 @@ import {
   type RentalItem,
   type RentalStatus,
 } from "@/data/rentals";
-import { TextLink } from "@/components/ml/links";
+import { TextButton } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 
 export function RentalAvailabilityBadge({
@@ -102,22 +103,20 @@ export function EquipmentCard({ e }: { e: Equipment }) {
         </div>
         <div className="mt-3 flex items-center justify-between gap-2">
           <LocationRow text={`${e.location} · ${e.distance}`} />
-          <TextLink
-            to="/marketplace/rent/provider/$id"
-            params={{ id: e.providerId }}
+          <TextButton
+            onClick={() => toast("Provider profile — coming soon")}
             className="shrink-0 truncate text-1"
           >
             View Provider
-          </TextLink>
+          </TextButton>
         </div>
-        <BtnLink
-          to="/marketplace/rent/request/$id"
-          params={{ id: e.id }}
+        <Btn
           variant="outline"
           className="mt-3 w-full"
+          onClick={() => toast("Rental requests — coming soon")}
         >
           Check Availability
-        </BtnLink>
+        </Btn>
       </div>
     </article>
   );
@@ -236,10 +235,10 @@ export function ProviderSummary({ p, compact }: { p: Provider; compact?: boolean
 
 export function ProviderCard({ p }: { p: Provider }) {
   return (
-    <Link
-      to="/marketplace/rent/provider/$id"
-      params={{ id: p.id }}
-      className="block rounded-lg bg-subtle p-4"
+    <button
+      type="button"
+      onClick={() => toast("Provider profile — coming soon")}
+      className="block w-full rounded-lg bg-subtle p-4 text-left"
     >
       <ProviderSummary p={p} />
       <div className="mt-3 flex flex-wrap gap-2">
@@ -252,7 +251,7 @@ export function ProviderCard({ p }: { p: Provider }) {
           </span>
         ))}
       </div>
-    </Link>
+    </button>
   );
 }
 

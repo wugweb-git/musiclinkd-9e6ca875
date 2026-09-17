@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
+import { toast } from "sonner";
+import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
 import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
 import { equipment, providers, rentalCategories } from "@/data/rentals";
 import { loadCatalogRentals } from "@/lib/market-view";
@@ -109,9 +110,9 @@ function NearbyRentals() {
           <p className="mt-1 text-1 text-muted-foreground">
             Renters nearby are searching for backline and mics every week.
           </p>
-          <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">
+          <Btn className="mt-4 w-full" onClick={() => toast("Rent out equipment — coming soon")}>
             Rent Out Equipment
-          </BtnLink>
+          </Btn>
         </div>
       </div>
     </Screen>

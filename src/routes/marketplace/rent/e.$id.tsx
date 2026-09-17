@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Share2, Flag, Check } from "lucide-react";
-import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { toast } from "sonner";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
   ConditionBadge,
   LocationRow,
@@ -284,14 +285,13 @@ function RentalDetail() {
               ))}
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <BtnLink
-                to="/marketplace/rent/provider/$id"
-                params={{ id: p.id }}
+              <Btn
                 variant="outline"
                 className="w-full"
+                onClick={() => toast("Provider profile — coming soon")}
               >
                 View Profile
-              </BtnLink>
+              </Btn>
               <BtnLink to="/messages" variant="outline" className="w-full">
                 Message
               </BtnLink>
@@ -365,9 +365,9 @@ function RentalDetail() {
               Check Availability
             </BtnLink>
           ) : (
-            <BtnLink to="/marketplace/rent/request/$id" params={{ id: e.id }} className="shrink-0">
+            <Btn className="shrink-0" onClick={() => toast("Rental requests — coming soon")}>
               Check Availability
-            </BtnLink>
+            </Btn>
           )}
         </div>
       </div>

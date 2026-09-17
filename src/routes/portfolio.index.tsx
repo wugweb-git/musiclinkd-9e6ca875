@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Settings } from "lucide-react";
-import { Btn, BtnLink, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
+import { Btn, BtnLink, IconBtn, Screen, TopBar } from "@/components/ml/ui";
+import { toast } from "sonner";
 import {
   PortfolioHeader,
   PortfolioSkeleton,
@@ -62,9 +63,13 @@ function PortfolioOverview() {
         subtitle="Show the work you're proud of"
         back="/profile"
         right={
-          <IconBtnLink to="/portfolio/settings" label="Portfolio Settings" variant="plain">
+          <IconBtn
+            label="Portfolio Settings — coming soon"
+            variant="plain"
+            onClick={() => toast("Portfolio settings — coming soon")}
+          >
             <Settings size={iconSize.md} aria-hidden />
-          </IconBtnLink>
+          </IconBtn>
         }
       />
 
