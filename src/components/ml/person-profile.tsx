@@ -68,6 +68,17 @@ import {
   isOpenForWork,
 } from "./profile";
 import { HireModal } from "./hire-modal";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import {
+  answerConnection,
+  connectionWith,
+  removeConnection,
+  requestConnection,
+  setFollowing as setFollowingFn,
+  type ConnectionState,
+} from "@/lib/connections.functions";
 import { BottomCta } from "./marketing";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
@@ -143,6 +154,7 @@ export function PersonProfileExperience({
             />
           ) : (
             <ViewerActions
+              profileId={p.profileId}
               onHire={isOpenForWork(p.availability) ? () => setHireOpen(true) : undefined}
             />
           )}
@@ -242,26 +254,128 @@ export function PersonProfileExperience({
   );
 }
 
-function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
-  const [following, setFollowing] = useState(false);
-  const [connected, setConnected] = useState(false);
+/**
+ * What a visitor can do about this profile, read from the database: connect (asked for, then
+ * accepted), message, hire, follow. A signed-out visitor is sent to Welcome; a seed-only profile
+ * that has no database row keeps the buttons but cannot connect.
+ */
+function ViewerActions({
+  profileId,
+  onHire,
+}: {
+  profileId?: string | undefined;
+  onHire?: (() => void) | undefined;
+}) {
+  const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
+  const readConnection = useServerFn(connectionWith);
+  const ask = useServerFn(requestConnection);
+  const answer = useServerFn(answerConnection);
+  const remove = useServerFn(removeConnection);
+  const follow = useServerFn(setFollowingFn);
+  const live = Boolean(signedIn && profileId);
+  const key = ["connection", profileId] as const;
+
+  const q = useQuery({
+    queryKey: key,
+    queryFn: () => readConnection({ data: { profileId: profileId ?? "" } }),
+    enabled: live,
+  });
+  const state: ConnectionState = q.data?.state ?? "none";
+  const following = q.data?.following ?? false;
+
+  const act = useMutation({
+    mutationFn: async (what: "ask" | "accept" | "remove" | "follow" | "unfollow") => {
+      if (!profileId) return;
+      if (what === "ask") {
+        await ask({ data: { profileId } });
+        return;
+      }
+      if (what === "accept") {
+        const id = q.data?.connectionId;
+        if (id) await answer({ data: { id, accept: true } });
+        return;
+      }
+      if (what === "remove") {
+        await remove({ data: { profileId } });
+        return;
+      }
+      await follow({ data: { profileId, following: what === "follow" } });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
+  const connectLabel =
+    state === "connected"
+      ? "Connected"
+      : state === "sent"
+        ? "Requested"
+        : state === "received"
+          ? "Accept"
+          : "Connect";
+  const connectIcon =
+    state === "connected" || state === "sent" ? (
+      <Check size={iconSize.sm} aria-hidden />
+    ) : (
+      <UserPlus size={iconSize.sm} aria-hidden />
+    );
+
+  function onConnect() {
+    if (!live) return;
+    if (state === "none" || state === "declined") {
+      act.mutate("ask");
+      return;
+    }
+    if (state === "received") {
+      act.mutate("accept");
+      return;
+    }
+    act.mutate("remove");
+  }
+
+  // Signed out, or a profile with no row: the row reads the same, and every button leads to Welcome.
+  if (!live) {
+    return (
+      <div className="flex items-center gap-2">
+        <BtnLink
+          to="/welcome"
+          className="min-w-0 flex-1 px-3"
+          icon={<UserPlus size={iconSize.sm} aria-hidden />}
+        >
+          Connect
+        </BtnLink>
+        <BtnLink
+          to="/welcome"
+          variant="outline"
+          className="min-w-0 flex-1 px-3"
+          icon={<Send size={iconSize.sm} aria-hidden />}
+        >
+          Message
+        </BtnLink>
+        {onHire ? (
+          <IconBtnLink label="Hire" to="/welcome" variant="outline" className="h-12 w-12">
+            <BriefcaseBusiness size={iconSize.md} aria-hidden />
+          </IconBtnLink>
+        ) : null}
+        <IconBtnLink label="Follow" to="/welcome" variant="outline" className="h-12 w-12">
+          <Plus size={iconSize.md} aria-hidden />
+        </IconBtnLink>
+      </div>
+    );
+  }
 
   return (
     // One row, primary first: connect, then message, then hire, then follow. Each says its state.
     <div className="flex items-center gap-2">
       <Btn
-        variant={connected ? "outline" : "primary"}
+        variant={state === "connected" || state === "sent" ? "outline" : "primary"}
         className="min-w-0 flex-1 px-3"
-        icon={
-          connected ? (
-            <Check size={iconSize.sm} aria-hidden />
-          ) : (
-            <UserPlus size={iconSize.sm} aria-hidden />
-          )
-        }
-        onClick={() => setConnected((c) => !c)}
+        icon={connectIcon}
+        loading={act.isPending}
+        onClick={onConnect}
       >
-        {connected ? "Requested" : "Connect"}
+        {connectLabel}
       </Btn>
       <BtnLink
         to="/messages"
@@ -272,7 +386,7 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         Message
       </BtnLink>
       {/* Hire stays an icon until you are connected; then it earns its word. */}
-      {onHire && connected ? (
+      {onHire && state === "connected" ? (
         <Btn
           variant="outline"
           className="min-w-0 flex-1 px-3"
@@ -290,7 +404,7 @@ function ViewerActions({ onHire }: { onHire?: (() => void) | undefined }) {
         label={following ? "Following" : "Follow"}
         variant={following ? "ghost" : "outline"}
         className="h-12 w-12"
-        onClick={() => setFollowing((f) => !f)}
+        onClick={() => act.mutate(following ? "unfollow" : "follow")}
       >
         {following ? (
           <Check size={iconSize.md} aria-hidden />

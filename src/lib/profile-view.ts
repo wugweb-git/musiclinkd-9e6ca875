@@ -73,6 +73,7 @@ const roleTypeFromKey: Record<string, ProfileRole> = {
 export function profileFromRow(row: ProfileRow): PersonProfile {
   return {
     ...emptySections(),
+    ...(row.id ? { profileId: row.id } : {}),
     username: row.username ?? "",
     name: row.display_name ?? row.username ?? "",
     photo: row.avatar_url ?? "",
@@ -92,6 +93,7 @@ export function mergeProfileRow(
 ): PersonProfile {
   if (!row) return base;
   const primary = roleLabel(row.roles?.[0], labels);
+  const profileId = row.id;
   const linkMap = asLinkMap(row.links);
   const links = Object.entries(linkMap)
     .filter(([, v]) => Boolean(v))
@@ -99,6 +101,7 @@ export function mergeProfileRow(
 
   return {
     ...base,
+    ...(profileId ? { profileId } : {}),
     username: row.username || base.username,
     name: row.display_name || base.name,
     ...(row.avatar_url ? { photo: row.avatar_url } : {}),

@@ -122,6 +122,8 @@ export type MarketEntry = {
 
 export type PersonProfile = {
   username: string;
+  /** profiles.id, when this view came from the database. Connect and Follow need it. */
+  profileId?: string | undefined;
   name: string;
   photo: string;
   cover: string;
