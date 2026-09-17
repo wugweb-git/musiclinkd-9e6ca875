@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bookmark, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
@@ -13,7 +13,7 @@ import {
 } from "@/components/ml/opportunity";
 import { getOpportunity, categoryLabel, payParts } from "@/data/opportunities";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
-import { myApplicationTo } from "@/lib/applications.functions";
+import { myApplicationTo, recordOpportunityView } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
@@ -57,6 +57,12 @@ function OpportunityDetail() {
     enabled: signedIn,
     retry: false,
   });
+
+  const recordView = useServerFn(recordOpportunityView);
+  useEffect(() => {
+    // Once per real opportunity view; the database decides whether it actually counts.
+    if (signedIn && db) void recordView({ data: { slug: id } }).catch(() => {});
+  }, [signedIn, db, id, recordView]);
 
   if (!o) {
     return (

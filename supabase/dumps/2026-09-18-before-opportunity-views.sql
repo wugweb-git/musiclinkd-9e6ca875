@@ -1,0 +1,16 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918190000 (opportunity_views).
+--
+-- Scope: row count only. This migration is purely additive — a new opportunity_views table plus
+-- two SECURITY DEFINER functions (record_opportunity_view, opportunity_view_stats), mirroring the
+-- portfolio_item_plays / record_portfolio_play / trending_portfolio_items pattern from
+-- 20260917100200_portfolio_plays_trending.sql and 20260917100300_portfolio_plays_signed_in.sql.
+-- Nothing existing is read, altered, or referenced by a trigger, so there is nothing of the
+-- existing schema to restore.
+--
+-- opportunities: 9 rows (unchanged by this migration)
+--
+-- To undo the migration:
+--   DROP FUNCTION IF EXISTS public.opportunity_view_stats(uuid);
+--   DROP FUNCTION IF EXISTS public.record_opportunity_view(uuid);
+--   DROP TABLE IF EXISTS public.opportunity_views;

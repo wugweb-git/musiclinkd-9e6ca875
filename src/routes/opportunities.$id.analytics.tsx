@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, Meter } from "@/components/ml/kit";
 import { opportunityAnalytics, myOpportunities, getOpportunity } from "@/data/opportunities";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { getOpportunityViewStats } from "@/lib/applications.functions";
 
 export const Route = createFileRoute("/opportunities/$id/analytics")({
   // Ids that are not static opportunities are looked up as stored opportunity slugs.
@@ -33,10 +36,23 @@ function OpportunityAnalytics() {
   const { db } = Route.useLoaderData();
   const posted = myOpportunities.find((x) => x.id === id);
   const o = posted ?? db ?? undefined;
-  // A stored opportunity records only its applicant count: no views, saves or sources.
+  // A stored opportunity's views come from opportunity_views, a real table; the static demo
+  // opportunities below keep their illustrative figures since they are not real posts.
   const stored = !posted && db != null;
   const a = opportunityAnalytics;
   const peak = Math.max(...a.daily);
+
+  const readStats = useServerFn(getOpportunityViewStats);
+  const stats = useQuery({
+    queryKey: ["opportunity-views", id],
+    queryFn: () => readStats({ data: { slug: id } }),
+    enabled: stored,
+  });
+  const totalViews = stats.data?.totalViews ?? 0;
+  const daily = stats.data?.daily ?? [0, 0, 0, 0, 0, 0, 0];
+  const peakReal = Math.max(1, ...daily);
+  const applicants = o?.applicants ?? 0;
+  const viewToApply = totalViews > 0 ? `${Math.round((applicants / totalViews) * 100)}%` : "—";
 
   return (
     <Screen>
@@ -48,7 +64,11 @@ function OpportunityAnalytics() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <div className="grid grid-cols-2 gap-2">
           {(stored
-            ? [{ label: "Applicants", value: o?.applicants ?? 0 }]
+            ? [
+                { label: "Views", value: stats.isLoading ? "—" : totalViews },
+                { label: "Applicants", value: applicants },
+                { label: "View → apply", value: stats.isLoading ? "—" : viewToApply },
+              ]
             : [
                 { label: "Views", value: a.views },
                 { label: "Saves", value: a.saves },
@@ -63,7 +83,21 @@ function OpportunityAnalytics() {
           ))}
         </div>
 
-        {stored ? null : (
+        {stored ? (
+          <Card className="space-y-3">
+            <h2 className="text-sm">Views · last 7 days</h2>
+            <div className="flex h-28 items-end gap-2">
+              {daily.map((d, i) => (
+                <div
+                  key={i}
+                  className="flex-1 rounded-t-lg bg-primary/80"
+                  style={{ height: `${(d / peakReal) * 100}%` }}
+                  aria-label={`${d} views`}
+                />
+              ))}
+            </div>
+          </Card>
+        ) : (
           <>
             <Card className="space-y-3">
               <h2 className="text-sm">Views · last 7 days</h2>

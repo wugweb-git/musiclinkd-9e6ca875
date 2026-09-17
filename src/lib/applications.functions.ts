@@ -236,3 +236,53 @@ export const createOpportunity = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return row as { id: string; slug: string };
   });
+
+/**
+ * Counts a view of someone else's opportunity. The database decides whether it actually counts
+ * (record_opportunity_view: signed-in, not the poster's own, at most once per 30 minutes) — this
+ * just resolves the slug and asks. Never throws: a view is a courtesy count, not a critical write.
+ * Schema: supabase/migrations/20260918190000_opportunity_views.sql
+ */
+export const recordOpportunityView = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ context, data }) => {
+    const client = db(context.supabase);
+    const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
+    if (!opportunityId) return { ok: true };
+    const rpc = client.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ error: { message: string } | null }>;
+    await rpc.call(client, "record_opportunity_view", { opp: opportunityId });
+    return { ok: true };
+  });
+
+export type OpportunityViewStats = { totalViews: number; daily: number[] };
+
+/** The poster's own view stats for the last 7 days. Empty for anyone else's opportunity. */
+export const getOpportunityViewStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ context, data }): Promise<OpportunityViewStats> => {
+    const client = db(context.supabase);
+    const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
+    if (!opportunityId) return { totalViews: 0, daily: [0, 0, 0, 0, 0, 0, 0] };
+    const rpc = client.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{
+      data: { day: string; views: number }[] | null;
+      error: { message: string } | null;
+    }>;
+    const { data: rows, error } = await rpc.call(client, "opportunity_view_stats", {
+      opp: opportunityId,
+    });
+    if (error) throw new Error(error.message);
+    const byDay = new Map((rows ?? []).map((r) => [r.day, Number(r.views)]));
+    const daily = Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(Date.now() - (6 - i) * 86_400_000).toISOString().slice(0, 10);
+      return byDay.get(day) ?? 0;
+    });
+    return { totalViews: daily.reduce((sum, n) => sum + n, 0), daily };
+  });
