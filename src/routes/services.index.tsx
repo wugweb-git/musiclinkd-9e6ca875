@@ -70,22 +70,6 @@ function ServicesHome() {
           </div>
         ) : null}
 
-        <div className="space-y-2">
-          <Row
-            icon={<CalendarClock size={iconSize.sm} />}
-            title="Availability"
-            subtitle="Whether your services can be booked right now"
-            to="/services/availability"
-          />
-          <Row
-            icon={<Settings2 size={iconSize.sm} />}
-            title="Booking policies"
-            subtitle="Deposits, cancellation, rescheduling"
-            onClick={() => toast("Booking policies — coming soon")}
-            right={<SoonBadge />}
-          />
-        </div>
-
         <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
           {filters.map((f) => (
             <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>

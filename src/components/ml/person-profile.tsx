@@ -376,7 +376,8 @@ function ViewerActions({
   }
 
   return (
-    // One row, primary first: connect, then message, then hire, then follow. Each says its state.
+    // One row, one primary at a time: Connect leads until you are connected, then Message does —
+    // the row is never all-outline, because there is always exactly one next thing to do.
     <div className="flex items-center gap-2">
       <Btn
         variant={state === "connected" || state === "sent" ? "outline" : "primary"}
@@ -388,7 +389,7 @@ function ViewerActions({
         {connectLabel}
       </Btn>
       <Btn
-        variant="outline"
+        variant={state === "connected" ? "primary" : "outline"}
         className="min-w-0 flex-1 px-3"
         icon={<Send size={iconSize.sm} aria-hidden />}
         loading={message.isPending}

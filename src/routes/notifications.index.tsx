@@ -12,8 +12,8 @@ import {
   UserRoundPlus,
   type LucideIcon,
 } from "lucide-react";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
-import { EmptyState, Loading } from "@/components/ml/kit";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import {
   listNotifications,
   markRead,
@@ -128,12 +128,8 @@ function NotificationsScreen() {
         }
       />
 
-      <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-3">
-        {filters.map((f) => (
-          <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
-            {f}
-          </Chip>
-        ))}
+      <div className="px-5 pt-3">
+        <Segmented value={filter} options={filters} onChange={setFilter} />
       </div>
 
       <main className="px-5 pt-3">
