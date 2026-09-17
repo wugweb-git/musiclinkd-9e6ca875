@@ -82,9 +82,6 @@ import { Route as OpportunitiesSavedRouteImport } from './routes/opportunities.s
 import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
-import { Route as PortfolioReorderRouteImport } from './routes/portfolio.reorder'
-import { Route as PortfolioSelectRouteImport } from './routes/portfolio.select'
-import { Route as PortfolioSettingsRouteImport } from './routes/portfolio.settings'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
@@ -548,21 +545,6 @@ const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
 const PortfolioAnalyticsRoute = PortfolioAnalyticsRouteImport.update({
   id: '/portfolio/analytics',
   path: '/portfolio/analytics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioReorderRoute = PortfolioReorderRouteImport.update({
-  id: '/portfolio/reorder',
-  path: '/portfolio/reorder',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioSelectRoute = PortfolioSelectRouteImport.update({
-  id: '/portfolio/select',
-  path: '/portfolio/select',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioSettingsRoute = PortfolioSettingsRouteImport.update({
-  id: '/portfolio/settings',
-  path: '/portfolio/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileIndexRoute = ProfileIndexRouteImport.update({
@@ -1132,9 +1114,6 @@ export interface FileRoutesByFullPath {
   '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
-  '/portfolio/reorder': typeof PortfolioReorderRoute
-  '/portfolio/select': typeof PortfolioSelectRoute
-  '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
@@ -1308,9 +1287,6 @@ export interface FileRoutesByTo {
   '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
-  '/portfolio/reorder': typeof PortfolioReorderRoute
-  '/portfolio/select': typeof PortfolioSelectRoute
-  '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
@@ -1486,9 +1462,6 @@ export interface FileRoutesById {
   '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
-  '/portfolio/reorder': typeof PortfolioReorderRoute
-  '/portfolio/select': typeof PortfolioSelectRoute
-  '/portfolio/settings': typeof PortfolioSettingsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
@@ -1665,9 +1638,6 @@ export interface FileRouteTypes {
     | '/opportunities/saved'
     | '/opportunities/search'
     | '/portfolio/analytics'
-    | '/portfolio/reorder'
-    | '/portfolio/select'
-    | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
@@ -1841,9 +1811,6 @@ export interface FileRouteTypes {
     | '/opportunities/saved'
     | '/opportunities/search'
     | '/portfolio/analytics'
-    | '/portfolio/reorder'
-    | '/portfolio/select'
-    | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
@@ -2018,9 +1985,6 @@ export interface FileRouteTypes {
     | '/opportunities/saved'
     | '/opportunities/search'
     | '/portfolio/analytics'
-    | '/portfolio/reorder'
-    | '/portfolio/select'
-    | '/portfolio/settings'
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
@@ -2196,9 +2160,6 @@ export interface RootRouteChildren {
   OpportunitiesSavedRoute: typeof OpportunitiesSavedRoute
   OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
-  PortfolioReorderRoute: typeof PortfolioReorderRoute
-  PortfolioSelectRoute: typeof PortfolioSelectRoute
-  PortfolioSettingsRoute: typeof PortfolioSettingsRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ProfileInsightsRoute: typeof ProfileInsightsRoute
@@ -2818,27 +2779,6 @@ declare module '@tanstack/react-router' {
       path: '/portfolio/analytics'
       fullPath: '/portfolio/analytics'
       preLoaderRoute: typeof PortfolioAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/reorder': {
-      id: '/portfolio/reorder'
-      path: '/portfolio/reorder'
-      fullPath: '/portfolio/reorder'
-      preLoaderRoute: typeof PortfolioReorderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/select': {
-      id: '/portfolio/select'
-      path: '/portfolio/select'
-      fullPath: '/portfolio/select'
-      preLoaderRoute: typeof PortfolioSelectRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/settings': {
-      id: '/portfolio/settings'
-      path: '/portfolio/settings'
-      fullPath: '/portfolio/settings'
-      preLoaderRoute: typeof PortfolioSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/': {
@@ -3620,9 +3560,6 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesSavedRoute: OpportunitiesSavedRoute,
   OpportunitiesSearchRoute: OpportunitiesSearchRoute,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
-  PortfolioReorderRoute: PortfolioReorderRoute,
-  PortfolioSelectRoute: PortfolioSelectRoute,
-  PortfolioSettingsRoute: PortfolioSettingsRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   ProfileInsightsRoute: ProfileInsightsRoute,

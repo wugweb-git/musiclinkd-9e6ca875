@@ -147,6 +147,22 @@ export const savePortfolioItem = createServerFn({ method: "POST" })
     return row;
   });
 
+/** Publish or hide one work. A hidden work stays in the account's list but leaves the profile. */
+export const setPortfolioPublished = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ id: z.string().uuid(), published: z.boolean() }).parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const { error } = await context.supabase
+      .from("portfolio_items")
+      .update({ published: data.published })
+      .eq("id", data.id)
+      .eq("user_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { published: data.published };
+  });
+
 export const deletePortfolioItem = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))

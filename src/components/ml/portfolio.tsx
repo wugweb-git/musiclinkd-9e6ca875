@@ -1,7 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import {
-  ArrowDown,
-  ArrowUp,
   BriefcaseBusiness,
   Clapperboard,
   Disc3,
@@ -13,14 +11,18 @@ import {
   Mic,
   Music2,
   PenLine,
+  EyeOff,
+  Eye,
+  Share2,
   Star,
+  Trash2,
   X,
   type LucideIcon,
   ChevronDown,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
-import { Btn, BtnLink, Chip, Sheet } from "@/components/ml/ui";
+import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
 import {
   StateCard as BaseStateCard,
   StatusPill as BaseStatusPill,
@@ -41,6 +43,7 @@ import {
 import { showDemoControls } from "@/lib/dev";
 import { iconSize } from "@/lib/tokens";
 
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export { analyticsFor };
 
 /* ---------------- Work type icon ---------------------------------------- */
@@ -110,7 +113,26 @@ export function WorkTypeSheet({ open, onClose }: { open: boolean; onClose: () =>
  * Two states. Resting: cover (or type icon), title, type. Tapped: expands in place with the player
  * when the link's source embeds, or an Open link to a new tab when it doesn't.
  */
-export function WorkCard({ item }: { item: PortfolioItem }) {
+/**
+ * One work, with everything you can do to it. Featuring happens here on the list — it is a
+ * property of the work, and it saves as it is tapped.
+ */
+export function WorkCard({
+  item,
+  actions,
+}: {
+  item: PortfolioItem;
+  /** Omitted for a read-only list (the signed-out demo, or somebody else's work). */
+  actions?: {
+    onFeature: () => void;
+    onTogglePublished: () => void;
+    onShare: () => void;
+    onDelete: () => void;
+    /** False when three works already lead and this one is not one of them. */
+    canFeature: boolean;
+    busy: boolean;
+  };
+}) {
   const t = workType(item.kind);
   const [open, setOpen] = useState(false);
   return (
@@ -136,7 +158,12 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <h3 className="truncate text-2 font-semibold">{item.title}</h3>
-              <StatusPill published={item.published} />
+              <span className="flex shrink-0 items-center gap-1.5">
+                {item.featured ? (
+                  <span className="pill bg-background text-muted-foreground">Featured</span>
+                ) : null}
+                <StatusPill published={item.published} />
+              </span>
             </div>
             <p className="mt-0.5 text-1 text-muted-foreground">
               {t.label}
@@ -164,7 +191,7 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
       {open ? (
         <div className="animate-in fade-in space-y-3 px-4 pb-4 duration-200">
           {item.media_url ? <MediaEmbed url={item.media_url} title={item.title} /> : null}
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <BtnLink
               to="/portfolio/$id"
               params={{ id: item.id }}
@@ -173,6 +200,49 @@ export function WorkCard({ item }: { item: PortfolioItem }) {
             >
               Details
             </BtnLink>
+            {actions ? (
+              <>
+                <IconBtnLink
+                  label="Edit"
+                  to="/portfolio/$id/edit"
+                  params={{ id: item.id }}
+                  variant="outline"
+                >
+                  <PenLine size={iconSize.sm} aria-hidden />
+                </IconBtnLink>
+                <IconBtn
+                  label={item.featured ? "Remove from featured" : "Feature this"}
+                  variant={item.featured ? "ink" : "outline"}
+                  disabled={actions.busy || (!item.featured && !actions.canFeature)}
+                  onClick={actions.onFeature}
+                >
+                  <Star size={iconSize.sm} fill={item.featured ? "currentColor" : "none"} aria-hidden />
+                </IconBtn>
+                <IconBtn
+                  label={item.published ? "Hide from your profile" : "Publish to your profile"}
+                  variant="outline"
+                  disabled={actions.busy}
+                  onClick={actions.onTogglePublished}
+                >
+                  {item.published ? (
+                    <EyeOff size={iconSize.sm} aria-hidden />
+                  ) : (
+                    <Eye size={iconSize.sm} aria-hidden />
+                  )}
+                </IconBtn>
+                <IconBtn label="Share this work" variant="outline" onClick={actions.onShare}>
+                  <Share2 size={iconSize.sm} aria-hidden />
+                </IconBtn>
+                <IconBtn
+                  label="Delete this work"
+                  variant="outline"
+                  disabled={actions.busy}
+                  onClick={actions.onDelete}
+                >
+                  <Trash2 size={iconSize.sm} aria-hidden />
+                </IconBtn>
+              </>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -587,93 +657,6 @@ export function ContributorPicker({
         </div>
       ) : null}
     </div>
-  );
-}
-
-/* ---------------- Featured toggle & reorder ----------------------------- */
-
-export function FeaturedToggle({
-  on,
-  disabled,
-  onToggle,
-}: {
-  on: boolean;
-  disabled?: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={on}
-      disabled={disabled && !on}
-      onClick={onToggle}
-      className={`rounded-full border px-4 py-2 text-1 font-semibold ${
-        on ? "border-transparent bg-primary text-primary-foreground" : "border-border bg-card"
-      } ${disabled && !on ? "opacity-50" : ""}`}
-    >
-      <span className="inline-flex items-center gap-1">
-        <Star size={iconSize.xs} fill={on ? "currentColor" : "none"} aria-hidden />
-        {on ? "Featured" : "Feature this"}
-      </span>
-    </button>
-  );
-}
-
-export function ReorderList({
-  items,
-  onMove,
-  featured,
-  onFeature,
-}: {
-  items: PortfolioItem[];
-  onMove: (index: number, dir: -1 | 1) => void;
-  featured?: string[];
-  onFeature?: (id: string) => void;
-}) {
-  return (
-    <ol className="space-y-3">
-      {items.map((item, i) => (
-        <li key={item.id} className="rounded-lg bg-subtle p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">{item.title}</p>
-              <p className="text-1 text-muted-foreground">
-                {workType(item.kind).label} · position {i + 1}
-              </p>
-            </div>
-            <div className="flex shrink-0 gap-3">
-              <button
-                type="button"
-                onClick={() => onMove(i, -1)}
-                disabled={i === 0}
-                aria-label={`Move ${item.title} up`}
-                className="hit-area flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
-              >
-                <ArrowUp size={iconSize.sm} aria-hidden />
-              </button>
-              <button
-                type="button"
-                onClick={() => onMove(i, 1)}
-                disabled={i === items.length - 1}
-                aria-label={`Move ${item.title} down`}
-                className="hit-area flex h-10 w-10 items-center justify-center rounded-full border border-border disabled:opacity-40"
-              >
-                <ArrowDown size={iconSize.sm} aria-hidden />
-              </button>
-            </div>
-          </div>
-          {onFeature ? (
-            <div className="mt-3">
-              <FeaturedToggle
-                on={(featured ?? []).includes(item.id)}
-                disabled={(featured ?? []).length >= FEATURED_LIMIT}
-                onToggle={() => onFeature(item.id)}
-              />
-            </div>
-          ) : null}
-        </li>
-      ))}
-    </ol>
   );
 }
 

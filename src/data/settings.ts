@@ -61,9 +61,10 @@ export const settingsGroups: SettingsGroup[] = [
         key: "portfolio",
         label: "Portfolio settings",
         hint: "Visibility and ordering",
-        to: "/portfolio/settings",
+        // Both live on the work itself now, so this goes to the portfolio rather than a screen
+        // that only held them in a form.
+        to: "/portfolio",
         icon: "folder",
-        soon: true,
       },
     ],
   },
