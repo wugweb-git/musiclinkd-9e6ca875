@@ -3,9 +3,10 @@ import { z } from "zod";
 import { anonClient } from "@/lib/portfolio.functions";
 
 /*
- * Bands: a group of existing talent profiles, not an account, keyed by slug. Public reads with the
- * anon key; members of private profiles are hidden by RLS. Schema:
- * supabase/migrations/20260915130000_bands.sql.
+ * Bands read the collabs tables: a band is a collab of type 'band' (owner, 17 Sep 2026), the
+ * ongoing public kind, as against a project room. A collab is a group of existing talent profiles,
+ * not an account, keyed by slug. Public reads with the anon key; members of private profiles are
+ * hidden by RLS. Schema: supabase/migrations/20260917120000_collabs.sql.
  */
 
 export type BandRow = {
@@ -26,6 +27,9 @@ export type BandRow = {
   rate_unit: string | null;
   is_verified: boolean;
   created_by: string | null;
+  type: "band" | "project";
+  visibility: "public" | "private";
+  status: "active" | "paused" | "completed" | "archived";
   members: {
     profile_id: string;
     role: "owner" | "admin" | "member";
@@ -62,11 +66,11 @@ export type BandRow = {
 };
 
 const BAND = `id, slug, name, tagline, bio, genres, city, formed_year, avatar_url, cover_url, looking_for,
-  availability, rate_paise, rate_unit, is_verified, created_by,
-  members:band_members(profile_id, role, instrument, since_year, sort_order,
+  availability, rate_paise, rate_unit, is_verified, created_by, type, visibility, status,
+  members:collab_members(profile_id, role, instrument, since_year, sort_order,
     profile:profiles(username, display_name, avatar_url, is_verified)),
-  events:band_events(id, title, venue, city, event_date, event_time, date_precision, status, ticket_note, sort_order),
-  releases:band_releases(id, title, kind, release_year, cover_url, sort_order)`;
+  events:collab_events(id, title, venue, city, event_date, event_time, date_precision, status, ticket_note, sort_order),
+  releases:collab_releases(id, title, kind, release_year, cover_url, sort_order)`;
 
 type Sorted = { sort_order: number };
 const bySort = (a: Sorted, b: Sorted) => a.sort_order - b.sort_order;
@@ -84,7 +88,11 @@ function shape(raw: BandRow): BandRow {
 
 export const listBands = createServerFn({ method: "GET" }).handler(async (): Promise<BandRow[]> => {
   const client = await anonClient();
-  const { data, error } = await client.from("bands").select(BAND).order("name");
+  const { data, error } = await client
+    .from("collabs")
+    .select(BAND)
+    .eq("type", "band")
+    .order("name");
   if (error) throw new Error(error.message);
   return ((data ?? []) as unknown as BandRow[]).map(shape);
 });
@@ -94,8 +102,9 @@ export const getBandBySlug = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<BandRow | null> => {
     const client = await anonClient();
     const { data: row, error } = await client
-      .from("bands")
+      .from("collabs")
       .select(BAND)
+      .eq("type", "band")
       .eq("slug", data.slug)
       .maybeSingle();
     if (error) throw new Error(error.message);
