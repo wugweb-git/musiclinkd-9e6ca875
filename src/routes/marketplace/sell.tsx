@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { AudioWaveform, Guitar, Package, Wrench, type LucideIcon } from "lucide-react";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { PriceBlock, TrustPill } from "@/components/ml/market";
 import { createListing } from "@/lib/catalog.functions";
@@ -27,11 +28,11 @@ export const Route = createFileRoute("/marketplace/sell")({
 });
 
 const types = [
-  { label: "Instrument", emoji: "🎸", category: "gear_sale", itemCategoryKind: "instrument" },
-  { label: "Audio equipment", emoji: "🎙", category: "gear_sale", itemCategoryKind: "equipment" },
-  { label: "Rental", emoji: "📦", category: "gear_rental", itemCategoryKind: "equipment" },
-  { label: "Service", emoji: "🎚", category: "creative_services" },
-] as const;
+  { label: "Instrument", icon: Guitar, category: "gear_sale", itemCategoryKind: "instrument" },
+  { label: "Audio equipment", icon: AudioWaveform, category: "gear_sale", itemCategoryKind: "equipment" },
+  { label: "Rental", icon: Package, category: "gear_rental", itemCategoryKind: "equipment" },
+  { label: "Service", icon: Wrench, category: "creative_services" },
+] as const satisfies { label: string; icon: LucideIcon; category: string; itemCategoryKind?: string }[];
 
 // Only the conditions the real schema stores; a service or rental has no condition.
 const conditions = [
@@ -103,11 +104,8 @@ function Sell() {
                 onClick={() => setType(t.label)}
                 className={`flex w-full items-center gap-3 rounded-lg border-2 p-4 text-left ${type === t.label ? "border-foreground" : "border-transparent"} bg-subtle`}
               >
-                <span
-                  className="flex h-11 w-11 items-center justify-center rounded-sm text-2"
-                  style={{ background: "var(--surface-subtle)" }}
-                >
-                  {t.emoji}
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip">
+                  <t.icon size={20} strokeWidth={1.75} aria-hidden />
                 </span>
                 <span className="text-sm font-semibold">{t.label}</span>
               </button>
