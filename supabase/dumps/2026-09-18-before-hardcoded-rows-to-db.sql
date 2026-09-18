@@ -1,0 +1,19 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918220000_hardcoded_rows_to_db.sql.
+--
+-- Scope: row counts plus a clash check. That migration only inserts new rows (content that was
+-- hardcoded in src/data/*.ts); it alters no column and changes no existing row. None of its slugs
+-- existed at snapshot time, so every row it adds is identifiable by slug.
+--
+-- Row counts: marketplace_listings 8, studios 12, studio_rooms 7, opportunities 9.
+--
+-- To undo:
+--   DELETE FROM public.studio_rooms WHERE studio_id IN
+--     (SELECT id FROM public.studios WHERE slug IN ('jam-room-bandra', 'octave-sound-labs'));
+--   DELETE FROM public.studios WHERE slug IN ('jam-room-bandra', 'octave-sound-labs');
+--   DELETE FROM public.marketplace_listings WHERE slug IN ('shure-sm7b', 'fender-twin',
+--     'pioneer-xdj-rx3', 'jbl-pa-2k', 'swaraj-tabla', 'focusrite-18i20-rent', 'nord-stage-3',
+--     'fender-strat-62', 'sitar-swaraj', 'backline-rental', 'focusrite-18i20', 'neumann-tlm103');
+--   DELETE FROM public.opportunities WHERE slug IN ('female-playback-singer-indie-pop-single',
+--     'mixing-engineer-6-track-alt-rock-ep', 'session-drummer-2-night-club-run',
+--     'recording-studio-3-days-live-tracking', 'lyricist-hindi-brand-film-sneaker-launch');
