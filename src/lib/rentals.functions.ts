@@ -239,8 +239,10 @@ export { STATUS_DB as rentalStatusToDb };
  *
  * Provider is deliberately NOT the full data/rentals.ts Provider type: badges, responseRate,
  * responseTime and years-as-a-provider aren't tracked anywhere (not just for rentals — nowhere in
- * the schema), and this doesn't fabricate them. rating/reviews/completedRentals ARE real, computed
- * from the reviews and rental_bookings tables rather than stored redundantly. Whether the provider
+ * the schema), and this doesn't fabricate them. rating/reviews/followers ARE real: the database
+ * keeps profiles.rating, review_count and followers_count from reviews and follows
+ * (20260918240000_missing_data.sql); before that migration the rating is averaged from reviews
+ * here. completedRentals is counted from rental_bookings. Whether the provider
  * is a business or talent account is read from whether a profile_business row exists for them —
  * the same signal profile-groups.functions.ts uses ("an account is a business when it has a
  * profile_business row").
@@ -352,19 +354,33 @@ export type RealProvider = Pick<Provider, "id" | "name" | "location" | "verified
   isBusiness: boolean;
   rating?: number;
   reviews?: number;
+  followers?: number;
   completedRentals: number;
 };
+
+type ProviderProfileRow = {
+  id: string;
+  display_name: string | null;
+  headline: string | null;
+  bio: string | null;
+  city: string | null;
+  avatar_url: string | null;
+  is_verified: boolean;
+  rating?: number | null;
+  review_count?: number;
+  followers_count?: number;
+};
+
+const PROVIDER_PROFILE = "id, display_name, headline, bio, city, avatar_url, is_verified";
 
 export const getRentalProvider = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<RealProvider | null> => {
     const client = await anonClient();
-    const [profileRes, businessRes, reviewsRes, completedRes] = await Promise.all([
-      client
-        .from("profiles")
-        .select("id, display_name, headline, bio, city, avatar_url, is_verified")
-        .eq("id", data.profileId)
-        .maybeSingle(),
+    const profileOf = (select: string) =>
+      client.from("profiles").select(select).eq("id", data.profileId).maybeSingle();
+    const [standingRes, businessRes, reviewsRes, completedRes] = await Promise.all([
+      profileOf(`${PROVIDER_PROFILE}, rating, review_count, followers_count`),
       client
         .from("profile_business")
         .select("profile_id")
@@ -377,23 +393,23 @@ export const getRentalProvider = createServerFn({ method: "GET" })
         .eq("status", "completed")
         .eq("listing.seller_profile_id", data.profileId),
     ]);
+    // Before the standing columns exist, the profile is read without them.
+    const profileRes = standingRes.error ? await profileOf(PROVIDER_PROFILE) : standingRes;
     if (profileRes.error) throw new Error(profileRes.error.message);
-    const profile = profileRes.data as {
-      id: string;
-      display_name: string | null;
-      headline: string | null;
-      bio: string | null;
-      city: string | null;
-      avatar_url: string | null;
-      is_verified: boolean;
-    } | null;
+    const profile = profileRes.data as unknown as ProviderProfileRow | null;
     if (!profile) return null;
     const reviewRows = (reviewsRes.data ?? []) as { rating: number }[];
-    const rating = reviewRows.length
-      ? Math.round(
-          (reviewRows.reduce((s, r) => s + Number(r.rating), 0) / reviewRows.length) * 10,
-        ) / 10
-      : undefined;
+    const stored = profile.review_count != null;
+    const count = stored ? (profile.review_count ?? 0) : reviewRows.length;
+    const rating = !count
+      ? undefined
+      : stored
+        ? profile.rating == null
+          ? undefined
+          : Number(profile.rating)
+        : Math.round(
+            (reviewRows.reduce((s, r) => s + Number(r.rating), 0) / reviewRows.length) * 10,
+          ) / 10;
     return {
       id: profile.id,
       name: profile.display_name ?? "MusicLinkd member",
@@ -404,7 +420,8 @@ export const getRentalProvider = createServerFn({ method: "GET" })
       photo: profile.avatar_url ?? "",
       isBusiness: Boolean(businessRes.data),
       ...(rating != null ? { rating } : {}),
-      ...(reviewRows.length ? { reviews: reviewRows.length } : {}),
+      ...(count ? { reviews: count } : {}),
+      ...(profile.followers_count ? { followers: profile.followers_count } : {}),
       completedRentals: (completedRes.data ?? []).length,
     };
   });

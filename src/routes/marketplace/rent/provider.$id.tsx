@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, Chip, VerifiedBadge } from "@/components/ml/ui";
-import { EmptyState, EquipmentGrid, Rating } from "@/components/ml/market";
+import { EmptyState, EquipmentGrid, Followers, Rating, ReviewTags } from "@/components/ml/market";
 import { Loading } from "@/components/ml/kit";
 import { RentalReportSheet } from "@/components/ml/rental";
 import { getRentalProvider } from "@/lib/rentals.functions";
@@ -98,6 +98,7 @@ function ProviderProfile() {
             {p.role ? <p className="mt-0.5 text-1 text-muted-foreground">{p.role}</p> : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               {p.rating ? <Rating value={p.rating} count={p.reviews} /> : null}
+              <Followers count={p.followers} />
               {p.location ? (
                 <span className="text-1 text-muted-foreground">{p.location}</span>
               ) : null}
@@ -165,6 +166,7 @@ function ProviderProfile() {
                   <Rating value={r.rating} />
                 </div>
                 <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
+                <ReviewTags tags={r.tags} />
                 {r.response ? (
                   <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
                     <span className="font-semibold">{p.name}:</span> {r.response}

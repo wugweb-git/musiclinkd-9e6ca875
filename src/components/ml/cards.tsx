@@ -156,6 +156,26 @@ export function TalentGridCard({ t }: { t: Talent }) {
   );
 }
 
+/** Neighbourhood and city, "Indiranagar, Bengaluru". */
+function personPlace(person: DirectoryPerson) {
+  return [person.area, person.city].filter(Boolean).join(", ");
+}
+
+/** The stored rating and review count; nothing while there are no reviews. */
+function PersonRating({ person }: { person: DirectoryPerson }) {
+  if (person.rating == null) return null;
+  return (
+    <span
+      className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-warn"
+      aria-label={`${person.rating} out of 5 from ${person.reviewCount} reviews`}
+    >
+      <Star size={iconSize.xs} fill="currentColor" aria-hidden />
+      {person.rating.toFixed(1)}
+      <span className="font-normal text-muted-foreground">({person.reviewCount})</span>
+    </span>
+  );
+}
+
 /*
  * One person from the profiles table, as a row. The directory, search and anywhere else that
  * lists real people share this — the same name, headline, city and save control in every list.
@@ -197,10 +217,15 @@ export function PersonRow({
                 .map((r) => labelFor(roleLabels, r))
                 .join(" · ")}
           </span>
-          {person.city ? (
+          {person.city || person.rating != null ? (
             <span className="mt-0.5 flex items-center gap-1 text-1 text-muted-foreground">
-              <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-              {person.city}
+              {person.city ? (
+                <>
+                  <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
+                  <span className="truncate">{personPlace(person)}</span>
+                </>
+              ) : null}
+              <PersonRating person={person} />
             </span>
           ) : null}
         </span>
@@ -253,7 +278,12 @@ export function PersonCard({
       {person.city ? (
         <span className="mt-1 flex items-center gap-1 text-1 text-muted-foreground">
           <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-          <span className="truncate">{person.city}</span>
+          <span className="truncate">{personPlace(person)}</span>
+        </span>
+      ) : null}
+      {person.rating != null ? (
+        <span className="mt-1 flex items-center text-1">
+          <PersonRating person={person} />
         </span>
       ) : null}
     </Link>

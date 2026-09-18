@@ -31,6 +31,25 @@ function labelled(labels: TaxonomyLabels | undefined, category: string, slugs: s
   return map ? slugs.map((s) => map[s] ?? s) : slugs;
 }
 
+/** Link keys as their platforms are written, for when link_platforms has no label. */
+const PLATFORM_NAMES: Record<string, string> = {
+  spotify: "Spotify",
+  soundcloud: "SoundCloud",
+  youtube: "YouTube",
+  instagram: "Instagram",
+  apple_music: "Apple Music",
+  bandcamp: "Bandcamp",
+  x: "X",
+  twitter: "X",
+  facebook: "Facebook",
+  linkedin: "LinkedIn",
+  website: "Website",
+};
+
+function platformLabel(key: string, labels?: TaxonomyLabels): string {
+  return labels?.["link_platforms"]?.[key] ?? PLATFORM_NAMES[key.toLowerCase()] ?? key;
+}
+
 function roleLabel(key: string | undefined | null, labels?: TaxonomyLabels): string | null {
   if (!key) return null;
   return labels?.["person_types"]?.[key] ?? roleDefs.find((r) => r.key === key)?.label ?? key;
@@ -97,7 +116,10 @@ export function mergeProfileRow(
   const linkMap = asLinkMap(row.links);
   const links = Object.entries(linkMap)
     .filter(([, v]) => Boolean(v))
-    .map(([label, handle]) => ({ label, handle }));
+    .map(([key, handle]) => ({ label: platformLabel(key, labels), handle }));
+  // rating and review_count are kept from reviews by the database; no reviews, no rating.
+  const reviewCount = row.review_count ?? 0;
+  const rating = reviewCount && row.rating != null ? Number(row.rating) : 0;
 
   return {
     ...base,
@@ -112,7 +134,7 @@ export function mergeProfileRow(
     primaryRole: primary ?? base.primaryRole,
     secondaryRoles: (row.roles ?? []).slice(1).map((r) => roleLabel(r, labels) ?? r),
     roleSlugs: row.roles ?? [],
-    location: [row.city, row.state].filter(Boolean).join(", ") || base.location,
+    location: [row.area, row.city, row.state].filter(Boolean).join(", ") || base.location,
     shortBio: row.bio || base.shortBio,
     longBio: row.bio || base.longBio,
     genres: row.genres?.length ? labelled(labels, "genres", row.genres) : base.genres,
@@ -122,6 +144,11 @@ export function mergeProfileRow(
     languages: row.languages?.length
       ? labelled(labels, "languages", row.languages)
       : base.languages,
+    influences: row.influences?.length ? row.influences : base.influences,
+    ...(reviewCount ? { rating, reviewCount } : {}),
+    ...(row.followers_count != null
+      ? { stats: { ...base.stats, followers: row.followers_count.toLocaleString("en-IN") } }
+      : {}),
     specialisations: row.specialisations?.length
       ? row.specialisations.map((s) => (s.includes(":") ? s.slice(s.indexOf(":") + 1) : s))
       : base.specialisations,
@@ -177,7 +204,7 @@ function portfolioSections(items: ProfileSections["portfolio"]) {
         title: item.title,
         role: item.role ?? "",
         project: item.description ?? "",
-        duration: "",
+        duration: item.duration ?? "",
         artwork: item.cover_url ?? "",
         ...(item.media_url ? { media: item.media_url } : {}),
       });
@@ -220,6 +247,7 @@ const availabilityFromStatus: Record<string, AvailabilityState> = {
   available_now: "Available",
   open_for_gigs: "Available for Shows",
   on_tour: "Touring",
+  selective: "Selective",
   unavailable: "Busy",
 };
 
@@ -250,7 +278,7 @@ const slugList = (value: unknown): string[] =>
   );
 
 /**
- * Role details, budget tier, rate and persona badges as "Professional details" rows. A row is only
+ * Role details, budget tier, rate, response time and persona badges as "Professional details" rows. A row is only
  * made when its taxonomy category has a label; values are published labels, never raw slugs.
  */
 function professionalRows(sections: ProfileSections, labels: TaxonomyLabels | undefined) {
@@ -264,19 +292,30 @@ function professionalRows(sections: ProfileSections, labels: TaxonomyLabels | un
     rows.set(label, [...current, ...values.filter((v) => !current.includes(v))]);
   };
 
+  // Free-text details (turnaround, monitoring…) show under their profile_fields label as written.
+  const fieldNames = labels?.["profile_fields"] ?? {};
+  const text = new Map<string, string>();
   for (const { role_slug, details } of sections.role_details) {
     for (const [key, value] of Object.entries(details)) {
       const category = detailCategory(role_slug, key);
       if (category) add(category, slugList(value));
+      else if (
+        typeof value === "string" &&
+        value.trim() &&
+        fieldNames[key] &&
+        !text.has(fieldNames[key])
+      )
+        text.set(fieldNames[key], value.trim());
     }
   }
   if (sections.budget_tier) add("budget_type", [sections.budget_tier]);
-  const out: { label: string; value: string | PriceParts }[] = [...rows].map(([label, values]) => ({
-    label,
-    value: values.join(" · "),
-  }));
-  const hourly = priceParts(sections.hourly_rate_paise, "hr");
-  if (hourly) out.push({ label: "Hourly rate", value: hourly });
+  const out: { label: string; value: string | PriceParts }[] = [
+    ...[...rows].map(([label, values]) => ({ label, value: values.join(" · ") })),
+    ...[...text].map(([label, value]) => ({ label, value })),
+  ];
+  const rate = priceParts(sections.rate_paise, sections.rate_unit);
+  if (rate) out.push({ label: "Rate", value: rate });
+  if (sections.response_time) out.push({ label: "Response", value: sections.response_time });
   const persona = names["persona_badges"];
   const badges = sections.persona_badges
     .map((s) => labels?.["persona_badges"]?.[s])
@@ -385,6 +424,7 @@ export function mergeSections(
         stars: r.rating,
         text: r.body,
         ...(r.response ? { response: r.response } : {}),
+        ...(r.tags.length ? { tags: r.tags } : {}),
       })),
     ),
     gallery: pick(
@@ -399,7 +439,8 @@ export function mergeSections(
     opportunities: pick(base.opportunities, storedOpportunities(sections)),
     market: pick(base.market, storedMarket(sections, labels)),
     studio: base.studio ?? storedStudio(sections),
-    availability: base.availability ?? storedAvailability(sections),
+    // A role's own status (e.g. Selective) is more specific than the profile-wide one.
+    availability: storedAvailability(sections) ?? base.availability,
     verification:
       base.verification !== "Basic"
         ? base.verification

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, Package, Truck } from "lucide-react";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
-import { Rating, useFileReport } from "./market";
+import { Followers, Rating, useFileReport } from "./market";
 import { Price } from "./kit";
 import { rupeeParts } from "@/lib/price";
 import { inr, priceFor, type Equipment, type RentalItem, type RentalStatus } from "@/data/rentals";
@@ -38,7 +38,7 @@ export function RentalAvailabilityBadge({
 }
 
 export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md" | "lg" }) {
-  // Database rentals have a day rate and a price note, but no weekly or monthly rate.
+  // A weekly or monthly rate shows when the owner set one; otherwise the price note does.
   return (
     <div className="min-w-0">
       {e.daily != null ? (
@@ -47,10 +47,14 @@ export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md
           amountClassName={size === "lg" ? "text-3 font-bold" : "text-2 font-bold"}
         />
       ) : null}
-      {size === "lg" && e.weekly != null && e.monthly != null ? (
+      {size === "lg" && (e.weekly != null || e.monthly != null) ? (
         <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
-          <Price price={rupeeParts(e.weekly, "week")} amountClassName="text-1 font-semibold" />
-          <Price price={rupeeParts(e.monthly, "month")} amountClassName="text-1 font-semibold" />
+          {e.weekly != null ? (
+            <Price price={rupeeParts(e.weekly, "week")} amountClassName="text-1 font-semibold" />
+          ) : null}
+          {e.monthly != null ? (
+            <Price price={rupeeParts(e.monthly, "month")} amountClassName="text-1 font-semibold" />
+          ) : null}
         </div>
       ) : size === "lg" && e.priceNote ? (
         <p className="mt-1 text-1 text-muted-foreground">{e.priceNote}</p>
@@ -73,12 +77,12 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
 }
 
 /**
- * A rental provider as the database has them: a profile, plus rating, reviews and completed
- * rentals when getRentalProvider computed them. A listing's owner alone (id, name, photo, verified)
- * is enough for a card.
+ * A rental provider as the database has them: a profile, plus rating, reviews, followers and
+ * completed rentals when they have any. A listing's owner alone (id, name, photo, verified) is
+ * enough for a card.
  */
 export type ProviderLike = Pick<RealProvider, "id" | "name" | "photo" | "verified"> &
-  Partial<Pick<RealProvider, "role" | "rating" | "reviews" | "completedRentals">>;
+  Partial<Pick<RealProvider, "role" | "rating" | "reviews" | "followers" | "completedRentals">>;
 
 export function ProviderSummary({ p, compact }: { p: ProviderLike; compact?: boolean }) {
   return (
@@ -94,9 +98,10 @@ export function ProviderSummary({ p, compact }: { p: ProviderLike; compact?: boo
           {p.verified ? <VerifiedBadge size={16} /> : null}
         </div>
         {p.role ? <p className="truncate text-1 text-muted-foreground">{p.role}</p> : null}
-        {compact || (p.rating == null && !p.completedRentals) ? null : (
+        {compact || (p.rating == null && !p.followers && !p.completedRentals) ? null : (
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <Rating value={p.rating} count={p.reviews} />
+            <Followers count={p.followers} />
             {p.completedRentals ? (
               <span className="text-1 text-muted-foreground">{p.completedRentals} rentals</span>
             ) : null}
@@ -127,7 +132,15 @@ export function providersOf(items: RentalItem[]): ProviderLike[] {
   for (const e of items) {
     const o = e.owner;
     if (!o?.id || seen.has(o.id)) continue;
-    seen.set(o.id, { id: o.id, name: o.name, photo: o.photo, verified: o.verified });
+    seen.set(o.id, {
+      id: o.id,
+      name: o.name,
+      photo: o.photo,
+      verified: o.verified,
+      ...(o.rating != null ? { rating: o.rating } : {}),
+      ...(o.reviews ? { reviews: o.reviews } : {}),
+      ...(o.followers ? { followers: o.followers } : {}),
+    });
   }
   return [...seen.values()];
 }

@@ -231,6 +231,19 @@ export const syncIdentityFromProvider = createServerFn({ method: "POST" })
     return { filled: Object.keys(patch) };
   });
 
+/** What a profile's rate is per (profiles.rate_unit). */
+export const RATE_UNITS = [
+  "hour",
+  "song",
+  "show",
+  "night",
+  "day",
+  "session",
+  "track",
+  "feature",
+] as const;
+export type RateUnit = (typeof RATE_UNITS)[number];
+
 const strList = (max: number, len = 40) => z.array(z.string().max(len)).max(max).optional();
 
 const profilePatchSchema = z.object({
@@ -266,7 +279,15 @@ const profilePatchSchema = z.object({
   onboarding_step: z.string().max(40).optional().nullable(),
   onboarding_draft: z.record(z.string(), z.unknown()).optional(),
   onboarding_complete: z.boolean().optional(),
+  area: z.string().max(80).optional().nullable(),
+  influences: strList(20, 80),
+  hourly_rate_paise: z.number().int().min(0).max(1_000_000_000).optional().nullable(),
+  rate_paise: z.number().int().min(0).max(1_000_000_000).optional().nullable(),
+  rate_unit: z.enum(RATE_UNITS).optional().nullable(),
 });
+
+/** Columns the missing-data migration adds; a save before it lands drops them and keeps the rest. */
+const PENDING_COLUMNS = ["area", "influences", "rate_paise", "rate_unit"];
 
 export const saveMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -283,9 +304,11 @@ export const saveMyProfile = createServerFn({ method: "POST" })
         .select()
         .single();
     let { data: row, error } = await write(patch);
-    // first_name / last_name arrive with their migration; until then display_name carries the name.
-    if (error?.code === "PGRST204" && ("first_name" in patch || "last_name" in patch)) {
-      const { first_name: _f, last_name: _l, ...rest } = patch;
+    // first_name / last_name and the missing-data columns arrive with their migrations; until then
+    // display_name carries the name and hourly_rate_paise the rate.
+    const pending = ["first_name", "last_name", ...PENDING_COLUMNS];
+    if (error?.code === "PGRST204" && pending.some((k) => k in patch)) {
+      const rest = Object.fromEntries(Object.entries(patch).filter(([k]) => !pending.includes(k)));
       ({ data: row, error } = await write(rest));
     }
     if (error) throw new Error(usernameError(error) ?? error.message);
@@ -343,19 +366,35 @@ export async function anonClient() {
   });
 }
 
+/**
+ * A read that names columns the missing-data migration adds (20260918240000_missing_data.sql).
+ * Until the database has them the read fails, and the same read runs again with the columns it
+ * already has, so a screen shows what is stored instead of an error.
+ */
+export async function softSelect<R extends { error: unknown }>(
+  read: (columns: string) => PromiseLike<R>,
+  columns: string,
+  fallback: string,
+): Promise<R> {
+  const first = await read(columns);
+  return first.error ? read(fallback) : first;
+}
+
+const PUBLIC_PROFILE =
+  "id, username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, experience_level, availability, avatar_url, cover_url, links, visibility";
+
 /** Public profile read — anon key, safe columns only, no session. */
 export const getPublicProfile = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ username: z.string().min(1).max(60) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
 
-    const { data: row } = await client
-      .from("profiles")
-      .select(
-        "id, username, display_name, headline, bio, city, state, country, roles, instruments, genres, languages, specialisations, work_modes, experience_level, availability, avatar_url, cover_url, links, visibility",
-      )
-      .eq("username", data.username)
-      .maybeSingle();
+    const { data: row } = await softSelect(
+      (columns) =>
+        client.from("profiles").select(columns).eq("username", data.username).maybeSingle(),
+      `${PUBLIC_PROFILE}, area, influences, rating, review_count, followers_count`,
+      PUBLIC_PROFILE,
+    );
 
     if (!row || (row as { visibility?: string }).visibility === "private") return null;
     return row;
@@ -431,6 +470,8 @@ export type ProfileSections = {
     rating: number;
     body: string;
     response: string | null;
+    /** Short labels the reviewer picked ("On time"). */
+    tags: string[];
   }[];
   portfolio: {
     id: string;
@@ -442,10 +483,17 @@ export type ProfileSections = {
     cover_url: string | null;
     media_url: string | null;
     release_year: number | null;
+    /** Running time as stored, "3:42". */
+    duration: string | null;
   }[];
   trust_badges: string[];
   is_verified: boolean;
   hourly_rate_paise: number | null;
+  /** The rate and what it is per; an hourly rate alone reads as rate_unit "hour". */
+  rate_paise: number | null;
+  rate_unit: string | null;
+  /** Measured from messages when there are enough replies (profile_response_time), else as stored. */
+  response_time: string | null;
   /** budget_type slug. */
   budget_tier: string | null;
   persona_badges: string[];
@@ -476,6 +524,24 @@ export type ProfileSections = {
   }[];
 };
 
+const REVIEW = "id, author_name, author_org, context, rating, body, response";
+const WORK =
+  "id, title, kind, description, role, collaborators, cover_url, media_url, release_year";
+const FLAGS = "roles, trust_badges, is_verified, hourly_rate_paise, budget_tier, persona_badges";
+
+/**
+ * How fast this profile replies, measured from its messages (median over the last 90 days). Null
+ * with fewer than three replies, or before the function exists.
+ */
+async function measuredResponseTime(client: SupabaseClient, profileId: string) {
+  const rpc = client.rpc as unknown as (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => Promise<{ data: string | null; error: unknown }>;
+  const { data, error } = await rpc.call(client, "profile_response_time", { p: profileId });
+  return error || !data ? null : data;
+}
+
 /** Every section for one profile. RLS decides what the client may see. */
 async function loadSections(client: SupabaseClient, profileId: string): Promise<ProfileSections> {
   const [
@@ -489,6 +555,7 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     opportunities,
     listings,
     studios,
+    measured,
   ] = await Promise.all([
     client
       .from("profile_services")
@@ -509,27 +576,35 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
       .select("id, image_url")
       .eq("profile_id", profileId)
       .order("sort_order"),
-    client
-      .from("reviews")
-      .select("id, author_name, author_org, context, rating, body, response")
-      .eq("target_profile_id", profileId)
-      .order("created_at", { ascending: false }),
-    client
-      .from("portfolio_items")
-      .select(
-        "id, title, kind, description, role, collaborators, cover_url, media_url, release_year",
-      )
-      .eq("user_id", profileId)
-      .eq("published", true)
-      // Featured work leads the profile, which is what the Reorder screen promises.
-      .order("featured", { ascending: false })
-      .order("sort_order")
-      .order("created_at", { ascending: false }),
-    client
-      .from("profiles")
-      .select("roles, trust_badges, is_verified, hourly_rate_paise, budget_tier, persona_badges")
-      .eq("id", profileId)
-      .maybeSingle(),
+    softSelect(
+      (columns) =>
+        client
+          .from("reviews")
+          .select(columns)
+          .eq("target_profile_id", profileId)
+          .order("created_at", { ascending: false }),
+      `${REVIEW}, tags`,
+      REVIEW,
+    ),
+    softSelect(
+      (columns) =>
+        client
+          .from("portfolio_items")
+          .select(columns)
+          .eq("user_id", profileId)
+          .eq("published", true)
+          // Featured work leads the profile, which is what the Reorder screen promises.
+          .order("featured", { ascending: false })
+          .order("sort_order")
+          .order("created_at", { ascending: false }),
+      `${WORK}, duration`,
+      WORK,
+    ),
+    softSelect(
+      (columns) => client.from("profiles").select(columns).eq("id", profileId).maybeSingle(),
+      `${FLAGS}, rate_paise, rate_unit, response_time`,
+      FLAGS,
+    ),
     client.from("profile_role_details").select("role_slug, details").eq("profile_id", profileId),
     client
       .from("opportunities")
@@ -549,6 +624,7 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
       .select("slug, name, location, hourly_rate_paise")
       .eq("owner_profile_id", profileId)
       .order("created_at"),
+    measuredResponseTime(client, profileId),
   ]);
   const failed = [
     services,
@@ -569,6 +645,9 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     trust_badges?: string[];
     is_verified?: boolean;
     hourly_rate_paise?: number | null;
+    rate_paise?: number | null;
+    rate_unit?: string | null;
+    response_time?: string | null;
     budget_tier?: string | null;
     persona_badges?: string[];
   } | null;
@@ -581,14 +660,28 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     services: (services.data ?? []) as ProfileSections["services"],
     experience: (experience.data ?? []) as ProfileSections["experience"],
     gallery: (gallery.data ?? []) as ProfileSections["gallery"],
-    reviews: ((reviews.data ?? []) as ProfileSections["reviews"]).map((r) => ({
-      ...r,
-      rating: Number(r.rating),
-    })),
-    portfolio: (portfolio.data ?? []) as ProfileSections["portfolio"],
+    reviews: ((reviews.data ?? []) as Partial<ProfileSections["reviews"][number]>[]).map(
+      (r) =>
+        ({
+          ...r,
+          rating: Number(r.rating),
+          tags: r.tags ?? [],
+        }) as ProfileSections["reviews"][number],
+    ),
+    portfolio: ((portfolio.data ?? []) as Partial<ProfileSections["portfolio"][number]>[]).map(
+      (w) => ({ ...w, duration: w.duration ?? null }) as ProfileSections["portfolio"][number],
+    ),
     trust_badges: flags?.trust_badges ?? [],
     is_verified: flags?.is_verified ?? false,
     hourly_rate_paise: flags?.hourly_rate_paise ?? null,
+    // Before rate_paise exists, or where it was never set, the hourly rate is the rate.
+    ...(flags?.rate_paise != null
+      ? { rate_paise: flags.rate_paise, rate_unit: flags.rate_unit ?? null }
+      : {
+          rate_paise: flags?.hourly_rate_paise ?? null,
+          rate_unit: flags?.hourly_rate_paise != null ? "hour" : null,
+        }),
+    response_time: measured ?? flags?.response_time ?? null,
     budget_tier: flags?.budget_tier ?? null,
     persona_badges: flags?.persona_badges ?? [],
     role_details: ((roleDetails.data ?? []) as ProfileSections["role_details"]).sort(

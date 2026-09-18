@@ -26,6 +26,8 @@ export type ReviewRow = {
   author_profile_id: string | null;
   target_profile_id: string | null;
   target_studio_id: string | null;
+  /** What the reviewer picked out ("On time", "Great sound"); absent before 20260918240000. */
+  tags?: string[];
 };
 
 const SELECT =
@@ -265,11 +267,15 @@ export const listReviewsFor = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }): Promise<ReviewRow[]> => {
     const client = await anonClient();
-    const { data: rows, error } = await client
-      .from("reviews")
-      .select(SELECT)
-      .eq("target_profile_id", data.profileId)
-      .order("created_at", { ascending: false });
+    const read = (select: string) =>
+      client
+        .from("reviews")
+        .select(select)
+        .eq("target_profile_id", data.profileId)
+        .order("created_at", { ascending: false });
+    // Tags come with 20260918240000_missing_data.sql; before it, the reviews are read without them.
+    const tagged = await read(`${SELECT}, tags`);
+    const { data: rows, error } = tagged.error ? await read(SELECT) : tagged;
     if (error) throw new Error(error.message);
     return (rows ?? []) as unknown as ReviewRow[];
   });

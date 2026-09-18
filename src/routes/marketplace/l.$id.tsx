@@ -12,6 +12,7 @@ import {
   PriceBlock,
   Rating,
   ReportSheet,
+  ReviewTags,
   SaveButton,
   SellerSummary,
   TrustPill,
@@ -191,7 +192,7 @@ function ListingDetail() {
           <>
             <h2 className="mt-6 text-2">{l.type === "product" ? "Seller" : "Provider"}</h2>
             <div className="mt-2 rounded-lg bg-subtle p-4">
-              <SellerSummary seller={l.owner} compact />
+              <SellerSummary seller={l.owner} />
               {l.owner.username ? (
                 <BtnLink
                   to="/profile/$username"
@@ -223,6 +224,7 @@ function ListingDetail() {
                       {new Date(r.created_at).toLocaleDateString("en-IN")}
                     </p>
                     <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
+                    <ReviewTags tags={r.tags} />
                     {r.response ? (
                       <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
                         Seller: {r.response}

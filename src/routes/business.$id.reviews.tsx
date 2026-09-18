@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Stars } from "@/components/ml/kit";
+import { Card, EmptyState } from "@/components/ml/kit";
+import { ReviewCard } from "@/components/ml/profile";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { replyToReview } from "@/lib/reviews.functions";
 
@@ -80,48 +81,53 @@ function BusinessReviews() {
           b.reviews.map((r) => {
             const response = sent[r.id] ?? r.response;
             return (
-              <Card key={r.id}>
-                <div className="flex items-center gap-3">
-                  <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-background" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{r.author}</p>
-                  </div>
-                  <Stars value={r.rating} />
-                </div>
-                <p className="mt-3 text-1">{r.body}</p>
-
-                {response ? (
-                  <div className="mt-3 rounded-lg bg-subtle p-3">
-                    <p className="text-1 font-semibold">{b.name} replied</p>
-                    <p className="mt-1 text-1 text-muted-foreground">{response}</p>
-                  </div>
-                ) : replyTo === r.id ? (
-                  <div className="mt-3">
-                    <textarea
-                      value={drafts[r.id] ?? ""}
-                      onChange={(e) => setDrafts({ ...drafts, [r.id]: e.target.value })}
-                      rows={3}
-                      placeholder="Reply once, publicly. Keep it short and factual."
-                      className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
-                    />
-                    <div className="mt-2 flex gap-2">
-                      <Btn
-                        className="flex-1"
-                        disabled={(drafts[r.id] ?? "").trim().length < 4 || sending === r.id}
-                        onClick={() => void postReply(r.id)}
-                      >
-                        {sending === r.id ? "Posting…" : "Post reply"}
-                      </Btn>
-                      <Btn variant="ghost" className="flex-1" onClick={() => setReplyTo(null)}>
-                        Cancel
-                      </Btn>
+              <Card key={r.id} className="p-0">
+                {/* The review itself is the card the person profile uses; the reply sits under it. */}
+                <ReviewCard
+                  r={{
+                    id: r.id,
+                    by: r.author,
+                    org: r.org,
+                    context: r.context,
+                    stars: r.rating,
+                    text: r.body,
+                    tags: r.tags,
+                  }}
+                />
+                <div className="px-4 pb-4">
+                  {response ? (
+                    <div className="mt-3 rounded-lg bg-subtle p-3">
+                      <p className="text-1 font-semibold">{b.name} replied</p>
+                      <p className="mt-1 text-1 text-muted-foreground">{response}</p>
                     </div>
-                  </div>
-                ) : (
-                  <Btn variant="outline" className="mt-3 w-full" onClick={() => setReplyTo(r.id)}>
-                    Reply as {b.name}
-                  </Btn>
-                )}
+                  ) : replyTo === r.id ? (
+                    <div className="mt-3">
+                      <textarea
+                        value={drafts[r.id] ?? ""}
+                        onChange={(e) => setDrafts({ ...drafts, [r.id]: e.target.value })}
+                        rows={3}
+                        placeholder="Reply once, publicly. Keep it short and factual."
+                        className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
+                      />
+                      <div className="mt-2 flex gap-2">
+                        <Btn
+                          className="flex-1"
+                          disabled={(drafts[r.id] ?? "").trim().length < 4 || sending === r.id}
+                          onClick={() => void postReply(r.id)}
+                        >
+                          {sending === r.id ? "Posting…" : "Post reply"}
+                        </Btn>
+                        <Btn variant="ghost" className="flex-1" onClick={() => setReplyTo(null)}>
+                          Cancel
+                        </Btn>
+                      </div>
+                    </div>
+                  ) : (
+                    <Btn variant="outline" className="mt-3 w-full" onClick={() => setReplyTo(r.id)}>
+                      Reply as {b.name}
+                    </Btn>
+                  )}
+                </div>
               </Card>
             );
           })

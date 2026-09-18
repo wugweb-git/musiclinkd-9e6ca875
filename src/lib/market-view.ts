@@ -14,8 +14,8 @@ import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.function
 /*
  * Database marketplace listings shaped as the static `Listing` the market screens render.
  * Only stored fields are carried over. Location is the rental pickup place, else the seller's
- * profile city. Fields the table does not have (distance, saves, rating, reviews, description,
- * specs, delivery, brand, availability) stay empty, and the screens skip empty values.
+ * profile city. Fields the table does not have (distance, saves, rating, reviews, delivery,
+ * availability) stay empty, and the screens skip empty values.
  */
 
 const TYPES: Record<string, ListingType> = {
@@ -73,18 +73,32 @@ function postedAt(createdAt: string, now: number) {
   return plural(Math.floor(hours / 24), "day");
 }
 
-/** The seller's profile when linked, otherwise only the stored seller name. */
 /** Where a listing is: the rental pickup place when stored, otherwise the seller's city. */
 const placeOf = (row: ListingRow) => row.pickup_location ?? row.seller?.city ?? "";
 
+/** Stored specs are label/value pairs; anything else in the column is left out. */
+const specsOf = (row: ListingRow) =>
+  Array.isArray(row.specs)
+    ? row.specs.filter((s) => s && typeof s.label === "string" && typeof s.value === "string")
+    : [];
+
+/**
+ * The seller's profile when linked, otherwise only the stored seller name. A rating shows only
+ * once the seller has reviews; followers only once someone follows them.
+ */
 function ownerOf(row: ListingRow): Listing["owner"] {
   if (row.seller) {
+    const s = row.seller;
     return {
-      id: row.seller.id,
-      name: row.seller.display_name ?? row.seller.username ?? row.seller_name ?? "",
-      username: row.seller.username,
-      photo: row.seller.avatar_url ?? "",
-      verified: row.seller.is_verified,
+      id: s.id,
+      name: s.display_name ?? s.username ?? row.seller_name ?? "",
+      username: s.username,
+      photo: s.avatar_url ?? "",
+      verified: s.is_verified,
+      ...(s.rating != null && s.review_count
+        ? { rating: Number(s.rating), reviews: s.review_count }
+        : {}),
+      ...(s.followers_count ? { followers: s.followers_count } : {}),
     };
   }
   return row.seller_name
@@ -102,7 +116,9 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     dbId: row.id,
     type,
     title: row.title,
-    subtitle: "",
+    // Brand and model under the title ("Shure · SM7B").
+    subtitle: [row.brand, row.model].filter(Boolean).join(" · "),
+    ...(row.brand ? { brand: row.brand } : {}),
     // Amount, unit and note as parts; with no amount the note is the price.
     price: priceParts(row.price_paise, row.price_unit, row.price_note) ?? { amount: "" },
     // Condition describes goods; a service stored as "new" is not shown with a condition badge.
@@ -114,8 +130,8 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     saves: 0,
     postedAt: postedAt(row.created_at, now),
     photos: row.image_url ? [row.image_url] : [],
-    description: "",
-    specs: [],
+    description: row.listing_description ?? "",
+    specs: specsOf(row),
     sellerId: "",
     ...(owner ? { owner } : {}),
   };
@@ -165,10 +181,27 @@ const RENTAL_EQUIPMENT: Record<string, { category: RentalCategory; subcategory: 
   backline: { category: "studio", subcategory: "Backline" },
 };
 
+/** Stored paise as whole rupees, or nothing when the column is empty. */
+const rupeesOf = (paise: number | null | undefined) =>
+  paise == null ? undefined : Math.round(paise / 100);
+
+/** Only the keys with a value, so the rental screens skip what the owner left empty. */
+function present<T extends Record<string, unknown>>(
+  fields: T,
+): { [K in keyof T]?: Exclude<T[K], undefined> } {
+  return Object.fromEntries(
+    Object.entries(fields).filter(
+      ([, v]) => v != null && v !== "" && !(Array.isArray(v) && !v.length),
+    ),
+  ) as { [K in keyof T]?: Exclude<T[K], undefined> };
+}
+
 /**
  * A database gear_rental row shaped as the rental screens' item. Only stored fields are carried:
- * the day rate (when the stored unit is a day), the price note, condition, photo and provider.
- * A row with no item category has no rental category, so it shows in search but in no category.
+ * the day rate (when the stored unit is a day), weekly and monthly rates, deposit, quantity, rental
+ * length and notice, pickup and delivery, brand, model, description, specs, what's included, the
+ * price note, condition, photo and provider. A row with no item category has no rental category,
+ * so it shows in search but in no category.
  */
 export function rentalFromRow(row: ListingRow, labels: TaxonomyLabels): RentalItem {
   const mapped = row.item_category ? RENTAL_EQUIPMENT[row.item_category] : undefined;
@@ -196,6 +229,24 @@ export function rentalFromRow(row: ListingRow, labels: TaxonomyLabels): RentalIt
       ? { daily: row.price_paise / 100 }
       : {}),
     ...(row.price_note ? { priceNote: row.price_note } : {}),
+    ...present({
+      weekly: rupeesOf(row.weekly_price_paise),
+      monthly: rupeesOf(row.monthly_price_paise),
+      deposit: rupeesOf(row.deposit_paise),
+      quantity: row.quantity_available ?? undefined,
+      minDays: row.min_days ?? undefined,
+      maxDays: row.max_days ?? undefined,
+      noticePeriod: row.notice_period ?? undefined,
+      pickup: row.pickup_available ?? undefined,
+      delivery: row.delivery_available ?? undefined,
+      deliveryFee: rupeesOf(row.delivery_fee_paise),
+      deliveryNote: row.delivery_note ?? undefined,
+      brand: row.brand ?? undefined,
+      model: row.model ?? undefined,
+      description: row.listing_description ?? undefined,
+      specs: specsOf(row),
+      included: row.included ?? undefined,
+    }),
     ...(condition ? { condition } : {}),
     ...(category ? { category } : {}),
     ...(subcategory ? { subcategory } : {}),

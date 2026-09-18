@@ -6,7 +6,9 @@ import { Btn, BtnLink, IconBtn } from "@/components/ml/ui";
 import { BookableHero, EntityMetaRow, PolicyCard, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr, lowestRate } from "@/data/booking";
+import { rupeeParts } from "@/lib/price";
 import { Price } from "@/components/ml/kit";
+import { ReviewCard } from "@/components/ml/profile";
 import { TextLink } from "@/components/ml/links";
 import { shareLink } from "@/lib/booking-actions";
 import { iconSize } from "@/lib/tokens";
@@ -105,6 +107,26 @@ function BookingEntry() {
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
+                  {r.description ? (
+                    <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">
+                      {r.description}
+                    </p>
+                  ) : null}
+                  {/* Package rates beside the hourly one ("Half day", "Full day"). */}
+                  {r.tiers.some((t) => t.unit !== "hour") ? (
+                    <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
+                      {r.tiers
+                        .filter((t) => t.unit !== "hour")
+                        .map((t) => (
+                          <Price
+                            key={t.label}
+                            price={rupeeParts(t.price, t.label)}
+                            amountClassName="text-1 font-semibold"
+                            unitClassName="text-1"
+                          />
+                        ))}
+                    </div>
+                  ) : null}
                 </div>
                 <Price
                   price={lowestRate(r.tiers)}
@@ -144,6 +166,39 @@ function BookingEntry() {
                 >
                   {e}
                 </span>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {b.addOns.length ? (
+          <section className="mt-6">
+            <h3 className="text-2">Add-ons</h3>
+            <ul className="mt-3 divide-y divide-border rounded-lg border border-border">
+              {b.addOns.map((a) => (
+                <li key={a.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <span className="min-w-0 truncate text-1">{a.name}</span>
+                  {a.unpriced ? null : (
+                    <Price
+                      price={rupeeParts(a.price, a.perHour ? "hour" : (a.unit ?? null))}
+                      align="end"
+                      className="shrink-0"
+                      amountClassName="text-1 font-semibold"
+                      unitClassName="text-1"
+                    />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {b.reviewItems?.length ? (
+          <section className="mt-6">
+            <h3 className="text-2">Reviews</h3>
+            <div className="mt-3 space-y-3">
+              {b.reviewItems.map((r) => (
+                <ReviewCard key={r.id} r={r} />
               ))}
             </div>
           </section>

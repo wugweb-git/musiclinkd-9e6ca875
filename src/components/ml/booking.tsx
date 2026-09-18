@@ -138,7 +138,7 @@ export function BookableHero({ b }: { b: Bookable }) {
 }
 
 export function EntityMetaRow({ b }: { b: Bookable }) {
-  // Database studios have no distance or response time; skip what is empty.
+  // Database studios have no distance, and a rating only once reviewed; skip what is empty.
   const place = [b.area, b.city].filter(Boolean).join(", ");
   const where = [place, b.distanceKm ? `${b.distanceKm} km` : ""].filter(Boolean).join(" · ");
   return (
@@ -476,12 +476,16 @@ export function AddOnCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{a.name}</p>
-          <p className="mt-0.5 text-1 text-muted-foreground">{a.description}</p>
-          <Price
-            price={{ amount: inr(a.price), unit: a.perHour ? "hour" : undefined }}
-            className="mt-1.5"
-            amountClassName="text-sm font-semibold"
-          />
+          {a.description ? (
+            <p className="mt-0.5 text-1 text-muted-foreground">{a.description}</p>
+          ) : null}
+          {a.unpriced ? null : (
+            <Price
+              price={{ amount: inr(a.price), unit: a.perHour ? "hour" : a.unit }}
+              className="mt-1.5"
+              amountClassName="text-sm font-semibold"
+            />
+          )}
           {a.rentalListingId ? (
             <TextLink to="/marketplace/rent" className="mt-1 gap-1">
               Rental Marketplace <ChevronRight size={iconSize.xs} />

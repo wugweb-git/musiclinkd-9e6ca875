@@ -315,6 +315,7 @@ const availabilityWord: Record<string, string> = {
   "Available for Shows": "Available",
   "Looking for Collaboration": "Collaborating",
   "Available for Session Work": "Available",
+  Selective: "Selective",
   Busy: "Busy",
   Touring: "Touring",
 };
@@ -1056,6 +1057,15 @@ export function ReviewCard({ r }: { r: ReviewItem }) {
         <p className="pill mt-1.5 bg-background text-muted-foreground">{r.context}</p>
       ) : null}
       <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.text}</p>
+      {r.tags?.length ? (
+        <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Tags">
+          {r.tags.map((tag) => (
+            <li key={tag} className="pill bg-background text-muted-foreground">
+              {tag}
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {r.response ? (
         <div className="mt-3 rounded-lg bg-subtle p-3">
           <p className="pill bg-background text-muted-foreground">Response</p>

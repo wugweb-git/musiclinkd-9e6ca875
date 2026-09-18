@@ -50,6 +50,10 @@ export type Listing = {
     username: string | null;
     photo: string;
     verified: boolean;
+    /** The seller's review average and count, when they have reviews; their follower count. */
+    rating?: number;
+    reviews?: number;
+    followers?: number;
   };
   reason?: string;
   status?: "Draft" | "Pending Review" | "Published" | "Paused" | "Sold" | "Rented";

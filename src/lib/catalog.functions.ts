@@ -20,6 +20,22 @@ export type OwnerSummary = {
   is_verified: boolean;
 };
 
+/**
+ * A seller's profile with its public standing. rating and review_count are kept by the database
+ * from reviews, followers_count from follows (20260918240000_missing_data.sql); absent before then.
+ */
+export type SellerOwnerSummary = OwnerSummary & {
+  rating?: number | null;
+  review_count?: number;
+  followers_count?: number;
+};
+
+/** A studio's extra, priced per unit when it has a price ("Engineer", ₹800, "hour"). */
+export type StudioAddOn = { name: string; price_paise: number | null; unit: string | null };
+
+/** A room's package rate beside its hourly one ("Half day", 4 hours, ₹8,000). */
+export type RoomTier = { label: string; hours: number | null; price_paise: number | null };
+
 export type StudioRow = {
   id: string;
   slug: string;
@@ -37,6 +53,9 @@ export type StudioRow = {
   operating_hours: string | null;
   image_url: string | null;
   images: string[];
+  /** How soon the studio usually replies ("within 2 hours"); null before the column exists. */
+  response_time?: string | null;
+  add_ons?: StudioAddOn[];
   owner: OwnerSummary | null;
   rooms: {
     id: string;
@@ -47,6 +66,8 @@ export type StudioRow = {
     gear: string[] | null;
     photo_url: string | null;
     sort_order: number;
+    description?: string | null;
+    tiers?: RoomTier[];
   }[];
   equipment: {
     id: string;
@@ -56,7 +77,17 @@ export type StudioRow = {
     included: boolean;
     sort_order: number;
   }[];
-  reviews: { id: string; author_name: string; rating: number; body: string; created_at: string }[];
+  reviews: {
+    id: string;
+    author_name: string;
+    rating: number;
+    body: string;
+    created_at: string;
+    author_org?: string | null;
+    context?: string | null;
+    response?: string | null;
+    tags?: string[];
+  }[];
 };
 
 export type OpportunityRow = {
@@ -92,22 +123,64 @@ export type ListingRow = {
   seller_name: string | null;
   /** Where a rental is picked up, when the owner said. */
   pickup_location: string | null;
-  seller: OwnerSummary | null;
+  brand: string | null;
+  model: string | null;
+  listing_description: string | null;
+  specs: { label: string; value: string }[] | null;
+  included: string[] | null;
+  // Rentals only.
+  weekly_price_paise: number | null;
+  monthly_price_paise: number | null;
+  deposit_paise: number | null;
+  quantity_available: number | null;
+  pickup_available: boolean | null;
+  delivery_available: boolean | null;
+  delivery_fee_paise: number | null;
+  delivery_note: string | null;
+  min_days: number | null;
+  max_days: number | null;
+  notice_period: string | null;
+  seller: SellerOwnerSummary | null;
 };
 
 const OWNER = "id, username, display_name, avatar_url, city, is_verified";
-const STUDIO = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
+const SELLER = `${OWNER}, rating, review_count, followers_count`;
+const STUDIO_FIELDS = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
   console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
   owner:profiles!studios_owner_profile_id_fkey(${OWNER}),
+  equipment:studio_equipment(id, name, category, quantity, included, sort_order)`;
+const STUDIO = `${STUDIO_FIELDS}, response_time, add_ons,
+  rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order, description, tiers),
+  reviews(id, author_name, author_org, context, response, rating, body, created_at, tags)`;
+/** The studio read before 20260918240000_missing_data.sql, while its columns are not there yet. */
+const STUDIO_BEFORE = `${STUDIO_FIELDS},
   rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order),
-  equipment:studio_equipment(id, name, category, quantity, included, sort_order),
   reviews(id, author_name, rating, body, created_at)`;
 const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,
   collaboration_type, location, status, applicant_count, created_at,
   creator:profiles!opportunities_creator_profile_id_fkey(${OWNER})`;
-const LISTING = `id, slug, title, category, item_category, item_category_kind, condition, price_paise,
-  price_unit, price_note, image_url, created_at, seller_name, pickup_location,
+const LISTING_FIELDS = `id, slug, title, category, item_category, item_category_kind, condition, price_paise,
+  price_unit, price_note, image_url, created_at, seller_name, pickup_location, brand, model,
+  listing_description, specs, included, weekly_price_paise, monthly_price_paise, deposit_paise,
+  quantity_available, pickup_available, delivery_available, delivery_fee_paise, delivery_note,
+  min_days, max_days, notice_period`;
+const LISTING = `${LISTING_FIELDS},
+  seller:profiles!marketplace_listings_seller_profile_id_fkey(${SELLER})`;
+/** The seller without the standing columns, while 20260918240000_missing_data.sql is not applied. */
+const LISTING_BEFORE = `${LISTING_FIELDS},
   seller:profiles!marketplace_listings_seller_profile_id_fkey(${OWNER})`;
+
+type Result = { data: unknown; error: { message: string } | null };
+
+/** Runs the read with the full select, and again with the earlier one if that one errors. */
+async function withFallback(run: (select: string) => PromiseLike<Result>, selects: string[]) {
+  let result: Result = { data: null, error: { message: "Nothing to read." } };
+  for (const select of selects) {
+    result = await run(select);
+    if (!result.error) break;
+  }
+  return result;
+}
 
 type Sorted = { sort_order?: number };
 const bySort = (a: Sorted, b: Sorted) => (a.sort_order ?? 0) - (b.sort_order ?? 0);
@@ -116,21 +189,28 @@ function shapeStudio(raw: StudioRow): StudioRow {
   return {
     ...raw,
     rating: raw.rating == null ? null : Number(raw.rating),
-    rooms: [...(raw.rooms ?? [])].sort(bySort),
+    add_ons: Array.isArray(raw.add_ons) ? raw.add_ons : [],
+    rooms: [...(raw.rooms ?? [])]
+      .map((room) => ({ ...room, tiers: Array.isArray(room.tiers) ? room.tiers : [] }))
+      .sort(bySort),
     equipment: [...(raw.equipment ?? [])].sort(bySort),
     reviews: (raw.reviews ?? [])
-      .map((r) => ({ ...r, rating: Number(r.rating) }))
+      .map((r) => ({ ...r, rating: Number(r.rating), tags: r.tags ?? [] }))
       .sort((a, b) => b.created_at.localeCompare(a.created_at)),
   };
 }
 
 export const listStudios = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
-  const { data, error } = await client.from("studios").select(STUDIO).order("rating", {
-    ascending: false,
-    // A studio with no reviews yet goes after the rated ones, not before them.
-    nullsFirst: false,
-  });
+  const { data, error } = await withFallback(
+    (select) =>
+      client.from("studios").select(select).order("rating", {
+        ascending: false,
+        // A studio with no reviews yet goes after the rated ones, not before them.
+        nullsFirst: false,
+      }),
+    [STUDIO, STUDIO_BEFORE],
+  );
   if (error) throw new Error(error.message);
   return ((data ?? []) as unknown as StudioRow[]).map(shapeStudio);
 });
@@ -139,11 +219,10 @@ export const getStudio = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
-    const { data: row, error } = await client
-      .from("studios")
-      .select(STUDIO)
-      .eq("slug", data.slug)
-      .maybeSingle();
+    const { data: row, error } = await withFallback(
+      (select) => client.from("studios").select(select).eq("slug", data.slug).maybeSingle(),
+      [STUDIO, STUDIO_BEFORE],
+    );
     if (error) throw new Error(error.message);
     return row ? shapeStudio(row as unknown as StudioRow) : null;
   });
@@ -210,16 +289,21 @@ export const setOpportunityStatus = createServerFn({ method: "POST" })
  */
 export const listListings = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
-  const browsing = await client
-    .from("marketplace_listings")
-    .select(LISTING)
-    .not("listing_status", "in", "(unavailable,archived)")
-    .order("created_at", { ascending: false });
+  const browsing = await withFallback(
+    (select) =>
+      client
+        .from("marketplace_listings")
+        .select(select)
+        .not("listing_status", "in", "(unavailable,archived)")
+        .order("created_at", { ascending: false }),
+    [LISTING, LISTING_BEFORE],
+  );
   if (!browsing.error) return (browsing.data ?? []) as unknown as ListingRow[];
-  const { data, error } = await client
-    .from("marketplace_listings")
-    .select(LISTING)
-    .order("created_at", { ascending: false });
+  const { data, error } = await withFallback(
+    (select) =>
+      client.from("marketplace_listings").select(select).order("created_at", { ascending: false }),
+    [LISTING, LISTING_BEFORE],
+  );
   if (error) throw new Error(error.message);
   return (data ?? []) as unknown as ListingRow[];
 });
@@ -229,11 +313,15 @@ export const listMyListings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const client = context.supabase as unknown as SupabaseClient;
-    const { data, error } = await client
-      .from("marketplace_listings")
-      .select(LISTING)
-      .eq("seller_profile_id", context.userId)
-      .order("created_at", { ascending: false });
+    const { data, error } = await withFallback(
+      (select) =>
+        client
+          .from("marketplace_listings")
+          .select(select)
+          .eq("seller_profile_id", context.userId)
+          .order("created_at", { ascending: false }),
+      [LISTING, LISTING_BEFORE],
+    );
     if (error) throw new Error(error.message);
     return (data ?? []) as unknown as ListingRow[];
   });
@@ -242,11 +330,11 @@ export const getListing = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
-    const { data: row, error } = await client
-      .from("marketplace_listings")
-      .select(LISTING)
-      .eq("slug", data.slug)
-      .maybeSingle();
+    const { data: row, error } = await withFallback(
+      (select) =>
+        client.from("marketplace_listings").select(select).eq("slug", data.slug).maybeSingle(),
+      [LISTING, LISTING_BEFORE],
+    );
     if (error) throw new Error(error.message);
     return (row ?? null) as unknown as ListingRow | null;
   });
@@ -256,11 +344,15 @@ export const getSellerListings = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ sellerProfileId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const client = await anonClient();
-    const { data: rows, error } = await client
-      .from("marketplace_listings")
-      .select(LISTING)
-      .eq("seller_profile_id", data.sellerProfileId)
-      .order("created_at", { ascending: false });
+    const { data: rows, error } = await withFallback(
+      (select) =>
+        client
+          .from("marketplace_listings")
+          .select(select)
+          .eq("seller_profile_id", data.sellerProfileId)
+          .order("created_at", { ascending: false }),
+      [LISTING, LISTING_BEFORE],
+    );
     if (error) throw new Error(error.message);
     return (rows ?? []) as unknown as ListingRow[];
   });

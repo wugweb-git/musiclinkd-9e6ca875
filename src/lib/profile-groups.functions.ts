@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { anonClient } from "@/lib/portfolio.functions";
+import { anonClient, softSelect } from "@/lib/portfolio.functions";
 
 /*
  * Business accounts. MusicLinkd has two account kinds, talent and business, in one username
@@ -28,6 +28,12 @@ type ProfileBase = {
   is_verified: boolean;
   hourly_rate_paise: number | null;
   visibility: string | null;
+  /** Neighbourhood within the city. The columns below arrive with 20260918240000_missing_data.sql. */
+  area?: string | null;
+  /** Kept from reviews by the database; null while there are none. */
+  rating?: number | string | null;
+  review_count?: number;
+  followers_count?: number;
 };
 
 export type BusinessRecord = {
@@ -38,6 +44,8 @@ export type BusinessRecord = {
     logo_url: string | null;
     hero_banner_url: string | null;
     founded_year: number | null;
+    /** The registered name ("SoundHouse Studio LLP"). */
+    legal_name?: string | null;
   };
   /** Drafts are the owner's only, so a public read has active and paused services. */
   services: {
@@ -66,9 +74,12 @@ export type BusinessRecord = {
   reviews: {
     id: string;
     author_name: string;
+    author_org: string | null;
+    context: string | null;
     rating: number;
     body: string;
     response: string | null;
+    tags: string[];
   }[];
   studio: {
     rating: number | null;
@@ -96,17 +107,26 @@ export type BusinessSummary = {
 
 const PROFILE =
   "id, username, display_name, headline, bio, city, roles, genres, avatar_url, cover_url, is_verified, hourly_rate_paise, visibility";
+/** PROFILE with the missing-data columns; reads fall back to PROFILE until they exist. */
+const PROFILE_FULL = `${PROFILE}, area, rating, review_count, followers_count`;
+
+const BUSINESS = "business_address, operating_hours, logo_url, hero_banner_url, founded_year";
+const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
+const REVIEW_FULL = `${REVIEW}, tags`;
+const STUDIO = (review: string) =>
+  `id, rating, review_count, rooms:studio_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), reviews(${review})`;
 
 async function businessRecord(
   client: SupabaseClient,
   profile: ProfileBase,
 ): Promise<BusinessRecord | null> {
   const [business, services, team, gallery, credits, reviews, studios] = await Promise.all([
-    client
-      .from("profile_business")
-      .select("business_address, operating_hours, logo_url, hero_banner_url, founded_year")
-      .eq("profile_id", profile.id)
-      .maybeSingle(),
+    softSelect(
+      (columns) =>
+        client.from("profile_business").select(columns).eq("profile_id", profile.id).maybeSingle(),
+      `${BUSINESS}, legal_name`,
+      BUSINESS,
+    ),
     client
       .from("profile_services")
       .select("id, name, price_paise, price_unit, price_note, category, status")
@@ -130,18 +150,22 @@ async function businessRecord(
       .eq("published", true)
       .order("sort_order")
       .order("created_at", { ascending: false }),
-    client
-      .from("reviews")
-      .select("id, author_name, rating, body, response, created_at")
-      .eq("target_profile_id", profile.id),
-    client
-      .from("studios")
-      .select(
-        "id, rating, review_count, rooms:studio_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), reviews(id, author_name, rating, body, response, created_at)",
-      )
-      .eq("owner_profile_id", profile.id)
-      .order("created_at")
-      .limit(1),
+    softSelect(
+      (columns) => client.from("reviews").select(columns).eq("target_profile_id", profile.id),
+      REVIEW_FULL,
+      REVIEW,
+    ),
+    softSelect(
+      (columns) =>
+        client
+          .from("studios")
+          .select(columns)
+          .eq("owner_profile_id", profile.id)
+          .order("created_at")
+          .limit(1),
+      STUDIO(REVIEW_FULL),
+      STUDIO(REVIEW),
+    ),
   ]);
   const failed = [business, services, team, gallery, credits, reviews, studios].find(
     (r) => r.error,
@@ -149,20 +173,36 @@ async function businessRecord(
   if (failed?.error) throw new Error(failed.error.message);
   if (!business.data) return null;
 
-  type StoredReview = BusinessRecord["reviews"][number] & { created_at: string };
+  type StoredReview = Partial<BusinessRecord["reviews"][number]> & {
+    id: string;
+    author_name: string;
+    rating: number;
+    body: string;
+    created_at: string;
+  };
   const studio = (studios.data?.[0] ?? null) as
     | (Omit<NonNullable<BusinessRecord["studio"]>, "rooms"> & {
         rooms: NonNullable<BusinessRecord["studio"]>["rooms"] | null;
         reviews: StoredReview[] | null;
       })
     | null;
-  const allReviews = [...((reviews.data ?? []) as StoredReview[]), ...(studio?.reviews ?? [])]
+  const allReviews = [
+    ...((reviews.data ?? []) as unknown as StoredReview[]),
+    ...(studio?.reviews ?? []),
+  ]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
-    .map(({ created_at: _created, ...r }) => ({ ...r, rating: Number(r.rating) }));
+    .map(({ created_at: _created, ...r }) => ({
+      ...r,
+      author_org: r.author_org ?? null,
+      context: r.context ?? null,
+      response: r.response ?? null,
+      rating: Number(r.rating),
+      tags: r.tags ?? [],
+    }));
 
   return {
     profile,
-    business: business.data as BusinessRecord["business"],
+    business: business.data as unknown as BusinessRecord["business"],
     services: (services.data ?? []) as BusinessRecord["services"],
     team: (team.data ?? []) as BusinessRecord["team"],
     gallery: (gallery.data ?? []) as BusinessRecord["gallery"],
@@ -185,13 +225,14 @@ export const getPublicBusiness = createServerFn({ method: "GET" })
   .inputValidator((d) => username.parse(d))
   .handler(async ({ data }): Promise<BusinessRecord | null> => {
     const client = await anonClient();
-    const { data: row, error } = await client
-      .from("profiles")
-      .select(PROFILE)
-      .eq("username", data.username)
-      .maybeSingle();
+    const { data: row, error } = await softSelect(
+      (columns) =>
+        client.from("profiles").select(columns).eq("username", data.username).maybeSingle(),
+      PROFILE_FULL,
+      PROFILE,
+    );
     if (error) throw new Error(error.message);
-    const profile = row as ProfileBase | null;
+    const profile = row as unknown as ProfileBase | null;
     if (!profile || profile.visibility === "private") return null;
     return businessRecord(client as unknown as SupabaseClient, profile);
   });
@@ -201,13 +242,13 @@ export const getMyBusiness = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<BusinessRecord | null> => {
     const client = context.supabase as unknown as SupabaseClient;
-    const { data: row, error } = await client
-      .from("profiles")
-      .select(PROFILE)
-      .eq("id", context.userId)
-      .maybeSingle();
+    const { data: row, error } = await softSelect(
+      (columns) => client.from("profiles").select(columns).eq("id", context.userId).maybeSingle(),
+      PROFILE_FULL,
+      PROFILE,
+    );
     if (error) throw new Error(error.message);
-    return row ? businessRecord(client, row as ProfileBase) : null;
+    return row ? businessRecord(client, row as unknown as ProfileBase) : null;
   });
 
 /** The signed-in business updates its own profile_business row (e.g. operating hours). */
@@ -306,13 +347,13 @@ export const listPublicBusinesses = createServerFn({ method: "GET" }).handler(
  */
 
 async function publicProfile(client: Awaited<ReturnType<typeof anonClient>>, name: string) {
-  const { data, error } = await client
-    .from("profiles")
-    .select(PROFILE)
-    .eq("username", name)
-    .maybeSingle();
+  const { data, error } = await softSelect(
+    (columns) => client.from("profiles").select(columns).eq("username", name).maybeSingle(),
+    PROFILE_FULL,
+    PROFILE,
+  );
   if (error) throw new Error(error.message);
-  const row = data as ProfileBase | null;
+  const row = data as unknown as ProfileBase | null;
   return row && row.visibility !== "private" ? row : null;
 }
 
@@ -364,7 +405,31 @@ export type DirectoryPerson = {
   genres: string[];
   avatarUrl: string | null;
   verified: boolean;
+  /** Neighbourhood within the city. */
+  area: string | null;
+  /** Null while the person has no reviews. */
+  rating: number | null;
+  reviewCount: number;
 };
+
+/** A stored profile as a directory entry. */
+function directoryPerson(r: ProfileBase): DirectoryPerson {
+  const reviewCount = r.review_count ?? 0;
+  return {
+    id: r.id,
+    username: r.username ?? "",
+    name: r.display_name ?? r.username ?? "",
+    headline: r.headline,
+    city: r.city,
+    roles: r.roles ?? [],
+    genres: r.genres ?? [],
+    avatarUrl: r.avatar_url,
+    verified: Boolean(r.is_verified),
+    area: r.area ?? null,
+    rating: reviewCount && r.rating != null ? Number(r.rating) : null,
+    reviewCount,
+  };
+}
 
 /*
  * Everyone in one category, for /categories/$slug. Public profiles only (RLS keeps the rest out of
@@ -382,23 +447,17 @@ export const listPeopleByRole = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }): Promise<DirectoryPerson[]> => {
     const client = await anonClient();
-    let query = client.from("profiles").select(PROFILE).eq("visibility", "public");
-    if (data.role) query = query.contains("roles", [data.role]);
-    const { data: rows, error } = await query
-      .order("is_verified", { ascending: false })
-      .limit(data.limit ?? 40);
+    const { data: rows, error } = await softSelect(
+      (columns) => {
+        let query = client.from("profiles").select(columns).eq("visibility", "public");
+        if (data.role) query = query.contains("roles", [data.role]);
+        return query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);
+      },
+      PROFILE_FULL,
+      PROFILE,
+    );
     if (error) throw new Error(error.message);
-    return ((rows ?? []) as ProfileBase[]).map((r) => ({
-      id: r.id,
-      username: r.username ?? "",
-      name: r.display_name ?? r.username ?? "",
-      headline: r.headline,
-      city: r.city,
-      roles: r.roles ?? [],
-      genres: r.genres ?? [],
-      avatarUrl: r.avatar_url,
-      verified: Boolean(r.is_verified),
-    }));
+    return ((rows ?? []) as unknown as ProfileBase[]).map(directoryPerson);
   });
 
 /*
@@ -420,41 +479,29 @@ export const searchPeople = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }): Promise<{ people: DirectoryPerson[]; total: number }> => {
     const client = await anonClient();
-    let query = client
-      .from("profiles")
-      .select(PROFILE, { count: "exact" })
-      .eq("visibility", "public");
-
     // A comma or a bracket would be read as another condition, so neither survives the text.
     const text = (data.q ?? "").replace(/[,()]/g, " ").trim();
-    if (text) {
-      const like = `%${text}%`;
-      query = query.or(
-        `display_name.ilike.${like},username.ilike.${like},headline.ilike.${like},city.ilike.${like}`,
-      );
-    }
-    if (data.role) query = query.contains("roles", [data.role]);
-    if (data.genre) query = query.contains("genres", [data.genre]);
-    if (data.verifiedOnly) query = query.eq("is_verified", true);
+    const search = (columns: string) => {
+      let query = client
+        .from("profiles")
+        .select(columns, { count: "exact" })
+        .eq("visibility", "public");
+      if (text) {
+        const like = `%${text}%`;
+        query = query.or(
+          `display_name.ilike.${like},username.ilike.${like},headline.ilike.${like},city.ilike.${like}`,
+        );
+      }
+      if (data.role) query = query.contains("roles", [data.role]);
+      if (data.genre) query = query.contains("genres", [data.genre]);
+      if (data.verifiedOnly) query = query.eq("is_verified", true);
+      return query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);
+    };
 
-    const {
-      data: rows,
-      count,
-      error,
-    } = await query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);
+    const { data: rows, count, error } = await softSelect(search, PROFILE_FULL, PROFILE);
     if (error) throw new Error(error.message);
     return {
-      people: ((rows ?? []) as ProfileBase[]).map((r) => ({
-        id: r.id,
-        username: r.username ?? "",
-        name: r.display_name ?? r.username ?? "",
-        headline: r.headline,
-        city: r.city,
-        roles: r.roles ?? [],
-        genres: r.genres ?? [],
-        avatarUrl: r.avatar_url,
-        verified: Boolean(r.is_verified),
-      })),
+      people: ((rows ?? []) as unknown as ProfileBase[]).map(directoryPerson),
       total: count ?? 0,
     };
   });

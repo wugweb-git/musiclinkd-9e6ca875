@@ -8,6 +8,7 @@ import {
   ConditionBadge,
   LocationRow,
   Rating,
+  ReviewTags,
   SellerSummary,
   ProductCard,
   productFromRental,
@@ -117,12 +118,14 @@ function RentalDetail() {
       ? [
           {
             k: "Delivery",
+            // No stored fee is not a free delivery, so the amount shows only when set.
             v: e.delivery
-              ? `${e.pickup ? "Pickup or " : ""}delivery ${inr(e.deliveryFee ?? 0)}`
+              ? `${e.pickup ? "Pickup or " : ""}delivery${e.deliveryFee != null ? ` ${inr(e.deliveryFee)}` : ""}`
               : "Pickup only",
           },
         ]
       : []),
+    ...(e.deliveryNote ? [{ k: "Delivery note", v: e.deliveryNote }] : []),
   ];
   const barNote = [e.deposit != null ? `Deposit ${inr(e.deposit)}` : e.priceNote, e.availability]
     .filter(Boolean)
@@ -264,7 +267,7 @@ function RentalDetail() {
           <>
             <h2 className="mt-6 text-2">Provider</h2>
             <div className="mt-2 rounded-lg bg-subtle p-4">
-              <SellerSummary seller={e.owner} compact />
+              <SellerSummary seller={e.owner} />
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {e.owner.id ? (
                   <BtnLink
@@ -312,6 +315,7 @@ function RentalDetail() {
                       <Rating value={r.rating} />
                     </div>
                     <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
+                    <ReviewTags tags={r.tags} />
                   </article>
                 ))
               ) : (

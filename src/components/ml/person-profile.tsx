@@ -734,7 +734,11 @@ function OwnerStack({
         )}
       </StackSection>
 
-      {p.genres.length || p.instruments.length || p.languages.length ? (
+      {p.genres.length ||
+      p.instruments.length ||
+      p.languages.length ||
+      p.specialisations.length ||
+      p.influences.length ? (
         <StackSection title="Music identity" editTo={edit} collapsible>
           <ChipGroupList>
             <ChipGroup label="Genres" icon={Music} items={p.genres} />

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { ListingGrid, Rating, TrustPill } from "@/components/ml/market";
+import { Followers, ListingGrid, Rating, ReviewTags, TrustPill } from "@/components/ml/market";
 import { EmptyState, Loading } from "@/components/ml/kit";
 import { getRentalProvider } from "@/lib/rentals.functions";
 import { getSellerListings } from "@/lib/catalog.functions";
@@ -85,6 +85,7 @@ function SellerProfile() {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {s.verified ? <TrustPill label="Verified identity" /> : null}
             {s.rating ? <Rating value={s.rating} count={s.reviews} /> : null}
+            <Followers count={s.followers} />
           </div>
           {s.bio ? <p className="mt-3 text-sm text-muted-foreground">{s.bio}</p> : null}
           <div className="mt-4 flex gap-2">
@@ -123,6 +124,7 @@ function SellerProfile() {
                   {new Date(r.created_at).toLocaleDateString("en-IN")}
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
+                <ReviewTags tags={r.tags} />
               </article>
             ))
           ) : (

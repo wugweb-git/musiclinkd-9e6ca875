@@ -20,6 +20,7 @@ export type AvailabilityState =
   | "Available for Shows"
   | "Looking for Collaboration"
   | "Available for Session Work"
+  | "Selective"
   | "Touring";
 
 export type AudioTrack = {
@@ -98,6 +99,8 @@ export type ReviewItem = {
   stars: number;
   text: string;
   response?: string;
+  /** Short labels the reviewer picked, shown as chips. */
+  tags?: string[] | undefined;
 };
 
 export type OpportunityItem = {

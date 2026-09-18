@@ -90,6 +90,10 @@ export type RentalItem = Pick<Equipment, "id" | "name" | "photos"> &
       username: string | null;
       photo: string;
       verified: boolean;
+      /** The provider's review average and count, when they have reviews; their follower count. */
+      rating?: number;
+      reviews?: number;
+      followers?: number;
     };
   };
 

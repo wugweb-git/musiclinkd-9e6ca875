@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
 import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
-import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
+import { Segmented } from "@/components/ml/kit";
+import { getMyProfile, saveMyProfile, RATE_UNITS, type RateUnit } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
@@ -38,8 +39,14 @@ type Form = {
   headline: string;
   bio: string;
   city: string;
+  area: string;
   state: string;
   availability: string;
+  /** Whole rupees as typed; empty for no rate. */
+  rate: string;
+  rate_unit: RateUnit;
+  /** Influences, comma-separated as typed. */
+  influence_text: string;
   visibility: string;
   experience_level: string;
   roles: string[];
@@ -57,8 +64,12 @@ const empty: Form = {
   headline: "",
   bio: "",
   city: "",
+  area: "",
   state: "",
   availability: "",
+  rate: "",
+  rate_unit: "hour",
+  influence_text: "",
   visibility: "public",
   experience_level: "",
   roles: [],
@@ -80,6 +91,30 @@ function splitName(row: ProfileRow): { first_name: string; last_name: string } {
     : { first_name: full.slice(0, space), last_name: full.slice(space + 1).trim() };
 }
 
+/** One-keyword labels for the rate units, in the order the choice shows them. */
+const UNIT_LABELS: Record<RateUnit, string> = {
+  hour: "Hour",
+  session: "Session",
+  day: "Day",
+  night: "Night",
+  show: "Show",
+  song: "Song",
+  track: "Track",
+  feature: "Feature",
+};
+const UNIT_ORDER = Object.keys(UNIT_LABELS) as RateUnit[];
+const unitFromLabel = (label: string) => UNIT_ORDER.find((u) => UNIT_LABELS[u] === label) ?? "hour";
+
+function rateFromRow(row: ProfileRow): { rate: string; rate_unit: RateUnit } {
+  const unit = RATE_UNITS.find((u) => u === row.rate_unit);
+  if (row.rate_paise != null)
+    return { rate: String(row.rate_paise / 100), rate_unit: unit ?? "hour" };
+  if (row.hourly_rate_paise != null) {
+    return { rate: String(row.hourly_rate_paise / 100), rate_unit: "hour" };
+  }
+  return { rate: "", rate_unit: unit ?? "hour" };
+}
+
 function fromRow(row: ProfileRow | null): Form {
   if (!row) return empty;
   return {
@@ -88,8 +123,12 @@ function fromRow(row: ProfileRow | null): Form {
     headline: row.headline ?? "",
     bio: row.bio ?? "",
     city: row.city ?? "",
+    area: row.area ?? "",
     state: row.state ?? "",
     availability: row.availability ?? "",
+    // Before a rate has a unit, the hourly rate is the rate.
+    ...rateFromRow(row),
+    influence_text: (row.influences ?? []).join(", "),
     visibility: row.visibility ?? "public",
     experience_level: row.experience_level ?? "",
     roles: row.roles ?? [],
@@ -165,6 +204,8 @@ function EditProfile() {
       return;
     }
     setStatus("saving");
+    const rupees = Number(form.rate.replace(/[₹,\s]/g, ""));
+    const ratePaise = form.rate.trim() && Number.isFinite(rupees) ? Math.round(rupees * 100) : null;
     try {
       const saved = await persist({
         data: {
@@ -177,8 +218,19 @@ function EditProfile() {
           headline: form.headline || null,
           bio: form.bio || null,
           city: form.city || null,
+          area: form.area.trim() || null,
           state: form.state || null,
           availability: form.availability || null,
+          rate_paise: ratePaise,
+          rate_unit: ratePaise == null ? null : form.rate_unit,
+          // The hourly rate follows the rate while it is per hour; any other unit leaves it be.
+          ...(form.rate_unit === "hour" || ratePaise == null
+            ? { hourly_rate_paise: ratePaise }
+            : {}),
+          influences: form.influence_text
+            .split(",")
+            .map((v) => v.trim())
+            .filter(Boolean),
           visibility: form.visibility || "public",
           experience_level: form.experience_level || null,
           roles: form.roles,
@@ -277,7 +329,7 @@ function EditProfile() {
     {
       id: "professional",
       label: "Professional",
-      detail: "Roles, experience, work modes",
+      detail: "Roles, experience, work modes, rate",
       done: form.roles.length > 0,
       body: (
         <div className="space-y-4">
@@ -299,13 +351,30 @@ function EditProfile() {
             value={form.experience_level}
             onChange={(v) => update({ experience_level: v })}
           />
+          <Field
+            label="Rate (₹)"
+            value={form.rate}
+            onChange={(v) => update({ rate: v })}
+            inputMode="decimal"
+          />
+          <div>
+            <span className="block text-1 font-medium text-muted-foreground">Per</span>
+            {/* Segmented bleeds 20px each side; this section's body is inset 16px. */}
+            <div className="px-1">
+              <Segmented
+                value={UNIT_LABELS[form.rate_unit]}
+                options={UNIT_ORDER.map((u) => UNIT_LABELS[u])}
+                onChange={(label) => update({ rate_unit: unitFromLabel(label) })}
+              />
+            </div>
+          </div>
         </div>
       ),
     },
     {
       id: "music",
       label: "Music",
-      detail: "Genres, instruments, languages",
+      detail: "Genres, instruments, languages, influences",
       done: form.genres.length > 0 && form.languages.length > 0,
       body: (
         <div className="space-y-4">
@@ -330,16 +399,28 @@ function EditProfile() {
             selected={form.languages}
             onToggle={(v) => toggle("languages", v)}
           />
+          <Field
+            label="Influences"
+            value={form.influence_text}
+            onChange={(v) => update({ influence_text: v })}
+            hint="Separate names with commas"
+          />
         </div>
       ),
     },
     {
       id: "availability",
       label: "Location & availability",
-      detail: "City, state, current status",
+      detail: "Area, city, state, current status",
       done: Boolean(form.city && form.availability),
       body: (
         <div className="space-y-3">
+          <Field
+            label="Area"
+            value={form.area}
+            onChange={(v) => update({ area: v })}
+            hint="Your neighbourhood, e.g. Indiranagar"
+          />
           <Field label="City" value={form.city} onChange={(v) => update({ city: v })} />
           <Field label="State" value={form.state} onChange={(v) => update({ state: v })} />
           <Field
@@ -508,6 +589,7 @@ function Field({
   hint,
   multiline = false,
   readOnly = false,
+  inputMode,
 }: {
   label: string;
   value: string;
@@ -515,6 +597,7 @@ function Field({
   hint?: string;
   multiline?: boolean;
   readOnly?: boolean;
+  inputMode?: "decimal";
 }) {
   return (
     <label className="block">
@@ -530,6 +613,7 @@ function Field({
         <input
           value={value}
           readOnly={readOnly}
+          {...(inputMode ? { inputMode } : {})}
           onChange={(e) => onChange(e.target.value)}
           className={`mt-1.5 min-h-control w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-background text-muted-foreground" : "bg-card"}`}
         />

@@ -23,10 +23,12 @@ export type BusinessView = {
   subtitle: string;
   tagline: string;
   stats: [label: string, value: string][] | null;
-  /** Studio rating and review count, when the business has a studio. */
+  /** Across the account's own reviews and its studio's; null while there are none. */
   rating: number | null;
   reviewCount: number | null;
   about: string;
+  /** The registered name, when it differs from how the business is known. */
+  legalName: string;
   services: {
     id: string;
     label: string;
@@ -56,8 +58,34 @@ export type BusinessView = {
   }[];
   credits: { id: string; title: string; meta: string }[];
   gallery: string[];
-  reviews: { id: string; author: string; rating: number; body: string; response: string | null }[];
+  reviews: {
+    id: string;
+    author: string;
+    org: string;
+    context: string;
+    rating: number;
+    body: string;
+    response: string | null;
+    tags: string[];
+  }[];
 };
+
+/**
+ * One rating over the account's reviews and its studio's, weighted by how many each has. The
+ * database keeps both (profiles.rating/review_count, studios.rating/review_count).
+ */
+function combinedRating(
+  parts: { rating: number | string | null | undefined; count: number | null | undefined }[],
+): { rating: number | null; count: number } {
+  let count = 0;
+  let sum = 0;
+  for (const p of parts) {
+    if (!p.count || p.rating == null) continue;
+    count += p.count;
+    sum += Number(p.rating) * p.count;
+  }
+  return { rating: count ? Math.round((sum / count) * 10) / 10 : null, count };
+}
 
 /** Stored hours are one line per day, "Day: hours"; a line without a day is shown whole. */
 function hoursFrom(text: string | null) {
@@ -75,6 +103,12 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
   const { profile, business, studio } = r;
   const role = profile.roles?.[0];
   const typeLabel = role ? taxonomyLabel(labels, "person_types", role) : "";
+  const place = [profile.area, profile.city].filter(Boolean).join(", ");
+  const reviews = combinedRating([
+    { rating: profile.rating, count: profile.review_count },
+    { rating: studio?.rating, count: studio?.review_count },
+  ]);
+  const legalName = business.legal_name?.trim() ?? "";
   return {
     id: profile.username ?? profile.id,
     profileId: profile.id,
@@ -83,25 +117,33 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     verified: profile.is_verified,
     cover: business.hero_banner_url ?? profile.cover_url ?? "",
     logo: business.logo_url ?? profile.avatar_url ?? "",
-    city: profile.city ?? "",
+    city: place,
     subtitle: joinParts(
       typeLabel,
-      profile.city,
+      place,
       business.founded_year ? `since ${business.founded_year}` : "",
     ),
     tagline: profile.headline ?? "",
-    // Only a studio stores a rating and review count; followers and bookings are not stored.
-    stats: studio
-      ? [
-          ["Followers", "—"],
-          ["Bookings", "—"],
-          ["Rating", studio.rating == null ? "—" : String(studio.rating)],
-          ["Reviews", String(studio.review_count)],
-        ]
-      : null,
-    rating: studio?.rating ?? null,
-    reviewCount: studio ? studio.review_count : null,
+    // Followers and reviews are kept by the database; bookings are not counted, so they read "—".
+    // Before followers_count exists, only a studio has figures to show.
+    stats:
+      profile.followers_count != null || studio
+        ? [
+            [
+              "Followers",
+              profile.followers_count == null
+                ? "—"
+                : profile.followers_count.toLocaleString("en-IN"),
+            ],
+            ["Bookings", "—"],
+            ["Rating", reviews.rating == null ? "—" : String(reviews.rating)],
+            ["Reviews", String(reviews.count)],
+          ]
+        : null,
+    rating: reviews.rating,
+    reviewCount: reviews.count || (studio ? 0 : null),
     about: profile.bio ?? "",
+    legalName: legalName && legalName !== profile.display_name ? legalName : "",
     services: r.services.map((s) => ({
       id: s.id,
       label: s.name,
@@ -141,9 +183,12 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     reviews: r.reviews.map((rv) => ({
       id: rv.id,
       author: rv.author_name,
+      org: rv.author_org ?? "",
+      context: rv.context ?? "",
       rating: rv.rating,
       body: rv.body,
       response: rv.response,
+      tags: rv.tags,
     })),
   };
 }

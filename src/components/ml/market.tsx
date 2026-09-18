@@ -86,6 +86,30 @@ export function Rating({
   );
 }
 
+/** A follower count beside a rating; nothing before anyone follows. */
+export function Followers({ count }: { count?: number | undefined }) {
+  if (!count) return null;
+  return (
+    <span className="text-1 text-muted-foreground">
+      {count.toLocaleString("en-IN")} follower{count === 1 ? "" : "s"}
+    </span>
+  );
+}
+
+/** What a reviewer picked out ("On time"), as static pills under the review. */
+export function ReviewTags({ tags }: { tags?: string[] | undefined }) {
+  if (!tags?.length) return null;
+  return (
+    <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Tags">
+      {tags.map((tag) => (
+        <li key={tag} className="pill bg-background text-muted-foreground">
+          {tag}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function LocationRow({ text }: { text: string }) {
   return (
     <span className="inline-flex items-center gap-1 text-1 text-muted-foreground">
@@ -495,6 +519,7 @@ export function SellerSummary({
     verified: boolean;
     rating?: number;
     reviews?: number;
+    followers?: number;
     responseTime?: string;
     photo?: string;
   };
@@ -513,9 +538,10 @@ export function SellerSummary({
         {seller.role ? (
           <p className="truncate text-1 text-muted-foreground">{seller.role}</p>
         ) : null}
-        {compact || !(seller.rating || seller.responseTime) ? null : (
-          <div className="mt-1 flex items-center gap-2">
+        {compact || !(seller.rating || seller.followers || seller.responseTime) ? null : (
+          <div className="mt-1 flex flex-wrap items-center gap-2">
             <Rating value={seller.rating} count={seller.reviews} />
+            <Followers count={seller.followers} />
             {seller.responseTime ? (
               <span className="text-1 text-muted-foreground">Replies {seller.responseTime}</span>
             ) : null}

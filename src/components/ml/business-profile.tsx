@@ -114,10 +114,18 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
 
         {tab === "Overview" ? (
           <>
-            {b.about ? (
+            {b.about || b.legalName ? (
               <Card className="space-y-2">
                 <h2 className="text-sm">About</h2>
-                <p className="text-1 leading-relaxed text-muted-foreground">{b.about}</p>
+                {b.about ? (
+                  <p className="text-1 leading-relaxed text-muted-foreground">{b.about}</p>
+                ) : null}
+                {b.legalName ? (
+                  <p className="flex items-start justify-between gap-3 text-1">
+                    <span className="text-muted-foreground">Registered</span>
+                    <span className="text-right font-semibold">{b.legalName}</span>
+                  </p>
+                ) : null}
               </Card>
             ) : null}
             {b.services.some((s) => s.status === "active") ? (

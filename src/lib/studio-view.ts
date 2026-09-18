@@ -1,12 +1,13 @@
-import type { Bookable, Resource } from "@/data/booking";
-import { taxonomyLabel, type StudioRow } from "@/lib/catalog.functions";
+import type { AddOn, Bookable, DurationUnit, PricingTier, Resource } from "@/data/booking";
+import { taxonomyLabel, type RoomTier, type StudioRow } from "@/lib/catalog.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
  * filled; everything else is a neutral empty value ("", 0, []) that the render paths skip.
- * There is no tax, response time, distance, timezone, add-ons or availability calendar.
+ * There is no tax, distance, timezone or availability calendar. A rating shows only once the
+ * studio has reviews (studios.rating is kept from them by the database).
  */
 
 export type DiscoverStudio = {
@@ -29,7 +30,7 @@ export function discoverStudioFromRow(row: StudioRow, labels: TaxonomyLabels): D
     username: row.owner?.username ?? "",
     name: row.name,
     location: row.location ?? "",
-    rating: row.rating == null ? null : Number(row.rating),
+    rating: row.rating == null || !row.review_count ? null : Number(row.rating),
     rate: priceParts(row.hourly_rate_paise, "hr"),
     photo: row.image_url ?? "",
     gear: row.equipment.length
@@ -46,8 +47,22 @@ function splitLocation(location: string | null) {
   return { area: value.slice(0, cut).trim(), city: value.slice(cut + 1).trim() };
 }
 
+const unitIsHour = (unit: string) => ["hour", "hr", "hourly"].includes(unit.trim().toLowerCase());
+
 /** Bookable prices are whole rupees; the database stores paise. */
 const rupees = (paise: number) => paise / 100;
+
+/** A stored package ("Half day", 4 hours) as a pricing tier; the label says which duration it is. */
+function packageTier(tier: RoomTier): PricingTier | null {
+  if (tier.price_paise == null || !tier.label) return null;
+  const label = tier.label.toLowerCase();
+  const unit: DurationUnit = label.includes("half")
+    ? "halfDay"
+    : label.includes("full") || label.includes("day")
+      ? "fullDay"
+      : "session";
+  return { unit, label: tier.label, hours: tier.hours ?? 0, price: rupees(tier.price_paise) };
+}
 
 function hourlyResource(
   id: string,
@@ -56,16 +71,28 @@ function hourlyResource(
   paise: number | null,
   photo: string,
   gear: string[] = [],
+  description = "",
+  packages: RoomTier[] = [],
 ): Resource | null {
-  if (paise == null) return null;
+  const tiers: PricingTier[] = [
+    ...(paise == null
+      ? []
+      : [{ unit: "hour" as const, label: "Hourly", hours: 1, price: rupees(paise) }]),
+    // A stored "Hourly" package repeats the room's own hourly rate; keep one of each unit and price.
+    ...packages
+      .map(packageTier)
+      .filter((t): t is PricingTier => t !== null)
+      .filter((t) => !(paise != null && t.unit === "hour" && t.price === rupees(paise))),
+  ];
+  if (!tiers.length) return null;
   return {
     id,
     name,
-    description: "",
+    description,
     capacity: capacity ?? 0,
     equipment: gear,
-    tiers: [{ unit: "hour", label: "Hourly", hours: 1, price: rupees(paise) }],
-    durations: ["hour"],
+    tiers,
+    durations: [...new Set(tiers.map((t) => t.unit))],
     model: "request",
     availabilityNote: "",
     photo,
@@ -82,6 +109,8 @@ export function bookableFromStudio(row: StudioRow, labels: TaxonomyLabels): Book
           room.hourly_rate_paise,
           room.photo_url ?? "",
           room.gear ?? [],
+          room.description ?? "",
+          room.tiers ?? [],
         ),
       )
     : [hourlyResource(row.id, row.name, null, row.hourly_rate_paise, row.image_url ?? "")];
@@ -94,7 +123,8 @@ export function bookableFromStudio(row: StudioRow, labels: TaxonomyLabels): Book
     name: row.name,
     kind: "",
     verified: row.verified_gold || Boolean(row.owner?.is_verified),
-    rating: row.rating ?? 0,
+    // No reviews, no rating: the meta row skips a zero.
+    rating: row.review_count ? (row.rating ?? 0) : 0,
     reviews: row.review_count,
     ...splitLocation(row.location),
     distanceKm: 0,
@@ -105,12 +135,30 @@ export function bookableFromStudio(row: StudioRow, labels: TaxonomyLabels): Book
     facilities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),
     resources: priced,
     equipment: row.equipment.map((e) => e.name),
-    addOns: [],
+    addOns: (row.add_ons ?? []).map((a, i): AddOn => ({
+      id: `addon-${i}`,
+      name: a.name,
+      description: "",
+      price: a.price_paise == null ? 0 : rupees(a.price_paise),
+      ...(a.unit && unitIsHour(a.unit) ? { perHour: true } : a.unit ? { unit: a.unit } : {}),
+      ...(a.price_paise == null ? { unpriced: true } : {}),
+      available: true,
+    })),
     policies: row.cancellation_policy
       ? [{ title: "Cancellation", body: row.cancellation_policy }]
       : [],
     taxPct: 0,
-    responseTime: "",
+    responseTime: row.response_time ?? "",
+    reviewItems: row.reviews.map((r) => ({
+      id: r.id,
+      by: r.author_name,
+      org: r.author_org ?? "",
+      context: r.context ?? "",
+      stars: r.rating,
+      text: r.body,
+      ...(r.response ? { response: r.response } : {}),
+      tags: r.tags ?? [],
+    })),
     hasCalendar: false,
   };
 }

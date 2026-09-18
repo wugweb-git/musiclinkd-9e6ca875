@@ -1,3 +1,4 @@
+import type { ReviewItem } from "@/data/profile";
 /**
  * FLOW 08 — BOOKING — design-time seeded data.
  *
@@ -70,6 +71,10 @@ export type AddOn = {
   description: string;
   price: number;
   perHour?: boolean;
+  /** Database add-ons: a unit other than the hour ("song", "session"). */
+  unit?: string;
+  /** Database add-ons with no stored price: nothing to show or add to a total. */
+  unpriced?: boolean;
   available: boolean;
   qty?: boolean;
   /** PROPOSED — links an add-on to a Marketplace rental listing (FLOW 07) */
@@ -112,6 +117,8 @@ export type Bookable = {
   facilities: string[];
   resources: Resource[];
   addOns: AddOn[];
+  /** Database studios: the written reviews, newest first. */
+  reviewItems?: ReviewItem[];
   policies: Policy[];
   taxPct: number;
   /** COMPUTED */

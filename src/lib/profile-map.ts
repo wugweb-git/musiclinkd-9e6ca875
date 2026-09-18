@@ -31,6 +31,16 @@ export type ProfileRow = {
   onboarding_step?: string | null;
   onboarding_draft?: unknown;
   onboarding_complete?: boolean | null;
+  /** Neighbourhood within the city ("Indiranagar"). */
+  area?: string | null;
+  influences?: string[] | null;
+  hourly_rate_paise?: number | null;
+  rate_paise?: number | null;
+  rate_unit?: string | null;
+  /** Kept by the database from reviews and follows; null rating while there are no reviews. */
+  rating?: number | string | null;
+  review_count?: number | null;
+  followers_count?: number | null;
 };
 
 /** Flatten the per-role specialisation map into a stable list. */
