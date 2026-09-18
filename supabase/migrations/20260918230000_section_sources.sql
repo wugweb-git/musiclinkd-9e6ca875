@@ -304,7 +304,8 @@ BEGIN
         '/marketplace/rent/listings');
     ELSE
       PERFORM public.notify(NEW.renter_profile_id, v_listing.seller_profile_id, 'rental_answered',
-        public.display_name_of(v_listing.seller_profile_id) || ' marked your rental of '
+        -- A listing with only a seller name has no profile to name; the title must not be null.
+        coalesce(public.display_name_of(v_listing.seller_profile_id), 'The owner') || ' marked your rental of '
           || v_listing.title || ' ' || replace(NEW.status, '_', ' '),
         to_char(NEW.start_date, 'DD Mon') || ' – ' || to_char(NEW.end_date, 'DD Mon'),
         '/marketplace/rent/active/' || NEW.id);
