@@ -5,12 +5,12 @@
 BEGIN;
 
 -- ===== REPORTS =====
--- A flag on a review, a listing or a rental listing. The reporter sees their own; nobody else
+-- A flag on a review, a listing, a rental listing or a person. The reporter sees their own; nobody else
 -- reads them from the app (the team reads them in the database).
 CREATE TABLE IF NOT EXISTS public.reports (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   reporter_profile_id uuid NOT NULL DEFAULT auth.uid() REFERENCES public.profiles(id) ON DELETE CASCADE,
-  subject_type        text NOT NULL CHECK (subject_type IN ('review', 'listing', 'rental')),
+  subject_type        text NOT NULL CHECK (subject_type IN ('review', 'listing', 'rental', 'profile')),
   subject_id          text NOT NULL CHECK (length(subject_id) BETWEEN 1 AND 120),
   reason              text NOT NULL CHECK (length(reason) BETWEEN 1 AND 80),
   detail              text CHECK (length(detail) <= 1000),
