@@ -5,9 +5,12 @@
 -- hardcoded in src/data/*.ts); it alters no column and changes no existing row. None of its slugs
 -- existed at snapshot time, so every row it adds is identifiable by slug.
 --
--- Row counts: marketplace_listings 8, studios 12, studio_rooms 7, opportunities 9.
+-- Row counts: marketplace_listings 8, studios 12, studio_rooms 7, opportunities 9,
+-- taxonomy_options (equipment_categories) 7.
 --
 -- To undo:
+--   DELETE FROM public.taxonomy_options WHERE category_key = 'equipment_categories'
+--     AND slug IN ('pa_systems', 'backline');
 --   DELETE FROM public.studio_rooms WHERE studio_id IN
 --     (SELECT id FROM public.studios WHERE slug IN ('jam-room-bandra', 'octave-sound-labs'));
 --   DELETE FROM public.studios WHERE slug IN ('jam-room-bandra', 'octave-sound-labs');

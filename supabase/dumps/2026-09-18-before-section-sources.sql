@@ -1,7 +1,8 @@
 -- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
 -- Taken 2026-09-18 via Lovable query_database, before migration 20260918230000_section_sources.sql.
 --
--- Scope: row counts plus the definitions the migration replaces. It adds search_events,
+-- Scope: row counts plus the definitions the migration replaces. It also lets portfolio works be
+-- saved (saved_items 'portfolio', portfolio_save_count). It adds search_events,
 -- saved_searches and portfolio_item_events, the columns opportunity_views.source and
 -- marketplace_listings.listing_status (default 'active', so every existing listing stays as it is),
 -- widens the saved_items and notifications kind checks, adds read functions and a rental-booking

@@ -85,7 +85,8 @@ GRANT SELECT, INSERT, DELETE ON public.saved_searches TO authenticated;
 -- many people shortlisted it.
 ALTER TABLE public.saved_items DROP CONSTRAINT IF EXISTS saved_items_target_type_check;
 ALTER TABLE public.saved_items ADD CONSTRAINT saved_items_target_type_check
-  CHECK (target_type IN ('talent', 'band', 'studio', 'business', 'event', 'listing', 'opportunity'));
+  CHECK (target_type IN ('talent', 'band', 'studio', 'business', 'event', 'listing', 'opportunity',
+    'portfolio'));
 
 -- How many people saved one opportunity; readable only by its poster (zero for anyone else).
 CREATE OR REPLACE FUNCTION public.opportunity_save_count(opp uuid)
@@ -105,6 +106,25 @@ $fn$;
 
 REVOKE ALL ON FUNCTION public.opportunity_save_count(uuid) FROM public;
 GRANT EXECUTE ON FUNCTION public.opportunity_save_count(uuid) TO authenticated;
+
+-- How many people saved one portfolio work; readable only by the work's owner (zero otherwise).
+CREATE OR REPLACE FUNCTION public.portfolio_save_count(p_item uuid)
+RETURNS bigint
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $fn$
+  SELECT count(*)
+  FROM public.saved_items s
+  WHERE s.target_type = 'portfolio' AND s.target_id = p_item
+    AND EXISTS (
+      SELECT 1 FROM public.portfolio_items p WHERE p.id = p_item AND p.user_id = auth.uid()
+    );
+$fn$;
+
+REVOKE ALL ON FUNCTION public.portfolio_save_count(uuid) FROM public;
+GRANT EXECUTE ON FUNCTION public.portfolio_save_count(uuid) TO authenticated;
 
 -- ===== WHERE OPPORTUNITY VIEWS COME FROM =====
 -- The screen the viewer opened the opportunity from. Null for views counted before this column.

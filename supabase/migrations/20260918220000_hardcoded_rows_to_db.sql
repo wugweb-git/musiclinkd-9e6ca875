@@ -27,6 +27,13 @@
 
 BEGIN;
 
+-- Two equipment kinds the rentals need and the taxonomy lacked: a PA system and a full backline.
+-- Without them those rentals sit in no rental category.
+INSERT INTO public.taxonomy_options (category_key, slug, label, sort_order, is_published) VALUES
+  ('equipment_categories', 'pa_systems', 'PA Systems', 8, true),
+  ('equipment_categories', 'backline', 'Backline', 9, true)
+ON CONFLICT (category_key, slug) DO NOTHING;
+
 -- ---------------------------------------------------------------------------------------------
 -- src/data/rentals.ts — equipment (providers have no profile: seller_name only)
 -- The Pearl Export kit is already live as pearl-export-drum-kit and is not repeated.
@@ -80,7 +87,7 @@ INSERT INTO public.marketplace_listings (
   now() - interval '3 minutes'
 ),
 (
-  'jbl-pa-2k', 'Pulse Live Systems', 'JBL EON 2000W PA System', 'gear_rental', NULL, NULL, 'used',
+  'jbl-pa-2k', 'Pulse Live Systems', 'JBL EON 2000W PA System', 'gear_rental', 'equipment', 'pa_systems', 'used',
   650000, 'day', '+ ₹50,000 deposit',
   'https://images.unsplash.com/photo-1519508234439-4f23643125c1?auto=format&fit=crop&w=900&q=80',
   'JBL', 'EON715 + EON718S',
@@ -167,7 +174,7 @@ INSERT INTO public.marketplace_listings (
   now() - interval '1 day'
 ),
 (
-  'backline-rental', 'Ravi Deshmukh', 'Full Backline Rental — Drums, Amps, DI', 'gear_rental', NULL, NULL, NULL,
+  'backline-rental', 'Ravi Deshmukh', 'Full Backline Rental — Drums, Amps, DI', 'gear_rental', 'equipment', 'backline', NULL,
   650000, 'day', '+ ₹20,000 deposit',
   'https://images.unsplash.com/photo-1571327073757-71d13c24de30?auto=format&fit=crop&w=800&q=80',
   NULL, NULL,

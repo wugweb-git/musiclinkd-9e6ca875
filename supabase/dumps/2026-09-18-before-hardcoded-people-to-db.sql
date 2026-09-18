@@ -1,0 +1,16 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-18 via Lovable query_database, before migration 20260918221000_hardcoded_people_to_db.sql
+-- (approved by the owner the same day: "Profiles for the people and businesses the hardcoded screens
+-- showed — refactor and use it").
+--
+-- Scope: row counts. That migration only adds rows — 17 sign-in-less accounts and their profiles,
+-- sections, studios and reviews, all under fixed ids — and links the five name-only sellers'
+-- listings to their new profiles (seller_profile_id, only where it was null). No existing row's
+-- content changes. None of its usernames, slugs or ids existed at snapshot time.
+--
+-- Row counts: auth.users 102, profiles 102, profile_business 21, profile_role_details 71,
+-- profile_services 31, profile_experience 18, profile_gallery 30, portfolio_items 85, studios 12,
+-- studio_rooms 7, studio_equipment 16, reviews 35, notifications 4.
+--
+-- To undo: see the Rollback note at the top of the migration (unlink the listings, then delete the
+-- 17 auth.users ids; everything else cascades).
