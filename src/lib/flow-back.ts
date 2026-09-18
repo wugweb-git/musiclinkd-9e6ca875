@@ -33,3 +33,15 @@ export function useFlowBack() {
     fallback();
   };
 }
+
+/**
+ * The in-app path of the entry just behind this one — where the person came from — or null when
+ * this is the first entry (a shared link, a new tab).
+ */
+export function usePreviousPath() {
+  const router = useRouter();
+  return () => {
+    const i = indexOf(router);
+    return typeof i === "number" && i > 0 ? (pathByIndex.get(i - 1) ?? null) : null;
+  };
+}

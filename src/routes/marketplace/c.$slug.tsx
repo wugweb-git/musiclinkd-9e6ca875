@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
-import { EmptyState, ListingCard, MarketFilterSheet, SortSheet } from "@/components/ml/market";
-import { listings, marketCategories, subcategories } from "@/data/market";
+import { EmptyState, ListingGrid, MarketFilterSheet, SortSheet } from "@/components/ml/market";
+import { marketCategories, subcategories } from "@/data/market";
 import { loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/c/$slug")({
-  // Database listings follow the static ones in their mapped category.
+  // Database listings in their mapped category.
   loader: () => loadCatalogListings(),
   head: ({ params }) => {
     const c = marketCategories.find((m) => m.slug === params.slug);
@@ -36,15 +36,14 @@ function CategoryScreen() {
   const [sort, setSort] = useState(sorts[0]!);
   const catalog = Route.useLoaderData();
 
-  const items = [...listings, ...catalog].filter(
-    (l) => l.category === slug && (sub === "All" || l.subcategory === sub),
-  );
+  const inCategory = catalog.filter((l) => l.category === slug);
+  const items = inCategory.filter((l) => sub === "All" || l.subcategory === sub);
 
   return (
     <Screen>
       <TopBar
         title={cat?.label ?? "Market"}
-        subtitle={`${cat?.count ?? 0} listings in India`}
+        subtitle={`${inCategory.length} listings in India`}
         back="/marketplace"
       />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
@@ -65,7 +64,7 @@ function CategoryScreen() {
       </div>
       <div className="space-y-3 px-5 py-4">
         {items.length ? (
-          items.map((l) => <ListingCard key={l.id} l={l} />)
+          <ListingGrid items={items} />
         ) : (
           <EmptyState
             emoji="🎚"

@@ -20,7 +20,12 @@ export type OfferRow = {
   status: OfferStatus;
   created_at: string;
   listing: { id: string; slug: string; title: string; image_url: string | null } | null;
-  buyer: { id: string; username: string | null; display_name: string | null; avatar_url: string | null } | null;
+  buyer: {
+    id: string;
+    username: string | null;
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
 };
 
 const SELECT = `id, amount_paise, message, status, created_at,

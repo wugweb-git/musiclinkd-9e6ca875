@@ -1,48 +1,54 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Share2, Flag, Check } from "lucide-react";
-import { toast } from "sonner";
-import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import {
   ConditionBadge,
   LocationRow,
   Rating,
-  SaveButton,
   SellerSummary,
+  ProductCard,
+  productFromRental,
 } from "@/components/ml/market";
 import {
-  EquipmentTile,
-  ProviderSummary,
   RentalAvailabilityBadge,
   RentalPriceBlock,
   RentalReportSheet,
 } from "@/components/ml/rental";
-import {
-  equipment,
-  equipmentById,
-  inr,
-  providerById,
-  rentalReviews,
-  type RentalItem,
-} from "@/data/rentals";
-import { Price } from "@/components/ml/kit";
-import { loadCatalogRentals } from "@/lib/market-view";
+import { SavedToggle } from "@/components/ml/saved-toggle";
+import { inr, type RentalItem } from "@/data/rentals";
+import { EmptyState, Loading, Price } from "@/components/ml/kit";
+import { getListing } from "@/lib/catalog.functions";
+import { loadCatalogRentals, rentalFromRow } from "@/lib/market-view";
+import { getTaxonomyLabels } from "@/lib/portfolio.functions";
+import { listReviewsFor } from "@/lib/reviews.functions";
 import { priceText, rupeeParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
+import { rememberListingVisit } from "@/lib/device-history";
 
 export const Route = createFileRoute("/marketplace/rent/e/$id")({
-  // Static equipment wins; any other id is looked up as a database rental slug. Database rentals
-  // also fill in related equipment after the static ones.
-  loader: () => loadCatalogRentals(),
+  // The id is a live rental's slug; the rest of the catalog fills in related equipment. The row's
+  // own id (uuid) is what saved_items stores, so it is read alongside.
+  loader: async ({ params }) => {
+    const [catalog, row] = await Promise.all([
+      loadCatalogRentals(),
+      getListing({ data: { slug: params.id } }).catch(() => null),
+    ]);
+    // A rental its owner set unavailable or archived is out of browsing but can still be opened.
+    const own =
+      !catalog.some((x) => x.id === params.id) && row?.category === "gear_rental"
+        ? rentalFromRow(row, await getTaxonomyLabels().catch(() => ({})))
+        : null;
+    return { catalog: own ? [own, ...catalog] : catalog, rowId: row?.id ?? null };
+  },
   head: ({ params, loaderData }) => {
-    const known = equipmentById(params.id);
-    const e: RentalItem | undefined = known ?? loaderData?.find((x) => x.id === params.id);
+    const e: RentalItem | undefined = loaderData?.catalog.find((x) => x.id === params.id);
     const title = e
       ? `Rent ${e.name}${e.daily != null ? ` — ${priceText(rupeeParts(e.daily, "day"))}` : ""} | MusicLinkd`
       : "Rental | MusicLinkd";
-    const desc = known
-      ? `${known.brand} ${known.model} for rent in ${known.location}. ${known.availability}. Deposit ${inr(known.deposit)}.`
-      : "Rental equipment on MusicLinkd.";
+    const desc = "Rental equipment on MusicLinkd.";
     const image = e?.photos[0];
     return {
       meta: [
@@ -64,12 +70,22 @@ export const Route = createFileRoute("/marketplace/rent/e/$id")({
 
 function RentalDetail() {
   const { id } = Route.useParams();
-  const catalog = Route.useLoaderData();
-  const e: RentalItem | undefined = equipmentById(id) ?? catalog.find((x) => x.id === id);
-  const fromCatalog = !equipmentById(id);
-  const [saved, setSaved] = useState(false);
+  const { catalog, rowId } = Route.useLoaderData();
+  const e: RentalItem | undefined = catalog.find((x) => x.id === id);
   const [shot, setShot] = useState(0);
   const [report, setReport] = useState(false);
+  // Feeds Market's "Recently viewed" rail, the same as opening a listing there.
+  const found = Boolean(e);
+  useEffect(() => {
+    if (found) rememberListingVisit(id);
+  }, [id, found]);
+  const loadReviews = useServerFn(listReviewsFor);
+  const ownerId = e?.owner?.id ?? undefined;
+  const reviews = useQuery({
+    queryKey: ["rent", "provider", ownerId, "reviews"],
+    queryFn: () => loadReviews({ data: { profileId: ownerId! } }),
+    enabled: !!ownerId,
+  });
 
   if (!e) {
     return (
@@ -82,11 +98,7 @@ function RentalDetail() {
     );
   }
 
-  const p = e.providerId ? providerById(e.providerId) : undefined;
-  const related = [
-    ...equipment.filter((x) => x.category === e.category && x.id !== e.id).slice(0, 5),
-    ...catalog.filter((x) => e.category && x.category === e.category && x.id !== e.id),
-  ];
+  const related = catalog.filter((x) => e.category && x.category === e.category && x.id !== e.id);
   const byline = [e.brand, e.model, e.rentals != null ? `${e.rentals} completed rentals` : ""]
     .filter(Boolean)
     .join(" · ");
@@ -129,7 +141,7 @@ function RentalDetail() {
             >
               <Share2 size={iconSize.sm} />
             </button>
-            <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={40} />
+            {rowId ? <SavedToggle targetType="listing" targetId={rowId} size={40} /> : null}
           </div>
         }
       />
@@ -248,93 +260,76 @@ function RentalDetail() {
           </>
         ) : null}
 
-        {p || e.owner ? <h2 className="mt-6 text-2">Provider</h2> : null}
-        {e.owner && !p ? (
-          <div className="mt-2 rounded-lg bg-subtle p-4">
-            <SellerSummary seller={e.owner} compact />
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              {e.owner.username ? (
-                <BtnLink
-                  to="/profile/$username"
-                  params={{ username: e.owner.username }}
-                  variant="outline"
-                  className="w-full"
-                >
-                  View Profile
+        {e.owner ? (
+          <>
+            <h2 className="mt-6 text-2">Provider</h2>
+            <div className="mt-2 rounded-lg bg-subtle p-4">
+              <SellerSummary seller={e.owner} compact />
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {e.owner.id ? (
+                  <BtnLink
+                    to="/marketplace/rent/provider/$id"
+                    params={{ id: e.owner.id }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    View Profile
+                  </BtnLink>
+                ) : e.owner.username ? (
+                  <BtnLink
+                    to="/profile/$username"
+                    params={{ username: e.owner.username }}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    View Profile
+                  </BtnLink>
+                ) : null}
+                <BtnLink to="/messages" variant="outline" className="w-full">
+                  Message
                 </BtnLink>
-              ) : null}
-              <BtnLink to="/messages" variant="outline" className="w-full">
-                Message
-              </BtnLink>
+              </div>
             </div>
-          </div>
-        ) : null}
-        {p ? (
-          <div className="mt-2 rounded-lg bg-subtle p-4">
-            <ProviderSummary p={p} />
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-              {[
-                { k: "Response", v: p.responseRate },
-                { k: "Replies in", v: p.responseTime },
-                { k: "Rentals", v: `${p.completedRentals}` },
-              ].map((x) => (
-                <div key={x.k} className="rounded-lg bg-subtle py-2">
-                  <p className="truncate text-1 font-bold">{x.v}</p>
-                  <p className="text-1 text-muted-foreground">{x.k}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <Btn
-                variant="outline"
-                className="w-full"
-                onClick={() => toast("Provider profile — coming soon")}
-              >
-                View Profile
-              </Btn>
-              <BtnLink to="/messages" variant="outline" className="w-full">
-                Message
-              </BtnLink>
-            </div>
-          </div>
+          </>
         ) : null}
 
-        {fromCatalog ? null : (
+        {ownerId ? (
           <>
             <h2 className="mt-6 text-2">Reviews</h2>
             <div className="mt-2 space-y-3">
-              {rentalReviews.slice(0, 2).map((r) => (
-                <article key={r.id} className="rounded-lg bg-subtle p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-1 font-semibold">{r.name}</p>
-                      <p className="truncate text-1 text-muted-foreground">{r.context}</p>
+              {reviews.isLoading ? (
+                <Loading rows={2} />
+              ) : reviews.data?.length ? (
+                reviews.data.slice(0, 2).map((r) => (
+                  <article key={r.id} className="rounded-lg bg-subtle p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-1 font-semibold">{r.author_name}</p>
+                        {r.context ? (
+                          <p className="truncate text-1 text-muted-foreground">{r.context}</p>
+                        ) : null}
+                      </div>
+                      <Rating value={r.rating} />
                     </div>
-                    <Rating value={r.rating} />
-                  </div>
-                  <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {r.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="rounded-full bg-background px-2 py-1 text-1 font-semibold text-muted-foreground"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              ))}
+                    <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
+                  </article>
+                ))
+              ) : (
+                <EmptyState
+                  title="No reviews yet"
+                  body="Reviews left for this provider show up here."
+                />
+              )}
             </div>
           </>
-        )}
+        ) : null}
 
         <h2 className="mt-6 text-2">Related equipment</h2>
       </div>
 
       <div className="rail flex gap-3 overflow-x-auto px-5 pb-5 no-scrollbar">
         {related.map((x) => (
-          <EquipmentTile key={x.id} e={x} />
+          <ProductCard key={x.id} item={productFromRental(x)} rail />
         ))}
       </div>
 
@@ -359,20 +354,17 @@ function RentalDetail() {
             ) : null}
             {barNote ? <p className="truncate text-1 text-muted-foreground">{barNote}</p> : null}
           </div>
-          {fromCatalog ? (
-            // The request flow needs dates, rates and a deposit a database rental does not store.
-            <BtnLink to="/messages" className="shrink-0">
-              Check Availability
-            </BtnLink>
-          ) : (
-            <Btn className="shrink-0" onClick={() => toast("Rental requests — coming soon")}>
-              Check Availability
-            </Btn>
-          )}
+          <BtnLink to="/marketplace/rent/request/$id" params={{ id: e.id }} className="shrink-0">
+            Check Availability
+          </BtnLink>
         </div>
       </div>
 
-      <RentalReportSheet open={report} onClose={() => setReport(false)} />
+      <RentalReportSheet
+        open={report}
+        onClose={() => setReport(false)}
+        subject={{ type: "rental", id: e.id }}
+      />
     </Screen>
   );
 }

@@ -3,6 +3,7 @@
  * Built on the existing Gestalt kit — no second design system.
  */
 import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Fragment, useCallback, useEffect, useState, type ReactNode } from "react";
 import {
   Bookmark,
@@ -39,6 +40,8 @@ import {
   type OpportunityStatus,
 } from "@/data/opportunities";
 import { iconSize } from "@/lib/tokens";
+import { useAuth } from "@/hooks/use-auth";
+import { setOpportunitySaved } from "@/lib/applications.functions";
 
 /** One icon per requirement type, in place of the emoji the categories carried. */
 const categoryIcons: Record<string, LucideIcon> = {
@@ -79,6 +82,8 @@ export function statusTone(s: OpportunityStatus): Tone {
 /** Local-only shortlist of opportunities (design-only, no backend). */
 // eslint-disable-next-line react-refresh/only-export-components -- hook intentionally co-located with its component
 export function useSavedOpportunities() {
+  const { signedIn } = useAuth();
+  const mirror = useServerFn(setOpportunitySaved);
   const [ids, setIds] = useState<string[]>([]);
   useEffect(() => {
     try {
@@ -88,17 +93,23 @@ export function useSavedOpportunities() {
       /* ignore */
     }
   }, []);
-  const toggle = useCallback((id: string) => {
-    setIds((prev) => {
-      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      try {
-        localStorage.setItem(savedOpportunityKey, JSON.stringify(next));
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
+  const toggle = useCallback(
+    (id: string) => {
+      const saving = !ids.includes(id);
+      setIds((prev) => {
+        const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+        try {
+          localStorage.setItem(savedOpportunityKey, JSON.stringify(next));
+        } catch {
+          /* ignore */
+        }
+        return next;
+      });
+      // Signed in, the save is also kept in saved_items so the poster's Saves count is real.
+      if (signedIn) void mirror({ data: { slug: id, saved: saving } }).catch(() => {});
+    },
+    [ids, signedIn, mirror],
+  );
   return { ids, toggle, has: (id: string) => ids.includes(id) };
 }
 

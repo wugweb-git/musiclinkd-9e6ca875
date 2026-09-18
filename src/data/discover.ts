@@ -185,9 +185,9 @@ export const singers: Talent[] = [
   },
 ];
 
-export const quickCategories: { label: string; to: QuickCategoryTo; soon?: boolean }[] = [
+export const quickCategories: { label: string; to: QuickCategoryTo }[] = [
   { label: "Talent", to: "/categories" },
-  { label: "Bands", to: "/bands", soon: true },
+  { label: "Bands", to: "/bands" },
   { label: "Studios", to: "/discover/community" },
   { label: "Events", to: "/categories" },
   { label: "Marketplace", to: "/marketplace" },

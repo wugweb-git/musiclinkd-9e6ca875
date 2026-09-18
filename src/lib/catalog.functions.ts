@@ -88,6 +88,8 @@ export type ListingRow = {
   image_url: string | null;
   created_at: string;
   seller_name: string | null;
+  /** Where a rental is picked up, when the owner said. */
+  pickup_location: string | null;
   seller: OwnerSummary | null;
 };
 
@@ -102,7 +104,7 @@ const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budge
   collaboration_type, location, status, applicant_count, created_at,
   creator:profiles!opportunities_creator_profile_id_fkey(${OWNER})`;
 const LISTING = `id, slug, title, category, item_category, item_category_kind, condition, price_paise,
-  price_unit, price_note, image_url, created_at, seller_name,
+  price_unit, price_note, image_url, created_at, seller_name, pickup_location,
   seller:profiles!marketplace_listings_seller_profile_id_fkey(${OWNER})`;
 
 type Sorted = { sort_order?: number };
@@ -124,6 +126,8 @@ export const listStudios = createServerFn({ method: "GET" }).handler(async () =>
   const client = await anonClient();
   const { data, error } = await client.from("studios").select(STUDIO).order("rating", {
     ascending: false,
+    // A studio with no reviews yet goes after the rated ones, not before them.
+    nullsFirst: false,
   });
   if (error) throw new Error(error.message);
   return ((data ?? []) as unknown as StudioRow[]).map(shapeStudio);
@@ -197,8 +201,19 @@ export const setOpportunityStatus = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/**
+ * Every listing open for browsing, newest first. An owner can take a listing out of browsing
+ * (listing_status unavailable or archived, 20260918230000_section_sources.sql); before that column
+ * exists every listing is read as before.
+ */
 export const listListings = createServerFn({ method: "GET" }).handler(async () => {
   const client = await anonClient();
+  const browsing = await client
+    .from("marketplace_listings")
+    .select(LISTING)
+    .not("listing_status", "in", "(unavailable,archived)")
+    .order("created_at", { ascending: false });
+  if (!browsing.error) return (browsing.data ?? []) as unknown as ListingRow[];
   const { data, error } = await client
     .from("marketplace_listings")
     .select(LISTING)
@@ -286,30 +301,28 @@ export const createListing = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<{ slug: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const slug = listingSlug(data.title);
-    const { error } = await client
-      .from("marketplace_listings")
-      .insert({
-        slug,
-        seller_profile_id: context.userId,
-        title: data.title,
-        category: data.category,
-        item_category_kind: data.itemCategoryKind ?? null,
-        item_category: data.itemCategory ?? null,
-        brand: data.brand ?? null,
-        model: data.model ?? null,
-        condition: data.condition ?? null,
-        price_paise: data.pricePaise,
-        price_unit: data.priceUnit ?? null,
-        listing_description: data.description ?? null,
-        ...(data.weeklyPricePaise != null ? { weekly_price_paise: data.weeklyPricePaise } : {}),
-        ...(data.monthlyPricePaise != null ? { monthly_price_paise: data.monthlyPricePaise } : {}),
-        ...(data.depositPaise != null ? { deposit_paise: data.depositPaise } : {}),
-        ...(data.pickupAvailable != null ? { pickup_available: data.pickupAvailable } : {}),
-        ...(data.deliveryAvailable != null ? { delivery_available: data.deliveryAvailable } : {}),
-        ...(data.minDays != null ? { min_days: data.minDays } : {}),
-        ...(data.maxDays != null ? { max_days: data.maxDays } : {}),
-        ...(data.noticePeriod ? { notice_period: data.noticePeriod } : {}),
-      } as never);
+    const { error } = await client.from("marketplace_listings").insert({
+      slug,
+      seller_profile_id: context.userId,
+      title: data.title,
+      category: data.category,
+      item_category_kind: data.itemCategoryKind ?? null,
+      item_category: data.itemCategory ?? null,
+      brand: data.brand ?? null,
+      model: data.model ?? null,
+      condition: data.condition ?? null,
+      price_paise: data.pricePaise,
+      price_unit: data.priceUnit ?? null,
+      listing_description: data.description ?? null,
+      ...(data.weeklyPricePaise != null ? { weekly_price_paise: data.weeklyPricePaise } : {}),
+      ...(data.monthlyPricePaise != null ? { monthly_price_paise: data.monthlyPricePaise } : {}),
+      ...(data.depositPaise != null ? { deposit_paise: data.depositPaise } : {}),
+      ...(data.pickupAvailable != null ? { pickup_available: data.pickupAvailable } : {}),
+      ...(data.deliveryAvailable != null ? { delivery_available: data.deliveryAvailable } : {}),
+      ...(data.minDays != null ? { min_days: data.minDays } : {}),
+      ...(data.maxDays != null ? { max_days: data.maxDays } : {}),
+      ...(data.noticePeriod ? { notice_period: data.noticePeriod } : {}),
+    } as never);
     if (error) throw new Error(error.message);
     return { slug };
   });

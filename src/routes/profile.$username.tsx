@@ -2,7 +2,6 @@ import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { BusinessProfileExperience } from "@/components/ml/business-profile";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
-import { getProfile } from "@/data/profile";
 import { businessViewFromRecord } from "@/lib/business-view";
 import {
   getPublicProfile,
@@ -18,8 +17,8 @@ import { rememberVisit } from "@/lib/device-history";
 
 export const Route = createFileRoute("/profile/$username")({
   // One username namespace for both account kinds. A business account (it has a profile_business
-  // row) shows the business profile screen; any other stored profile shows the talent profile, real
-  // rows winning over seed data. A username in neither is a 404, never somebody else's page.
+  // row) shows the business profile screen; any other stored profile shows the talent profile from
+  // its own row. A username in neither is a 404, never somebody else's page.
   loader: async ({ params }) => {
     // "me" is the owner's own profile, which has its own screen.
     if (params.username === "me") throw redirect({ to: "/profile" });
@@ -32,9 +31,9 @@ export const Route = createFileRoute("/profile/$username")({
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
     ]);
     if (business) return { row: null, business, labels, sections: null };
-    if (!row && !getProfile(params.username)) throw notFound();
-    // Without sections the profile shows its seed sections or empty states.
-    const sections: ProfileSections | null = row?.id
+    if (!row) throw notFound();
+    // Without sections the profile shows its empty states.
+    const sections: ProfileSections | null = row.id
       ? await getPublicProfileSections({ data: { profileId: row.id } }).catch(() => null)
       : null;
     return { row, business: null, labels, sections };
@@ -46,7 +45,9 @@ export const Route = createFileRoute("/profile/$username")({
       : null;
     const profile = business
       ? { name: business.name, primaryRole: business.typeLabel, headline: business.tagline }
-      : profileView(params.username, loaderData.row, loaderData.labels, loaderData.sections);
+      : loaderData.row
+        ? profileView(loaderData.row, loaderData.labels, loaderData.sections)
+        : { name: params.username, primaryRole: "", headline: "" };
     const title = profile.primaryRole
       ? `${profile.name} — ${profile.primaryRole} | MusicLinkd`
       : `${profile.name} | MusicLinkd`;
@@ -68,24 +69,18 @@ export const Route = createFileRoute("/profile/$username")({
 });
 
 /**
- * The real row over the seed profile. A real profile with no seed gets only its own data; the
- * sections the profiles table does not store render their empty states.
+ * The stored row and its stored sections, nothing else; the sections the database does not hold
+ * render their empty states.
  */
-function profileView(
-  username: string,
-  row: ProfileRow | null,
-  labels: TaxonomyLabels,
-  sections: ProfileSections | null,
-) {
-  const base = getProfile(username) ?? profileFromRow(row ?? { username });
-  return mergeSections(mergeProfileRow(base, row, labels), sections, labels);
+function profileView(row: ProfileRow, labels: TaxonomyLabels, sections: ProfileSections | null) {
+  return mergeSections(mergeProfileRow(profileFromRow(row), row, labels), sections, labels);
 }
 
 function ProfileRoute() {
   const { username } = Route.useParams();
   const { row, business, labels, sections } = Route.useLoaderData();
   const view = business ? businessViewFromRecord(business, labels) : null;
-  const person = business ? null : profileView(username, row, labels, sections);
+  const person = business || !row ? null : profileView(row, labels, sections);
 
   // Opening a page is what makes it recently viewed; the note stays on this device.
   const name = view?.name ?? person?.name ?? "";

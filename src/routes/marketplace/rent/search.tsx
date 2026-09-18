@@ -1,26 +1,28 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { Screen, TopBar, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
-import { EmptyState, SortSheet } from "@/components/ml/market";
-import {
-  EquipmentRow,
-  RentalFilterSheet,
-  RentalSkeleton,
-  rentalSortOptions,
-} from "@/components/ml/rental";
-import {
-  equipment,
-  popularRentalSearches,
-  recentRentalSearches,
-  rentalCategories,
-} from "@/data/rentals";
+import { EmptyState, EquipmentGrid, SortSheet, useMarketCity } from "@/components/ml/market";
+import { TextButton } from "@/components/ml/links";
+import { RentalFilterSheet, RentalSkeleton, rentalSortOptions } from "@/components/ml/rental";
+import { rentalCategories } from "@/data/rentals";
 import { loadCatalogRentals } from "@/lib/market-view";
+import { readRecentSearches } from "@/lib/device-history";
+import { useSearchRecorder } from "@/lib/search-events";
+import { popularSearches, saveSearch } from "@/lib/searches.functions";
+import { inCity } from "@/lib/market-view";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { MarketCategoryIcon } from "@/components/ml/market";
 
 export const Route = createFileRoute("/marketplace/rent/search")({
-  // Database rentals are searched after the static ones.
+  // `q` opens the screen on a search, as a saved search does.
+  validateSearch: (search: Record<string, unknown>): { q?: string } =>
+    typeof search["q"] === "string" && search["q"] ? { q: search["q"] } : {},
+  // Live rentals, searched by name, brand, model, sub-category and location.
   loader: () => loadCatalogRentals(),
   head: () => ({
     meta: [
@@ -41,7 +43,7 @@ export const Route = createFileRoute("/marketplace/rent/search")({
 });
 
 function RentSearch() {
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(Route.useSearch().q ?? "");
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState(rentalSortOptions[0]!);
@@ -49,12 +51,36 @@ function RentSearch() {
   const catalog = Route.useLoaderData();
 
   const results = q
-    ? [...equipment, ...catalog].filter((e) =>
+    ? catalog.filter((e) =>
         `${e.name} ${e.brand ?? ""} ${e.model ?? ""} ${e.subcategory ?? ""} ${e.location ?? ""}`
           .toLowerCase()
           .includes(q.toLowerCase()),
       )
     : [];
+
+  // Recent searches are this device's own; popular ones are the rental searches run most over the
+  // last 30 days (search_events). A search counts once the typing stops.
+  const [city] = useMarketCity();
+  useSearchRecorder("rent", q, results.length, city);
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => {
+    setRecent(readRecentSearches("rent").map((s) => s.query));
+  }, [q]);
+  const fetchPopular = useServerFn(popularSearches);
+  const popularQuery = useQuery({
+    queryKey: ["searches", "popular", "rent"],
+    queryFn: () => fetchPopular({ data: { scope: "rent" } }),
+  });
+  const popular = popularQuery.data ?? [];
+  const nearby = inCity(catalog, city).slice(0, 3);
+
+  const { signedIn } = useAuth();
+  const save = useServerFn(saveSearch);
+  const keep = useMutation({
+    mutationFn: () => save({ data: { scope: "rent", query: q.trim() } }),
+    onSuccess: () => toast.success("Search saved."),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
 
   return (
     <Screen>
@@ -67,23 +93,33 @@ function RentSearch() {
         <div className="space-y-6 px-5 pb-6">
           <section>
             <h2 className="pill mb-2 bg-subtle text-muted-foreground">Recent searches</h2>
-            <div className="flex flex-wrap gap-2">
-              {recentRentalSearches.map((s) => (
-                <Chip key={s} onClick={() => setQ(s)}>
-                  {s}
-                </Chip>
-              ))}
-            </div>
+            {recent.length ? (
+              <div className="flex flex-wrap gap-2">
+                {recent.map((s) => (
+                  <Chip key={s} onClick={() => setQ(s)}>
+                    {s}
+                  </Chip>
+                ))}
+              </div>
+            ) : (
+              <p className="text-1 text-muted-foreground">Searches you run show up here.</p>
+            )}
           </section>
           <section>
             <h2 className="pill mb-2 bg-subtle text-muted-foreground">Popular equipment</h2>
-            <div className="flex flex-wrap gap-2">
-              {popularRentalSearches.map((s) => (
-                <Chip key={s} onClick={() => setQ(s)}>
-                  {s}
-                </Chip>
-              ))}
-            </div>
+            {popular.length ? (
+              <div className="flex flex-wrap gap-2">
+                {popular.map((s) => (
+                  <Chip key={s} onClick={() => setQ(s)}>
+                    {s}
+                  </Chip>
+                ))}
+              </div>
+            ) : (
+              <p className="text-1 text-muted-foreground">
+                The equipment renters search for most shows up here.
+              </p>
+            )}
           </section>
           <section>
             <h2 className="pill mb-2 bg-subtle text-muted-foreground">Suggested categories</h2>
@@ -100,19 +136,29 @@ function RentSearch() {
           <section>
             <h2 className="pill mb-3 bg-subtle text-muted-foreground">Available nearby</h2>
             <div className="space-y-3">
-              {equipment.slice(0, 3).map((e) => (
-                <EquipmentRow key={e.id} e={e} />
-              ))}
+              {nearby.length ? (
+                <EquipmentGrid items={nearby} />
+              ) : (
+                <p className="text-1 text-muted-foreground">Nothing listed nearby yet.</p>
+              )}
             </div>
           </section>
         </div>
       ) : (
         <>
           <div className="flex items-center justify-between gap-2 px-5 pb-3">
-            <p className="text-1 font-semibold text-muted-foreground">
+            <p className="min-w-0 truncate text-1 font-semibold text-muted-foreground">
               {results.length} available · {sort}
             </p>
-            <div className="flex gap-2">
+            <div className="flex shrink-0 items-center gap-2">
+              <TextButton
+                disabled={keep.isPending}
+                onClick={() =>
+                  signedIn ? keep.mutate() : toast.error("Sign in to save a search.")
+                }
+              >
+                Save search
+              </TextButton>
               <button
                 onClick={() => setSortOpen(true)}
                 className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-1 font-semibold"
@@ -131,7 +177,7 @@ function RentSearch() {
             {loading ? (
               <RentalSkeleton />
             ) : results.length ? (
-              results.map((e) => <EquipmentRow key={e.id} e={e} />)
+              <EquipmentGrid items={results} />
             ) : (
               <EmptyState
                 emoji="🔍"

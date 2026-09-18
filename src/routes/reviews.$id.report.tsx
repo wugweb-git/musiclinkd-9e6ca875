@@ -1,8 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
-import { flagReasons, getReview } from "@/data/reviews";
+import { Card, EmptyState, Loading } from "@/components/ml/kit";
+import { flagReasons } from "@/data/reviews";
+import { listReviewsAboutMe } from "@/lib/reviews.functions";
+import { fileReport } from "@/lib/reports.functions";
 
 export const Route = createFileRoute("/reviews/$id/report")({
   head: () => ({
@@ -24,10 +29,38 @@ export const Route = createFileRoute("/reviews/$id/report")({
 function ReportReview() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const r = getReview(id);
+  // A review is reported by the person it's about, from the reviews they received.
+  const load = useServerFn(listReviewsAboutMe);
+  const report = useServerFn(fileReport);
+  const q = useQuery({ queryKey: ["reviews", "about-me"], queryFn: () => load() });
+  const found = (q.data ?? []).find((x) => x.id === id);
+  const r = found ? { authorName: found.author_name, body: found.body } : undefined;
   const [reason, setReason] = useState<string | null>(null);
   const [detail, setDetail] = useState("");
-  const [sent, setSent] = useState(false);
+  const send = useMutation({
+    mutationFn: () =>
+      report({
+        data: {
+          subjectType: "review",
+          subjectId: id,
+          reason: reason!,
+          ...(detail.trim() ? { detail: detail.trim() } : {}),
+        },
+      }),
+    onError: () => toast.error("That didn't send. Try again."),
+  });
+  const sent = send.isSuccess;
+
+  if (q.isLoading) {
+    return (
+      <Screen>
+        <TopBar title="Report" back="/reviews" />
+        <div className="px-5 pt-6">
+          <Loading rows={2} />
+        </div>
+      </Screen>
+    );
+  }
 
   if (!r) {
     return (
@@ -93,7 +126,12 @@ function ReportReview() {
           />
         </Card>
 
-        <Btn className="w-full" disabled={!reason} onClick={() => setSent(true)}>
+        <Btn
+          className="w-full"
+          disabled={!reason}
+          loading={send.isPending}
+          onClick={() => send.mutate()}
+        >
           Send report
         </Btn>
         <p className="text-center text-1 text-muted-foreground">

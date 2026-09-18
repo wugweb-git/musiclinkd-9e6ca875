@@ -42,7 +42,8 @@ export function SignInMethodsRow() {
   }, []);
 
   const count = identities?.length ?? 0;
-  const hint = identities === null ? "Checking…" : identities.map((i) => labelFor(i.provider)).join(", ");
+  const hint =
+    identities === null ? "Checking…" : identities.map((i) => labelFor(i.provider)).join(", ");
 
   async function remove(identity: UserIdentity) {
     setBusyId(identity.identity_id);

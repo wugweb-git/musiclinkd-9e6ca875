@@ -208,7 +208,9 @@ function CollabRoom() {
           <section className="space-y-3 rounded-lg bg-subtle p-4">
             <p className="text-sm">
               {joinParts(
-                myMembership?.role === "admin" ? "You were asked in as an admin" : "You were asked to join",
+                myMembership?.role === "admin"
+                  ? "You were asked in as an admin"
+                  : "You were asked to join",
                 c.name,
               )}
             </p>

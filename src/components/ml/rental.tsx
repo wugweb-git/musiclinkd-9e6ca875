@@ -1,21 +1,19 @@
-import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type ReactNode } from "react";
-import { CalendarDays, Package, Truck, MapPin } from "lucide-react";
-import { toast } from "sonner";
-import { Btn, BtnLink, Chip, Sheet, VerifiedBadge } from "./ui";
-import { ConditionBadge, LocationRow, Rating, SaveButton } from "./market";
+import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { CalendarDays, Package, Truck } from "lucide-react";
+import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
+import { Rating, useFileReport } from "./market";
 import { Price } from "./kit";
 import { rupeeParts } from "@/lib/price";
-import {
-  inr,
-  priceFor,
-  type Booking,
-  type Equipment,
-  type Provider,
-  type RentalItem,
-  type RentalStatus,
-} from "@/data/rentals";
-import { TextButton } from "@/components/ml/links";
+import { inr, priceFor, type Equipment, type RentalItem, type RentalStatus } from "@/data/rentals";
+import type { RealProvider } from "@/lib/rentals.functions";
+import { listListings } from "@/lib/catalog.functions";
+import { rentalFromRow } from "@/lib/market-view";
+import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { listMySavedIds } from "@/lib/saved.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export function RentalAvailabilityBadge({
@@ -74,158 +72,34 @@ export function RentalStatusPill({ status }: { status: RentalStatus }) {
   return <span className={`shrink-0 rounded-full pill ${tone[status]}`}>{status}</span>;
 }
 
-export function EquipmentCard({ e }: { e: Equipment }) {
-  const [saved, setSaved] = useState(false);
-  return (
-    <article className="overflow-hidden rounded-lg bg-subtle">
-      <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="block">
-        <div className="relative">
-          <img src={e.photos[0]} alt={e.name} loading="lazy" className="h-44 w-full object-cover" />
-          <span className="absolute left-3 top-3 rounded-full pill pill-glass">Rental</span>
-        </div>
-      </Link>
-      <div className="absolute" />
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2">
-          <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="min-w-0 flex-1">
-            <RentalPriceBlock e={e} />
-            <h3 className="mt-1 line-clamp-2 text-2 leading-snug">{e.name}</h3>
-            <p className="mt-0.5 truncate text-1 text-muted-foreground">
-              {e.brand} · {e.model}
-            </p>
-          </Link>
-          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} />
-        </div>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <RentalAvailabilityBadge text={e.availability} />
-          <ConditionBadge value={e.condition} />
-          <Rating value={e.rating} count={e.reviews} />
-        </div>
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <LocationRow text={`${e.location} · ${e.distance}`} />
-          <TextButton
-            onClick={() => toast("Provider profile — coming soon")}
-            className="shrink-0 truncate text-1"
-          >
-            View Provider
-          </TextButton>
-        </div>
-        <Btn
-          variant="outline"
-          className="mt-3 w-full"
-          onClick={() => toast("Rental requests — coming soon")}
-        >
-          Check Availability
-        </Btn>
-      </div>
-    </article>
-  );
-}
+/**
+ * A rental provider as the database has them: a profile, plus rating, reviews and completed
+ * rentals when getRentalProvider computed them. A listing's owner alone (id, name, photo, verified)
+ * is enough for a card.
+ */
+export type ProviderLike = Pick<RealProvider, "id" | "name" | "photo" | "verified"> &
+  Partial<Pick<RealProvider, "role" | "rating" | "reviews" | "completedRentals">>;
 
-export function EquipmentTile({ e }: { e: RentalItem }) {
-  return (
-    <Link
-      to="/marketplace/rent/e/$id"
-      params={{ id: e.id }}
-      className="block w-[176px] shrink-0 overflow-hidden rounded-lg bg-subtle"
-    >
-      {e.photos[0] ? (
-        <img
-          src={e.photos[0]}
-          alt={e.name}
-          loading="lazy"
-          className="h-[124px] w-full object-cover"
-        />
-      ) : (
-        <div className="h-[124px] w-full bg-background" />
-      )}
-      <div className="p-3">
-        <RentalPriceBlock e={e} />
-        <h3 className="mt-1 line-clamp-2 text-1 leading-snug">{e.name}</h3>
-        {e.distance ? (
-          <p className="mt-1 truncate text-1 text-muted-foreground">{e.distance}</p>
-        ) : null}
-        <div className="mt-2">
-          <RentalAvailabilityBadge text={e.availableFrom ?? "Enquire"} />
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-export function EquipmentRow({ e, action }: { e: RentalItem; action?: ReactNode }) {
-  const [saved, setSaved] = useState(false);
-  const provider = providerName(e);
-  return (
-    <article className="flex gap-3 rounded-lg bg-subtle p-3">
-      <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="shrink-0">
-        {e.photos[0] ? (
-          <img
-            src={e.photos[0]}
-            alt={e.name}
-            loading="lazy"
-            className="h-24 w-24 rounded-lg object-cover"
-          />
-        ) : (
-          <div className="h-24 w-24 rounded-lg bg-subtle" />
-        )}
-      </Link>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <Link to="/marketplace/rent/e/$id" params={{ id: e.id }} className="min-w-0">
-            <RentalPriceBlock e={e} />
-            <h3 className="line-clamp-2 text-1 leading-snug">{e.name}</h3>
-          </Link>
-          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
-        </div>
-        {e.availability || e.condition ? (
-          <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            {e.availability ? <RentalAvailabilityBadge text={e.availability} /> : null}
-            {e.condition ? <ConditionBadge value={e.condition} /> : null}
-          </div>
-        ) : null}
-        {e.distance || provider ? (
-          <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            {e.distance ? <LocationRow text={e.distance} /> : null}
-            {provider ? (
-              <span className="truncate text-1 text-muted-foreground">by {provider}</span>
-            ) : null}
-          </div>
-        ) : null}
-        {action ? <div className="mt-2">{action}</div> : null}
-      </div>
-    </article>
-  );
-}
-
-function providerName(e: RentalItem) {
-  const map: Record<string, string> = {
-    soundhouse: "SoundHouse Studio",
-    "ravi-gear": "Ravi Deshmukh",
-    "swaraj-instruments": "Swaraj Instruments",
-    "pulse-live": "Pulse Live Systems",
-  };
-  // Database rentals have no static provider; they name the stored seller, or nobody.
-  if (!e.providerId) return e.owner?.name ?? "";
-  return map[e.providerId] ?? "MusicLinkd provider";
-}
-
-export function ProviderSummary({ p, compact }: { p: Provider; compact?: boolean }) {
+export function ProviderSummary({ p, compact }: { p: ProviderLike; compact?: boolean }) {
   return (
     <div className="flex items-center gap-3">
-      <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-sm object-cover" />
+      {p.photo ? (
+        <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-sm object-cover" />
+      ) : (
+        <div className="h-12 w-12 shrink-0 rounded-sm bg-background" aria-hidden />
+      )}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <p className="truncate text-2 font-semibold">{p.name}</p>
           {p.verified ? <VerifiedBadge size={16} /> : null}
         </div>
-        <p className="truncate text-1 text-muted-foreground">{p.role}</p>
-        {compact ? null : (
+        {p.role ? <p className="truncate text-1 text-muted-foreground">{p.role}</p> : null}
+        {compact || (p.rating == null && !p.completedRentals) ? null : (
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <Rating value={p.rating} count={p.reviews} />
-            <span className="text-1 text-muted-foreground">
-              {p.completedRentals} rentals · replies {p.responseTime.toLowerCase()}
-            </span>
+            {p.completedRentals ? (
+              <span className="text-1 text-muted-foreground">{p.completedRentals} rentals</span>
+            ) : null}
           </div>
         )}
       </div>
@@ -233,26 +107,56 @@ export function ProviderSummary({ p, compact }: { p: Provider; compact?: boolean
   );
 }
 
-export function ProviderCard({ p }: { p: Provider }) {
+/** Opens the provider's rental page (/marketplace/rent/provider/$id, keyed by profile id). */
+export function ProviderCard({ p }: { p: ProviderLike }) {
   return (
-    <button
-      type="button"
-      onClick={() => toast("Provider profile — coming soon")}
+    <Link
+      to="/marketplace/rent/provider/$id"
+      params={{ id: p.id }}
       className="block w-full rounded-lg bg-subtle p-4 text-left"
     >
       <ProviderSummary p={p} />
-      <div className="mt-3 flex flex-wrap gap-2">
-        {p.badges.map((b) => (
-          <span
-            key={b}
-            className="rounded-full bg-status-category-bg px-2.5 py-1 text-1 font-semibold text-status-category-text"
-          >
-            {b}
-          </span>
-        ))}
-      </div>
-    </button>
+    </Link>
   );
+}
+
+/** The distinct providers behind a set of live rentals, in listing order. */
+// eslint-disable-next-line react-refresh/only-export-components -- helper co-located with ProviderCard
+export function providersOf(items: RentalItem[]): ProviderLike[] {
+  const seen = new Map<string, ProviderLike>();
+  for (const e of items) {
+    const o = e.owner;
+    if (!o?.id || seen.has(o.id)) continue;
+    seen.set(o.id, { id: o.id, name: o.name, photo: o.photo, verified: o.verified });
+  }
+  return [...seen.values()];
+}
+
+/**
+ * The signed-in user's saved rentals. saved_items stores a listing's row id (uuid), while a
+ * RentalItem is addressed by its slug, so the match is made on the listing rows themselves.
+ */
+// eslint-disable-next-line react-refresh/only-export-components -- hook co-located with the rental components
+export function useSavedRentals(enabled = true) {
+  const { signedIn } = useAuth();
+  const fetchIds = useServerFn(listMySavedIds);
+  const fetchRows = useServerFn(listListings);
+  const fetchLabels = useServerFn(getTaxonomyLabels);
+  return useQuery({
+    queryKey: ["rent", "saved"],
+    queryFn: async () => {
+      const [ids, rows, labels] = await Promise.all([
+        fetchIds({ data: { targetType: "listing" } }),
+        fetchRows(),
+        fetchLabels().catch((): TaxonomyLabels => ({})),
+      ]);
+      const saved = new Set(ids);
+      return rows
+        .filter((row) => row.category === "gear_rental" && saved.has(row.id))
+        .map((row) => rentalFromRow(row, labels));
+    },
+    enabled: signedIn && enabled,
+  });
 }
 
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
@@ -455,52 +359,11 @@ export function FulfilmentPicker({
   );
 }
 
-export function BookingCard({
-  b,
-  e,
-  provider,
-  action,
-}: {
-  b: Booking;
-  e: Equipment;
-  provider: Provider;
-  action?: ReactNode;
-}) {
-  return (
-    <article className="rounded-lg bg-subtle p-3">
-      <div className="flex gap-3">
-        <img
-          src={e.photos[0]}
-          alt={e.name}
-          loading="lazy"
-          className="h-20 w-20 shrink-0 rounded-lg object-cover"
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="line-clamp-2 text-1 leading-snug">{e.name}</h3>
-            <RentalStatusPill status={b.status} />
-          </div>
-          <p className="mt-1 truncate text-1 text-muted-foreground">{provider.name}</p>
-          <p className="mt-1 text-1 font-semibold">
-            {b.start} → {b.end} · {b.days} days
-          </p>
-          <p className="mt-0.5 text-1 text-muted-foreground">
-            {b.fulfilment} · {inr(b.total)} {b.timeRemaining ? `· ${b.timeRemaining}` : ""}
-          </p>
-        </div>
-      </div>
-      {action ? <div className="mt-3 flex flex-wrap gap-2">{action}</div> : null}
-    </article>
-  );
-}
-
 /**
- * A real booking (rental_bookings, see rentals.functions.ts) next to a static-seed one: the join
- * only carries a listing's id/title/photo, never brand/model/location/provider bio the way
- * Equipment/Provider do — those fields don't exist for a database listing, so this claims only
- * what the booking actually has rather than filling Equipment/Provider with placeholders.
+ * A booking (rental_bookings, see rentals.functions.ts). The join only carries a listing's
+ * id/title/photo, so this shows only what the booking actually has.
  */
-export function RealBookingCard({
+export function BookingCard({
   title,
   photo,
   status,
@@ -588,11 +451,11 @@ const moreFilterGroups: { label: string; options: string[] }[] = [
 export function RentalFilterSheet({
   open,
   onClose,
-  results = 42,
+  results,
 }: {
   open: boolean;
   onClose: () => void;
-  results?: number;
+  results: number;
 }) {
   const [selected, setSelected] = useState<string[]>(["Mumbai"]);
   const [more, setMore] = useState(false);
@@ -715,7 +578,17 @@ export const rentalSortOptions = [
   "Newest",
 ];
 
-export function RentalReportSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function RentalReportSheet({
+  open,
+  onClose,
+  subject,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** The rental listing, or — on a provider's page — the provider. */
+  subject: { type: "rental" | "profile"; id: string };
+}) {
+  const send = useFileReport(onClose);
   const reasons = [
     "Report equipment",
     "Report provider",
@@ -730,7 +603,13 @@ export function RentalReportSheet({ open, onClose }: { open: boolean; onClose: (
           <button
             key={r}
             type="button"
-            onClick={onClose}
+            // Blocking has nowhere to be stored yet, so it closes the sheet as before.
+            onClick={() =>
+              r.startsWith("Block")
+                ? onClose()
+                : send.mutate({ subjectType: subject.type, subjectId: subject.id, reason: r })
+            }
+            disabled={send.isPending}
             className="w-full px-4 py-4 text-left text-sm font-medium"
           >
             {r}

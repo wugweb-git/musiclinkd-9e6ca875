@@ -41,12 +41,7 @@ function SavedOpportunities() {
           </EmptyState>
         ) : (
           list.map((o) => (
-            <OpportunityCard
-              key={o.id}
-              o={o}
-              saved={has(o.id)}
-              onSave={() => toggle(o.id)}
-            />
+            <OpportunityCard key={o.id} o={o} saved={has(o.id)} onSave={() => toggle(o.id)} />
           ))
         )}
       </div>

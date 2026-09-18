@@ -119,7 +119,11 @@ function SecurityScreen() {
             <div className="space-y-2">
               {sessions.data.map((s) => (
                 <Card key={s.id} className="flex items-center gap-3">
-                  <Laptop size={iconSize.lg} className="shrink-0 text-muted-foreground" aria-hidden />
+                  <Laptop
+                    size={iconSize.lg}
+                    className="shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-1 font-semibold">{deviceLabel(s.user_agent)}</p>
                     <p className="text-1 text-muted-foreground">
@@ -127,7 +131,11 @@ function SecurityScreen() {
                       {s.ip ? ` · ${s.ip}` : ""}
                     </p>
                   </div>
-                  <Btn variant="ghost" className="px-3 text-1" onClick={() => void signOutOne(s.id)}>
+                  <Btn
+                    variant="ghost"
+                    className="px-3 text-1"
+                    onClick={() => void signOutOne(s.id)}
+                  >
                     Sign out
                   </Btn>
                 </Card>

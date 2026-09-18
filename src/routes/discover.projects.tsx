@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
-import { opportunities } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/discover/projects")({
-  // Stored opportunities follow the static ones; none when the database is unreachable.
+  // Stored opportunities; none when the database is unreachable.
   loader: async () => ({ dbOpportunities: await loadDbOpportunities() }),
   head: () => ({
     meta: [
@@ -26,9 +25,7 @@ export const Route = createFileRoute("/discover/projects")({
 
 function DiscoverProjects() {
   const { dbOpportunities } = Route.useLoaderData();
-  const projects = [...opportunities, ...dbOpportunities].filter(
-    (o) => o.kind === "Project" || o.kind === "Collaborator",
-  );
+  const projects = dbOpportunities.filter((o) => o.kind === "Project" || o.kind === "Collaborator");
 
   return (
     <Screen>

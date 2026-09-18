@@ -69,8 +69,16 @@ const visibilityFromDb: Record<string, string> = {
   limited: "Limited",
 };
 
-const contactToDb: Record<string, string> = { Anyone: "anyone", Connections: "connections", Nobody: "nobody" };
-const contactFromDb: Record<string, string> = { anyone: "Anyone", connections: "Connections", nobody: "Nobody" };
+const contactToDb: Record<string, string> = {
+  Anyone: "anyone",
+  Connections: "connections",
+  Nobody: "nobody",
+};
+const contactFromDb: Record<string, string> = {
+  anyone: "Anyone",
+  connections: "Connections",
+  nobody: "Nobody",
+};
 const phoneToDb: Record<string, string> = { Never: "never", Booked: "booked", Always: "always" };
 const phoneFromDb: Record<string, string> = { never: "Never", booked: "Booked", always: "Always" };
 
@@ -149,10 +157,7 @@ function PrivacyScreen() {
       key: "reach" as const,
       icon: Send,
       label: "How people reach you",
-      hint: summarise(
-        reach,
-        (k) => contactChannels.find((c) => c.key === k)?.label ?? k,
-      ),
+      hint: summarise(reach, (k) => contactChannels.find((c) => c.key === k)?.label ?? k),
     },
     {
       key: "modes" as const,
@@ -207,9 +212,7 @@ function PrivacyScreen() {
               <li key={c.key}>
                 <button
                   type="button"
-                  onClick={() =>
-                    live ? setEditing(c.key) : toast(`${c.label} — coming soon`)
-                  }
+                  onClick={() => (live ? setEditing(c.key) : toast(`${c.label} — coming soon`))}
                   aria-disabled={!live}
                   className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
                 >
@@ -306,11 +309,7 @@ function PrivacyScreen() {
           </div>
         </section>
       </div>
-      <Sheet
-        open={drawer === "reach"}
-        onClose={() => setDrawer(null)}
-        title="How people reach you"
-      >
+      <Sheet open={drawer === "reach"} onClose={() => setDrawer(null)} title="How people reach you">
         <OptionList
           options={contactChannels.filter((c) => c.key !== "business")}
           selected={reach}

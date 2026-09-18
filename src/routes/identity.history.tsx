@@ -80,7 +80,11 @@ function ScanHistory() {
         ) : (
           <div className="flex flex-col gap-2">
             {items.map((h, i) => (
-              <Link key={`${h.username}-${i}`} to="/profile/$username" params={{ username: h.username }}>
+              <Link
+                key={`${h.username}-${i}`}
+                to="/profile/$username"
+                params={{ username: h.username }}
+              >
                 <ActionRow
                   icon={<ScanLine size={iconSize.sm} />}
                   label={h.name}

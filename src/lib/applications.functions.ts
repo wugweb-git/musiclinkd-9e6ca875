@@ -39,6 +39,8 @@ export type MyApplication = {
   status: ApplicationStatus;
   message: string | null;
   created_at: string;
+  updated_at: string;
+  portfolio_item_ids: string[];
   opportunity: {
     id: string;
     slug: string;
@@ -125,7 +127,7 @@ export const listMyApplications = createServerFn({ method: "GET" })
     const { data, error } = await db(context.supabase)
       .from("opportunity_applications")
       .select(
-        "id, status, message, created_at, opportunity:opportunities(id, slug, title, location, status)",
+        "id, status, message, created_at, updated_at, portfolio_item_ids, opportunity:opportunities(id, slug, title, location, status)",
       )
       .eq("applicant_profile_id", context.userId)
       .order("created_at", { ascending: false });
@@ -269,7 +271,17 @@ export const createOpportunity = createServerFn({ method: "POST" })
  */
 export const recordOpportunityView = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .inputValidator((d) =>
+    z
+      .object({
+        slug: z.string().min(1).max(120),
+        /** The screen the viewer came from (opportunityViewSource in opportunity-view.ts). */
+        source: z
+          .enum(["discover", "search", "profile", "opportunities", "direct", "other"])
+          .optional(),
+      })
+      .parse(d),
+  )
   .handler(async ({ context, data }) => {
     const client = db(context.supabase);
     const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
@@ -278,7 +290,13 @@ export const recordOpportunityView = createServerFn({ method: "POST" })
       fn: string,
       args: Record<string, unknown>,
     ) => Promise<{ error: { message: string } | null }>;
-    await rpc.call(client, "record_opportunity_view", { opp: opportunityId });
+    // With where it came from (20260918230000_section_sources.sql); before that function takes a
+    // source, the view is still counted without one.
+    const { error } = await rpc.call(client, "record_opportunity_view", {
+      opp: opportunityId,
+      src: data.source ?? null,
+    });
+    if (error) await rpc.call(client, "record_opportunity_view", { opp: opportunityId });
     return { ok: true };
   });
 
@@ -309,4 +327,79 @@ export const getOpportunityViewStats = createServerFn({ method: "GET" })
       return byDay.get(day) ?? 0;
     });
     return { totalViews: daily.reduce((sum, n) => sum + n, 0), daily };
+  });
+
+export type OpportunityViewSource = { source: string; views: number };
+
+/** Where the poster's own opportunity was opened from, all time. Empty for anyone else's. */
+export const getOpportunityViewSources = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ context, data }): Promise<OpportunityViewSource[]> => {
+    const client = db(context.supabase);
+    const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
+    if (!opportunityId) return [];
+    const rpc = client.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{
+      data: { source: string; views: number }[] | null;
+      error: { message: string } | null;
+    }>;
+    const { data: rows, error } = await rpc.call(client, "opportunity_view_sources", {
+      opp: opportunityId,
+    });
+    if (error) return [];
+    return (rows ?? []).map((r) => ({ source: r.source, views: Number(r.views) }));
+  });
+
+/*
+ * Saving an opportunity. The shortlist itself stays on the device (useSavedOpportunities); a
+ * signed-in save is also kept in saved_items, so the poster can see how many people saved it.
+ * Schema: supabase/migrations/20260918230000_section_sources.sql
+ */
+export const setOpportunitySaved = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ slug: z.string().min(1).max(120), saved: z.boolean() }).parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: boolean }> => {
+    const client = db(context.supabase);
+    const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
+    if (!opportunityId) return { ok: false };
+    const saved = client.from("saved_items");
+    const { error } = data.saved
+      ? await saved.upsert(
+          {
+            user_id: context.userId,
+            target_type: "opportunity",
+            target_id: opportunityId,
+          } as never,
+          { onConflict: "user_id,target_type,target_id", ignoreDuplicates: true },
+        )
+      : await saved
+          .delete()
+          .eq("user_id", context.userId)
+          .eq("target_type", "opportunity")
+          .eq("target_id", opportunityId);
+    return { ok: !error };
+  });
+
+/** How many people saved the poster's own opportunity. Zero for anyone else's. */
+export const getOpportunitySaveCount = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ context, data }): Promise<number | null> => {
+    const client = db(context.supabase);
+    const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
+    if (!opportunityId) return null;
+    const rpc = client.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ data: number | null; error: { message: string } | null }>;
+    const { data: count, error } = await rpc.call(client, "opportunity_save_count", {
+      opp: opportunityId,
+    });
+    if (error) return null;
+    return Number(count ?? 0);
   });

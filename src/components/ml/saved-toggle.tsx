@@ -2,7 +2,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import { listMySavedIds, saveTarget, unsaveTarget, type SavedTargetType } from "@/lib/saved.functions";
+import {
+  listMySavedIds,
+  saveTarget,
+  unsaveTarget,
+  type SavedTargetType,
+} from "@/lib/saved.functions";
 import { SaveButton } from "./market";
 
 /**

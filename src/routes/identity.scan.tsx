@@ -54,8 +54,7 @@ function Scanner() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const scan = useServerFn(recordScan);
-  const detectorSupported =
-    typeof window !== "undefined" && "BarcodeDetector" in window;
+  const detectorSupported = typeof window !== "undefined" && "BarcodeDetector" in window;
 
   async function resolveAndGo(username: string) {
     setPhase("scanning");
@@ -159,9 +158,7 @@ function Scanner() {
             title="Camera access needed"
             body="MusicLinkd uses your camera only while this scanner is open, to read QR codes. Nothing is recorded or uploaded."
           >
-            <Btn
-              onClick={() => setPhase(detectorSupported ? "ready" : "unsupported")}
-            >
+            <Btn onClick={() => setPhase(detectorSupported ? "ready" : "unsupported")}>
               <Camera size={iconSize.sm} className="mr-2" /> Allow camera
             </Btn>
             <Btn variant="outline" onClick={() => setPhase("denied")}>

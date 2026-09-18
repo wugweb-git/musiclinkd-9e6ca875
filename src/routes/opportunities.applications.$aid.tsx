@@ -1,17 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { MessageCircle, CheckCircle2, Circle } from "lucide-react";
+import { toast } from "sonner";
+import { CheckCircle2, Circle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Dialog, Price } from "@/components/ml/kit";
-import { getApplication, getOpportunity, applicationTone } from "@/data/opportunities";
-import { demoPortfolio, workType } from "@/data/portfolio";
+import { Card, StatusPill, EmptyState, Dialog, Loading } from "@/components/ml/kit";
+import { applicationTone, type ApplicationStatus } from "@/data/opportunities";
+import { workType } from "@/data/portfolio";
+import {
+  listAttachedWork,
+  listMyApplications,
+  withdrawApplication,
+  type MyApplication,
+} from "@/lib/applications.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/applications/$aid")({
-  head: ({ params }) => {
-    const a = getApplication(params.aid);
-    const o = a ? getOpportunity(a.opportunityId) : undefined;
-    const title = `Application · ${o?.title ?? "Opportunity"} | MusicLinkd`;
+  head: () => {
+    const title = "Application · Opportunity | MusicLinkd";
     return {
       meta: [
         { title },
@@ -29,12 +37,86 @@ export const Route = createFileRoute("/opportunities/applications/$aid")({
   component: ApplicationDetail,
 });
 
+/** The stored "pending" is what the screens call "submitted". */
+const shownStatus = (s: MyApplication["status"]): ApplicationStatus =>
+  s === "pending" ? "submitted" : s;
+
+const when = (iso: string) =>
+  new Date(iso).toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+/** Progress from what the row holds: when it was sent, and when its status last changed. */
+function timelineFor(a: MyApplication) {
+  const applied = { label: "Applied", at: when(a.created_at), done: true };
+  const changed = when(a.updated_at);
+  if (a.status === "shortlisted")
+    return [applied, { label: "Shortlisted", at: changed, done: true }];
+  if (a.status === "accepted") return [applied, { label: "Accepted", at: changed, done: true }];
+  if (a.status === "rejected") return [applied, { label: "Not selected", at: changed, done: true }];
+  if (a.status === "withdrawn") return [applied, { label: "Withdrawn", at: changed, done: true }];
+  return [applied, { label: "Shortlist decision", at: "—", done: false }];
+}
+
+/** One of your own applications, from the database, with a real withdraw. */
 function ApplicationDetail() {
   const { aid } = Route.useParams();
-  const a = getApplication(aid);
-  const o = a ? getOpportunity(a.opportunityId) : undefined;
+  const { signedIn, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
+  const load = useServerFn(listMyApplications);
+  const loadWork = useServerFn(listAttachedWork);
+  const pullOut = useServerFn(withdrawApplication);
   const [withdraw, setWithdraw] = useState(false);
   const [done, setDone] = useState(false);
+
+  const q = useQuery({
+    queryKey: ["applications", "mine"],
+    queryFn: () => load(),
+    enabled: signedIn,
+  });
+  const a = q.data?.find((x) => x.id === aid);
+  const o = a?.opportunity ?? undefined;
+
+  const work = useQuery({
+    queryKey: ["applications", "mine", aid, "work"],
+    queryFn: () => loadWork({ data: { ids: a?.portfolio_item_ids ?? [] } }),
+    enabled: !!a?.portfolio_item_ids.length,
+  });
+
+  const pull = useMutation({
+    mutationFn: (slug: string) => pullOut({ data: { slug } }),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["applications", "mine"] });
+      const prev = queryClient.getQueryData<MyApplication[]>(["applications", "mine"]);
+      queryClient.setQueryData<MyApplication[]>(["applications", "mine"], (list) =>
+        list?.map((x) => (x.id === aid ? { ...x, status: "withdrawn" } : x)),
+      );
+      return { prev };
+    },
+    onSuccess: () => {
+      setDone(true);
+      void queryClient.invalidateQueries({ queryKey: ["applications", "mine"] });
+      if (o) void queryClient.invalidateQueries({ queryKey: ["application", o.slug] });
+    },
+    onError: (_e, _slug, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(["applications", "mine"], ctx.prev);
+      toast.error("That didn't save. Try again.");
+    },
+  });
+
+  if (authLoading || (signedIn && q.isLoading)) {
+    return (
+      <Screen>
+        <TopBar title="Your application" back="/opportunities/applications" />
+        <div className="px-5 pt-4">
+          <Loading rows={3} />
+        </div>
+      </Screen>
+    );
+  }
 
   if (!a) {
     return (
@@ -47,6 +129,8 @@ function ApplicationDetail() {
     );
   }
 
+  const status = shownStatus(a.status);
+
   return (
     <Screen>
       <TopBar
@@ -57,8 +141,8 @@ function ApplicationDetail() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <StatusPill label={a.status} tone={applicationTone(a.status)} />
-            <span className="text-1 text-muted-foreground">Applied {a.submittedAt}</span>
+            <StatusPill label={status} tone={applicationTone(status)} />
+            <span className="text-1 text-muted-foreground">Applied {when(a.created_at)}</span>
           </div>
           {a.status === "shortlisted" ? (
             <p className="text-1 text-muted-foreground">
@@ -78,7 +162,7 @@ function ApplicationDetail() {
 
         <Card className="space-y-3">
           <h2 className="text-sm">Progress</h2>
-          {a.timeline.map((t) => (
+          {timelineFor(a).map((t) => (
             <div key={t.label} className="flex items-start gap-2">
               {t.done ? (
                 <CheckCircle2 size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
@@ -95,20 +179,10 @@ function ApplicationDetail() {
 
         <Card className="space-y-2">
           <h2 className="text-sm">What you sent</h2>
-          <p className="text-1 text-muted-foreground">{a.message}</p>
-          {a.rateQuoted ? (
-            <div>
-              <p className="text-1 text-muted-foreground">Rate quoted</p>
-              <Price
-                price={a.rateQuoted}
-                amountClassName="text-1 font-semibold"
-                unitClassName="text-1"
-              />
-            </div>
-          ) : null}
+          {a.message ? <p className="text-1 text-muted-foreground">{a.message}</p> : null}
           <div className="flex flex-wrap gap-2 pt-1">
-            {a.portfolioIds.map((pid) => {
-              const item = demoPortfolio.find((p) => p.id === pid);
+            {a.portfolio_item_ids.map((pid) => {
+              const item = work.data?.find((p) => p.id === pid);
               return (
                 <span
                   key={pid}
@@ -121,18 +195,10 @@ function ApplicationDetail() {
           </div>
         </Card>
 
-        {a.threadId ? (
-          <BtnLink to="/messages" className="w-full">
-            <span className="inline-flex items-center gap-2">
-              <MessageCircle size={iconSize.sm} /> Open Conversation
-            </span>
-          </BtnLink>
-        ) : null}
-
         {o ? (
           <BtnLink
             to="/opportunities/$id"
-            params={{ id: o.id }}
+            params={{ id: o.slug }}
             variant="outline"
             className="w-full"
           >
@@ -140,8 +206,13 @@ function ApplicationDetail() {
           </BtnLink>
         ) : null}
 
-        {["submitted", "viewed", "shortlisted"].includes(a.status) ? (
-          <Btn variant="ghost" className="w-full" onClick={() => setWithdraw(true)}>
+        {["pending", "shortlisted"].includes(a.status) ? (
+          <Btn
+            variant="ghost"
+            className="w-full"
+            loading={pull.isPending}
+            onClick={() => setWithdraw(true)}
+          >
             Withdraw Application
           </Btn>
         ) : null}
@@ -154,9 +225,10 @@ function ApplicationDetail() {
         onClose={() => setWithdraw(false)}
       >
         <Btn
+          loading={pull.isPending}
           onClick={() => {
             setWithdraw(false);
-            setDone(true);
+            if (o) pull.mutate(o.slug);
           }}
         >
           Withdraw

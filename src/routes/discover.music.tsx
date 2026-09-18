@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
-import { trending } from "@/data/discover";
 import { workType } from "@/data/portfolio";
 import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import { popularSearches } from "@/lib/searches.functions";
 import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/discover/music")({
@@ -23,15 +23,19 @@ export const Route = createFileRoute("/discover/music")({
   }),
   // Same source discover.index.tsx already uses: real plays in the last 7 days, counted by the
   // database (trending_portfolio_items), not seed data. Without it the section is just empty.
+  // Trending searches are the Discover searches run most over the last 30 days (search_events).
   loader: async () => {
-    const tracks = await listTrendingWork().catch((): TrendingItem[] => []);
-    return { tracks };
+    const [tracks, trendingSearches] = await Promise.all([
+      listTrendingWork().catch((): TrendingItem[] => []),
+      popularSearches({ data: { scope: "discover" } }).catch((): string[] => []),
+    ]);
+    return { tracks, trendingSearches };
   },
   component: DiscoverMusic,
 });
 
 function DiscoverMusic() {
-  const { tracks } = Route.useLoaderData();
+  const { tracks, trendingSearches } = Route.useLoaderData();
 
   return (
     <Screen>
@@ -76,19 +80,21 @@ function DiscoverMusic() {
           />
         )}
 
-        <div>
-          <p className="mb-2 text-sm font-semibold">Trending searches</p>
-          <div className="flex flex-wrap gap-2">
-            {trending.map((t) => (
-              <span
-                key={t.name}
-                className="rounded-full bg-background px-3 py-1.5 text-1 font-semibold"
-              >
-                {t.name}
-              </span>
-            ))}
+        {trendingSearches.length ? (
+          <div>
+            <p className="mb-2 text-sm font-semibold">Trending searches</p>
+            <div className="flex flex-wrap gap-2">
+              {trendingSearches.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-background px-3 py-1.5 text-1 font-semibold"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </Screen>
   );

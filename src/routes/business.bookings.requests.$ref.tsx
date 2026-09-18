@@ -111,7 +111,11 @@ function RequestReviewContent() {
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
-      <TopBar title="Request" subtitle={bk.room?.name ?? bk.studio?.name ?? "Studio"} back="/business/bookings" />
+      <TopBar
+        title="Request"
+        subtitle={bk.room?.name ?? bk.studio?.name ?? "Studio"}
+        back="/business/bookings"
+      />
       <main className="px-5 pt-4">
         <div className="rounded-lg bg-subtle p-4">
           <div className="flex items-center gap-3">
@@ -136,7 +140,11 @@ function RequestReviewContent() {
             <Detail label="Date" value={formatDate(bk.session_date)} />
             <Detail
               label="Time"
-              value={bk.start_time ? `${formatTime(bk.start_time)} – ${formatTime(bk.end_time)}` : "Not set"}
+              value={
+                bk.start_time
+                  ? `${formatTime(bk.start_time)} – ${formatTime(bk.end_time)}`
+                  : "Not set"
+              }
             />
             {bk.hours ? <Detail label="Duration" value={`${bk.hours} hrs`} /> : null}
             {bk.people ? <Detail label="People" value={`${bk.people}`} /> : null}

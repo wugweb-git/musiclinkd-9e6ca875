@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Navigate } from "@tanstack/react-router";
-import { getBookable, getResource, priceFor, type Bookable, type Resource } from "@/data/booking";
+import { getResource, priceFor, type Bookable, type Resource } from "@/data/booking";
 
 export type BookingDraft = {
   resourceId: string;
@@ -44,16 +44,15 @@ export function CalendarGate({ children }: { children: ReactNode }) {
 }
 
 export function BookingDraftProvider({
-  id,
-  fallback,
+  studio,
   children,
 }: {
   id: string;
-  /** Database studio for ids the seeded lookup does not know. */
-  fallback?: Bookable | null;
+  /** The database studio for this id, or null when there is none. */
+  studio?: Bookable | null;
   children: ReactNode;
 }) {
-  const bookable = getBookable(id) ?? fallback ?? undefined;
+  const bookable = studio ?? undefined;
   const [draft, setDraft] = useState<BookingDraft>(() => ({
     resourceId: bookable?.resources[0]?.id ?? "",
     hours: 2,

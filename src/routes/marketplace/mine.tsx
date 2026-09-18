@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Chip, BtnLink, Btn } from "@/components/ml/ui";
-import { EmptyState, ListingRow } from "@/components/ml/market";
+import { EmptyState, ListingGrid } from "@/components/ml/market";
 import { loadMyCatalogListings } from "@/lib/market-view";
 import { answerOffer, listOffersOnMyListings } from "@/lib/offers.functions";
 import { inr } from "@/lib/price";
@@ -95,7 +95,7 @@ function Mine() {
               ))}
             </div>
           ) : listings.length ? (
-            listings.map((l) => <ListingRow key={l.id} l={l} />)
+            <ListingGrid items={listings} />
           ) : (
             <EmptyState
               emoji="🛍️"
@@ -127,9 +127,7 @@ function Mine() {
               <article key={o.id} className="rounded-lg bg-subtle p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-1 font-semibold">
-                      {o.listing?.title ?? "Listing"}
-                    </p>
+                    <p className="truncate text-1 font-semibold">{o.listing?.title ?? "Listing"}</p>
                     <p className="text-1 text-muted-foreground">
                       {inr(Math.round(o.amount_paise / 100))} from{" "}
                       {o.buyer?.display_name ?? o.buyer?.username ?? "a buyer"}

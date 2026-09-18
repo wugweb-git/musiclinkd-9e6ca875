@@ -842,7 +842,6 @@ function ContactStep({
           )
         ) : null}
       </section>
-
     </div>
   );
 }

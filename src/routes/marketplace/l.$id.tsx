@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Share2, Flag } from "lucide-react";
@@ -17,25 +17,23 @@ import {
   TrustPill,
 } from "@/components/ml/market";
 import { EmptyState, Loading } from "@/components/ml/kit";
-import { byId, listings, reviews, sellerById } from "@/data/market";
-import { loadCatalogListings } from "@/lib/market-view";
+import { loadCatalogListings, loadListingBySlug } from "@/lib/market-view";
 import { useSavedListings } from "@/hooks/use-saved-listings";
+import { rememberListingVisit } from "@/lib/device-history";
 import { listReviewsFor } from "@/lib/reviews.functions";
 import { priceText } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
-  // Static listings win; any other id is looked up as a database listing slug. Database listings
-  // in the same category follow the static related listings.
+  // The id is a database listing slug; related listings are the other listings in its category.
   loader: async ({ params }) => {
     const all = await loadCatalogListings();
-    return {
-      catalog: byId(params.id) ? null : (all.find((x) => x.id === params.id) ?? null),
-      all,
-    };
+    // Not in browsing (a service, or set unavailable/archived) is not the same as not existing.
+    const catalog = all.find((x) => x.id === params.id) ?? (await loadListingBySlug(params.id));
+    return { catalog, all };
   },
-  head: ({ params, loaderData }) => {
-    const l = byId(params.id) ?? loaderData?.catalog ?? undefined;
+  head: ({ loaderData }) => {
+    const l = loaderData?.catalog ?? undefined;
     const price = l ? priceText({ amount: l.price.amount, unit: l.price.unit }) : "";
     const title = l
       ? `${l.title}${price ? ` — ${price}` : ""} | MusicLinkd Market`
@@ -63,22 +61,26 @@ export const Route = createFileRoute("/marketplace/l/$id")({
 function ListingDetail() {
   const { id } = Route.useParams();
   const { catalog, all } = Route.useLoaderData();
-  const fromCatalog = !byId(id);
-  const l = byId(id) ?? catalog ?? undefined;
+  const l = catalog ?? undefined;
   const { has: isSaved, toggle: toggleSave } = useSavedListings();
-  const [localSaved, setLocalSaved] = useState(false);
-  const saved = fromCatalog ? isSaved(id) : localSaved;
-  const toggleSaved = () => (fromCatalog ? toggleSave(id) : setLocalSaved((s) => !s));
+  // Saves are keyed by the listing's row uuid; the route id is its slug.
+  const saved = l?.dbId ? isSaved(l.dbId) : false;
+  const toggleSaved = () => (l?.dbId ? toggleSave(l.dbId) : undefined);
   const [offer, setOffer] = useState(false);
   const [report, setReport] = useState(false);
   const [shot, setShot] = useState(0);
   const loadReviews = useServerFn(listReviewsFor);
-  const ownerId = l && "owner" in l ? l.owner?.id : undefined;
+  const ownerId = l?.owner?.id;
   const realReviews = useQuery({
     queryKey: ["marketplace", "listing-owner-reviews", ownerId],
     queryFn: () => loadReviews({ data: { profileId: ownerId! } }),
     enabled: !!ownerId,
   });
+  // Goods only: the market's recently viewed rail never lists services.
+  const viewedType = l?.type;
+  useEffect(() => {
+    if (viewedType === "product" || viewedType === "rental") rememberListingVisit(id);
+  }, [id, viewedType]);
 
   if (!l) {
     return (
@@ -91,7 +93,6 @@ function ListingDetail() {
     );
   }
 
-  const seller = sellerById(l.sellerId);
   const where = [l.location, l.distance].filter(Boolean).join(" · ");
   const cta =
     l.type === "service"
@@ -155,7 +156,7 @@ function ListingDetail() {
         {l.subtitle ? <p className="mt-1 text-sm text-muted-foreground">{l.subtitle}</p> : null}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {where ? <LocationRow text={where} /> : null}
-          {!fromCatalog || l.owner?.verified ? <TrustPill label="Industry verified" /> : null}
+          {l.owner?.verified ? <TrustPill label="Industry verified" /> : null}
           <span className="text-1 text-muted-foreground">Listed {l.postedAt}</span>
         </div>
 
@@ -186,114 +187,66 @@ function ListingDetail() {
           </>
         ) : null}
 
-        {seller || l.owner ? (
-          <h2 className="mt-6 text-2">{l.type === "product" ? "Seller" : "Provider"}</h2>
-        ) : null}
-        {l.owner && !seller ? (
-          <div className="mt-2 rounded-lg bg-subtle p-4">
-            <SellerSummary seller={l.owner} compact />
-            {l.owner.username ? (
-              <BtnLink
-                to="/profile/$username"
-                params={{ username: l.owner.username }}
-                variant="outline"
-                className="mt-3 w-full"
-              >
-                View Profile
-              </BtnLink>
-            ) : null}
-          </div>
-        ) : null}
-        {seller ? (
-          <div className="mt-2 rounded-lg bg-subtle p-4">
-            <SellerSummary seller={seller} />
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-              {[
-                { k: "Response", v: seller.responseRate },
-                { k: "Replies in", v: seller.responseTime },
-                { k: "On MusicLinkd", v: `${seller.years} yrs` },
-              ].map((x) => (
-                <div key={x.k} className="rounded-lg bg-subtle py-2">
-                  <p className="text-1 font-bold">{x.v}</p>
-                  <p className="text-1 text-muted-foreground">{x.k}</p>
-                </div>
-              ))}
+        {l.owner ? (
+          <>
+            <h2 className="mt-6 text-2">{l.type === "product" ? "Seller" : "Provider"}</h2>
+            <div className="mt-2 rounded-lg bg-subtle p-4">
+              <SellerSummary seller={l.owner} compact />
+              {l.owner.username ? (
+                <BtnLink
+                  to="/profile/$username"
+                  params={{ username: l.owner.username }}
+                  variant="outline"
+                  className="mt-3 w-full"
+                >
+                  View Profile
+                </BtnLink>
+              ) : null}
             </div>
-            <BtnLink
-              to="/marketplace/seller/$id"
-              params={{ id: seller.id }}
-              variant="outline"
-              className="mt-3 w-full"
-            >
-              View Profile
-            </BtnLink>
-          </div>
+          </>
         ) : null}
 
-        {fromCatalog ? (
-          ownerId ? (
-            <>
-              <h2 className="mt-6 text-2">Reviews</h2>
-              <div className="mt-2 space-y-3">
-                {realReviews.isLoading ? (
-                  <Loading rows={2} />
-                ) : realReviews.data?.length ? (
-                  realReviews.data.map((r) => (
-                    <article key={r.id} className="rounded-lg bg-subtle p-4">
-                      <div className="flex items-center justify-between">
-                        <p className="text-1 font-semibold">{r.author_name}</p>
-                        <Rating value={r.rating} />
-                      </div>
-                      <p className="text-1 text-muted-foreground">
-                        {new Date(r.created_at).toLocaleDateString("en-IN")}
-                      </p>
-                      <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
-                      {r.response ? (
-                        <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
-                          Seller: {r.response}
-                        </p>
-                      ) : null}
-                    </article>
-                  ))
-                ) : (
-                  <EmptyState title="No reviews yet" body="Reviews left for this seller show up here." />
-                )}
-              </div>
-            </>
-          ) : null
-        ) : (
+        {ownerId ? (
           <>
             <h2 className="mt-6 text-2">Reviews</h2>
             <div className="mt-2 space-y-3">
-              {reviews.slice(0, 2).map((r) => (
-                <article key={r.id} className="rounded-lg bg-subtle p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-1 font-semibold">{r.name}</p>
-                    <Rating value={r.rating} />
-                  </div>
-                  <p className="text-1 text-muted-foreground">
-                    {r.role} · {r.context} · {r.date}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
-                  {r.response ? (
-                    <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
-                      Seller: {r.response}
+              {realReviews.isLoading ? (
+                <Loading rows={2} />
+              ) : realReviews.data?.length ? (
+                realReviews.data.map((r) => (
+                  <article key={r.id} className="rounded-lg bg-subtle p-4">
+                    <div className="flex items-center justify-between">
+                      <p className="text-1 font-semibold">{r.author_name}</p>
+                      <Rating value={r.rating} />
+                    </div>
+                    <p className="text-1 text-muted-foreground">
+                      {new Date(r.created_at).toLocaleDateString("en-IN")}
                     </p>
-                  ) : null}
-                </article>
-              ))}
+                    <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
+                    {r.response ? (
+                      <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
+                        Seller: {r.response}
+                      </p>
+                    ) : null}
+                  </article>
+                ))
+              ) : (
+                <EmptyState
+                  title="No reviews yet"
+                  body="Reviews left for this seller show up here."
+                />
+              )}
             </div>
           </>
-        )}
+        ) : null}
 
         <h2 className="mt-6 text-2">Related listings</h2>
         <div className="rail mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
-          {[
-            ...listings.filter((x) => x.id !== l.id).slice(0, 4),
-            ...all.filter((x) => x.category === l.category && x.id !== l.id),
-          ].map((x) => (
-            <ListingTile key={x.id} l={x} />
-          ))}
+          {all
+            .filter((x) => x.category === l.category && x.id !== l.id)
+            .map((x) => (
+              <ListingTile key={x.id} l={x} />
+            ))}
         </div>
 
         <button
@@ -316,7 +269,7 @@ function ListingDetail() {
       </div>
 
       <OfferSheet open={offer} onClose={() => setOffer(false)} listing={l} />
-      <ReportSheet open={report} onClose={() => setReport(false)} />
+      <ReportSheet open={report} onClose={() => setReport(false)} subjectId={l.id} />
     </Screen>
   );
 }

@@ -16,6 +16,7 @@ import {
 } from "@/lib/reviews.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/reviews/")({
   head: () => ({
@@ -193,6 +194,13 @@ function ReviewsHub() {
               ))}
             </ul>
           </Card>
+          {signedIn ? (
+            <Row
+              title="Ask for a review"
+              subtitle="People you have worked with"
+              to="/reviews/request"
+            />
+          ) : null}
           <Row
             title="Full review policy"
             subtitle="Trust & safety"
@@ -276,6 +284,15 @@ function ReceivedReview({ r }: { r: ReviewRow }) {
           Respond
         </Btn>
       )}
+      <div className="flex justify-end">
+        <TextLink
+          to="/reviews/$id/report"
+          params={{ id: r.id }}
+          className="text-1 text-muted-foreground"
+        >
+          Report
+        </TextLink>
+      </div>
     </Card>
   );
 }

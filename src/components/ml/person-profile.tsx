@@ -38,6 +38,7 @@ import type { PersonProfile, profileInsights } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { cn, joinParts } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
+import { StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { Price } from "./kit";
 import {
   AudioTrackCard,
@@ -87,13 +88,13 @@ import { iconSize } from "@/lib/tokens";
 type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About" | "Reviews";
 
 /** Each section carries an icon, so an unselected tab can be the icon alone. */
-const tabs: { key: ProfileTab; icon: LucideIcon }[] = [
-  { key: "Overview", icon: Sparkles },
-  { key: "About", icon: Info },
-  { key: "Portfolio", icon: Music },
-  { key: "Projects", icon: FolderKanban },
-  { key: "Services", icon: BriefcaseBusiness },
-  { key: "Reviews", icon: Star },
+const tabs: { key: ProfileTab; icon: LucideIcon; solid: SolidIcon; move: Move }[] = [
+  { key: "Overview", icon: Sparkles, solid: "sparkle", move: "spin" },
+  { key: "About", icon: Info, solid: "info", move: "hop" },
+  { key: "Portfolio", icon: Music, solid: "music", move: "dance" },
+  { key: "Projects", icon: FolderKanban, solid: "folder", move: "swing" },
+  { key: "Services", icon: BriefcaseBusiness, solid: "briefcase", move: "swing" },
+  { key: "Reviews", icon: Star, solid: "star", move: "stamp" },
 ];
 
 /** An owner's empty-state button that opens new portfolio work of the kind the section shows. */
@@ -172,7 +173,7 @@ export function PersonProfileExperience({
           className="sticky top-0 z-tabs border-b border-border bg-background/95 px-2 backdrop-blur"
         >
           <div role="tablist" aria-label="Profile sections" className="flex items-stretch">
-            {tabs.map(({ key, icon: Icon }) => {
+            {tabs.map(({ key, icon: Icon, solid, move }) => {
               const active = tab === key;
               return (
                 <button
@@ -187,7 +188,7 @@ export function PersonProfileExperience({
                     active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
                   )}
                 >
-                  <Icon size={20} aria-hidden />
+                  <StateIcon outline={Icon} solid={solid} active={active} size={20} move={move} />
                   <span
                     className={cn(
                       "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
@@ -316,23 +317,42 @@ function ViewerActions({
     onError: () => toast.error("That didn't save. Try again."),
   });
 
+  // Optimistic: the button turns the moment it's tapped, and the refetch in onSuccess keeps the
+  // mutation pending until fresh data lands, so it never flips back and forth. A failure reverts
+  // it, with the error toast above.
+  const pending = act.isPending ? act.variables : undefined;
+  const shown: ConnectionState =
+    pending === "ask"
+      ? "sent"
+      : pending === "accept"
+        ? "connected"
+        : pending === "remove"
+          ? "none"
+          : state;
+  const followOn = pending === "follow" ? true : pending === "unfollow" ? false : following;
+  const connectOn = shown === "connected" || shown === "sent";
+
   const connectLabel =
-    state === "connected"
+    shown === "connected"
       ? "Connected"
-      : state === "sent"
+      : shown === "sent"
         ? "Requested"
-        : state === "received"
+        : shown === "received"
           ? "Accept"
           : "Connect";
-  const connectIcon =
-    state === "connected" || state === "sent" ? (
-      <Check size={iconSize.sm} aria-hidden />
-    ) : (
-      <UserPlus size={iconSize.sm} aria-hidden />
-    );
+  const connectIcon = (
+    <StateIcon
+      outline={UserPlus}
+      solid="check"
+      active={connectOn}
+      size={iconSize.sm}
+      move="stamp"
+      strokeWidth={2}
+    />
+  );
 
   function onConnect() {
-    if (!live) return;
+    if (!live || act.isPending) return;
     if (state === "none" || state === "declined") {
       act.mutate("ask");
       return;
@@ -380,16 +400,15 @@ function ViewerActions({
     // the row is never all-outline, because there is always exactly one next thing to do.
     <div className="flex items-center gap-2">
       <Btn
-        variant={state === "connected" || state === "sent" ? "outline" : "primary"}
+        variant={connectOn ? "outline" : "primary"}
         className="min-w-0 flex-1 px-3"
         icon={connectIcon}
-        loading={act.isPending}
         onClick={onConnect}
       >
         {connectLabel}
       </Btn>
       <Btn
-        variant={state === "connected" ? "primary" : "outline"}
+        variant={shown === "connected" ? "primary" : "outline"}
         className="min-w-0 flex-1 px-3"
         icon={<Send size={iconSize.sm} aria-hidden />}
         loading={message.isPending}
@@ -398,7 +417,7 @@ function ViewerActions({
         Message
       </Btn>
       {/* Hire stays an icon until you are connected; then it earns its word. */}
-      {onHire && state === "connected" ? (
+      {onHire && shown === "connected" ? (
         <Btn
           variant="outline"
           className="min-w-0 flex-1 px-3"
@@ -413,16 +432,14 @@ function ViewerActions({
         </IconBtn>
       ) : null}
       <IconBtn
-        label={following ? "Following" : "Follow"}
-        variant={following ? "ghost" : "outline"}
+        label={followOn ? "Following" : "Follow"}
+        variant={followOn ? "ghost" : "outline"}
         className="h-12 w-12"
-        onClick={() => act.mutate(following ? "unfollow" : "follow")}
+        onClick={() => {
+          if (!act.isPending) act.mutate(followOn ? "unfollow" : "follow");
+        }}
       >
-        {following ? (
-          <Check size={iconSize.md} aria-hidden />
-        ) : (
-          <Plus size={iconSize.md} aria-hidden />
-        )}
+        <StateIcon outline={Plus} solid="check" active={followOn} size={iconSize.md} move="stamp" />
       </IconBtn>
     </div>
   );

@@ -1,8 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Dialog } from "@/components/ml/kit";
 import { businessTypes, type BusinessType } from "@/data/business";
+import { createMyBusiness } from "@/lib/profile-groups.functions";
 
 const steps = ["type", "basics", "location", "spaces", "team", "review"] as const;
 type Step = (typeof steps)[number];
@@ -43,7 +47,23 @@ function NewBusiness() {
   const [address, setAddress] = useState("");
   const [spaces, setSpaces] = useState("2");
   const [invites, setInvites] = useState("");
-  const [created, setCreated] = useState(false);
+  const queryClient = useQueryClient();
+  const save = useServerFn(createMyBusiness);
+  const create = useMutation({
+    mutationFn: () =>
+      save({
+        data: {
+          type,
+          name,
+          city,
+          ...(tagline.trim() ? { tagline } : {}),
+          ...(address.trim() ? { address } : {}),
+        },
+      }),
+    onSuccess: () => queryClient.invalidateQueries(),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+  const created = create.isSuccess;
 
   return (
     <Screen bottomNav={false}>
@@ -200,7 +220,12 @@ function NewBusiness() {
               Continue
             </Btn>
           ) : (
-            <Btn className="flex-1" onClick={() => setCreated(true)}>
+            <Btn
+              className="flex-1"
+              disabled={!name.trim()}
+              loading={create.isPending}
+              onClick={() => create.mutate()}
+            >
               Create Business
             </Btn>
           )}
@@ -211,7 +236,7 @@ function NewBusiness() {
         open={created}
         title="Business created"
         body="Add spaces and rates next, then request business verification to get the badge."
-        onClose={() => setCreated(false)}
+        onClose={() => create.reset()}
       >
         <div className="space-y-2">
           <BtnLink to="/business" className="w-full">

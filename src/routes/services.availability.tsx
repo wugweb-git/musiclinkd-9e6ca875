@@ -34,7 +34,8 @@ export const Route = createFileRoute("/services/availability")({
 function Availability() {
   const load = useServerFn(getMyProfile);
   const q = useQuery({ queryKey: ["profile", "me"], queryFn: () => load() });
-  const availability = (q.data as { availability?: string | null } | null | undefined)?.availability ?? null;
+  const availability =
+    (q.data as { availability?: string | null } | null | undefined)?.availability ?? null;
 
   return (
     <Screen>

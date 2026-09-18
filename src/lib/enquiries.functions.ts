@@ -19,7 +19,12 @@ export type EnquiryRow = {
   message: string;
   status: EnquiryStatus;
   created_at: string;
-  sender: { id: string; username: string | null; display_name: string | null; avatar_url: string | null } | null;
+  sender: {
+    id: string;
+    username: string | null;
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
 };
 
 const SELECT = `id, intent, message, status, created_at,
@@ -69,9 +74,7 @@ export const listMyLeads = createServerFn({ method: "GET" })
 export const setLeadStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
-    z
-      .object({ id: z.string().uuid(), status: z.enum(["replied", "booked", "closed"]) })
-      .parse(d),
+    z.object({ id: z.string().uuid(), status: z.enum(["replied", "booked", "closed"]) }).parse(d),
   )
   .handler(async ({ context, data }): Promise<{ status: EnquiryStatus }> => {
     const { error } = await db(context.supabase)

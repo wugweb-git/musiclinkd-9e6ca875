@@ -1,14 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
-import { EmptyState } from "@/components/ml/market";
+import { EmptyState, EquipmentGrid } from "@/components/ml/market";
 import { Loading } from "@/components/ml/kit";
-import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
-import { providers, recentRentalSearches } from "@/data/rentals";
+import { ProviderCard, providersOf, useSavedRentals } from "@/components/ml/rental";
+import { SavedSearchRow } from "@/components/ml/saved-market";
 import { loadCatalogRentals } from "@/lib/market-view";
+import { readListingVisits } from "@/lib/device-history";
 import { listMySavedIds } from "@/lib/saved.functions";
+import { listMySavedSearches } from "@/lib/searches.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/marketplace/rent/saved")({
@@ -34,19 +36,39 @@ const tabs = ["Equipment", "Providers", "Searches", "Spaces", "Recently viewed"]
 function SavedRentals() {
   const [tab, setTab] = useState(tabs[0]!);
   const { signedIn } = useAuth();
+  const savedRentals = useSavedRentals(tab === "Equipment");
+  const savedEquipment = savedRentals.data ?? [];
+
+  // A provider is a profile: saved as talent or business, and the owner of a live rental.
   const fetchIds = useServerFn(listMySavedIds);
-  const savedIds = useQuery({
-    queryKey: ["rent", "saved-ids"],
-    queryFn: () => fetchIds({ data: { targetType: "listing" } }),
-    enabled: signedIn && tab === "Equipment",
+  const savedPeople = useQuery({
+    queryKey: ["rent", "saved-providers"],
+    queryFn: async () => {
+      const [talent, business] = await Promise.all([
+        fetchIds({ data: { targetType: "talent" } }),
+        fetchIds({ data: { targetType: "business" } }),
+      ]);
+      return [...talent, ...business];
+    },
+    enabled: signedIn && tab === "Providers",
   });
   const allRentals = useQuery({
     queryKey: ["rent", "catalog"],
     queryFn: loadCatalogRentals,
-    enabled: signedIn && tab === "Equipment",
+    enabled: tab === "Providers" || tab === "Recently viewed",
   });
-  const savedEquipment = (allRentals.data ?? []).filter((e) =>
-    (savedIds.data ?? []).includes(e.id),
+  // Rentals opened on this device, newest first (the same history as Rent's rail).
+  const viewedIds = tab === "Recently viewed" ? readListingVisits().map((v) => v.id) : [];
+  const viewed = viewedIds.flatMap((id) => (allRentals.data ?? []).filter((e) => e.id === id));
+  // Searches kept from rental search (saved_searches).
+  const fetchSearches = useServerFn(listMySavedSearches);
+  const savedSearches = useQuery({
+    queryKey: ["saved-searches", "rent"],
+    queryFn: () => fetchSearches({ data: { scope: "rent" } }),
+    enabled: signedIn && tab === "Searches",
+  });
+  const savedProviders = providersOf(allRentals.data ?? []).filter((p) =>
+    (savedPeople.data ?? []).includes(p.id),
   );
 
   return (
@@ -62,10 +84,10 @@ function SavedRentals() {
 
       <div className="space-y-3 px-5 pb-6">
         {tab === "Equipment" ? (
-          savedIds.isLoading || allRentals.isLoading ? (
+          savedRentals.isLoading ? (
             <Loading rows={3} />
           ) : savedEquipment.length ? (
-            savedEquipment.map((e) => <EquipmentRow key={e.id} e={e} />)
+            <EquipmentGrid items={savedEquipment} />
           ) : (
             <EmptyState
               emoji="🎛️"
@@ -76,26 +98,35 @@ function SavedRentals() {
           )
         ) : null}
 
-        {tab === "Providers"
-          ? providers.slice(0, 3).map((p) => <ProviderCard key={p.id} p={p} />)
-          : null}
+        {tab === "Providers" ? (
+          savedPeople.isLoading || allRentals.isLoading ? (
+            <Loading rows={3} />
+          ) : savedProviders.length ? (
+            savedProviders.map((p) => <ProviderCard key={p.id} p={p} />)
+          ) : (
+            <EmptyState
+              emoji="🏪"
+              title="No saved providers yet"
+              body="Save a provider's profile to keep them here."
+              action={<BtnLink to="/marketplace/rent/nearby">Find Providers</BtnLink>}
+            />
+          )
+        ) : null}
 
-        {tab === "Searches"
-          ? recentRentalSearches.map((s) => (
-              <article
-                key={s}
-                className="flex items-center justify-between gap-3 rounded-lg bg-subtle p-4"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-1 font-semibold">{s}</p>
-                  <p className="text-1 text-muted-foreground">Alerts on · 4 new available</p>
-                </div>
-                <Link to="/marketplace/rent/search" className="shrink-0">
-                  <Chip>View</Chip>
-                </Link>
-              </article>
-            ))
-          : null}
+        {tab === "Searches" ? (
+          savedSearches.isLoading ? (
+            <Loading rows={3} />
+          ) : savedSearches.data?.length ? (
+            savedSearches.data.map((s) => <SavedSearchRow key={s.id} search={s} />)
+          ) : (
+            <EmptyState
+              emoji="🔍"
+              title="No saved searches yet"
+              body="Searches you save for rentals show up here."
+              action={<BtnLink to="/marketplace/rent/search">Search Rentals</BtnLink>}
+            />
+          )
+        ) : null}
 
         {tab === "Spaces" ? (
           <EmptyState
@@ -107,11 +138,17 @@ function SavedRentals() {
         ) : null}
 
         {tab === "Recently viewed" ? (
-          <EmptyState
-            emoji="🕓"
-            title="No view history yet"
-            body="MusicLinkd doesn't track browsing history yet — coming soon."
-          />
+          allRentals.isLoading ? (
+            <Loading rows={2} />
+          ) : viewed.length ? (
+            <EquipmentGrid items={viewed} />
+          ) : (
+            <EmptyState
+              emoji="🕓"
+              title="No view history yet"
+              body="Rentals you open on this device show up here."
+            />
+          )
         ) : null}
       </div>
     </Screen>

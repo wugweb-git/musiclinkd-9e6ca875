@@ -106,7 +106,12 @@ function PricingContent() {
           A flat hourly rate per space. Tiered rates and add-ons aren't supported yet.
         </p>
 
-        <MoneyRow label="Base hourly rate" hint="Whole studio" value={baseRate} onChange={setBaseRate} />
+        <MoneyRow
+          label="Base hourly rate"
+          hint="Whole studio"
+          value={baseRate}
+          onChange={setBaseRate}
+        />
 
         {q.data.rooms.length ? (
           <section className="min-w-0">

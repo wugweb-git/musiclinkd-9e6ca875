@@ -32,9 +32,11 @@ export const Route = createFileRoute("/settings/security/2fa")({
 function TwoStep() {
   const [loading, setLoading] = useState(true);
   const [factor, setFactor] = useState<{ id: string } | null>(null);
-  const [enrolling, setEnrolling] = useState<{ factorId: string; uri: string; secret: string } | null>(
-    null,
-  );
+  const [enrolling, setEnrolling] = useState<{
+    factorId: string;
+    uri: string;
+    secret: string;
+  } | null>(null);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
 

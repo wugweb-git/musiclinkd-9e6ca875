@@ -365,7 +365,11 @@ export const getRentalProvider = createServerFn({ method: "GET" })
         .select("id, display_name, headline, bio, city, avatar_url, is_verified")
         .eq("id", data.profileId)
         .maybeSingle(),
-      client.from("profile_business").select("profile_id").eq("profile_id", data.profileId).maybeSingle(),
+      client
+        .from("profile_business")
+        .select("profile_id")
+        .eq("profile_id", data.profileId)
+        .maybeSingle(),
       client.from("reviews").select("rating").eq("target_profile_id", data.profileId),
       client
         .from("rental_bookings")
@@ -386,7 +390,9 @@ export const getRentalProvider = createServerFn({ method: "GET" })
     if (!profile) return null;
     const reviewRows = (reviewsRes.data ?? []) as { rating: number }[];
     const rating = reviewRows.length
-      ? Math.round((reviewRows.reduce((s, r) => s + Number(r.rating), 0) / reviewRows.length) * 10) / 10
+      ? Math.round(
+          (reviewRows.reduce((s, r) => s + Number(r.rating), 0) / reviewRows.length) * 10,
+        ) / 10
       : undefined;
     return {
       id: profile.id,
@@ -401,4 +407,98 @@ export const getRentalProvider = createServerFn({ method: "GET" })
       ...(reviewRows.length ? { reviews: reviewRows.length } : {}),
       completedRentals: (completedRes.data ?? []).length,
     };
+  });
+
+/*
+ * How often each rental is booked, for "Popular rentals". rental_bookings is readable only by the
+ * renter and the owner, so the count comes from a database function that returns nothing else.
+ * Schema: supabase/migrations/20260918230000_section_sources.sql
+ */
+export const getRentalBookingCounts = createServerFn({ method: "GET" }).handler(
+  async (): Promise<Record<string, number>> => {
+    const client = await anonClient();
+    const rpc = client.rpc as unknown as (fn: string) => Promise<{
+      data: { listing_id: string; bookings: number }[] | null;
+      error: { message: string } | null;
+    }>;
+    const { data, error } = await rpc.call(client, "rental_booking_counts");
+    if (error) return {};
+    return Object.fromEntries((data ?? []).map((r) => [r.listing_id, Number(r.bookings)]));
+  },
+);
+
+/** Where one of the owner's own rental listings stands, for the My listings buckets. */
+export type ListingStanding = {
+  /** What the owner set: active, unavailable or archived. */
+  stored: string;
+  /** Rented right now: a booking is active. */
+  rented: boolean;
+  /** Promised to someone: a booking is confirmed. */
+  reserved: boolean;
+  /** Rentals of this listing that have finished. */
+  completed: number;
+};
+
+/**
+ * The owner's rental listings' standing, keyed by row id. Currently Rented and Reserved are read
+ * from the listing's bookings, since that is what actually happened; Unavailable and Archived are
+ * the owner's own choice (marketplace_listings.listing_status). Before that column exists every
+ * listing reads as active.
+ */
+export const listMyListingStandings = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<Record<string, ListingStanding>> => {
+    const client = db(context.supabase);
+    const [statusRes, bookingRes] = await Promise.all([
+      client
+        .from("marketplace_listings")
+        .select("id, listing_status")
+        .eq("seller_profile_id", context.userId),
+      client
+        .from("rental_bookings")
+        .select("status, listing:marketplace_listings!inner(id, seller_profile_id)")
+        .eq("listing.seller_profile_id", context.userId)
+        .in("status", ["confirmed", "active", "completed"]),
+    ]);
+    const standings: Record<string, ListingStanding> = {};
+    const of = (id: string) =>
+      (standings[id] ??= { stored: "active", rented: false, reserved: false, completed: 0 });
+    if (!statusRes.error) {
+      for (const r of (statusRes.data ?? []) as { id: string; listing_status: string | null }[]) {
+        of(r.id).stored = r.listing_status ?? "active";
+      }
+    }
+    if (bookingRes.error) throw new Error(bookingRes.error.message);
+    for (const b of (bookingRes.data ?? []) as unknown as {
+      status: string;
+      listing: { id: string } | null;
+    }[]) {
+      if (!b.listing) continue;
+      const s = of(b.listing.id);
+      if (b.status === "active") s.rented = true;
+      else if (b.status === "confirmed") s.reserved = true;
+      else s.completed += 1;
+    }
+    return standings;
+  });
+
+/** The owner takes a listing out of browsing (unavailable, archived) or puts it back (active). */
+export const setMyListingStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["active", "unavailable", "archived"]),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("marketplace_listings")
+      .update({ listing_status: data.status } as never)
+      .eq("id", data.id)
+      .eq("seller_profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { status: data.status };
   });

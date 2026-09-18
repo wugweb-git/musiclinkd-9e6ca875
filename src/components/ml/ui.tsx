@@ -15,6 +15,7 @@ import {
   Home,
   Compass,
   Store,
+  ShoppingBag,
   MessageCircle,
   User,
   ArrowLeft,
@@ -43,15 +44,18 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
-import { SoonBadge } from "./kit";
+import { BetaBadge, SoonBadge } from "./kit";
+import { stageOf } from "@/lib/release";
+import { TabIcon, type SolidIcon } from "./tab-icon";
 
 /*
  * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
  * `100vh` so the browser's own chrome doesn't push the page end off screen on a phone.
  *
  * The bottom nav is a route-type rule: shown on the five tab roots, hidden on every pushed screen
- * (detail, form, settings sub-page, flow). A sheet opened over a tab root leaves it as it was.
- * `bottomNav` overrides the rule; `className` carries a screen's own bottom clearance.
+ * (detail, form, settings sub-page, flow). It is drawn once in the root layout (AppNav), not per
+ * screen, so it stays mounted between tabs and its icons can animate from one state to the next.
+ * Screen only reserves room for it; `className` carries a screen's own bottom clearance.
  */
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function isTabRoot(path: string) {
@@ -74,33 +78,43 @@ export function Screen({
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
       <div className={`flex-1 ${clearance}`}>{children}</div>
-      {bottomNav ? <BottomNav /> : null}
     </div>
   );
 }
 
+/** The one bottom nav, mounted in the root layout and shown on tab roots. */
+export function AppNav() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  return isTabRoot(path) ? <BottomNav /> : null;
+}
+
 // eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
-export const navItems = [
-  { to: "/home", label: "Home", icon: Home },
-  { to: "/discover", label: "Discover", icon: Compass },
-  { to: "/messages", label: "Connections", icon: MessageCircle, soon: true },
-  { to: "/marketplace", label: "Market", icon: Store },
-  { to: "/profile", label: "Profile", icon: User },
+export const navItems: {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  solid: SolidIcon;
+}[] = [
+  { to: "/home", label: "Home", icon: Home, solid: "home" },
+  { to: "/discover", label: "Discover", icon: Compass, solid: "compass" },
+  { to: "/messages", label: "Connections", icon: MessageCircle, solid: "speech" },
+  { to: "/marketplace", label: "Market", icon: ShoppingBag, solid: "bag" },
+  { to: "/profile", label: "Profile", icon: User, solid: "person" },
 ];
 
 /** Every module, grouped, for the menu. The five tabs are here too, so the menu is complete. */
 const menuGroups: {
   title: string;
-  items: { to: string; label: string; icon: LucideIcon; soon?: boolean }[];
+  items: { to: string; label: string; icon: LucideIcon }[];
 }[] = [
   {
     title: "Main",
     items: [
       { to: "/home", label: "Home", icon: Home },
       { to: "/discover", label: "Discover", icon: Compass },
-      { to: "/search", label: "Search", icon: Search, soon: true },
-      { to: "/messages", label: "Connections", icon: MessageCircle, soon: true },
-      { to: "/notifications", label: "Notifications", icon: Bell, soon: true },
+      { to: "/search", label: "Search", icon: Search },
+      { to: "/messages", label: "Connections", icon: MessageCircle },
+      { to: "/notifications", label: "Notifications", icon: Bell },
       { to: "/profile", label: "Profile", icon: User },
     ],
   },
@@ -110,9 +124,9 @@ const menuGroups: {
       { to: "/portfolio", label: "Portfolio", icon: FolderKanban },
       { to: "/services", label: "Services", icon: BriefcaseBusiness },
       { to: "/opportunities", label: "Opportunities", icon: Megaphone },
-      { to: "/collab", label: "Collaborations", icon: Handshake, soon: true },
-      { to: "/bands", label: "Bands", icon: UsersRound, soon: true },
-      { to: "/reviews", label: "Reviews", icon: Star, soon: true },
+      { to: "/collab", label: "Collaborations", icon: Handshake },
+      { to: "/bands", label: "Bands", icon: UsersRound },
+      { to: "/reviews", label: "Reviews", icon: Star },
       { to: "/verification", label: "Verification", icon: BadgeCheck },
       { to: "/identity/qr", label: "QR & Card", icon: QrCode },
     ],
@@ -122,7 +136,7 @@ const menuGroups: {
     items: [
       { to: "/marketplace", label: "Market", icon: Store },
       { to: "/marketplace/rent", label: "Rentals", icon: Package },
-      { to: "/bookings", label: "Bookings", icon: CalendarCheck, soon: true },
+      { to: "/bookings", label: "Bookings", icon: CalendarCheck },
       { to: "/studio", label: "Studios", icon: Mic2 },
       { to: "/business", label: "Business", icon: Building2 },
       { to: "/categories", label: "Categories", icon: LayoutGrid },
@@ -132,14 +146,14 @@ const menuGroups: {
     title: "For you",
     items: [
       { to: "/saved", label: "Saved", icon: Bookmark },
-      { to: "/recently-viewed", label: "Recently viewed", icon: History, soon: true },
+      { to: "/recently-viewed", label: "Recently viewed", icon: History },
     ],
   },
   {
     title: "Account",
     items: [
       { to: "/settings", label: "Settings", icon: Settings },
-      { to: "/help", label: "Help", icon: CircleHelp, soon: true },
+      { to: "/help", label: "Help", icon: CircleHelp },
     ],
   },
 ];
@@ -157,7 +171,6 @@ export function BottomNav() {
         <ul className="flex items-stretch justify-between gap-1 px-2 pb-[env(safe-area-inset-bottom)]">
           {navItems.map((item) => {
             const active = path === item.to || path.startsWith(`${item.to}/`);
-            const Icon = item.icon;
             return (
               <li key={item.to} className={active ? "flex-[2]" : "flex-1"}>
                 <Link
@@ -171,18 +184,20 @@ export function BottomNav() {
                       active ? "bg-background px-4" : "w-10"
                     }`}
                   >
-                    <Icon
-                      size={iconSize.md}
-                      className="shrink-0 text-foreground"
-                      strokeWidth={active ? 2.4 : 1.8}
-                      aria-hidden
-                    />
+                    <span className="flex text-foreground">
+                      <TabIcon
+                        outline={item.icon}
+                        solid={item.solid}
+                        active={active}
+                        size={iconSize.md}
+                      />
+                    </span>
                     {active ? (
                       <span className="whitespace-nowrap text-sm font-semibold text-foreground">
                         {item.label}
                       </span>
                     ) : null}
-                    {item.soon ? (
+                    {stageOf(item.to) === "soon" ? (
                       <span
                         aria-hidden
                         className="absolute right-2.5 top-2 h-1.5 w-1.5 rounded-full bg-muted-foreground"
@@ -230,7 +245,11 @@ export function BottomNav() {
                       >
                         <Icon size={iconSize.md} className="shrink-0" aria-hidden />
                         <span className="min-w-0 flex-1">{item.label}</span>
-                        {item.soon ? <SoonBadge /> : null}
+                        {stageOf(item.to) === "soon" ? (
+                          <SoonBadge />
+                        ) : stageOf(item.to) === "beta" ? (
+                          <BetaBadge />
+                        ) : null}
                       </Link>
                     </li>
                   );

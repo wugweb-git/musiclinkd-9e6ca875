@@ -4,9 +4,17 @@ import { iconSize } from "@/lib/tokens";
 
 /**
  * A portfolio link played in place: the source's own player when it embeds, the browser's player
- * for a direct file, otherwise an Open link to a new tab.
+ * for a direct file, otherwise an Open link to a new tab. `onOpen` hears that link being followed.
  */
-export function MediaEmbed({ url, title }: { url: string; title: string }) {
+export function MediaEmbed({
+  url,
+  title,
+  onOpen,
+}: {
+  url: string;
+  title: string;
+  onOpen?: () => void;
+}) {
   const embed = embedFor(url);
   if (!embed) return null;
   if (embed.mode === "iframe") {
@@ -43,6 +51,7 @@ export function MediaEmbed({ url, title }: { url: string; title: string }) {
       href={embed.src}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={onOpen}
       className="state-layer press-brand inline-flex min-h-control-sm w-full items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-background"
     >
       <ExternalLink size={iconSize.sm} aria-hidden /> Open

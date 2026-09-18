@@ -11,19 +11,18 @@ import {
   statusTone,
   useSavedOpportunities,
 } from "@/components/ml/opportunity";
-import { getOpportunity, categoryLabel, payParts } from "@/data/opportunities";
-import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { categoryLabel, payParts } from "@/data/opportunities";
+import { loadDbOpportunity, opportunityViewSource } from "@/lib/opportunity-view";
+import { usePreviousPath } from "@/lib/flow-back";
 import { myApplicationTo, recordOpportunityView } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/$id/")({
-  // Static opportunities first; any other id is looked up as a stored opportunity slug.
-  loader: async ({ params }) => ({
-    db: getOpportunity(params.id) ? null : await loadDbOpportunity(params.id),
-  }),
+  // The id is a stored opportunity slug.
+  loader: async ({ params }) => ({ db: await loadDbOpportunity(params.id) }),
   head: ({ params, loaderData }) => {
-    const o = getOpportunity(params.id) ?? loaderData?.db ?? undefined;
+    const o = loaderData?.db ?? undefined;
     const title = o ? `${o.title} | MusicLinkd Opportunities` : "Opportunity | MusicLinkd";
     const desc = o?.summary || (o ? o.title : "This opportunity is no longer available.");
     return {
@@ -43,7 +42,7 @@ export const Route = createFileRoute("/opportunities/$id/")({
 function OpportunityDetail() {
   const { id } = Route.useParams();
   const { db } = Route.useLoaderData();
-  const o = getOpportunity(id) ?? db ?? undefined;
+  const o = db ?? undefined;
   const { has, toggle } = useSavedOpportunities();
   const [share, setShare] = useState(false);
 
@@ -59,9 +58,16 @@ function OpportunityDetail() {
   });
 
   const recordView = useServerFn(recordOpportunityView);
+  const previousPath = usePreviousPath();
   useEffect(() => {
-    // Once per real opportunity view; the database decides whether it actually counts.
-    if (signedIn && db) void recordView({ data: { slug: id } }).catch(() => {});
+    // Once per real opportunity view, with the screen it was opened from; the database decides
+    // whether it actually counts.
+    if (signedIn && db)
+      void recordView({
+        data: { slug: id, source: opportunityViewSource(previousPath()) },
+      }).catch(() => {});
+    // previousPath reads the history as it is now; it is not a dependency of when to record.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signedIn, db, id, recordView]);
 
   if (!o) {

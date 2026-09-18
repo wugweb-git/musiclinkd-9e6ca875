@@ -92,7 +92,8 @@ export const listMySaved = createServerFn({ method: "GET" })
     const rows = (saved ?? []) as SavedRow[];
     if (!rows.length) return empty;
 
-    const idsOf = (t: SavedTargetType) => rows.filter((r) => r.target_type === t).map((r) => r.target_id);
+    const idsOf = (t: SavedTargetType) =>
+      rows.filter((r) => r.target_type === t).map((r) => r.target_id);
     const savedAtOf = (t: SavedTargetType, id: string) =>
       rows.find((r) => r.target_type === t && r.target_id === id)!.created_at;
     const cardIdOf = (t: SavedTargetType, id: string) =>
@@ -105,51 +106,58 @@ export const listMySaved = createServerFn({ method: "GET" })
     const eventIds = idsOf("event");
     const listingIds = idsOf("listing");
 
-    const [talentRows, bandRows, studioRows, businessRows, eventRows, listingRows] = await Promise.all([
-      talentIds.length
-        ? context.supabase
-            .from("profiles")
-            .select("id, display_name, username, headline, avatar_url")
-            .in("id", talentIds)
-        : Promise.resolve({ data: [], error: null }),
-      bandIds.length
-        ? context.supabase
-            .from("bands" as never)
-            .select("id, name, city, avatar_url")
-            .in("id", bandIds)
-        : Promise.resolve({ data: [], error: null }),
-      studioIds.length
-        ? context.supabase
-            .from("studios" as never)
-            .select("id, name, location, slug")
-            .in("id", studioIds)
-        : Promise.resolve({ data: [], error: null }),
-      businessIds.length
-        ? context.supabase
-            .from("profiles")
-            .select("id, display_name, username, headline, avatar_url")
-            .in("id", businessIds)
-        : Promise.resolve({ data: [], error: null }),
-      eventIds.length
-        ? context.supabase
-            .from("profile_events" as never)
-            .select("id, title, event_date, venue_name")
-            .in("id", eventIds)
-        : Promise.resolve({ data: [], error: null }),
-      listingIds.length
-        ? context.supabase
-            .from("marketplace_listings" as never)
-            .select("id, title, price_paise, image_url")
-            .in("id", listingIds)
-        : Promise.resolve({ data: [], error: null }),
-    ]);
+    const [talentRows, bandRows, studioRows, businessRows, eventRows, listingRows] =
+      await Promise.all([
+        talentIds.length
+          ? context.supabase
+              .from("profiles")
+              .select("id, display_name, username, headline, avatar_url")
+              .in("id", talentIds)
+          : Promise.resolve({ data: [], error: null }),
+        bandIds.length
+          ? context.supabase
+              .from("bands" as never)
+              .select("id, name, city, avatar_url")
+              .in("id", bandIds)
+          : Promise.resolve({ data: [], error: null }),
+        studioIds.length
+          ? context.supabase
+              .from("studios" as never)
+              .select("id, name, location, slug")
+              .in("id", studioIds)
+          : Promise.resolve({ data: [], error: null }),
+        businessIds.length
+          ? context.supabase
+              .from("profiles")
+              .select("id, display_name, username, headline, avatar_url")
+              .in("id", businessIds)
+          : Promise.resolve({ data: [], error: null }),
+        eventIds.length
+          ? context.supabase
+              .from("profile_events" as never)
+              .select("id, title, event_date, venue_name")
+              .in("id", eventIds)
+          : Promise.resolve({ data: [], error: null }),
+        listingIds.length
+          ? context.supabase
+              .from("marketplace_listings" as never)
+              .select("id, title, price_paise, image_url")
+              .in("id", listingIds)
+          : Promise.resolve({ data: [], error: null }),
+      ]);
     for (const r of [talentRows, bandRows, studioRows, businessRows, eventRows, listingRows]) {
       if (r.error) throw new Error(r.error.message);
     }
 
     return {
       talent: (talentRows.data as never[]).map((p: never) => {
-        const row = p as { id: string; display_name: string | null; username: string | null; headline: string | null; avatar_url: string | null };
+        const row = p as {
+          id: string;
+          display_name: string | null;
+          username: string | null;
+          headline: string | null;
+          avatar_url: string | null;
+        };
         return {
           id: cardIdOf("talent", row.id),
           targetType: "talent",
@@ -161,7 +169,12 @@ export const listMySaved = createServerFn({ method: "GET" })
         };
       }),
       band: (bandRows.data as never[]).map((b: never) => {
-        const row = b as { id: string; name: string; city: string | null; avatar_url: string | null };
+        const row = b as {
+          id: string;
+          name: string;
+          city: string | null;
+          avatar_url: string | null;
+        };
         return {
           id: cardIdOf("band", row.id),
           targetType: "band",
@@ -185,7 +198,13 @@ export const listMySaved = createServerFn({ method: "GET" })
         };
       }),
       business: (businessRows.data as never[]).map((p: never) => {
-        const row = p as { id: string; display_name: string | null; username: string | null; headline: string | null; avatar_url: string | null };
+        const row = p as {
+          id: string;
+          display_name: string | null;
+          username: string | null;
+          headline: string | null;
+          avatar_url: string | null;
+        };
         return {
           id: cardIdOf("business", row.id),
           targetType: "business",
@@ -197,7 +216,12 @@ export const listMySaved = createServerFn({ method: "GET" })
         };
       }),
       event: (eventRows.data as never[]).map((e: never) => {
-        const row = e as { id: string; title: string; event_date: string | null; venue_name: string | null };
+        const row = e as {
+          id: string;
+          title: string;
+          event_date: string | null;
+          venue_name: string | null;
+        };
         return {
           id: cardIdOf("event", row.id),
           targetType: "event",
@@ -209,14 +233,22 @@ export const listMySaved = createServerFn({ method: "GET" })
         };
       }),
       listing: (listingRows.data as never[]).map((l: never) => {
-        const row = l as { id: string; title: string; price_paise: number | null; image_url: string | null };
+        const row = l as {
+          id: string;
+          title: string;
+          price_paise: number | null;
+          image_url: string | null;
+        };
         return {
           id: cardIdOf("listing", row.id),
           targetType: "listing",
           targetId: row.id,
           savedAt: savedAtOf("listing", row.id),
           name: row.title,
-          subtitle: row.price_paise != null ? `₹${Math.round(row.price_paise / 100).toLocaleString("en-IN")}` : null,
+          subtitle:
+            row.price_paise != null
+              ? `₹${Math.round(row.price_paise / 100).toLocaleString("en-IN")}`
+              : null,
           photo: row.image_url,
         };
       }),

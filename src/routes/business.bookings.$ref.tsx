@@ -145,7 +145,11 @@ function ProviderBookingDetailContent() {
             <Detail label="Date" value={formatDate(bk.session_date)} />
             <Detail
               label="Time"
-              value={bk.start_time ? `${formatTime(bk.start_time)} – ${formatTime(bk.end_time)}` : "Not set"}
+              value={
+                bk.start_time
+                  ? `${formatTime(bk.start_time)} – ${formatTime(bk.end_time)}`
+                  : "Not set"
+              }
             />
             {bk.hours ? <Detail label="Duration" value={`${bk.hours} hrs`} /> : null}
             {bk.purpose ? <Detail label="Purpose" value={bk.purpose} /> : null}

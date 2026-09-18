@@ -68,7 +68,9 @@ function BusinessCard() {
         <div className="mt-4 flex flex-col gap-2">
           <p className="pill px-1 bg-background text-muted-foreground">Shared details</p>
           {shared.length ? (
-            shared.map((s) => <ActionRow key={s.label} icon={s.icon} label={s.label} hint={s.hint} />)
+            shared.map((s) => (
+              <ActionRow key={s.label} icon={s.icon} label={s.label} hint={s.hint} />
+            ))
           ) : (
             <p className="px-1 text-1 text-muted-foreground">
               No contact details on file yet — add a website in Profile edit, or your phone/email

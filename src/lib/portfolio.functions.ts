@@ -36,8 +36,8 @@ export const listMyPortfolio = createServerFn({ method: "GET" })
 
 /**
  * Plays per work, for the account's own performance screen. The database counts a play when
- * somebody opens the work (record_portfolio_play); nothing else about a work is counted yet, so
- * nothing else is returned.
+ * somebody opens the work (record_portfolio_play). Views, shares and clicks are counted apart,
+ * in myPortfolioEvents.
  */
 export const myPortfolioPlays = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -150,9 +150,7 @@ export const savePortfolioItem = createServerFn({ method: "POST" })
 /** Publish or hide one work. A hidden work stays in the account's list but leaves the profile. */
 export const setPortfolioPublished = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z.object({ id: z.string().uuid(), published: z.boolean() }).parse(d),
-  )
+  .inputValidator((d) => z.object({ id: z.string().uuid(), published: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("portfolio_items")
@@ -616,3 +614,36 @@ export const getMyProfileSections = createServerFn({ method: "GET" })
   .handler(async ({ context }) =>
     loadSections(context.supabase as unknown as SupabaseClient, context.userId),
   );
+
+export type WorkEventCounts = {
+  views: number;
+  shares: number;
+  profileClicks: number;
+  linkClicks: number;
+};
+
+/**
+ * Views, shares, profile clicks and link clicks per work, for the account's own performance
+ * screen (portfolio_item_events, readable only by the work's owner). Null when the events cannot
+ * be read — before the table exists — so the figures show a dash, not a zero.
+ * Schema: supabase/migrations/20260918230000_section_sources.sql
+ */
+export const myPortfolioEvents = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<WorkEventCounts | null> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data: rows, error } = await client
+      .from("portfolio_item_events")
+      .select("kind")
+      .eq("item_id", data.id);
+    if (error) return null;
+    const counts: WorkEventCounts = { views: 0, shares: 0, profileClicks: 0, linkClicks: 0 };
+    for (const row of (rows ?? []) as { kind: string }[]) {
+      if (row.kind === "view") counts.views += 1;
+      else if (row.kind === "share") counts.shares += 1;
+      else if (row.kind === "profile_click") counts.profileClicks += 1;
+      else if (row.kind === "link_click") counts.linkClicks += 1;
+    }
+    return counts;
+  });

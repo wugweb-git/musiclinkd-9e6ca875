@@ -36,7 +36,7 @@ export const listReviewable = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const client = db(context.supabase);
-    const [bookings, applications, written] = await Promise.all([
+    const [bookings, applications, written, rentals] = await Promise.all([
       client
         .from("booking_requests")
         .select("studio_id, session_date, studio:studios(id, slug, name)")
@@ -52,7 +52,15 @@ export const listReviewable = createServerFn({ method: "GET" })
         .from("reviews")
         .select("target_profile_id, target_studio_id")
         .eq("author_profile_id", context.userId),
+      // A completed rental, either side: the renter reviews the owner, the owner the renter.
+      client
+        .from("rental_bookings")
+        .select(
+          "renter_profile_id, renter:profiles!rental_bookings_renter_profile_id_fkey(id, username, display_name), listing:marketplace_listings!inner(title, seller_profile_id, seller:profiles!marketplace_listings_seller_profile_id_fkey(id, username, display_name))",
+        )
+        .eq("status", "completed"),
     ]);
+    if (rentals.error) throw new Error(rentals.error.message);
     if (bookings.error) throw new Error(bookings.error.message);
     if (applications.error) throw new Error(applications.error.message);
     if (written.error) throw new Error(written.error.message);
@@ -117,9 +125,29 @@ export const listReviewable = createServerFn({ method: "GET" })
         : [];
     });
 
+    type RentalPerson = { id: string; username: string | null; display_name: string | null };
+    type RentalRow = {
+      renter_profile_id: string;
+      renter: RentalPerson | null;
+      listing: { title: string; seller_profile_id: string; seller: RentalPerson | null };
+    };
+    const renters = ((rentals.data ?? []) as unknown as RentalRow[]).flatMap((b) => {
+      const other = b.renter_profile_id === context.userId ? b.listing.seller : b.renter;
+      if (!other || other.id === context.userId || profileDone.has(other.id)) return [];
+      return [
+        {
+          kind: "person" as const,
+          id: other.id,
+          slug: other.username ?? "",
+          name: other.display_name ?? other.username ?? "",
+          context: `Rental · ${b.listing.title}`,
+        },
+      ];
+    });
+
     // The same studio or person can appear once, however many sessions there were.
     const seen = new Set<string>();
-    return [...studios, ...people].filter((s) => !seen.has(s.id) && seen.add(s.id));
+    return [...studios, ...people, ...renters].filter((s) => !seen.has(s.id) && seen.add(s.id));
   });
 
 /** Write one. The database refuses anything this account has not actually worked with. */
@@ -177,7 +205,9 @@ export const listMyReviews = createServerFn({ method: "GET" })
 /** Correct the wording of a review you wrote. Rating is locked once published — body only. */
 export const editMyReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid(), body: z.string().trim().min(10).max(2000) }).parse(d))
+  .inputValidator((d) =>
+    z.object({ id: z.string().uuid(), body: z.string().trim().min(10).max(2000) }).parse(d),
+  )
   .handler(async ({ context, data }) => {
     const { error } = await db(context.supabase)
       .from("reviews")
@@ -242,4 +272,157 @@ export const listReviewsFor = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return (rows ?? []) as unknown as ReviewRow[];
+  });
+
+/*
+ * Asking for a review. The people you can ask are the ones who could write one about you — an
+ * accepted application or a completed rental, either side — and haven't yet. Ask once, remind once
+ * a week later; the database holds both rules (could_review_me, the "Remind once" policy), and a
+ * trigger tells the person asked. Schema: 20260918210000_reports_prefs_review_requests.sql
+ */
+export type ReviewAskTarget = {
+  id: string;
+  name: string;
+  photo: string | null;
+  context: string;
+  askedAt: string | null;
+  remindedAt: string | null;
+};
+
+export const listReviewAskTargets = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<ReviewAskTarget[]> => {
+    const client = db(context.supabase);
+    type Person = {
+      id: string;
+      username: string | null;
+      display_name: string | null;
+      avatar_url: string | null;
+    };
+    const PERSON = "id, username, display_name, avatar_url";
+    const [asApplicant, asPoster, asRenter, asOwner, reviewed, asked] = await Promise.all([
+      client
+        .from("opportunity_applications")
+        .select(
+          `opportunity:opportunities!inner(title, creator_profile_id, creator:profiles!opportunities_creator_profile_id_fkey(${PERSON}))`,
+        )
+        .eq("status", "accepted")
+        .eq("applicant_profile_id", context.userId),
+      client
+        .from("opportunity_applications")
+        .select(
+          `applicant:profiles!opportunity_applications_applicant_profile_id_fkey(${PERSON}), opportunity:opportunities!inner(title, creator_profile_id)`,
+        )
+        .eq("status", "accepted")
+        .eq("opportunity.creator_profile_id", context.userId),
+      client
+        .from("rental_bookings")
+        .select(
+          `listing:marketplace_listings!inner(title, seller:profiles!marketplace_listings_seller_profile_id_fkey(${PERSON}))`,
+        )
+        .eq("status", "completed")
+        .eq("renter_profile_id", context.userId),
+      client
+        .from("rental_bookings")
+        .select(
+          `renter:profiles!rental_bookings_renter_profile_id_fkey(${PERSON}), listing:marketplace_listings!inner(title, seller_profile_id)`,
+        )
+        .eq("status", "completed")
+        .eq("listing.seller_profile_id", context.userId),
+      client.from("reviews").select("author_profile_id").eq("target_profile_id", context.userId),
+      client
+        .from("review_requests")
+        .select("asked_profile_id, asked_at, reminded_at")
+        .eq("requester_profile_id", context.userId),
+    ]);
+    for (const r of [asApplicant, asPoster, asRenter, asOwner, reviewed, asked])
+      if (r.error) throw new Error(r.error.message);
+
+    type Row = {
+      opportunity: { title: string; creator: Person | null };
+      applicant: Person | null;
+      listing: { title: string; seller: Person | null };
+      renter: Person | null;
+      author_profile_id: string;
+      asked_profile_id: string;
+      asked_at: string;
+      reminded_at: string | null;
+    };
+    const rows = (r: { data: unknown }) => (r.data ?? []) as Row[];
+    const pairs: { who: Person | null; context: string }[] = [
+      ...rows(asApplicant).map((a) => ({
+        who: a.opportunity.creator,
+        context: a.opportunity.title,
+      })),
+      ...rows(asPoster).map((a) => ({ who: a.applicant, context: a.opportunity.title })),
+      ...rows(asRenter).map((b) => ({
+        who: b.listing.seller,
+        context: `Rental · ${b.listing.title}`,
+      })),
+      ...rows(asOwner).map((b) => ({ who: b.renter, context: `Rental · ${b.listing.title}` })),
+    ];
+
+    const done = new Set(rows(reviewed).map((r) => r.author_profile_id));
+    const asks = new Map(
+      rows(asked).map((r) => [
+        r.asked_profile_id,
+        { askedAt: r.asked_at, remindedAt: r.reminded_at },
+      ]),
+    );
+    const seen = new Set<string>();
+    return pairs.flatMap(({ who, context: why }) => {
+      if (!who || who.id === context.userId || done.has(who.id) || seen.has(who.id)) return [];
+      seen.add(who.id);
+      const ask = asks.get(who.id);
+      return [
+        {
+          id: who.id,
+          name: who.display_name ?? who.username ?? "",
+          photo: who.avatar_url,
+          // review_requests.context holds 120 characters; a long title is cut to fit.
+          context: why.length > 120 ? `${why.slice(0, 119)}…` : why,
+          askedAt: ask?.askedAt ?? null,
+          remindedAt: ask?.remindedAt ?? null,
+        },
+      ];
+    });
+  });
+
+/** Ask, or — a week after asking — send the one reminder. */
+export const askForReview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        profileId: z.string().uuid(),
+        context: z.string().max(120).optional(),
+        remind: z.boolean().default(false),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const client = db(context.supabase);
+    if (data.remind) {
+      const { data: rows, error } = await client
+        .from("review_requests")
+        .update({ reminded_at: new Date().toISOString() } as never)
+        .eq("requester_profile_id", context.userId)
+        .eq("asked_profile_id", data.profileId)
+        .select("asked_profile_id");
+      if (error) throw new Error(error.message);
+      if (!rows?.length) throw new Error("A reminder can go once, a week after asking.");
+      return { reminded: true };
+    }
+    const { error } = await client.from("review_requests").insert({
+      requester_profile_id: context.userId,
+      asked_profile_id: data.profileId,
+      context: data.context ?? null,
+    } as never);
+    if (error) {
+      if (error.code === "23505") throw new Error("You've already asked them.");
+      throw new Error(
+        error.code === "42501" ? "You can ask once you have worked together." : error.message,
+      );
+    }
+    return { asked: true };
   });

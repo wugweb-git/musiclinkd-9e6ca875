@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
-import { Screen, SearchBar, Chip, BtnLink } from "@/components/ml/ui";
+import { Screen, SearchBar, Chip } from "@/components/ml/ui";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   CategoryTile,
@@ -12,9 +12,11 @@ import {
   SectionRow,
   useMarketCity,
 } from "@/components/ml/market";
-import { listings, marketCategories } from "@/data/market";
-import { TextLink } from "@/components/ml/links";
+import { marketCategories, type Listing } from "@/data/market";
+import { GearCta } from "@/components/ml/gear-cta";
 import { iconSize } from "@/lib/tokens";
+import { loadCatalogListings } from "@/lib/market-view";
+import { readListingVisits } from "@/lib/device-history";
 
 export const Route = createFileRoute("/marketplace/")({
   head: () => ({
@@ -35,6 +37,7 @@ export const Route = createFileRoute("/marketplace/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loader: () => loadCatalogListings(),
   component: MarketHome,
 });
 
@@ -55,6 +58,18 @@ function MarketHome() {
   const [city, setCity] = useMarketCity();
   const [view, setView] = useState<(typeof views)[number]["label"]>("For You");
   const navigate = useNavigate();
+  const catalog = Route.useLoaderData();
+  // Listings opened on this device, most recent first, read live from the catalog. Goods only:
+  // services never sit in this rail.
+  const [viewed, setViewed] = useState<Listing[]>([]);
+  useEffect(() => {
+    const byId = new Map(catalog.map((l) => [l.id, l]));
+    setViewed(
+      readListingVisits()
+        .map((v) => byId.get(v.id))
+        .filter((l): l is Listing => !!l && (l.type === "product" || l.type === "rental")),
+    );
+  }, [catalog]);
 
   return (
     <Screen>
@@ -135,27 +150,18 @@ function MarketHome() {
         </div>
       </SectionRow>
 
-      <SectionRow title="Recently viewed" to="/recently-viewed">
-        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-          {listings.slice(2, 6).map((l) => (
-            <ListingTile key={l.id} l={l} />
-          ))}
-        </div>
-      </SectionRow>
+      {viewed.length ? (
+        <SectionRow title="Recently viewed" to="/recently-viewed">
+          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+            {viewed.map((l) => (
+              <ListingTile key={l.id} l={l} />
+            ))}
+          </div>
+        </SectionRow>
+      ) : null}
 
-      <div className="px-5 pb-4">
-        <div className="rounded-lg bg-subtle p-5">
-          <h2 className="text-2">Have gear sitting idle?</h2>
-          <p className="mt-1 text-1 text-muted-foreground">
-            List it to 72,000+ verified music professionals. Free while Market is in Beta.
-          </p>
-          <BtnLink to="/marketplace/sell" className="mt-4 w-full">
-            Create a Listing
-          </BtnLink>
-          <TextLink to="/marketplace/mine" className="mt-2 block text-center text-1">
-            My Marketplace
-          </TextLink>
-        </div>
+      <div className="px-5 pb-6 pt-2">
+        <GearCta />
       </div>
 
       <MarketFilterSheet open={filters} onClose={() => setFilters(false)} />

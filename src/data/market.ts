@@ -19,6 +19,8 @@ export type Seller = {
 
 export type Listing = {
   id: string;
+  /** Database listings: the row's uuid, which saves are keyed by (`id` is the slug). */
+  dbId?: string;
   type: ListingType;
   title: string;
   subtitle: string;
@@ -42,7 +44,13 @@ export type Listing = {
   specs: { label: string; value: string }[];
   sellerId: string;
   /** Database listings: the seller's profile (username set) or only a seller name. */
-  owner?: { id?: string | null; name: string; username: string | null; photo: string; verified: boolean };
+  owner?: {
+    id?: string | null;
+    name: string;
+    username: string | null;
+    photo: string;
+    verified: boolean;
+  };
   reason?: string;
   status?: "Draft" | "Pending Review" | "Published" | "Paused" | "Sold" | "Rented";
 };
@@ -114,7 +122,6 @@ export const marketCategories = [
   { slug: "audio-gear", label: "Audio Gear", emoji: "🎙", count: "8,205" },
   { slug: "studio", label: "Studio", emoji: "🎛", count: "3,914" },
   { slug: "rentals", label: "Rentals", emoji: "📦", count: "2,760" },
-  { slug: "services", label: "Services", emoji: "🎚", count: "6,132" },
   { slug: "spaces", label: "Spaces", emoji: "🏢", count: "1,208" },
 ];
 

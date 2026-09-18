@@ -125,7 +125,11 @@ function ReplyToReview() {
           </ul>
         </Card>
 
-        <Btn className="w-full" disabled={body.trim().length < 4 || sending} onClick={() => void post()}>
+        <Btn
+          className="w-full"
+          disabled={body.trim().length < 4 || sending}
+          onClick={() => void post()}
+        >
           {sending ? "Posting…" : "Post response"}
         </Btn>
       </div>

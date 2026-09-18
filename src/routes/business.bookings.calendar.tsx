@@ -5,7 +5,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { BusinessOnlyGate, EmptyState, Loading, StatusPill, type Tone } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { listStudioBookings, type BookingRequest, type BookingStatus } from "@/lib/bookings.functions";
+import {
+  listStudioBookings,
+  type BookingRequest,
+  type BookingStatus,
+} from "@/lib/bookings.functions";
 
 export const Route = createFileRoute("/business/bookings/calendar")({
   head: () => ({
@@ -180,7 +184,8 @@ function BlockRow({ b }: { b: BookingRequest }) {
       <span className="mt-1 h-10 w-1 shrink-0 rounded-full bg-primary" aria-hidden />
       <div className="min-w-0 flex-1">
         <p className="truncate text-1 font-semibold">
-          {b.room?.name ?? "Session"} · {b.requester?.display_name ?? b.requester?.username ?? "Someone"}
+          {b.room?.name ?? "Session"} ·{" "}
+          {b.requester?.display_name ?? b.requester?.username ?? "Someone"}
         </p>
         <p className="truncate text-1 text-muted-foreground">
           {b.people ? `${b.people} people` : ""}
@@ -209,9 +214,7 @@ function DayView({
       {items.length === 0 ? (
         <div className="rounded-lg bg-subtle p-5 text-center">
           <p className="text-sm font-semibold">Nothing booked</p>
-          <p className="mt-1 text-1 text-muted-foreground">
-            This day has no requests yet.
-          </p>
+          <p className="mt-1 text-1 text-muted-foreground">This day has no requests yet.</p>
           <Link
             to="/business/availability"
             className="mt-3 inline-flex min-h-touch items-center justify-center rounded-full bg-ink px-5 text-1 font-semibold text-background"

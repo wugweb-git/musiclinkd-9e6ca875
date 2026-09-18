@@ -477,3 +477,61 @@ export const isMyAccountBusiness = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return Boolean(data);
   });
+
+/*
+ * Create Business extends the signed-in account's own profile (owner's call): the name, tagline
+ * and city go on the profile, the address on its profile_business row — and that row is what
+ * makes the account a business. The type sets the profile's role only when it has none yet, so a
+ * role picked in onboarding is never overwritten. Types with no matching role (production house,
+ * rental house) leave roles alone.
+ */
+const ROLE_FOR_TYPE: Record<string, string> = {
+  studio: "studio",
+  label: "music_label",
+  venue: "venue",
+  agency: "booking_agency",
+};
+
+export const createMyBusiness = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        type: z.enum(["studio", "label", "production_house", "venue", "agency", "rental"]),
+        name: z.string().trim().min(1).max(80),
+        tagline: z.string().trim().max(160).optional(),
+        city: z.string().trim().max(80),
+        address: z.string().trim().max(300).optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ username: string | null }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data: me, error: readError } = await client
+      .from("profiles")
+      .select("username, roles")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (readError) throw new Error(readError.message);
+    const current = (me as { username: string | null; roles: string[] | null } | null) ?? null;
+    const role = ROLE_FOR_TYPE[data.type];
+
+    const { error } = await client
+      .from("profiles")
+      .update({
+        display_name: data.name,
+        city: data.city,
+        ...(data.tagline ? { headline: data.tagline } : {}),
+        ...(role && !current?.roles?.length ? { roles: [role] } : {}),
+      } as never)
+      .eq("id", context.userId);
+    if (error) throw new Error(error.message);
+
+    const { error: businessError } = await client.from("profile_business").upsert({
+      profile_id: context.userId,
+      business_address: data.address || null,
+      updated_at: new Date().toISOString(),
+    } as never);
+    if (businessError) throw new Error(businessError.message);
+    return { username: current?.username ?? null };
+  });

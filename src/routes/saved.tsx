@@ -6,7 +6,12 @@ import { toast } from "sonner";
 import { X } from "lucide-react";
 import { Chip, Screen, TopBar } from "@/components/ml/ui";
 import { EmptyState, Loading } from "@/components/ml/kit";
-import { listMySaved, unsaveTarget, type SavedCard, type SavedTargetType } from "@/lib/saved.functions";
+import {
+  listMySaved,
+  unsaveTarget,
+  type SavedCard,
+  type SavedTargetType,
+} from "@/lib/saved.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/saved")({
@@ -85,11 +90,7 @@ function Saved() {
             <article key={c.id} className="rounded-lg bg-subtle p-4">
               <div className="flex items-center gap-3">
                 {c.photo ? (
-                  <img
-                    src={c.photo}
-                    alt={c.name}
-                    className="h-14 w-14 rounded-sm object-cover"
-                  />
+                  <img src={c.photo} alt={c.name} className="h-14 w-14 rounded-sm object-cover" />
                 ) : (
                   <span className="h-14 w-14 shrink-0 rounded-sm bg-background" aria-hidden />
                 )}

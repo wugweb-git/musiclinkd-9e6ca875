@@ -46,10 +46,34 @@ function AccountScreen() {
     verified: boolean;
     action: string;
   }[] = [
-    { key: "email", label: "Email", value: user?.email ?? "—", verified: !!user?.email_confirmed_at, action: "Change" },
-    { key: "phone", label: "Phone", value: user?.phone ?? "Not set", verified: !!user?.phone_confirmed_at, action: user?.phone ? "Change" : "Add" },
-    { key: "username", label: "Username", value: row?.username ? `@${row.username}` : "Not set", verified: false, action: row?.username ? "Locked" : "Claim" },
-    { key: "language", label: "Language", value: "English (India)", verified: false, action: "Change" },
+    {
+      key: "email",
+      label: "Email",
+      value: user?.email ?? "—",
+      verified: !!user?.email_confirmed_at,
+      action: "Change",
+    },
+    {
+      key: "phone",
+      label: "Phone",
+      value: user?.phone ?? "Not set",
+      verified: !!user?.phone_confirmed_at,
+      action: user?.phone ? "Change" : "Add",
+    },
+    {
+      key: "username",
+      label: "Username",
+      value: row?.username ? `@${row.username}` : "Not set",
+      verified: false,
+      action: row?.username ? "Locked" : "Claim",
+    },
+    {
+      key: "language",
+      label: "Language",
+      value: "English (India)",
+      verified: false,
+      action: "Change",
+    },
     { key: "currency", label: "Currency", value: "INR ₹", verified: false, action: "Change" },
   ];
 

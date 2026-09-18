@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { ListingCard, Rating, TrustPill } from "@/components/ml/market";
+import { ListingGrid, Rating, TrustPill } from "@/components/ml/market";
 import { EmptyState, Loading } from "@/components/ml/kit";
 import { getRentalProvider } from "@/lib/rentals.functions";
 import { getSellerListings } from "@/lib/catalog.functions";
@@ -61,9 +61,10 @@ function SellerProfile() {
     );
   }
 
-  const items = (listings.data ?? []).map((row) =>
-    adaptListing(row, labels.data ?? {}, Date.now()),
-  );
+  // Market shows goods and rentals; services are Discover's (owner, 18 Sep 2026).
+  const items = (listings.data ?? [])
+    .map((row) => adaptListing(row, labels.data ?? {}, Date.now()))
+    .filter((l) => l.type !== "service");
 
   return (
     <Screen>
@@ -78,9 +79,7 @@ function SellerProfile() {
             )}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{s.name}</p>
-              {s.role ? (
-                <p className="truncate text-1 text-muted-foreground">{s.role}</p>
-              ) : null}
+              {s.role ? <p className="truncate text-1 text-muted-foreground">{s.role}</p> : null}
             </div>
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -103,7 +102,7 @@ function SellerProfile() {
           {listings.isLoading ? (
             <Loading rows={2} />
           ) : items.length ? (
-            items.map((l) => <ListingCard key={l.id} l={l} />)
+            <ListingGrid items={items} />
           ) : (
             <EmptyState title="No listings yet" body="Nothing published here right now." />
           )}

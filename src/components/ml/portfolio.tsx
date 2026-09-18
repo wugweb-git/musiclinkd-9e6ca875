@@ -23,10 +23,7 @@ import {
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
-import {
-  StateCard as BaseStateCard,
-  StatusPill as BaseStatusPill,
-} from "@/components/ml/kit";
+import { StateCard as BaseStateCard, StatusPill as BaseStatusPill } from "@/components/ml/kit";
 import { embedFor } from "@/lib/embed";
 import { MediaEmbed } from "./media-embed";
 import {
@@ -216,7 +213,11 @@ export function WorkCard({
                   disabled={actions.busy || (!item.featured && !actions.canFeature)}
                   onClick={actions.onFeature}
                 >
-                  <Star size={iconSize.sm} fill={item.featured ? "currentColor" : "none"} aria-hidden />
+                  <Star
+                    size={iconSize.sm}
+                    fill={item.featured ? "currentColor" : "none"}
+                    aria-hidden
+                  />
                 </IconBtn>
                 <IconBtn
                   label={item.published ? "Hide from your profile" : "Publish to your profile"}

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, Price, StatusPill } from "@/components/ml/kit";
-import { getOpportunity, payParts } from "@/data/opportunities";
+import { payParts } from "@/data/opportunities";
 import { demoPortfolio, workType } from "@/data/portfolio";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
 import { applyToOpportunity } from "@/lib/applications.functions";
@@ -21,12 +21,10 @@ export const Route = createFileRoute("/opportunities/$id/apply")({
   validateSearch: (s: Record<string, unknown>): { step: Step } => ({
     step: (order as string[]).includes(String(s["step"])) ? (s["step"] as Step) : "portfolio",
   }),
-  // Static opportunities first; any other id is looked up as a stored opportunity slug.
-  loader: async ({ params }) => ({
-    db: getOpportunity(params.id) ? null : await loadDbOpportunity(params.id),
-  }),
-  head: ({ params, loaderData }) => {
-    const o = getOpportunity(params.id) ?? loaderData?.db ?? undefined;
+  // The id is a stored opportunity slug.
+  loader: async ({ params }) => ({ db: await loadDbOpportunity(params.id) }),
+  head: ({ loaderData }) => {
+    const o = loaderData?.db ?? undefined;
     const title = `Apply · ${o?.title ?? "Opportunity"} | MusicLinkd`;
     return {
       meta: [
@@ -53,7 +51,7 @@ function ApplyFlow() {
   const { step } = Route.useSearch();
   const nav = useNavigate();
   const { db } = Route.useLoaderData();
-  const o = getOpportunity(id) ?? db ?? undefined;
+  const o = db ?? undefined;
   const [picked, setPicked] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [rate, setRate] = useState("");

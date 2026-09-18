@@ -52,6 +52,7 @@ import { useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
 import { recordPlay } from "@/lib/plays";
+import { recordWorkEvent } from "@/lib/work-events";
 import { iconSize } from "@/lib/tokens";
 
 /* ── Section shell ─────────────────────────────────────────── */
@@ -733,6 +734,8 @@ export function AudioTrackCard({
   playing: boolean;
   onToggle: () => void;
 }) {
+  // Shown on a profile counts as a view of the work, for its owner's Performance figures.
+  useEffect(() => recordWorkEvent(track.id, "view"), [track.id]);
   return (
     <article className="rounded-lg bg-subtle p-3">
       <div className="flex items-center gap-3">
@@ -777,7 +780,11 @@ export function AudioTrackCard({
       </div>
       {playing && track.media ? (
         <div className="mt-3 animate-in fade-in duration-200">
-          <MediaEmbed url={track.media} title={track.title} />
+          <MediaEmbed
+            url={track.media}
+            title={track.title}
+            onOpen={() => recordWorkEvent(track.id, "link_click")}
+          />
         </div>
       ) : null}
     </article>
@@ -802,6 +809,8 @@ export function VideoCard({
   layout?: "card" | "grid" | "row";
 }) {
   const [open, setOpen] = useState(false);
+  // Shown on a profile counts as a view of the work, for its owner's Performance figures.
+  useEffect(() => recordWorkEvent(v.id, "view"), [v.id]);
   const toggle = v.media
     ? () => {
         if (!open) recordPlay(v.id);
@@ -811,7 +820,11 @@ export function VideoCard({
   const player =
     open && v.media ? (
       <div className="mt-3 animate-in fade-in duration-200">
-        <MediaEmbed url={v.media} title={v.title} />
+        <MediaEmbed
+          url={v.media}
+          title={v.title}
+          onOpen={() => recordWorkEvent(v.id, "link_click")}
+        />
       </div>
     ) : null;
   if (layout === "row") {

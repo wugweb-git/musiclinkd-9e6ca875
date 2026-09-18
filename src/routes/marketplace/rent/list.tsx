@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Camera, Star } from "lucide-react";
+import { Camera } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Price } from "@/components/ml/kit";
 import { ConditionBadge, MarketCategoryIcon } from "@/components/ml/market";
-import { equipment, rentalCategories } from "@/data/rentals";
+import { rentalCategories } from "@/data/rentals";
 import { createListing } from "@/lib/catalog.functions";
 import { iconSize } from "@/lib/tokens";
 
@@ -30,7 +30,6 @@ export const Route = createFileRoute("/marketplace/rent/list")({
 });
 
 const steps = ["Category", "Media", "Details", "Availability", "Review"];
-const sample = equipment[0]!;
 const conditions = [
   { label: "New", value: "new" },
   { label: "Like New", value: "like_new" },
@@ -41,7 +40,6 @@ function ListForRent() {
   const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
   const [cat, setCat] = useState<(typeof rentalCategories)[number]["slug"]>("audio");
-  const [cover, setCover] = useState(0);
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
@@ -176,21 +174,6 @@ function ListForRent() {
               cover.
             </p>
             <div className="mt-4 grid grid-cols-3 gap-2">
-              {sample.photos.map((src, i) => (
-                <button key={src} onClick={() => setCover(i)} className="relative">
-                  <img
-                    src={src}
-                    alt=""
-                    className="h-24 w-full rounded-lg object-cover"
-                    style={{ outline: cover === i ? "2px solid var(--primary)" : "none" }}
-                  />
-                  {cover === i ? (
-                    <span className="absolute left-1.5 top-1.5 rounded-full bg-primary p-1 text-primary-foreground">
-                      <Star size={iconSize.xs} fill="currentColor" />
-                    </span>
-                  ) : null}
-                </button>
-              ))}
               <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-1 font-semibold text-muted-foreground">
                 <Camera size={iconSize.sm} /> Add
               </button>
@@ -388,7 +371,9 @@ function ListForRent() {
               This is exactly what renters will see.
             </p>
             <article className="mt-4 overflow-hidden rounded-lg bg-subtle">
-              <img src={sample.photos[cover]} alt="" className="h-44 w-full object-cover" />
+              <div className="flex h-44 items-center justify-center bg-background text-1 text-muted-foreground">
+                Cover photo
+              </div>
               <div className="p-4">
                 <Price
                   price={{ amount: dailyPrice ? `₹${dailyPrice}` : "₹0", unit: "day" }}
@@ -416,9 +401,7 @@ function ListForRent() {
             <Btn
               className="w-full"
               disabled={publishing || (step === steps.length - 1 && (!name.trim() || !dailyPrice))}
-              onClick={() =>
-                step === steps.length - 1 ? void publish() : setStep((s) => s + 1)
-              }
+              onClick={() => (step === steps.length - 1 ? void publish() : setStep((s) => s + 1))}
             >
               {step === steps.length - 1
                 ? publishing

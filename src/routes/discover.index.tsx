@@ -17,19 +17,21 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
-import { Price, SoonBadge } from "@/components/ml/kit";
+import { BetaBadge, Price, SoonBadge } from "@/components/ml/kit";
+import { stageOf } from "@/lib/release";
 import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { SectionActionLink } from "@/components/ml/links";
-import { useState } from "react";
-import { quickCategories, talents, studios } from "@/data/discover";
+import { useEffect, useState } from "react";
+import { quickCategories } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { PersonCard, PersonRow, StudioCard } from "@/components/ml/cards";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { recordPlay } from "@/lib/plays";
+import { recordWorkEvent } from "@/lib/work-events";
 import { MediaEmbed } from "@/components/ml/media-embed";
 import { NoCover } from "@/components/ml/profile";
 import { joinParts } from "@/lib/utils";
@@ -135,7 +137,8 @@ function Discover() {
           );
           const cls =
             "relative flex w-[86px] shrink-0 flex-col items-center gap-2 rounded-lg bg-subtle px-2 py-3";
-          return c.soon ? (
+          const stage = stageOf(c.to);
+          return stage === "soon" ? (
             <div key={c.label} aria-disabled="true" className={cls}>
               {inner}
               <SoonBadge className="absolute -top-1.5 right-1" />
@@ -143,6 +146,7 @@ function Discover() {
           ) : (
             <Link key={c.label} to={c.to} className={cls}>
               {inner}
+              {stage === "beta" ? <BetaBadge className="absolute -top-1.5 right-1" /> : null}
             </Link>
           );
         })}
@@ -211,6 +215,8 @@ function Discover() {
 /** A trending work: tap to play it in place, which also counts toward Trending. */
 function TrendingWorkRow({ item }: { item: TrendingItem }) {
   const [open, setOpen] = useState(false);
+  // Shown in Trending counts as a view of the work, for its owner's Performance figures.
+  useEffect(() => recordWorkEvent(item.id, "view"), [item.id]);
   return (
     <article className="rounded-lg bg-subtle p-3">
       <button
@@ -249,11 +255,18 @@ function TrendingWorkRow({ item }: { item: TrendingItem }) {
       </button>
       {open ? (
         <div className="mt-3 space-y-2 animate-in fade-in duration-200">
-          {item.media_url ? <MediaEmbed url={item.media_url} title={item.title} /> : null}
+          {item.media_url ? (
+            <MediaEmbed
+              url={item.media_url}
+              title={item.title}
+              onOpen={() => recordWorkEvent(item.id, "link_click")}
+            />
+          ) : null}
           {item.username ? (
             <Link
               to="/profile/$username"
               params={{ username: item.username }}
+              onClick={() => recordWorkEvent(item.id, "profile_click")}
               className="link-action block text-center text-1 font-semibold"
             >
               View Profile

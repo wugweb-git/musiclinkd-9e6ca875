@@ -2,14 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SlidersHorizontal, ArrowUpDown } from "lucide-react";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
-import { EmptyState, SortSheet } from "@/components/ml/market";
-import { EquipmentRow, RentalFilterSheet, rentalSortOptions } from "@/components/ml/rental";
-import { equipmentByCategory, rentalCategories } from "@/data/rentals";
+import { EmptyState, EquipmentGrid, SortSheet } from "@/components/ml/market";
+import { RentalFilterSheet, rentalSortOptions } from "@/components/ml/rental";
+import { rentalCategories } from "@/data/rentals";
 import { loadCatalogRentals } from "@/lib/market-view";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/c/$slug")({
-  // Database rentals follow the static ones in their mapped category.
+  // Live rentals in their mapped category.
   loader: () => loadCatalogRentals(),
   head: ({ params }) => {
     const c = rentalCategories.find((x) => x.slug === params.slug);
@@ -36,7 +36,7 @@ function RentCategory() {
   const { slug } = Route.useParams();
   const cat = rentalCategories.find((c) => c.slug === slug);
   const catalog = Route.useLoaderData();
-  const items = [...equipmentByCategory(slug), ...catalog.filter((e) => e.category === slug)];
+  const items = catalog.filter((e) => e.category === slug);
   const [sub, setSub] = useState("All");
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
@@ -79,7 +79,7 @@ function RentCategory() {
       </div>
       <div className="space-y-3 px-5 pb-6">
         {shown.length ? (
-          shown.map((e) => <EquipmentRow key={e.id} e={e} />)
+          <EquipmentGrid items={shown} />
         ) : (
           <EmptyState
             emoji="📦"

@@ -141,3 +141,26 @@ export async function loadMyDbOpportunities(): Promise<PostedOpportunity[]> {
   const now = Date.now();
   return rows.map((r) => opportunityFromRow(r, labels, now));
 }
+
+export type OpportunityViewSource =
+  "discover" | "search" | "profile" | "opportunities" | "direct" | "other";
+
+/**
+ * Which screen an opportunity was opened from, for "Where views come from". `previous` is the
+ * in-app path behind the opportunity (usePreviousPath); none means it was opened directly.
+ */
+export function opportunityViewSource(previous: string | null): OpportunityViewSource {
+  if (!previous) return "direct";
+  if (previous.startsWith("/search") || previous.startsWith("/opportunities/search"))
+    return "search";
+  if (previous === "/" || previous.startsWith("/discover") || previous.startsWith("/home"))
+    return "discover";
+  if (
+    previous.startsWith("/profile") ||
+    previous.startsWith("/business/") ||
+    previous.startsWith("/bands/")
+  )
+    return "profile";
+  if (previous.startsWith("/opportunities")) return "opportunities";
+  return "other";
+}

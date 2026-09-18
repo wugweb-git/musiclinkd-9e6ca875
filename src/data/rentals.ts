@@ -79,8 +79,18 @@ export type RentalItem = Pick<Equipment, "id" | "name" | "photos"> &
   Partial<Omit<Equipment, "id" | "name" | "photos">> & {
     /** Price text stored beside the amount ("+ ₹5,000 deposit"). */
     priceNote?: string;
+    /** Database rentals: the row's uuid, which saves are keyed by (`id` is the slug). */
+    dbId?: string;
+    /** Database rentals: the item taxonomy slug ("drums", "microphones"), when the row has one. */
+    itemCategory?: string;
     /** Database rentals: the provider's profile (username set) or only a name. */
-    owner?: { id?: string | null; name: string; username: string | null; photo: string; verified: boolean };
+    owner?: {
+      id?: string | null;
+      name: string;
+      username: string | null;
+      photo: string;
+      verified: boolean;
+    };
   };
 
 const img = (id: string, w = 900) =>

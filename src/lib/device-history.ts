@@ -35,10 +35,15 @@ export type RecentSearch = {
   results: number;
   /** ISO timestamp of the last time this search ran. */
   at: string;
+  /** Where it ran. Searches remembered before scopes existed have none. */
+  scope?: SearchScope;
 };
 
-export function readRecentSearches(): RecentSearch[] {
-  return readList(
+export type SearchScope = "market" | "rent" | "discover";
+
+/** Every remembered search, or only those run in one place. */
+export function readRecentSearches(scope?: SearchScope): RecentSearch[] {
+  const all = readList(
     SEARCH_KEY,
     (e): e is RecentSearch =>
       typeof e === "object" &&
@@ -46,16 +51,22 @@ export function readRecentSearches(): RecentSearch[] {
       typeof (e as RecentSearch).query === "string" &&
       typeof (e as RecentSearch).at === "string",
   );
+  return scope ? all.filter((e) => e.scope === scope) : all;
 }
 
 const write = (list: RecentSearch[]) => writeList(SEARCH_KEY, list, SEARCH_LIMIT);
 
 /** Remember one search. Running the same one again moves it to the top instead of repeating it. */
-export function rememberSearch(query: string, results: number) {
+export function rememberSearch(query: string, results: number, scope?: SearchScope) {
   const q = query.trim();
   if (!q) return;
-  const rest = readRecentSearches().filter((e) => e.query.toLowerCase() !== q.toLowerCase());
-  write([{ query: q, results, at: new Date().toISOString() }, ...rest]);
+  const rest = readRecentSearches().filter(
+    (e) => !(e.query.toLowerCase() === q.toLowerCase() && e.scope === scope),
+  );
+  write([
+    { query: q, results, at: new Date().toISOString(), ...(scope ? { scope } : {}) },
+    ...rest,
+  ]);
 }
 
 export function forgetSearch(query: string) {
@@ -114,4 +125,31 @@ export function rememberVisit(visit: Omit<Visit, "at">) {
 
 export function forgetVisits() {
   writeList(VISIT_KEY, [], VISIT_LIMIT);
+}
+
+const LISTING_KEY = "ml.recently-viewed-listings";
+const LISTING_LIMIT = 20;
+
+export type ListingVisit = {
+  /** The listing slug the link needs; the listing itself is read live from the catalog. */
+  id: string;
+  at: string;
+};
+
+export function readListingVisits(): ListingVisit[] {
+  return readList(
+    LISTING_KEY,
+    (e): e is ListingVisit =>
+      typeof e === "object" &&
+      e !== null &&
+      typeof (e as ListingVisit).id === "string" &&
+      typeof (e as ListingVisit).at === "string",
+  );
+}
+
+/** Remember that this marketplace listing was opened. Opening it again moves it up. */
+export function rememberListingVisit(id: string) {
+  if (!id) return;
+  const rest = readListingVisits().filter((v) => v.id !== id);
+  writeList(LISTING_KEY, [{ id, at: new Date().toISOString() }, ...rest], LISTING_LIMIT);
 }

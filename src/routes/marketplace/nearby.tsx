@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
-import { ListingRow } from "@/components/ml/market";
-import { listings } from "@/data/market";
-import { loadCatalogListings } from "@/lib/market-view";
+import { ListingGrid, useMarketCity } from "@/components/ml/market";
+import { inCity, loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/nearby")({
-  // Database listings follow the static ones, same as marketplace/index.tsx and search.tsx.
+  // Database listings, same as search.tsx.
   loader: () => loadCatalogListings(),
   head: () => ({
     meta: [
@@ -25,11 +24,12 @@ export const Route = createFileRoute("/marketplace/nearby")({
 });
 
 function Nearby() {
-  const catalog = Route.useLoaderData();
-  const all = [...listings, ...catalog];
+  // Listed in the Market city; everything when nothing is listed there yet.
+  const [city] = useMarketCity();
+  const catalog = inCity(Route.useLoaderData(), city);
   return (
     <Screen>
-      <TopBar title="Nearby" subtitle="Dadar, Mumbai · within 15 km" back="/marketplace" />
+      <TopBar title="Nearby" back="/marketplace" />
       <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
         {["All", "5 km", "15 km", "50 km", "Studios", "Rentals"].map((c, i) => (
           <Chip key={c} active={i === 0}>
@@ -37,10 +37,8 @@ function Nearby() {
           </Chip>
         ))}
       </div>
-      <div className="space-y-3 px-5">
-        {all.map((l) => (
-          <ListingRow key={l.id} l={l} />
-        ))}
+      <div className="px-5 pb-4">
+        <ListingGrid items={catalog} />
       </div>
     </Screen>
   );

@@ -7,7 +7,6 @@ import { BarChart3, Users, Pencil, XCircle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, StatusPill, EmptyState, Dialog, Loading } from "@/components/ml/kit";
 import { statusTone } from "@/components/ml/opportunity";
-import { myOpportunities } from "@/data/opportunities";
 import { useMyDbOpportunities } from "@/hooks/use-my-opportunities";
 import { setOpportunityStatus } from "@/lib/catalog.functions";
 import { iconSize } from "@/lib/tokens";
@@ -29,10 +28,9 @@ export const Route = createFileRoute("/opportunities/$id/manage")({
 function ManageOpportunity() {
   const { id } = Route.useParams();
   const queryClient = useQueryClient();
-  // Signed in: the user's own stored opportunities resolve too.
+  // The user's own stored opportunities.
   const mine = useMyDbOpportunities();
-  const isReal = mine.items.some((x) => x.id === id);
-  const o = mine.items.find((x) => x.id === id) ?? myOpportunities.find((x) => x.id === id);
+  const o = mine.items.find((x) => x.id === id);
   const setStatus = useServerFn(setOpportunityStatus);
   const [close, setClose] = useState(false);
   const [closed, setClosed] = useState(false);
@@ -40,10 +38,6 @@ function ManageOpportunity() {
 
   async function closeIt() {
     setClose(false);
-    if (!isReal) {
-      setClosed(true);
-      return;
-    }
     setBusy(true);
     try {
       await setStatus({ data: { id, status: "closed" } });

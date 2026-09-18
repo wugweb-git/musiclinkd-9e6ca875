@@ -1,19 +1,21 @@
 import { subcategories, type Listing, type ListingType } from "@/data/market";
 import type { RentalCategory, RentalItem } from "@/data/rentals";
 import {
+  getListing,
   listListings,
   listMyListings,
   taxonomyLabel,
   type ListingRow,
 } from "@/lib/catalog.functions";
 import { priceParts } from "@/lib/price";
+import { getRentalBookingCounts } from "@/lib/rentals.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 
 /*
  * Database marketplace listings shaped as the static `Listing` the market screens render.
- * Only stored fields are carried over. Fields the table does not have (location, distance, saves,
- * rating, reviews, description, specs, delivery, brand, availability) stay empty, and the screens
- * skip empty values.
+ * Only stored fields are carried over. Location is the rental pickup place, else the seller's
+ * profile city. Fields the table does not have (distance, saves, rating, reviews, description,
+ * specs, delivery, brand, availability) stay empty, and the screens skip empty values.
  */
 
 const TYPES: Record<string, ListingType> = {
@@ -72,6 +74,9 @@ function postedAt(createdAt: string, now: number) {
 }
 
 /** The seller's profile when linked, otherwise only the stored seller name. */
+/** Where a listing is: the rental pickup place when stored, otherwise the seller's city. */
+const placeOf = (row: ListingRow) => row.pickup_location ?? row.seller?.city ?? "";
+
 function ownerOf(row: ListingRow): Listing["owner"] {
   if (row.seller) {
     return {
@@ -94,6 +99,7 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
   const owner = ownerOf(row);
   return {
     id: row.slug,
+    dbId: row.id,
     type,
     title: row.title,
     subtitle: "",
@@ -101,7 +107,7 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     price: priceParts(row.price_paise, row.price_unit, row.price_note) ?? { amount: "" },
     // Condition describes goods; a service stored as "new" is not shown with a condition badge.
     ...(condition ? { condition } : {}),
-    location: "",
+    location: placeOf(row),
     distance: "",
     category,
     subcategory: subcategoryOf(row, category, labels),
@@ -122,11 +128,14 @@ async function loadRows() {
   ]);
 }
 
-/** Every database listing, newest first. Empty when the catalog cannot be read. */
+/**
+ * Every database listing Market carries, newest first. Services are Discover's, not Market's
+ * (owner, 18 Sep 2026), so they're left out here. Empty when the catalog cannot be read.
+ */
 export async function loadCatalogListings(): Promise<Listing[]> {
   const [rows, labels] = await loadRows();
   const now = Date.now();
-  return rows.map((row) => listingFromRow(row, labels, now));
+  return rows.map((row) => listingFromRow(row, labels, now)).filter((l) => l.type !== "service");
 }
 
 /** The signed-in user's own listings, newest first — for /marketplace/mine. */
@@ -169,6 +178,9 @@ export function rentalFromRow(row: ListingRow, labels: TaxonomyLabels): RentalIt
   const owner = ownerOf(row);
   return {
     id: row.slug,
+    dbId: row.id,
+    ...(row.item_category ? { itemCategory: row.item_category } : {}),
+    ...(placeOf(row) ? { location: placeOf(row) } : {}),
     name: row.title,
     photos: row.image_url ? [row.image_url] : [],
     ...(row.price_paise != null && row.price_unit === "day"
@@ -195,4 +207,40 @@ export async function loadMyCatalogRentals(): Promise<RentalItem[]> {
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
   return rows.filter((row) => row.category === "gear_rental").map((r) => rentalFromRow(r, labels));
+}
+
+/**
+ * The items in the viewer's Market city (useMarketCity), matched on the stored place. When
+ * nothing is listed there, every item — an empty "near you" says less than the whole catalogue.
+ */
+export function inCity<T extends { location?: string }>(items: T[], city: string): T[] {
+  const want = city.trim().toLowerCase();
+  if (!want) return items;
+  const here = items.filter((item) => {
+    const place = (item.location ?? "").toLowerCase();
+    return place !== "" && (place.includes(want) || want.includes(place));
+  });
+  return here.length ? here : items;
+}
+
+/**
+ * How many times each rental has been booked (declined and cancelled requests aside), keyed by
+ * the listing's row id. Counted by the database (rental_booking_counts); empty when it cannot be
+ * read, so "Popular rentals" falls back to newest first.
+ */
+export async function loadRentalBookingCounts(): Promise<Record<string, number>> {
+  return getRentalBookingCounts().catch((): Record<string, number> => ({}));
+}
+
+/*
+ * One listing by slug, read directly rather than found in the browse catalog: a listing can be
+ * left out of browsing (a service, or one its owner marked unavailable or archived) and still be
+ * opened from the owner's own lists. Null when there is no such listing.
+ */
+export async function loadListingBySlug(slug: string): Promise<Listing | null> {
+  const [row, labels] = await Promise.all([
+    getListing({ data: { slug } }).catch(() => null),
+    getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
+  ]);
+  return row ? listingFromRow(row, labels, Date.now()) : null;
 }

@@ -7,6 +7,7 @@ import {
   BriefcaseBusiness,
   CalendarCheck,
   MessageCircle,
+  Package,
   Star,
   UsersRound,
   UserRoundPlus,
@@ -53,8 +54,11 @@ const kindIcon: Record<NotificationKind, LucideIcon> = {
   booking_answered: CalendarCheck,
   review_received: Star,
   review_reply: Star,
+  review_request: Star,
   collab_invite: UsersRound,
   collab_joined: UsersRound,
+  rental_requested: Package,
+  rental_answered: Package,
 };
 
 const groupOf: Record<NotificationKind, (typeof filters)[number]> = {
@@ -67,8 +71,11 @@ const groupOf: Record<NotificationKind, (typeof filters)[number]> = {
   booking_answered: "Bookings",
   review_received: "All",
   review_reply: "All",
+  review_request: "All",
   collab_invite: "All",
   collab_joined: "All",
+  rental_requested: "Bookings",
+  rental_answered: "Bookings",
 };
 
 /** "4 minutes ago" is a lie the moment the tab sits idle; this says the day and time instead. */

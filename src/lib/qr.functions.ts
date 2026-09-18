@@ -70,9 +70,14 @@ export const getMyScanHistory = createServerFn({ method: "GET" })
       .in("id", ids);
     if (profileError) throw new Error(profileError.message);
     const byId = new Map(
-      ((profiles ?? []) as { id: string; username: string | null; display_name: string | null; avatar_url: string | null }[]).map(
-        (p) => [p.id, p],
-      ),
+      (
+        (profiles ?? []) as {
+          id: string;
+          username: string | null;
+          display_name: string | null;
+          avatar_url: string | null;
+        }[]
+      ).map((p) => [p.id, p]),
     );
 
     return rows

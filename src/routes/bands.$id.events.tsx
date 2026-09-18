@@ -4,12 +4,11 @@ import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented, StatusPill } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
-import { opportunities } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 
 export const Route = createFileRoute("/bands/$id/events")({
-  // The id is the band's slug. Stored opportunities follow the static ones; none when the database
-  // is unreachable.
+  // The id is the band's slug. Gigs are stored opportunities; none when the database is
+  // unreachable.
   loader: async ({ params }) => {
     const [{ band, labels }, dbOpportunities] = await Promise.all([
       loadBand(params.id),
@@ -55,7 +54,7 @@ function BandEvents() {
     );
   }
 
-  const gigs = [...opportunities, ...dbOpportunities].filter((o) => o.kind === "Gig").slice(0, 4);
+  const gigs = dbOpportunities.filter((o) => o.kind === "Gig").slice(0, 4);
 
   return (
     <Screen>

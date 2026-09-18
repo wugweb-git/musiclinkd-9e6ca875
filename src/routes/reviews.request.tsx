@@ -1,8 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, StatusPill } from "@/components/ml/kit";
-import { reviewRequestTargets } from "@/data/reviews";
+import { Card, EmptyState, Loading, StatusPill } from "@/components/ml/kit";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { initialsOf } from "@/components/ml/viewer";
+import { askForReview, listReviewAskTargets } from "@/lib/reviews.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/reviews/request")({
   head: () => ({
@@ -25,12 +30,24 @@ export const Route = createFileRoute("/reviews/request")({
   component: RequestReviews,
 });
 
+const WEEK = 7 * 86_400_000;
+
 function RequestReviews() {
-  const [asked, setAsked] = useState<Record<string, "asked" | "reminded">>(
-    Object.fromEntries(
-      reviewRequestTargets.filter((t) => t.asked).map((t) => [t.id, "asked" as const]),
-    ),
-  );
+  const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
+  const load = useServerFn(listReviewAskTargets);
+  const ask = useServerFn(askForReview);
+  const q = useQuery({
+    queryKey: ["reviews", "ask-targets"],
+    queryFn: () => load(),
+    enabled: signedIn,
+  });
+  const send = useMutation({
+    mutationFn: (v: { profileId: string; context: string; remind: boolean }) => ask({ data: v }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["reviews", "ask-targets"] }),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't send. Try again."),
+  });
+  const reviewRequestTargets = q.data ?? [];
 
   return (
     <Screen>
@@ -48,19 +65,25 @@ function RequestReviews() {
           </p>
         </Card>
 
-        {reviewRequestTargets.length ? (
+        {q.isLoading ? (
+          <Loading rows={2} />
+        ) : reviewRequestTargets.length ? (
           <div className="space-y-3">
             {reviewRequestTargets.map((t) => {
-              const state = asked[t.id];
+              const pending = send.isPending && send.variables.profileId === t.id;
+              const state = t.remindedAt ? "reminded" : t.askedAt ? "asked" : undefined;
+              // The one reminder opens a week after asking.
+              const tooSoon =
+                state === "asked" && Date.now() - new Date(t.askedAt!).getTime() < WEEK;
               return (
                 <Card key={t.id}>
                   <div className="flex items-center gap-3">
-                    <img
-                      src={t.photo}
-                      alt=""
-                      className="h-10 w-10 rounded-full object-cover"
-                      loading="lazy"
-                    />
+                    <Avatar className="h-10 w-10">
+                      {t.photo ? <AvatarImage src={t.photo} alt="" /> : null}
+                      <AvatarFallback className="bg-background text-1 font-semibold text-muted-foreground">
+                        {initialsOf(t.name)}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{t.name}</p>
                       <p className="truncate text-1 text-muted-foreground">{t.context}</p>
@@ -75,9 +98,14 @@ function RequestReviews() {
                   <Btn
                     variant={state ? "outline" : "primary"}
                     className="mt-3 w-full"
-                    disabled={state === "reminded"}
+                    loading={pending}
+                    disabled={state === "reminded" || tooSoon}
                     onClick={() =>
-                      setAsked({ ...asked, [t.id]: state === "asked" ? "reminded" : "asked" })
+                      send.mutate({
+                        profileId: t.id,
+                        context: t.context,
+                        remind: state === "asked",
+                      })
                     }
                   >
                     {state === "reminded"

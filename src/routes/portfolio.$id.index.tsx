@@ -16,7 +16,13 @@ import {
   WorkTypeIcon,
 } from "@/components/ml/portfolio";
 import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
-import { deletePortfolioItem, getMyPortfolioItem } from "@/lib/portfolio.functions";
+import {
+  deletePortfolioItem,
+  getMyPortfolioItem,
+  myPortfolioEvents,
+  myPortfolioPlays,
+} from "@/lib/portfolio.functions";
+import { recordWorkEvent } from "@/lib/work-events";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
@@ -55,14 +61,40 @@ function WorkDetail() {
   const fetchItem = useServerFn(getMyPortfolioItem);
   const remove = useServerFn(deletePortfolioItem);
 
-  const demo = demoPortfolio.find((d) => d.id === id) ?? null;
+  // Signed in, the work is the stored row only; the demo works stand in for signed-out viewers.
+  const demo = !loading && !signedIn ? (demoPortfolio.find((d) => d.id === id) ?? null) : null;
   const q = useQuery({
     queryKey: ["portfolio", "item", id],
     queryFn: () => fetchItem({ data: { id } }) as Promise<PortfolioItem | null>,
-    enabled: signedIn && !demo,
+    enabled: signedIn,
   });
 
   const item = demo ?? q.data ?? null;
+
+  // Plays, views, shares and clicks are counted in the database. Nothing saves a work, so Saves
+  // stays a dash.
+  const fetchPlays = useServerFn(myPortfolioPlays);
+  const plays = useQuery({
+    queryKey: ["portfolio", "plays"],
+    queryFn: () => fetchPlays(),
+    enabled: signedIn,
+  });
+  const fetchEvents = useServerFn(myPortfolioEvents);
+  const events = useQuery({
+    queryKey: ["portfolio", "events", id],
+    queryFn: () => fetchEvents({ data: { id } }),
+    enabled: signedIn && !demo,
+  });
+  const figures = demo
+    ? analyticsFor(demo.id)
+    : {
+        views: events.data?.views ?? null,
+        plays: plays.data?.[id] ?? null,
+        shares: events.data?.shares ?? null,
+        saves: null,
+        profileClicks: events.data?.profileClicks ?? null,
+        linkClicks: events.data?.linkClicks ?? null,
+      };
 
   async function onDelete() {
     try {
@@ -76,11 +108,16 @@ function WorkDetail() {
 
   async function share() {
     const url = window.location.href;
+    // A share counts once it went somewhere: sent from the share sheet, or the link copied.
     if (navigator.share) {
-      await navigator.share({ title: item?.title ?? "My work", url }).catch(() => {});
+      await navigator
+        .share({ title: item?.title ?? "My work", url })
+        .then(() => recordWorkEvent(id, "share"))
+        .catch(() => {});
       return;
     }
     await navigator.clipboard.writeText(url);
+    recordWorkEvent(id, "share");
     toast.success("Link copied");
   }
 
@@ -164,7 +201,7 @@ function WorkDetail() {
             <section className="mt-6">
               <h2 className="text-2">Performance</h2>
               <div className="mt-3">
-                <WorkAnalytics figures={analyticsFor(item.id)} />
+                <WorkAnalytics figures={figures} />
               </div>
             </section>
 

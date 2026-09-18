@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { fileReport, type ReportSubject } from "@/lib/reports.functions";
 import { makeOffer } from "@/lib/offers.functions";
 import {
   Heart,
@@ -18,14 +21,17 @@ import {
   Building2,
   Disc3,
   Speaker,
+  ShoppingCart,
   type LucideIcon,
 } from "lucide-react";
 import type { Listing } from "@/data/market";
+import type { RentalItem } from "@/data/rentals";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
 import { EmptyState as BaseEmptyState, Price, Segmented } from "./kit";
-import type { PriceParts } from "@/lib/price";
+import { rupeeParts, unitLabel, type PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
+import { StateIcon } from "./tab-icon";
 
 export function SaveButton({
   saved,
@@ -46,12 +52,12 @@ export function SaveButton({
         e.stopPropagation();
         onToggle();
       }}
-      className="flex items-center justify-center rounded-full bg-card/90 backdrop-blur transition-transform active:scale-97"
+      className="flex items-center justify-center rounded-full bg-card transition-transform active:scale-97"
       style={{ width: size, height: size }}
     >
       <Heart
         size={size * 0.45}
-        className={saved ? "text-primary" : "text-muted-foreground"}
+        className={saved ? "text-primary" : "text-foreground"}
         fill={saved ? "currentColor" : "none"}
         strokeWidth={2}
       />
@@ -168,113 +174,275 @@ function typeMeta(l: Listing) {
   }
 }
 
-export function ListingCard({
-  l,
+/** Physical things — gear for sale or for rent — get the product card. Services and spaces don't. */
+// eslint-disable-next-line react-refresh/only-export-components -- predicate co-located with the card it gates
+export const isProduct = (l: Listing) => l.type === "product" || l.type === "rental";
+
+/** What the product card draws, whichever side of the market it came from. */
+export type ProductItem = {
+  /** Which detail page opens: a marketplace listing, or a piece of rental equipment. */
+  opens: "listing" | "equipment";
+  id: string;
+  title: string;
+  photos: string[];
+  category: string;
+  badge: string | null;
+  price: PriceParts | null;
+};
+
+// eslint-disable-next-line react-refresh/only-export-components -- adapter co-located with the card
+export function productFromListing(l: Listing): ProductItem {
+  return {
+    opens: "listing",
+    id: l.id,
+    title: l.title,
+    photos: l.photos,
+    category: l.category,
+    badge: l.condition ?? typeMeta(l).tag,
+    price: l.price,
+  };
+}
+
+// eslint-disable-next-line react-refresh/only-export-components -- adapter co-located with the card
+export function productFromRental(e: RentalItem): ProductItem {
+  return {
+    opens: "equipment",
+    id: e.id,
+    title: e.name,
+    photos: e.photos,
+    category: e.category ?? "other",
+    badge: e.condition ?? "Rental",
+    price:
+      e.daily != null ? rupeeParts(e.daily, "day") : e.priceNote ? { amount: e.priceNote } : null,
+  };
+}
+
+/* The badge moves by what it says. New catches the light; nearly new catches it more slowly; a
+   rental breathes, as if on offer right now; worn gear and brand names stay still — a used amp
+   shouldn't sparkle. Reduced motion stops all of it. */
+const SWEEP =
+  "bg-[linear-gradient(110deg,transparent_35%,rgb(255_255_255/0.55)_50%,transparent_65%)] bg-[length:200%_100%] bg-no-repeat";
+function badgeMotion(label: string) {
+  if (label === "New") return `${SWEEP} motion-safe:animate-glimmer`;
+  if (label === "Like New" || label === "Excellent")
+    return `${SWEEP} motion-safe:animate-glimmer-slow`;
+  if (label === "Rental") return "motion-safe:animate-breathe";
+  return "";
+}
+
+/*
+ * The product card, drawn to the owner's reference (a 750px-wide product card). Every size, gap
+ * and radius is that reference's pixel value as a share of the card's width (cqw), so the card
+ * keeps its proportions at any width — a rail tile or half of a grid. Small text has a floor.
+ */
+export function ProductCard({
+  item,
   saved,
   onSave,
+  rail = false,
 }: {
-  l: Listing;
+  item: ProductItem;
   saved?: boolean;
   onSave?: () => void;
+  rail?: boolean;
 }) {
   const [localSaved, setLocalSaved] = useState(false);
+  const [shown, setShown] = useState(0);
+  const [tapped, setTapped] = useState(false);
   const isSaved = saved ?? localSaved;
-  const meta = typeMeta(l);
-  // The same order as an opportunity: what it is, then its terms as one quiet line, then price.
-  // The type or brand and the condition read as words, not as badges stacked on the photo.
-  const terms = [meta.tag, l.condition].filter(Boolean).join(" · ");
-  const where = [l.location, l.distance].filter(Boolean).join(" · ");
-  return (
-    <Link
-      to="/marketplace/l/$id"
-      params={{ id: l.id }}
-      className="block overflow-hidden rounded-lg bg-subtle"
-    >
-      <div className="relative">
-        {l.photos[0] ? (
-          <img
-            src={l.photos[0]}
-            alt={l.title}
-            loading="lazy"
-            className="aspect-[16/10] w-full object-cover"
-          />
-        ) : (
-          <div className="aspect-[16/10] w-full bg-background" />
-        )}
-        <div className="absolute right-2 top-2">
-          <SaveButton
-            saved={isSaved}
-            onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
-          />
-        </div>
-      </div>
-      <div className="p-4">
-        <h3 className="line-clamp-2 text-2 font-semibold leading-snug">{l.title}</h3>
-        {terms ? <p className="mt-1 truncate text-1 text-muted-foreground">{terms}</p> : null}
-        <div className="mt-3 flex items-end justify-between gap-3">
-          <PriceBlock price={l.price} />
-          {l.rating ? (
-            <Rating value={l.rating} count={l.reviews} />
-          ) : meta.line ? (
-            <span className="shrink-0 text-1 text-muted-foreground">{meta.line}</span>
+  const unit = unitLabel(item.price?.unit);
+  const className = `group @container block ${rail ? "w-[224px] shrink-0" : ""}`;
+
+  const body = (
+    // The container can't size itself in cqw (it would measure the screen), so the card's own
+    // radius, fill and shadow live one layer in, where cqw means the card's width.
+    <div className="overflow-hidden rounded-[6.93cqw] bg-white shadow-[0_10px_24px_-12px_rgba(13,11,38,0.16)] transition-transform duration-[260ms] ease-spring group-active:scale-[0.96]">
+      <div className="p-[2.93cqw]">
+        <div className="relative aspect-[705/690] overflow-hidden rounded-[5.07cqw] bg-[#EEEEEE]">
+          {item.photos.length ? (
+            <div
+              className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto"
+              onScroll={(e) => {
+                const el = e.currentTarget;
+                setShown(Math.round(el.scrollLeft / el.clientWidth));
+              }}
+            >
+              {item.photos.map((src, i) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt={i === 0 ? item.title : ""}
+                  loading="lazy"
+                  className="h-full w-full shrink-0 snap-center object-cover transition-transform duration-[600ms] ease-standard group-hover:scale-[1.04]"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <MarketCategoryIcon slug={item.category} size={36} />
+            </div>
+          )}
+          {item.badge ? (
+            <span
+              className={`absolute left-[3.73cqw] top-[4cqw] rounded-full bg-white/25 px-[2.67cqw] py-[1.07cqw] text-[max(3.47cqw,11px)] leading-[1.2] text-white backdrop-blur-md ${badgeMotion(item.badge)}`}
+            >
+              {item.badge}
+            </span>
+          ) : null}
+          <button
+            type="button"
+            aria-label={isSaved ? "Remove from saved" : "Save"}
+            aria-pressed={isSaved}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setTapped(true);
+              if (onSave) onSave();
+              else setLocalSaved((s) => !s);
+            }}
+            onAnimationEnd={(e) => {
+              if (e.target === e.currentTarget) setTapped(false);
+            }}
+            className={`absolute right-[3.47cqw] top-[2.93cqw] flex h-[10.4cqw] w-[10.4cqw] items-center justify-center rounded-full backdrop-blur-md transition-[color,background-color] duration-200 ${
+              isSaved ? "bg-red-500/20 text-red-500" : "bg-white/50 text-[#0D0D0D]"
+            } ${tapped ? "animate-tab-tap" : ""}`}
+          >
+            <StateIcon
+              outline={Heart}
+              solid="heart"
+              active={isSaved}
+              size="4.8cqw"
+              move="beat"
+              strokeWidth={2}
+            />
+          </button>
+          {item.photos.length > 1 ? (
+            <div
+              className="absolute inset-x-0 bottom-[3.73cqw] flex justify-center gap-[1.2cqw]"
+              aria-hidden
+            >
+              {item.photos.map((src, i) => (
+                <span
+                  key={src}
+                  className={`h-[1.6cqw] rounded-full transition-[width,background-color] duration-300 ease-standard ${
+                    i === shown ? "w-[4cqw] bg-white" : "w-[1.6cqw] bg-white/60"
+                  }`}
+                />
+              ))}
+            </div>
           ) : null}
         </div>
-        {where ? (
-          <div className="mt-3">
-            <LocationRow text={where} />
-          </div>
-        ) : null}
       </div>
+
+      <div className="px-[5.6cqw] pb-[2.93cqw] pt-[3.2cqw]">
+        <h3 className="truncate text-[max(5.33cqw,14px)] font-semibold leading-[1.15] tracking-[-0.02em] text-[#0D0D0D]">
+          {item.title}
+        </h3>
+        <div className="mt-[4.8cqw] flex items-center justify-between gap-[2cqw]">
+          {/* A rate is two values: the amount, then its unit on a small line under it. */}
+          <span className="min-w-0">
+            <span className="block truncate text-[max(4.8cqw,13px)] font-semibold leading-none text-price">
+              {item.price?.amount ?? ""}
+            </span>
+            {unit ? (
+              <span className="mt-[1.2cqw] block text-[max(3.47cqw,11px)] leading-none text-[#8A8A8A]">
+                {unit}
+              </span>
+            ) : null}
+          </span>
+          {/* The whole card is the link; this only shows where it goes. */}
+          <span
+            aria-hidden
+            className="flex h-[9.6cqw] w-[9.6cqw] shrink-0 items-center justify-center rounded-full bg-[#0D0D0D] text-white transition-transform duration-300 ease-spring group-hover:-rotate-12 group-hover:translate-x-[0.4cqw] group-active:scale-90"
+          >
+            <ShoppingCart className="h-[4.8cqw] w-[4.8cqw]" strokeWidth={2} />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  return item.opens === "equipment" ? (
+    <Link to="/marketplace/rent/e/$id" params={{ id: item.id }} className={className}>
+      {body}
+    </Link>
+  ) : (
+    <Link to="/marketplace/l/$id" params={{ id: item.id }} className={className}>
+      {body}
     </Link>
   );
 }
 
-export function ListingTile({
+/**
+ * Any marketplace listing: products and rentals get the product card. Services and spaces keep
+ * their row in lists and are left out of product carousels.
+ */
+export function ListingCard({
   l,
   saved,
   onSave,
+  rail = false,
 }: {
   l: Listing;
   saved?: boolean;
   onSave?: () => void;
+  rail?: boolean;
 }) {
-  const [localSaved, setLocalSaved] = useState(false);
-  const isSaved = saved ?? localSaved;
+  // Carousels are product-only: a service is simply left out of a rail rather than drawn as a row.
+  if (!isProduct(l)) return rail ? null : <ListingRow l={l} />;
   return (
-    <Link
-      to="/marketplace/l/$id"
-      params={{ id: l.id }}
-      className="block w-[168px] shrink-0 overflow-hidden rounded-lg bg-subtle"
-    >
-      <div className="relative h-[124px]">
-        {l.photos[0] ? (
-          <img
-            src={l.photos[0]}
-            alt={l.title}
-            loading="lazy"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="h-full w-full bg-background" />
-        )}
-        <div className="absolute right-1.5 top-1.5">
-          <SaveButton
-            saved={isSaved}
-            onToggle={() => (onSave ? onSave() : setLocalSaved((s) => !s))}
-            size={32}
-          />
+    <ProductCard
+      item={productFromListing(l)}
+      rail={rail}
+      {...(saved !== undefined ? { saved } : {})}
+      {...(onSave ? { onSave } : {})}
+    />
+  );
+}
+
+/** The same, sized for a horizontal rail. */
+export function ListingTile(props: { l: Listing; saved?: boolean; onSave?: () => void }) {
+  return <ListingCard {...props} rail />;
+}
+
+/**
+ * A list of listings: products as an unbroken two-column grid, then any services as full-width
+ * rows after them. Interleaving a full-width row inside the grid leaves holes, and the market
+ * leads with products.
+ */
+export function ListingGrid({
+  items,
+  saveProps,
+}: {
+  items: Listing[];
+  saveProps?: (l: Listing) => { saved?: boolean; onSave?: () => void };
+}) {
+  const products = items.filter(isProduct);
+  const others = items.filter((l) => !isProduct(l));
+  return (
+    <div className="space-y-3">
+      {products.length ? (
+        <div className="grid grid-cols-2 gap-3">
+          {products.map((l) => (
+            <ListingCard key={l.id} l={l} {...(saveProps?.(l) ?? {})} />
+          ))}
         </div>
-      </div>
-      <div className="p-3">
-        <h3 className="line-clamp-2 text-sm font-semibold leading-snug">{l.title}</h3>
-        <div className="mt-1.5">
-          <PriceBlock price={l.price} />
-        </div>
-        {l.distance ? (
-          <p className="mt-1 truncate text-1 text-muted-foreground">{l.distance}</p>
-        ) : null}
-      </div>
-    </Link>
+      ) : null}
+      {others.map((l) => (
+        <ListingRow key={l.id} l={l} />
+      ))}
+    </div>
+  );
+}
+
+/** Rental equipment as a two-column grid of product cards. */
+export function EquipmentGrid({ items }: { items: RentalItem[] }) {
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {items.map((e) => (
+        <ProductCard key={e.id} item={productFromRental(e)} />
+      ))}
+    </div>
   );
 }
 
@@ -557,7 +725,8 @@ const filterGroups: { label: string; options: string[] }[] = [
 ];
 
 /** A listing is exactly one of these, so it's a tab row (Segmented), not a Chip cluster. */
-const listingTypes = ["For sale", "Rental", "Service", "Space"] as const;
+// Services live in Discover, not Market (owner, 18 Sep 2026).
+const listingTypes = ["For sale", "Rental", "Space"] as const;
 
 export function MarketFilterSheet({
   open,
@@ -794,7 +963,30 @@ export function OfferSheet({
   );
 }
 
-export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+/** Files a report and says so; the sheet closes either way once it's with the team. */
+export function useFileReport(onDone: () => void) {
+  const report = useServerFn(fileReport);
+  return useMutation({
+    mutationFn: (v: { subjectType: ReportSubject; subjectId: string; reason: string }) =>
+      report({ data: v }),
+    onSuccess: () => {
+      toast.success("Reported. Thanks — the team will look at it.");
+      onDone();
+    },
+    onError: () => toast.error("That didn't send. Try again."),
+  });
+}
+
+export function ReportSheet({
+  open,
+  onClose,
+  subjectId,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** The listing being reported. */
+  subjectId: string;
+}) {
   const reasons = [
     "Incorrect information",
     "Suspected scam",
@@ -803,6 +995,7 @@ export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => v
     "Seller behaviour",
   ];
   const [reason, setReason] = useState(reasons[0]!);
+  const send = useFileReport(onClose);
   return (
     <Sheet open={open} onClose={onClose} title="Report listing">
       <div className="mb-5 divide-y divide-border rounded-lg border border-border">
@@ -820,7 +1013,11 @@ export function ReportSheet({ open, onClose }: { open: boolean; onClose: () => v
           </button>
         ))}
       </div>
-      <Btn className="w-full" onClick={onClose}>
+      <Btn
+        className="w-full"
+        loading={send.isPending}
+        onClick={() => send.mutate({ subjectType: "listing", subjectId, reason })}
+      >
         Submit Report
       </Btn>
       <Btn variant="ghost" className="mt-2 w-full" onClick={onClose}>

@@ -1,10 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, SegmentedField } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
+import { conversationWith, sendMessage } from "@/lib/messages.functions";
 
 export const Route = createFileRoute("/bands/$id/contact")({
   loader: ({ params }) => loadBand(params.id),
@@ -28,11 +32,28 @@ const reasons = ["Show", "Session", "Collab", "Press"];
 
 function BandContact() {
   const { band: row, labels } = Route.useLoaderData();
-  const { user } = useAuth();
+  const { user, signedIn } = useAuth();
+  const navigate = useNavigate();
   const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [reason, setReason] = useState(reasons[0]!);
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState(false);
+  const open = useServerFn(conversationWith);
+  const say = useServerFn(sendMessage);
+  // Bookings go to whoever runs the band: an owner or admin on the lineup, else its creator.
+  const contact =
+    row?.members.find((m) => m.role === "owner")?.profile_id ??
+    row?.members.find((m) => m.role === "admin")?.profile_id ??
+    row?.created_by;
+  const send = useMutation({
+    mutationFn: async () => {
+      const { id } = await open({ data: { profileId: contact! } });
+      await say({
+        data: { conversationId: id, body: `${reason} · ${band!.name}\n\n${message.trim()}` },
+      });
+    },
+    onError: () => toast.error("That didn't send. Try again."),
+  });
+  const sent = send.isSuccess;
 
   if (!band) {
     return (
@@ -99,7 +120,12 @@ function BandContact() {
           />
         </Card>
 
-        <Btn className="w-full" disabled={message.trim().length < 8} onClick={() => setSent(true)}>
+        <Btn
+          className="w-full"
+          disabled={message.trim().length < 8 || !contact || contact === user?.id}
+          loading={send.isPending}
+          onClick={() => (signedIn ? send.mutate() : void navigate({ to: "/welcome" }))}
+        >
           Send to {band.name}
         </Btn>
       </div>

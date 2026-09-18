@@ -3,7 +3,6 @@ import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
-import { studios, talents } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
@@ -24,7 +23,7 @@ export const Route = createFileRoute("/discover/nearby")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  // Database studios and people follow the seeded ones; without them the lists show seed data only.
+  // Database studios and people; empty when the database is unreachable.
   loader: async () => {
     const [rows, labels, dbPeople] = await Promise.all([
       listStudios().catch(() => []),
@@ -84,24 +83,8 @@ function Nearby() {
 
         <section>
           <p className="mb-2 text-sm font-semibold">Studios around you</p>
-          {studios.length || dbStudios.length ? (
+          {dbStudios.length ? (
             <div className="space-y-3">
-              {studios.slice(0, 4).map((s) => (
-                <Card key={s.name}>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={s.photo}
-                      alt=""
-                      className="h-12 w-12 rounded-[14px] object-cover"
-                      loading="lazy"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{s.name}</p>
-                      <p className="truncate text-1 text-muted-foreground">{s.location}</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
               {dbStudios.map((s) => (
                 <Link key={s.slug} to="/booking/$id" params={{ id: s.slug }} className="block">
                   <Card>
@@ -132,33 +115,8 @@ function Nearby() {
 
         <section>
           <p className="mb-2 text-sm font-semibold">People around you</p>
-          {talents.length || dbPeople.length ? (
+          {dbPeople.length ? (
             <div className="space-y-3">
-              {talents.slice(0, 5).map((t) => (
-                <Link
-                  key={t.id}
-                  to="/profile/$username"
-                  params={{ username: t.id }}
-                  className="block"
-                >
-                  <Card>
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={t.photo}
-                        alt=""
-                        className="h-11 w-11 rounded-full object-cover"
-                        loading="lazy"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{t.name}</p>
-                        <p className="truncate text-1 text-muted-foreground">
-                          {t.role} · {t.location}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
               {dbPeople.map((p) =>
                 p.username ? (
                   <Link

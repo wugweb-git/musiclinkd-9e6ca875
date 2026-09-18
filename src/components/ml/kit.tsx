@@ -109,6 +109,20 @@ export function SoonBadge({ className = "" }: { className?: string }) {
   );
 }
 
+/**
+ * A module that's open but new: the warn (amber) tones, with the same light sweep as Soon, so the
+ * two labels read as one family — amber you can use, pink you can't yet.
+ */
+export function BetaBadge({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center rounded-full bg-warn-container bg-[linear-gradient(110deg,transparent_35%,color-mix(in_oklab,white_65%,transparent)_50%,transparent_65%)] bg-[length:200%_100%] bg-no-repeat px-2 py-0.5 text-1 font-semibold text-warn-strong motion-safe:animate-soon ${className}`}
+    >
+      Beta
+    </span>
+  );
+}
+
 /** The maker's credit: Sign in and Settings, same place at the foot of each. */
 export function MadeByWugweb() {
   return (

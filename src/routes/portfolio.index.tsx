@@ -265,7 +265,9 @@ function PortfolioOverview() {
         open={toDelete !== null}
         title="Delete this work?"
         body={
-          toDelete ? `"${toDelete.title}" comes off your portfolio for good. This can't be undone.` : ""
+          toDelete
+            ? `"${toDelete.title}" comes off your portfolio for good. This can't be undone.`
+            : ""
         }
         onClose={() => setToDelete(null)}
       >

@@ -147,7 +147,8 @@ function NewCollab() {
           {signedIn ? "Start project" : "Sign in to start"}
         </Btn>
         <p className="text-1 text-muted-foreground">
-          You can ask the people you are working with on the next screen. They join once they say yes.
+          You can ask the people you are working with on the next screen. They join once they say
+          yes.
         </p>
       </form>
     </Screen>

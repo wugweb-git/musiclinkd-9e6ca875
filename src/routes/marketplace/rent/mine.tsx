@@ -5,15 +5,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
 import { Loading } from "@/components/ml/kit";
-import { BookingCard, RealBookingCard } from "@/components/ml/rental";
-import { bookings, equipmentById, providerById, type RentalStatus } from "@/data/rentals";
+import { BookingCard } from "@/components/ml/rental";
+import { type RentalStatus } from "@/data/rentals";
 import { listMyRentalBookings } from "@/lib/rentals.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
 
 const tabs = ["Upcoming", "Active", "Completed", "Cancelled"] as const;
 
-/** Real statuses don't carry a bucket the way seed bookings do — derive the same grouping. */
+/** A booking's status, grouped into the four tabs. */
 function bucketOf(status: RentalStatus): (typeof tabs)[number] {
   if (status === "Active") return "Active";
   if (status === "Completed") return "Completed";
@@ -45,13 +45,10 @@ function MyRentals() {
     queryFn: () => load(),
     enabled: signedIn,
   });
-  const real = (q.data ?? []).filter((b) => bucketOf(b.status) === tab);
-  const list = bookings.filter((b) => b.bucket === tab);
-  const empty = list.length === 0 && real.length === 0;
+  const list = (q.data ?? []).filter((b) => bucketOf(b.status) === tab);
 
   const countOf = (bucket: (typeof tabs)[number]) =>
-    (q.data ?? []).filter((b) => bucketOf(b.status) === bucket).length +
-    bookings.filter((b) => b.bucket === bucket).length;
+    (q.data ?? []).filter((b) => bucketOf(b.status) === bucket).length;
 
   return (
     <Screen>
@@ -75,24 +72,7 @@ function MyRentals() {
 
       <div className="space-y-3 px-5 pb-6">
         {signedIn && q.isLoading ? <Loading rows={2} /> : null}
-        {real.map((b) => (
-          <RealBookingCard
-            key={b.id}
-            title={b.listingTitle ?? "Rental"}
-            photo={b.listingPhoto}
-            status={b.status}
-            startDate={b.startDate}
-            endDate={b.endDate}
-            fulfilment={b.fulfilment}
-            totalPaise={b.totalPaise}
-            action={
-              <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
-                <Chip>View</Chip>
-              </Link>
-            }
-          />
-        ))}
-        {empty ? (
+        {list.length === 0 && !(signedIn && q.isLoading) ? (
           <EmptyState
             emoji="📭"
             title={`No ${tab.toLowerCase()} rentals`}
@@ -101,14 +81,17 @@ function MyRentals() {
           />
         ) : (
           list.map((b) => {
-            const e = equipmentById(b.equipmentId)!;
-            const p = providerById(e.providerId)!;
+            const bucket = bucketOf(b.status);
             return (
               <BookingCard
                 key={b.id}
-                b={b}
-                e={e}
-                provider={p}
+                title={b.listingTitle ?? "Rental"}
+                photo={b.listingPhoto}
+                status={b.status}
+                startDate={b.startDate}
+                endDate={b.endDate}
+                fulfilment={b.fulfilment}
+                totalPaise={b.totalPaise}
                 action={
                   <>
                     <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
@@ -117,7 +100,7 @@ function MyRentals() {
                     <Link to="/messages">
                       <Chip>Message</Chip>
                     </Link>
-                    {b.bucket === "Active" ? (
+                    {bucket === "Active" ? (
                       <>
                         <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
                           <Chip>Extend</Chip>
@@ -127,7 +110,7 @@ function MyRentals() {
                         </Link>
                       </>
                     ) : null}
-                    {b.bucket === "Completed" ? (
+                    {bucket === "Completed" ? (
                       <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
                         <Chip>Review</Chip>
                       </Link>

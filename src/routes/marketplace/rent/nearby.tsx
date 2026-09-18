@@ -1,16 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import { toast } from "sonner";
-import { Screen, TopBar, Chip, Btn } from "@/components/ml/ui";
-import { EquipmentRow, ProviderCard } from "@/components/ml/rental";
-import { equipment, providers, rentalCategories } from "@/data/rentals";
-import { loadCatalogRentals } from "@/lib/market-view";
+import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
+import { ProviderCard, providersOf } from "@/components/ml/rental";
+import { rentalCategories } from "@/data/rentals";
+import { inCity, loadCatalogRentals } from "@/lib/market-view";
 import { iconSize } from "@/lib/tokens";
-import { MarketCategoryIcon } from "@/components/ml/market";
+import {
+  EmptyState,
+  EquipmentGrid,
+  MarketCategoryIcon,
+  useMarketCity,
+} from "@/components/ml/market";
 
 export const Route = createFileRoute("/marketplace/rent/nearby")({
-  // Database rentals follow the static ones. Providers stay static: no matching live source yet.
+  // Live rentals; the providers are the owners of those listings.
   loader: () => loadCatalogRentals(),
   head: () => ({
     meta: [
@@ -33,19 +37,17 @@ export const Route = createFileRoute("/marketplace/rent/nearby")({
 const radii = ["5 km", "15 km", "25 km", "50 km"];
 
 function NearbyRentals() {
-  const catalog = Route.useLoaderData();
-  const allEquipment = [...equipment, ...catalog];
+  // Listed in the Market city; everything when nothing is listed there yet.
+  const [city] = useMarketCity();
+  const allEquipment = inCity(Route.useLoaderData(), city);
+  const providers = providersOf(allEquipment);
   const [radius, setRadius] = useState("15 km");
   const [cat, setCat] = useState("All");
   const shown = cat === "All" ? allEquipment : allEquipment.filter((e) => e.category === cat);
 
   return (
     <Screen>
-      <TopBar
-        title="Near you"
-        subtitle={`Dadar, Mumbai · within ${radius}`}
-        back="/marketplace/rent"
-      />
+      <TopBar title="Near you" back="/marketplace/rent" />
 
       <div className="px-5 pt-4">
         <div className="relative overflow-hidden rounded-lg border border-border bg-subtle">
@@ -87,20 +89,30 @@ function NearbyRentals() {
       </div>
 
       <div className="space-y-3 px-5">
-        {shown.map((e) => (
-          <EquipmentRow key={e.id} e={e} />
-        ))}
+        {shown.length ? (
+          <EquipmentGrid items={shown} />
+        ) : (
+          <EmptyState
+            emoji="📦"
+            title="Nothing listed here yet"
+            body="No providers have listed this category near you yet."
+            action={<BtnLink to="/marketplace/rent/search">Search All Rentals</BtnLink>}
+          />
+        )}
       </div>
 
       <section className="px-5 pt-6">
         <h2 className="text-2">Providers around you</h2>
-        <p className="mt-0.5 text-1 text-muted-foreground">
-          Verified rental partners within {radius}
-        </p>
         <div className="mt-3 space-y-3">
-          {providers.slice(0, 3).map((p) => (
-            <ProviderCard key={p.id} p={p} />
-          ))}
+          {providers.length ? (
+            providers.slice(0, 3).map((p) => <ProviderCard key={p.id} p={p} />)
+          ) : (
+            <EmptyState
+              emoji="🏪"
+              title="No providers nearby yet"
+              body="People renting out equipment in your area show up here."
+            />
+          )}
         </div>
       </section>
 
@@ -110,9 +122,9 @@ function NearbyRentals() {
           <p className="mt-1 text-1 text-muted-foreground">
             Renters nearby are searching for backline and mics every week.
           </p>
-          <Btn className="mt-4 w-full" onClick={() => toast("Rent out equipment — coming soon")}>
+          <BtnLink to="/marketplace/rent/list" className="mt-4 w-full">
             Rent Out Equipment
-          </Btn>
+          </BtnLink>
         </div>
       </div>
     </Screen>

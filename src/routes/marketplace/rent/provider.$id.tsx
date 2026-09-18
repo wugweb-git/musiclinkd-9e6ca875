@@ -3,9 +3,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, Chip, VerifiedBadge } from "@/components/ml/ui";
-import { EmptyState, Rating } from "@/components/ml/market";
+import { EmptyState, EquipmentGrid, Rating } from "@/components/ml/market";
 import { Loading } from "@/components/ml/kit";
-import { EquipmentRow, RentalReportSheet } from "@/components/ml/rental";
+import { RentalReportSheet } from "@/components/ml/rental";
 import { getRentalProvider } from "@/lib/rentals.functions";
 import { getSellerListings } from "@/lib/catalog.functions";
 import { rentalFromRow } from "@/lib/market-view";
@@ -82,7 +82,11 @@ function ProviderProfile() {
       <div className="px-5 py-4">
         <div className="flex items-start gap-3">
           {p.photo ? (
-            <img src={p.photo} alt={p.name} className="h-20 w-20 shrink-0 rounded-lg object-cover" />
+            <img
+              src={p.photo}
+              alt={p.name}
+              className="h-20 w-20 shrink-0 rounded-lg object-cover"
+            />
           ) : (
             <span className="h-20 w-20 shrink-0 rounded-lg bg-subtle" aria-hidden />
           )}
@@ -94,7 +98,9 @@ function ProviderProfile() {
             {p.role ? <p className="mt-0.5 text-1 text-muted-foreground">{p.role}</p> : null}
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               {p.rating ? <Rating value={p.rating} count={p.reviews} /> : null}
-              {p.location ? <span className="text-1 text-muted-foreground">{p.location}</span> : null}
+              {p.location ? (
+                <span className="text-1 text-muted-foreground">{p.location}</span>
+              ) : null}
             </div>
           </div>
         </div>
@@ -133,7 +139,7 @@ function ProviderProfile() {
           listings.isLoading ? (
             <Loading rows={2} />
           ) : items.length ? (
-            items.map((e) => <EquipmentRow key={e.id} e={e} />)
+            <EquipmentGrid items={items} />
           ) : (
             <EmptyState
               emoji="📦"
@@ -203,7 +209,11 @@ function ProviderProfile() {
         ) : null}
       </div>
 
-      <RentalReportSheet open={report} onClose={() => setReport(false)} />
+      <RentalReportSheet
+        open={report}
+        onClose={() => setReport(false)}
+        subject={{ type: "profile", id }}
+      />
     </Screen>
   );
 }

@@ -4,24 +4,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Chip, BtnLink, Btn } from "@/components/ml/ui";
-import { EmptyState } from "@/components/ml/market";
+import { EmptyState, ProductCard, productFromRental } from "@/components/ml/market";
 import { Loading } from "@/components/ml/kit";
-import { EquipmentRow, RentalStatusPill } from "@/components/ml/rental";
-import {
-  equipment,
-  equipmentById,
-  inr,
-  rentalNotifications,
-  rentalRequests,
-  type RentalItem,
-} from "@/data/rentals";
-import { TextLink } from "@/components/ml/links";
+import { RentalStatusPill } from "@/components/ml/rental";
+import { inr, type RentalItem } from "@/data/rentals";
+import { TextButton, TextLink } from "@/components/ml/links";
 import { useAuth } from "@/hooks/use-auth";
 import {
   listMyIncomingRentalRequests,
+  listMyListingStandings,
+  setMyListingStatus,
   setRentalBookingStatus,
-  type MyRentalBooking,
+  type ListingStanding,
 } from "@/lib/rentals.functions";
+import { listRentalNotifications } from "@/lib/notifications.functions";
 import { loadMyCatalogRentals } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/rent/listings")({
@@ -49,17 +45,29 @@ const statusBuckets = [
   "Completed",
   "Archived",
 ] as const;
-const tone: Record<string, string> = {
-  primary: "var(--surface-subtle)",
-  success: "var(--success-container)",
-  warn: "var(--warn-container)",
-  purple: "var(--purple-container)",
-};
+type Bucket = (typeof statusBuckets)[number];
+
+const ACTIVE: ListingStanding = { stored: "active", rented: false, reserved: false, completed: 0 };
+
+/**
+ * The one bucket a listing sits in. The owner's own Unavailable or Archived comes first; otherwise
+ * its bookings say whether it is out with someone (Currently Rented) or promised (Reserved).
+ */
+function bucketOf(s: ListingStanding): Bucket {
+  if (s.stored === "archived") return "Archived";
+  if (s.stored === "unavailable") return "Unavailable";
+  if (s.rented) return "Currently Rented";
+  if (s.reserved) return "Reserved";
+  return "Active";
+}
+
+/** Completed is history, not a state: any listing with a finished rental is listed there too. */
+const inBucket = (s: ListingStanding, bucket: string) =>
+  bucket === "Completed" ? s.completed > 0 : bucketOf(s) === bucket;
 
 function MyListings() {
   const [tab, setTab] = useState(tabs[0]!);
   const [bucket, setBucket] = useState<string>("Active");
-  const shown = equipment.filter((e) => e.listingStatus === bucket);
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
   const load = useServerFn(listMyIncomingRentalRequests);
@@ -80,21 +88,48 @@ function MyListings() {
   });
   const realRequests = q.data ?? [];
 
-  // A real listing carries no status column yet, so it can only honestly sit in "Active".
   const myListings = useQuery({
     queryKey: ["marketplace", "mine", "rentals"],
     queryFn: loadMyCatalogRentals,
     enabled: signedIn && tab === "Active",
   });
-  const realListings: RentalItem[] = bucket === "Active" ? (myListings.data ?? []) : [];
+  const loadStandings = useServerFn(listMyListingStandings);
+  const standings = useQuery({
+    queryKey: ["marketplace", "mine", "standings"],
+    queryFn: () => loadStandings(),
+    enabled: signedIn && tab === "Active",
+  });
+  const standingOf = (e: RentalItem) => (e.dbId && standings.data?.[e.dbId]) || ACTIVE;
+  const realListings: RentalItem[] = (myListings.data ?? []).filter((e) =>
+    inBucket(standingOf(e), bucket),
+  );
+  const listingsLoading = signedIn && (myListings.isLoading || standings.isLoading);
+
+  // The owner takes a listing out of browsing, or puts it back.
+  const saveStatus = useServerFn(setMyListingStatus);
+  const changeStatus = useMutation({
+    mutationFn: (vars: { id: string; status: "active" | "unavailable" | "archived" }) =>
+      saveStatus({ data: vars }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["marketplace", "mine", "standings"] });
+      toast.success("Updated.");
+    },
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
+  // Requests, answers and cancellations on rentals, as notified (notifications, rental_* kinds).
+  const loadAlerts = useServerFn(listRentalNotifications);
+  const alerts = useQuery({
+    queryKey: ["notifications", "rentals"],
+    queryFn: () => loadAlerts(),
+    enabled: signedIn && tab === "Alerts",
+  });
 
   return (
     <Screen>
       <TopBar
         title="My rental listings"
-        subtitle={`${equipment.length + (myListings.data?.length ?? 0)} items · ${
-          rentalRequests.length + realRequests.length
-        } requests`}
+        subtitle={`${myListings.data?.length ?? 0} items · ${realRequests.length} requests`}
         back="/marketplace/rent"
         right={
           <TextLink to="/marketplace/rent/list" className="shrink-0 text-1">
@@ -120,38 +155,55 @@ function MyListings() {
                 </Chip>
               ))}
             </div>
-            {signedIn && myListings.isLoading && bucket === "Active" ? <Loading rows={2} /> : null}
-            {realListings.map((e) => (
-              <div key={e.id}>
-                <EquipmentRow e={e} />
-                <div className="mt-1.5 flex flex-wrap gap-2 px-1 text-1 font-semibold text-muted-foreground">
-                  <span
-                    className="rounded-full px-2 py-1"
-                    style={{ background: "var(--success-container)", color: "var(--success)" }}
-                  >
-                    Active
-                  </span>
-                </div>
-              </div>
-            ))}
-            {shown.length ? (
-              shown.map((e) => (
-                <div key={e.id}>
-                  <EquipmentRow e={e} />
-                  <div className="mt-1.5 flex flex-wrap gap-2 px-1 text-1 font-semibold text-muted-foreground">
-                    <span
-                      className="rounded-full px-2 py-1"
-                      style={{ background: "var(--success-container)", color: "var(--success)" }}
-                    >
-                      {e.listingStatus}
-                    </span>
-                    <span className="rounded-full bg-background px-2 py-1">
-                      {e.views} views · {e.saves} saves · {e.enquiries} enquiries
-                    </span>
+            {listingsLoading ? <Loading rows={2} /> : null}
+            <div className="grid grid-cols-2 gap-3">
+              {realListings.map((e) => {
+                const standing = standingOf(e);
+                const state = bucketOf(standing);
+                const set = (status: "active" | "unavailable" | "archived") =>
+                  e.dbId && changeStatus.mutate({ id: e.dbId, status });
+                return (
+                  <div key={e.id}>
+                    <ProductCard item={productFromRental(e)} />
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2 px-1 text-1 font-semibold text-muted-foreground">
+                      <span
+                        className="rounded-full bg-subtle px-2 py-1"
+                        style={
+                          state === "Active"
+                            ? { background: "var(--success-container)", color: "var(--success)" }
+                            : undefined
+                        }
+                      >
+                        {bucket === "Completed" ? `${standing.completed} completed` : state}
+                      </span>
+                      {standing.stored === "archived" ? (
+                        <TextButton disabled={changeStatus.isPending} onClick={() => set("active")}>
+                          Restore
+                        </TextButton>
+                      ) : (
+                        <>
+                          <TextButton
+                            disabled={changeStatus.isPending}
+                            onClick={() =>
+                              set(standing.stored === "unavailable" ? "active" : "unavailable")
+                            }
+                          >
+                            {standing.stored === "unavailable" ? "Available" : "Unavailable"}
+                          </TextButton>
+                          <TextButton
+                            disabled={changeStatus.isPending}
+                            onClick={() => set("archived")}
+                          >
+                            Archive
+                          </TextButton>
+                        </>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
-            ) : realListings.length === 0 ? (
+                );
+              })}
+            </div>
+            {realListings.length === 0 && !listingsLoading ? (
               <EmptyState
                 emoji="📦"
                 title={`Nothing ${bucket.toLowerCase()}`}
@@ -223,58 +275,13 @@ function MyListings() {
               </article>
             ))
           : null}
-        {tab === "Requests" && !q.isLoading
-          ? rentalRequests.map((r) => {
-              const e = equipmentById(r.equipmentId)!;
-              return (
-                <article key={r.id} className="rounded-lg bg-subtle p-4">
-                  <div className="flex items-start gap-3">
-                    <img
-                      src={e.photos[0]}
-                      alt=""
-                      className="h-14 w-14 shrink-0 rounded-sm object-cover"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-1 font-semibold">{e.name}</p>
-                      <p className="truncate text-1 text-muted-foreground">
-                        {r.renter} · {r.dates} · {r.quantity} unit
-                      </p>
-                      <p className="mt-1 text-1">
-                        <span className="font-semibold">{inr(r.offered)}</span>
-                        {r.offered !== r.asking ? (
-                          <span className="text-muted-foreground">
-                            {" "}
-                            offered vs {inr(r.asking)} asking
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground"> at asking price</span>
-                        )}
-                      </p>
-                    </div>
-                    <RentalStatusPill
-                      status={
-                        r.status === "Pending"
-                          ? "Requested"
-                          : r.status === "Accepted"
-                            ? "Confirmed"
-                            : "Declined"
-                      }
-                    />
-                  </div>
-                  {r.status === "Pending" ? (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Chip active>Accept</Chip>
-                      <Chip>Counter offer</Chip>
-                      <Chip>Decline</Chip>
-                      <Link to="/messages">
-                        <Chip>Message</Chip>
-                      </Link>
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })
-          : null}
+        {tab === "Requests" && !q.isLoading && realRequests.length === 0 ? (
+          <EmptyState
+            emoji="📨"
+            title="No requests yet"
+            body="When someone asks to rent your equipment, the request shows up here."
+          />
+        ) : null}
 
         {tab === "Drafts" ? (
           <EmptyState
@@ -285,21 +292,36 @@ function MyListings() {
           />
         ) : null}
 
+        {tab === "Alerts" && signedIn && alerts.isLoading ? <Loading rows={2} /> : null}
         {tab === "Alerts"
-          ? rentalNotifications.map((n) => (
-              <article key={n.id} className="flex items-start gap-3 rounded-lg bg-subtle p-4">
-                <span
-                  className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
-                  style={{ background: tone[n.tone] }}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-1 font-semibold">{n.title}</p>
-                  <p className="text-1 text-muted-foreground">{n.body}</p>
-                </div>
-                <span className="shrink-0 text-1 text-muted-foreground">{n.time}</span>
-              </article>
+          ? (alerts.data ?? []).map((n) => (
+              <Link
+                key={n.id}
+                to={n.href ?? "/marketplace/rent/listings"}
+                className="block rounded-lg bg-subtle p-4"
+              >
+                <p className="text-1 font-semibold">{n.title}</p>
+                {n.body ? (
+                  <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{n.body}</p>
+                ) : null}
+                <p className="mt-1 text-1 text-muted-foreground">
+                  {new Date(n.created_at).toLocaleString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </Link>
             ))
           : null}
+        {tab === "Alerts" && !alerts.isLoading && !alerts.data?.length ? (
+          <EmptyState
+            emoji="🔔"
+            title="No alerts yet"
+            body="Requests, confirmations and returns for your rentals show up here."
+          />
+        ) : null}
       </div>
     </Screen>
   );

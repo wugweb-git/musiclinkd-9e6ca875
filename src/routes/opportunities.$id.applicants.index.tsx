@@ -12,7 +12,6 @@ import {
   KanbanHeader,
   KanbanProvider,
 } from "@/components/kibo-ui/kanban";
-import { myOpportunities, getOpportunity } from "@/data/opportunities";
 import {
   listApplicants,
   setApplicationStatus,
@@ -23,14 +22,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/")({
-  // Ids that are not static opportunities are looked up as stored opportunity slugs. Stored
-  // opportunities have no application records, so their list is empty.
-  loader: async ({ params }) => ({
-    db:
-      myOpportunities.some((x) => x.id === params.id) || getOpportunity(params.id)
-        ? null
-        : await loadDbOpportunity(params.id),
-  }),
+  // The id is a stored opportunity slug.
+  loader: async ({ params }) => ({ db: await loadDbOpportunity(params.id) }),
   head: () => ({
     meta: [
       { title: "Applicants | MusicLinkd Opportunities" },
@@ -74,7 +67,7 @@ function Applicants() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("All");
   const { signedIn } = useAuth();
   const { db } = Route.useLoaderData();
-  const o = myOpportunities.find((x) => x.id === id) ?? db ?? undefined;
+  const o = db ?? undefined;
   const queryClient = useQueryClient();
   const load = useServerFn(listApplicants);
   const decide = useServerFn(setApplicationStatus);

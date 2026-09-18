@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { MoonStar } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { Card } from "@/components/ml/kit";
@@ -12,6 +15,12 @@ import {
   type Channel,
 } from "@/data/notifications";
 import { iconSize } from "@/lib/tokens";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  getNotificationPrefs,
+  saveNotificationPrefs,
+  type ChannelPrefs,
+} from "@/lib/notifications.functions";
 
 export const Route = createFileRoute("/notifications/settings")({
   head: () => ({
@@ -31,11 +40,52 @@ export const Route = createFileRoute("/notifications/settings")({
 });
 
 function NotificationSettings() {
+  const { signedIn } = useAuth();
+  const load = useServerFn(getNotificationPrefs);
+  const save = useServerFn(saveNotificationPrefs);
+  const stored = useQuery({
+    queryKey: ["notifications", "prefs"],
+    queryFn: () => load(),
+    enabled: signedIn,
+  });
   const [prefs, setPrefs] = useState(defaultPreferences);
   const [quiet, setQuiet] = useState(quietHours.enabled);
 
+  // What's saved wins over the defaults, category by category, once it arrives.
+  const applied = useRef(false);
+  useEffect(() => {
+    if (applied.current || !stored.data) return;
+    applied.current = true;
+    const saved = stored.data;
+    setPrefs((list) => list.map((p) => ({ ...p, ...saved.channels[p.category] })));
+    setQuiet(saved.quietHours);
+  }, [stored.data]);
+
+  const persist = useMutation({
+    mutationFn: (next: { prefs: typeof prefs; quiet: boolean }) =>
+      save({
+        data: {
+          channels: Object.fromEntries(
+            next.prefs.map((p) => [p.category, { push: p.push, email: p.email, sms: p.sms }]),
+          ) as ChannelPrefs,
+          quietHours: next.quiet,
+        },
+      }),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+
+  // Every change saves as it's made; signed out, the screen still works for this visit.
+  const commit = (next: typeof prefs, nextQuiet: boolean) => {
+    setPrefs(next);
+    setQuiet(nextQuiet);
+    if (signedIn) persist.mutate({ prefs: next, quiet: nextQuiet });
+  };
+
   const toggle = (category: string, ch: Channel) =>
-    setPrefs((list) => list.map((p) => (p.category === category ? { ...p, [ch]: !p[ch] } : p)));
+    commit(
+      prefs.map((p) => (p.category === category ? { ...p, [ch]: !p[ch] } : p)),
+      quiet,
+    );
 
   return (
     <Screen>
@@ -90,7 +140,7 @@ function NotificationSettings() {
               role="switch"
               aria-checked={quiet}
               aria-label="Quiet hours"
-              onClick={() => setQuiet((q) => !q)}
+              onClick={() => commit(prefs, !quiet)}
               className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${quiet ? "bg-primary" : "bg-background"}`}
             >
               <span

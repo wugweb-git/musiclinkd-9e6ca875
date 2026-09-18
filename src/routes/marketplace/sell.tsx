@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { AudioWaveform, Guitar, Package, Wrench, type LucideIcon } from "lucide-react";
+import { AudioWaveform, Guitar, Package, type LucideIcon } from "lucide-react";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { PriceBlock, TrustPill } from "@/components/ml/market";
 import { createListing } from "@/lib/catalog.functions";
@@ -29,10 +29,19 @@ export const Route = createFileRoute("/marketplace/sell")({
 
 const types = [
   { label: "Instrument", icon: Guitar, category: "gear_sale", itemCategoryKind: "instrument" },
-  { label: "Audio equipment", icon: AudioWaveform, category: "gear_sale", itemCategoryKind: "equipment" },
+  {
+    label: "Audio equipment",
+    icon: AudioWaveform,
+    category: "gear_sale",
+    itemCategoryKind: "equipment",
+  },
   { label: "Rental", icon: Package, category: "gear_rental", itemCategoryKind: "equipment" },
-  { label: "Service", icon: Wrench, category: "creative_services" },
-] as const satisfies { label: string; icon: LucideIcon; category: string; itemCategoryKind?: string }[];
+] as const satisfies {
+  label: string;
+  icon: LucideIcon;
+  category: string;
+  itemCategoryKind?: string;
+}[];
 
 // Only the conditions the real schema stores; a service or rental has no condition.
 const conditions = [

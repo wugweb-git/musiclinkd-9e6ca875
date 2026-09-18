@@ -1,13 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
-import { EmptyState, ListingRow } from "@/components/ml/market";
+import { EmptyState, ListingGrid } from "@/components/ml/market";
 import { Loading } from "@/components/ml/kit";
-import { sellers } from "@/data/market";
+import { SavedSearchRow, SellerRow, sellersOf } from "@/components/ml/saved-market";
 import { loadCatalogListings } from "@/lib/market-view";
 import { listMySavedIds } from "@/lib/saved.functions";
+import { listMySavedSearches } from "@/lib/searches.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/marketplace/saved")({
@@ -39,10 +40,34 @@ function SavedMarket() {
   const allListings = useQuery({
     queryKey: ["marketplace", "catalog"],
     queryFn: loadCatalogListings,
-    enabled: signedIn && tab === "Listings",
+    enabled: signedIn && (tab === "Listings" || tab === "Sellers"),
   });
-  const savedListings = (allListings.data ?? []).filter((l) =>
-    (savedIds.data ?? []).includes(l.id),
+  const savedListings = (allListings.data ?? []).filter(
+    (l) => l.dbId != null && (savedIds.data ?? []).includes(l.dbId),
+  );
+
+  // Searches kept from Market search (saved_searches).
+  const fetchSearches = useServerFn(listMySavedSearches);
+  const savedSearches = useQuery({
+    queryKey: ["saved-searches", "market"],
+    queryFn: () => fetchSearches({ data: { scope: "market" } }),
+    enabled: signedIn && tab === "Searches",
+  });
+
+  // A seller is a profile: saved as talent or business, with at least one listing in Market.
+  const savedPeople = useQuery({
+    queryKey: ["marketplace", "saved-sellers"],
+    queryFn: async () => {
+      const [talent, business] = await Promise.all([
+        fetchIds({ data: { targetType: "talent" } }),
+        fetchIds({ data: { targetType: "business" } }),
+      ]);
+      return [...talent, ...business];
+    },
+    enabled: signedIn && tab === "Sellers",
+  });
+  const savedSellers = sellersOf(allListings.data ?? []).filter((p) =>
+    (savedPeople.data ?? []).includes(p.id),
   );
 
   return (
@@ -60,7 +85,7 @@ function SavedMarket() {
           savedIds.isLoading || allListings.isLoading ? (
             <Loading rows={3} />
           ) : savedListings.length ? (
-            savedListings.map((l) => <ListingRow key={l.id} l={l} />)
+            <ListingGrid items={savedListings} />
           ) : (
             <EmptyState
               emoji="🛍️"
@@ -70,36 +95,34 @@ function SavedMarket() {
             />
           )
         ) : null}
-        {tab === "Searches"
-          ? ["condenser microphone · Mumbai", "sitar under ₹80,000", "jam room Bandra"].map((s) => (
-              <article
-                key={s}
-                className="flex items-center justify-between rounded-lg bg-subtle p-4"
-              >
-                <div>
-                  <p className="text-1 font-semibold">{s}</p>
-                  <p className="text-1 text-muted-foreground">Alerts on · 4 new this week</p>
-                </div>
-                <Chip>View</Chip>
-              </article>
-            ))
-          : null}
-        {tab === "Sellers"
-          ? sellers.slice(0, 3).map((s) => (
-              <Link
-                key={s.id}
-                to="/marketplace/seller/$id"
-                params={{ id: s.id }}
-                className="flex items-center gap-3 rounded-lg bg-subtle p-4"
-              >
-                <img src={s.photo} alt={s.name} className="h-12 w-12 rounded-sm object-cover" />
-                <div className="min-w-0">
-                  <p className="truncate text-1 font-semibold">{s.name}</p>
-                  <p className="truncate text-1 text-muted-foreground">{s.role}</p>
-                </div>
-              </Link>
-            ))
-          : null}
+        {tab === "Searches" ? (
+          savedSearches.isLoading ? (
+            <Loading rows={3} />
+          ) : savedSearches.data?.length ? (
+            savedSearches.data.map((s) => <SavedSearchRow key={s.id} search={s} />)
+          ) : (
+            <EmptyState
+              emoji="🔍"
+              title="No saved searches yet"
+              body="Searches you save in Market show up here."
+              action={<BtnLink to="/marketplace/search">Search Market</BtnLink>}
+            />
+          )
+        ) : null}
+        {tab === "Sellers" ? (
+          savedPeople.isLoading || allListings.isLoading ? (
+            <Loading rows={3} />
+          ) : savedSellers.length ? (
+            savedSellers.map((p) => <SellerRow key={p.id} seller={p} />)
+          ) : (
+            <EmptyState
+              emoji="🏪"
+              title="No saved sellers yet"
+              body="Save a seller's profile to keep them here."
+              action={<BtnLink to="/marketplace">Explore Market</BtnLink>}
+            />
+          )
+        ) : null}
         {tab === "Studios" ? (
           <EmptyState
             emoji="🏢"
