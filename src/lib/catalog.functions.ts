@@ -44,6 +44,8 @@ export type StudioRow = {
     capacity: number | null;
     hourly_rate_paise: number | null;
     amenities: string[];
+    gear: string[] | null;
+    photo_url: string | null;
     sort_order: number;
   }[];
   equipment: {
@@ -97,7 +99,7 @@ const OWNER = "id, username, display_name, avatar_url, city, is_verified";
 const STUDIO = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
   console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
   owner:profiles!studios_owner_profile_id_fkey(${OWNER}),
-  rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, sort_order),
+  rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order),
   equipment:studio_equipment(id, name, category, quantity, included, sort_order),
   reviews(id, author_name, rating, body, created_at)`;
 const OPPORTUNITY = `id, slug, title, role_required, genres, budget_paise, budget_unit, budget_note,

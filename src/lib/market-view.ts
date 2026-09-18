@@ -154,6 +154,15 @@ const RENTAL_EQUIPMENT: Record<string, { category: RentalCategory; subcategory: 
   audio_interfaces: { category: "audio", subcategory: "Audio Interfaces" },
   studio_monitors: { category: "audio", subcategory: "Studio Monitors" },
   drums: { category: "instruments", subcategory: "Drums" },
+  headphones: { category: "audio", subcategory: "Headphones" },
+  mixers: { category: "audio", subcategory: "Mixers" },
+  preamps: { category: "studio", subcategory: "Outboard Gear" },
+  controllers: { category: "dj", subcategory: "DJ Controllers" },
+  dj_controller: { category: "dj", subcategory: "DJ Controllers" },
+  drum_machine: { category: "dj", subcategory: "Performance Equipment" },
+  sampler: { category: "dj", subcategory: "Performance Equipment" },
+  pa_systems: { category: "live", subcategory: "PA Systems" },
+  backline: { category: "studio", subcategory: "Backline" },
 };
 
 /**

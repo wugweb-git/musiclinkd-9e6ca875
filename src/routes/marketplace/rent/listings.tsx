@@ -279,7 +279,7 @@ function MyListings() {
           <EmptyState
             emoji="📨"
             title="No requests yet"
-            body="When someone asks to rent your equipment, the request shows up here."
+            body="Requests from renters wait here for you to accept or decline."
           />
         ) : null}
 
@@ -319,7 +319,7 @@ function MyListings() {
           <EmptyState
             emoji="🔔"
             title="No alerts yet"
-            body="Requests, confirmations and returns for your rentals show up here."
+            body="You're told here when a renter requests, confirms or returns."
           />
         ) : null}
       </div>

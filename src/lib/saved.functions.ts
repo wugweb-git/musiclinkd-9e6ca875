@@ -8,7 +8,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * every function here reads or writes only the signed-in user's own rows.
  */
 
-export type SavedTargetType = "talent" | "band" | "studio" | "business" | "event" | "listing";
+export type SavedTargetType =
+  "talent" | "band" | "studio" | "business" | "event" | "listing" | "portfolio";
 
 export type SavedCard = {
   id: string;
@@ -20,7 +21,15 @@ export type SavedCard = {
   photo: string | null;
 };
 
-const targetType = z.enum(["talent", "band", "studio", "business", "event", "listing"]);
+const targetType = z.enum([
+  "talent",
+  "band",
+  "studio",
+  "business",
+  "event",
+  "listing",
+  "portfolio",
+]);
 
 // The generated types predate this table.
 const savedTable = (client: unknown) =>
@@ -83,6 +92,7 @@ export const listMySaved = createServerFn({ method: "GET" })
       business: [],
       event: [],
       listing: [],
+      portfolio: [],
     };
     const { data: saved, error } = await savedTable(context.supabase)
       .select("id, target_type, target_id, created_at")
@@ -105,8 +115,9 @@ export const listMySaved = createServerFn({ method: "GET" })
     const businessIds = idsOf("business");
     const eventIds = idsOf("event");
     const listingIds = idsOf("listing");
+    const portfolioIds = idsOf("portfolio");
 
-    const [talentRows, bandRows, studioRows, businessRows, eventRows, listingRows] =
+    const [talentRows, bandRows, studioRows, businessRows, eventRows, listingRows, portfolioRows] =
       await Promise.all([
         talentIds.length
           ? context.supabase
@@ -144,8 +155,22 @@ export const listMySaved = createServerFn({ method: "GET" })
               .select("id, title, price_paise, image_url")
               .in("id", listingIds)
           : Promise.resolve({ data: [], error: null }),
+        portfolioIds.length
+          ? context.supabase
+              .from("portfolio_items" as never)
+              .select("id, title, role, cover_url")
+              .in("id", portfolioIds)
+          : Promise.resolve({ data: [], error: null }),
       ]);
-    for (const r of [talentRows, bandRows, studioRows, businessRows, eventRows, listingRows]) {
+    for (const r of [
+      talentRows,
+      bandRows,
+      studioRows,
+      businessRows,
+      eventRows,
+      listingRows,
+      portfolioRows,
+    ]) {
       if (r.error) throw new Error(r.error.message);
     }
 
@@ -250,6 +275,23 @@ export const listMySaved = createServerFn({ method: "GET" })
               ? `₹${Math.round(row.price_paise / 100).toLocaleString("en-IN")}`
               : null,
           photo: row.image_url,
+        };
+      }),
+      portfolio: (portfolioRows.data as never[]).map((w: never) => {
+        const row = w as {
+          id: string;
+          title: string;
+          role: string | null;
+          cover_url: string | null;
+        };
+        return {
+          id: cardIdOf("portfolio", row.id),
+          targetType: "portfolio",
+          targetId: row.id,
+          savedAt: savedAtOf("portfolio", row.id),
+          name: row.title,
+          subtitle: row.role,
+          photo: row.cover_url,
         };
       }),
     };

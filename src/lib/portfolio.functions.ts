@@ -620,6 +620,7 @@ export type WorkEventCounts = {
   shares: number;
   profileClicks: number;
   linkClicks: number;
+  saves: number;
 };
 
 /**
@@ -638,7 +639,19 @@ export const myPortfolioEvents = createServerFn({ method: "GET" })
       .select("kind")
       .eq("item_id", data.id);
     if (error) return null;
-    const counts: WorkEventCounts = { views: 0, shares: 0, profileClicks: 0, linkClicks: 0 };
+    // Saves live in saved_items; only the owner gets the count back (portfolio_save_count).
+    const rpc = client.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ data: number | null; error: unknown }>;
+    const saved = await rpc.call(client, "portfolio_save_count", { p_item: data.id });
+    const counts: WorkEventCounts = {
+      views: 0,
+      shares: 0,
+      profileClicks: 0,
+      linkClicks: 0,
+      saves: saved.error ? 0 : Number(saved.data ?? 0),
+    };
     for (const row of (rows ?? []) as { kind: string }[]) {
       if (row.kind === "view") counts.views += 1;
       else if (row.kind === "share") counts.shares += 1;

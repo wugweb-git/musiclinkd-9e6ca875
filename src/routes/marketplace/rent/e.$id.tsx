@@ -317,7 +317,7 @@ function RentalDetail() {
               ) : (
                 <EmptyState
                   title="No reviews yet"
-                  body="Reviews left for this provider show up here."
+                  body="Renters can review a provider after a completed rental."
                 />
               )}
             </div>

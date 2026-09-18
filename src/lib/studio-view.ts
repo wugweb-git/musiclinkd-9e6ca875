@@ -55,6 +55,7 @@ function hourlyResource(
   capacity: number | null,
   paise: number | null,
   photo: string,
+  gear: string[] = [],
 ): Resource | null {
   if (paise == null) return null;
   return {
@@ -62,7 +63,7 @@ function hourlyResource(
     name,
     description: "",
     capacity: capacity ?? 0,
-    equipment: [],
+    equipment: gear,
     tiers: [{ unit: "hour", label: "Hourly", hours: 1, price: rupees(paise) }],
     durations: ["hour"],
     model: "request",
@@ -74,7 +75,14 @@ function hourlyResource(
 export function bookableFromStudio(row: StudioRow, labels: TaxonomyLabels): Bookable | null {
   const resources = row.rooms.length
     ? row.rooms.map((room) =>
-        hourlyResource(room.id, room.name, room.capacity, room.hourly_rate_paise, ""),
+        hourlyResource(
+          room.id,
+          room.name,
+          room.capacity,
+          room.hourly_rate_paise,
+          room.photo_url ?? "",
+          room.gear ?? [],
+        ),
       )
     : [hourlyResource(row.id, row.name, null, row.hourly_rate_paise, row.image_url ?? "")];
   const priced = resources.filter((r): r is Resource => r !== null);

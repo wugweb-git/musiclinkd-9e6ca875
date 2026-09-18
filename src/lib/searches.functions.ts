@@ -24,6 +24,12 @@ export type SavedSearch = {
   createdAt: string;
 };
 
+/**
+ * `searched` says whether the list is what people searched for, or — until enough searches have
+ * been run — what's most listed, so a heading can say which.
+ */
+export type PopularSearches = { items: string[]; searched: boolean };
+
 /** The most-run searches in one scope over the last 30 days, optionally in one Market city. */
 export const popularSearches = createServerFn({ method: "GET" })
   .inputValidator((d) =>
@@ -34,7 +40,7 @@ export const popularSearches = createServerFn({ method: "GET" })
       })
       .parse(d),
   )
-  .handler(async ({ data }): Promise<string[]> => {
+  .handler(async ({ data }): Promise<PopularSearches> => {
     const client = await anonClient();
     const rpc = client.rpc as unknown as (
       fn: string,
@@ -45,9 +51,60 @@ export const popularSearches = createServerFn({ method: "GET" })
       p_city: data.city ?? null,
       lim: 8,
     });
-    if (error) return [];
-    return (rows ?? []).map((r) => r.query);
+    const run = error ? [] : (rows ?? []).map((r) => r.query);
+    if (run.length >= 6) return { items: run, searched: true };
+    // Until enough searches have been run, what people can find stands in: the kinds of item
+    // with the most live listings (Market, Rent), or the genres most profiles work in (Discover).
+    const fill = await mostListed(client as unknown as SupabaseClient, data.scope);
+    const seen = new Set(run.map((q) => q.toLowerCase()));
+    return {
+      items: [...run, ...fill.filter((q) => !seen.has(q.toLowerCase()))].slice(0, 8),
+      searched: false,
+    };
   });
+
+async function mostListed(client: SupabaseClient, scope: SearchScope): Promise<string[]> {
+  const counts = new Map<string, { key: string; n: number }>();
+  const bump = (key: string, slug: string) => {
+    const id = `${key}:${slug}`;
+    counts.set(id, { key, n: (counts.get(id)?.n ?? 0) + 1 });
+  };
+  if (scope === "discover") {
+    const { data } = await client.from("profiles").select("genres").eq("visibility", "public");
+    for (const p of (data ?? []) as { genres: string[] | null }[])
+      for (const g of p.genres ?? []) bump("genres", g);
+  } else {
+    const { data } = await client
+      .from("marketplace_listings")
+      .select("item_category, item_category_kind")
+      .eq("category", scope === "rent" ? "gear_rental" : "gear_sale");
+    for (const l of (data ?? []) as {
+      item_category: string | null;
+      item_category_kind: string | null;
+    }[])
+      if (l.item_category)
+        bump(
+          l.item_category_kind === "instrument" ? "instruments" : "equipment_categories",
+          l.item_category,
+        );
+  }
+  const top = [...counts.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 8);
+  if (!top.length) return [];
+  const { data: options } = await client
+    .from("taxonomy_options")
+    .select("category_key, slug, label")
+    .in(
+      "slug",
+      top.map(([id]) => id.split(":")[1]!),
+    );
+  const label = new Map(
+    ((options ?? []) as { category_key: string; slug: string; label: string }[]).map((o) => [
+      `${o.category_key}:${o.slug}`,
+      o.label,
+    ]),
+  );
+  return top.map(([id]) => label.get(id)).filter((l): l is string => Boolean(l));
+}
 
 /** This account's saved searches in one scope, newest first. */
 export const listMySavedSearches = createServerFn({ method: "GET" })

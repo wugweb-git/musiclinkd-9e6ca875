@@ -53,6 +53,11 @@ import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-image
 import { MediaEmbed } from "./media-embed";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
+import { SavedToggle } from "./saved-toggle";
+
+/** Works stored in the database can be saved; demo works (non-uuid ids) can't. */
+const isDbId = (id: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 import { iconSize } from "@/lib/tokens";
 
 /* ── Section shell ─────────────────────────────────────────── */
@@ -762,6 +767,7 @@ export function AudioTrackCard({
             <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
           ) : null}
         </div>
+        {isDbId(track.id) ? <SavedToggle targetType="portfolio" targetId={track.id} /> : null}
         <button
           type="button"
           onClick={() => {
@@ -854,6 +860,7 @@ export function VideoCard({
             <h3 className="line-clamp-2 text-2 font-semibold leading-snug">{v.title}</h3>
             <p className="mt-1 truncate text-1 text-muted-foreground">{v.context}</p>
           </div>
+          {isDbId(v.id) ? <SavedToggle targetType="portfolio" targetId={v.id} /> : null}
         </div>
         {player}
       </article>
@@ -891,8 +898,13 @@ export function VideoCard({
         ) : null}
       </div>
       <div className="p-3">
-        <h3 className="truncate text-1">{v.title}</h3>
-        <p className="truncate text-1 text-muted-foreground">{v.context}</p>
+        <div className="flex items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-1">{v.title}</h3>
+            <p className="truncate text-1 text-muted-foreground">{v.context}</p>
+          </div>
+          {isDbId(v.id) ? <SavedToggle targetType="portfolio" targetId={v.id} size={36} /> : null}
+        </div>
         {player}
       </div>
     </article>

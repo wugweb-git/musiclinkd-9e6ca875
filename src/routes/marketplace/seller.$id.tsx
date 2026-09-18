@@ -126,7 +126,7 @@ function SellerProfile() {
               </article>
             ))
           ) : (
-            <EmptyState title="No reviews yet" body="Reviews left for this seller show up here." />
+            <EmptyState title="No reviews yet" body="No one has reviewed this seller yet." />
           )}
         </div>
       </div>

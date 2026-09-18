@@ -104,7 +104,7 @@ function SavedMarket() {
             <EmptyState
               emoji="🔍"
               title="No saved searches yet"
-              body="Searches you save in Market show up here."
+              body="Search Market, then tap Save this search."
               action={<BtnLink to="/marketplace/search">Search Market</BtnLink>}
             />
           )
@@ -118,7 +118,7 @@ function SavedMarket() {
             <EmptyState
               emoji="🏪"
               title="No saved sellers yet"
-              body="Save a seller's profile to keep them here."
+              body="Tap save on a seller's profile."
               action={<BtnLink to="/marketplace">Explore Market</BtnLink>}
             />
           )

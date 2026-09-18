@@ -77,12 +77,20 @@ function RentHome() {
     );
   }, [allEquipment]);
   const saved = useSavedRentals();
-  const recommended = useRecommendedRentals(allEquipment, saved.data ?? [], city);
   // Listed in the Market city; everything when nothing is listed there yet.
   const nearby = inCity(allEquipment, city).slice(0, 5);
   // Most booked first; the catalogue is newest first, so a tie keeps the newer listing ahead.
   const booked = (e: RentalItem) => (e.dbId ? (bookings[e.dbId] ?? 0) : 0);
-  const popular = [...allEquipment].sort((a, b) => booked(b) - booked(a)).slice(0, 5);
+  const mostBooked = [...allEquipment].sort((a, b) => booked(b) - booked(a));
+  const popular = mostBooked.slice(0, 5);
+  // Picks from this person's own signals; with none yet, the most-booked rentals in their city.
+  const personal = useRecommendedRentals(allEquipment, saved.data ?? [], city);
+  const savedIds = new Set((saved.data ?? []).map((e) => e.id));
+  const recommended = personal.length
+    ? personal
+    : inCity(mostBooked, city)
+        .filter((e) => !savedIds.has(e.id))
+        .slice(0, 4);
 
   return (
     <Screen>
@@ -156,97 +164,55 @@ function RentHome() {
         </div>
       </SectionRow>
 
-      <SectionRow
-        title="Recommended for you"
-        hint="From your instruments, saves and location"
-        to="/marketplace/rent/search"
-      >
+      {/* With nothing listed at all, one empty state stands in for every rail below. */}
+      {!loading && !allEquipment.length ? (
         <div className="px-5">
-          {loading ? (
-            [0, 1].map((i) => <RentalSkeleton key={i} />)
-          ) : recommended.length ? (
-            <EquipmentGrid items={recommended} />
-          ) : (
-            <EmptyState
-              emoji="✨"
-              title="No recommendations yet"
-              body="Save rentals and add your instruments to get picks here."
-            />
-          )}
+          <EmptyState
+            emoji="🎛️"
+            title="Nothing to rent yet"
+            body={`Be the first to list gear in ${city}.`}
+            action={<BtnLink to="/marketplace/rent/list">Rent Out Equipment</BtnLink>}
+          />
         </div>
-      </SectionRow>
+      ) : (
+        <>
+          <SectionRow
+            title="Recommended for you"
+            // Only claim what the picks are built from when they were built from it.
+            {...(personal.length ? { hint: "From your instruments, saves and location" } : {})}
+            to="/marketplace/rent/search"
+          >
+            <div className="px-5">
+              {loading ? (
+                [0, 1].map((i) => <RentalSkeleton key={i} />)
+              ) : (
+                <EquipmentGrid items={recommended} />
+              )}
+            </div>
+          </SectionRow>
 
-      <SectionRow title="Near you" to="/marketplace/rent/nearby">
-        {nearby.length ? (
-          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-            {nearby.map((e) => (
-              <ProductCard key={e.id} item={productFromRental(e)} rail />
-            ))}
-          </div>
-        ) : (
-          <div className="px-5">
-            <EmptyState
-              emoji="📍"
-              title="Nothing listed near you yet"
-              body="Rentals listed in your area show up here."
-            />
-          </div>
-        )}
-      </SectionRow>
+          <SectionRow title="Near you" to="/marketplace/rent/nearby">
+            <RentalRail items={nearby} />
+          </SectionRow>
 
-      <SectionRow title="Popular rentals">
-        {popular.length ? (
-          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-            {popular.map((e) => (
-              <ProductCard key={e.id} item={productFromRental(e)} rail />
-            ))}
-          </div>
-        ) : (
-          <div className="px-5">
-            <EmptyState
-              emoji="🔥"
-              title="No popular rentals yet"
-              body="The most-rented equipment shows up here."
-            />
-          </div>
-        )}
-      </SectionRow>
+          <SectionRow title="Popular rentals">
+            <RentalRail items={popular} />
+          </SectionRow>
+        </>
+      )}
 
-      <SectionRow title="Recently viewed">
-        {viewed.length ? (
-          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-            {viewed.map((e) => (
-              <ProductCard key={e.id} item={productFromRental(e)} rail />
-            ))}
-          </div>
-        ) : (
-          <div className="px-5">
-            <EmptyState
-              emoji="🕓"
-              title="No view history yet"
-              body="Rentals you open on this device show up here."
-            />
-          </div>
-        )}
-      </SectionRow>
+      {/* Personal rails appear once there's something in them. */}
+      {viewed.length ? (
+        <SectionRow title="Recently viewed">
+          <RentalRail items={viewed} />
+        </SectionRow>
+      ) : null}
 
-      <SectionRow title="Saved rentals">
-        {saved.data?.length ? (
-          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-            {saved.data.map((e) => (
-              <ProductCard key={e.id} item={productFromRental(e)} rail />
-            ))}
-          </div>
-        ) : (
-          <div className="px-5">
-            <EmptyState
-              emoji="🎛️"
-              title="No saved equipment yet"
-              body="Tap the heart on a listing to keep it here."
-            />
-          </div>
-        )}
-      </SectionRow>
+      {saved.data?.length ? (
+        <SectionRow title="Saved rentals" to="/marketplace/rent/saved">
+          <RentalRail items={saved.data} />
+        </SectionRow>
+      ) : null}
 
       <div className="space-y-3 px-5 pb-4">
         <div className="rounded-lg bg-subtle p-5">
@@ -283,6 +249,17 @@ function RentHome() {
         rental
       />
     </Screen>
+  );
+}
+
+/** A horizontal rail of rental product cards — every rail on this screen. */
+function RentalRail({ items }: { items: RentalItem[] }) {
+  return (
+    <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+      {items.map((e) => (
+        <ProductCard key={e.id} item={productFromRental(e)} rail />
+      ))}
+    </div>
   );
 }
 

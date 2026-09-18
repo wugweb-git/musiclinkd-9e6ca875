@@ -107,7 +107,7 @@ function SavedRentals() {
             <EmptyState
               emoji="🏪"
               title="No saved providers yet"
-              body="Save a provider's profile to keep them here."
+              body="Tap save on a provider's profile."
               action={<BtnLink to="/marketplace/rent/nearby">Find Providers</BtnLink>}
             />
           )
@@ -122,7 +122,7 @@ function SavedRentals() {
             <EmptyState
               emoji="🔍"
               title="No saved searches yet"
-              body="Searches you save for rentals show up here."
+              body="Search for gear, then tap Save search."
               action={<BtnLink to="/marketplace/rent/search">Search Rentals</BtnLink>}
             />
           )
@@ -146,7 +146,7 @@ function SavedRentals() {
             <EmptyState
               emoji="🕓"
               title="No view history yet"
-              body="Rentals you open on this device show up here."
+              body="Nothing opened on this device yet."
             />
           )
         ) : null}

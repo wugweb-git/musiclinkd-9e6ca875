@@ -27,7 +27,10 @@ export const Route = createFileRoute("/discover/music")({
   loader: async () => {
     const [tracks, trendingSearches] = await Promise.all([
       listTrendingWork().catch((): TrendingItem[] => []),
-      popularSearches({ data: { scope: "discover" } }).catch((): string[] => []),
+      popularSearches({ data: { scope: "discover" } }).catch(() => ({
+        items: [],
+        searched: false,
+      })),
     ]);
     return { tracks, trendingSearches };
   },
@@ -35,7 +38,8 @@ export const Route = createFileRoute("/discover/music")({
 });
 
 function DiscoverMusic() {
-  const { tracks, trendingSearches } = Route.useLoaderData();
+  const { tracks, trendingSearches: trending } = Route.useLoaderData();
+  const trendingSearches = trending.items;
 
   return (
     <Screen>
@@ -82,7 +86,9 @@ function DiscoverMusic() {
 
         {trendingSearches.length ? (
           <div>
-            <p className="mb-2 text-sm font-semibold">Trending searches</p>
+            <p className="mb-2 text-sm font-semibold">
+              {trending.searched ? "Trending searches" : "Popular genres"}
+            </p>
             <div className="flex flex-wrap gap-2">
               {trendingSearches.map((t) => (
                 <span

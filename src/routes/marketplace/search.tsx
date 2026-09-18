@@ -78,7 +78,8 @@ function MarketSearch() {
     queryKey: ["searches", "popular", "market", city],
     queryFn: () => fetchPopular({ data: { scope: "market", city } }),
   });
-  const popular = popularQuery.data ?? [];
+  const popular = popularQuery.data?.items ?? [];
+  const popularSearched = popularQuery.data?.searched ?? false;
 
   const { signedIn } = useAuth();
   const save = useServerFn(saveSearch);
@@ -115,7 +116,9 @@ function MarketSearch() {
           ) : null}
           {popular.length ? (
             <>
-              <h2 className="pill mb-2 bg-subtle text-muted-foreground">Popular in {city}</h2>
+              <h2 className="pill mb-2 bg-subtle text-muted-foreground">
+                {popularSearched ? `Popular in ${city}` : "Popular categories"}
+              </h2>
               <div className="flex flex-wrap gap-2">
                 {popular.map((s) => (
                   <Chip key={s} onClick={() => setQ(s)}>

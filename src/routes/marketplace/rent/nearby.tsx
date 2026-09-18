@@ -110,7 +110,7 @@ function NearbyRentals() {
             <EmptyState
               emoji="🏪"
               title="No providers nearby yet"
-              body="People renting out equipment in your area show up here."
+              body="No one rents out gear in your city yet."
             />
           )}
         </div>

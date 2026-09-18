@@ -176,7 +176,7 @@ function ProviderProfile() {
             <EmptyState
               emoji="⭐"
               title="No reviews yet"
-              body="Reviews left for this provider show up here."
+              body="Renters can review a provider after a completed rental."
             />
           )
         ) : null}

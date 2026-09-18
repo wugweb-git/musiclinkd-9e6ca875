@@ -71,7 +71,7 @@ function RentSearch() {
     queryKey: ["searches", "popular", "rent"],
     queryFn: () => fetchPopular({ data: { scope: "rent" } }),
   });
-  const popular = popularQuery.data ?? [];
+  const popular = popularQuery.data?.items ?? [];
   const nearby = inCity(catalog, city).slice(0, 3);
 
   const { signedIn } = useAuth();
@@ -91,9 +91,10 @@ function RentSearch() {
 
       {!q ? (
         <div className="space-y-6 px-5 pb-6">
-          <section>
-            <h2 className="pill mb-2 bg-subtle text-muted-foreground">Recent searches</h2>
-            {recent.length ? (
+          {/* Each list shows once it has something in it — no placeholder lines. */}
+          {recent.length ? (
+            <section>
+              <h2 className="pill mb-2 bg-subtle text-muted-foreground">Recent searches</h2>
               <div className="flex flex-wrap gap-2">
                 {recent.map((s) => (
                   <Chip key={s} onClick={() => setQ(s)}>
@@ -101,13 +102,11 @@ function RentSearch() {
                   </Chip>
                 ))}
               </div>
-            ) : (
-              <p className="text-1 text-muted-foreground">Searches you run show up here.</p>
-            )}
-          </section>
-          <section>
-            <h2 className="pill mb-2 bg-subtle text-muted-foreground">Popular equipment</h2>
-            {popular.length ? (
+            </section>
+          ) : null}
+          {popular.length ? (
+            <section>
+              <h2 className="pill mb-2 bg-subtle text-muted-foreground">Popular equipment</h2>
               <div className="flex flex-wrap gap-2">
                 {popular.map((s) => (
                   <Chip key={s} onClick={() => setQ(s)}>
@@ -115,12 +114,8 @@ function RentSearch() {
                   </Chip>
                 ))}
               </div>
-            ) : (
-              <p className="text-1 text-muted-foreground">
-                The equipment renters search for most shows up here.
-              </p>
-            )}
-          </section>
+            </section>
+          ) : null}
           <section>
             <h2 className="pill mb-2 bg-subtle text-muted-foreground">Suggested categories</h2>
             <div className="flex flex-wrap gap-2">
@@ -133,16 +128,12 @@ function RentSearch() {
               ))}
             </div>
           </section>
-          <section>
-            <h2 className="pill mb-3 bg-subtle text-muted-foreground">Available nearby</h2>
-            <div className="space-y-3">
-              {nearby.length ? (
-                <EquipmentGrid items={nearby} />
-              ) : (
-                <p className="text-1 text-muted-foreground">Nothing listed nearby yet.</p>
-              )}
-            </div>
-          </section>
+          {nearby.length ? (
+            <section>
+              <h2 className="pill mb-3 bg-subtle text-muted-foreground">Available nearby</h2>
+              <EquipmentGrid items={nearby} />
+            </section>
+          ) : null}
         </div>
       ) : (
         <>

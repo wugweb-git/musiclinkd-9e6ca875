@@ -71,8 +71,7 @@ function WorkDetail() {
 
   const item = demo ?? q.data ?? null;
 
-  // Plays, views, shares and clicks are counted in the database. Nothing saves a work, so Saves
-  // stays a dash.
+  // Plays, views, shares, saves and clicks are all counted in the database.
   const fetchPlays = useServerFn(myPortfolioPlays);
   const plays = useQuery({
     queryKey: ["portfolio", "plays"],
@@ -91,7 +90,7 @@ function WorkDetail() {
         views: events.data?.views ?? null,
         plays: plays.data?.[id] ?? null,
         shares: events.data?.shares ?? null,
-        saves: null,
+        saves: events.data?.saves ?? null,
         profileClicks: events.data?.profileClicks ?? null,
         linkClicks: events.data?.linkClicks ?? null,
       };
