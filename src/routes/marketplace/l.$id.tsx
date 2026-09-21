@@ -1,9 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Share2, Flag, PenLine, MessageCircle, CalendarClock, Tag } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, IconBtn } from "@/components/ml/ui";
+import {
+  ArrowLeft,
+  Award,
+  Cable,
+  CalendarClock,
+  CalendarDays,
+  CircleCheck,
+  Flag,
+  Hash,
+  Info,
+  MapPin,
+  MessageCircle,
+  Palette,
+  PenLine,
+  Plug,
+  Ruler,
+  Shapes,
+  Share2,
+  SlidersVertical,
+  Sparkles,
+  Tag,
+  Truck,
+  Weight,
+  type LucideIcon,
+} from "lucide-react";
+import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink } from "@/components/ml/ui";
 import { MediaEmbed } from "@/components/ml/media-embed";
 import { useAuth } from "@/hooks/use-auth";
 import { shareLink } from "@/lib/booking-actions";
@@ -19,7 +43,8 @@ import {
   ReportSheet,
   ReviewTags,
   SaveButton,
-  SellerSummary,
+  MarketCategoryIcon,
+  SellerCard,
   TrustPill,
 } from "@/components/ml/market";
 import { EmptyState, Loading } from "@/components/ml/kit";
@@ -75,6 +100,7 @@ function ListingDetail() {
   const [offer, setOffer] = useState(false);
   const [report, setReport] = useState(false);
   const [shot, setShot] = useState(0);
+  const strip = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const taxonomy = useGearTaxonomy();
   const loadReviews = useServerFn(listReviewsFor);
@@ -136,51 +162,88 @@ function ListingDetail() {
 
   return (
     <Screen className="pb-28">
-      <TopBar
-        title="Listing"
-        back="/marketplace"
-        right={
+      {/* Media runs under the top bar: full width, as tall as the screen allows (a square on a
+          phone, at most 62% of the viewport). Back, share and save float over it. */}
+      {/* Zero-height sticky strip: the buttons ride over the photo and stay on screen when it
+          scrolls away. */}
+      <div className="sticky top-0 z-bar h-0">
+        <div className="flex items-center justify-between px-5 pt-4">
+          <IconBtnLink label="Back" to="/marketplace" className="bg-white/85 backdrop-blur">
+            <ArrowLeft size={iconSize.md} aria-hidden />
+          </IconBtnLink>
           <div className="flex items-center gap-2">
             <IconBtn
               label="Share"
+              className="bg-white/85 backdrop-blur"
               onClick={() => void shareLink({ title: l.title, url: window.location.href })}
             >
               <Share2 size={iconSize.sm} aria-hidden />
             </IconBtn>
             <SaveButton saved={saved} onToggle={toggleSaved} size={40} />
           </div>
-        }
-      />
+        </div>
+      </div>
 
-      {/* Photos: swipe between them; the dots follow. */}
-      {l.photos.length ? (
-        <div className="relative">
-          <div
-            className="no-scrollbar flex aspect-square snap-x snap-mandatory overflow-x-auto bg-subtle"
-            onScroll={(e) => {
-              const el = e.currentTarget;
-              setShot(Math.round(el.scrollLeft / el.clientWidth));
-            }}
-          >
-            {l.photos.map((src, i) => (
-              <img
-                key={src}
-                src={src}
-                alt={i === 0 ? l.title : `${l.title}, photo ${i + 1}`}
-                className="h-full w-full shrink-0 snap-center object-cover"
-              />
-            ))}
-          </div>
-          {l.photos.length > 1 ? (
-            <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5" aria-hidden>
+      <div className="relative">
+        {l.photos.length ? (
+          <>
+            <div
+              ref={strip}
+              className="no-scrollbar flex h-[min(100vw,62vh)] max-h-[640px] snap-x snap-mandatory overflow-x-auto bg-card"
+              onScroll={(e) => {
+                const el = e.currentTarget;
+                setShot(Math.round(el.scrollLeft / el.clientWidth));
+              }}
+            >
+              {l.photos.map((src, i) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt={i === 0 ? l.title : `${l.title}, photo ${i + 1}`}
+                  className="h-full w-full shrink-0 snap-center object-cover"
+                />
+              ))}
+            </div>
+            <div
+              className={`pointer-events-none absolute inset-x-0 bottom-3 items-center justify-center gap-1.5 ${l.photos.length > 1 ? "flex" : "hidden"}`}
+            >
               {l.photos.map((p, i) => (
                 <span
                   key={p}
+                  aria-hidden
                   className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${i === shot ? "w-4 bg-white" : "w-1.5 bg-white/60"}`}
                 />
               ))}
             </div>
-          ) : null}
+            <span className="absolute bottom-3 right-4 rounded-sm bg-black/55 px-2 py-0.5 text-1 font-semibold text-white">
+              {shot + 1}/{l.photos.length}
+            </span>
+          </>
+        ) : (
+          <div className="flex h-[min(100vw,62vh)] items-center justify-center bg-card">
+            <MarketCategoryIcon slug={l.gear ?? "other"} size={48} />
+          </div>
+        )}
+      </div>
+
+      {/* Every photo as a thumbnail; tap one to jump to it. */}
+      {l.photos.length > 1 ? (
+        <div className="no-scrollbar flex gap-2 overflow-x-auto px-5 pt-3">
+          {l.photos.map((src, i) => (
+            <button
+              key={src}
+              type="button"
+              aria-label={`Photo ${i + 1}`}
+              aria-current={i === shot}
+              onClick={() => {
+                const el = strip.current;
+                if (el) el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+              }}
+              className={`h-14 w-14 shrink-0 overflow-hidden rounded-sm border-2 ${i === shot ? "border-foreground" : "border-transparent opacity-70"}`}
+            >
+              <img src={src} alt="" className="h-full w-full object-cover" />
+            </button>
+          ))}
         </div>
       ) : null}
 
@@ -218,12 +281,16 @@ function ListingDetail() {
           <>
             <h2 className="mt-6 text-2">Details</h2>
             <dl className="mt-2 divide-y divide-border rounded-lg bg-card">
-              {details.map((d) => (
-                <div key={d.label} className="flex items-center justify-between gap-4 px-4 py-3">
-                  <dt className="text-1 text-foreground">{d.label}</dt>
-                  <dd className="text-right text-1 font-semibold">{d.value}</dd>
-                </div>
-              ))}
+              {details.map((d) => {
+                const Icon = detailIcon(d.label);
+                return (
+                  <div key={d.label} className="flex items-center gap-3 px-4 py-3">
+                    <Icon size={iconSize.md} strokeWidth={1.75} className="shrink-0" aria-hidden />
+                    <dt className="min-w-0 flex-1 text-1 text-foreground">{d.label}</dt>
+                    <dd className="text-right text-1 font-semibold">{d.value}</dd>
+                  </div>
+                );
+              })}
             </dl>
           </>
         ) : null}
@@ -231,9 +298,15 @@ function ListingDetail() {
         {l.included?.length ? (
           <>
             <h2 className="mt-6 text-2">What's included</h2>
-            <ul className="mt-2 flex flex-wrap gap-2">
+            <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg bg-card p-4">
               {l.included.map((x) => (
-                <li key={x} className="pill bg-card text-foreground">
+                <li key={x} className="flex items-center gap-2 text-1 text-foreground">
+                  <CircleCheck
+                    size={iconSize.sm}
+                    strokeWidth={1.75}
+                    className="shrink-0"
+                    aria-hidden
+                  />
                   {x}
                 </li>
               ))}
@@ -244,18 +317,11 @@ function ListingDetail() {
         {l.owner ? (
           <>
             <h2 className="mt-6 text-2">{l.type === "product" ? "Seller" : "Provider"}</h2>
-            <div className="mt-2 rounded-lg bg-subtle p-4">
-              <SellerSummary seller={l.owner} />
-              {l.owner.username ? (
-                <BtnLink
-                  to="/profile/$username"
-                  params={{ username: l.owner.username }}
-                  variant="outline"
-                  className="mt-3 w-full"
-                >
-                  View Profile
-                </BtnLink>
-              ) : null}
+            <div className="mt-2">
+              <SellerCard
+                seller={l.owner}
+                listings={all.filter((x) => x.owner?.id && x.owner.id === l.owner?.id).length}
+              />
             </div>
           </>
         ) : null}
@@ -351,4 +417,28 @@ function ListingDetail() {
       <ReportSheet open={report} onClose={() => setReport(false)} subjectId={l.id} />
     </Screen>
   );
+}
+
+/** A line icon for each details row, by its label; anything unknown gets the info mark. */
+const detailIcons: Record<string, LucideIcon> = {
+  "listed for": Tag,
+  type: Shapes,
+  brand: Award,
+  model: Hash,
+  condition: Sparkles,
+  fulfilment: Truck,
+  city: MapPin,
+  connectivity: Cable,
+  power: Plug,
+  weight: Weight,
+  year: CalendarDays,
+  channels: SlidersVertical,
+  dimensions: Ruler,
+  size: Ruler,
+  colour: Palette,
+  color: Palette,
+};
+
+function detailIcon(label: string): LucideIcon {
+  return detailIcons[label.toLowerCase()] ?? Info;
 }

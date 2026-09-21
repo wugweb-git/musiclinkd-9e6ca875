@@ -11,6 +11,7 @@ import {
   Star,
   ShieldCheck,
   Check,
+  ChevronRight,
   LocateFixed,
   Search,
   Guitar,
@@ -593,6 +594,69 @@ export function SellerSummary({
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * The seller on a listing page: the whole card opens their profile. Photo, name and badge, then
+ * one line of standing — rating, how many listings they have in Market, followers.
+ */
+export function SellerCard({
+  seller,
+  listings,
+}: {
+  seller: {
+    name: string;
+    username?: string | null;
+    photo?: string;
+    verified: boolean;
+    rating?: number;
+    reviews?: number;
+    followers?: number;
+  };
+  listings: number;
+}) {
+  const facts = [
+    listings ? `${listings} listing${listings === 1 ? "" : "s"}` : null,
+    seller.followers ? `${seller.followers} follower${seller.followers === 1 ? "" : "s"}` : null,
+  ].filter(Boolean);
+  const body = (
+    <>
+      {seller.photo ? (
+        <img src={seller.photo} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" />
+      ) : (
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-icon-chip text-2 font-semibold">
+          {seller.name.slice(0, 1).toUpperCase()}
+        </span>
+      )}
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1.5">
+          <span className="truncate text-sm font-semibold text-foreground">{seller.name}</span>
+          {seller.verified ? <VerifiedBadge size={16} /> : null}
+        </span>
+        <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-1 text-foreground">
+          {seller.rating ? <Rating value={seller.rating} count={seller.reviews} /> : null}
+          {facts.map((f) => (
+            <span key={f}>{f}</span>
+          ))}
+        </span>
+      </span>
+      {seller.username ? (
+        <ChevronRight size={iconSize.md} className="shrink-0" aria-hidden />
+      ) : null}
+    </>
+  );
+  const cls = "flex items-center gap-3 rounded-lg bg-card p-4";
+  return seller.username ? (
+    <Link
+      to="/profile/$username"
+      params={{ username: seller.username }}
+      className={`state-layer ${cls}`}
+    >
+      {body}
+    </Link>
+  ) : (
+    <div className={cls}>{body}</div>
   );
 }
 
