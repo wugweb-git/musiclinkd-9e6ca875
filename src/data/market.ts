@@ -36,6 +36,10 @@ export type Listing = {
   itemCategory?: string;
   /** Goods: the Market category — an instrument family or an equipment category. */
   gear?: string;
+  /** Goods: model beside the brand, a short video link, what comes with it. */
+  model?: string;
+  videoUrl?: string;
+  included?: string[];
   /** Goods: whether it can be picked up, or delivered. */
   pickup?: boolean;
   deliverable?: boolean;

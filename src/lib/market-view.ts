@@ -132,6 +132,9 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     ...(type === "product" || type === "rental"
       ? {
           ...(row.item_category ? { itemCategory: row.item_category } : {}),
+          ...(row.model ? { model: row.model } : {}),
+          ...(row.video_url ? { videoUrl: row.video_url } : {}),
+          ...(row.included?.length ? { included: row.included } : {}),
           pickup: row.pickup_available ?? true,
           deliverable: row.delivery_available ?? false,
         }

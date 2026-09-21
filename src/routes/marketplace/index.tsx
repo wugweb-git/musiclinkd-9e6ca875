@@ -102,6 +102,10 @@ function MarketHome() {
   const nearby = inMyDistrict.length ? inMyDistrict : nearFirst(inCity(goods, city), myPin);
   const allForSale = shown.filter((l) => l.type === "product");
   const allForRent = shown.filter((l) => l.type === "rental");
+  // With a filter on, Explore becomes one results grid too, so the count and the list agree.
+  const grid =
+    view === "Buy" ? allForSale : view === "Rent" ? allForRent : view === "Nearby" ? nearby : goods;
+  const showGrid = view !== "Explore" || active > 0;
   const forSale = allForSale.slice(0, 8);
   const forRent = allForRent.slice(0, 8);
   // Listings opened on this device, most recent first, read live from the catalog. Goods only:
@@ -162,7 +166,19 @@ function MarketHome() {
         </div>
       </header>
 
-      <ActiveFilters value={filter} onChange={setFilter} />
+      <ActiveFilters
+        value={filter}
+        onChange={setFilter}
+        {...(active
+          ? {
+              before: (
+                <span className="shrink-0 text-1 font-semibold text-foreground">
+                  {grid.length} result{grid.length === 1 ? "" : "s"}
+                </span>
+              ),
+            }
+          : {})}
+      />
 
       {/* Categories: each opens its page; the last tile opens every category. */}
       <div className="rail mb-7 flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
@@ -185,12 +201,10 @@ function MarketHome() {
         />
       </div>
 
-      {view !== "Explore" ? (
+      {showGrid ? (
         <section className="px-5 pb-6">
-          {(view === "Buy" ? allForSale : view === "Rent" ? allForRent : nearby).length ? (
-            <ListingGrid
-              items={view === "Buy" ? allForSale : view === "Rent" ? allForRent : nearby}
-            />
+          {grid.length ? (
+            <ListingGrid items={grid} />
           ) : (
             <EmptyState
               emoji="🎸"
@@ -202,7 +216,7 @@ function MarketHome() {
       ) : null}
 
       {/* What's listed, newest first, on the product card. Each rail shows once it has something. */}
-      {view === "Explore" && forSale.length ? (
+      {!showGrid && forSale.length ? (
         <SectionRow title="For sale" to="/marketplace/search">
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {forSale.map((l) => (
@@ -212,7 +226,7 @@ function MarketHome() {
         </SectionRow>
       ) : null}
 
-      {view === "Explore" && forRent.length ? (
+      {!showGrid && forRent.length ? (
         <SectionRow title="For rent" to="/marketplace/rent">
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {forRent.map((l) => (
@@ -222,7 +236,7 @@ function MarketHome() {
         </SectionRow>
       ) : null}
 
-      {view === "Explore" && viewed.length ? (
+      {!showGrid && viewed.length ? (
         <SectionRow title="Recently viewed" to="/recently-viewed">
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {viewed.map((l) => (

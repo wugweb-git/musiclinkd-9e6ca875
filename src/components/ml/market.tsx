@@ -148,7 +148,9 @@ export function PriceBlock({ price, size = "md" }: { price: PriceParts; size?: "
   return (
     <Price
       price={price}
+      inline
       amountClassName={size === "lg" ? "text-3 font-bold" : "text-sm font-semibold"}
+      unitClassName={size === "lg" ? "text-sm" : "text-1"}
     />
   );
 }
@@ -995,10 +997,20 @@ export function ActiveFilters({
   return (
     <div className="rail no-scrollbar flex items-center gap-2 overflow-x-auto px-5 pb-4">
       {before}
+      {chips.length ? (
+        <button
+          type="button"
+          onClick={() => onChange(emptyMarketFilter)}
+          className="shrink-0 px-1 text-1 font-semibold text-foreground underline underline-offset-2"
+        >
+          Clear all
+        </button>
+      ) : null}
       {chips.map((c) => (
-        <Chip
+        <button
           key={`${c.key}-${c.value}`}
-          active
+          type="button"
+          aria-label={`Remove ${c.label}`}
           onClick={() =>
             onChange(
               c.value === "verified"
@@ -1011,21 +1023,13 @@ export function ActiveFilters({
                   },
             )
           }
+          className="state-layer inline-flex shrink-0 items-center gap-1.5 rounded-sm bg-card py-1.5 pl-2.5 pr-2 text-1 font-medium text-foreground"
         >
           {c.label}
-          <X size={iconSize.xs} aria-label="Remove" />
-        </Chip>
+          <X size={iconSize.xs} aria-hidden />
+        </button>
       ))}
       {after}
-      {chips.length ? (
-        <button
-          type="button"
-          onClick={() => onChange(emptyMarketFilter)}
-          className="shrink-0 px-2 text-1 font-semibold text-foreground"
-        >
-          Clear all
-        </button>
-      ) : null}
     </div>
   );
 }

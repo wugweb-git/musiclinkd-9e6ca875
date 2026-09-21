@@ -2,8 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Share2, Flag } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Share2, Flag, PenLine, MessageCircle, CalendarClock, Tag } from "lucide-react";
+import { Screen, TopBar, Btn, BtnLink, IconBtn } from "@/components/ml/ui";
+import { MediaEmbed } from "@/components/ml/media-embed";
+import { useAuth } from "@/hooks/use-auth";
+import { shareLink } from "@/lib/booking-actions";
+import { gearTypeOf, useGearTaxonomy } from "@/lib/listing-category";
+import { shownPlace } from "@/lib/place";
 import {
   ConditionBadge,
   ListingTile,
@@ -70,6 +75,8 @@ function ListingDetail() {
   const [offer, setOffer] = useState(false);
   const [report, setReport] = useState(false);
   const [shot, setShot] = useState(0);
+  const { user } = useAuth();
+  const taxonomy = useGearTaxonomy();
   const loadReviews = useServerFn(listReviewsFor);
   const ownerId = l?.owner?.id;
   const realReviews = useQuery({
@@ -94,55 +101,88 @@ function ListingDetail() {
     );
   }
 
-  const where = [l.location, l.distance].filter(Boolean).join(" · ");
-  const cta =
-    l.type === "service"
-      ? ["Enquire", "Book"]
-      : l.type === "rental"
-        ? ["Check availability", "Request rental"]
-        : l.type === "space"
-          ? ["Check availability", "Book"]
-          : ["Make offer", "Message seller"];
+  const goods = l.type === "product" || l.type === "rental";
+  const rental = l.type === "rental";
+  const mine = Boolean(user?.id && l.owner?.id === user.id);
+  const where = shownPlace(l.location);
+  // The listing's own fields as one details list; any older stored spec rows follow, without
+  // repeating a label already shown.
+  const fulfil =
+    l.pickup && l.deliverable
+      ? "Pickup or delivery"
+      : l.deliverable
+        ? "Delivery"
+        : l.pickup
+          ? "Pickup"
+          : "";
+  const facts = goods
+    ? [
+        { label: "Listed for", value: rental ? "Rent" : "Sale" },
+        { label: "Type", value: gearTypeOf(l.itemCategory, taxonomy)?.label ?? "" },
+        { label: "Brand", value: l.brand ?? "" },
+        { label: "Model", value: l.model ?? "" },
+        { label: "Condition", value: l.condition ?? "" },
+        { label: "Fulfilment", value: fulfil },
+        { label: "City", value: where },
+      ].filter((f) => f.value)
+    : [];
+  const details = [
+    ...facts,
+    ...l.specs.filter((sp) => !facts.some((f) => f.label.toLowerCase() === sp.label.toLowerCase())),
+  ];
+  const related = all.filter(
+    (x) => x.id !== l.id && (l.gear ? x.gear === l.gear : x.category === l.category),
+  );
 
   return (
-    <Screen>
+    <Screen className="pb-28">
       <TopBar
         title="Listing"
         back="/marketplace"
         right={
           <div className="flex items-center gap-2">
-            <button
-              aria-label="Share"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            <IconBtn
+              label="Share"
+              onClick={() => void shareLink({ title: l.title, url: window.location.href })}
             >
-              <Share2 size={iconSize.sm} />
-            </button>
+              <Share2 size={iconSize.sm} aria-hidden />
+            </IconBtn>
             <SaveButton saved={saved} onToggle={toggleSaved} size={40} />
           </div>
         }
       />
 
-      <div className="relative">
-        {l.photos[shot] ? (
-          <img src={l.photos[shot]} alt={l.title} className="h-64 w-full object-cover" />
-        ) : null}
-        {l.photos.length > 1 ? (
-          <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
-            {l.photos.map((p, i) => (
-              <button
-                key={p}
-                aria-label={`Photo ${i + 1}`}
-                onClick={() => setShot(i)}
-                className="h-1.5 rounded-full transition-all"
-                style={{
-                  width: i === shot ? 18 : 6,
-                  background: i === shot ? "var(--primary)" : "var(--border)",
-                }}
+      {/* Photos: swipe between them; the dots follow. */}
+      {l.photos.length ? (
+        <div className="relative">
+          <div
+            className="no-scrollbar flex aspect-square snap-x snap-mandatory overflow-x-auto bg-subtle"
+            onScroll={(e) => {
+              const el = e.currentTarget;
+              setShot(Math.round(el.scrollLeft / el.clientWidth));
+            }}
+          >
+            {l.photos.map((src, i) => (
+              <img
+                key={src}
+                src={src}
+                alt={i === 0 ? l.title : `${l.title}, photo ${i + 1}`}
+                className="h-full w-full shrink-0 snap-center object-cover"
               />
             ))}
           </div>
-        ) : null}
-      </div>
+          {l.photos.length > 1 ? (
+            <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5" aria-hidden>
+              {l.photos.map((p, i) => (
+                <span
+                  key={p}
+                  className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${i === shot ? "w-4 bg-white" : "w-1.5 bg-white/60"}`}
+                />
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="px-5 py-5">
         <div className="flex items-start justify-between gap-3">
@@ -154,37 +194,50 @@ function ListingDetail() {
           )}
         </div>
         <h1 className="mt-2 text-3 leading-tight">{l.title}</h1>
-        {l.subtitle ? <p className="mt-1 text-sm text-muted-foreground">{l.subtitle}</p> : null}
+        {l.subtitle ? <p className="mt-1 text-sm text-foreground">{l.subtitle}</p> : null}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {where ? <LocationRow text={where} /> : null}
           {l.owner?.verified ? <TrustPill label="Industry verified" /> : null}
-          <span className="text-1 text-muted-foreground">Listed {l.postedAt}</span>
+          <span className="text-1 text-foreground">Listed {l.postedAt}</span>
         </div>
+
+        {l.videoUrl ? (
+          <div className="mt-6">
+            <MediaEmbed url={l.videoUrl} title={l.title} />
+          </div>
+        ) : null}
 
         {l.description ? (
           <>
             <h2 className="mt-6 text-2">Description</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{l.description}</p>
+            <p className="mt-2 text-sm leading-relaxed text-foreground">{l.description}</p>
           </>
         ) : null}
 
-        {l.specs.length ? (
+        {details.length ? (
           <>
-            <h2 className="mt-6 text-2">
-              {l.type === "service"
-                ? "Service details"
-                : l.type === "rental"
-                  ? "Rental terms"
-                  : "Specifications"}
-            </h2>
-            <dl className="mt-2 divide-y divide-border rounded-lg border border-border">
-              {l.specs.map((s) => (
-                <div key={s.label} className="flex items-center justify-between px-4 py-3">
-                  <dt className="text-1 text-muted-foreground">{s.label}</dt>
-                  <dd className="text-1 font-semibold">{s.value}</dd>
+            <h2 className="mt-6 text-2">Details</h2>
+            <dl className="mt-2 divide-y divide-border rounded-lg bg-card">
+              {details.map((d) => (
+                <div key={d.label} className="flex items-center justify-between gap-4 px-4 py-3">
+                  <dt className="text-1 text-foreground">{d.label}</dt>
+                  <dd className="text-right text-1 font-semibold">{d.value}</dd>
                 </div>
               ))}
             </dl>
+          </>
+        ) : null}
+
+        {l.included?.length ? (
+          <>
+            <h2 className="mt-6 text-2">What's included</h2>
+            <ul className="mt-2 flex flex-wrap gap-2">
+              {l.included.map((x) => (
+                <li key={x} className="pill bg-card text-foreground">
+                  {x}
+                </li>
+              ))}
+            </ul>
           </>
         ) : null}
 
@@ -223,7 +276,7 @@ function ListingDetail() {
                     <p className="text-1 text-muted-foreground">
                       {new Date(r.created_at).toLocaleDateString("en-IN")}
                     </p>
-                    <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
+                    <p className="mt-2 text-sm text-foreground">{r.body}</p>
                     <ReviewTags tags={r.tags} />
                     {r.response ? (
                       <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
@@ -239,32 +292,59 @@ function ListingDetail() {
           </>
         ) : null}
 
-        <h2 className="mt-6 text-2">Related listings</h2>
-        <div className="rail mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
-          {all
-            .filter((x) => x.category === l.category && x.id !== l.id)
-            .map((x) => (
-              <ListingTile key={x.id} l={x} />
-            ))}
-        </div>
+        {related.length ? (
+          <>
+            <h2 className="mt-6 text-2">Related listings</h2>
+            <div className="rail mt-2 flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+              {related.map((x) => (
+                <ListingTile key={x.id} l={x} />
+              ))}
+            </div>
+          </>
+        ) : null}
 
-        <button
-          onClick={() => setReport(true)}
-          className="mx-auto mt-6 flex items-center gap-1.5 text-1 font-semibold text-muted-foreground"
-        >
-          <Flag size={iconSize.xs} /> Report this listing
-        </button>
+        {mine ? null : (
+          <button
+            onClick={() => setReport(true)}
+            className="mx-auto mt-6 flex items-center gap-1.5 text-1 font-semibold text-foreground"
+          >
+            <Flag size={iconSize.xs} /> Report this listing
+          </button>
+        )}
       </div>
 
-      <div className="fixed inset-x-0 bottom-16 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 py-3 backdrop-blur">
-        <div className="flex gap-2">
-          <Btn variant="outline" className="flex-1" onClick={() => setOffer(true)}>
-            {cta[0]}
-          </Btn>
-          <BtnLink to="/messages" className="flex-1 w-full">
-            {cta[1]}
-          </BtnLink>
-        </div>
+      {/* One primary action: yours → Edit; for sale → Make offer; for rent → Request rental. No
+          payment anywhere — the rest happens between the two people. */}
+      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app bg-background/95 px-5 pb-[max(env(safe-area-inset-bottom),12px)] pt-3 backdrop-blur">
+        {mine && l.dbId ? (
+          <div className="flex gap-2">
+            <BtnLink to="/marketplace/mine" variant="outline" className="flex-1">
+              My listings
+            </BtnLink>
+            <BtnLink to="/marketplace/sell" search={{ edit: l.dbId }} className="flex-1">
+              <PenLine size={iconSize.sm} aria-hidden />
+              Edit listing
+            </BtnLink>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <BtnLink to="/messages" variant="outline" className="flex-1">
+              <MessageCircle size={iconSize.sm} aria-hidden />
+              Message
+            </BtnLink>
+            {rental ? (
+              <BtnLink to="/marketplace/rent/request/$id" params={{ id: l.id }} className="flex-1">
+                <CalendarClock size={iconSize.sm} aria-hidden />
+                Request rental
+              </BtnLink>
+            ) : goods ? (
+              <Btn className="flex-1" onClick={() => setOffer(true)}>
+                <Tag size={iconSize.sm} aria-hidden />
+                Make offer
+              </Btn>
+            ) : null}
+          </div>
+        )}
       </div>
 
       <OfferSheet open={offer} onClose={() => setOffer(false)} listing={l} />

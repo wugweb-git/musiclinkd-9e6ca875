@@ -6,7 +6,7 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ChevronRight, Star, WifiOff, type LucideIcon } from "lucide-react";
-import { unitLabel, type PriceParts } from "@/lib/price";
+import { unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
@@ -58,6 +58,7 @@ export function Price({
   className = "",
   amountClassName = "",
   unitClassName = "text-1",
+  inline = false,
 }: {
   price: PriceParts | null | undefined;
   align?: "start" | "center" | "end" | undefined;
@@ -67,6 +68,8 @@ export function Price({
   amountClassName?: string | undefined;
   /** Size of the unit and note lines; never larger than the amount. */
   unitClassName?: string | undefined;
+  /** The unit on the amount's line as "/day" (Market's rates), not on a line of its own. */
+  inline?: boolean | undefined;
 }) {
   if (!price?.amount) return null;
   const unit = unitLabel(price.unit);
@@ -80,8 +83,13 @@ export function Price({
     <span className={`inline-flex min-w-0 flex-col ${alignment} ${className}`}>
       <span className={`${tone === "price" ? "text-price" : ""} ${amountClassName}`}>
         {price.amount}
+        {inline && price.unit ? (
+          <span className={`${unitClassName} font-normal text-muted-foreground`}>
+            /{unitName(price.unit)}
+          </span>
+        ) : null}
       </span>
-      {unit ? (
+      {unit && !inline ? (
         <span className={`${unitClassName} font-normal leading-tight text-muted-foreground`}>
           {unit}
         </span>

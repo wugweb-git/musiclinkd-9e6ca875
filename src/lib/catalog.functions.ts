@@ -122,6 +122,7 @@ export type ListingRow = {
   created_at: string;
   seller_name: string | null;
   /** Where a rental is picked up, when the owner said. */
+  video_url?: string | null;
   photos?: string[] | null;
   pickup_location: string | null;
   brand: string | null;
@@ -172,7 +173,7 @@ const LISTING_FIELDS = `id, slug, title, category, item_category, item_category_
   price_unit, price_note, image_url, created_at, seller_name, pickup_location, brand, model,
   listing_description, specs, included, weekly_price_paise, monthly_price_paise, deposit_paise,
   quantity_available, pickup_available, delivery_available, delivery_fee_paise, delivery_note,
-  min_days, max_days, notice_period, photos`;
+  min_days, max_days, notice_period, photos, video_url`;
 const LISTING = `${LISTING_FIELDS},
   seller:profiles!marketplace_listings_seller_profile_id_fkey(${SELLER})`;
 /** The seller without the standing columns, while 20260918240000_missing_data.sql is not applied. */
