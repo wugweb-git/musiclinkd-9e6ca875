@@ -103,9 +103,6 @@ function MyRentals() {
                     {bucket === "Active" ? (
                       <>
                         <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
-                          <Chip>Extend</Chip>
-                        </Link>
-                        <Link to="/marketplace/rent/active/$id" params={{ id: b.id }}>
                           <Chip>Return</Chip>
                         </Link>
                       </>

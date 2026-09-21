@@ -53,7 +53,7 @@ function RentalBooking() {
 /**
  * A booking, from the database: dates, status, fulfilment, total, deposit, plus the listing's
  * provider (getRentalProvider — a profile, no badges or response times).
- * Extend and Review have no backend yet (owner's call, 18 Sep 2026) — both stay as "coming soon".
+ * Extend is removed (owner, 21 Sep 2026); Rate opens the review screen for the provider.
  * Return is real: it moves the booking to "completed" via setRentalBookingStatus.
  */
 function RealRentalBooking({ id }: { id: string }) {
@@ -207,28 +207,18 @@ function RealRentalBooking({ id }: { id: string }) {
         <h2 className="mt-6 text-2">Actions</h2>
         <div className="mt-2 space-y-2">
           {b.status === "Active" ? (
-            <>
-              <Btn
-                variant="outline"
-                className="w-full"
-                onClick={() => toast("Extensions — coming soon")}
-              >
-                Request Extension
-              </Btn>
-              <Btn
-                className="w-full"
-                loading={complete.isPending}
-                onClick={() => complete.mutate()}
-              >
-                Return Equipment
-              </Btn>
-            </>
+            <Btn className="w-full" loading={complete.isPending} onClick={() => complete.mutate()}>
+              Return Equipment
+            </Btn>
           ) : null}
           {b.status === "Completed" ? (
             <>
-              <Btn className="w-full" onClick={() => toast("Reviews — coming soon")}>
-                Rate Provider & Equipment
-              </Btn>
+              {/* A completed rental lets the renter review the provider (can_review_profile). */}
+              {providerId ? (
+                <BtnLink to="/reviews/write/$id" params={{ id: providerId }} className="w-full">
+                  Rate Provider & Equipment
+                </BtnLink>
+              ) : null}
               {b.listingSlug ? (
                 <BtnLink
                   to="/marketplace/rent/e/$id"
