@@ -59,4 +59,10 @@ UPDATE profiles SET roles = '{studio,sound_engineer}' WHERE id = '2baecd1b-d9b3-
 UPDATE profiles SET roles = '{studio,sound_engineer}' WHERE id = '86a5d555-61eb-5619-b452-3a9387baa66f'; -- Yash Raj Sound Studios
 
 -- Production house profiles added on 2026-09-21 (profiles and profile_business cascade from auth.users):
---   DELETE FROM auth.users WHERE id IN (<the 3 ids, filled in after the insert>);
+--   DELETE FROM auth.users WHERE id IN (
+--     '370806f8-ddae-4a37-879b-29e9766c2df0',  -- Marigold Reel Productions (Mumbai)
+--     '8916c93c-3864-427f-88a9-1ffeb48a866c',  -- Nine Lamps Media (Bengaluru)
+--     'c65cbf9d-62fe-4890-9710-d8361aa5c183'); -- Tarang Audio Visual (Chennai)
+--
+-- Applied 2026-09-21. After: a_and_r gone, artist_manager labelled "Artist Management", 17 business
+-- rows cleaned of talent tags, 3 production houses added (business profiles 33 -> 36).
