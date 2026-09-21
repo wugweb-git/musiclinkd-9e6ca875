@@ -33,6 +33,7 @@ import {
   PersonTypePicker,
   InlineField,
   OnboardingProvider,
+  UsernameField,
   StepShell,
   StepSkeleton,
   SyncBanner,
@@ -520,7 +521,6 @@ function StepBody({
 
   switch (id) {
     case "identity": {
-      const check = validateUsername(d.username);
       return (
         <div className="space-y-5">
           <InlineField
@@ -532,30 +532,12 @@ function StepBody({
             autoComplete="name"
             hint="Use the name you're credited under."
           />
-          <InlineField
-            inputId="username"
-            label="Username"
-            prefix="musiclinkd.com/"
+          <UsernameField
             value={d.username}
-            onChange={(v) => set({ username: v.toLowerCase().replace(/\s/g, "") })}
-            placeholder="yourname"
-            autoComplete="username"
-            readOnly={Boolean(claimedUsername)}
-            {...(claimedUsername
-              ? { hint: "This is your profile link. Usernames can't be changed." }
-              : claimError
-                ? { error: claimError }
-                : !d.username
-                  ? { hint: "Your profile link: lowercase letters, numbers, dots and underscores." }
-                  : !check.ok
-                    ? { error: check.message }
-                    : usernameStatus === "taken"
-                      ? { error: "That one's taken. Try another." }
-                      : usernameStatus === "available"
-                        ? { ok: `${check.message} is available` }
-                        : usernameStatus === "checking"
-                          ? { hint: "Checking…" }
-                          : { hint: check.message })}
+            onChange={(v) => set({ username: v })}
+            status={usernameStatus}
+            locked={Boolean(claimedUsername)}
+            claimError={claimError}
           />
           <div className="grid grid-cols-2 gap-3">
             <DrawerField label="State">

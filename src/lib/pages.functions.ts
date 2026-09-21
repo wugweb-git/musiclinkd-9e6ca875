@@ -20,7 +20,14 @@ async function admin() {
 }
 
 /** A free username from a business name: letters and digits joined by dots, 3 to 30 long. */
-async function freeUsername(client: SupabaseClient, name: string) {
+async function freeUsername(client: SupabaseClient, name: string, preferred?: string) {
+  if (preferred && /^[a-z0-9._]{3,30}$/.test(preferred)) {
+    const [{ data: used }, { data: reserved }] = await Promise.all([
+      client.from("profiles").select("id").eq("username", preferred).limit(1),
+      client.from("reserved_usernames").select("name").eq("name", preferred).limit(1),
+    ]);
+    if (!used?.length && !reserved?.length) return preferred;
+  }
   const base =
     name
       .toLowerCase()
@@ -48,6 +55,8 @@ async function freeUsername(client: SupabaseClient, name: string) {
 export async function createBusinessPage(
   ownerId: string,
   name: string,
+  /** The @username the owner picked; if it was taken meanwhile, one is made from the name. */
+  preferred: string | undefined,
   setUp: (client: SupabaseClient, pageId: string, username: string | null) => Promise<void>,
 ): Promise<{ pageId: string; username: string | null }> {
   const supabaseAdmin = await admin();
@@ -76,7 +85,7 @@ export async function createBusinessPage(
   const pageId = created.user.id;
 
   try {
-    const username = await freeUsername(client, name);
+    const username = await freeUsername(client, name, preferred);
     const { error: linkError } = await client
       .from("profiles")
       .update({ owner_id: ownerId, ...(username ? { username } : {}) } as never)

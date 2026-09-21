@@ -641,6 +641,10 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       .object({
         type: z.string().regex(/^[a-z_]{2,40}$/),
         name: z.string().trim().min(1).max(80),
+        username: z
+          .string()
+          .regex(/^[a-z0-9._]{3,30}$/)
+          .optional(),
         tagline: z.string().trim().max(160).optional(),
         city: z.string().trim().regex(CITY_PATTERN),
         pinCode: z.string().regex(/^[1-9]\d{5}$/),
@@ -685,8 +689,12 @@ export const createMyBusiness = createServerFn({ method: "POST" })
     // A talent login gets a business page it owns (owner, 22 Sep 2026), so its own profile is
     // never touched. A login that signed up as a business is the business itself, as before.
     if (await isTalentAccount(client, current?.roles)) {
-      const page = await createBusinessPage(context.userId, data.name, (admin, pageId, username) =>
-        setUpBusiness(admin, pageId, data, { username, roles: null }, false),
+      const page = await createBusinessPage(
+        context.userId,
+        data.name,
+        data.username,
+        (admin, pageId, username) =>
+          setUpBusiness(admin, pageId, data, { username, roles: null }, false),
       );
       return { username: page.username, pageId: page.pageId };
     }
@@ -733,6 +741,7 @@ async function setUpBusiness(
     languages?: string[] | undefined;
     genres?: string[] | undefined;
     policies?: string[] | undefined;
+    username?: string | undefined;
     amenities?: string[] | undefined;
     equipment?: string[] | undefined;
   },
@@ -744,6 +753,8 @@ async function setUpBusiness(
     .from("profiles")
     .update({
       display_name: data.name,
+      // A business that signed up as itself claims its @username here, once.
+      ...(!current?.username && data.username ? { username: data.username } : {}),
       city: data.city,
       ...(data.state ? { state: data.state, country: "India" } : {}),
       ...(data.languages?.length ? { languages: data.languages } : {}),

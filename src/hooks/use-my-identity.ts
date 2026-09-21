@@ -17,7 +17,7 @@ type Contact = {
 /** The public profile link people reach by scanning. Absolute, so it works off the phone. */
 function profileUrl(username: string) {
   const origin = typeof window === "undefined" ? `https://${SHORT_HOST}` : window.location.origin;
-  return `${origin}/profile/${username}`;
+  return `${origin}/@${username}`;
 }
 
 /**

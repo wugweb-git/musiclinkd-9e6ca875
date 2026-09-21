@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HandleRouteImport } from './routes/$handle'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as BandRouteImport } from './routes/band'
@@ -187,6 +188,11 @@ import { Route as OpportunitiesIdApplicantsAidRouteImport } from './routes/oppor
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HandleRoute = HandleRouteImport.update({
+  id: '/$handle',
+  path: '/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -1067,6 +1073,7 @@ const OpportunitiesIdApplicantsAidRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
   '/band': typeof BandRoute
@@ -1243,6 +1250,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
   '/band': typeof BandRoute
@@ -1419,6 +1427,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
   '/band': typeof BandRoute
@@ -1597,6 +1606,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$handle'
     | '/about'
     | '/accounts'
     | '/band'
@@ -1773,6 +1783,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$handle'
     | '/about'
     | '/accounts'
     | '/band'
@@ -1948,6 +1959,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$handle'
     | '/about'
     | '/accounts'
     | '/band'
@@ -2125,6 +2137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HandleRoute: typeof HandleRoute
   AboutRoute: typeof AboutRoute
   AccountsRoute: typeof AccountsRoute
   BandRoute: typeof BandRoute
@@ -2300,6 +2313,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$handle': {
+      id: '/$handle'
+      path: '/$handle'
+      fullPath: '/$handle'
+      preLoaderRoute: typeof HandleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -3551,6 +3571,7 @@ const SettingsSecurityRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HandleRoute: HandleRoute,
   AboutRoute: AboutRoute,
   AccountsRoute: AccountsRoute,
   BandRoute: BandRoute,

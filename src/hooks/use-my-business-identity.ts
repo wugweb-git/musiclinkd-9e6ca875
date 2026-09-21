@@ -8,7 +8,7 @@ import { SHORT_HOST } from "@/data/identity";
 
 function businessUrl(username: string) {
   const origin = typeof window === "undefined" ? `https://${SHORT_HOST}` : window.location.origin;
-  return `${origin}/business/${username}`;
+  return `${origin}/@${username}`;
 }
 
 /**

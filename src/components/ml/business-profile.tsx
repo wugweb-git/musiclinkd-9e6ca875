@@ -21,6 +21,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { connectionWith, setFollowing as setFollowingFn } from "@/lib/connections.functions";
 import { shareLink } from "@/lib/booking-actions";
+import { enterLinkedProfile, listLinkedProfiles } from "@/lib/pages.functions";
+import { switchToLinked } from "@/lib/saved-accounts";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, IconBtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
@@ -48,8 +50,16 @@ const tabs: { key: BusinessTab; icon: LucideIcon; solid: SolidIcon; move: Move }
 /** A business account's profile: /business/$id and /profile/$username for a business. */
 export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }) {
   const [tab, setTab] = useState<BusinessTab>("Overview");
-  const { user } = useAuth();
+  const { user, signedIn } = useAuth();
   const isOwner = !!b && user?.id === b.profileId;
+  // A business page this sign-in owns (src/lib/pages.functions.ts): one tap switches into it.
+  const loadLinked = useServerFn(listLinkedProfiles);
+  const linked = useQuery({
+    queryKey: ["accounts", "linked", user?.id ?? null],
+    queryFn: () => loadLinked(),
+    enabled: signedIn && !!b && !isOwner,
+  });
+  const ownsPage = !!b && !isOwner && (linked.data ?? []).some((p) => p.id === b.profileId);
 
   if (!b) {
     return (
@@ -104,7 +114,11 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
       </CoverHero>
 
       <div className="space-y-4 px-5 pt-4 pb-6">
-        <BusinessActions id={b.id} name={b.name} profileId={b.profileId} owner={isOwner} />
+        {ownsPage ? (
+          <SwitchToManage id={b.id} profileId={b.profileId} name={b.name} />
+        ) : (
+          <BusinessActions id={b.id} name={b.name} profileId={b.profileId} owner={isOwner} />
+        )}
 
         {b.stats ? (
           <div className="grid grid-cols-4 gap-2 rounded-lg bg-subtle p-3 text-center">
@@ -360,6 +374,36 @@ function hostOf(url: string) {
  * it, and follow it. Follow turns the moment it's tapped and settles when the database answers,
  * the same as on a person's profile. Signed out, Message and Follow lead to Welcome.
  */
+/** You own this page but are signed in as yourself: switch into it to manage it. */
+function SwitchToManage({ id, profileId, name }: { id: string; profileId: string; name: string }) {
+  const enter = useServerFn(enterLinkedProfile);
+  const [busy, setBusy] = useState(false);
+  return (
+    <div className="space-y-2">
+      <Btn
+        className="w-full"
+        loading={busy}
+        onClick={async () => {
+          setBusy(true);
+          try {
+            await switchToLinked(profileId, enter);
+            // A fresh start as the page, so nothing from your own profile stays on screen.
+            window.location.assign(`/business/${id}/manage`);
+          } catch {
+            toast.error("Couldn't switch. Try again from Switch account.");
+            setBusy(false);
+          }
+        }}
+      >
+        Switch to {name} to Manage
+      </Btn>
+      <p className="text-center text-1 text-muted-foreground">
+        You own this page. Visitors see Message and Book here.
+      </p>
+    </div>
+  );
+}
+
 function BusinessActions({
   id,
   name,
@@ -411,9 +455,7 @@ function BusinessActions({
           label="Share Profile"
           variant="outline"
           className="h-11 w-11"
-          onClick={() =>
-            void shareLink({ title: name, url: `${window.location.origin}/business/${id}` })
-          }
+          onClick={() => void shareLink({ title: name, url: `${window.location.origin}/@${id}` })}
         >
           <Share2 size={iconSize.md} aria-hidden />
         </IconBtn>

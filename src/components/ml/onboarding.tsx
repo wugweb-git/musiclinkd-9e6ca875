@@ -42,7 +42,13 @@ import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import { deleteProfileImage, PROFILE_IMAGE_ACCEPT, uploadProfileImage } from "@/lib/profile-images";
 import { draftToProfile, profileToDraft } from "@/lib/profile-map";
-import { emptyDraft, visibleSteps, type OnboardingDraft } from "@/data/onboarding";
+import {
+  emptyDraft,
+  validateUsername,
+  visibleSteps,
+  type OnboardingDraft,
+} from "@/data/onboarding";
+import type { UsernameStatus } from "@/lib/username";
 import {
   loadPersonaBucket,
   type LoadState,
@@ -970,6 +976,55 @@ export function PhotoPicker({
         <p className="mt-4 text-1 text-muted-foreground">JPEG, PNG or WebP, up to 5 MB.</p>
       </Sheet>
     </div>
+  );
+}
+
+/**
+ * The @username field for talent and business alike: lowercase, no spaces, a live availability
+ * check (useUsernameAvailability), and read-only once claimed, since usernames never change.
+ */
+export function UsernameField({
+  value,
+  onChange,
+  status,
+  locked = false,
+  claimError,
+  inputId = "username",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  status: UsernameStatus;
+  locked?: boolean;
+  claimError?: string | null;
+  inputId?: string;
+}) {
+  const check = validateUsername(value);
+  return (
+    <InlineField
+      inputId={inputId}
+      label="Username"
+      prefix="musiclinkd.com/@"
+      value={value}
+      onChange={(v) => onChange(v.toLowerCase().replace(/\s/g, ""))}
+      placeholder="yourname"
+      autoComplete="username"
+      readOnly={locked}
+      {...(locked
+        ? { hint: "This is your profile link. Usernames can't be changed." }
+        : claimError
+          ? { error: claimError }
+          : !value
+            ? { hint: "Your profile link: lowercase letters, numbers, dots and underscores." }
+            : !check.ok
+              ? { error: check.message }
+              : status === "taken"
+                ? { error: "That one's taken. Try another." }
+                : status === "available"
+                  ? { ok: `${check.message} is available` }
+                  : status === "checking"
+                    ? { hint: "Checking…" }
+                    : { hint: check.message })}
+    />
   );
 }
 

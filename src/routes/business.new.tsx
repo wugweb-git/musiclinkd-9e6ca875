@@ -10,6 +10,7 @@ import {
   DrawerField,
   InlineField,
   PersonTypePicker,
+  UsernameField,
   StepShell,
   StepSkeleton,
 } from "@/components/ml/onboarding";
@@ -23,6 +24,8 @@ import { GOOGLE_MAPS } from "@/lib/place";
 import { cityProblem, pinProblem } from "@/lib/validation";
 import { businessTypes, choicesFor, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { roleIcon } from "@/lib/role-icons";
+import { useUsernameAvailability } from "@/lib/username";
+import { validateUsername } from "@/data/onboarding";
 import { iconSize } from "@/lib/tokens";
 
 /*
@@ -72,6 +75,16 @@ function typeIcon(o: TaxonomyOption) {
   return <Icon size={16} aria-hidden />;
 }
 
+/** A username from a business name: lowercase letters and digits joined by dots, 3 to 30. */
+function suggestUsername(name: string) {
+  return name
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, ".")
+    .replace(/^\.+|\.+$/g, "")
+    .slice(0, 30);
+}
+
 /** Picked slugs as their labels, or "Not added". */
 function labelsOf(options: TaxonomyOption[] | undefined, slugs: string[]) {
   return slugs.map((s) => options?.find((o) => o.slug === s)?.label ?? s).join(", ") || "Not added";
@@ -94,6 +107,14 @@ function NewBusiness() {
   const [place, setPlace] = useState<MapsPlace | null>(null);
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
+  // The @username, suggested from the name until the owner types their own.
+  const [username, setUsername] = useState("");
+  const [usernameTouched, setUsernameTouched] = useState(false);
+  useEffect(() => {
+    if (!usernameTouched) setUsername(suggestUsername(name));
+  }, [name, usernameTouched]);
+  const usernameOk = validateUsername(username).ok;
+  const usernameStatus = useUsernameAvailability(username, usernameOk);
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [pinCode, setPinCode] = useState("");
@@ -132,7 +153,7 @@ function NewBusiness() {
   const pinError = pinCode ? pinProblem(pinCode) : "Enter the 6-digit PIN code.";
   const valid: Record<Step, boolean> = {
     type: Boolean(type) && !mapsError,
-    basics: Boolean(name.trim()),
+    basics: Boolean(name.trim()) && usernameOk && usernameStatus !== "taken",
     location: Boolean(state) && !cityError && !pinError,
     offer: languages.length > 0,
     policies: policies.some((p) => p.trim()),
@@ -150,6 +171,7 @@ function NewBusiness() {
         data: {
           type: type!,
           name,
+          username,
           city: city.trim(),
           state,
           pinCode,
@@ -322,6 +344,15 @@ function NewBusiness() {
               maxLength={80}
               hint="Use the name on your signboard."
             />
+            <UsernameField
+              inputId="businessUsername"
+              value={username}
+              onChange={(v) => {
+                setUsernameTouched(true);
+                setUsername(v);
+              }}
+              status={usernameStatus}
+            />
             <InlineField
               inputId="tagline"
               label="Tagline (optional)"
@@ -417,6 +448,7 @@ function NewBusiness() {
                 ["Type", typeLabel, "type"],
                 ["Maps link", link ? "Added" : "Not added", "type"],
                 ["Name", name, "basics"],
+                ["Username", `@${username}`, "basics"],
                 ["Tagline", tagline.trim() || "Not added", "basics"],
                 ["City", [city, state].filter(Boolean).join(", "), "location"],
                 ["Genres", labelsOf(tx.genres, genres), "offer"],
