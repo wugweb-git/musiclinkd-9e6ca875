@@ -1,0 +1,23 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before a data update (no migration file: data only).
+--
+-- 1. Opening hours: every studio with weekly_hours gets studios.operating_hours rewritten to the
+--    line the app now derives from weekly_hours (src/lib/studio-slots.ts hoursLine), and its
+--    business's profile_business.operating_hours to the same line when the owner has one studio.
+--    Owner 86a5d555-61eb-5619-b452-3a9387baa66f has two studios with different hours, so their
+--    business line is left as it is.
+-- 2. auth.users: the one unconfirmed account (qa.tester@musiclinkd.app, f267d8ca-47bc-4ad1-9161-cf76fdbb5899)
+--    gets email_confirmed_at = now(), since sign-in no longer uses email codes. It was null.
+--
+-- Values at snapshot time (id, name, studios.operating_hours, profile_business.operating_hours):
+--   b84bbaa9-f4e2-40c8-8f27-959b220c7410 Bandra Jam Room — Hourly Rehearsal | '9 am – 11 pm' | '09:00 AM – 11:00 PM (Mon–Sat)'
+--   29159501-1987-5152-8b0e-954b5cf11bdf Headroom Mastering | NULL | NULL
+--   62102fef-efc3-4cb4-b8b2-36b1fadd660e Octave Sound Labs | NULL | (no business row)
+--   76f7d7c8-274e-5109-89e6-63ed65658c05 Soundhouse Bandra | E'Mon–Fri: 10:00 – 22:00\nSaturday: 11:00 – 23:00\nSunday: Closed' | same
+--   9ac144a3-afdd-573b-b823-224ef271d4c5 The Basement Jam Rooms | NULL | NULL
+--   dfce6dfa-e21c-5000-bb2d-bb45457e0039 Waveform Podcast Studio | NULL | NULL
+--   29833230-3ca8-58e3-b0c2-f87756c18008 Wugweb | '09:00 AM – 11:00 PM (Mon–Sat)' | same
+--   3b0324b2-a7e7-5ba3-b3fc-a64a0b87b348 Yash Raj Sound Studios — Sound Lab | '09:00 AM – 11:00 PM (Mon–Sat)' | '09:00 AM – 11:00 PM (Mon–Sat)'
+--
+-- To undo: set each operating_hours back to the value above, and
+--   UPDATE auth.users SET email_confirmed_at = NULL WHERE id = 'f267d8ca-47bc-4ad1-9161-cf76fdbb5899';
