@@ -1,17 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { AccountRow } from "@/components/ml/accounts";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  addAnotherAccount,
-  forgetAccount,
-  readAccounts,
-  switchTo,
-  type SavedAccount,
-} from "@/lib/saved-accounts";
+import { addAnotherAccount, forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
 import { iconSize } from "@/lib/tokens";
 
 /*
@@ -37,9 +31,8 @@ export const Route = createFileRoute("/accounts")({
 
 function Accounts() {
   const { user } = useAuth();
-  const [accounts, setAccounts] = useState<SavedAccount[]>([]);
+  const accounts = useSavedAccounts();
   const [busy, setBusy] = useState(false);
-  useEffect(() => setAccounts(readAccounts()), [user]);
 
   async function pick(userId: string) {
     setBusy(true);
@@ -49,7 +42,6 @@ function Accounts() {
       window.location.assign("/");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't switch account");
-      setAccounts(readAccounts());
       setBusy(false);
     }
   }
@@ -66,10 +58,7 @@ function Accounts() {
               current={a.userId === user?.id}
               busy={busy}
               onPick={() => void pick(a.userId)}
-              onRemove={() => {
-                forgetAccount(a.userId);
-                setAccounts(readAccounts());
-              }}
+              onRemove={() => forgetAccount(a.userId)}
             />
           ))}
         </ul>

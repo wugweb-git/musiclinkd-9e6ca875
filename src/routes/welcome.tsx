@@ -36,7 +36,7 @@ import { MadeByWugweb } from "@/components/ml/kit";
 import { useServerFn } from "@tanstack/react-start";
 import { signUpWithPassword } from "@/lib/sign-up.functions";
 import { AccountRow } from "@/components/ml/accounts";
-import { forgetAccount, readAccounts, switchTo, type SavedAccount } from "@/lib/saved-accounts";
+import { forgetAccount, switchTo, useSavedAccounts } from "@/lib/saved-accounts";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -272,14 +272,12 @@ function WelcomeScreen() {
   const signup = mode === "signup";
 
   // Accounts already signed in on this device (Switch account): one tap back in.
-  const [saved, setSaved] = useState<SavedAccount[]>([]);
-  useEffect(() => setSaved(readAccounts()), []);
+  const saved = useSavedAccounts();
   async function continueAs(userId: string) {
     try {
       await switchTo(userId);
       window.location.assign("/");
     } catch (e) {
-      setSaved(readAccounts());
       toast.error(e instanceof Error ? e.message : "Couldn't continue as that account");
     }
   }
@@ -331,10 +329,7 @@ function WelcomeScreen() {
                     current={false}
                     busy={busy !== null}
                     onPick={() => void continueAs(a.userId)}
-                    onRemove={() => {
-                      forgetAccount(a.userId);
-                      setSaved(readAccounts());
-                    }}
+                    onRemove={() => forgetAccount(a.userId)}
                   />
                 ))}
               </ul>

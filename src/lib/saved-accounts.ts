@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,7 +24,20 @@ export type SavedAccount = {
 };
 
 const KEY = "ml.saved-accounts";
+const CHANGED = "ml:saved-accounts";
 const LIMIT = 5;
+
+/** The saved accounts, kept current as sessions are remembered or accounts removed. */
+export function useSavedAccounts(): SavedAccount[] {
+  const [list, setList] = useState<SavedAccount[]>([]);
+  useEffect(() => {
+    const read = () => setList(readAccounts());
+    read();
+    window.addEventListener(CHANGED, read);
+    return () => window.removeEventListener(CHANGED, read);
+  }, []);
+  return list;
+}
 
 export function readAccounts(): SavedAccount[] {
   try {
@@ -42,6 +56,7 @@ export function readAccounts(): SavedAccount[] {
 function write(list: SavedAccount[]) {
   try {
     localStorage.setItem(KEY, JSON.stringify(list.slice(0, LIMIT)));
+    window.dispatchEvent(new Event(CHANGED));
   } catch {
     // Switching just won't offer this account; signing in still works.
   }
