@@ -7,7 +7,7 @@ import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { formatDate, formatTime, type BookingStatus } from "@/data/booking";
+import { formatDate, formatTime, isoDate, type BookingStatus } from "@/data/booking";
 import { listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { TextLink } from "@/components/ml/links";
@@ -57,7 +57,7 @@ function ProviderBookingsContent() {
   });
 
   const all = q.data ?? [];
-  const today = new Date().toISOString().slice(0, 10);
+  const today = isoDate(new Date());
   const pending = all.filter((b) => ["requested", "reviewing"].includes(b.status));
   const cancelled = all.filter((b) => b.status === "cancelled");
   const todays = all.filter((b) => b.session_date === today && b.status !== "cancelled");

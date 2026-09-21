@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { BusinessOnlyGate, EmptyState, Loading, StatusPill, type Tone } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
+import { isoDate } from "@/data/booking";
 import {
   listStudioBookings,
   type BookingRequest,
@@ -48,9 +49,6 @@ const statusLabel: Record<BookingStatus, string> = {
   completed: "Completed",
 };
 
-function isoDate(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
 function formatDate(iso: string) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString("en-IN", {
     weekday: "short",

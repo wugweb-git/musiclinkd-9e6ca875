@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient, softSelect } from "@/lib/portfolio.functions";
 import { GOOGLE_MAPS, placeLine } from "@/lib/place";
+import { CITY_PATTERN } from "@/lib/validation";
 
 /*
  * Business accounts. MusicLinkd has two account kinds, talent and business, in one username
@@ -611,6 +612,25 @@ const ROLE_FOR_TYPE: Record<string, string> = {
   agency: "booking_agency",
 };
 
+/**
+ * True when the account already has talent roles: any person type the taxonomy doesn't flag as a
+ * business type (taxonomy_options metadata.flow = 'business').
+ */
+async function isTalentAccount(
+  client: SupabaseClient,
+  roles: readonly string[] | null | undefined,
+) {
+  if (!roles?.length) return false;
+  const { data, error } = await client
+    .from("taxonomy_options")
+    .select("slug")
+    .eq("category_key", "person_types")
+    .eq("metadata->>flow", "business");
+  if (error) throw new Error(error.message);
+  const business = new Set((data as { slug: string }[] | null)?.map((o) => o.slug) ?? []);
+  return roles.some((r) => !business.has(r));
+}
+
 export const createMyBusiness = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
@@ -619,11 +639,8 @@ export const createMyBusiness = createServerFn({ method: "POST" })
         type: z.enum(["studio", "label", "production_house", "venue", "agency", "rental"]),
         name: z.string().trim().min(1).max(80),
         tagline: z.string().trim().max(160).optional(),
-        city: z.string().trim().max(80),
-        pinCode: z
-          .string()
-          .regex(/^[1-9]\d{5}$/)
-          .optional(),
+        city: z.string().trim().regex(CITY_PATTERN),
+        pinCode: z.string().regex(/^[1-9]\d{5}$/),
         mapsUrl: z.string().trim().max(500).regex(GOOGLE_MAPS).optional(),
       })
       .parse(d),
@@ -638,6 +655,18 @@ export const createMyBusiness = createServerFn({ method: "POST" })
     if (readError) throw new Error(readError.message);
     const current = (me as { username: string | null; roles: string[] | null } | null) ?? null;
     const role = ROLE_FOR_TYPE[data.type];
+    // The profile row is the business, so a talent account can't become one: its name, city and
+    // headline would be overwritten. A business needs its own account (Switch account → Add).
+    if (await isTalentAccount(client, current?.roles)) {
+      throw new Error("A business needs its own account. Add one from Switch account.");
+    }
+    // One account, one business profile.
+    const { data: owned } = await client
+      .from("profile_business")
+      .select("profile_id")
+      .eq("profile_id", context.userId)
+      .maybeSingle();
+    if (owned) throw new Error("This account already has a business profile.");
 
     const { error } = await client
       .from("profiles")
@@ -689,4 +718,18 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       }
     }
     return { username: current?.username ?? null };
+  });
+
+/** Whether the signed-in account is a talent account, which can't create a business on itself. */
+export const getMyAccountIsTalent = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<boolean> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data, error } = await client
+      .from("profiles")
+      .select("roles")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return isTalentAccount(client, (data as { roles: string[] | null } | null)?.roles);
   });

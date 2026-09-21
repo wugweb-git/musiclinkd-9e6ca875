@@ -6,7 +6,7 @@ import { Card, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { businessViewFromRecord, type BusinessView } from "@/lib/business-view";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { getMyBusiness } from "@/lib/profile-groups.functions";
+import { getMyAccountIsTalent, getMyBusiness } from "@/lib/profile-groups.functions";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
@@ -44,8 +44,15 @@ function BusinessHome() {
     queryFn: loadMyBusiness,
     enabled: signedIn,
   });
-  const pending = loading || (signedIn && q.isPending);
+  // A talent account can't turn into a business; a business needs its own account.
+  const talent = useQuery({
+    queryKey: ["account", "is-talent", user?.id ?? null],
+    queryFn: () => getMyAccountIsTalent(),
+    enabled: signedIn,
+  });
+  const pending = loading || (signedIn && (q.isPending || talent.isPending));
   const businesses = signedIn ? (q.data ?? []) : [];
+  const canCreate = !businesses.length && !talent.data;
 
   return (
     <Screen>
@@ -55,7 +62,7 @@ function BusinessHome() {
         back="/profile"
         // One account, one business: adding shows only while there is none.
         right={
-          businesses.length ? undefined : (
+          !canCreate || pending ? undefined : (
             <Link
               to="/business/new"
               search={{ step: "type" as const }}
@@ -115,6 +122,15 @@ function BusinessHome() {
               </Card>
             </Link>
           ))
+        ) : talent.data ? (
+          <EmptyState
+            title="A business has its own account"
+            body="Your talent profile stays as it is. Add a business account, then switch between the two."
+          >
+            <BtnLink to="/accounts" className="w-full">
+              Add a Business Account
+            </BtnLink>
+          </EmptyState>
         ) : (
           <EmptyState
             title="No business yet"

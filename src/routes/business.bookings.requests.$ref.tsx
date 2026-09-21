@@ -97,6 +97,8 @@ function RequestReviewContent() {
       await queryClient.invalidateQueries({ queryKey: ["booking", ref] });
       await queryClient.invalidateQueries({ queryKey: ["business", "bookings", "mine"] });
       toast.success(status === "confirmed" ? "Request accepted" : "Request declined");
+      // Back to the fresh status, so the screen shows it was handled and can't be answered twice.
+      setDecision("none");
     } catch {
       toast.error("Couldn't send that — try again");
       setDecision("none");

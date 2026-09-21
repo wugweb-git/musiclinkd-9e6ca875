@@ -177,14 +177,29 @@ export const answerBooking = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }) => {
-    const { error } = await db(context.supabase)
+    // Only the studio's owner answers. The requester can update their own row too (to cancel),
+    // so without this they could confirm their own request.
+    const client = db(context.supabase);
+    const { data: studios, error: studioError } = await client
+      .from("studios")
+      .select("id")
+      .eq("owner_profile_id", context.userId);
+    if (studioError) throw new Error(studioError.message);
+    const ids = ((studios ?? []) as { id: string }[]).map((s) => s.id);
+    if (!ids.length) throw new Error("Only the studio can answer this request.");
+    const { data: updated, error } = await client
       .from("booking_requests")
       .update({
         status: data.status,
         ...(data.reply === undefined ? {} : { reply: data.reply }),
       } as never)
-      .eq("id", data.id);
+      .eq("id", data.id)
+      .in("studio_id", ids)
+      .select("id");
     if (error) throw new Error(error.message);
+    if (!(updated as unknown[] | null)?.length) {
+      throw new Error("Only the studio can answer this request.");
+    }
     return { status: data.status };
   });
 

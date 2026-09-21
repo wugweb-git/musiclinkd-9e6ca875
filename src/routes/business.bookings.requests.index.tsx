@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Btn, Screen, TopBar, Chip } from "@/components/ml/ui";
+import { Btn, BtnLink, Screen, TopBar, Chip } from "@/components/ml/ui";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
@@ -142,6 +142,8 @@ function RequestsContent() {
               </p>
               {b.notes ? <p className="mt-2 text-1 leading-relaxed">{b.notes}</p> : null}
 
+              {/* Accepting happens on the review screen, which shows clashing requests and answers
+                  them with a saved reply; accepting from here could double-book a slot. */}
               {["requested", "reviewing"].includes(b.status) ? (
                 <div className="mt-3 flex gap-2">
                   {b.status === "requested" ? (
@@ -154,21 +156,13 @@ function RequestsContent() {
                       Reviewing
                     </Btn>
                   ) : null}
-                  <Btn
+                  <BtnLink
+                    to="/business/bookings/requests/$ref"
+                    params={{ ref: b.id }}
                     className="min-h-10 flex-1 text-1"
-                    loading={reply.isPending}
-                    onClick={() => reply.mutate({ id: b.id, status: "confirmed" })}
                   >
-                    Confirm
-                  </Btn>
-                  <Btn
-                    variant="ghost"
-                    className="min-h-10 flex-1 text-1"
-                    loading={reply.isPending}
-                    onClick={() => reply.mutate({ id: b.id, status: "declined" })}
-                  >
-                    Decline
-                  </Btn>
+                    Review
+                  </BtnLink>
                 </div>
               ) : null}
             </article>

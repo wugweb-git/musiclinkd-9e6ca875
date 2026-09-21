@@ -81,11 +81,18 @@ function minutes(hhmm: string) {
 const pad = (n: number) => String(n).padStart(2, "0");
 const at = (date: string, hour: number) => new Date(`${date}T${pad(hour)}:00:00`).getTime();
 
-/** The earliest day a session can be asked for: tomorrow. Today and earlier are never offered. */
+/** Today's date in India, whatever clock the code runs on (the server's is UTC). */
+const INDIA_DATE = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Kolkata",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/** The earliest day a session can be asked for: tomorrow in India. Today and earlier are never offered. */
 export function earliestBookingDate(now = new Date()) {
-  const d = new Date(now);
-  d.setDate(now.getDate() + 1);
-  return isoDate(d);
+  const [y = 0, m = 1, d = 1] = INDIA_DATE.format(now).split("-").map(Number);
+  return isoDate(new Date(y, m - 1, d + 1));
 }
 
 /** How far ahead the calendar reads bookings; later dates are not offered. */

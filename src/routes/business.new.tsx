@@ -7,7 +7,8 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Dialog } from "@/components/ml/kit";
 import { businessTypes, type BusinessType } from "@/data/business";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
-import { GOOGLE_MAPS, PIN_CODE, placeLine } from "@/lib/place";
+import { GOOGLE_MAPS } from "@/lib/place";
+import { cityProblem, pinProblem } from "@/lib/validation";
 
 // Spaces and Team are off for now (owner, 21 Sep 2026): a business starts with one space, rooms are
 // added after it exists, and one business profile belongs to one account (one email).
@@ -59,14 +60,29 @@ function NewBusiness() {
           name,
           city,
           ...(tagline.trim() ? { tagline } : {}),
-          ...(PIN_CODE.test(pinCode) ? { pinCode } : {}),
-          ...(GOOGLE_MAPS.test(mapsUrl.trim()) ? { mapsUrl: mapsUrl.trim() } : {}),
+          pinCode,
+          ...(mapsUrl.trim() ? { mapsUrl: mapsUrl.trim() } : {}),
         },
       }),
     onSuccess: () => queryClient.invalidateQueries(),
-    onError: () => toast.error("That didn't save. Try again."),
+    onError: (e) =>
+      toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again."),
   });
   const created = create.isSuccess;
+
+  // Each step's Continue waits for that step's fields to be valid.
+  const cityError = city.trim() ? cityProblem(city) : "Enter the city.";
+  const pinError = pinCode ? pinProblem(pinCode) : "Enter the 6-digit PIN code.";
+  const mapsError =
+    mapsUrl.trim() && !GOOGLE_MAPS.test(mapsUrl.trim())
+      ? "Paste the link from Share in Google Maps."
+      : null;
+  const stepReady =
+    step === "basics"
+      ? Boolean(name.trim())
+      : step === "location"
+        ? !cityError && !pinError && !mapsError
+        : true;
 
   return (
     <Screen bottomNav={false}>
@@ -138,6 +154,7 @@ function NewBusiness() {
         {step === "location" ? (
           <Card className="space-y-3">
             <h1 className="text-2 font-bold">Where is it?</h1>
+            <Field label="City" value={city} onChange={setCity} placeholder="Mumbai" />
             <div className="flex flex-wrap gap-2">
               {["Mumbai", "Delhi", "Bengaluru", "Chennai", "Pune", "Kolkata"].map((c) => (
                 <Chip key={c} active={city === c} onClick={() => setCity(c)}>
@@ -145,23 +162,29 @@ function NewBusiness() {
                 </Chip>
               ))}
             </div>
+            {city.trim() && cityError ? (
+              <p className="text-1 text-destructive">{cityError}</p>
+            ) : null}
             <Field
               label="PIN code"
               value={pinCode}
               onChange={(v) => setPinCode(v.replace(/\D/g, "").slice(0, 6))}
               placeholder="400053"
+              inputMode="numeric"
             />
+            {pinCode.length === 6 && pinError ? (
+              <p className="text-1 text-destructive">{pinError}</p>
+            ) : null}
             <Field
               label="Google Maps link"
               value={mapsUrl}
               onChange={setMapsUrl}
               placeholder="https://maps.app.goo.gl/…"
             />
-            {mapsUrl.trim() && !GOOGLE_MAPS.test(mapsUrl.trim()) ? (
-              <p className="text-1 text-destructive">Paste the link from Share in Google Maps.</p>
-            ) : null}
+            {mapsError ? <p className="text-1 text-destructive">{mapsError}</p> : null}
             <p className="text-1 text-muted-foreground">
-              Your profile shows the city and PIN code; Directions opens the Maps link.
+              Your profile shows the city. The PIN code is never shown; it finds people near you.
+              Directions opens the Maps link.
             </p>
           </Card>
         ) : null}
@@ -172,7 +195,8 @@ function NewBusiness() {
             {[
               ["Type", businessTypes.find((t) => t.key === type)?.label ?? ""],
               ["Name", name || "Untitled business"],
-              ["Place", placeLine(city, pinCode)],
+              ["City", city.trim()],
+              ["Maps link", mapsUrl.trim() ? "Added" : "Not added"],
             ].map(([k, v]) => (
               <div
                 key={k}
@@ -195,13 +219,13 @@ function NewBusiness() {
             </Btn>
           ) : null}
           {idx < steps.length - 1 ? (
-            <Btn className="flex-1" onClick={() => go(steps[idx + 1]!)}>
+            <Btn className="flex-1" disabled={!stepReady} onClick={() => go(steps[idx + 1]!)}>
               Continue
             </Btn>
           ) : (
             <Btn
               className="flex-1"
-              disabled={!name.trim()}
+              disabled={!name.trim() || Boolean(cityError || pinError || mapsError)}
               loading={create.isPending}
               onClick={() => create.mutate()}
             >
@@ -235,11 +259,13 @@ function Field({
   value,
   onChange,
   placeholder,
+  inputMode,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
+  inputMode?: "numeric";
 }) {
   return (
     <label className="block">
@@ -248,6 +274,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder ?? ""}
+        {...(inputMode ? { inputMode } : {})}
         className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
       />
     </label>
