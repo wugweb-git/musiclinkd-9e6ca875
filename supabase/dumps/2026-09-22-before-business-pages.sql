@@ -1,0 +1,31 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922160000_business_pages.sql.
+-- The migration adds a column, two indexes and extends one trigger function; it changes no rows.
+--
+-- public.profiles has no owner_id column. Constraints: profiles_id_fkey (id -> auth.users.id ON DELETE
+-- CASCADE), profiles_username_key, username/pin/visibility/rate checks.
+-- Policies: SELECT "Public profiles are viewable by everyone" (visibility = 'public' OR auth.uid() = id);
+--   INSERT "Users can insert their own profile" (auth.uid() = id);
+--   UPDATE "Users can update their own profile" (auth.uid() = id).
+-- Triggers: keep_counted_columns, profiles_guard_admin_fields, profiles_username_rules,
+--   update_profiles_updated_at.
+--
+-- public.profiles_guard_admin_fields() before the migration:
+-- CREATE OR REPLACE FUNCTION public.profiles_guard_admin_fields()
+--  RETURNS trigger LANGUAGE plpgsql SET search_path TO 'public'
+-- AS $function$
+-- BEGIN
+--   IF coalesce(auth.jwt() ->> 'role', '') IN ('authenticated', 'anon') THEN
+--     IF TG_OP = 'INSERT' AND (NEW.trust_badges <> '{}' OR NEW.is_verified) THEN
+--       RAISE EXCEPTION 'trust_badges and is_verified are set by MusicLinkd, not by the profile owner';
+--     END IF;
+--     IF TG_OP = 'UPDATE' AND (NEW.trust_badges IS DISTINCT FROM OLD.trust_badges
+--                              OR NEW.is_verified IS DISTINCT FROM OLD.is_verified) THEN
+--       RAISE EXCEPTION 'trust_badges and is_verified are set by MusicLinkd, not by the profile owner';
+--     END IF;
+--   END IF;
+--   RETURN NEW;
+-- END
+-- $function$;
+--
+-- To undo: see the Rollback note at the top of the migration.
