@@ -602,25 +602,16 @@ export function RentalReportSheet({
   subject: { type: "rental" | "profile"; id: string };
 }) {
   const send = useFileReport(onClose);
-  const reasons = [
-    "Report equipment",
-    "Report provider",
-    "Report a scam",
-    "Incorrect information",
-    "Block provider",
-  ];
+  const reasons = ["Report equipment", "Report provider", "Report a scam", "Incorrect information"];
   return (
-    <Sheet open={open} onClose={onClose} title="Report or block">
+    <Sheet open={open} onClose={onClose} title="Report">
       <div className="divide-y divide-border rounded-lg border border-border">
         {reasons.map((r) => (
           <button
             key={r}
             type="button"
-            // Blocking has nowhere to be stored yet, so it closes the sheet as before.
             onClick={() =>
-              r.startsWith("Block")
-                ? onClose()
-                : send.mutate({ subjectType: subject.type, subjectId: subject.id, reason: r })
+              send.mutate({ subjectType: subject.type, subjectId: subject.id, reason: r })
             }
             disabled={send.isPending}
             className="w-full px-4 py-4 text-left text-sm font-medium"

@@ -1046,9 +1046,6 @@ export function ReportSheet({
       >
         Submit Report
       </Btn>
-      <Btn variant="ghost" className="mt-2 w-full" onClick={onClose}>
-        Block This Seller
-      </Btn>
     </Sheet>
   );
 }

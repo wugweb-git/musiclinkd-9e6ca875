@@ -1,7 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
+  BarChart3,
   House,
+  Pencil,
+  Share2,
   MapPin,
   Music,
   Plus,
@@ -17,6 +20,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { connectionWith, setFollowing as setFollowingFn } from "@/lib/connections.functions";
 import { conversationWith } from "@/lib/messages.functions";
+import { shareLink } from "@/lib/booking-actions";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, IconBtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
@@ -61,15 +65,18 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
         title={b.name}
         subtitle={b.typeLabel}
         back="/business"
+        // Managing is the owner's; a visitor has nothing to manage here.
         right={
-          <Link
-            to="/business/$id/manage"
-            params={{ id: b.id }}
-            aria-label="Manage business"
-            className="grid h-10 w-10 place-items-center rounded-full bg-background"
-          >
-            <Settings2 size={iconSize.sm} />
-          </Link>
+          isOwner ? (
+            <Link
+              to="/business/$id/manage"
+              params={{ id: b.id }}
+              aria-label="Manage business"
+              className="grid h-10 w-10 place-items-center rounded-full bg-background"
+            >
+              <Settings2 size={iconSize.sm} />
+            </Link>
+          ) : undefined
         }
       />
 
@@ -108,7 +115,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
 
         {b.tagline ? <p className="text-1 leading-relaxed">{b.tagline}</p> : null}
 
-        <BusinessActions id={b.id} profileId={b.profileId} owner={isOwner} />
+        <BusinessActions id={b.id} name={b.name} profileId={b.profileId} owner={isOwner} />
 
         {b.stats ? (
           <div className="grid grid-cols-4 gap-2 rounded-lg bg-subtle p-3 text-center">
@@ -310,10 +317,12 @@ const reviewItem = (rv: BusinessReview) => ({
  */
 function BusinessActions({
   id,
+  name,
   profileId,
   owner,
 }: {
   id: string;
+  name: string;
   profileId: string;
   owner: boolean;
 }) {
@@ -347,7 +356,41 @@ function BusinessActions({
       Book
     </BtnLink>
   );
-  if (owner) return <div className="flex items-center gap-2">{book}</div>;
+  // The owner sees what the person profile's owner sees: edit, share, stats — not Book or Follow.
+  if (owner) {
+    return (
+      <div className="flex items-center gap-2">
+        <IconBtnLink
+          to="/business/$id/manage"
+          params={{ id }}
+          label="Edit Business"
+          variant="ink"
+          className="h-11 w-11"
+        >
+          <Pencil size={iconSize.md} aria-hidden />
+        </IconBtnLink>
+        <IconBtn
+          label="Share Profile"
+          variant="outline"
+          className="h-11 w-11"
+          onClick={() =>
+            void shareLink({ title: name, url: `${window.location.origin}/business/${id}` })
+          }
+        >
+          <Share2 size={iconSize.md} aria-hidden />
+        </IconBtn>
+        <IconBtnLink
+          to="/business/$id/dashboard"
+          params={{ id }}
+          label="Stats"
+          variant="outline"
+          className="h-11 w-11"
+        >
+          <BarChart3 size={iconSize.md} aria-hidden />
+        </IconBtnLink>
+      </div>
+    );
+  }
 
   if (!signedIn) {
     return (
