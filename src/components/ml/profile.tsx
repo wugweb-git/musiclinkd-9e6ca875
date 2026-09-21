@@ -29,6 +29,7 @@ import {
   Laptop,
   Youtube,
   MessageSquareQuote,
+  Clock,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -1080,47 +1081,73 @@ export function ReviewInviteCard() {
   );
 }
 
+/**
+ * A service as a card (a talent's Services tab, the Overview, the Add service preview): name and
+ * "From" price on one row, the delivery time under it, the description, then how they work and
+ * one Book Service button. The button opens the service's booking request; the preview's does
+ * nothing.
+ */
 export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () => void }) {
-  // The terms read as one quiet line with icons, not a row of chips competing with the title.
-  const terms = [
-    s.mode ? { icon: Laptop, text: s.mode } : null,
-    s.turnaround ? { icon: Hourglass, text: s.turnaround } : null,
-    s.availability ? { icon: CalendarClock, text: s.availability } : null,
-  ].filter((t) => t !== null);
+  const real = /^[0-9a-f-]{36}$/i.test(s.id);
   return (
     <article className="rounded-lg bg-subtle p-4">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="min-w-0 text-2 font-semibold leading-snug">{s.name}</h3>
+        {real ? (
+          <Link
+            to="/services/$id"
+            params={{ id: s.id }}
+            className="min-w-0 text-2 font-semibold leading-snug"
+          >
+            {s.name}
+          </Link>
+        ) : (
+          <h3 className="min-w-0 text-2 font-semibold leading-snug">{s.name}</h3>
+        )}
         {s.from ? (
           <Price
             from
+            inline
             price={s.from}
             align="end"
             className="shrink-0"
             amountClassName="text-sm font-semibold"
           />
         ) : (
-          <span className="shrink-0 text-1 font-semibold text-muted-foreground">On enquiry</span>
+          <span className="shrink-0 text-1 font-semibold text-foreground">On enquiry</span>
         )}
       </div>
-      {s.description ? (
-        <p className="mt-1 line-clamp-2 text-1 leading-relaxed text-muted-foreground">
-          {s.description}
+      {s.turnaround ? (
+        <p className="mt-1 flex items-center gap-1.5 text-1 text-foreground">
+          <Clock size={12} className="shrink-0" aria-hidden />
+          Est. {s.turnaround}
         </p>
       ) : null}
-      {terms.length ? (
-        <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
-          {terms.map(({ icon: Icon, text }) => (
-            <li key={text} className="flex items-center gap-1.5">
-              <Icon size={12} className="shrink-0" aria-hidden />
-              {text}
-            </li>
-          ))}
-        </ul>
+      {s.description ? (
+        <p className="mt-2 line-clamp-3 text-1 leading-relaxed text-foreground">{s.description}</p>
       ) : null}
-      <Btn variant="primary" className="mt-4 min-h-control-sm w-full text-sm" onClick={onEnquire}>
-        Enquire
-      </Btn>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <span className="flex min-w-0 items-center gap-1.5 truncate text-1 text-foreground">
+          {s.mode ? (
+            <>
+              <Laptop size={12} className="shrink-0" aria-hidden />
+              {s.mode}
+            </>
+          ) : null}
+        </span>
+        {real ? (
+          <BtnLink
+            to="/services/$id/enquiry"
+            params={{ id: s.id }}
+            className="min-h-control-sm shrink-0 px-4 text-sm"
+          >
+            Book Service
+          </BtnLink>
+        ) : (
+          <Btn className="min-h-control-sm shrink-0 px-4 text-sm" onClick={onEnquire}>
+            Book Service
+          </Btn>
+        )}
+      </div>
     </article>
   );
 }

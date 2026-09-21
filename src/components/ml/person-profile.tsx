@@ -1062,10 +1062,12 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
 
 function Services({ p, onHire }: { p: PersonProfile; onHire: () => void }) {
   return (
-    <ProfileSection title="Services provided">
+    <ProfileSection title="Services">
       <div className="space-y-3">
         {p.services.length ? (
-          <ServicesProvided services={p.services} />
+          p.services.map((service) => (
+            <ServiceCard key={service.id} s={service} onEnquire={onHire} />
+          ))
         ) : (
           // No owner button: the new-service flow does not save a service yet.
           <ProfileEmpty
