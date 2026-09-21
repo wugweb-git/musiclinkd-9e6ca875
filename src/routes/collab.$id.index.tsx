@@ -2,7 +2,20 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { MoreHorizontal, Pencil, SendHorizontal, UserRoundPlus, UsersRound } from "lucide-react";
+import {
+  Archive,
+  Camera,
+  ImagePlus,
+  CircleCheck,
+  CirclePause,
+  CirclePlay,
+  MoreHorizontal,
+  Pencil,
+  SendHorizontal,
+  UserRoundPlus,
+  UsersRound,
+  type LucideIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, Sheet } from "@/components/ml/ui";
 import { Dialog, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
@@ -10,6 +23,7 @@ import {
   addCollabMember,
   answerCollabInvite,
   deleteCollab,
+  setCollabImage,
   getCollab,
   listCollabMessages,
   listProjectTypes,
@@ -27,6 +41,9 @@ import {
 import { searchPeople } from "@/lib/profile-groups.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { SheetSelect } from "@/components/ml/listing-form";
+import { CoverHero, ImagePickButton } from "@/components/ml/profile";
+import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
@@ -54,6 +71,21 @@ const statusLabel: Record<CollabStatus, string> = {
   archived: "Archived",
 };
 
+/** One line under each choice in the drawer: what it means for the people in it. */
+const statusHint: Record<CollabStatus, string> = {
+  active: "Work is going on",
+  paused: "On hold for now",
+  completed: "Done; it stays for the record",
+  archived: "Put away; hidden from your list",
+};
+
+const statusIcon: Record<CollabStatus, LucideIcon> = {
+  active: CirclePlay,
+  paused: CirclePause,
+  completed: CircleCheck,
+  archived: Archive,
+};
+
 function CollabRoom() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
@@ -69,6 +101,7 @@ function CollabRoom() {
   const changeVisibility = useServerFn(setCollabVisibility);
   const answer = useServerFn(answerCollabInvite);
   const remove = useServerFn(deleteCollab);
+  const saveImage = useServerFn(setCollabImage);
   const find = useServerFn(searchPeople);
   const [username, setUsername] = useState("");
   const [editing, setEditing] = useState(false);
@@ -200,6 +233,18 @@ function CollabRoom() {
     );
   }
 
+  // Banner and picture: uploaded to the signed-in owner's folder, then saved on the project.
+  async function pickImage(which: ProfileImageKind, file: File) {
+    if (!c) return;
+    try {
+      const url = await uploadProfileImage(which, file);
+      await saveImage({ data: { id: c.id, kind: which, url } });
+      await queryClient.invalidateQueries({ queryKey: ["collab", id] });
+    } catch (e) {
+      toast.error(e instanceof Error && e.message ? e.message : "That didn't upload. Try again.");
+    }
+  }
+
   if (!c) {
     return (
       <Screen>
@@ -224,23 +269,57 @@ function CollabRoom() {
 
   return (
     <Screen>
-      <TopBar
-        title={c.name}
-        subtitle={joinParts(
-          c.type === "band" ? "Band" : kind || "Project",
-          c.visibility === "private" ? "Private" : "Public",
-          c.city ?? "",
-          c.ends_on ? `Wraps up ${formatDay(c.ends_on)}` : "",
-        )}
+      {/* The project's banner and picture: the cover header profiles use, changed from the cover. */}
+      <CoverHero
+        cover={c.cover_url ?? undefined}
+        photo={c.avatar_url ?? undefined}
+        name={c.name}
+        square
         back="/collab"
-        right={
+        actions={
           canManage ? (
-            <IconBtn label="Edit" onClick={() => setEditing(true)} className="h-10 w-10">
-              <Pencil size={iconSize.sm} aria-hidden />
-            </IconBtn>
+            <>
+              <ImagePickButton
+                kind="cover"
+                label="Change banner"
+                className="h-10 w-10 bg-card/90 text-foreground"
+                onPick={pickImage}
+              >
+                <ImagePlus size={iconSize.sm} aria-hidden />
+              </ImagePickButton>
+              <IconBtn
+                label="Edit"
+                variant="plain"
+                onClick={() => setEditing(true)}
+                className="bg-card/90"
+              >
+                <Pencil size={iconSize.sm} aria-hidden />
+              </IconBtn>
+            </>
           ) : undefined
         }
-      />
+        photoPick={
+          canManage ? (
+            <ImagePickButton
+              kind="avatar"
+              label="Change picture"
+              className="absolute -bottom-1 -left-1 h-9 w-9 border border-border bg-card text-foreground"
+              onPick={pickImage}
+            >
+              <Camera size={iconSize.sm} aria-hidden />
+            </ImagePickButton>
+          ) : null
+        }
+      >
+        <p className="mt-1 text-1 text-muted-foreground">
+          {joinParts(
+            c.type === "band" ? "Band" : kind || "Project",
+            c.visibility === "private" ? "Private" : "Public",
+            c.city ?? "",
+            c.ends_on ? `Wraps up ${formatDay(c.ends_on)}` : "",
+          )}
+        </p>
+      </CoverHero>
 
       <div className="space-y-6 px-5 pt-4 pb-8">
         {invited ? (
@@ -449,14 +528,20 @@ function CollabRoom() {
         {canManage ? (
           <section className="space-y-2">
             <h2 className="text-sm">Where it stands</h2>
-            <SegmentedField
-              label="Where it stands"
-              value={statusLabel[c.status]}
-              options={statuses.map((s) => statusLabel[s])}
+            <SheetSelect
+              title="Where it stands"
+              value={c.status}
+              options={statuses.map((s) => ({
+                value: s,
+                label: statusLabel[s],
+                hint: statusHint[s],
+                icon: statusIcon[s],
+              }))}
               onChange={(next) => {
-                const match = statuses.find((s) => statusLabel[s] === next);
-                if (match) status.mutate(match);
+                const match = statuses.find((s) => s === next);
+                if (match && match !== c.status) status.mutate(match);
               }}
+              placeholder="Pick one"
             />
           </section>
         ) : null}

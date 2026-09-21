@@ -380,6 +380,27 @@ export const updateCollab = createServerFn({ method: "POST" })
     return { saved: true };
   });
 
+/** The project's banner or picture, once uploaded to the owner's storage folder. */
+export const setCollabImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        kind: z.enum(["cover", "avatar"]),
+        url: z.string().url().max(500),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("collabs")
+      .update({ [data.kind === "cover" ? "cover_url" : "avatar_url"]: data.url } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { saved: true };
+  });
+
 /** Close a project for good. Only its owner can, and only a project — a band is not ended here. */
 export const deleteCollab = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
