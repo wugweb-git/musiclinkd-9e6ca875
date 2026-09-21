@@ -21,12 +21,28 @@ export type GearTaxonomy = { types: GearType[]; categories: GearCategory[] };
 const familyLabels: Record<string, string> = {
   guitar: "Guitars",
   keys: "Keys",
-  percussion: "Percussion",
+  percussion: "Drums",
+  strings: "Strings",
   wind: "Wind",
-  bowed: "Bowed strings",
-  indian_string: "Indian strings",
   electronic: "Electronic",
 };
+
+/** Families Market shows as one (owner, 22 Sep 2026): bowed and Indian strings are Strings. */
+const familyAlias: Record<string, string> = { bowed: "strings", indian_string: "strings" };
+
+/**
+ * The categories the Market rail shows, most asked-for first; every other one is behind See all
+ * (owner, 22 Sep 2026: six or seven common ones).
+ */
+export const popularCategories = [
+  "guitar",
+  "keys",
+  "percussion",
+  "strings",
+  "microphones",
+  "controllers",
+  "pa_systems",
+];
 
 type Row = {
   category_key: "instruments" | "equipment_categories";
@@ -71,7 +87,10 @@ export function loadGearTaxonomy(): Promise<GearTaxonomy> {
                 slug: r.slug,
                 label: r.label,
                 kind: "instrument" as const,
-                category: r.metadata?.family ?? "other_instruments",
+                category:
+                  familyAlias[r.metadata?.family ?? ""] ??
+                  r.metadata?.family ??
+                  "other_instruments",
               }
             : { slug: r.slug, label: r.label, kind: "equipment" as const, category: r.slug },
         );

@@ -51,7 +51,7 @@ import {
 } from "@/lib/market-filter";
 import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
 import { EmptyState as BaseEmptyState, Price, Segmented } from "./kit";
-import { rupeeParts, unitLabel, type PriceParts } from "@/lib/price";
+import { rupeeParts, unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { StateIcon } from "./tab-icon";
@@ -169,6 +169,7 @@ const categoryIcons: Record<string, LucideIcon> = {
   percussion: Drum,
   wind: Wind,
   bowed: AudioWaveform,
+  strings: Music,
   indian_string: Music,
   electronic: SlidersHorizontal,
   microphones: MicVocal,
@@ -318,7 +319,7 @@ export function ProductCard({
   const [shown, setShown] = useState(0);
   const [tapped, setTapped] = useState(false);
   const isSaved = saved ?? localSaved;
-  const unit = unitLabel(item.price?.unit);
+  const unit = unitName(item.price?.unit);
   const className = `group @container block ${rail ? "w-[224px] shrink-0" : ""}`;
 
   const body = (
@@ -407,16 +408,12 @@ export function ProductCard({
           {item.title}
         </h3>
         <div className="mt-[4.8cqw] flex items-center justify-between gap-[2cqw]">
-          {/* A rate is two values: the amount, then its unit on a small line under it. */}
-          <span className="min-w-0">
-            <span className="block truncate text-[max(4.8cqw,13px)] font-semibold leading-none text-price">
+          {/* A rate reads as one line: the amount, then "/day" in the small grey unit style. */}
+          <span className="min-w-0 truncate leading-none">
+            <span className="text-[max(4.8cqw,13px)] font-semibold text-price">
               {item.price?.amount ?? ""}
             </span>
-            {unit ? (
-              <span className="mt-[1.2cqw] block text-[max(3.47cqw,11px)] leading-none text-[#8A8A8A]">
-                {unit}
-              </span>
-            ) : null}
+            {unit ? <span className="text-[max(3.47cqw,11px)] text-[#8A8A8A]">/{unit}</span> : null}
           </span>
           {/* The whole card is the link; this only shows where it goes. */}
           <span
@@ -974,9 +971,15 @@ export function MarketFilterSheet({
 export function ActiveFilters({
   value,
   onChange,
+  before,
+  after,
 }: {
   value: MarketFilter;
   onChange: (f: MarketFilter) => void;
+  /** Leads the row (a result count); the row then shows even with no filter set. */
+  before?: ReactNode;
+  /** Ends the row, before Clear all (the sort in force). */
+  after?: ReactNode;
 }) {
   const taxonomy = useGearTaxonomy();
   const chips = filterGroupsFor(taxonomy).flatMap((g) =>
@@ -988,9 +991,10 @@ export function ActiveFilters({
   );
   if (value.verifiedOnly)
     chips.push({ key: "verified" as never, value: "verified", label: "Verified sellers" });
-  if (!chips.length) return null;
+  if (!chips.length && !before && !after) return null;
   return (
     <div className="rail no-scrollbar flex items-center gap-2 overflow-x-auto px-5 pb-4">
+      {before}
       {chips.map((c) => (
         <Chip
           key={`${c.key}-${c.value}`}
@@ -1012,14 +1016,36 @@ export function ActiveFilters({
           <X size={iconSize.xs} aria-label="Remove" />
         </Chip>
       ))}
-      <button
-        type="button"
-        onClick={() => onChange(emptyMarketFilter)}
-        className="shrink-0 px-2 text-1 font-semibold text-foreground"
-      >
-        Clear all
-      </button>
+      {after}
+      {chips.length ? (
+        <button
+          type="button"
+          onClick={() => onChange(emptyMarketFilter)}
+          className="shrink-0 px-2 text-1 font-semibold text-foreground"
+        >
+          Clear all
+        </button>
+      ) : null}
     </div>
+  );
+}
+
+/** The Filters button: dark with a count while any filter is set. */
+export function FilterButton({ count, onClick }: { count: number; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-label={count ? `Filters, ${count} applied` : "Filters"}
+      onClick={onClick}
+      className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${count ? "border-foreground bg-ink text-background" : "border-border bg-card"}`}
+    >
+      <SlidersHorizontal size={iconSize.sm} aria-hidden />
+      {count ? (
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[11px] font-bold text-white">
+          {count}
+        </span>
+      ) : null}
+    </button>
   );
 }
 

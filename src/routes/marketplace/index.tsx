@@ -7,6 +7,7 @@ import { Segmented } from "@/components/ml/kit";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   ActiveFilters,
+  FilterButton,
   CategoryTile,
   EmptyState,
   ListingGrid,
@@ -18,7 +19,7 @@ import {
   useMarketCity,
 } from "@/components/ml/market";
 import { type Listing } from "@/data/market";
-import { useGearTaxonomy } from "@/lib/listing-category";
+import { popularCategories, useGearTaxonomy } from "@/lib/listing-category";
 import { GearCta } from "@/components/ml/gear-cta";
 import { iconSize } from "@/lib/tokens";
 import { inCity, loadCatalogListings, nearFirst } from "@/lib/market-view";
@@ -120,18 +121,7 @@ function MarketHome() {
             >
               <Plus size={iconSize.sm} /> List
             </Link>
-            <button
-              aria-label={active ? `Filters, ${active} applied` : "Filters"}
-              onClick={() => setFilters(true)}
-              className={`relative flex h-10 w-10 items-center justify-center rounded-full border ${active ? "border-foreground bg-ink text-background" : "border-border bg-card"}`}
-            >
-              <SlidersHorizontal size={iconSize.sm} />
-              {active ? (
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[11px] font-bold text-white">
-                  {active}
-                </span>
-              ) : null}
-            </button>
+            <FilterButton count={active} onClick={() => setFilters(true)} />
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
           </div>
         </div>
@@ -168,14 +158,17 @@ function MarketHome() {
 
       {/* Categories: each opens its page; the last tile opens every category. */}
       <div className="rail mb-7 flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-        {taxonomy.categories.map((c) => (
-          <CategoryTile
-            key={c.slug}
-            slug={c.slug}
-            label={c.label}
-            onOpen={() => void navigate({ to: "/marketplace/c/$slug", params: { slug: c.slug } })}
-          />
-        ))}
+        {popularCategories
+          .map((slug) => taxonomy.categories.find((c) => c.slug === slug))
+          .filter((c): c is NonNullable<typeof c> => Boolean(c))
+          .map((c) => (
+            <CategoryTile
+              key={c.slug}
+              slug={c.slug}
+              label={c.label}
+              onOpen={() => void navigate({ to: "/marketplace/c/$slug", params: { slug: c.slug } })}
+            />
+          ))}
         <CategoryTile
           slug="see-all"
           label="See all"
