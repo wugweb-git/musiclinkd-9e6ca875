@@ -1,12 +1,14 @@
 import type { AddOn, Bookable, DurationUnit, PricingTier, Resource } from "@/data/booking";
 import { taxonomyLabel, type RoomTier, type StudioRow } from "@/lib/catalog.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
+import { hasWeeklyHours, type WeeklyHours } from "@/lib/studio-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
  * filled; everything else is a neutral empty value ("", 0, []) that the render paths skip.
- * There is no tax, distance, timezone or availability calendar. A rating shows only once the
+ * There is no tax, distance or timezone. The availability calendar is on once the studio has
+ * weekly hours (studios.weekly_hours, src/lib/studio-slots.ts). A rating shows only once the
  * studio has reviews (studios.rating is kept from them by the database).
  */
 
@@ -99,7 +101,11 @@ function hourlyResource(
   };
 }
 
-export function bookableFromStudio(row: StudioRow, labels: TaxonomyLabels): Bookable | null {
+export function bookableFromStudio(
+  row: StudioRow,
+  labels: TaxonomyLabels,
+  weeklyHours: WeeklyHours = {},
+): Bookable | null {
   const resources = row.rooms.length
     ? row.rooms.map((room) =>
         hourlyResource(
@@ -159,6 +165,7 @@ export function bookableFromStudio(row: StudioRow, labels: TaxonomyLabels): Book
       ...(r.response ? { response: r.response } : {}),
       tags: r.tags ?? [],
     })),
-    hasCalendar: false,
+    // With no weekly hours there is nothing to pick from, so the studio is asked directly.
+    hasCalendar: hasWeeklyHours(weeklyHours),
   };
 }

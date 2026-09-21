@@ -5,8 +5,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 /*
  * The studio owner's own edit surface for the real, flat columns that exist today:
  * studios.hourly_rate_paise, .operating_hours, .cancellation_policy, and each
- * studio_rooms.hourly_rate_paise. No tiers, add-ons or per-day schedule exist yet — those need
- * new schema, so the screens that used to show them only edit what's real.
+ * studio_rooms.hourly_rate_paise. The weekly booking hours and closed times are edited through
+ * src/lib/studio-calendar.functions.ts.
  * RLS: "Owners write their own" on both studios and studio_rooms (20260914180000_catalog.sql).
  */
 

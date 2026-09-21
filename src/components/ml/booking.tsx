@@ -33,6 +33,7 @@ import {
   type Bookable,
   type Booking,
   type BookingStatus,
+  type DayAvailability,
   type DayState,
   type PriceLines,
   type Resource,
@@ -250,12 +251,15 @@ export function AvailabilityCalendar({
   selected,
   onSelect,
   timezone,
+  dayOf,
 }: {
   resourceId: string;
   fromPrice: number;
   selected?: string | undefined;
   onSelect: (date: string) => void;
   timezone: string;
+  /** A database studio's real day (src/lib/studio-slots.ts); the design-time schedule otherwise. */
+  dayOf?: ((date: string) => DayAvailability) | undefined;
 }) {
   const today = new Date();
   const [cursor, setCursor] = useState({ y: today.getFullYear(), m: today.getMonth() });
@@ -301,7 +305,7 @@ export function AvailabilityCalendar({
         {days.map((d) => {
           const iso = isoDate(d);
           const inMonth = d.getMonth() === cursor.m;
-          const a = availabilityFor(resourceId, iso, fromPrice);
+          const a = dayOf ? dayOf(iso) : availabilityFor(resourceId, iso, fromPrice);
           const disabled = a.state === "unavailable" || a.state === "closed";
           const isSel = selected === iso;
           return (

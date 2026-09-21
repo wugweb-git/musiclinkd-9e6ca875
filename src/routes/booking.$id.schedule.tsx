@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import {
   AvailabilityCalendar,
@@ -13,15 +15,10 @@ import {
   StickyBar,
 } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
-import {
-  availabilityFor,
-  durationOptions,
-  formatDate,
-  formatTime,
-  inr,
-  nextAvailableDate,
-} from "@/data/booking";
+import { durationOptions, formatDate, formatTime, inr } from "@/data/booking";
 import { showDemoControls } from "@/lib/dev";
+import { getStudioCalendar } from "@/lib/studio-calendar.functions";
+import { calendarWindow, nextOpenDay, spanIsOpen, studioDay } from "@/lib/studio-slots";
 
 export const Route = createFileRoute("/booking/$id/schedule")({
   head: () => ({
@@ -58,13 +55,45 @@ function Schedule() {
   const { bookable: b, resource: r, draft, set, price, endTime } = useBookingDraft();
   const navigate = useNavigate();
   const [sim, setSim] = useState<Sim>("ok");
-  const [conflict, setConflict] = useState(false);
+  // The start time that was taken while it was being chosen.
+  const [conflict, setConflict] = useState<string | null>(null);
   const [customHours, setCustomHours] = useState(4);
 
   const fromPrice = Math.min(...r.tiers.map((t) => t.price));
-  const day = draft.date ? availabilityFor(r.id, draft.date, fromPrice) : undefined;
+  // The studio's weekly hours and its taken and closed times, read again every minute so a slot
+  // someone else books meanwhile stops being offered.
+  const range = useMemo(() => calendarWindow(), []);
+  const loadCalendar = useServerFn(getStudioCalendar);
+  const calendar = useQuery({
+    queryKey: ["studio-calendar", b.id, range.from],
+    queryFn: () => loadCalendar({ data: { slug: b.id, ...range } }),
+    refetchInterval: 60_000,
+  });
+  const cal = calendar.data;
+  const dayOf = useCallback(
+    (date: string) => studioDay(cal?.weeklyHours ?? {}, cal?.busy ?? [], r.id, date, fromPrice),
+    [cal, r.id, fromPrice],
+  );
+  const day = useMemo(
+    () => (draft.date && cal ? dayOf(draft.date) : undefined),
+    [draft.date, cal, dayOf],
+  );
   const openSlots = day?.slots.filter((s) => s.state === "open") ?? [];
-  const next = nextAvailableDate(r.id, fromPrice);
+  const next = useMemo(() => (cal ? nextOpenDay(dayOf) : undefined), [cal, dayOf]);
+  // The whole session has to sit on open hours, not only its first one.
+  const fits = Boolean(draft.start && spanIsOpen(day, draft.start, draft.hours));
+
+  useEffect(() => {
+    if (!draft.start || !day) return;
+    if (day.slots.find((s) => s.start === draft.start)?.state !== "open") {
+      setConflict(draft.start);
+      set({ start: undefined });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the day's slots change
+  }, [day]);
+
+  // Database studios keep their own wall clock and store no zone name.
+  const timezone = b.timezone || "studio time";
 
   const allowed = durationOptions.filter(
     (o) =>
@@ -98,13 +127,16 @@ function Schedule() {
         {sim === "offline" ? <OfflineBanner onRetry={() => setSim("ok")} /> : null}
 
         <div className="mt-4">
-          {sim === "loading" ? (
+          {sim === "loading" || calendar.isLoading ? (
             <CalendarSkeleton />
-          ) : sim === "error" ? (
+          ) : sim === "error" || calendar.isError ? (
             <ErrorState
               title="Availability didn't load"
               message="We couldn't reach this provider's calendar just now."
-              onRetry={() => setSim("ok")}
+              onRetry={() => {
+                setSim("ok");
+                void calendar.refetch();
+              }}
             />
           ) : (
             <AvailabilityCalendar
@@ -112,12 +144,13 @@ function Schedule() {
               fromPrice={fromPrice}
               {...(draft.date ? { selected: draft.date } : {})}
               onSelect={(date) => set({ date, start: undefined })}
-              timezone={b.timezone}
+              timezone={timezone}
+              dayOf={dayOf}
             />
           )}
         </div>
 
-        {sim === "ok" && draft.date ? (
+        {sim === "ok" && cal && draft.date ? (
           <section className="mt-6">
             <div className="flex items-baseline justify-between">
               <h2 className="text-2">{formatDate(draft.date)}</h2>
@@ -161,15 +194,8 @@ function Schedule() {
                 <SlotPicker
                   slots={day?.slots ?? []}
                   {...(draft.start ? { value: draft.start } : {})}
-                  onChange={(start) => {
-                    // Demo: the 12:00 slot shows the conflict state.
-                    if (start === "12:00") {
-                      setConflict(true);
-                      return;
-                    }
-                    set({ start });
-                  }}
-                  timezone={b.timezone}
+                  onChange={(start) => set({ start })}
+                  timezone={timezone}
                 />
               </div>
             )}
@@ -196,8 +222,13 @@ function Schedule() {
             </div>
             <p className="mt-3 rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
               {formatTime(draft.start)} – {formatTime(endTime)} · {draft.hours} hr
-              {draft.hours > 1 ? "s" : ""} · {b.timezone}
+              {draft.hours > 1 ? "s" : ""} · {timezone}
             </p>
+            {fits ? null : (
+              <p className="mt-2 text-1 text-muted-foreground">
+                This runs into a taken or closed hour. Pick a shorter time or an earlier start.
+              </p>
+            )}
           </section>
         ) : null}
 
@@ -220,22 +251,23 @@ function Schedule() {
             ? `${formatDate(draft.date!)} · ${formatTime(draft.start)}`
             : "Select a date and time to continue"
         }
-        disabled={!draft.start || sim !== "ok"}
+        disabled={!draft.start || !fits || sim !== "ok"}
         primaryLabel="Continue"
         onPrimary={() => navigate({ to: "/booking/$id/details", params: { id: b.id } })}
       />
 
       <Sheet
-        open={conflict}
-        onClose={() => setConflict(false)}
+        open={conflict !== null}
+        onClose={() => setConflict(null)}
         title="This time is no longer available"
       >
         <p className="text-sm text-muted-foreground">
-          Someone booked {draft.date ? formatDate(draft.date) : "this date"} at 12:00 PM while you
-          were choosing. Your other selections are saved.
+          Someone booked {draft.date ? formatDate(draft.date) : "this date"} at{" "}
+          {conflict ? formatTime(conflict) : ""} while you were choosing. Your other selections are
+          saved.
         </p>
         <div className="mt-5 space-y-2">
-          <Btn className="w-full" onClick={() => setConflict(false)}>
+          <Btn className="w-full" onClick={() => setConflict(null)}>
             Choose Another Time
           </Btn>
           <Btn
@@ -243,12 +275,12 @@ function Schedule() {
             className="w-full"
             onClick={() => {
               set({ date: undefined, start: undefined });
-              setConflict(false);
+              setConflict(null);
             }}
           >
             Choose Another Date
           </Btn>
-          <Btn variant="ghost" className="w-full" onClick={() => setConflict(false)}>
+          <Btn variant="ghost" className="w-full" onClick={() => setConflict(null)}>
             Return
           </Btn>
         </div>
