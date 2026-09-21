@@ -34,6 +34,7 @@ import {
   Star,
   Users,
   type LucideIcon,
+  UserRound,
 } from "lucide-react";
 import type { PersonProfile, profileInsights } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
@@ -615,9 +616,10 @@ function Overview({
           <FeaturedCard featured={p.featured} />
         </ProfileSection>
       ) : null}
-      {p.genres.length || p.instruments.length || p.languages.length ? (
+      {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
         <ProfileSection title="Music identity">
           <ChipGroupList>
+            <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
             <ChipGroup label="Genres" icon={Music} items={p.genres} />
             <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
             <ChipGroup label="Languages" icon={Languages} items={p.languages} />
@@ -705,31 +707,21 @@ function OwnerStack({
   const bio = p.longBio || p.shortBio;
   return (
     <>
-      <StackSection title="About" editTo={edit}>
+      <StackSection title="About" editTo={edit} editSection="identity">
         {bio ? (
           <ClampedText text={bio} />
         ) : (
-          <ProfileEmpty
-            title="No summary yet"
-            body="Say what you do and who you do it for."
-            cta={{ label: "Write a summary", to: "/profile/edit" }}
-          />
+          <ProfileEmpty title="No summary yet" body="Say what you do and who you do it for." />
         )}
       </StackSection>
 
       {p.featured ? (
-        <StackSection title="Featured" editTo={edit}>
+        <StackSection title="Featured" editTo="/portfolio">
           <FeaturedCard featured={p.featured} />
         </StackSection>
       ) : null}
 
-      <StackSection
-        title="Services"
-        editTo={edit}
-        collapsible
-        showAll="Manage services"
-        showAllTo="/services"
-      >
+      <StackSection title="Services" editTo="/services" collapsible>
         {p.services.length ? (
           <div className="space-y-2">
             {p.services.slice(0, 2).map((service) => (
@@ -740,18 +732,19 @@ function OwnerStack({
           <ProfileEmpty
             title="No services yet"
             body="List what you offer and what it costs, so people can book it."
-            cta={{ label: "Add a service", to: "/profile/edit" }}
           />
         )}
       </StackSection>
 
-      {p.genres.length ||
+      {typesOf(p).length ||
+      p.genres.length ||
       p.instruments.length ||
       p.languages.length ||
       p.specialisations.length ||
       p.influences.length ? (
-        <StackSection title="Music identity" editTo={edit} collapsible>
+        <StackSection title="Music identity" editTo={edit} editSection="music" collapsible>
           <ChipGroupList>
+            <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
             <ChipGroup label="Genres" icon={Music} items={p.genres} />
             <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
             <ChipGroup label="Languages" icon={Languages} items={p.languages} />
@@ -761,12 +754,7 @@ function OwnerStack({
         </StackSection>
       ) : null}
 
-      <StackSection
-        title="Portfolio"
-        editTo={edit}
-        showAll="Manage portfolio"
-        showAllTo="/portfolio"
-      >
+      <StackSection title="Portfolio" editTo="/portfolio">
         {p.audio.length || p.video.length || p.gallery.length ? (
           <div className="space-y-4">
             {p.audio.length ? (
@@ -795,7 +783,6 @@ function OwnerStack({
             <ProfileEmpty
               title="No work yet"
               body="Tracks, videos and credits are what turn a profile view into an enquiry."
-              cta={addWork("Add work", "track")}
             />
             {gallery}
           </div>
@@ -803,7 +790,7 @@ function OwnerStack({
       </StackSection>
 
       {p.projects.length ? (
-        <StackSection title="Projects" editTo={edit} collapsible>
+        <StackSection title="Projects" editTo="/portfolio" collapsible>
           <div className="space-y-2">
             {p.projects.slice(0, 3).map((project) => (
               <ProjectCard key={project.id} p={project} />
@@ -813,7 +800,7 @@ function OwnerStack({
       ) : null}
 
       {p.experience.length ? (
-        <StackSection title="Experience" editTo={edit} collapsible>
+        <StackSection title="Experience" editTo={edit} editSection="experience" collapsible>
           <div className="space-y-2">
             {p.experience.map((item) => (
               <ExperienceCard key={item.id} e={item} />
@@ -822,7 +809,13 @@ function OwnerStack({
         </StackSection>
       ) : null}
 
-      <StackSection title="Professional details" editTo={edit} collapsible defaultOpen={false}>
+      <StackSection
+        title="Professional details"
+        editTo={edit}
+        editSection={p.professional.length ? "details" : "professional"}
+        collapsible
+        defaultOpen={false}
+      >
         {p.professional.length ? (
           <div className="divide-y divide-border rounded-lg bg-subtle">
             {p.professional.map((item) => (
@@ -833,20 +826,15 @@ function OwnerStack({
           <ProfileEmpty
             title="No details yet"
             body="Setup, tools and working details will appear here."
-            cta={{ label: "Add details", to: "/profile/edit" }}
           />
         )}
       </StackSection>
 
-      <StackSection title="Links" editTo={edit} collapsible defaultOpen={false}>
+      <StackSection title="Links" editTo={edit} editSection="links" collapsible defaultOpen={false}>
         {p.links.length ? (
           <SocialLinks links={p.links} />
         ) : (
-          <ProfileEmpty
-            title="No links yet"
-            body="Streaming and social links will appear here."
-            cta={{ label: "Add links", to: "/profile/edit" }}
-          />
+          <ProfileEmpty title="No links yet" body="Streaming and social links will appear here." />
         )}
       </StackSection>
 
@@ -1119,11 +1107,13 @@ function About({ p }: { p: PersonProfile }) {
         )}
       </ProfileSection>
       <ProfileSection title="Music identity">
-        {p.specialisations.length ||
+        {typesOf(p).length ||
+        p.specialisations.length ||
         p.influences.length ||
         p.instruments.length ||
         p.languages.length ? (
           <ChipGroupList>
+            <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
             <ChipGroup label="Specialisations" icon={Sparkles} items={p.specialisations} />
             <ChipGroup label="Influences" icon={Heart} items={p.influences} />
             <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
@@ -1285,4 +1275,9 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
       ) : null}
     </>
   );
+}
+
+/** The person's types (Violinist, Producer…): shown in Music identity, not under the name. */
+function typesOf(p: PersonProfile) {
+  return [p.primaryRole, ...p.secondaryRoles].filter(Boolean);
 }

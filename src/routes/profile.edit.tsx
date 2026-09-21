@@ -5,7 +5,16 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
 import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { SegmentedField } from "@/components/ml/kit";
-import { getMyProfile, saveMyProfile, RATE_UNITS, type RateUnit } from "@/lib/portfolio.functions";
+import {
+  getMyProfile,
+  getMyProfileSections,
+  getTaxonomyLabels,
+  saveMyExperience,
+  saveMyProfile,
+  saveMyRoleDetails,
+  RATE_UNITS,
+  type RateUnit,
+} from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
@@ -25,6 +34,9 @@ import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 
 export const Route = createFileRoute("/profile/edit")({
+  // ?section= opens that section (a profile section's edit pencil links straight to it).
+  validateSearch: (search: Record<string, unknown>): { section?: string } =>
+    typeof search["section"] === "string" ? { section: search["section"] } : {},
   head: () => ({
     meta: [
       { title: "Edit Professional Profile | MusicLinkd" },
@@ -60,6 +72,7 @@ type Form = {
   rate_unit: RateUnit;
   /** Influences, comma-separated as typed. */
   influence_text: string;
+  specialisation_text: string;
   visibility: string;
   experience_level: string;
   roles: string[];
@@ -83,6 +96,7 @@ const empty: Form = {
   rate: "",
   rate_unit: "hour",
   influence_text: "",
+  specialisation_text: "",
   visibility: "public",
   experience_level: "",
   roles: [],
@@ -142,6 +156,10 @@ function fromRow(row: ProfileRow | null): Form {
     // Before a rate has a unit, the hourly rate is the rate.
     ...rateFromRow(row),
     influence_text: (row.influences ?? []).join(", "),
+    // Stored as "role:specialisation" or plain; the profile shows the part after the colon.
+    specialisation_text: (row.specialisations ?? [])
+      .map((v) => (v.includes(":") ? v.slice(v.indexOf(":") + 1) : v))
+      .join(", "),
     visibility: row.visibility ?? "public",
     experience_level: row.experience_level ?? "",
     roles: row.roles ?? [],
@@ -170,7 +188,44 @@ function EditProfile() {
       .catch(() => undefined);
   }, [isBusiness, loadBusiness]);
 
-  const [open, setOpen] = useState<string | null>("identity");
+  const { section: openSection } = Route.useSearch();
+  const [open, setOpen] = useState<string | null>(openSection ?? "identity");
+
+  // Experience and each role's professional details live in their own tables; they load and save
+  // beside the profile row, on the same Save.
+  const loadSections = useServerFn(getMyProfileSections);
+  const loadLabels = useServerFn(getTaxonomyLabels);
+  const persistExperience = useServerFn(saveMyExperience);
+  const persistRoleDetails = useServerFn(saveMyRoleDetails);
+  const [experience, setExperience] = useState<ExperienceDraft[]>([]);
+  const [roleDetails, setRoleDetails] = useState<RoleDetailsDraft[]>([]);
+  const [fieldLabels, setFieldLabels] = useState<Record<string, string>>({});
+  const [roleLabels, setRoleLabels] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!signedIn) return;
+    void loadSections()
+      .then((sec) => {
+        setExperience(
+          sec.experience.map((e) => ({
+            title: e.title,
+            org: e.org ?? "",
+            startYear: e.start_year ? String(e.start_year) : "",
+            endYear: e.end_year ? String(e.end_year) : "",
+            detail: e.detail ?? "",
+          })),
+        );
+        setRoleDetails(
+          sec.role_details.map((r) => ({ roleSlug: r.role_slug, details: r.details })),
+        );
+      })
+      .catch(() => undefined);
+    void loadLabels()
+      .then((l) => {
+        setFieldLabels(l["profile_fields"] ?? {});
+        setRoleLabels(l["person_types"] ?? {});
+      })
+      .catch(() => undefined);
+  }, [signedIn, loadSections, loadLabels]);
   const [form, setForm] = useState<Form>(empty);
   const [row, setRow] = useState<ProfileRow | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
@@ -273,6 +328,10 @@ function EditProfile() {
             .split(",")
             .map((v) => v.trim())
             .filter(Boolean),
+          specialisations: form.specialisation_text
+            .split(",")
+            .map((v) => v.trim())
+            .filter(Boolean),
           visibility: form.visibility || "public",
           experience_level: form.experience_level || null,
           roles: form.roles,
@@ -283,6 +342,22 @@ function EditProfile() {
           links: form.links,
         },
       });
+      await persistExperience({
+        data: {
+          items: experience
+            .filter((e) => e.title.trim())
+            .map((e) => ({
+              title: e.title.trim(),
+              ...(e.org.trim() ? { org: e.org.trim() } : {}),
+              startYear: yearOf(e.startYear),
+              endYear: yearOf(e.endYear),
+              ...(e.detail.trim() ? { detail: e.detail.trim() } : {}),
+            })),
+        },
+      });
+      for (const r of roleDetails) {
+        await persistRoleDetails({ data: { roleSlug: r.roleSlug, details: r.details } });
+      }
       if (isBusiness) {
         const link = mapsUrl.trim();
         await saveBusiness({ data: { maps_url: GOOGLE_MAPS.test(link) ? link : null } });
@@ -377,17 +452,10 @@ function EditProfile() {
     {
       id: "professional",
       label: "Professional",
-      detail: "Roles, experience, work modes, rate",
-      done: form.roles.length > 0,
+      detail: "Work modes, experience level, rate",
+      done: Boolean(form.experience_level || form.work_modes.length),
       body: (
         <div className="space-y-4">
-          <TaxonomyChips
-            label="Roles"
-            options={roleOptions}
-            state={taxonomyState}
-            selected={form.roles}
-            onToggle={(v) => toggle("roles", v)}
-          />
           <Chips
             label="Work modes"
             options={workModeOptions as unknown as string[]}
@@ -425,11 +493,18 @@ function EditProfile() {
     },
     {
       id: "music",
-      label: "Music",
-      detail: "Genres, instruments, languages, influences",
-      done: form.genres.length > 0 && form.languages.length > 0,
+      label: "Music identity",
+      detail: "Type, genres, instruments, languages, influences",
+      done: form.roles.length > 0 && form.genres.length > 0 && form.languages.length > 0,
       body: (
         <div className="space-y-4">
+          <TaxonomyChips
+            label="Type"
+            options={roleOptions}
+            state={taxonomyState}
+            selected={form.roles}
+            onToggle={(v) => toggle("roles", v)}
+          />
           <TaxonomyChips
             label="Genres"
             options={genreOptions}
@@ -457,9 +532,79 @@ function EditProfile() {
             onChange={(v) => update({ influence_text: v })}
             hint="Separate names with commas"
           />
+          <Field
+            label="Specialisations"
+            value={form.specialisation_text}
+            onChange={(v) => update({ specialisation_text: v })}
+            hint="Separate them with commas"
+          />
         </div>
       ),
     },
+    {
+      id: "experience",
+      label: "Experience",
+      detail: "Roles, bands and places you've worked",
+      done: experience.some((e) => e.title.trim()),
+      body: <ExperienceEditor items={experience} onChange={setExperience} />,
+    },
+    ...(roleDetails.length
+      ? [
+          {
+            id: "details",
+            label: "Professional details",
+            detail: "Setup, tools and working details for each role",
+            done: true,
+            body: (
+              <div className="space-y-5">
+                {roleDetails.map((r) => (
+                  <div key={r.roleSlug} className="space-y-3">
+                    <p className="text-1 font-semibold">{roleLabels[r.roleSlug] ?? r.roleSlug}</p>
+                    {Object.entries(r.details).map(([key, value]) => (
+                      <Field
+                        key={key}
+                        label={fieldLabels[key] ?? key.replace(/_/g, " ")}
+                        value={
+                          Array.isArray(value)
+                            ? value.join(", ")
+                            : value == null
+                              ? ""
+                              : String(value)
+                        }
+                        onChange={(v) =>
+                          setRoleDetails((all) =>
+                            all.map((x) =>
+                              x.roleSlug === r.roleSlug
+                                ? {
+                                    ...x,
+                                    details: {
+                                      ...x.details,
+                                      [key]: Array.isArray(value)
+                                        ? v
+                                            .split(",")
+                                            .map((t) => t.trim())
+                                            .filter(Boolean)
+                                        : typeof value === "number"
+                                          ? Number(v) || null
+                                          : typeof value === "boolean"
+                                            ? v.trim().toLowerCase() === "yes"
+                                            : v,
+                                    },
+                                  }
+                                : x,
+                            ),
+                          )
+                        }
+                        {...(typeof value === "boolean" ? { hint: "Yes or No" } : {})}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ),
+          },
+        ]
+      : []),
     {
       id: "availability",
       label: "Location & availability",
@@ -767,6 +912,82 @@ function Chips({
           </Chip>
         ))}
       </div>
+    </div>
+  );
+}
+
+type ExperienceDraft = {
+  title: string;
+  org: string;
+  startYear: string;
+  endYear: string;
+  detail: string;
+};
+type RoleDetailsDraft = {
+  roleSlug: string;
+  details: Record<string, string | number | boolean | string[] | null>;
+};
+
+const yearOf = (v: string) => {
+  const n = Number(v.trim());
+  return Number.isInteger(n) && n >= 1950 && n <= 2100 ? n : null;
+};
+
+/** The experience list: each entry's title, where, years and a line about it; add or remove. */
+function ExperienceEditor({
+  items,
+  onChange,
+}: {
+  items: ExperienceDraft[];
+  onChange: (v: ExperienceDraft[]) => void;
+}) {
+  const set = (i: number, patch: Partial<ExperienceDraft>) =>
+    onChange(items.map((e, j) => (j === i ? { ...e, ...patch } : e)));
+  return (
+    <div className="space-y-4">
+      {items.map((e, i) => (
+        <div key={i} className="space-y-3 rounded-lg bg-background p-3">
+          <Field label="Title" value={e.title} onChange={(v) => set(i, { title: v })} />
+          <Field label="Where" value={e.org} onChange={(v) => set(i, { org: v })} />
+          <div className="grid grid-cols-2 gap-2">
+            <Field
+              label="From (year)"
+              value={e.startYear}
+              onChange={(v) => set(i, { startYear: v })}
+            />
+            <Field
+              label="To (year)"
+              value={e.endYear}
+              onChange={(v) => set(i, { endYear: v })}
+              hint="Leave empty if current"
+            />
+          </div>
+          <Field
+            label="About it"
+            value={e.detail}
+            onChange={(v) => set(i, { detail: v })}
+            multiline
+          />
+          <Btn
+            variant="ghost"
+            className="w-full"
+            onClick={() => onChange(items.filter((_, j) => j !== i))}
+          >
+            Remove
+          </Btn>
+        </div>
+      ))}
+      {items.length < 30 ? (
+        <Btn
+          variant="outline"
+          className="w-full"
+          onClick={() =>
+            onChange([...items, { title: "", org: "", startYear: "", endYear: "", detail: "" }])
+          }
+        >
+          Add experience
+        </Btn>
+      ) : null}
     </div>
   );
 }

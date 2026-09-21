@@ -98,7 +98,7 @@ export function ProfileSection({
 
 /** Where a stacked section's footer link can go. */
 export type StackDestination =
-  "/portfolio" | "/services" | "/reviews" | "/profile/edit" | "/verification";
+  "/portfolio" | "/services" | "/reviews" | "/profile/edit" | "/verification" | "/collab";
 
 /**
  * A stacked profile section: full-bleed block, thick divider under it, the title with the owner's
@@ -107,6 +107,7 @@ export type StackDestination =
 export function StackSection({
   title,
   editTo,
+  editSection,
   collapsible = false,
   defaultOpen = true,
   showAll,
@@ -116,8 +117,13 @@ export function StackSection({
   children,
 }: {
   title: string;
-  /** Owner only: where editing this section happens. Visitors pass nothing. */
-  editTo?: "/profile/edit" | undefined;
+  /**
+   * Owner only: where editing this section happens — the one action a section has. Visitors pass
+   * nothing.
+   */
+  editTo?: StackDestination | undefined;
+  /** With editTo "/profile/edit": the Edit profile section to open. */
+  editSection?: string | undefined;
   collapsible?: boolean;
   defaultOpen?: boolean;
   /** Footer link label, e.g. "Show all tracks". */
@@ -137,7 +143,15 @@ export function StackSection({
         <h2 className="min-w-0 flex-1 text-3 font-bold">{title}</h2>
         {action}
         {editTo ? (
-          <IconBtnLink to={editTo} label={`Edit ${title}`} variant="ghost" className="h-10 w-10">
+          <IconBtnLink
+            to={editTo}
+            {...(editTo === "/profile/edit" && editSection
+              ? { search: { section: editSection } }
+              : {})}
+            label={`Edit ${title}`}
+            variant="ghost"
+            className="h-10 w-10"
+          >
             <Pencil size={iconSize.sm} aria-hidden />
           </IconBtnLink>
         ) : null}
@@ -479,29 +493,6 @@ export function ImagePickButton<K extends string = ProfileImageKind>({
   );
 }
 
-/** The roles someone picked, each with the icon its taxonomy entry carries. */
-function RoleLine({ p }: { p: PersonProfile }) {
-  const { options } = useTaxonomy();
-  const roles = [p.primaryRole, ...p.secondaryRoles].filter(Boolean);
-  const slugs = p.roleSlugs ?? [];
-  if (!roles.length) return null;
-  return (
-    <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
-      {roles.map((role, i) => {
-        const slug = slugs[i];
-        const option = slug ? options?.["person_types"]?.find((o) => o.slug === slug) : undefined;
-        const Icon = slug ? roleIcon(option ?? { slug, metadata: null }) : null;
-        return (
-          <li key={role} className="flex items-center gap-1.5">
-            {Icon ? <Icon size={16} strokeWidth={1.75} aria-hidden /> : null}
-            {role}
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
 /** Window scroll in px, read on a frame, so the cover can shrink as the page moves. */
 function useScrollY() {
   const [y, setY] = useState(0);
@@ -695,7 +686,6 @@ export function ProfileHero({
       }
     >
       {p.username ? <p className="mt-0.5 text-sm text-muted-foreground">@{p.username}</p> : null}
-      <RoleLine p={p} />
       {/* The headline is the one line someone writes about themselves; About carries the rest. */}
       {p.headline && p.headline !== p.primaryRole ? (
         <p className="mt-1.5 text-sm leading-snug text-foreground">{p.headline}</p>

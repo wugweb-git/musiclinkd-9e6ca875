@@ -778,6 +778,80 @@ export const getMyProfileSections = createServerFn({ method: "GET" })
     loadSections(context.supabase as unknown as SupabaseClient, context.userId),
   );
 
+/**
+ * The owner's experience list, as Edit profile shows it: the whole list is written back in order
+ * (rows not sent are removed). Years are whole years; an open role has no end year.
+ */
+export const saveMyExperience = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        items: z
+          .array(
+            z.object({
+              title: z.string().trim().min(1).max(120),
+              org: z.string().trim().max(120).optional(),
+              startYear: z.number().int().min(1950).max(2100).nullable().optional(),
+              endYear: z.number().int().min(1950).max(2100).nullable().optional(),
+              detail: z.string().trim().max(500).optional(),
+            }),
+          )
+          .max(30),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const del = await client.from("profile_experience").delete().eq("profile_id", context.userId);
+    if (del.error) throw new Error(del.error.message);
+    if (!data.items.length) return { count: 0 };
+    const { error } = await client.from("profile_experience").insert(
+      data.items.map((e, i) => ({
+        profile_id: context.userId,
+        title: e.title,
+        org: e.org || null,
+        start_year: e.startYear ?? null,
+        end_year: e.endYear ?? null,
+        detail: e.detail || null,
+        sort_order: i,
+      })) as never,
+    );
+    if (error) throw new Error(error.message);
+    return { count: data.items.length };
+  });
+
+/** One role's professional details (turnaround, setup…), as Edit profile shows them. */
+export const saveMyRoleDetails = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        roleSlug: z.string().min(1).max(80),
+        details: z.record(
+          z.string().max(80),
+          z.union([
+            z.string().max(300),
+            z.number(),
+            z.boolean(),
+            z.array(z.string().max(80)).max(30),
+            z.null(),
+          ]),
+        ),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { error } = await client
+      .from("profile_role_details")
+      .update({ details: data.details, updated_at: new Date().toISOString() } as never)
+      .eq("profile_id", context.userId)
+      .eq("role_slug", data.roleSlug);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export type WorkEventCounts = {
   views: number;
   shares: number;
