@@ -2,9 +2,15 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
-import { ListingStepFooter, PriceBlock, TrustPill } from "@/components/ml/market";
-import { kindOfSubCategory, listingSubCategories } from "@/lib/listing-category";
+import { Screen, TopBar } from "@/components/ml/ui";
+import { ListingStepFooter, TrustPill } from "@/components/ml/market";
+import {
+  emptyListingDraft,
+  ListingDetailsForm,
+  listingPayload,
+  ListingPreview,
+  type ListingDraft,
+} from "@/components/ml/listing-form";
 import { createListing } from "@/lib/catalog.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -27,40 +33,22 @@ export const Route = createFileRoute("/marketplace/sell")({
   component: Sell,
 });
 
-// Only the conditions the real schema stores.
-const conditions = [
-  { label: "New", value: "new" },
-  { label: "Like New", value: "like_new" },
-  { label: "Used", value: "used" },
-] as const;
-
 function Sell() {
   const navigate = useNavigate();
   const { signedIn } = useAuth();
   const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [sub, setSub] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
-  const [condition, setCondition] = useState<(typeof conditions)[number]["value"]>("used");
+  const [draft, setDraft] = useState<ListingDraft>(emptyListingDraft);
+  const patch = (p: Partial<ListingDraft>) => setDraft((d) => ({ ...d, ...p }));
   const [publishing, setPublishing] = useState(false);
   const labels = ["Listing details", "Add photos", "Preview"];
   const last = labels.length - 1;
 
   async function publish() {
-    const rupees = Number(price.replace(/[^0-9]/g, ""));
     setPublishing(true);
     try {
       const { slug } = await submit({
-        data: {
-          category: "gear_sale",
-          ...(sub ? { itemCategoryKind: kindOfSubCategory(sub), itemCategory: sub } : {}),
-          title: title.trim() || "Untitled listing",
-          pricePaise: rupees * 100,
-          ...(description.trim() ? { description: description.trim() } : {}),
-          condition,
-        },
+        data: { category: "gear_sale", ...listingPayload(draft, false) },
       });
       void navigate({ to: "/marketplace/l/$id", params: { id: slug } });
     } catch {
@@ -111,77 +99,15 @@ function Sell() {
           </div>
         ) : null}
 
-        {step === 0 ? (
-          <div className="space-y-4">
-            <Field label="Title">
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Fender Stratocaster, 2022"
-                className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
-              />
-            </Field>
-            <Field label="Price (₹)">
-              <input
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                inputMode="numeric"
-                placeholder="1,84,000"
-                className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
-              />
-            </Field>
-            <Field label="Category">
-              <div className="flex flex-wrap gap-2">
-                {listingSubCategories.map((s) => (
-                  <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
-                    {s}
-                  </Chip>
-                ))}
-              </div>
-            </Field>
-            <Field label="Condition">
-              <div className="flex flex-wrap gap-2">
-                {conditions.map((c) => (
-                  <Chip
-                    key={c.value}
-                    active={condition === c.value}
-                    onClick={() => setCondition(c.value)}
-                  >
-                    {c.label}
-                  </Chip>
-                ))}
-              </div>
-            </Field>
-            <Field label="Description">
-              <textarea
-                rows={4}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Condition, history, what's included..."
-                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
-              />
-            </Field>
-          </div>
-        ) : null}
+        {step === 0 ? <ListingDetailsForm value={draft} onChange={patch} rental={false} /> : null}
 
         {step === last ? (
-          <div className="overflow-hidden rounded-lg bg-subtle">
-            <div className="flex h-40 items-center justify-center bg-background text-1 text-muted-foreground">
-              Cover photo
+          <>
+            <ListingPreview value={draft} rental={false} />
+            <div className="mt-3">
+              <TrustPill label="Posted as you" />
             </div>
-            <div className="p-4">
-              <PriceBlock price={{ amount: price ? `₹${price}` : "₹0" }} size="lg" />
-              <h2 className="mt-1 text-2">{title || "Untitled listing"}</h2>
-              <p className="text-1 text-muted-foreground">
-                {[sub, conditions.find((c) => c.value === condition)!.label]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </p>
-              <div className="mt-3">
-                <TrustPill label="Posted as you" />
-              </div>
-            </div>
-          </div>
+          </>
         ) : null}
       </div>
 
@@ -191,20 +117,11 @@ function Sell() {
           last={step === last}
           onBack={() => setStep(step - 1)}
           onNext={() => (step === last ? void publish() : setStep(step + 1))}
-          disabled={step === last && (!title.trim() || !price || !signedIn)}
+          disabled={step === last && (!draft.name.trim() || !draft.price || !signedIn)}
           busy={publishing}
           publishLabel="Publish Listing"
         />
       </div>
     </Screen>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="pill mb-1.5 bg-background text-muted-foreground">{label}</p>
-      {children}
-    </div>
   );
 }

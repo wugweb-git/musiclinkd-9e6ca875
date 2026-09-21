@@ -3,10 +3,15 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Camera } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Price } from "@/components/ml/kit";
-import { ConditionBadge, ListingStepFooter } from "@/components/ml/market";
-import { kindOfSubCategory, listingSubCategories } from "@/lib/listing-category";
+import { Screen, TopBar, BtnLink, Chip } from "@/components/ml/ui";
+import { ListingStepFooter } from "@/components/ml/market";
+import {
+  emptyListingDraft,
+  ListingDetailsForm,
+  listingPayload,
+  ListingPreview,
+  type ListingDraft,
+} from "@/components/ml/listing-form";
 import { createListing } from "@/lib/catalog.functions";
 import { iconSize } from "@/lib/tokens";
 
@@ -30,33 +35,17 @@ export const Route = createFileRoute("/marketplace/rent/list")({
 });
 
 const steps = ["Details", "Media", "Availability", "Review"];
-const conditions = [
-  { label: "New", value: "new" },
-  { label: "Like New", value: "like_new" },
-  { label: "Used", value: "used" },
-] as const;
-
 function ListForRent() {
   const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [name, setName] = useState("");
-  const [brand, setBrand] = useState("");
-  const [model, setModel] = useState("");
-  const [sub, setSub] = useState<string | null>(null);
-  const [condition, setCondition] = useState<(typeof conditions)[number]["value"]>("used");
-  const [description, setDescription] = useState("");
-  const [dailyPrice, setDailyPrice] = useState("");
-  const [weeklyPrice, setWeeklyPrice] = useState("");
-  const [monthlyPrice, setMonthlyPrice] = useState("");
-  const [deposit, setDeposit] = useState("");
-  const [fulfilment, setFulfilment] = useState<string[]>(["Pickup"]);
+  const [draft, setDraft] = useState<ListingDraft>(emptyListingDraft);
+  const patch = (p: Partial<ListingDraft>) => setDraft((d) => ({ ...d, ...p }));
   const [minDays, setMinDays] = useState("1 day");
   const [maxDays, setMaxDays] = useState("30 days");
   const [noticePeriod, setNoticePeriod] = useState("Same day");
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
 
-  const rupees = (v: string) => Number(v.replace(/[^0-9]/g, ""));
   const daysFrom = (label: string) => parseInt(label, 10) || 1;
 
   async function publish() {
@@ -65,19 +54,7 @@ function ListForRent() {
       await submit({
         data: {
           category: "gear_rental",
-          ...(sub ? { itemCategoryKind: kindOfSubCategory(sub), itemCategory: sub } : {}),
-          title: name.trim() || "Untitled rental",
-          ...(brand.trim() ? { brand: brand.trim() } : {}),
-          ...(model.trim() ? { model: model.trim() } : {}),
-          ...(description.trim() ? { description: description.trim() } : {}),
-          pricePaise: rupees(dailyPrice) * 100,
-          priceUnit: "day",
-          condition,
-          ...(weeklyPrice ? { weeklyPricePaise: rupees(weeklyPrice) * 100 } : {}),
-          ...(monthlyPrice ? { monthlyPricePaise: rupees(monthlyPrice) * 100 } : {}),
-          ...(deposit ? { depositPaise: rupees(deposit) * 100 } : {}),
-          pickupAvailable: fulfilment.includes("Pickup"),
-          deliveryAvailable: fulfilment.includes("Delivery"),
+          ...listingPayload(draft, true),
           minDays: daysFrom(minDays),
           maxDays: daysFrom(maxDays),
           noticePeriod,
@@ -157,139 +134,7 @@ function ListForRent() {
         ) : null}
 
         {!published && step === 0 ? (
-          <>
-            <h2 className="text-2">Equipment details</h2>
-            <div className="mt-4 space-y-3">
-              {[
-                { label: "Equipment name", ph: "Shure SM7B", value: name, set: setName },
-                { label: "Brand", ph: "Shure", value: brand, set: setBrand },
-                { label: "Model", ph: "SM7B", value: model, set: setModel },
-              ].map((f) => (
-                <div key={f.label}>
-                  <label className="mb-1.5 block text-1 font-medium text-muted-foreground">
-                    {f.label}
-                  </label>
-                  <input
-                    value={f.value}
-                    onChange={(e) => f.set(e.target.value)}
-                    placeholder={f.ph}
-                    className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
-                  />
-                </div>
-              ))}
-              <div>
-                <span
-                  id="grp-subcategory"
-                  className="mb-1.5 block text-1 font-medium text-muted-foreground"
-                >
-                  Sub-category
-                </span>
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="group"
-                  aria-labelledby="grp-subcategory"
-                >
-                  {listingSubCategories.map((s) => (
-                    <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
-                      {s}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <span
-                  id="grp-condition"
-                  className="mb-1.5 block text-1 font-medium text-muted-foreground"
-                >
-                  Condition
-                </span>
-                <div className="flex flex-wrap gap-2" role="group" aria-labelledby="grp-condition">
-                  {conditions.map((c) => (
-                    <Chip
-                      key={c.value}
-                      active={condition === c.value}
-                      onClick={() => setCondition(c.value)}
-                    >
-                      {c.label}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="description-included-accessories"
-                  className="mb-1.5 block text-1 font-medium text-muted-foreground"
-                >
-                  Description & included accessories
-                </label>
-                <textarea
-                  id="description-included-accessories"
-                  rows={4}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Serviced between rentals. Includes windscreen, yoke mount, XLR cable and padded case."
-                  className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "Daily ₹", value: dailyPrice, set: setDailyPrice },
-                  { label: "Weekly ₹", value: weeklyPrice, set: setWeeklyPrice },
-                  { label: "Monthly ₹", value: monthlyPrice, set: setMonthlyPrice },
-                ].map((f) => (
-                  <div key={f.label}>
-                    <label className="mb-1.5 block text-1 font-medium text-muted-foreground">
-                      {f.label}
-                    </label>
-                    <input
-                      inputMode="numeric"
-                      value={f.value}
-                      onChange={(e) => f.set(e.target.value)}
-                      placeholder="0"
-                      className="w-full rounded-lg border border-border bg-card px-3 py-3 text-sm outline-none focus:border-primary"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div>
-                <label
-                  htmlFor="security-deposit"
-                  className="mb-1.5 block text-1 font-medium text-muted-foreground"
-                >
-                  Security deposit
-                </label>
-                <input
-                  id="security-deposit"
-                  inputMode="numeric"
-                  value={deposit}
-                  onChange={(e) => setDeposit(e.target.value)}
-                  placeholder="₹15,000"
-                  className="w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
-                />
-              </div>
-              <div>
-                <span
-                  id="grp-fulfilment"
-                  className="mb-1.5 block text-1 font-medium text-muted-foreground"
-                >
-                  Fulfilment
-                </span>
-                <div className="flex flex-wrap gap-2" role="group" aria-labelledby="grp-fulfilment">
-                  {["Pickup", "Delivery"].map((f) => (
-                    <Chip
-                      key={f}
-                      active={fulfilment.includes(f)}
-                      onClick={() =>
-                        setFulfilment((s) => (s.includes(f) ? s.filter((x) => x !== f) : [...s, f]))
-                      }
-                    >
-                      {f}
-                    </Chip>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </>
+          <ListingDetailsForm value={draft} onChange={patch} rental />
         ) : null}
 
         {!published && step === 2 ? (
@@ -342,29 +187,9 @@ function ListForRent() {
             <p className="mt-1 text-1 text-muted-foreground">
               This is exactly what renters will see.
             </p>
-            <article className="mt-4 overflow-hidden rounded-lg bg-subtle">
-              <div className="flex h-44 items-center justify-center bg-background text-1 text-muted-foreground">
-                Cover photo
-              </div>
-              <div className="p-4">
-                <Price
-                  price={{ amount: dailyPrice ? `₹${dailyPrice}` : "₹0", unit: "day" }}
-                  amountClassName="text-sm font-bold"
-                  unitClassName="text-1"
-                />
-                <h3 className="mt-1 text-sm leading-snug">{name || "Untitled rental"}</h3>
-                <p className="text-1 text-muted-foreground">
-                  {[brand, model].filter(Boolean).join(" · ")}
-                </p>
-                <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                  <ConditionBadge value={conditions.find((c) => c.value === condition)!.label} />
-                </div>
-                <p className="mt-2 text-1 text-muted-foreground">
-                  {deposit ? `Deposit ₹${deposit} · ` : ""}
-                  {fulfilment.join(" or ") || "Pickup"} · min {minDays}
-                </p>
-              </div>
-            </article>
+            <div className="mt-4">
+              <ListingPreview value={draft} rental extra={`min ${minDays}`} />
+            </div>
           </>
         ) : null}
 
@@ -375,7 +200,7 @@ function ListForRent() {
               last={step === steps.length - 1}
               onBack={() => setStep((s) => s - 1)}
               onNext={() => (step === steps.length - 1 ? void publish() : setStep((s) => s + 1))}
-              disabled={step === steps.length - 1 && (!name.trim() || !dailyPrice)}
+              disabled={step === steps.length - 1 && (!draft.name.trim() || !draft.price)}
               busy={publishing}
               publishLabel="Publish rental"
             />
