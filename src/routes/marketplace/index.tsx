@@ -85,7 +85,7 @@ function MarketHome() {
           <h1 className="text-4 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
             <Link
-              to="/marketplace/sell"
+              to="/marketplace/mine"
               className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
             >
               <Plus size={iconSize.sm} /> List

@@ -391,66 +391,156 @@ const listingSlug = (title: string) =>
     .replace(/(^-|-$)/g, "")
     .slice(0, 80)}-${Math.random().toString(36).slice(2, 7)}`;
 
+/** The fields a listing is written with, on create and on edit. */
+const listingInput = z.object({
+  category: z.enum(["gear_sale", "gear_rental", "creative_services"]),
+  itemCategoryKind: z.enum(["instrument", "equipment"]).optional(),
+  itemCategory: z.string().max(60).optional(),
+  title: z.string().trim().min(1).max(200),
+  brand: z.string().trim().max(100).optional(),
+  model: z.string().trim().max(100).optional(),
+  description: z.string().trim().max(2000).optional(),
+  pricePaise: z.number().int().min(0),
+  priceUnit: z.string().max(20).optional(),
+  condition: z.enum(["new", "like_new", "used"]).optional(),
+  // Rentals only.
+  weeklyPricePaise: z.number().int().min(0).optional(),
+  monthlyPricePaise: z.number().int().min(0).optional(),
+  depositPaise: z.number().int().min(0).optional(),
+  pickupAvailable: z.boolean().optional(),
+  deliveryAvailable: z.boolean().optional(),
+  minDays: z.number().int().min(1).optional(),
+  maxDays: z.number().int().min(1).optional(),
+  noticePeriod: z.string().max(60).optional(),
+  // "City PIN", as every place is stored (src/lib/place.ts).
+  pickupLocation: z.string().trim().max(120).optional(),
+  videoUrl: z.string().trim().url().max(500).optional(),
+});
+
+type ListingInput = z.infer<typeof listingInput>;
+
+/** The columns listingInput writes, shared by create and edit. */
+function listingColumns(data: ListingInput) {
+  return {
+    title: data.title,
+    category: data.category,
+    item_category_kind: data.itemCategoryKind ?? null,
+    item_category: data.itemCategory ?? null,
+    brand: data.brand ?? null,
+    model: data.model ?? null,
+    condition: data.condition ?? null,
+    price_paise: data.pricePaise,
+    price_unit: data.priceUnit ?? null,
+    listing_description: data.description ?? null,
+    ...(data.weeklyPricePaise != null ? { weekly_price_paise: data.weeklyPricePaise } : {}),
+    ...(data.monthlyPricePaise != null ? { monthly_price_paise: data.monthlyPricePaise } : {}),
+    ...(data.depositPaise != null ? { deposit_paise: data.depositPaise } : {}),
+    ...(data.pickupAvailable != null ? { pickup_available: data.pickupAvailable } : {}),
+    ...(data.deliveryAvailable != null ? { delivery_available: data.deliveryAvailable } : {}),
+    ...(data.minDays != null ? { min_days: data.minDays } : {}),
+    ...(data.maxDays != null ? { max_days: data.maxDays } : {}),
+    ...(data.noticePeriod ? { notice_period: data.noticePeriod } : {}),
+    ...(data.pickupLocation ? { pickup_location: data.pickupLocation } : {}),
+    video_url: data.videoUrl ?? null,
+  };
+}
+
 /** Sell, rent out or offer a service. "Studio" isn't here — a studio is its own richer entity. */
 export const createListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z
-      .object({
-        category: z.enum(["gear_sale", "gear_rental", "creative_services"]),
-        itemCategoryKind: z.enum(["instrument", "equipment"]).optional(),
-        itemCategory: z.string().max(60).optional(),
-        title: z.string().trim().min(1).max(200),
-        brand: z.string().trim().max(100).optional(),
-        model: z.string().trim().max(100).optional(),
-        description: z.string().trim().max(2000).optional(),
-        pricePaise: z.number().int().min(0),
-        priceUnit: z.string().max(20).optional(),
-        condition: z.enum(["new", "like_new", "used"]).optional(),
-        // Rentals only.
-        weeklyPricePaise: z.number().int().min(0).optional(),
-        monthlyPricePaise: z.number().int().min(0).optional(),
-        depositPaise: z.number().int().min(0).optional(),
-        pickupAvailable: z.boolean().optional(),
-        deliveryAvailable: z.boolean().optional(),
-        minDays: z.number().int().min(1).optional(),
-        maxDays: z.number().int().min(1).optional(),
-        noticePeriod: z.string().max(60).optional(),
-        // "City PIN", as every place is stored (src/lib/place.ts).
-        pickupLocation: z.string().trim().max(120).optional(),
-        videoUrl: z.string().trim().url().max(500).optional(),
-      })
-      .parse(d),
-  )
+  .inputValidator((d) => listingInput.parse(d))
   .handler(async ({ context, data }): Promise<{ slug: string }> => {
     const client = context.supabase as unknown as SupabaseClient;
     const slug = listingSlug(data.title);
     const { error } = await client.from("marketplace_listings").insert({
       slug,
       seller_profile_id: context.userId,
-      title: data.title,
-      category: data.category,
-      item_category_kind: data.itemCategoryKind ?? null,
-      item_category: data.itemCategory ?? null,
-      brand: data.brand ?? null,
-      model: data.model ?? null,
-      condition: data.condition ?? null,
-      price_paise: data.pricePaise,
-      price_unit: data.priceUnit ?? null,
-      listing_description: data.description ?? null,
-      ...(data.weeklyPricePaise != null ? { weekly_price_paise: data.weeklyPricePaise } : {}),
-      ...(data.monthlyPricePaise != null ? { monthly_price_paise: data.monthlyPricePaise } : {}),
-      ...(data.depositPaise != null ? { deposit_paise: data.depositPaise } : {}),
-      ...(data.pickupAvailable != null ? { pickup_available: data.pickupAvailable } : {}),
-      ...(data.deliveryAvailable != null ? { delivery_available: data.deliveryAvailable } : {}),
-      ...(data.minDays != null ? { min_days: data.minDays } : {}),
-      ...(data.maxDays != null ? { max_days: data.maxDays } : {}),
-      ...(data.noticePeriod ? { notice_period: data.noticePeriod } : {}),
-      ...(data.pickupLocation ? { pickup_location: data.pickupLocation } : {}),
-      ...(data.videoUrl ? { video_url: data.videoUrl } : {}),
+      ...listingColumns(data),
     } as never);
     if (error) throw new Error(error.message);
     return { slug };
+  });
+
+/** What the seller's own listings screen and the edit flow read: every status, not just live. */
+export type MyListing = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  item_category: string | null;
+  item_category_kind: "instrument" | "equipment" | null;
+  condition: "new" | "like_new" | "used" | null;
+  price_paise: number | null;
+  price_unit: string | null;
+  image_url: string | null;
+  brand: string | null;
+  model: string | null;
+  listing_description: string | null;
+  pickup_location: string | null;
+  pickup_available: boolean | null;
+  delivery_available: boolean | null;
+  video_url: string | null;
+  listing_status: string | null;
+  created_at: string;
+};
+
+export const listMyManagedListings = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<MyListing[]> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data, error } = await client
+      .from("marketplace_listings")
+      .select(
+        "id, slug, title, category, item_category, item_category_kind, condition, price_paise, price_unit, image_url, brand, model, listing_description, pickup_location, pickup_available, delivery_available, video_url, listing_status, created_at",
+      )
+      .eq("seller_profile_id", context.userId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as unknown as MyListing[];
+  });
+
+/** The seller edits one of their own listings. */
+export const updateListing = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => listingInput.extend({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<{ slug: string }> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { data: row, error } = await client
+      .from("marketplace_listings")
+      .update(listingColumns(data) as never)
+      .eq("id", data.id)
+      .eq("seller_profile_id", context.userId)
+      .select("slug")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("Listing not found");
+    return { slug: (row as { slug: string }).slug };
+  });
+
+/**
+ * The seller deletes one of their own listings. Its offers and bookings go with it (the foreign
+ * keys cascade), so a listing someone has a confirmed or running rental on can't be deleted —
+ * unpublish it instead.
+ */
+export const deleteListing = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const { count: live } = await client
+      .from("rental_bookings")
+      .select("id", { count: "exact", head: true })
+      .eq("listing_id", data.id)
+      .in("status", ["confirmed", "active"]);
+    if (live) throw new Error("booked");
+    const { error, count } = await client
+      .from("marketplace_listings")
+      .delete({ count: "exact" })
+      .eq("id", data.id)
+      .eq("seller_profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    if (!count) throw new Error("Listing not found");
+    return { deleted: true };
   });
 
 /** Label for a taxonomy slug, or the slug when the label is not loaded. */

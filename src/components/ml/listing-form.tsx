@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import type { ProfileRow } from "@/lib/profile-map";
+import type { MyListing } from "@/lib/catalog.functions";
 import {
   Calendar,
   CalendarDays,
@@ -32,7 +33,7 @@ import {
 } from "@/lib/listing-category";
 import { instrumentIcon } from "@/lib/instrument-icons";
 import { iconSize } from "@/lib/tokens";
-import { placeLine } from "@/lib/place";
+import { parsePlace, placeLine } from "@/lib/place";
 import { pinProblem } from "@/lib/validation";
 
 /*
@@ -103,7 +104,7 @@ export const listingSteps = ["What & price", "Photos & description", "Where & pu
  */
 const DRAFT_KEY = "ml.listing-draft";
 
-function readDraft(): Partial<ListingDraft> | null {
+export function readListingDraft(): Partial<ListingDraft> | null {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
     return raw ? (JSON.parse(raw) as Partial<ListingDraft>) : null;
@@ -134,7 +135,7 @@ export function clearListingDraft() {
  * for; City and PIN code start from the seller's profile (the shared ["profile","me"] query), are
  * filled once, and never over what was typed.
  */
-export function useListingDraft(mode: ListingMode) {
+export function useListingDraft(mode: ListingMode, editing = false) {
   const [draft, setDraft] = useState<ListingDraft>({ ...emptyListingDraft, mode });
   const { signedIn } = useAuth();
   const load = useServerFn(getMyProfile);
@@ -146,9 +147,10 @@ export function useListingDraft(mode: ListingMode) {
   const row = profile.data as ProfileRow | null | undefined;
   // Storage is read after mount, so the server render and the first client render agree.
   useEffect(() => {
-    const saved = readDraft();
+    if (editing) return;
+    const saved = readListingDraft();
     if (saved) setDraft((d) => ({ ...d, ...saved }));
-  }, []);
+  }, [editing]);
   useEffect(() => {
     if (!row) return;
     setDraft((d) => ({
@@ -159,6 +161,32 @@ export function useListingDraft(mode: ListingMode) {
   }, [row]);
   const patch = (p: Partial<ListingDraft>) => setDraft((d) => ({ ...d, ...p }));
   return [draft, patch] as const;
+}
+
+/** A saved listing read back into the draft, for editing. */
+export function draftFromListing(row: MyListing): ListingDraft {
+  const place = parsePlace(row.pickup_location);
+  const unit = rateUnits.find((u) => u.value === row.price_unit)?.value ?? "day";
+  return {
+    mode: row.category === "gear_rental" ? "Rent out" : "Sell",
+    name: row.title,
+    brand: row.brand ?? "",
+    model: row.model ?? "",
+    sub: listingSubCategories.find((s) => subCategorySlug(s) === row.item_category) ?? null,
+    condition: row.condition ?? "used",
+    description: row.listing_description ?? "",
+    price: row.price_paise != null ? String(Math.round(row.price_paise / 100)) : "",
+    unit,
+    fulfilment:
+      row.pickup_available && row.delivery_available
+        ? "both"
+        : row.delivery_available
+          ? "delivery"
+          : "pickup",
+    city: place.city,
+    pin: place.pin,
+    videoUrl: row.video_url ?? "",
+  };
 }
 
 const rupees = (v: string) => Number(v.replace(/[^0-9]/g, ""));

@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { ListingStepFooter } from "@/components/ml/market";
 import {
   clearListingDraft,
+  draftFromListing,
   ListingMediaStep,
   listingPayload,
   listingStepComplete,
@@ -15,17 +17,19 @@ import {
   saveListingDraft,
   useListingDraft,
 } from "@/components/ml/listing-form";
-import { createListing } from "@/lib/catalog.functions";
+import { createListing, listMyManagedListings, updateListing } from "@/lib/catalog.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 /*
- * The one listing flow: sell or rent out an instrument or a piece of equipment. Market's Sell
- * opens it on Sell; Rentals' Rent out opens it with ?type=rent (and /marketplace/rent/list
- * forwards here).
+ * The one listing flow: sell or rent out an instrument or a piece of equipment. My listings'
+ * Add listing opens it on Sell or with ?type=rent (and /marketplace/rent/list forwards here);
+ * ?edit=<id> opens one of the seller's listings to change it.
  */
 export const Route = createFileRoute("/marketplace/sell")({
-  validateSearch: (search: Record<string, unknown>): { type?: "rent" } =>
-    search["type"] === "rent" ? { type: "rent" } : {},
+  validateSearch: (search: Record<string, unknown>): { type?: "rent"; edit?: string } => ({
+    ...(search["type"] === "rent" ? { type: "rent" as const } : {}),
+    ...(typeof search["edit"] === "string" ? { edit: search["edit"] } : {}),
+  }),
   head: () => ({
     meta: [
       { title: "Create a Listing | MusicLinkd Market" },
@@ -46,20 +50,52 @@ export const Route = createFileRoute("/marketplace/sell")({
 
 function Sell() {
   const navigate = useNavigate();
-  const { type } = Route.useSearch();
+  const { type, edit } = Route.useSearch();
   const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
   const submit = useServerFn(createListing);
+  const save = useServerFn(updateListing);
+  const loadMine = useServerFn(listMyManagedListings);
   const [step, setStep] = useState(0);
-  const [draft, patch] = useListingDraft(type === "rent" ? "Rent out" : "Sell");
+  const [draft, patch] = useListingDraft(type === "rent" ? "Rent out" : "Sell", Boolean(edit));
   const [publishing, setPublishing] = useState(false);
   const last = listingSteps.length - 1;
-  const exit = draft.mode === "Rent out" ? "/marketplace/rent" : "/marketplace";
+  const exit = "/marketplace/mine";
+
+  // Editing: the listing comes from the seller's own list and fills the draft once.
+  const mine = useQuery({
+    queryKey: ["marketplace", "mine", "managed"],
+    queryFn: () => loadMine(),
+    enabled: signedIn && Boolean(edit),
+  });
+  const editing = edit ? mine.data?.find((l) => l.id === edit) : undefined;
+  const filled = useRef(false);
+  useEffect(() => {
+    if (!editing || filled.current) return;
+    filled.current = true;
+    patch(draftFromListing(editing));
+  }, [editing, patch]);
+
+  async function saveChanges() {
+    if (!edit) return;
+    setPublishing(true);
+    try {
+      await save({ data: { id: edit, ...listingPayload(draft) } });
+      await queryClient.invalidateQueries({ queryKey: ["marketplace", "mine"] });
+      toast.success("Changes saved");
+      void navigate({ to: "/marketplace/mine" });
+    } catch {
+      toast.error("Couldn't save that — try again");
+      setPublishing(false);
+    }
+  }
 
   async function publish() {
     setPublishing(true);
     try {
       const { slug } = await submit({ data: listingPayload(draft) });
       clearListingDraft();
+      await queryClient.invalidateQueries({ queryKey: ["marketplace", "mine"] });
       void navigate({ to: "/marketplace/l/$id", params: { id: slug } });
     } catch {
       toast.error("Couldn't publish that — try again");
@@ -70,7 +106,7 @@ function Sell() {
   return (
     <Screen>
       <TopBar
-        title="Create listing"
+        title={edit ? "Edit listing" : "Create listing"}
         subtitle={`Step ${step + 1} of ${listingSteps.length} · ${listingSteps[step]}`}
         back={exit}
       />
@@ -96,15 +132,20 @@ function Sell() {
           last={step === last}
           onCancel={() => void navigate({ to: exit })}
           onBack={() => setStep(step - 1)}
-          onNext={() => (step === last ? void publish() : setStep(step + 1))}
-          onSaveDraft={() =>
-            saveListingDraft(draft)
-              ? toast.success("Draft saved on this device")
-              : toast.error("Couldn't save the draft here")
+          onNext={() =>
+            step === last ? void (edit ? saveChanges() : publish()) : setStep(step + 1)
           }
+          {...(edit
+            ? {}
+            : {
+                onSaveDraft: () =>
+                  saveListingDraft(draft)
+                    ? toast.success("Draft saved on this device")
+                    : toast.error("Couldn't save the draft here"),
+              })}
           disabled={!listingStepComplete(draft, step) || (step === last && !signedIn)}
           busy={publishing}
-          publishLabel="Publish"
+          publishLabel={edit ? "Save changes" : "Publish"}
         />
       </div>
     </Screen>

@@ -1,15 +1,34 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Screen, TopBar, Chip, BtnLink, Btn } from "@/components/ml/ui";
-import { EmptyState, ListingGrid } from "@/components/ml/market";
-import { loadMyCatalogListings } from "@/lib/market-view";
+import {
+  CalendarClock,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  PenLine,
+  Plus,
+  Tag,
+  Trash2,
+  type LucideIcon,
+} from "lucide-react";
+import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
+import { Dialog, Price, StatusPill } from "@/components/ml/kit";
+import { EmptyState, MarketCategoryIcon } from "@/components/ml/market";
+import {
+  clearListingDraft,
+  readListingDraft,
+  type ListingDraft,
+} from "@/components/ml/listing-form";
+import { deleteListing, listMyManagedListings, type MyListing } from "@/lib/catalog.functions";
+import { setMyListingStatus } from "@/lib/rentals.functions";
 import { answerOffer, listOffersOnMyListings } from "@/lib/offers.functions";
-import { inr } from "@/lib/price";
+import { gearCategoryOf } from "@/lib/listing-category";
+import { inr, priceParts } from "@/lib/price";
+import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
-import { TextLink } from "@/components/ml/links";
 
 export const Route = createFileRoute("/marketplace/mine")({
   head: () => ({
@@ -29,15 +48,27 @@ export const Route = createFileRoute("/marketplace/mine")({
   component: Mine,
 });
 
-const tabs = ["Active", "Drafts", "Offers"];
+/*
+ * The seller's one place for the market (owner, 22 Sep 2026): no tabs. Numbers at the top, Add
+ * listing (sell or rent out), the draft kept on this device, every listing with its own actions
+ * — edit, publish or unpublish, delete — and the offers made on them.
+ */
+
+const live = (l: MyListing) => !l.listing_status || l.listing_status === "active";
+
+const addOptions: { mode: "sell" | "rent"; label: string; icon: LucideIcon }[] = [
+  { mode: "sell", label: "Sell", icon: Tag },
+  { mode: "rent", label: "Rent out", icon: CalendarClock },
+];
 
 function Mine() {
-  const [tab, setTab] = useState(tabs[0]!);
   const { signedIn } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const load = useServerFn(listMyManagedListings);
   const mine = useQuery({
-    queryKey: ["marketplace", "mine"],
-    queryFn: loadMyCatalogListings,
+    queryKey: ["marketplace", "mine", "managed"],
+    queryFn: () => load(),
     enabled: signedIn,
   });
   const listings = mine.data ?? [];
@@ -46,130 +77,341 @@ function Mine() {
   const offersQuery = useQuery({
     queryKey: ["marketplace", "offers", "received"],
     queryFn: () => fetchOffers(),
-    enabled: signedIn && tab === "Offers",
+    enabled: signedIn,
   });
+  const offers = offersQuery.data ?? [];
+
+  const setStatus = useServerFn(setMyListingStatus);
+  const remove = useServerFn(deleteListing);
   const answer = useServerFn(answerOffer);
-  const [answering, setAnswering] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [toDelete, setToDelete] = useState<MyListing | null>(null);
+
+  // The draft Save draft keeps on this device, read after mount.
+  const [draft, setDraft] = useState<Partial<ListingDraft> | null>(null);
+  useEffect(() => setDraft(readListingDraft()), []);
+
+  async function refresh() {
+    await queryClient.invalidateQueries({ queryKey: ["marketplace", "mine"] });
+  }
+
+  async function togglePublished(l: MyListing) {
+    setBusy(l.id);
+    try {
+      await setStatus({ data: { id: l.id, status: live(l) ? "unavailable" : "active" } });
+      await refresh();
+      toast.success(live(l) ? "Unpublished — hidden from Market" : "Published — live on Market");
+    } catch {
+      toast.error("Couldn't change that — try again");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function confirmDelete() {
+    if (!toDelete) return;
+    setBusy(toDelete.id);
+    try {
+      await remove({ data: { id: toDelete.id } });
+      await refresh();
+      toast.success("Listing deleted");
+      setToDelete(null);
+    } catch (e) {
+      toast.error(
+        e instanceof Error && e.message === "booked"
+          ? "It has a confirmed rental — unpublish it instead"
+          : "Couldn't delete that — try again",
+      );
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function respond(id: string, status: "accepted" | "declined") {
-    setAnswering(id);
+    setBusy(id);
     try {
       await answer({ data: { id, status } });
       await queryClient.invalidateQueries({ queryKey: ["marketplace", "offers", "received"] });
     } catch {
       toast.error("Couldn't save that — try again");
     } finally {
-      setAnswering(null);
+      setBusy(null);
     }
   }
 
+  const stats = [
+    { label: "Total", value: listings.length },
+    { label: "Live", value: listings.filter(live).length },
+    { label: "Unpublished", value: listings.filter((l) => !live(l)).length },
+    { label: "For sale", value: listings.filter((l) => l.category === "gear_sale").length },
+    { label: "For rent", value: listings.filter((l) => l.category === "gear_rental").length },
+    { label: "Open offers", value: offers.filter((o) => o.status === "pending").length },
+  ];
+
   return (
     <Screen>
-      <TopBar
-        title="My Marketplace"
-        {...(mine.isLoading
-          ? {}
-          : {
-              subtitle: `${listings.length} active listing${listings.length === 1 ? "" : "s"}`,
-            })}
-        back="/marketplace"
-        right={
-          <TextLink to="/marketplace/sell" className="text-1">
-            New
-          </TextLink>
-        }
-      />
-      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
-        {tabs.map((t) => (
-          <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
-            {t}
-          </Chip>
-        ))}
-      </div>
+      <TopBar title="My listings" back="/marketplace" />
 
-      <div className="space-y-3 px-5">
-        {tab === "Active" ? (
-          mine.isLoading ? (
+      <div className="space-y-6 px-5 py-4">
+        <div
+          className="grid grid-cols-3 gap-y-4 rounded-lg bg-subtle p-4"
+          aria-busy={mine.isLoading}
+        >
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <p className="text-3 font-bold leading-tight">{mine.isLoading ? "—" : s.value}</p>
+              <p className="mt-0.5 text-1 text-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        <Btn className="w-full" onClick={() => setAdding(true)}>
+          <Plus size={iconSize.sm} aria-hidden />
+          Add listing
+        </Btn>
+
+        {draft?.name || draft?.sub ? (
+          <section>
+            <h2 className="mb-2 text-2">Draft</h2>
+            <div className="flex items-center gap-3 rounded-lg bg-subtle p-4">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold">{draft.name || "Untitled listing"}</p>
+                <p className="text-1 text-foreground">
+                  {draft.mode ?? "Sell"} · saved on this device
+                </p>
+              </div>
+              <IconBtn
+                label="Discard draft"
+                onClick={() => {
+                  clearListingDraft();
+                  setDraft(null);
+                }}
+              >
+                <Trash2 size={iconSize.sm} aria-hidden />
+              </IconBtn>
+              <BtnLink to="/marketplace/sell" variant="outline" className="min-h-control-sm">
+                Continue
+              </BtnLink>
+            </div>
+          </section>
+        ) : null}
+
+        <section>
+          <h2 className="mb-2 text-2">Listings</h2>
+          {mine.isLoading ? (
             <div className="space-y-3" aria-busy>
               {[0, 1].map((i) => (
                 <div key={i} className="h-28 animate-pulse rounded-lg bg-subtle" />
               ))}
             </div>
           ) : listings.length ? (
-            <ListingGrid items={listings} />
+            <div className="space-y-3">
+              {listings.map((l) => (
+                <ManagedListing
+                  key={l.id}
+                  l={l}
+                  busy={busy === l.id}
+                  onToggle={() => void togglePublished(l)}
+                  onDelete={() => setToDelete(l)}
+                />
+              ))}
+            </div>
           ) : (
             <EmptyState
               emoji="🛍️"
               title="No listings yet"
               body="Everything you list on the marketplace shows up here."
-              action={<BtnLink to="/marketplace/sell">Create a Listing</BtnLink>}
             />
-          )
-        ) : null}
+          )}
+        </section>
 
-        {tab === "Drafts" ? (
-          <EmptyState
-            emoji="📝"
-            title="No drafts"
-            body="Start a listing and we'll keep it here until you publish."
-            action={<BtnLink to="/marketplace/sell">Create a Listing</BtnLink>}
-          />
-        ) : null}
-
-        {tab === "Offers" ? (
-          offersQuery.isLoading ? (
+        <section>
+          <h2 className="mb-2 text-2">Offers</h2>
+          {offersQuery.isLoading ? (
             <div className="space-y-3" aria-busy>
               {[0, 1].map((i) => (
                 <div key={i} className="h-20 animate-pulse rounded-lg bg-subtle" />
               ))}
             </div>
-          ) : (offersQuery.data ?? []).length ? (
-            (offersQuery.data ?? []).map((o) => (
-              <article key={o.id} className="rounded-lg bg-subtle p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-1 font-semibold">{o.listing?.title ?? "Listing"}</p>
-                    <p className="text-1 text-muted-foreground">
-                      {inr(Math.round(o.amount_paise / 100))} from{" "}
-                      {o.buyer?.display_name ?? o.buyer?.username ?? "a buyer"}
-                    </p>
+          ) : offers.length ? (
+            <div className="space-y-3">
+              {offers.map((o) => (
+                <article key={o.id} className="rounded-lg bg-subtle p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-1 font-semibold">
+                        {o.listing?.title ?? "Listing"}
+                      </p>
+                      <p className="text-1 text-muted-foreground">
+                        {inr(Math.round(o.amount_paise / 100))} from{" "}
+                        {o.buyer?.display_name ?? o.buyer?.username ?? "a buyer"}
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-background pill text-muted-foreground">
+                      {o.status}
+                    </span>
                   </div>
-                  <span className="shrink-0 rounded-full bg-background pill text-muted-foreground">
-                    {o.status}
-                  </span>
-                </div>
-                {o.message ? (
-                  <p className="mt-2 text-1 text-muted-foreground">{o.message}</p>
-                ) : null}
-                {o.status === "pending" ? (
-                  <div className="mt-3 flex gap-2">
-                    <Btn
-                      className="flex-1 text-1"
-                      disabled={answering === o.id}
-                      onClick={() => void respond(o.id, "accepted")}
-                    >
-                      Accept
-                    </Btn>
-                    <Btn
-                      variant="outline"
-                      className="flex-1 text-1"
-                      disabled={answering === o.id}
-                      onClick={() => void respond(o.id, "declined")}
-                    >
-                      Decline
-                    </Btn>
-                  </div>
-                ) : null}
-              </article>
-            ))
+                  {o.message ? (
+                    <p className="mt-2 text-1 text-muted-foreground">{o.message}</p>
+                  ) : null}
+                  {o.status === "pending" ? (
+                    <div className="mt-3 flex gap-2">
+                      <Btn
+                        className="flex-1 text-1"
+                        disabled={busy === o.id}
+                        onClick={() => void respond(o.id, "accepted")}
+                      >
+                        Accept
+                      </Btn>
+                      <Btn
+                        variant="outline"
+                        className="flex-1 text-1"
+                        disabled={busy === o.id}
+                        onClick={() => void respond(o.id, "declined")}
+                      >
+                        Decline
+                      </Btn>
+                    </div>
+                  ) : null}
+                </article>
+              ))}
+            </div>
           ) : (
             <EmptyState
               emoji="🤝"
               title="No offers yet"
               body="Offers buyers make on your listings show up here."
             />
-          )
-        ) : null}
+          )}
+        </section>
       </div>
+
+      <Sheet open={adding} onClose={() => setAdding(false)} title="What are you listing?">
+        <div className="space-y-2">
+          {addOptions.map((o) => (
+            <button
+              key={o.mode}
+              type="button"
+              onClick={() => {
+                setAdding(false);
+                void navigate({
+                  to: "/marketplace/sell",
+                  search: o.mode === "rent" ? { type: "rent" } : {},
+                });
+              }}
+              className="state-layer flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-left"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
+                <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1 text-sm font-semibold">{o.label}</span>
+              <ChevronRight size={iconSize.md} className="shrink-0" aria-hidden />
+            </button>
+          ))}
+        </div>
+      </Sheet>
+
+      <Dialog
+        open={toDelete !== null}
+        title="Delete this listing?"
+        body={
+          toDelete
+            ? `"${toDelete.title}" comes off Market for good, with any offers on it. This can't be undone.`
+            : ""
+        }
+        onClose={() => setToDelete(null)}
+      >
+        <Btn loading={busy === toDelete?.id} onClick={() => void confirmDelete()}>
+          Delete
+        </Btn>
+        <Btn variant="ghost" onClick={() => setToDelete(null)}>
+          Keep It
+        </Btn>
+      </Dialog>
     </Screen>
+  );
+}
+
+/** One of the seller's listings, with its actions always in reach. */
+function ManagedListing({
+  l,
+  busy,
+  onToggle,
+  onDelete,
+}: {
+  l: MyListing;
+  busy: boolean;
+  onToggle: () => void;
+  onDelete: () => void;
+}) {
+  const isLive = live(l);
+  return (
+    <article className="rounded-lg bg-subtle p-4">
+      <div className="flex gap-3">
+        {l.image_url ? (
+          <img
+            src={l.image_url}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-16 w-16 shrink-0 rounded-lg object-cover"
+          />
+        ) : (
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-icon-chip">
+            <MarketCategoryIcon
+              slug={gearCategoryOf(l.item_category, l.item_category_kind)}
+              size={iconSize.lg}
+            />
+          </span>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="truncate text-sm font-semibold">{l.title}</h3>
+            <StatusPill
+              label={isLive ? "Live" : "Unpublished"}
+              tone={isLive ? "good" : "warn"}
+              className="shrink-0"
+            />
+          </div>
+          <p className="text-1 text-foreground">
+            {l.category === "gear_rental" ? "For rent" : "For sale"}
+          </p>
+          <Price
+            price={priceParts(l.price_paise, l.price_unit)}
+            className="mt-1"
+            amountClassName="text-sm font-bold"
+          />
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        <BtnLink
+          to="/marketplace/l/$id"
+          params={{ id: l.slug }}
+          variant="outline"
+          className="min-h-control-sm flex-1"
+        >
+          View
+        </BtnLink>
+        <IconBtnLink label="Edit" to="/marketplace/sell" search={{ edit: l.id }} variant="outline">
+          <PenLine size={iconSize.sm} aria-hidden />
+        </IconBtnLink>
+        <IconBtn
+          label={isLive ? "Unpublish" : "Publish"}
+          variant="outline"
+          disabled={busy}
+          onClick={onToggle}
+        >
+          {isLive ? (
+            <EyeOff size={iconSize.sm} aria-hidden />
+          ) : (
+            <Eye size={iconSize.sm} aria-hidden />
+          )}
+        </IconBtn>
+        <IconBtn label="Delete" variant="outline" disabled={busy} onClick={onDelete}>
+          <Trash2 size={iconSize.sm} aria-hidden />
+        </IconBtn>
+      </div>
+    </article>
   );
 }
