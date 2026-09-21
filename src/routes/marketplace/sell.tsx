@@ -2,9 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { AudioWaveform, Guitar, type LucideIcon } from "lucide-react";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
-import { PriceBlock, TrustPill } from "@/components/ml/market";
+import { ListingStepFooter, PriceBlock, TrustPill } from "@/components/ml/market";
+import { kindOfSubCategory, listingSubCategories } from "@/lib/listing-category";
 import { createListing } from "@/lib/catalog.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -27,22 +27,7 @@ export const Route = createFileRoute("/marketplace/sell")({
   component: Sell,
 });
 
-const types = [
-  { label: "Instrument", icon: Guitar, category: "gear_sale", itemCategoryKind: "instrument" },
-  {
-    label: "Audio equipment",
-    icon: AudioWaveform,
-    category: "gear_sale",
-    itemCategoryKind: "equipment",
-  },
-] as const satisfies {
-  label: string;
-  icon: LucideIcon;
-  category: string;
-  itemCategoryKind?: string;
-}[];
-
-// Only the conditions the real schema stores; a service or rental has no condition.
+// Only the conditions the real schema stores.
 const conditions = [
   { label: "New", value: "new" },
   { label: "Like New", value: "like_new" },
@@ -54,14 +39,14 @@ function Sell() {
   const { signedIn } = useAuth();
   const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [type, setType] = useState<(typeof types)[number]["label"]>("Instrument");
+  const [sub, setSub] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [condition, setCondition] = useState<(typeof conditions)[number]["value"]>("used");
   const [publishing, setPublishing] = useState(false);
-  const labels = ["What are you offering?", "Add photos", "Listing details", "Preview"];
-  const selectedType = types.find((t) => t.label === type)!;
+  const labels = ["Add photos", "Listing details", "Preview"];
+  const last = labels.length - 1;
 
   async function publish() {
     const rupees = Number(price.replace(/[^0-9]/g, ""));
@@ -69,14 +54,12 @@ function Sell() {
     try {
       const { slug } = await submit({
         data: {
-          category: selectedType.category,
-          ...("itemCategoryKind" in selectedType
-            ? { itemCategoryKind: selectedType.itemCategoryKind }
-            : {}),
+          category: "gear_sale",
+          ...(sub ? { itemCategoryKind: kindOfSubCategory(sub), itemCategory: sub } : {}),
           title: title.trim() || "Untitled listing",
           pricePaise: rupees * 100,
           ...(description.trim() ? { description: description.trim() } : {}),
-          ...(selectedType.category === "gear_sale" ? { condition } : {}),
+          condition,
         },
       });
       void navigate({ to: "/marketplace/l/$id", params: { id: slug } });
@@ -90,7 +73,7 @@ function Sell() {
     <Screen>
       <TopBar
         title="Create listing"
-        subtitle={`Step ${step + 1} of 4 · ${labels[step]}`}
+        subtitle={`Step ${step + 1} of ${labels.length} · ${labels[step]}`}
         back="/marketplace"
       />
       <div className="px-5 pt-4">
@@ -105,23 +88,6 @@ function Sell() {
         </div>
 
         {step === 0 ? (
-          <div className="space-y-2">
-            {types.map((t) => (
-              <button
-                key={t.label}
-                onClick={() => setType(t.label)}
-                className={`flex w-full items-center gap-3 rounded-lg border-2 p-4 text-left ${type === t.label ? "border-foreground" : "border-transparent"} bg-subtle`}
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip">
-                  <t.icon size={20} strokeWidth={1.75} aria-hidden />
-                </span>
-                <span className="text-sm font-semibold">{t.label}</span>
-              </button>
-            ))}
-          </div>
-        ) : null}
-
-        {step === 1 ? (
           <div>
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-center text-1 text-muted-foreground">
@@ -145,7 +111,7 @@ function Sell() {
           </div>
         ) : null}
 
-        {step === 2 ? (
+        {step === 1 ? (
           <div className="space-y-4">
             <Field label="Title">
               <input
@@ -164,21 +130,28 @@ function Sell() {
                 className="h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary"
               />
             </Field>
-            {selectedType.category === "gear_sale" ? (
-              <Field label="Condition">
-                <div className="flex flex-wrap gap-2">
-                  {conditions.map((c) => (
-                    <Chip
-                      key={c.value}
-                      active={condition === c.value}
-                      onClick={() => setCondition(c.value)}
-                    >
-                      {c.label}
-                    </Chip>
-                  ))}
-                </div>
-              </Field>
-            ) : null}
+            <Field label="Category">
+              <div className="flex flex-wrap gap-2">
+                {listingSubCategories.map((s) => (
+                  <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
+                    {s}
+                  </Chip>
+                ))}
+              </div>
+            </Field>
+            <Field label="Condition">
+              <div className="flex flex-wrap gap-2">
+                {conditions.map((c) => (
+                  <Chip
+                    key={c.value}
+                    active={condition === c.value}
+                    onClick={() => setCondition(c.value)}
+                  >
+                    {c.label}
+                  </Chip>
+                ))}
+              </div>
+            </Field>
             <Field label="Description">
               <textarea
                 rows={4}
@@ -191,7 +164,7 @@ function Sell() {
           </div>
         ) : null}
 
-        {step === 3 ? (
+        {step === last ? (
           <div className="overflow-hidden rounded-lg bg-subtle">
             <div className="flex h-40 items-center justify-center bg-background text-1 text-muted-foreground">
               Cover photo
@@ -200,10 +173,9 @@ function Sell() {
               <PriceBlock price={{ amount: price ? `₹${price}` : "₹0" }} size="lg" />
               <h2 className="mt-1 text-2">{title || "Untitled listing"}</h2>
               <p className="text-1 text-muted-foreground">
-                {type}
-                {selectedType.category === "gear_sale"
-                  ? ` · ${conditions.find((c) => c.value === condition)!.label}`
-                  : ""}
+                {[sub, conditions.find((c) => c.value === condition)!.label]
+                  .filter(Boolean)
+                  .join(" · ")}
               </p>
               <div className="mt-3">
                 <TrustPill label="Posted as you" />
@@ -214,24 +186,15 @@ function Sell() {
       </div>
 
       <div className="px-5 py-6">
-        {step < 3 ? (
-          <Btn className="w-full" onClick={() => setStep(step + 1)}>
-            Continue
-          </Btn>
-        ) : (
-          <Btn
-            className="w-full"
-            disabled={!title.trim() || !price || publishing || !signedIn}
-            onClick={() => void publish()}
-          >
-            {publishing ? "Publishing…" : "Publish Listing"}
-          </Btn>
-        )}
-        {step > 0 ? (
-          <Btn variant="ghost" className="mt-2 w-full" onClick={() => setStep(step - 1)}>
-            Back
-          </Btn>
-        ) : null}
+        <ListingStepFooter
+          step={step}
+          last={step === last}
+          onBack={() => setStep(step - 1)}
+          onNext={() => (step === last ? void publish() : setStep(step + 1))}
+          disabled={step === last && (!title.trim() || !price || !signedIn)}
+          busy={publishing}
+          publishLabel="Publish Listing"
+        />
       </div>
     </Screen>
   );

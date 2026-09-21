@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { Camera } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Price } from "@/components/ml/kit";
-import { ConditionBadge, MarketCategoryIcon } from "@/components/ml/market";
-import { rentalCategories } from "@/data/rentals";
+import { ConditionBadge, ListingStepFooter } from "@/components/ml/market";
+import { kindOfSubCategory, listingSubCategories } from "@/lib/listing-category";
 import { createListing } from "@/lib/catalog.functions";
 import { iconSize } from "@/lib/tokens";
 
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/marketplace/rent/list")({
   component: ListForRent,
 });
 
-const steps = ["Category", "Media", "Details", "Availability", "Review"];
+const steps = ["Media", "Details", "Availability", "Review"];
 const conditions = [
   { label: "New", value: "new" },
   { label: "Like New", value: "like_new" },
@@ -39,7 +39,6 @@ const conditions = [
 function ListForRent() {
   const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [cat, setCat] = useState<(typeof rentalCategories)[number]["slug"]>("audio");
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
@@ -57,7 +56,6 @@ function ListForRent() {
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
 
-  const category = rentalCategories.find((c) => c.slug === cat);
   const rupees = (v: string) => Number(v.replace(/[^0-9]/g, ""));
   const daysFrom = (label: string) => parseInt(label, 10) || 1;
 
@@ -67,8 +65,7 @@ function ListForRent() {
       await submit({
         data: {
           category: "gear_rental",
-          itemCategoryKind: cat === "instruments" ? "instrument" : "equipment",
-          ...(sub ? { itemCategory: sub } : {}),
+          ...(sub ? { itemCategoryKind: kindOfSubCategory(sub), itemCategory: sub } : {}),
           title: name.trim() || "Untitled rental",
           ...(brand.trim() ? { brand: brand.trim() } : {}),
           ...(model.trim() ? { model: model.trim() } : {}),
@@ -143,31 +140,6 @@ function ListForRent() {
 
         {!published && step === 0 ? (
           <>
-            <h2 className="text-2">What are you renting out?</h2>
-            <p className="mt-1 text-1 text-muted-foreground">
-              We adapt the form to the kind of equipment you list.
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {rentalCategories.map((c) => (
-                <button
-                  key={c.slug}
-                  onClick={() => setCat(c.slug)}
-                  className="rounded-lg border p-4 text-left"
-                  style={{
-                    borderColor: cat === c.slug ? "var(--primary)" : "var(--border)",
-                    background: cat === c.slug ? "var(--surface-subtle)" : "var(--card)",
-                  }}
-                >
-                  <MarketCategoryIcon slug={c.slug} />
-                  <p className="mt-2 text-1 font-semibold text-foreground">{c.label}</p>
-                </button>
-              ))}
-            </div>
-          </>
-        ) : null}
-
-        {!published && step === 1 ? (
-          <>
             <h2 className="text-2">Add photos</h2>
             <p className="mt-1 text-1 text-muted-foreground">
               Show the actual equipment you are renting — not stock images. First photo becomes the
@@ -184,7 +156,7 @@ function ListForRent() {
           </>
         ) : null}
 
-        {!published && step === 2 ? (
+        {!published && step === 1 ? (
           <>
             <h2 className="text-2">Equipment details</h2>
             <div className="mt-4 space-y-3">
@@ -217,7 +189,7 @@ function ListForRent() {
                   role="group"
                   aria-labelledby="grp-subcategory"
                 >
-                  {(category?.subs ?? []).slice(0, 8).map((s) => (
+                  {listingSubCategories.map((s) => (
                     <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
                       {s}
                     </Chip>
@@ -320,7 +292,7 @@ function ListForRent() {
           </>
         ) : null}
 
-        {!published && step === 3 ? (
+        {!published && step === 2 ? (
           <>
             <h2 className="text-2">Availability</h2>
             <p className="mt-1 text-1 text-muted-foreground">
@@ -364,7 +336,7 @@ function ListForRent() {
           </>
         ) : null}
 
-        {!published && step === 4 ? (
+        {!published && step === 3 ? (
           <>
             <h2 className="text-2">Preview your listing</h2>
             <p className="mt-1 text-1 text-muted-foreground">
@@ -397,23 +369,16 @@ function ListForRent() {
         ) : null}
 
         {!published ? (
-          <div className="mt-6 space-y-2">
-            <Btn
-              className="w-full"
-              disabled={publishing || (step === steps.length - 1 && (!name.trim() || !dailyPrice))}
-              onClick={() => (step === steps.length - 1 ? void publish() : setStep((s) => s + 1))}
-            >
-              {step === steps.length - 1
-                ? publishing
-                  ? "Publishing…"
-                  : "Publish rental"
-                : "Continue"}
-            </Btn>
-            {step > 0 ? (
-              <Btn variant="outline" className="w-full" onClick={() => setStep((s) => s - 1)}>
-                Back
-              </Btn>
-            ) : null}
+          <div className="mt-6">
+            <ListingStepFooter
+              step={step}
+              last={step === steps.length - 1}
+              onBack={() => setStep((s) => s - 1)}
+              onNext={() => (step === steps.length - 1 ? void publish() : setStep((s) => s + 1))}
+              disabled={step === steps.length - 1 && (!name.trim() || !dailyPrice)}
+              busy={publishing}
+              publishLabel="Publish rental"
+            />
           </div>
         ) : null}
       </div>

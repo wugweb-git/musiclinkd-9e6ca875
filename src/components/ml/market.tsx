@@ -22,11 +22,14 @@ import {
   Disc3,
   Speaker,
   ShoppingCart,
+  ArrowLeft,
+  ArrowRight,
+  Send,
   type LucideIcon,
 } from "lucide-react";
 import type { Listing } from "@/data/market";
 import type { RentalItem } from "@/data/rentals";
-import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
+import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
 import { EmptyState as BaseEmptyState, Price, Segmented } from "./kit";
 import { rupeeParts, unitLabel, type PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
@@ -1080,5 +1083,45 @@ export function SectionRow({
       </div>
       {children}
     </section>
+  );
+}
+
+/*
+ * Footer for the listing flows (sell, rent out): an icon-only Back beside the one primary action.
+ * The last step publishes; every step before it continues.
+ */
+export function ListingStepFooter({
+  step,
+  last,
+  onBack,
+  onNext,
+  disabled = false,
+  busy = false,
+  publishLabel,
+}: {
+  step: number;
+  last: boolean;
+  onBack: () => void;
+  onNext: () => void;
+  disabled?: boolean;
+  busy?: boolean;
+  publishLabel: string;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      {step > 0 ? (
+        <IconBtn label="Back" className="h-control w-control" onClick={onBack}>
+          <ArrowLeft size={iconSize.md} aria-hidden />
+        </IconBtn>
+      ) : null}
+      <Btn className="flex-1" disabled={disabled || busy} onClick={onNext}>
+        {last ? (busy ? "Publishing…" : publishLabel) : "Continue"}
+        {last ? (
+          <Send size={iconSize.sm} aria-hidden />
+        ) : (
+          <ArrowRight size={iconSize.sm} aria-hidden />
+        )}
+      </Btn>
+    </div>
   );
 }
