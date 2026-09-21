@@ -1,0 +1,8 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921240000_recently_viewed.sql.
+--
+-- Scope: the migration only adds a new table, public.recently_viewed, with its index and policy.
+-- At snapshot time to_regclass('public.recently_viewed') was null (the table did not exist) and
+-- public.profiles held 125 rows. No existing row, column or policy is changed.
+--
+-- To undo: DROP TABLE public.recently_viewed;
