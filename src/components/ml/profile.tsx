@@ -519,6 +519,97 @@ function useScrollY() {
   return y;
 }
 
+/**
+ * The profile header: a cover that gives way as the page scrolls, the round picture overlapping
+ * it, then the name and whatever lines the page adds. The person profile, business profiles and a
+ * studio's booking page all use this one header.
+ */
+export function CoverHero({
+  cover,
+  photo,
+  name,
+  title,
+  back,
+  actions,
+  photoPick,
+  square = false,
+  children,
+}: {
+  /** A business's logo is square, as on LinkedIn company pages; a person's picture is round. */
+  square?: boolean;
+  cover?: string | undefined;
+  photo?: string | undefined;
+  name: string;
+  /** The name line; defaults to the name as a heading. */
+  title?: ReactNode;
+  back?: string | undefined;
+  /** Buttons on the cover, top right. */
+  actions?: ReactNode;
+  /** Owner only: a control laid over the picture to change it. */
+  photoPick?: ReactNode;
+  children?: ReactNode;
+}) {
+  // LinkedIn-height cover (132px), giving way to a 72px band as the page scrolls.
+  const y = useScrollY();
+  const shrink = Math.min(1, Math.max(0, y / 120));
+  const coverHeight = 132 - 60 * shrink;
+  const photoSize = 136 - 52 * shrink;
+  return (
+    <header>
+      <div
+        className="relative overflow-hidden motion-reduce:!h-33"
+        style={{ height: `${coverHeight}px` }}
+      >
+        {cover ? (
+          <>
+            <img src={cover} alt={`${name} cover`} className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
+          </>
+        ) : (
+          <div className="h-full w-full bg-icon-chip" />
+        )}
+        {back ? (
+          <Link
+            to={back}
+            aria-label="Back"
+            className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
+          >
+            <ArrowLeft size={iconSize.md} aria-hidden />
+          </Link>
+        ) : null}
+        {actions ? <div className="absolute right-5 top-5 flex gap-2">{actions}</div> : null}
+      </div>
+
+      <div className="-mt-16 px-5">
+        <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }}>
+          {photo ? (
+            <img
+              src={photo}
+              alt={name}
+              className={cn(
+                "aspect-square w-full border-4 border-background object-cover motion-reduce:!h-34",
+                square ? "rounded-lg" : "rounded-full",
+              )}
+            />
+          ) : (
+            <span
+              className={cn(
+                "flex aspect-square w-full items-center justify-center border-4 border-background bg-card text-muted-foreground",
+                square ? "rounded-lg" : "rounded-full",
+              )}
+            >
+              <User size={iconSize.xl} aria-label={name} />
+            </span>
+          )}
+          {photoPick}
+        </div>
+        {title ?? (name ? <h1 className="mt-3 text-3 leading-tight">{name}</h1> : null)}
+        {children}
+      </div>
+    </header>
+  );
+}
+
 export function ProfileHero({
   p,
   owner,
@@ -536,35 +627,14 @@ export function ProfileHero({
   onMore?: (() => void) | undefined;
   back?: string | undefined;
 }) {
-  // LinkedIn-height cover (132px), giving way to a 72px band as the page scrolls.
-  const y = useScrollY();
-  const shrink = Math.min(1, Math.max(0, y / 120));
-  const coverHeight = 132 - 60 * shrink;
-  const photoSize = 136 - 52 * shrink;
   return (
-    <header>
-      <div
-        className="relative overflow-hidden motion-reduce:!h-33"
-        style={{ height: `${coverHeight}px` }}
-      >
-        {p.cover ? (
-          <>
-            <img src={p.cover} alt={`${p.name} cover`} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
-          </>
-        ) : (
-          <div className="h-full w-full bg-icon-chip" />
-        )}
-        {back ? (
-          <Link
-            to={back}
-            aria-label="Back"
-            className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-card/90"
-          >
-            <ArrowLeft size={iconSize.md} aria-hidden />
-          </Link>
-        ) : null}
-        <div className="absolute right-5 top-5 flex gap-2">
+    <CoverHero
+      cover={p.cover}
+      photo={p.photo}
+      name={p.name}
+      back={back}
+      actions={
+        <>
           {/* The owner edits the cover from the cover itself, the way people expect. */}
           {owner && onPickImage ? (
             <ImagePickButton
@@ -587,35 +657,22 @@ export function ProfileHero({
               <MoreHorizontal size={iconSize.md} aria-hidden />
             </IconBtn>
           ) : null}
-        </div>
-      </div>
-
-      <div className="-mt-16 px-5">
-        <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }}>
-          {p.photo ? (
-            <img
-              src={p.photo}
-              alt={p.name}
-              className="aspect-square w-full rounded-full border-4 border-background object-cover motion-reduce:!h-34"
-            />
-          ) : (
-            <span className="flex aspect-square w-full items-center justify-center rounded-full border-4 border-background bg-card text-muted-foreground">
-              <User size={iconSize.xl} aria-label={p.name} />
-            </span>
-          )}
-          {owner && onPickImage ? (
-            <ImagePickButton
-              kind="avatar"
-              label="Change profile photo"
-              className="absolute -bottom-1 -left-1 h-9 w-9 border border-border bg-card text-foreground"
-              onPick={onPickImage}
-            >
-              <Camera size={iconSize.sm} aria-hidden />
-            </ImagePickButton>
-          ) : null}
-        </div>
-
-        {p.name || isVerifiedTier(p.verification) || p.availability ? (
+        </>
+      }
+      photoPick={
+        owner && onPickImage ? (
+          <ImagePickButton
+            kind="avatar"
+            label="Change profile photo"
+            className="absolute -bottom-1 -left-1 h-9 w-9 border border-border bg-card text-foreground"
+            onPick={onPickImage}
+          >
+            <Camera size={iconSize.sm} aria-hidden />
+          </ImagePickButton>
+        ) : null
+      }
+      title={
+        p.name || isVerifiedTier(p.verification) || p.availability ? (
           <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
             {/* LinkedIn's pattern: verification is a mark on the name, not a second label. The one
                 label beside the name is availability. */}
@@ -627,34 +684,37 @@ export function ProfileHero({
             ) : null}
             {p.availability ? <StatusBadge status={p.availability} /> : null}
           </div>
-        ) : null}
-        {p.username ? <p className="mt-0.5 text-sm text-muted-foreground">@{p.username}</p> : null}
-        <RoleLine p={p} />
-        {/* The headline is the one line someone writes about themselves; About carries the rest. */}
-        {p.headline && p.headline !== p.primaryRole ? (
-          <p className="mt-1.5 text-sm leading-snug text-foreground">{p.headline}</p>
-        ) : null}
-        {p.location || p.yearsActive ? (
-          <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
-            {p.location ? (
-              <span className="flex items-center gap-1">
-                <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-                {p.location}
-              </span>
-            ) : null}
-            {p.yearsActive ? (
-              <span className="flex items-center gap-1">
-                <CalendarDays size={iconSize.xs} className="shrink-0" aria-hidden />
-                {p.yearsActive.replace(/\s*active$/i, "")} active
-              </span>
-            ) : null}
-          </p>
-        ) : null}
-        {owner && p.privacy !== "Public" ? (
-          <p className="mt-2 text-1 font-semibold text-warn">Visibility: {p.privacy}</p>
-        ) : null}
-      </div>
-    </header>
+        ) : (
+          <></>
+        )
+      }
+    >
+      {p.username ? <p className="mt-0.5 text-sm text-muted-foreground">@{p.username}</p> : null}
+      <RoleLine p={p} />
+      {/* The headline is the one line someone writes about themselves; About carries the rest. */}
+      {p.headline && p.headline !== p.primaryRole ? (
+        <p className="mt-1.5 text-sm leading-snug text-foreground">{p.headline}</p>
+      ) : null}
+      {p.location || p.yearsActive ? (
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-1 text-muted-foreground">
+          {p.location ? (
+            <span className="flex items-center gap-1">
+              <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
+              {p.location}
+            </span>
+          ) : null}
+          {p.yearsActive ? (
+            <span className="flex items-center gap-1">
+              <CalendarDays size={iconSize.xs} className="shrink-0" aria-hidden />
+              {p.yearsActive.replace(/\s*active$/i, "")} active
+            </span>
+          ) : null}
+        </p>
+      ) : null}
+      {owner && p.privacy !== "Public" ? (
+        <p className="mt-2 text-1 font-semibold text-warn">Visibility: {p.privacy}</p>
+      ) : null}
+    </CoverHero>
   );
 }
 

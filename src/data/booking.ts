@@ -114,6 +114,10 @@ export type Bookable = {
   hero: string;
   /** The owning business's profile picture, shown as its logo. Empty when there is none. */
   logo?: string;
+  /** The owning business's username — a studio is a business profile. */
+  username?: string;
+  /** The business's real follower count. */
+  followers?: number;
   gallery: string[];
   about: string;
   facilities: string[];

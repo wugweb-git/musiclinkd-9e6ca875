@@ -46,16 +46,7 @@ function BookingEntry() {
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
-      <div className="relative">
-        <Link
-          to="/discover"
-          aria-label="Back"
-          className="absolute left-4 top-4 z-raised flex h-10 w-10 items-center justify-center rounded-full bg-background/90 text-2 backdrop-blur"
-        >
-          ←
-        </Link>
-        <BookableHero b={b} />
-      </div>
+      <BookableHero b={b} back="/discover" />
 
       <main className="px-5 pt-4">
         <h2 className="sr-only">About this space</h2>

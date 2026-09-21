@@ -137,6 +137,8 @@ export function bookableFromStudio(
     timezone: "",
     hero: row.image_url ?? "",
     logo: row.owner?.avatar_url ?? "",
+    ...(row.owner?.username ? { username: row.owner.username } : {}),
+    ...(row.owner?.followers_count ? { followers: row.owner.followers_count } : {}),
     gallery: row.images,
     about: row.description ?? "",
     facilities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),

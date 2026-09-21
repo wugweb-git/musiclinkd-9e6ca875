@@ -25,9 +25,10 @@ import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, IconBtnLink } from "@/comp
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import { TextLink } from "@/components/ml/links";
-import { ReviewCard } from "@/components/ml/profile";
+import { CoverHero, ReviewCard } from "@/components/ml/profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
+import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
 // Team is off for now: one business profile belongs to one account (owner, 21 Sep 2026).
@@ -60,60 +61,54 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
 
   return (
     <Screen>
-      <TopBar
-        title={b.name}
-        subtitle={b.typeLabel}
+      {/* The person profile's own header: cover, the business's picture as its logo, the name. */}
+      <CoverHero
+        cover={b.cover}
+        photo={b.logo}
+        name={b.name}
+        square
         back="/business"
-        // Managing is the owner's; a visitor has nothing to manage here.
-        right={
+        actions={
           isOwner ? (
+            // Managing is the owner's; a visitor has nothing to manage here.
             <Link
               to="/business/$id/manage"
               params={{ id: b.id }}
               aria-label="Manage business"
-              className="grid h-10 w-10 place-items-center rounded-full bg-background"
+              className="grid h-10 w-10 place-items-center rounded-full bg-card/90"
             >
               <Settings2 size={iconSize.sm} />
             </Link>
-          ) : undefined
+          ) : (
+            <SavedToggle targetType="business" targetId={b.profileId} size={40} />
+          )
         }
-      />
-
-      {b.cover ? (
-        <img src={b.cover} alt="" className="h-40 w-full object-cover" loading="lazy" />
-      ) : (
-        <div aria-hidden className="h-40 w-full bg-background" />
-      )}
+        title={
+          <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+            <h1 className="text-3 leading-tight">{b.name}</h1>
+            {b.verified ? <StatusPill label="verified" tone="good" /> : null}
+          </div>
+        }
+      >
+        {/* LinkedIn's company header: @username, the tagline, then one line of type · place ·
+            followers. */}
+        <p className="mt-0.5 text-sm text-muted-foreground">@{b.id}</p>
+        {b.tagline ? (
+          <p className="mt-1.5 text-sm leading-snug text-foreground">{b.tagline}</p>
+        ) : null}
+        {b.subtitle || b.followers ? (
+          <p className="mt-1.5 text-1 text-muted-foreground">
+            {joinParts(
+              b.subtitle,
+              b.followers
+                ? `${b.followers.toLocaleString("en-IN")} follower${b.followers === 1 ? "" : "s"}`
+                : "",
+            )}
+          </p>
+        ) : null}
+      </CoverHero>
 
       <div className="space-y-4 px-5 pt-4 pb-6">
-        <div className="-mt-10 flex items-end gap-3">
-          {b.logo ? (
-            <img
-              src={b.logo}
-              alt=""
-              className="h-16 w-16 rounded-lg border-4 border-background object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div
-              aria-hidden
-              className="h-16 w-16 shrink-0 rounded-lg border-4 border-background bg-background"
-            />
-          )}
-          <div className="min-w-0 flex-1 pb-1">
-            <div className="flex items-center gap-2">
-              <h1 className="truncate text-2 font-bold">{b.name}</h1>
-              {b.verified ? <StatusPill label="verified" tone="good" /> : null}
-            </div>
-            {b.subtitle ? (
-              <p className="truncate text-1 text-muted-foreground">{b.subtitle}</p>
-            ) : null}
-          </div>
-          {isOwner ? null : <SavedToggle targetType="business" targetId={b.profileId} size={36} />}
-        </div>
-
-        {b.tagline ? <p className="text-1 leading-relaxed">{b.tagline}</p> : null}
-
         <BusinessActions id={b.id} name={b.name} profileId={b.profileId} owner={isOwner} />
 
         {b.stats ? (

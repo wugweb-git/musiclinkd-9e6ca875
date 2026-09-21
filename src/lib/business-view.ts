@@ -21,6 +21,8 @@ export type BusinessView = {
   logo: string;
   city: string;
   subtitle: string;
+  /** Real follower count; null before the column exists. */
+  followers: number | null;
   tagline: string;
   stats: [label: string, value: string][] | null;
   /** Across the account's own reviews and its studio's; null while there are none. */
@@ -119,6 +121,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     // The business's logo is its profile picture (owner, 21 Sep 2026); the old logo field only fills in.
     logo: profile.avatar_url ?? business.logo_url ?? "",
     city: place,
+    followers: profile.followers_count ?? null,
     subtitle: joinParts(
       typeLabel,
       place,

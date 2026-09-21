@@ -56,7 +56,7 @@ export type StudioRow = {
   /** How soon the studio usually replies ("within 2 hours"); null before the column exists. */
   response_time?: string | null;
   add_ons?: StudioAddOn[];
-  owner: OwnerSummary | null;
+  owner: SellerOwnerSummary | null;
   rooms: {
     id: string;
     name: string;
@@ -147,7 +147,7 @@ const OWNER = "id, username, display_name, avatar_url, city, is_verified";
 const SELLER = `${OWNER}, rating, review_count, followers_count`;
 const STUDIO_FIELDS = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
   console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
-  owner:profiles!studios_owner_profile_id_fkey(${OWNER}),
+  owner:profiles!studios_owner_profile_id_fkey(${SELLER}),
   equipment:studio_equipment(id, name, category, quantity, included, sort_order)`;
 const STUDIO = `${STUDIO_FIELDS}, response_time, add_ons,
   rooms:studio_rooms(id, name, capacity, hourly_rate_paise, amenities, gear, photo_url, sort_order, description, tiers),

@@ -1,3 +1,4 @@
+import { CoverHero } from "./profile";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import {
@@ -113,35 +114,41 @@ export function BookingTimeline({ status }: { status: BookingStatus }) {
 /* Entity + resource                                                   */
 /* ------------------------------------------------------------------ */
 
-export function BookableHero({ b }: { b: Bookable }) {
+/** A studio's header: the profile page's own CoverHero, with the business's picture as its logo. */
+export function BookableHero({ b, back }: { b: Bookable; back?: string }) {
   return (
-    <div className="relative">
-      <img
-        src={b.hero}
-        alt={b.kind ? `${b.name} — ${b.kind}` : b.name}
-        className="h-56 w-full object-cover"
-        loading="lazy"
-      />
-      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/80 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 px-5 pb-4">
-        {b.kind ? (
-          <span className="inline-flex rounded-full bg-background/90 pill text-muted-foreground">
-            {b.kind}
-          </span>
-        ) : null}
-        <h1 className="mt-2 flex items-center gap-2 text-3 leading-tight text-background">
-          {b.logo ? (
-            <img
-              src={b.logo}
-              alt=""
-              className="h-10 w-10 shrink-0 rounded-full border-2 border-background object-cover"
-            />
-          ) : null}
-          <span className="truncate">{b.name}</span>
-          {b.verified ? <VerifiedBadge size={16} /> : null}
-        </h1>
-      </div>
-    </div>
+    <CoverHero
+      cover={b.hero}
+      photo={b.logo}
+      name={b.name}
+      square
+      back={back}
+      title={
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+          <h1 className="flex items-center gap-1.5 text-3 leading-tight">
+            {b.name}
+            {b.verified ? <VerifiedBadge size={16} /> : null}
+          </h1>
+          {b.kind ? <span className="pill bg-subtle text-muted-foreground">{b.kind}</span> : null}
+        </div>
+      }
+    >
+      {/* A studio is a business profile: its @username opens that profile. */}
+      {b.username ? (
+        <Link
+          to="/business/$id"
+          params={{ id: b.username }}
+          className="mt-0.5 block text-sm text-muted-foreground"
+        >
+          @{b.username}
+        </Link>
+      ) : null}
+      {b.followers ? (
+        <p className="mt-1.5 text-1 text-muted-foreground">
+          {b.followers.toLocaleString("en-IN")} follower{b.followers === 1 ? "" : "s"}
+        </p>
+      ) : null}
+    </CoverHero>
   );
 }
 
