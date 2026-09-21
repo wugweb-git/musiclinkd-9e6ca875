@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
@@ -11,6 +12,15 @@ import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "
 import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { GOOGLE_MAPS, PIN_CODE } from "@/lib/place";
+import {
+  DEFAULT_COUNTRY,
+  INDIAN_STATES,
+  cityProblem,
+  nameProblem,
+  pinProblem,
+  stateProblem,
+} from "@/lib/validation";
+import { SelectField } from "@/components/ml/onboarding";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 
@@ -200,6 +210,19 @@ function EditProfile() {
   const gaps = profileGaps({ ...(row ?? {}), ...form } as ProfileRow);
 
   const update = (patch: Partial<Form>) => setForm((f) => ({ ...f, ...patch }));
+  // Shown under each field as it is typed; a save waits until none is left.
+  const problems = {
+    first_name: nameProblem(form.first_name, "First name", true),
+    last_name: nameProblem(form.last_name, "Last name"),
+    city: cityProblem(form.city),
+    pin_code: pinProblem(form.pin_code),
+    state: stateProblem(form.state),
+    maps:
+      isBusiness && mapsUrl.trim() && !GOOGLE_MAPS.test(mapsUrl.trim())
+        ? "Paste the link from Share in Google Maps"
+        : null,
+  };
+  const firstProblem = Object.values(problems).find(Boolean) ?? null;
   const toggle = (
     key: "roles" | "genres" | "instruments" | "languages" | "work_modes",
     value: string,
@@ -213,6 +236,10 @@ function EditProfile() {
     });
 
   const save = async () => {
+    if (firstProblem) {
+      toast.error(firstProblem);
+      return;
+    }
     if (!navigator.onLine) {
       setStatus("offline");
       return;
@@ -234,6 +261,7 @@ function EditProfile() {
           city: form.city || null,
           pin_code: PIN_CODE.test(form.pin_code.trim()) ? form.pin_code.trim() : null,
           state: form.state || null,
+          country: DEFAULT_COUNTRY,
           availability: form.availability || null,
           rate_paise: ratePaise,
           rate_unit: ratePaise == null ? null : form.rate_unit,
@@ -321,11 +349,13 @@ function EditProfile() {
               label="First name"
               value={form.first_name}
               onChange={(v) => update({ first_name: v })}
+              error={problems.first_name}
             />
             <Field
               label="Last name"
               value={form.last_name}
               onChange={(v) => update({ last_name: v })}
+              error={problems.last_name}
             />
           </div>
           <Field
@@ -437,27 +467,39 @@ function EditProfile() {
       done: Boolean(form.city && form.availability),
       body: (
         <div className="space-y-3">
-          <Field label="City" value={form.city} onChange={(v) => update({ city: v })} />
+          <Field
+            label="City"
+            value={form.city}
+            onChange={(v) => update({ city: v })}
+            error={problems.city}
+          />
+          <SelectField
+            selectId="edit-state"
+            label="State"
+            value={form.state}
+            options={[...INDIAN_STATES]}
+            placeholder="Choose"
+            onChange={(v) => update({ state: v })}
+          />
+          {problems.state ? <p className="text-1 text-destructive">{problems.state}</p> : null}
           <Field
             label="PIN code"
             value={form.pin_code}
             onChange={(v) => update({ pin_code: v.replace(/\D/g, "").slice(0, 6) })}
-            hint="6 digits, e.g. 560038"
+            hint="6 digits, e.g. 560038. Only used to find what is near you; never shown."
+            error={problems.pin_code}
             inputMode="numeric"
           />
+          <Field label="Country" value={DEFAULT_COUNTRY} onChange={() => undefined} readOnly />
           {isBusiness ? (
             <Field
               label="Google Maps link"
               value={mapsUrl}
               onChange={setMapsUrl}
-              hint={
-                mapsUrl.trim() && !GOOGLE_MAPS.test(mapsUrl.trim())
-                  ? "Paste the link from Share in Google Maps"
-                  : "Opens as Directions on your profile"
-              }
+              hint="Opens as Directions on your profile"
+              error={problems.maps}
             />
           ) : null}
-          <Field label="State" value={form.state} onChange={(v) => update({ state: v })} />
           <Field
             label="Availability"
             value={form.availability}
@@ -622,6 +664,7 @@ function Field({
   value,
   onChange,
   hint,
+  error,
   multiline = false,
   readOnly = false,
   inputMode,
@@ -630,6 +673,8 @@ function Field({
   value: string;
   onChange: (v: string) => void;
   hint?: string;
+  /** What is wrong with the value; shown in place of the hint. */
+  error?: string | null;
   multiline?: boolean;
   readOnly?: boolean;
   inputMode?: "decimal" | "numeric";
@@ -653,7 +698,13 @@ function Field({
           className={`mt-1.5 min-h-control w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-background text-muted-foreground" : "bg-card"}`}
         />
       )}
-      {hint ? <span className="mt-1 block text-1 text-muted-foreground">{hint}</span> : null}
+      {error ? (
+        <span role="alert" className="mt-1 block text-1 text-destructive">
+          {error}
+        </span>
+      ) : hint ? (
+        <span className="mt-1 block text-1 text-muted-foreground">{hint}</span>
+      ) : null}
     </label>
   );
 }

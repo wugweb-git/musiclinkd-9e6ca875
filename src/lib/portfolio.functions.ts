@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { FEATURED_LIMIT } from "@/data/portfolio";
 import type { ListingRow } from "@/lib/catalog.functions";
 import { placeLine } from "@/lib/place";
+import { CITY_PATTERN, DEFAULT_COUNTRY, INDIAN_STATES, NAME_PATTERN } from "@/lib/validation";
 
 export type PortfolioKind = "track" | "ep" | "album" | "video" | "credit" | "live";
 
@@ -274,9 +275,19 @@ const profilePatchSchema = z.object({
   display_name: z.string().max(80).optional().nullable(),
   headline: z.string().max(160).optional().nullable(),
   bio: z.string().max(1200).optional().nullable(),
-  city: z.string().max(80).optional().nullable(),
-  state: z.string().max(80).optional().nullable(),
-  country: z.string().max(80).optional().nullable(),
+  city: z.string().trim().max(60).regex(CITY_PATTERN).optional().nullable(),
+  state: z
+    .string()
+    .refine((v) => (INDIAN_STATES as readonly string[]).includes(v), "Pick a state from the list")
+    .optional()
+    .nullable(),
+  // India only for now: any country sent is stored as India.
+  country: z
+    .string()
+    .max(80)
+    .transform(() => DEFAULT_COUNTRY)
+    .optional()
+    .nullable(),
   roles: strList(12),
   instruments: strList(20),
   genres: strList(20),
@@ -291,8 +302,8 @@ const profilePatchSchema = z.object({
   availability: z.string().max(40).optional().nullable(),
   avatar_url: z.string().max(500).optional().nullable(),
   cover_url: z.string().max(500).optional().nullable(),
-  first_name: z.string().max(60).optional().nullable(),
-  last_name: z.string().max(60).optional().nullable(),
+  first_name: z.string().trim().max(40).regex(NAME_PATTERN).optional().nullable(),
+  last_name: z.string().trim().max(40).regex(NAME_PATTERN).optional().nullable(),
   links: z.record(z.string(), z.string().max(300)).optional(),
   discovery_prefs: z.record(z.string(), z.unknown()).optional(),
   onboarding_step: z.string().max(40).optional().nullable(),
@@ -320,6 +331,9 @@ export const saveMyProfile = createServerFn({ method: "POST" })
     const patch = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== undefined),
     ) as Record<string, unknown>;
+    // India only for now: a place saved without a country is in India.
+    if (("city" in patch || "state" in patch) && !("country" in patch))
+      patch["country"] = DEFAULT_COUNTRY;
     // discovery_prefs holds keys from several screens (onboarding's topics and instrument
     // experience, Privacy's appear/who_can_message/show_phone, QR sharing), so a save merges into
     // what is stored instead of replacing it and dropping the other screens' keys.

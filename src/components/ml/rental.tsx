@@ -15,6 +15,7 @@ import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.function
 import { listMySavedIds } from "@/lib/saved.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { shownPlace } from "@/lib/place";
 
 export function RentalAvailabilityBadge({
   text,
@@ -318,7 +319,7 @@ export function FulfilmentPicker({
           {
             id: "Pickup",
             icon: Package,
-            line: `${e.location} · free`,
+            line: `${shownPlace(e.location)} · free`,
             note: "Collect from the provider",
           },
         ]

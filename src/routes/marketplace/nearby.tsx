@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { ListingGrid, useMarketCity } from "@/components/ml/market";
-import { inCity, loadCatalogListings } from "@/lib/market-view";
+import { inCity, loadCatalogListings, nearFirst } from "@/lib/market-view";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useAuth } from "@/hooks/use-auth";
+import { getMyProfile } from "@/lib/portfolio.functions";
 
 export const Route = createFileRoute("/marketplace/nearby")({
   // Database listings, same as search.tsx.
@@ -26,7 +30,12 @@ export const Route = createFileRoute("/marketplace/nearby")({
 function Nearby() {
   // Listed in the Market city; everything when nothing is listed there yet.
   const [city] = useMarketCity();
-  const catalog = inCity(Route.useLoaderData(), city);
+  // Your PIN code is the radius: listings in your postal district come first. It is never shown.
+  const { signedIn } = useAuth();
+  const loadMe = useServerFn(getMyProfile);
+  const me = useQuery({ queryKey: ["profile", "me"], queryFn: () => loadMe(), enabled: signedIn });
+  const myPin = (me.data as { pin_code?: string | null } | null | undefined)?.pin_code;
+  const catalog = nearFirst(inCity(Route.useLoaderData(), city), myPin);
   return (
     <Screen>
       <TopBar title="Nearby" back="/marketplace" />

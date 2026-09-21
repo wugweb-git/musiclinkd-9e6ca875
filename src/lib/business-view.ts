@@ -8,7 +8,6 @@ import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.function
 import { priceParts, type PriceParts } from "@/lib/price";
 import { getPublicBusiness, type BusinessRecord } from "@/lib/profile-groups.functions";
 import { joinParts } from "@/lib/utils";
-import { placeLine } from "@/lib/place";
 
 export type BusinessView = {
   /** The account's username: the id in /business/$id. */
@@ -108,7 +107,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
   const { profile, business, studio } = r;
   const role = profile.roles?.[0];
   const typeLabel = role ? taxonomyLabel(labels, "person_types", role) : "";
-  const place = placeLine(profile.city, profile.pin_code);
+  const place = profile.city ?? "";
   const reviews = combinedRating([
     { rating: profile.rating, count: profile.review_count },
     { rating: studio?.rating, count: studio?.review_count },

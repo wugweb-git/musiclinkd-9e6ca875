@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { shownPlace } from "@/lib/place";
 
 /*
  * The /saved screen's shortlist (public.saved_items, 20260918120000_saved_items.sql). Owner-only:
@@ -218,7 +219,7 @@ export const listMySaved = createServerFn({ method: "GET" })
           targetId: row.id,
           savedAt: savedAtOf("studio", row.id),
           name: row.name,
-          subtitle: row.location,
+          subtitle: shownPlace(row.location),
           photo: null,
         };
       }),

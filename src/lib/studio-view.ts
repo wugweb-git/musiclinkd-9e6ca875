@@ -4,7 +4,7 @@ import { priceParts, type PriceParts } from "@/lib/price";
 import { hasWeeklyHours, type WeeklyHours } from "@/lib/studio-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import type { StudioPhoto } from "@/lib/studio-photos.functions";
-import { parsePlace } from "@/lib/place";
+import { parsePlace, shownPlace } from "@/lib/place";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
@@ -33,7 +33,7 @@ export function discoverStudioFromRow(row: StudioRow, labels: TaxonomyLabels): D
     slug: row.slug,
     username: row.owner?.username ?? "",
     name: row.name,
-    location: row.location ?? "",
+    location: shownPlace(row.location),
     rating: row.rating == null || !row.review_count ? null : Number(row.rating),
     rate: priceParts(row.hourly_rate_paise, "hr"),
     photo: row.image_url ?? "",

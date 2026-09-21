@@ -28,6 +28,8 @@ export type Listing = {
   price: PriceParts;
   condition?: "New" | "Like New" | "Excellent" | "Good" | "Fair" | "Used";
   location: string;
+  /** The pickup PIN code: used for what is near you, never shown. */
+  pin?: string;
   distance: string;
   category: string;
   subcategory: string;

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
 import type { Equipment, Provider, RentalStatus } from "@/data/rentals";
+import { shownPlace } from "@/lib/place";
 
 /*
  * Renting equipment: a request against one marketplace_listings row (category gear_rental),
@@ -305,7 +306,7 @@ function equipmentFromRow(row: RentalListingRow): Equipment {
     monthly: Math.round((row.monthly_price_paise ?? 0) / 100),
     deposit: Math.round((row.deposit_paise ?? 0) / 100),
     quantity: row.quantity_available,
-    location: row.pickup_location ?? "",
+    location: shownPlace(row.pickup_location),
     distance: "",
     availability: "Available",
     unavailableDates: row.unavailable_dates,

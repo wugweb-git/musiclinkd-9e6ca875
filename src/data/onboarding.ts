@@ -9,6 +9,7 @@
 //   FUTURE    — out of scope for this release
 
 import type { PersonaBucket } from "@/lib/taxonomy";
+import { INDIAN_STATES } from "@/lib/validation";
 
 export type FieldSupport = "EXISTING" | "COMPUTED" | "PROPOSED" | "FUTURE";
 
@@ -287,17 +288,9 @@ export const businessTypes = [
  * screen: see `cityAliases` below, which the identity step uses to match what the edge reports.
  */
 export const countries = ["India"];
+/** Every Indian state and union territory (src/lib/validation.ts is the one list). */
 export const statesByCountry: Record<string, string[]> = {
-  India: [
-    "Maharashtra",
-    "Delhi",
-    "Karnataka",
-    "Tamil Nadu",
-    "West Bengal",
-    "Punjab",
-    "Kerala",
-    "Goa",
-  ],
+  India: [...INDIAN_STATES],
 };
 export const citiesByState: Record<string, string[]> = {
   Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik"],
@@ -307,7 +300,35 @@ export const citiesByState: Record<string, string[]> = {
   "West Bengal": ["Kolkata", "Howrah", "Siliguri"],
   Punjab: ["Chandigarh", "Ludhiana", "Amritsar"],
   Kerala: ["Kochi", "Thiruvananthapuram", "Kozhikode"],
-  Goa: ["Panaji", "Margao", "Vagator"],
+  Goa: ["Panaji", "Margao", "Vagator", "Anjuna"],
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Amaravati"],
+  "Arunachal Pradesh": ["Itanagar"],
+  Assam: ["Guwahati", "Dibrugarh"],
+  Bihar: ["Patna", "Gaya"],
+  Chhattisgarh: ["Raipur", "Bilaspur"],
+  Gujarat: ["Ahmedabad", "Surat", "Vadodara"],
+  Haryana: ["Gurugram", "Faridabad", "Chandigarh"],
+  "Himachal Pradesh": ["Shimla", "Dharamshala"],
+  Jharkhand: ["Ranchi", "Jamshedpur"],
+  "Madhya Pradesh": ["Indore", "Bhopal", "Gwalior"],
+  Manipur: ["Imphal"],
+  Meghalaya: ["Shillong"],
+  Mizoram: ["Aizawl"],
+  Nagaland: ["Kohima", "Dimapur"],
+  Odisha: ["Bhubaneswar", "Cuttack"],
+  Rajasthan: ["Jaipur", "Udaipur", "Jodhpur"],
+  Sikkim: ["Gangtok"],
+  Telangana: ["Hyderabad", "Warangal"],
+  Tripura: ["Agartala"],
+  "Uttar Pradesh": ["Lucknow", "Noida", "Varanasi", "Kanpur"],
+  Uttarakhand: ["Dehradun", "Rishikesh"],
+  "Andaman and Nicobar Islands": ["Port Blair"],
+  Chandigarh: ["Chandigarh"],
+  "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Silvassa"],
+  "Jammu and Kashmir": ["Srinagar", "Jammu"],
+  Ladakh: ["Leh"],
+  Lakshadweep: ["Kavaratti"],
+  Puducherry: ["Puducherry"],
 };
 
 /* Role-adaptive specialisation sets. */

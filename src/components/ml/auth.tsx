@@ -615,7 +615,7 @@ export function carriedEmail(): string {
   }
 }
 
-export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+export { EMAIL_PATTERN } from "@/lib/validation";
 
 /**
  * Show a field's error after the person leaves it or submits, then keep it live while they fix it.

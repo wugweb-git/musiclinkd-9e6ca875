@@ -8,7 +8,7 @@ import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
 import { labelFor, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
-import { placeLine } from "@/lib/place";
+import { shownPlace } from "@/lib/place";
 
 /*
  * Message and Save are disabled until there is somewhere for them to go: there is no thread to
@@ -122,9 +122,9 @@ export function TalentGridCard({ t }: { t: Talent }) {
   );
 }
 
-/** City and PIN code, "Bengaluru 560038". */
+/** The city only; the PIN code stays internal. */
 function personPlace(person: DirectoryPerson) {
-  return placeLine(person.city, person.pin_code);
+  return person.city ?? "";
 }
 
 /** The stored rating and review count; nothing while there are no reviews. */
@@ -284,7 +284,10 @@ export function StudioCard({
       <span className="block p-3">
         <span className="block truncate text-sm font-semibold">{studio.name}</span>
         <span className="mt-0.5 block truncate text-1 text-muted-foreground">
-          {[studio.location, studio.rating == null ? "" : `${studio.rating.toFixed(1)} out of 5`]
+          {[
+            shownPlace(studio.location),
+            studio.rating == null ? "" : `${studio.rating.toFixed(1)} out of 5`,
+          ]
             .filter(Boolean)
             .join(" · ")}
         </span>

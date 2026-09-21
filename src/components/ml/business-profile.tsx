@@ -32,6 +32,7 @@ import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
+import { shownPlace } from "@/lib/place";
 
 // Team is off for now: one business profile belongs to one account (owner, 21 Sep 2026).
 type BusinessTab = "Overview" | "Spaces" | "Credits" | "Reviews";
@@ -181,7 +182,8 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 <h2 className="text-sm">Find & contact</h2>
                 {b.address ? (
                   <p className="flex items-start gap-2 text-1">
-                    <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" /> {b.address}
+                    <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" />{" "}
+                    {shownPlace(b.address)}
                   </p>
                 ) : null}
                 {b.mapsUrl ? (

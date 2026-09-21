@@ -8,6 +8,7 @@ import { Card, SoonBadge, StatusPill } from "@/components/ml/kit";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { claimMyUsername, getMyProfile } from "@/lib/portfolio.functions";
+import { emailProblem, indianPhone, phoneProblem } from "@/lib/validation";
 
 export const Route = createFileRoute("/settings/account")({
   head: () => ({
@@ -83,16 +84,23 @@ function AccountScreen() {
   const [saving, setSaving] = useState(false);
   useEffect(() => setInput(field?.key === "email" || field?.key === "phone" ? "" : ""), [field]);
 
+  const problem =
+    field?.key === "email" && input.trim()
+      ? emailProblem(input)
+      : field?.key === "phone" && input.trim()
+        ? phoneProblem(input)
+        : null;
+
   async function submit() {
-    if (!field || !input.trim()) return;
+    if (!field || !input.trim() || problem) return;
     setSaving(true);
     try {
       if (field.key === "email") {
-        const { error } = await supabase.auth.updateUser({ email: input.trim() });
+        const { error } = await supabase.auth.updateUser({ email: input.trim().toLowerCase() });
         if (error) throw error;
         toast.success("Check your new email to confirm the change");
       } else if (field.key === "phone") {
-        const { error } = await supabase.auth.updateUser({ phone: input.trim() });
+        const { error } = await supabase.auth.updateUser({ phone: indianPhone(input)! });
         if (error) throw error;
         toast.success("Check your phone for a confirmation code");
       } else if (field.key === "username") {
@@ -163,16 +171,42 @@ function AccountScreen() {
             <span className="pill bg-background text-muted-foreground">
               New {field?.label.toLowerCase()}
             </span>
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
-            />
+            {field?.key === "phone" ? (
+              <span className="mt-1.5 flex min-h-control items-center rounded-lg border border-border bg-background focus-within:border-primary">
+                <span className="pl-3 text-1 text-muted-foreground">+91</span>
+                <input
+                  value={input}
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  onChange={(e) => setInput(e.target.value.replace(/[^\d]/g, "").slice(0, 10))}
+                  placeholder="98xxxxxxxx"
+                  className="min-h-control w-full bg-transparent px-2 text-1 outline-none"
+                />
+              </span>
+            ) : (
+              <input
+                value={input}
+                {...(field?.key === "email"
+                  ? { type: "email", inputMode: "email" as const, autoComplete: "email" }
+                  : {})}
+                onChange={(e) => setInput(e.target.value)}
+                className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
+              />
+            )}
           </label>
+          {problem ? (
+            <p role="alert" className="text-1 text-destructive">
+              {problem}
+            </p>
+          ) : null}
           <p className="text-1 text-muted-foreground">
             We send a confirmation before anything changes.
           </p>
-          <Btn className="w-full" onClick={() => void submit()} disabled={saving || !input.trim()}>
+          <Btn
+            className="w-full"
+            onClick={() => void submit()}
+            disabled={saving || !input.trim() || Boolean(problem)}
+          >
             Send confirmation
           </Btn>
         </div>

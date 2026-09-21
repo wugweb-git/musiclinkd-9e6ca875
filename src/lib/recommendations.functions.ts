@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
+import { parsePlace, samePinArea } from "@/lib/place";
 
 /*
  * Recommendations, ranked from what the signed-in person has actually told us and done: the roles,
@@ -30,6 +31,7 @@ export type Recommendations = {
 type Me = {
   id: string;
   city: string | null;
+  pin_code?: string | null;
   roles: string[] | null;
   genres: string[] | null;
   instruments: string[] | null;
@@ -105,7 +107,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
 
     const { data: meRow } = await client
       .from("profiles")
-      .select("id, city, roles, genres, instruments")
+      .select("id, city, pin_code, roles, genres, instruments")
       .eq("id", me)
       .maybeSingle();
     const profile = (meRow as Me | null) ?? {
@@ -246,6 +248,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
     const myGenres = profile.genres ?? [];
     const myInstruments = profile.instruments ?? [];
     const myCity = profile.city?.trim() || null;
+    const myPin = profile.pin_code ?? null;
 
     // What the people the viewer follows and saved have in common, as roles to lean towards.
     const likedRoles = new Map<string, number>();
@@ -287,7 +290,9 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
             (c.roles ?? []).find((r) => likedRoles.has(r))!,
           )}`,
         );
-      if (myCity && sameCity(myCity, c.city)) s.add(3, `Also in ${c.city}`);
+      // The PIN code is a radius, never shown: same postal district is nearer than same city.
+      if (samePinArea(myPin, c.pin_code)) s.add(4, "Near you");
+      else if (myCity && sameCity(myCity, c.city)) s.add(3, `Also in ${c.city}`);
       if (!s.score) continue;
       if (c.is_verified) s.score += 0.5;
       const reviewCount = c.review_count ?? 0;
@@ -349,7 +354,8 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
       const services = (st.services ?? []).filter((v) => bookedServices.has(v));
       if (services.length && !booked.has(st.id) && !savedStudios.has(st.id))
         s.add(2, `Offers ${listOf(services)}, like studios you used`);
-      if (myCity && sameCity(myCity, st.location)) s.add(3, `In ${myCity}`);
+      if (samePinArea(myPin, parsePlace(st.location).pin)) s.add(4, "Near you");
+      else if (myCity && sameCity(myCity, st.location)) s.add(3, `In ${myCity}`);
       if (!s.score) continue;
       s.score += Number(st.rating ?? 0) / 10;
       studioPicks.push({ id: st.id, reason: s.reason, score: s.score });

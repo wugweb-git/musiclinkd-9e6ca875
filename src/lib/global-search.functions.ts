@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
 import type { ListingRow, OpportunityRow } from "@/lib/catalog.functions";
+import { shownPlace } from "@/lib/place";
 
 /*
  * /search: one box over everything public. People come from searchPeople
@@ -197,7 +198,7 @@ async function studios(
       r.rating != null && r.review_count
         ? `${Number(r.rating).toFixed(1)} out of 5 · ${r.review_count} ${r.review_count === 1 ? "review" : "reviews"}`
         : "Studio",
-    place: r.location,
+    place: shownPlace(r.location),
     photo: r.image_url,
     verified: Boolean(r.verified_gold),
     // The same link the studio card uses: the owner's page, or the booking page without one.
@@ -469,7 +470,7 @@ async function subjectFields(
         verified: Boolean(s.verified_gold),
         fields: [
           { label: "name", value: s.name, strong: true },
-          { label: "location", value: s.location },
+          { label: "location", value: shownPlace(s.location) },
           { label: "description", value: s.description },
           { label: "console", value: s.console_type },
         ],
@@ -552,7 +553,7 @@ async function subjectFields(
           { label: "model", value: l.model, strong: true },
           { label: "category", value: l.item_category?.replace(/_/g, " ") },
           { label: "description", value: l.listing_description },
-          { label: "pickup place", value: l.pickup_location },
+          { label: "pickup place", value: shownPlace(l.pickup_location) },
           { label: "seller", value: l.seller_name },
         ],
         extra: [{ label: "Listed", detail: postedOn(l.created_at), weight: "light" }],

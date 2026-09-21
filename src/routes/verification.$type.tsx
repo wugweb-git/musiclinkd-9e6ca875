@@ -33,6 +33,7 @@ import {
   type VerificationTypeInfo,
 } from "@/lib/verification.functions";
 import { iconSize } from "@/lib/tokens";
+import { indianPhone } from "@/lib/validation";
 
 type Search = { step: number; mode?: "new" };
 
@@ -392,18 +393,6 @@ function VerificationRequestScreen() {
       onSubmitted={v.refresh}
     />
   );
-}
-
-/** Ten digits typed with or without the country code, as +91 and the number; null otherwise. */
-function indianPhone(value: string) {
-  const digits = value.replace(/\D/g, "");
-  const local =
-    digits.length === 12 && digits.startsWith("91")
-      ? digits.slice(2)
-      : digits.length === 11 && digits.startsWith("0")
-        ? digits.slice(1)
-        : digits;
-  return /^[1-9]\d{9}$/.test(local) ? `+91${local}` : null;
 }
 
 type Attached = { name: string; file?: File; path?: string };

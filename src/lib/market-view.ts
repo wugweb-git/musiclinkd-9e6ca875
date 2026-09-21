@@ -10,6 +10,7 @@ import {
 import { priceParts } from "@/lib/price";
 import { getRentalBookingCounts } from "@/lib/rentals.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
+import { parsePlace, samePinArea, shownPlace } from "@/lib/place";
 
 /*
  * Database marketplace listings shaped as the static `Listing` the market screens render.
@@ -74,7 +75,7 @@ function postedAt(createdAt: string, now: number) {
 }
 
 /** Where a listing is: the rental pickup place when stored, otherwise the seller's city. */
-const placeOf = (row: ListingRow) => row.pickup_location ?? row.seller?.city ?? "";
+const placeOf = (row: ListingRow) => shownPlace(row.pickup_location) || (row.seller?.city ?? "");
 
 /** Stored specs are label/value pairs; anything else in the column is left out. */
 const specsOf = (row: ListingRow) =>
@@ -124,6 +125,7 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     // Condition describes goods; a service stored as "new" is not shown with a condition badge.
     ...(condition ? { condition } : {}),
     location: placeOf(row),
+    ...(parsePlace(row.pickup_location).pin ? { pin: parsePlace(row.pickup_location).pin } : {}),
     distance: "",
     category,
     subcategory: subcategoryOf(row, category, labels),
@@ -273,6 +275,17 @@ export async function loadMyCatalogRentals(): Promise<RentalItem[]> {
  * The items in the viewer's Market city (useMarketCity), matched on the stored place. When
  * nothing is listed there, every item — an empty "near you" says less than the whole catalogue.
  */
+/** Items in the viewer's postal district first (PIN code as a radius); the order is kept otherwise. */
+export function nearFirst<T extends { pin?: string }>(
+  items: T[],
+  myPin: string | null | undefined,
+): T[] {
+  if (!myPin) return items;
+  return [...items].sort(
+    (a, b) => Number(samePinArea(myPin, b.pin)) - Number(samePinArea(myPin, a.pin)),
+  );
+}
+
 export function inCity<T extends { location?: string }>(items: T[], city: string): T[] {
   const want = city.trim().toLowerCase();
   if (!want) return items;

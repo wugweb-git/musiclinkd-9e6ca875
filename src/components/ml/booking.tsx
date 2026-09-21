@@ -43,7 +43,6 @@ import {
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { earliestBookingDate } from "@/lib/studio-slots";
-import { placeLine } from "@/lib/place";
 
 /* ------------------------------------------------------------------ */
 /* Status                                                            */
@@ -156,7 +155,7 @@ export function BookableHero({ b, back }: { b: Bookable; back?: string }) {
 
 export function EntityMetaRow({ b }: { b: Bookable }) {
   // Database studios have no distance, and a rating only once reviewed; skip what is empty.
-  const place = placeLine(b.city, b.area);
+  const place = b.city;
   const where = [place, b.distanceKm ? `${b.distanceKm} km` : ""].filter(Boolean).join(" · ");
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
@@ -664,7 +663,7 @@ export function BookingSummaryCard({
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{b.name}</p>
           <p className="truncate text-1 text-muted-foreground">{r.name}</p>
-          <p className="mt-1 truncate text-1 text-muted-foreground">{placeLine(b.city, b.area)}</p>
+          <p className="mt-1 truncate text-1 text-muted-foreground">{b.city}</p>
         </div>
       </div>
       <dl className="mt-3 grid grid-cols-2 gap-3 border-t border-border pt-3 text-1">

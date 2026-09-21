@@ -973,7 +973,7 @@ export function OfferSheet({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={3}
-            placeholder="I can collect from Dadar this weekend."
+            placeholder="I can collect this weekend."
             className="mb-3 w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
           />
           <p className="mb-5 text-1 text-muted-foreground">

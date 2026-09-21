@@ -6,7 +6,23 @@
 
 export const PIN_CODE = /^[1-9]\d{5}$/;
 
-/** "Mumbai 400053", or whichever part there is. */
+/**
+ * What anyone sees: the city only. PIN codes and area names are never shown (owner, 21 Sep 2026);
+ * the PIN is used internally, as a radius for what is near you (samePinArea).
+ */
+export function shownPlace(value: string | null | undefined) {
+  return parsePlace(value).city;
+}
+
+/**
+ * Two PIN codes in the same postal district (their first three digits match), i.e. near each
+ * other. False when either is missing.
+ */
+export function samePinArea(a: string | null | undefined, b: string | null | undefined) {
+  return Boolean(a && b && PIN_CODE.test(a) && PIN_CODE.test(b) && a.slice(0, 3) === b.slice(0, 3));
+}
+
+/** "Mumbai 400053", or whichever part there is: how a place is stored, never how it is shown. */
 export function placeLine(city: string | null | undefined, pin: string | null | undefined) {
   return [city?.trim(), pin?.trim()].filter(Boolean).join(" ");
 }
