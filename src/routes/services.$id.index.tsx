@@ -285,7 +285,7 @@ function ServiceDetail() {
 
           {s.requirements.length ? (
             <Card className="space-y-2">
-              <h2 className="text-sm">What the client should send</h2>
+              <h2 className="text-sm">What they need from you</h2>
               {s.requirements.map((r) => (
                 <p key={r} className="text-1 text-muted-foreground">
                   · {r}
@@ -294,20 +294,31 @@ function ServiceDetail() {
             </Card>
           ) : null}
 
-          <div className="grid grid-cols-2 gap-2">
-            <BtnLink to="/services/availability" variant="outline" className="w-full">
-              Availability
-            </BtnLink>
-            {s.ownerAvailability ? (
-              <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
-                Preview Booking
+          {owner ? (
+            <div className="grid grid-cols-2 gap-2">
+              <BtnLink to="/services/availability" variant="outline" className="w-full">
+                Availability
               </BtnLink>
-            ) : (
-              <Btn className="w-full" disabled>
-                Not Bookable
-              </Btn>
-            )}
-          </div>
+              {s.ownerAvailability ? (
+                <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
+                  Preview Booking
+                </BtnLink>
+              ) : (
+                <Btn className="w-full" disabled>
+                  Not Bookable
+                </Btn>
+              )}
+            </div>
+          ) : s.ownerAvailability ? (
+            // A visitor books from here: the same enquiry the owner previews.
+            <BtnLink to="/services/$id/enquiry" params={{ id: s.id }} className="w-full">
+              Enquire
+            </BtnLink>
+          ) : (
+            <Btn className="w-full" disabled>
+              Not taking bookings right now
+            </Btn>
+          )}
         </div>
       ) : null}
 

@@ -6,25 +6,20 @@ import { toast } from "sonner";
 import {
   ArrowLeftRight,
   Building2,
-  CalendarDays,
-  Clock,
   Gauge,
   GraduationCap,
   Guitar,
-  Handshake,
   FolderKanban,
   Hourglass,
   Laptop,
   MapPin,
   MicVocal,
   Music,
-  Package,
   PenLine,
   Plane,
   SlidersVertical,
   Sparkles,
   Speaker,
-  Tag,
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
@@ -42,14 +37,8 @@ import { iconSize } from "@/lib/tokens";
 import type { PortfolioItem } from "@/data/portfolio";
 import { ServiceCard } from "@/components/ml/profile";
 import type { ServiceItem } from "@/data/profile";
-import { pricingModelUnit, type PricingModel } from "@/data/services";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  optionLabel,
-  useRefreshServices,
-  useService,
-  useServiceOptions,
-} from "@/hooks/use-services";
+import { useRefreshServices, useService, useServiceOptions } from "@/hooks/use-services";
 import { haptic } from "@/lib/haptics";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
@@ -77,7 +66,7 @@ const legacySteps: Record<string, Step> = {
 };
 
 /** Delivery times offered in the drawer; a stored value outside the list stays pickable. */
-const deliveryTimes = ["Same day", "1–2 days", "3–5 days", "1 week", "2 weeks", "1 month"];
+const deliveryTimes = ["1–2 days", "3–5 days", "1 week", "2 weeks"];
 const modeIcons: Record<string, LucideIcon> = {
   in_person: MapPin,
   remote: Laptop,
@@ -112,7 +101,7 @@ export const Route = createFileRoute("/services/new")({
   component: NewService,
 });
 
-/** A line icon per service category and pricing model, for the drawers. */
+/** A line icon per service category, for the drawer. */
 const categoryIcons: Record<string, LucideIcon> = {
   vocals: MicVocal,
   mixing: SlidersVertical,
@@ -123,13 +112,6 @@ const categoryIcons: Record<string, LucideIcon> = {
   live: Speaker,
   studio: Building2,
   teaching: GraduationCap,
-};
-const modelIcons: Record<string, LucideIcon> = {
-  hourly: Clock,
-  per_song: Music,
-  per_day: CalendarDays,
-  package: Package,
-  custom: Handshake,
 };
 
 function NewService() {
@@ -164,10 +146,9 @@ function NewService() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deliverables, setDeliverables] = useState<string[]>([]);
+  const [requirements, setRequirements] = useState<string[]>([]);
   const [exampleIds, setExampleIds] = useState<string[]>([]);
-  const [model, setModel] = useState<string | null>(null);
   const [price, setPrice] = useState("");
-  const [minHours, setMinHours] = useState("");
   const [turnaround, setTurnaround] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
   const [busy, setBusy] = useState<"draft" | "active" | null>(null);
@@ -183,10 +164,9 @@ function NewService() {
     setTitle(source.name);
     setDescription(source.description ?? "");
     setDeliverables(source.deliverables);
+    setRequirements(source.requirements);
     setExampleIds(source.example_ids);
-    setModel(source.pricing_model);
     setPrice(source.price_paise == null ? "" : String(source.price_paise / 100));
-    setMinHours(source.min_hours == null ? "" : String(source.min_hours));
     setTurnaround(source.turnaround);
     setMode(source.work_modes[0] ?? null);
   }, [source, filled]);
@@ -221,11 +201,7 @@ function NewService() {
   const categoryOptions = (options?.categories ?? [])
     .filter((c) => offered.size === 0 || offered.has(c.slug) || source?.categories.includes(c.slug))
     .map((c) => ({ value: c.slug, label: c.label, icon: categoryIcons[c.slug] ?? Sparkles }));
-  const modelOptions = (options?.pricingModels ?? []).map((m) => ({
-    value: m.slug,
-    label: m.label,
-    icon: modelIcons[m.slug] ?? Tag,
-  }));
+
   const deliveryOptions = [
     ...deliveryTimes,
     ...(turnaround && !deliveryTimes.includes(turnaround) ? [turnaround] : []),
@@ -247,20 +223,22 @@ function NewService() {
     ),
   }));
 
-  const unit = model ? pricingModelUnit[model as PricingModel] : undefined;
-  const modelLabel = optionLabel(options?.pricingModels, model);
   const rupees = price.replace(/[₹,\s]/g, "");
   const pricePaise =
     rupees && Number.isFinite(Number(rupees)) ? Math.round(Number(rupees) * 100) : null;
-  const hours = /^\d+$/.test(minHours.trim()) ? Number(minHours.trim()) : null;
-  const previewPrice = priceParts(pricePaise, unit, unit ? null : modelLabel);
-  const quoted = model === "custom";
+  const previewPrice = priceParts(pricePaise, null);
 
   // Each step's Continue waits for that step's own fields.
   const ready =
     step === "what"
-      ? Boolean(categories.length && title.trim() && description.trim())
-      : Boolean(model && (quoted || (pricePaise ?? 0) > 0) && turnaround && mode);
+      ? Boolean(
+          categories.length &&
+          title.trim() &&
+          description.trim() &&
+          deliverables.length &&
+          exampleIds.length,
+        )
+      : Boolean((pricePaise ?? 0) > 0 && turnaround && mode);
 
   async function submit(status: "draft" | "active") {
     if (!signedIn) {
@@ -277,20 +255,17 @@ function NewService() {
           category: categories[0] ?? null,
           categories,
           example_ids: exampleIds,
-          pricing_model: model,
+          // One universal price: a starting price, with no unit or pricing model.
+          pricing_model: null,
           price_paise: pricePaise,
-          // A stored unit the pricing models do not name ("film") is kept while the model is unchanged.
-          price_unit:
-            pricePaise == null
-              ? null
-              : (unit ?? (model === source?.pricing_model ? source?.price_unit : null) ?? null),
-          min_hours: model === "hourly" && hours ? hours : null,
+          price_unit: null,
+          min_hours: null,
           turnaround: turnaround ?? null,
           // Not asked any more; a stored value is kept as it was.
           notice: source?.notice ?? null,
           work_modes: mode ? [mode] : [],
           deliverables,
-          requirements: source?.requirements ?? [],
+          requirements,
           status,
         },
       });
@@ -384,14 +359,14 @@ function NewService() {
                 />
               </Field>
               <TagListField
-                label="Deliverables (optional)"
+                label="Deliverables"
                 id="service-deliverables"
                 placeholder="Dry WAV stems"
                 value={deliverables}
                 onChange={setDeliverables}
               />
               <Field
-                label="Examples from your portfolio (optional)"
+                label="Examples from your portfolio"
                 id="service-examples"
                 hint="Shown on the service, so clients hear or see the work"
               >
@@ -405,49 +380,38 @@ function NewService() {
                     max={6}
                   />
                 ) : (
-                  <p className="text-1 text-foreground">Nothing published in your portfolio yet.</p>
+                  <div className="rounded-lg bg-card p-4">
+                    <p className="text-1 text-foreground">
+                      Nothing in your portfolio yet. Add a piece of work first, then pick it here.
+                    </p>
+                    <BtnLink to="/portfolio/new" variant="outline" className="mt-3 w-full">
+                      Add to portfolio
+                    </BtnLink>
+                  </div>
                 )}
               </Field>
+              <TagListField
+                label="What you need (optional)"
+                id="service-requirements"
+                placeholder="Guide track"
+                value={requirements}
+                onChange={setRequirements}
+              />
             </div>
           )
         ) : null}
 
         {step === "price" ? (
           <div className="space-y-4">
-            <Field
-              label="Starting Pricing"
-              id="service-price"
-              hint="Your fees will be deducted from this amount. Your client fees will be billed to them separately."
-            >
-              <div className="grid grid-cols-5 gap-2">
-                <input
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  inputMode="decimal"
-                  placeholder={quoted ? "On enquiry" : "₹8,000"}
-                  className={`${inputClass} col-span-3`}
-                />
-                <SheetSelect
-                  title="How you charge"
-                  value={model}
-                  options={modelOptions}
-                  onChange={setModel}
-                  placeholder="Per…"
-                  className="col-span-2"
-                />
-              </div>
+            <Field label="Starting price (₹)" id="service-price">
+              <input
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                inputMode="decimal"
+                placeholder="8,000"
+                className={inputClass}
+              />
             </Field>
-            {model === "hourly" ? (
-              <Field label="Minimum hours" id="service-min-hours">
-                <input
-                  value={minHours}
-                  onChange={(e) => setMinHours(e.target.value.replace(/\D/g, ""))}
-                  inputMode="numeric"
-                  placeholder="1"
-                  className={inputClass}
-                />
-              </Field>
-            ) : null}
             <Field label="Delivery time" id="service-delivery">
               <SheetSelect
                 title="Delivery time"
