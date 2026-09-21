@@ -47,6 +47,17 @@ export type BusinessView = {
   policies: string[];
   /** Its studio's slug when it has one: Book opens /booking/<slug>. */
   studioSlug: string | null;
+  /** What the place has, each with its proof photos. */
+  amenities: { label: string; photos: string[] }[];
+  /** Its gear: make and model, type, quantity, included or extra, and photos. */
+  equipment: {
+    id: string;
+    name: string;
+    type: string;
+    quantity: number | null;
+    included: boolean;
+    photos: string[];
+  }[];
   address: string;
   /** The business's Google Maps link, opened for directions. */
   mapsUrl: string | null;
@@ -123,6 +134,16 @@ function websiteOf(links: unknown): string | null {
   }
 }
 
+function photosOf(
+  photos: NonNullable<BusinessRecord["studio"]>["photos"] | undefined,
+  kind: "facility" | "equipment",
+  id: string,
+) {
+  return (photos ?? [])
+    .filter((p) => p.subject_type === kind && p.subject_id === id)
+    .map((p) => p.url);
+}
+
 export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels): BusinessView {
   const { profile, business, studio } = r;
   const role = profile.roles?.[0];
@@ -166,6 +187,22 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     hours: hoursFrom(business.operating_hours),
     policies: (business.policies ?? []).filter((p) => p.trim()),
     studioSlug: studio?.slug ?? null,
+    amenities: (studio?.amenities ?? []).map((slug) => ({
+      label: taxonomyLabel(labels, "studio_amenities", slug),
+      photos: photosOf(studio?.photos, "facility", slug),
+    })),
+    equipment: (studio?.equipment ?? []).map((e) => ({
+      id: e.id,
+      name: e.name,
+      type: e.category
+        ? (labels["equipment_categories"]?.[e.category] ??
+          labels["instruments"]?.[e.category] ??
+          e.category)
+        : "",
+      quantity: e.quantity,
+      included: e.included !== false,
+      photos: photosOf(studio?.photos, "equipment", e.id),
+    })),
     address: business.business_address ?? "",
     mapsUrl: business.maps_url ?? null,
     spaces: (studio?.rooms ?? []).map((room) => {

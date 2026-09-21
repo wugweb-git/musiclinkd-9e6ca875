@@ -35,7 +35,13 @@ export async function loadPublicProfile(username: string) {
     // Without labels the chips fall back to slugs; the page still renders.
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
-  if (business) return { row: null, business, labels, sections: null };
+  if (business) {
+    // A business's works come from the same portfolio as a talent's.
+    const sections = await getPublicProfileSections({
+      data: { profileId: business.profile.id },
+    }).catch(() => null);
+    return { row, business, labels, sections };
+  }
   if (!row) throw notFound();
   // Without sections the profile shows its empty states.
   const sections: ProfileSections | null = row.id
@@ -89,7 +95,9 @@ export function PublicProfileScreen({
 }) {
   const { row, business, labels, sections } = data;
   const view = business ? businessViewFromRecord(business, labels) : null;
-  const person = business || !row ? null : profileView(row, labels, sections);
+  // A business's works read like a talent's; its own profile record stands in for the row.
+  const baseRow = row ?? (business ? (business.profile as unknown as ProfileRow) : null);
+  const person = baseRow ? profileView(baseRow, labels, sections) : null;
 
   // Opening a page is what makes it recently viewed; the note stays on this device.
   const name = view?.name ?? person?.name ?? "";
@@ -107,6 +115,6 @@ export function PublicProfileScreen({
     });
   }, [username, name, detail, avatar, isBusiness]);
 
-  if (view) return <BusinessProfileExperience b={view} />;
+  if (view) return <BusinessProfileExperience b={view} work={person} />;
   return <PersonProfileExperience p={person!} />;
 }

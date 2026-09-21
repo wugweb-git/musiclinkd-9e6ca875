@@ -95,6 +95,18 @@ export type BusinessRecord = {
     slug?: string;
     rating: number | null;
     review_count: number;
+    /** studio_amenities slugs: what the place has. */
+    amenities: string[];
+    /** Its gear: type is an equipment category or an instrument slug. */
+    equipment: {
+      id: string;
+      name: string;
+      category: string | null;
+      quantity: number | null;
+      included: boolean;
+    }[];
+    /** Proof photos, by amenity slug (facility) or equipment id. */
+    photos: { subject_type: "facility" | "equipment"; subject_id: string; url: string }[];
     rooms: {
       id: string;
       name: string;
@@ -130,7 +142,7 @@ const BUSINESS =
 const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
 const REVIEW_FULL = `${REVIEW}, tags`;
 const STUDIO = (review: string) =>
-  `id, slug, rating, review_count, rooms:studio_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), reviews(${review})`;
+  `id, slug, rating, review_count, amenities, rooms:studio_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), equipment:studio_equipment(id, name, category, quantity, included, sort_order), photos:studio_photos(subject_type, subject_id, url, sort_order), reviews(${review})`;
 
 async function businessRecord(
   client: SupabaseClient,
@@ -197,8 +209,18 @@ async function businessRecord(
     created_at: string;
   };
   const studio = (studios.data?.[0] ?? null) as
-    | (Omit<NonNullable<BusinessRecord["studio"]>, "rooms"> & {
+    | (Omit<NonNullable<BusinessRecord["studio"]>, "rooms" | "equipment" | "photos"> & {
         rooms: NonNullable<BusinessRecord["studio"]>["rooms"] | null;
+        equipment:
+          | (NonNullable<BusinessRecord["studio"]>["equipment"][number] & {
+              sort_order: number;
+            })[]
+          | null;
+        photos:
+          | (NonNullable<BusinessRecord["studio"]>["photos"][number] & {
+              sort_order: number;
+            })[]
+          | null;
         reviews: StoredReview[] | null;
       })
     | null;
@@ -229,6 +251,13 @@ async function businessRecord(
           ...(studio.slug ? { slug: studio.slug } : {}),
           rating: studio.rating == null ? null : Number(studio.rating),
           review_count: studio.review_count,
+          amenities: studio.amenities ?? [],
+          equipment: [...(studio.equipment ?? [])]
+            .sort((a, b) => a.sort_order - b.sort_order)
+            .map(({ sort_order: _s, ...e }) => e),
+          photos: [...(studio.photos ?? [])]
+            .sort((a, b) => a.sort_order - b.sort_order)
+            .map(({ sort_order: _s, ...ph }) => ph),
           rooms: [...(studio.rooms ?? [])]
             .sort((a, b) => a.sort_order - b.sort_order)
             .map((room) => ({ ...room, gear: room.gear ?? [] })),

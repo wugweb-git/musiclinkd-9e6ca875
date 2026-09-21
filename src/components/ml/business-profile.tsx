@@ -12,6 +12,7 @@ import {
   Plus,
   Send,
   Settings2,
+  SlidersVertical,
   Sparkles,
   Star,
   type LucideIcon,
@@ -24,11 +25,22 @@ import { shareLink } from "@/lib/booking-actions";
 import { enterLinkedProfile, listLinkedProfiles } from "@/lib/pages.functions";
 import { switchToLinked } from "@/lib/saved-accounts";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
-import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, IconBtnLink } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
-import { TextLink } from "@/components/ml/links";
-import { CoverHero, ReviewCard, ReviewRail } from "@/components/ml/profile";
+import {
+  AudioTrackCard,
+  ClampedText,
+  CoverHero,
+  ProjectCard,
+  ReviewCard,
+  ReviewRail,
+  StackSection,
+  VideoCard,
+} from "@/components/ml/profile";
+import { GalleryView } from "@/components/ml/gallery";
+import { PhotoSheet, ProofPill } from "@/components/ml/booking";
+import type { PersonProfile } from "@/data/profile";
 import { CallBtn } from "@/components/ml/person-profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
@@ -37,19 +49,28 @@ import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 
 // Team is off for now: one business profile belongs to one account (owner, 21 Sep 2026).
-type BusinessTab = "Overview" | "Spaces" | "Credits" | "Reviews";
+type BusinessTab = "Overview" | "Portfolio" | "Spaces" | "Reviews";
 
 /** Same row as the person profile: icon alone until selected, then solid with its move. */
 const tabs: { key: BusinessTab; icon: LucideIcon; solid: SolidIcon; move: Move }[] = [
   { key: "Overview", icon: Sparkles, solid: "sparkle", move: "spin" },
+  { key: "Portfolio", icon: Music, solid: "music", move: "dance" },
   { key: "Spaces", icon: House, solid: "home", move: "hop" },
-  { key: "Credits", icon: Music, solid: "music", move: "dance" },
   { key: "Reviews", icon: Star, solid: "star", move: "stamp" },
 ];
 
 /** A business account's profile: /business/$id and /profile/$username for a business. */
-export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }) {
+export function BusinessProfileExperience({
+  b,
+  work = null,
+}: {
+  b: BusinessView | undefined;
+  /** The business's portfolio (tracks, videos, projects), read like a talent's. */
+  work?: PersonProfile | null;
+}) {
   const [tab, setTab] = useState<BusinessTab>("Overview");
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const { user, signedIn } = useAuth();
   const isOwner = !!b && user?.id === b.profileId;
   // A business page this sign-in owns (src/lib/pages.functions.ts): one tap switches into it.
@@ -60,6 +81,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
     enabled: signedIn && !!b && !isOwner,
   });
   const ownsPage = !!b && !isOwner && (linked.data ?? []).some((p) => p.id === b.profileId);
+  const activeServices = (b?.services ?? []).filter((s) => s.status === "active");
 
   if (!b) {
     return (
@@ -129,74 +151,159 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
 
       <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Business sections" />
 
-      <div className="space-y-4 px-5 pt-4 pb-6">
+      <div className="px-3 pb-6">
         {tab === "Overview" ? (
           <>
             {b.about || b.legalName ? (
-              <Card className="space-y-2">
-                <h2 className="text-sm">About</h2>
-                {b.about ? (
-                  <p className="text-1 leading-relaxed text-muted-foreground">{b.about}</p>
-                ) : null}
+              <StackSection title="About">
+                {b.about ? <ClampedText text={b.about} /> : null}
                 {b.legalName ? (
-                  <p className="flex items-start justify-between gap-3 text-1">
+                  <p className="mt-3 flex items-start justify-between gap-3 text-1">
                     <span className="text-muted-foreground">Registered</span>
                     <span className="text-right font-semibold">{b.legalName}</span>
                   </p>
                 ) : null}
-              </Card>
+              </StackSection>
             ) : null}
-            {b.services.some((s) => s.status === "active") ? (
-              <Card className="space-y-2">
-                <h2 className="text-sm">Services & rates</h2>
-                {b.services
-                  .filter((s) => s.status === "active")
-                  .map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex items-start justify-between gap-3 border-b border-border py-2 last:border-0"
-                    >
-                      <span className="min-w-0 flex-1 truncate text-1">{s.label}</span>
-                      <Price
-                        from
-                        inline
-                        price={s.price}
-                        align="end"
-                        className="shrink-0"
-                        amountClassName="text-1 font-semibold"
-                      />
-                    </div>
+
+            {b.gallery.length ? (
+              <StackSection title="Showcase">
+                <GalleryView images={b.gallery} title={`${b.name} showcase`} />
+              </StackSection>
+            ) : null}
+
+            {activeServices.length ? (
+              <StackSection title="Services & rates" collapsible>
+                {activeServices.map((s) => (
+                  <div
+                    key={s.id}
+                    className="flex items-start justify-between gap-3 border-b border-border py-2.5 last:border-0"
+                  >
+                    <span className="min-w-0 flex-1 truncate text-sm">{s.label}</span>
+                    <Price
+                      from
+                      inline
+                      price={s.price}
+                      align="end"
+                      className="shrink-0"
+                      amountClassName="text-sm font-semibold"
+                    />
+                  </div>
+                ))}
+              </StackSection>
+            ) : null}
+
+            {b.amenities.length ? (
+              <StackSection title="Amenities">
+                <div className="flex flex-wrap gap-2">
+                  {b.amenities.map((a) => (
+                    <ProofPill
+                      key={a.label}
+                      label={a.label}
+                      photos={a.photos}
+                      onOpen={() => setViewing({ title: a.label, photos: a.photos })}
+                      className="rounded-full bg-background text-1"
+                    />
                   ))}
-              </Card>
+                </div>
+              </StackSection>
             ) : null}
+
+            {b.equipment.length ? (
+              <StackSection title="Equipment" collapsible>
+                <ul className="divide-y divide-border">
+                  {b.equipment.map((e) => (
+                    <li key={e.id}>
+                      <button
+                        type="button"
+                        disabled={!e.photos.length}
+                        onClick={() => setViewing({ title: e.name, photos: e.photos })}
+                        className="state-layer flex w-full items-center gap-3 py-3 text-left disabled:cursor-default"
+                      >
+                        {e.photos[0] ? (
+                          <img
+                            src={e.photos[0]}
+                            alt=""
+                            loading="lazy"
+                            className="h-12 w-12 shrink-0 rounded-sm object-cover"
+                          />
+                        ) : (
+                          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-icon-chip">
+                            <SlidersVertical size={iconSize.md} aria-hidden />
+                          </span>
+                        )}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold">{e.name}</span>
+                          <span className="block truncate text-1 text-muted-foreground">
+                            {[e.type, e.quantity ? `Qty ${e.quantity}` : ""]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                        </span>
+                        <StatusPill
+                          label={e.included ? "included" : "extra cost"}
+                          tone={e.included ? "good" : "neutral"}
+                        />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </StackSection>
+            ) : null}
+
+            {work && (work.audio.length || work.video.length) ? (
+              <StackSection
+                title="Portfolio"
+                showAll="See all work"
+                onShowAll={() => setTab("Portfolio")}
+              >
+                <div className="space-y-3">
+                  {work.audio.slice(0, 2).map((track) => (
+                    <AudioTrackCard
+                      key={track.id}
+                      track={track}
+                      playing={playingId === track.id}
+                      onToggle={() => setPlayingId((id) => (id === track.id ? null : track.id))}
+                    />
+                  ))}
+                  {work.video.slice(0, 2).map((v) => (
+                    <VideoCard key={v.id} v={v} layout="row" />
+                  ))}
+                </div>
+              </StackSection>
+            ) : null}
+
             {b.hours.length ? (
-              <Card className="space-y-2">
-                <h2 className="text-sm">Hours</h2>
+              <StackSection title="Hours" collapsible>
                 {b.hours.map((h) => (
-                  <div key={`${h.day}${h.hours}`} className="flex justify-between gap-3 text-1">
+                  <div
+                    key={`${h.day}${h.hours}`}
+                    className="flex justify-between gap-3 py-1 text-sm"
+                  >
                     <span className="text-muted-foreground">{h.day}</span>
                     <span className="font-semibold">{h.hours}</span>
                   </div>
                 ))}
-              </Card>
+              </StackSection>
             ) : null}
+
             {b.policies.length ? (
               // Rules read as a plain list on the page, not a card.
-              <section className="space-y-2 px-1">
-                <h2 className="text-sm">Policies</h2>
-                <ul className="list-disc space-y-1.5 pl-5 text-1 text-muted-foreground">
+              <section className="mt-6 space-y-2 px-4">
+                <h2 className="text-3 font-bold">Policies</h2>
+                <ul className="list-disc space-y-1.5 pl-5 text-sm text-muted-foreground">
                   {b.policies.map((p) => (
                     <li key={p}>{p}</li>
                   ))}
                 </ul>
               </section>
             ) : null}
+
             {b.address || b.mapsUrl || b.website ? (
-              <Card className="space-y-2">
-                <h2 className="text-sm">Find & contact</h2>
+              <StackSection title="Find & contact">
                 {b.address ? (
-                  <p className="flex items-start gap-2 text-1">
-                    <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" />{" "}
+                  <p className="flex items-start gap-2 text-sm">
+                    <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" />
                     {shownPlace(b.address)}
                   </p>
                 ) : null}
@@ -205,90 +312,147 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                     href={b.mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-touch items-center gap-2 text-1 font-semibold underline-offset-4 hover:underline"
+                    className="inline-flex min-h-touch items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
                   >
                     <Navigation size={iconSize.sm} aria-hidden /> Directions
                   </a>
                 ) : null}
                 {b.website ? <WebsiteLink url={b.website} className="min-h-touch" /> : null}
-              </Card>
+              </StackSection>
             ) : null}
+
             {b.reviews.length ? (
-              <section className="space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-sm">Reviews</h2>
-                  <TextLink
-                    to="/business/$id/reviews"
-                    params={{ id: b.id }}
-                    className="shrink-0 text-1"
-                  >
-                    See All
-                  </TextLink>
-                </div>
+              <StackSection
+                title="Reviews"
+                showAll="See all reviews"
+                onShowAll={() => setTab("Reviews")}
+              >
                 <ReviewRail>
                   {b.reviews.map((rv) => (
                     <ReviewCard key={rv.id} r={reviewItem(rv)} />
                   ))}
                 </ReviewRail>
-              </section>
+              </StackSection>
             ) : null}
           </>
         ) : null}
 
-        {tab === "Reviews" ? (
-          b.reviews.length ? (
-            <ReviewRail>
-              {b.reviews.map((rv) => (
-                <ReviewCard key={rv.id} r={reviewItem(rv)} />
-              ))}
-            </ReviewRail>
+        {tab === "Portfolio" ? (
+          work && (work.audio.length || work.video.length || work.projects.length) ? (
+            <>
+              {work.audio.length ? (
+                <StackSection title="Audio">
+                  <div className="space-y-2">
+                    {work.audio.map((track) => (
+                      <AudioTrackCard
+                        key={track.id}
+                        track={track}
+                        playing={playingId === track.id}
+                        onToggle={() => setPlayingId((id) => (id === track.id ? null : track.id))}
+                      />
+                    ))}
+                  </div>
+                </StackSection>
+              ) : null}
+              {work.video.length ? (
+                <StackSection title="Video">
+                  <div className="grid grid-cols-2 gap-3">
+                    {work.video.map((v) => (
+                      <VideoCard key={v.id} v={v} />
+                    ))}
+                  </div>
+                </StackSection>
+              ) : null}
+              {work.projects.length ? (
+                <StackSection title="Projects">
+                  <div className="space-y-2">
+                    {work.projects.map((project) => (
+                      <ProjectCard key={project.id} p={project} />
+                    ))}
+                  </div>
+                </StackSection>
+              ) : null}
+              {b.credits.length ? (
+                <StackSection title="Credits" collapsible>
+                  {b.credits.map((c) => (
+                    <div key={c.id} className="border-b border-border py-2 last:border-0">
+                      <p className="text-sm font-semibold">{c.title}</p>
+                      {c.meta ? <p className="text-1 text-muted-foreground">{c.meta}</p> : null}
+                    </div>
+                  ))}
+                </StackSection>
+              ) : null}
+            </>
           ) : (
-            <EmptyState title="No reviews yet" body="No one has reviewed this business yet." />
+            <div className="px-2 pt-4">
+              <EmptyState title="No work yet" body="This business hasn't added its work yet." />
+            </div>
           )
         ) : null}
 
-        {tab === "Spaces" ? (
-          <div className="space-y-3">
-            {b.spaces.map((sp) => (
-              <Card key={sp.id} className="space-y-2 overflow-hidden p-0">
-                {sp.photo ? (
-                  <img src={sp.photo} alt="" className="h-32 w-full object-cover" loading="lazy" />
-                ) : null}
-                <div className="space-y-2 p-4 pt-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold">{sp.name}</p>
-                    <Price
-                      price={sp.rate}
-                      align="end"
-                      className="shrink-0"
-                      amountClassName="text-1 font-bold"
-                    />
-                  </div>
-                  {sp.detail ? <p className="text-1 text-muted-foreground">{sp.detail}</p> : null}
-                  <div className="flex flex-wrap gap-1.5">
-                    {sp.gear.map((g) => (
-                      <span key={g} className="rounded-full bg-background px-2.5 py-1 text-1">
-                        {g}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </Card>
-            ))}
+        {tab === "Reviews" ? (
+          <div className="px-2 pt-4">
+            {b.reviews.length ? (
+              <ReviewRail>
+                {b.reviews.map((rv) => (
+                  <ReviewCard key={rv.id} r={reviewItem(rv)} />
+                ))}
+              </ReviewRail>
+            ) : (
+              <EmptyState title="No reviews yet" body="No one has reviewed this business yet." />
+            )}
           </div>
         ) : null}
 
-        {tab === "Credits" ? (
-          <Card className="space-y-2">
-            {b.credits.map((c) => (
-              <div key={c.id} className="border-b border-border py-2 last:border-0">
-                <p className="text-1 font-semibold">{c.title}</p>
-                {c.meta ? <p className="text-1 text-muted-foreground">{c.meta}</p> : null}
-              </div>
-            ))}
-          </Card>
+        {tab === "Spaces" ? (
+          <div className="space-y-3 px-2 pt-4">
+            {b.spaces.length ? (
+              b.spaces.map((sp) => (
+                <Card key={sp.id} className="space-y-2 overflow-hidden p-0">
+                  {sp.photo ? (
+                    <img
+                      src={sp.photo}
+                      alt=""
+                      className="h-32 w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  <div className="space-y-2 p-4 pt-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-semibold">{sp.name}</p>
+                      <Price
+                        price={sp.rate}
+                        align="end"
+                        className="shrink-0"
+                        amountClassName="text-1 font-bold"
+                      />
+                    </div>
+                    {sp.detail ? <p className="text-1 text-muted-foreground">{sp.detail}</p> : null}
+                    <div className="flex flex-wrap gap-1.5">
+                      {sp.gear.map((g) => (
+                        <span key={g} className="rounded-full bg-background px-2.5 py-1 text-1">
+                          {g}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              ))
+            ) : (
+              <EmptyState
+                title="No spaces yet"
+                body="This business hasn't listed bookable spaces."
+              />
+            )}
+          </div>
         ) : null}
       </div>
+
+      <PhotoSheet
+        title={viewing?.title ?? ""}
+        photos={viewing?.photos ?? []}
+        onClose={() => setViewing(null)}
+      />
     </Screen>
   );
 }
