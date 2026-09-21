@@ -1,0 +1,7 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922130000_listing_media.sql.
+--
+-- Scope: the migration adds a public storage bucket listing-media, four storage.objects policies
+-- named "Sellers … their listing media", and a column public.marketplace_listings.photos. None of
+-- them existed at snapshot time (bucket 0 rows, policies 0 rows, column 0 rows). It writes no
+-- existing rows. Row counts: marketplace_listings 20.
