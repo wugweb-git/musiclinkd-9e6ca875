@@ -17,6 +17,7 @@ export type MessagePerson = {
   username: string | null;
   display_name: string | null;
   avatar_url: string | null;
+  headline: string | null;
 };
 
 export type ConversationSummary = {
@@ -36,7 +37,7 @@ export type Message = {
   mine: boolean;
 };
 
-const PERSON = "id, username, display_name, avatar_url";
+const PERSON = "id, username, display_name, avatar_url, headline";
 
 /** Every conversation this account is in, newest first, with the other person and the last line. */
 export const listConversations = createServerFn({ method: "GET" })

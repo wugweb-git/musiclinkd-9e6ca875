@@ -421,7 +421,13 @@ function ViewerActions({
  * Call, for a signed-in visitor, only when the owner's "Show phone number" setting lets this
  * viewer have the number — contact_phone decides that server-side. Nothing renders otherwise.
  */
-export function CallBtn({ profileId }: { profileId?: string | undefined }) {
+export function CallBtn({
+  profileId,
+  className = "h-12 w-12",
+}: {
+  profileId?: string | undefined;
+  className?: string;
+}) {
   const { signedIn } = useAuth();
   const readPhone = useServerFn(contactPhone);
   const q = useQuery({
@@ -435,7 +441,7 @@ export function CallBtn({ profileId }: { profileId?: string | undefined }) {
     <IconBtn
       label="Call"
       variant="outline"
-      className="h-12 w-12"
+      className={className}
       onClick={() => {
         window.location.href = `tel:${phone}`;
       }}
