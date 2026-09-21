@@ -1,3 +1,4 @@
+import { useAuth } from "@/hooks/use-auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -30,6 +31,9 @@ export const Route = createFileRoute("/business/$id/reviews")({
 function BusinessReviews() {
   const queryClient = useQueryClient();
   const b = businessView(Route.useLoaderData());
+  const { user } = useAuth();
+  // Only the business itself answers its reviews.
+  const owner = Boolean(b && user && user.id === b.profileId);
   const reply = useServerFn(replyToReview);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -124,11 +128,11 @@ function BusinessReviews() {
                         </Btn>
                       </div>
                     </div>
-                  ) : (
+                  ) : owner ? (
                     <Btn variant="outline" className="mt-3 w-full" onClick={() => setReplyTo(r.id)}>
                       Reply as {b.name}
                     </Btn>
-                  )}
+                  ) : null}
                 </div>
               </Card>
             );

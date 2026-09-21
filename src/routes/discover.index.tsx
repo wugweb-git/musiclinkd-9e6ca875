@@ -37,6 +37,7 @@ import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
 import { iconSize } from "@/lib/tokens";
+import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 
 export const Route = createFileRoute("/discover/")({
   head: () => ({
@@ -96,9 +97,20 @@ function Discover() {
   const [searchOpen, setSearchOpen] = useState(false);
   const { options } = useTaxonomy();
   // Recommendations used to be three screens of invented reasons (owner, 18 Sep). They are a
-  // section here instead: the people on MusicLinkd, and the ones near the viewer.
-  const myCity = people[0]?.city ?? "";
-  const nearby = myCity ? people.filter((p) => p.city === myCity) : [];
+  // section here instead: signed in, the people ranked from the viewer's own roles, genres,
+  // instruments, city, follows and saves (recommendations.functions.ts); signed out, the directory.
+  const recs = useRecommendations();
+  const suggested = recs?.people.length ? recs.people : people;
+  // Around you is the viewer's own stored city, never someone else's.
+  const myCity = recs?.city ?? "";
+  const nearby = myCity
+    ? [...suggested, ...people].filter(
+        (p, i, all) =>
+          p.city?.trim().toLowerCase() === myCity.toLowerCase() &&
+          all.findIndex((q) => q.id === p.id) === i,
+      )
+    : [];
+  const studios = rankBy(dbStudios, recs?.studios, (s) => s.id);
   return (
     <Screen>
       <header className="px-5 pb-4 pt-6">
@@ -151,14 +163,14 @@ function Discover() {
         })}
       </div>
 
-      {people.length ? (
+      {suggested.length ? (
         <section className="pb-6">
           <SectionHeader
             title="People to work with"
             action={<SectionActionLink to="/search">See All</SectionActionLink>}
           />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {people.slice(0, 8).map((p) => (
+            {suggested.slice(0, 8).map((p) => (
               <PersonCard key={p.id} person={p} roleLabels={options?.person_types} />
             ))}
           </div>
@@ -194,14 +206,14 @@ function Discover() {
         </section>
       ) : null}
 
-      {dbStudios.length ? (
+      {studios.length ? (
         <section className="pb-8">
           <SectionHeader
             title="Studios"
             action={<SectionActionLink to="/studio">See All</SectionActionLink>}
           />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {dbStudios.map((s) => (
+            {studios.map((s) => (
               <StudioCard key={s.slug} studio={s} />
             ))}
           </div>

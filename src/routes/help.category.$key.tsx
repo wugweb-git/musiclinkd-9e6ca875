@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { EmptyState, Row } from "@/components/ml/kit";
-import { contentCategories, pagesInCategory } from "@/data/cms";
+import { getHelpCentre, type HelpCentre } from "@/lib/help.functions";
 
 export const Route = createFileRoute("/help/category/$key")({
-  head: ({ params }) => {
-    const cat = contentCategories.find((c) => c.key === params.key);
+  loader: () =>
+    getHelpCentre().catch((): HelpCentre => ({ ready: false, categories: [], pages: [] })),
+  head: ({ params, loaderData }) => {
+    const cat = loaderData?.categories.find((c) => c.key === params.key);
     const title = cat ? `${cat.label} Guides | MusicLinkd` : "Topic not found | MusicLinkd";
     const description = cat?.blurb ?? "This MusicLinkd help topic is not available.";
     return {
@@ -24,8 +26,9 @@ export const Route = createFileRoute("/help/category/$key")({
 
 function CategoryPage() {
   const { key } = Route.useParams();
-  const cat = contentCategories.find((c) => c.key === key);
-  const pages = pagesInCategory(key);
+  const centre = Route.useLoaderData();
+  const cat = centre.categories.find((c) => c.key === key);
+  const pages = centre.pages.filter((p) => p.category === key);
 
   return (
     <Screen bottomNav={false}>

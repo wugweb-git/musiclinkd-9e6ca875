@@ -10,7 +10,12 @@ import {
   Trash2,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, Row, EmptyState, Dialog, StatusPill, SoonBadge } from "@/components/ml/kit";
+import { Card, Row, EmptyState, Dialog, StatusPill } from "@/components/ml/kit";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/use-auth";
+import { deleteMyBusiness } from "@/lib/business-account.functions";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
@@ -36,10 +41,37 @@ export const Route = createFileRoute("/business/$id/manage")({
 function ManageBusiness() {
   const { id } = Route.useParams();
   const b = businessView(Route.useLoaderData());
+  const { user, loading } = useAuth();
+  const queryClient = useQueryClient();
+  const remove = useServerFn(deleteMyBusiness);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
 
-  if (!b) {
+  async function onDelete() {
+    setDeleting(true);
+    try {
+      const result = await remove();
+      if (result.status === "upcoming") {
+        toast.error(
+          `${result.count} upcoming ${result.count === 1 ? "booking" : "bookings"} must be cancelled or handed over first.`,
+        );
+      } else if (result.status === "unavailable") {
+        toast.error("Deleting a business isn't available yet. Nothing was changed.");
+      } else {
+        setDeleted(true);
+        await queryClient.invalidateQueries();
+      }
+    } catch {
+      toast.error("That didn't go through. Try again.");
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
+
+  // Everything here acts on the signed-in account's own business, so only its owner sees it.
+  if (!b || (!loading && !deleted && user?.id !== b.profileId)) {
     return (
       <Screen>
         <TopBar title="Manage" back="/business" />
@@ -84,14 +116,14 @@ function ManageBusiness() {
             icon={<Pencil size={iconSize.sm} />}
             title="Details"
             subtitle="Name, about, contact, hours"
-            to="/business/new"
+            to="/profile/edit"
           />
           <Row
             icon={<Image size={iconSize.sm} />}
             title="Photos & spaces"
             subtitle={`${b.spaces.length} bookable spaces`}
-            to="/business/$id"
-            params={{ id }}
+            to="/business/availability"
+            hash="facilities"
           />
           <Row
             icon={<CalendarClock size={iconSize.sm} />}
@@ -110,7 +142,8 @@ function ManageBusiness() {
             icon={<ShieldCheck size={iconSize.sm} />}
             title="Business verification"
             subtitle={b.verified ? "Verified — renews yearly" : "Get the verified badge"}
-            right={<SoonBadge />}
+            to="/business/$id/verification"
+            params={{ id }}
           />
         </div>
 
@@ -135,13 +168,7 @@ function ManageBusiness() {
         onClose={() => setConfirmDelete(false)}
       >
         <div className="space-y-2">
-          <Btn
-            className="w-full"
-            onClick={() => {
-              setConfirmDelete(false);
-              setDeleted(true);
-            }}
-          >
+          <Btn className="w-full" loading={deleting} onClick={() => void onDelete()}>
             Yes, Delete
           </Btn>
           <Btn variant="ghost" className="w-full" onClick={() => setConfirmDelete(false)}>

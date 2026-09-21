@@ -1,31 +1,37 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
-import { MessageCircle, MoreHorizontal, UserRoundPlus, UsersRound } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { MoreHorizontal, Pencil, SendHorizontal, UserRoundPlus, UsersRound } from "lucide-react";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, Sheet } from "@/components/ml/ui";
+import { Dialog, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
 import {
   addCollabMember,
   answerCollabInvite,
+  deleteCollab,
   getCollab,
+  listCollabMessages,
   listProjectTypes,
   leaveCollab,
   removeMember,
+  sendCollabMessage,
   setCollabStatus,
   setCollabVisibility,
   setMemberRole,
   transferCollab,
+  updateCollab,
+  type Collab,
   type CollabStatus,
 } from "@/lib/collabs.functions";
+import { searchPeople } from "@/lib/profile-groups.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
 /*
- * One collab: what it is, who is in it, and where to talk. A band shows the same room; only its
+ * One collab: what it is, who is in it, and where to talk (its own thread, collab_messages). A band shows the same room; only its
  * kind and its members differ. Everything a tracker would hold — milestones, files, agreements —
  * the people in it keep between themselves.
  */
@@ -62,7 +68,11 @@ function CollabRoom() {
   const handOver = useServerFn(transferCollab);
   const changeVisibility = useServerFn(setCollabVisibility);
   const answer = useServerFn(answerCollabInvite);
+  const remove = useServerFn(deleteCollab);
+  const find = useServerFn(searchPeople);
   const [username, setUsername] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const q = useQuery({
     queryKey: ["collab", id],
@@ -94,6 +104,18 @@ function CollabRoom() {
     ? (types.data?.find((t) => t.slug === c.project_type)?.label ?? c.project_type)
     : "";
 
+  // Asking someone in: type a name and pick them, or type their exact username.
+  const term = username.trim().replace(/^@/, "");
+  const candidates = useQuery({
+    queryKey: ["collab-invite-search", term],
+    queryFn: () => find({ data: { q: term, limit: 8 } }),
+    enabled: canManage && term.length >= 2,
+  });
+  const inCollab = new Set(c?.members.map((m) => m.profile_id) ?? []);
+  const suggestions = (candidates.data?.people ?? [])
+    .filter((p) => !inCollab.has(p.id) && p.id !== myId)
+    .slice(0, 5);
+
   // Being asked in is a yes or a no, and nothing else happens until one of them.
   const decide = useMutation({
     mutationFn: (a: "join" | "no") => answer({ data: { id, answer: a } }),
@@ -109,7 +131,7 @@ function CollabRoom() {
   });
 
   const invite = useMutation({
-    mutationFn: () => add({ data: { id, username: username.trim().replace(/^@/, "") } }),
+    mutationFn: (who: string) => add({ data: { id, username: who } }),
     onSuccess: () => {
       setUsername("");
       void queryClient.invalidateQueries({ queryKey: ["collab", id] });
@@ -158,6 +180,15 @@ function CollabRoom() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
 
+  const destroy = useMutation({
+    mutationFn: () => remove({ data: { id } }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["collabs", "mine"] });
+      void navigate({ to: "/collab" });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+
   if (signedIn && q.isLoading) {
     return (
       <Screen>
@@ -199,8 +230,16 @@ function CollabRoom() {
           c.type === "band" ? "Band" : kind || "Project",
           c.visibility === "private" ? "Private" : "Public",
           c.city ?? "",
+          c.ends_on ? `Wraps up ${formatDay(c.ends_on)}` : "",
         )}
         back="/collab"
+        right={
+          canManage ? (
+            <IconBtn label="Edit" onClick={() => setEditing(true)} className="h-10 w-10">
+              <Pencil size={iconSize.sm} aria-hidden />
+            </IconBtn>
+          ) : undefined
+        }
       />
 
       <div className="space-y-6 px-5 pt-4 pb-8">
@@ -319,7 +358,7 @@ function CollabRoom() {
               className="flex gap-2 pt-1"
               onSubmit={(e) => {
                 e.preventDefault();
-                if (username.trim() && !invite.isPending) invite.mutate();
+                if (term && !invite.isPending) invite.mutate(term);
               }}
             >
               <label className="sr-only" htmlFor="add-member">
@@ -343,6 +382,42 @@ function CollabRoom() {
               </Btn>
             </form>
           ) : null}
+          {canManage && suggestions.length ? (
+            <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+              {suggestions.map((p) => (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    className="state-layer flex w-full items-center gap-3 px-4 py-3 text-left"
+                    disabled={invite.isPending}
+                    onClick={() => invite.mutate(p.username)}
+                  >
+                    {p.avatarUrl ? (
+                      <img
+                        src={p.avatarUrl}
+                        alt=""
+                        className="h-9 w-9 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-background"
+                      >
+                        <UsersRound size={iconSize.sm} />
+                      </span>
+                    )}
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">{p.name}</span>
+                      <span className="block truncate text-1 text-muted-foreground">
+                        {joinParts(`@${p.username}`, p.city ?? "")}
+                      </span>
+                    </span>
+                    <UserRoundPlus size={iconSize.sm} aria-hidden className="shrink-0" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
           {canManage ? (
             <p className="text-1 text-muted-foreground">
               They get asked, and are in once they say yes.
@@ -350,12 +425,12 @@ function CollabRoom() {
           ) : null}
         </section>
 
-        <section className="space-y-2">
-          <h2 className="text-sm">Talk</h2>
-          <BtnLink to="/messages" variant="outline" className="w-full">
-            <MessageCircle size={iconSize.sm} className="mr-1.5" aria-hidden /> Open messages
-          </BtnLink>
-        </section>
+        {myMembership?.status === "active" ? (
+          <section className="space-y-2">
+            <h2 className="text-sm">Talk</h2>
+            <CollabThread id={id} />
+          </section>
+        ) : null}
 
         {canManage ? (
           <section className="space-y-2">
@@ -397,8 +472,303 @@ function CollabRoom() {
             Leave this collaboration
           </Btn>
         ) : null}
+
+        {/* Only a project is ended here, and only by its owner; a band has its own screens. */}
+        {myMembership?.role === "owner" &&
+        myMembership.status === "active" &&
+        c.type === "project" ? (
+          <Btn
+            variant="ghost"
+            className="w-full text-destructive"
+            onClick={() => setConfirmDelete(true)}
+          >
+            Delete this project
+          </Btn>
+        ) : null}
       </div>
+
+      {canManage ? (
+        <EditCollabSheet
+          open={editing}
+          collab={c}
+          types={types.data ?? []}
+          onClose={() => setEditing(false)}
+        />
+      ) : null}
+
+      <Dialog
+        open={confirmDelete}
+        title={`Delete ${c.name}?`}
+        body="The project, who is in it and what was said in it go for good."
+        onClose={() => setConfirmDelete(false)}
+      >
+        <Btn className="w-full" loading={destroy.isPending} onClick={() => destroy.mutate()}>
+          Delete
+        </Btn>
+        <Btn variant="outline" className="w-full" onClick={() => setConfirmDelete(false)}>
+          Keep it
+        </Btn>
+      </Dialog>
     </Screen>
+  );
+}
+
+/** "12 Dec 2026" from a yyyy-mm-dd date, read as a calendar day. */
+function formatDay(day: string) {
+  const [y = 0, m = 1, d = 1] = day.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+/** Change what the collab is. The same fields as starting one, plus when it wraps up. */
+function EditCollabSheet({
+  open,
+  collab,
+  types,
+  onClose,
+}: {
+  open: boolean;
+  collab: Collab;
+  types: { slug: string; label: string }[];
+  onClose: () => void;
+}) {
+  const queryClient = useQueryClient();
+  const save = useServerFn(updateCollab);
+  const [name, setName] = useState(collab.name);
+  const [about, setAbout] = useState(collab.bio ?? "");
+  const [city, setCity] = useState(collab.city ?? "");
+  const [kind, setKind] = useState(collab.project_type ?? "");
+  const [endsOn, setEndsOn] = useState(collab.ends_on ?? "");
+
+  // Opening it again starts from what is saved, not from an earlier unsaved draft.
+  useEffect(() => {
+    if (!open) return;
+    setName(collab.name);
+    setAbout(collab.bio ?? "");
+    setCity(collab.city ?? "");
+    setKind(collab.project_type ?? "");
+    setEndsOn(collab.ends_on ?? "");
+  }, [open, collab]);
+
+  const commit = useMutation({
+    mutationFn: () =>
+      save({
+        data: {
+          id: collab.id,
+          name: name.trim(),
+          bio: about,
+          city,
+          projectType: kind,
+          endsOn,
+        },
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["collab", collab.id] });
+      void queryClient.invalidateQueries({ queryKey: ["collabs", "mine"] });
+      onClose();
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+
+  const field =
+    "mt-1.5 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none";
+  return (
+    <Sheet open={open} onClose={onClose} title="Edit">
+      <form
+        className="space-y-5"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (name.trim().length >= 2 && !commit.isPending) commit.mutate();
+        }}
+      >
+        <div>
+          <label htmlFor="edit-collab-name" className="block text-1 font-semibold">
+            Name
+          </label>
+          <input
+            id="edit-collab-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={80}
+            className={field}
+          />
+        </div>
+
+        {collab.type === "project" ? (
+          <div>
+            <p className="text-1 font-semibold">
+              What kind <span className="font-normal text-muted-foreground">· optional</span>
+            </p>
+            <div className="mt-1.5 flex flex-wrap gap-2">
+              {types.map((t) => (
+                <Chip
+                  key={t.slug}
+                  active={kind === t.slug}
+                  onClick={() => setKind(kind === t.slug ? "" : t.slug)}
+                >
+                  {t.label}
+                </Chip>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div>
+          <label htmlFor="edit-collab-about" className="block text-1 font-semibold">
+            What it is
+          </label>
+          <textarea
+            id="edit-collab-about"
+            rows={3}
+            value={about}
+            onChange={(e) => setAbout(e.target.value)}
+            maxLength={2000}
+            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="edit-collab-city" className="block text-1 font-semibold">
+            Where <span className="font-normal text-muted-foreground">· optional</span>
+          </label>
+          <input
+            id="edit-collab-city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            maxLength={80}
+            className={field}
+          />
+        </div>
+
+        {collab.type === "project" ? (
+          <div>
+            <label htmlFor="edit-collab-ends" className="block text-1 font-semibold">
+              Wraps up <span className="font-normal text-muted-foreground">· optional</span>
+            </label>
+            <input
+              id="edit-collab-ends"
+              type="date"
+              value={endsOn}
+              onChange={(e) => setEndsOn(e.target.value)}
+              className={field}
+            />
+          </div>
+        ) : null}
+
+        <Btn
+          type="submit"
+          className="w-full"
+          disabled={name.trim().length < 2}
+          loading={commit.isPending}
+        >
+          Save
+        </Btn>
+      </form>
+    </Sheet>
+  );
+}
+
+/** The room's own thread: what the people in it said, and a line to add to it. */
+function CollabThread({ id }: { id: string }) {
+  const queryClient = useQueryClient();
+  const read = useServerFn(listCollabMessages);
+  const send = useServerFn(sendCollabMessage);
+  const [draft, setDraft] = useState("");
+  const end = useRef<HTMLDivElement>(null);
+
+  const thread = useQuery({
+    queryKey: ["collab-messages", id],
+    queryFn: () => read({ data: { id } }),
+    refetchInterval: 15_000,
+  });
+  const messages = thread.data?.messages ?? [];
+
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: "nearest" });
+  }, [messages.length]);
+
+  const post = useMutation({
+    mutationFn: (body: string) => send({ data: { id, body } }),
+    onSuccess: () => {
+      setDraft("");
+      void queryClient.invalidateQueries({ queryKey: ["collab-messages", id] });
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't send. Try again."),
+  });
+
+  if (thread.isLoading) return <Loading rows={2} />;
+  if (thread.data && !thread.data.ready) {
+    return (
+      <p className="rounded-lg bg-subtle p-4 text-1 text-muted-foreground">
+        This thread is not open yet.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {messages.length === 0 ? (
+        <p className="rounded-lg bg-subtle p-4 text-1 text-muted-foreground">
+          Nothing said here yet. Everyone in the project sees what you write.
+        </p>
+      ) : (
+        <div className="max-h-96 space-y-3 overflow-y-auto rounded-lg bg-subtle p-4 no-scrollbar">
+          {messages.map((m) => (
+            <div key={m.id} className={m.mine ? "flex justify-end" : "flex justify-start"}>
+              <div className="max-w-[80%]">
+                {m.mine ? null : (
+                  <p className="mb-1 px-1 text-1 text-muted-foreground">
+                    {m.sender?.display_name ?? m.sender?.username ?? "Someone"}
+                  </p>
+                )}
+                <p
+                  className={`whitespace-pre-wrap rounded-3xl px-4 py-2.5 text-sm ${
+                    m.mine ? "bg-ink text-background" : "bg-background text-foreground"
+                  }`}
+                >
+                  {m.body}
+                </p>
+              </div>
+            </div>
+          ))}
+          <div ref={end} />
+        </div>
+      )}
+
+      <form
+        className="flex items-end gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const body = draft.trim();
+          if (body && !post.isPending) post.mutate(body);
+        }}
+      >
+        <label htmlFor="collab-message" className="sr-only">
+          Message
+        </label>
+        <textarea
+          id="collab-message"
+          rows={1}
+          value={draft}
+          maxLength={4000}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Write to everyone in it"
+          className="min-h-control w-full resize-none rounded-3xl border border-border bg-card px-4 py-3 text-sm outline-none"
+        />
+        {/* A plain button, because this one submits the form. */}
+        <button
+          type="submit"
+          aria-label="Send"
+          disabled={post.isPending || !draft.trim()}
+          className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink text-background transition-transform duration-200 ease-standard active:scale-97 disabled:opacity-50"
+        >
+          <SendHorizontal size={iconSize.md} aria-hidden />
+        </button>
+      </form>
+    </div>
   );
 }
 

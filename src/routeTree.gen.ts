@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as BandRouteImport } from './routes/band'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as MeRouteImport } from './routes/me'
@@ -59,6 +61,7 @@ import { Route as IdentityPrintRouteImport } from './routes/identity.print'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
 import { Route as IdentityScanRouteImport } from './routes/identity.scan'
 import { Route as IdentitySettingsRouteImport } from './routes/identity.settings'
+import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
@@ -185,9 +188,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BandRoute = BandRouteImport.update({
   id: '/band',
   path: '/band',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedRoute = FeedRouteImport.update({
@@ -428,6 +441,11 @@ const IdentityScanRoute = IdentityScanRouteImport.update({
 const IdentitySettingsRoute = IdentitySettingsRouteImport.update({
   id: '/identity/settings',
   path: '/identity/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalCookiesRoute = LegalCookiesRouteImport.update({
+  id: '/legal/cookies',
+  path: '/legal/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
@@ -1043,7 +1061,9 @@ const OpportunitiesIdApplicantsAidRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/band': typeof BandRoute
+  '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/home': typeof HomeRoute
   '/me': typeof MeRoute
@@ -1084,6 +1104,7 @@ export interface FileRoutesByFullPath {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/cookies': typeof LegalCookiesRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
@@ -1215,7 +1236,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/band': typeof BandRoute
+  '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/home': typeof HomeRoute
   '/me': typeof MeRoute
@@ -1255,6 +1278,7 @@ export interface FileRoutesByTo {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/cookies': typeof LegalCookiesRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
@@ -1387,7 +1411,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/band': typeof BandRoute
+  '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/home': typeof HomeRoute
   '/me': typeof MeRoute
@@ -1428,6 +1454,7 @@ export interface FileRoutesById {
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
   '/identity/settings': typeof IdentitySettingsRoute
+  '/legal/cookies': typeof LegalCookiesRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
@@ -1561,7 +1588,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/band'
+    | '/contact'
     | '/feed'
     | '/home'
     | '/me'
@@ -1602,6 +1631,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/cookies'
     | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
@@ -1733,7 +1763,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/band'
+    | '/contact'
     | '/feed'
     | '/home'
     | '/me'
@@ -1773,6 +1805,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/cookies'
     | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
@@ -1904,7 +1937,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/band'
+    | '/contact'
     | '/feed'
     | '/home'
     | '/me'
@@ -1945,6 +1980,7 @@ export interface FileRouteTypes {
     | '/identity/qr'
     | '/identity/scan'
     | '/identity/settings'
+    | '/legal/cookies'
     | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
@@ -2077,7 +2113,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   BandRoute: typeof BandRoute
+  ContactRoute: typeof ContactRoute
   FeedRoute: typeof FeedRoute
   HomeRoute: typeof HomeRoute
   MeRoute: typeof MeRoute
@@ -2118,6 +2156,7 @@ export interface RootRouteChildren {
   IdentityQrRoute: typeof IdentityQrRoute
   IdentityScanRoute: typeof IdentityScanRoute
   IdentitySettingsRoute: typeof IdentitySettingsRoute
+  LegalCookiesRoute: typeof LegalCookiesRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalTermsRoute: typeof LegalTermsRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
@@ -2250,11 +2289,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/band': {
       id: '/band'
       path: '/band'
       fullPath: '/band'
       preLoaderRoute: typeof BandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feed': {
@@ -2591,6 +2644,13 @@ declare module '@tanstack/react-router' {
       path: '/identity/settings'
       fullPath: '/identity/settings'
       preLoaderRoute: typeof IdentitySettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/cookies': {
+      id: '/legal/cookies'
+      path: '/legal/cookies'
+      fullPath: '/legal/cookies'
+      preLoaderRoute: typeof LegalCookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal/privacy': {
@@ -3471,7 +3531,9 @@ const SettingsSecurityRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   BandRoute: BandRoute,
+  ContactRoute: ContactRoute,
   FeedRoute: FeedRoute,
   HomeRoute: HomeRoute,
   MeRoute: MeRoute,
@@ -3512,6 +3574,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdentityQrRoute: IdentityQrRoute,
   IdentityScanRoute: IdentityScanRoute,
   IdentitySettingsRoute: IdentitySettingsRoute,
+  LegalCookiesRoute: LegalCookiesRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalTermsRoute: LegalTermsRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,

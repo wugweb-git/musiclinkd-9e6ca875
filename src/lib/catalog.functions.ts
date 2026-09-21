@@ -182,6 +182,16 @@ async function withFallback(run: (select: string) => PromiseLike<Result>, select
   return result;
 }
 
+/**
+ * Public studio reads skip archived studios (a deleted business archives its studio; see
+ * 20260921200000_partials_complete.sql). Before that column exists the read runs unfiltered.
+ */
+async function liveOnly(run: (live: boolean) => PromiseLike<Result>) {
+  const result = await run(true);
+  if (!result.error || !result.error.message.includes("archived_at")) return result;
+  return run(false);
+}
+
 type Sorted = { sort_order?: number };
 const bySort = (a: Sorted, b: Sorted) => (a.sort_order ?? 0) - (b.sort_order ?? 0);
 
@@ -204,10 +214,13 @@ export const listStudios = createServerFn({ method: "GET" }).handler(async () =>
   const client = await anonClient();
   const { data, error } = await withFallback(
     (select) =>
-      client.from("studios").select(select).order("rating", {
-        ascending: false,
-        // A studio with no reviews yet goes after the rated ones, not before them.
-        nullsFirst: false,
+      liveOnly((live) => {
+        const query = client.from("studios").select(select);
+        return (live ? query.is("archived_at" as never, null) : query).order("rating", {
+          ascending: false,
+          // A studio with no reviews yet goes after the rated ones, not before them.
+          nullsFirst: false,
+        });
       }),
     [STUDIO, STUDIO_BEFORE],
   );
@@ -220,7 +233,11 @@ export const getStudio = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const client = await anonClient();
     const { data: row, error } = await withFallback(
-      (select) => client.from("studios").select(select).eq("slug", data.slug).maybeSingle(),
+      (select) =>
+        liveOnly((live) => {
+          const query = client.from("studios").select(select).eq("slug", data.slug);
+          return (live ? query.is("archived_at" as never, null) : query).maybeSingle();
+        }),
       [STUDIO, STUDIO_BEFORE],
     );
     if (error) throw new Error(error.message);

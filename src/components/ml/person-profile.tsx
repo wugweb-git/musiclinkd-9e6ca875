@@ -24,6 +24,7 @@ import {
   Music,
   Mic2,
   Pencil,
+  Phone,
   Play,
   Settings,
   QrCode,
@@ -46,7 +47,6 @@ import {
   CompletionCard,
   ExperienceCard,
   FeaturedCard,
-  GalleryGrid,
   NoCover,
   MarketEntryCard,
   MoreSheet,
@@ -69,12 +69,14 @@ import {
   isOpenForWork,
 } from "./profile";
 import { HireModal } from "./hire-modal";
+import { GalleryEditor, GalleryView } from "./gallery";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
   answerConnection,
   connectionWith,
+  contactPhone,
   removeConnection,
   requestConnection,
   setFollowing as setFollowingFn,
@@ -82,6 +84,7 @@ import {
 } from "@/lib/connections.functions";
 import { conversationWith } from "@/lib/messages.functions";
 import { BottomCta } from "./marketing";
+import { PhotoSheet } from "./booking";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
@@ -112,11 +115,17 @@ export function PersonProfileExperience({
   completion,
   insights,
   onPickImage,
+  onGalleryChange,
 }: {
   p: PersonProfile;
   owner?: boolean;
   /** Owner only: uploads a chosen photo or cover and saves it to the profile. */
   onPickImage?: ((kind: "avatar" | "cover", file: File) => Promise<void>) | undefined;
+  /**
+   * Signed-in owner only: the gallery becomes editable, and this runs after each change so the
+   * profile can reload it.
+   */
+  onGalleryChange?: (() => void) | undefined;
   /** Owner only: what the profile still needs. Hidden when nothing is missing. */
   completion?: Completion | undefined;
   /** Owner only: insight figures. Left out for a real profile, so no sample numbers show. */
@@ -178,6 +187,7 @@ export function PersonProfileExperience({
             playingId={playingId}
             onToggleTrack={toggleTrack}
             onHire={() => setHireOpen(true)}
+            onGalleryChange={onGalleryChange}
           />
         ) : null}
         {tab === "Overview" && !owner ? (
@@ -395,6 +405,7 @@ function ViewerActions({
           <BriefcaseBusiness size={iconSize.md} aria-hidden />
         </IconBtn>
       ) : null}
+      <CallBtn profileId={profileId} />
       <IconBtn
         label={followOn ? "Following" : "Follow"}
         variant={followOn ? "ghost" : "outline"}
@@ -406,6 +417,34 @@ function ViewerActions({
         <StateIcon outline={Plus} solid="check" active={followOn} size={iconSize.md} move="stamp" />
       </IconBtn>
     </div>
+  );
+}
+
+/**
+ * Call, for a signed-in visitor, only when the owner's "Show phone number" setting lets this
+ * viewer have the number — contact_phone decides that server-side. Nothing renders otherwise.
+ */
+export function CallBtn({ profileId }: { profileId?: string | undefined }) {
+  const { signedIn } = useAuth();
+  const readPhone = useServerFn(contactPhone);
+  const q = useQuery({
+    queryKey: ["contact-phone", profileId],
+    queryFn: () => readPhone({ data: { profileId: profileId ?? "" } }),
+    enabled: Boolean(signedIn && profileId),
+  });
+  const phone = q.data?.phone;
+  if (!phone) return null;
+  return (
+    <IconBtn
+      label="Call"
+      variant="outline"
+      className="h-12 w-12"
+      onClick={() => {
+        window.location.href = `tel:${phone}`;
+      }}
+    >
+      <Phone size={iconSize.md} aria-hidden />
+    </IconBtn>
   );
 }
 
@@ -648,13 +687,21 @@ function OwnerStack({
   playingId,
   onToggleTrack,
   onHire,
+  onGalleryChange,
 }: {
   p: PersonProfile;
   playingId: string | null;
   onToggleTrack: (id: string) => void;
   onHire: () => void;
+  onGalleryChange?: (() => void) | undefined;
 }) {
   const edit = "/profile/edit" as const;
+  // The signed-in owner manages the gallery here; the demo profile shown signed out only shows it.
+  const gallery = onGalleryChange ? (
+    <GalleryEditor title="Gallery" onChange={onGalleryChange} />
+  ) : p.gallery.length ? (
+    <GalleryView images={p.gallery} title="Gallery" />
+  ) : null;
   const bio = p.longBio || p.shortBio;
   return (
     <>
@@ -741,14 +788,17 @@ function OwnerStack({
                 ))}
               </div>
             ) : null}
-            {p.gallery.length ? <GalleryGrid images={p.gallery} /> : null}
+            {gallery}
           </div>
         ) : (
-          <ProfileEmpty
-            title="No work yet"
-            body="Tracks, videos and credits are what turn a profile view into an enquiry."
-            cta={addWork("Add work", "track")}
-          />
+          <div className="space-y-4">
+            <ProfileEmpty
+              title="No work yet"
+              body="Tracks, videos and credits are what turn a profile view into an enquiry."
+              cta={addWork("Add work", "track")}
+            />
+            {gallery}
+          </div>
         )}
       </StackSection>
 
@@ -860,6 +910,7 @@ function Portfolio({
   owner: boolean;
 }) {
   const [layout, setLayout] = useState<"grid" | "rows">("grid");
+  const [viewing, setViewing] = useState(false);
   return (
     <>
       <ProfileSection
@@ -921,22 +972,29 @@ function Portfolio({
           )}
         </div>
       </ProfileSection>
-      {/* Gallery shows only for profiles that already have images (owner, 15 Sep); there is no upload. */}
+      {/* Visitors see a gallery only when it has photos; the owner adds them on their own profile. */}
       {p.gallery.length ? (
         <ProfileSection title="Gallery">
           {layout === "grid" ? (
-            <GalleryGrid images={p.gallery} />
+            <GalleryView images={p.gallery} title="Gallery" />
           ) : (
             <div className="space-y-3">
-              {p.gallery.map((image) => (
-                <img
+              {p.gallery.map((image, i) => (
+                <button
                   key={image}
-                  src={image}
-                  alt=""
-                  loading="lazy"
-                  className="h-56 w-full rounded-lg object-cover"
-                />
+                  type="button"
+                  onClick={() => setViewing(true)}
+                  aria-label={`View photo ${i + 1} of ${p.gallery.length}`}
+                  className="block w-full overflow-hidden rounded-lg"
+                >
+                  <img src={image} alt="" loading="lazy" className="h-56 w-full object-cover" />
+                </button>
               ))}
+              <PhotoSheet
+                title="Gallery"
+                photos={viewing ? p.gallery : []}
+                onClose={() => setViewing(false)}
+              />
             </div>
           )}
         </ProfileSection>

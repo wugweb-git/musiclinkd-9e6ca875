@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ChartNoAxesColumn, Plus, Search, X } from "lucide-react";
-import { Btn, IconBtn, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
+import { Plus, Search, X } from "lucide-react";
+import { Btn, IconBtn, Screen, TopBar } from "@/components/ml/ui";
 import { Dialog } from "@/components/ml/kit";
 import { toast } from "sonner";
 import {
@@ -13,12 +13,7 @@ import {
   WorkTypeSheet,
 } from "@/components/ml/portfolio";
 import { useEffect, useRef, useState } from "react";
-import {
-  demoPortfolio,
-  FEATURED_LIMIT,
-  roleSuggestions,
-  type PortfolioItem,
-} from "@/data/portfolio";
+import { FEATURED_LIMIT, roleSuggestions, type PortfolioItem } from "@/data/portfolio";
 import {
   deletePortfolioItem,
   listMyPortfolio,
@@ -65,10 +60,11 @@ function PortfolioOverview() {
     enabled: signedIn,
   });
 
-  // The list is the editor: moving and featuring happen here, on the work itself.
+  // The list is the editor: moving and featuring happen here, on the work itself. Only the
+  // account's own stored works; signed out there are none.
   const [items, setItems] = useState<PortfolioItem[]>([]);
   useEffect(() => {
-    setItems(signedIn ? (q.data ?? []) : demoPortfolio);
+    setItems(signedIn ? (q.data ?? []) : []);
   }, [q.data, signedIn]);
 
   const published = items.filter((i) => i.published);
@@ -92,7 +88,7 @@ function PortfolioOverview() {
       }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["portfolio", "mine"] }),
     onError: (e) => {
-      setItems(signedIn ? (q.data ?? []) : demoPortfolio);
+      setItems(signedIn ? (q.data ?? []) : []);
       toast.error(e instanceof Error ? e.message : "That didn't save. Try again.");
     },
   });
@@ -111,6 +107,16 @@ function PortfolioOverview() {
       return;
     }
     apply(items.map((i) => (i.id === id ? { ...i, featured: !i.featured } : i)));
+  }
+
+  /** One place up or down the whole list; the new order is what the profile shows. */
+  function move(id: string, by: -1 | 1) {
+    const from = items.findIndex((i) => i.id === id);
+    const to = from + by;
+    if (from < 0 || to < 0 || to >= items.length) return;
+    const next = [...items];
+    [next[from], next[to]] = [next[to]!, next[from]!];
+    apply(next);
   }
 
   const remove = useMutation({
@@ -138,7 +144,7 @@ function PortfolioOverview() {
     },
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["portfolio", "mine"] }),
     onError: (e) => {
-      setItems(signedIn ? (q.data ?? []) : demoPortfolio);
+      setItems(signedIn ? (q.data ?? []) : []);
       toast.error(e instanceof Error ? e.message : "That didn't save. Try again.");
     },
   });
@@ -170,9 +176,7 @@ function PortfolioOverview() {
                 <Search size={iconSize.md} aria-hidden />
               )}
             </IconBtn>
-            <IconBtnLink label="Performance" to="/portfolio/analytics" variant="outline">
-              <ChartNoAxesColumn size={iconSize.md} aria-hidden />
-            </IconBtnLink>
+            {/* Performance (/portfolio/analytics) is unlinked: analytics is GA's job, later (owner, 21 Sep 2026). */}
             <IconBtn label="Add work" variant="ink" onClick={() => setAdding(true)}>
               <Plus size={iconSize.md} aria-hidden />
             </IconBtn>
@@ -252,6 +256,11 @@ function PortfolioOverview() {
                       onDelete: () => setToDelete(item),
                       canFeature: featured.length < FEATURED_LIMIT,
                       busy: save.isPending || publishToggle.isPending,
+                      // Order is the whole list's, so moving waits for an unfiltered view.
+                      onMoveUp:
+                        !t && items[0]?.id !== item.id ? () => move(item.id, -1) : undefined,
+                      onMoveDown:
+                        !t && items.at(-1)?.id !== item.id ? () => move(item.id, 1) : undefined,
                     },
                   }
                 : {})}

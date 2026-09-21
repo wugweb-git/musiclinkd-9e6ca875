@@ -1,11 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Pencil, Plus, Share2, Trash2 } from "lucide-react";
 import { Btn, BtnLink, IconBtn, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
 import {
-  analyticsFor,
   AudioPlayer,
   CreditRow,
   PortfolioSkeleton,
@@ -15,10 +15,12 @@ import {
   WorkAnalytics,
   WorkTypeIcon,
 } from "@/components/ml/portfolio";
-import { demoPortfolio, workType, type PortfolioItem } from "@/data/portfolio";
+import { workType, type PortfolioItem } from "@/data/portfolio";
+import { Dialog } from "@/components/ml/kit";
 import {
   deletePortfolioItem,
   getMyPortfolioItem,
+  getPublicPortfolioItem,
   myPortfolioEvents,
   myPortfolioPlays,
 } from "@/lib/portfolio.functions";
@@ -59,41 +61,46 @@ function WorkDetail() {
   const navigate = useNavigate();
   const { signedIn, loading } = useAuth();
   const fetchItem = useServerFn(getMyPortfolioItem);
+  const fetchPublic = useServerFn(getPublicPortfolioItem);
   const remove = useServerFn(deletePortfolioItem);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
-  // Signed in, the work is the stored row only; the demo works stand in for signed-out viewers.
-  const demo = !loading && !signedIn ? (demoPortfolio.find((d) => d.id === id) ?? null) : null;
+  // The owner's own row (drafts too); for anybody else holding the link, the published work.
   const q = useQuery({
-    queryKey: ["portfolio", "item", id],
-    queryFn: () => fetchItem({ data: { id } }) as Promise<PortfolioItem | null>,
-    enabled: signedIn,
+    queryKey: ["portfolio", "item", id, signedIn],
+    queryFn: async () => {
+      const mine = signedIn ? ((await fetchItem({ data: { id } })) as PortfolioItem | null) : null;
+      if (mine) return { item: mine, own: true };
+      const shared = (await fetchPublic({ data: { id } })) as PortfolioItem | null;
+      return shared ? { item: shared, own: false } : null;
+    },
+    enabled: !loading,
   });
 
-  const item = demo ?? q.data ?? null;
+  const item = q.data?.item ?? null;
+  const own = q.data?.own ?? false;
 
-  // Plays, views, shares, saves and clicks are all counted in the database.
+  // Plays, views, shares, saves and clicks are all counted in the database; only the owner sees them.
   const fetchPlays = useServerFn(myPortfolioPlays);
   const plays = useQuery({
     queryKey: ["portfolio", "plays"],
     queryFn: () => fetchPlays(),
-    enabled: signedIn,
+    enabled: own,
   });
   const fetchEvents = useServerFn(myPortfolioEvents);
   const events = useQuery({
     queryKey: ["portfolio", "events", id],
     queryFn: () => fetchEvents({ data: { id } }),
-    enabled: signedIn && !demo,
+    enabled: own,
   });
-  const figures = demo
-    ? analyticsFor(demo.id)
-    : {
-        views: events.data?.views ?? null,
-        plays: plays.data?.[id] ?? null,
-        shares: events.data?.shares ?? null,
-        saves: events.data?.saves ?? null,
-        profileClicks: events.data?.profileClicks ?? null,
-        linkClicks: events.data?.linkClicks ?? null,
-      };
+  const figures = {
+    views: events.data?.views ?? null,
+    plays: plays.data?.[id] ?? null,
+    shares: events.data?.shares ?? null,
+    saves: events.data?.saves ?? null,
+    profileClicks: events.data?.profileClicks ?? null,
+    linkClicks: events.data?.linkClicks ?? null,
+  };
 
   async function onDelete() {
     try {
@@ -124,9 +131,9 @@ function WorkDetail() {
     <Screen bottomNav={false} className="pb-32">
       <TopBar title={onboarding ? "Your first work" : "Work"} back="/portfolio" />
       <main className="px-5 pt-4">
-        {signedIn && !demo && q.isLoading ? <PortfolioSkeleton /> : null}
+        {loading || q.isLoading ? <PortfolioSkeleton /> : null}
 
-        {signedIn && q.isError ? (
+        {q.isError ? (
           <StateCard
             tone="error"
             title="We couldn't load this work"
@@ -135,7 +142,7 @@ function WorkDetail() {
           />
         ) : null}
 
-        {!loading && !q.isLoading && !item ? (
+        {!loading && !q.isLoading && !q.isError && !item ? (
           <StateCard
             title="This work is no longer available"
             body="It may have been deleted, archived, or you don't have permission to view it."
@@ -197,16 +204,18 @@ function WorkDetail() {
               </section>
             ) : null}
 
-            <section className="mt-6">
-              <h2 className="text-2">Performance</h2>
-              <div className="mt-3">
-                <WorkAnalytics figures={figures} />
-              </div>
-            </section>
+            {own ? (
+              <section className="mt-6">
+                <h2 className="text-2">Performance</h2>
+                <div className="mt-3">
+                  <WorkAnalytics figures={figures} />
+                </div>
+              </section>
+            ) : null}
 
             {/* Icon-only actions: each label is the button's accessible name and tooltip. */}
             <div className="mt-6 flex items-center gap-2">
-              {demo ? null : (
+              {own ? (
                 <IconBtnLink
                   to="/portfolio/$id/edit"
                   params={{ id }}
@@ -216,32 +225,48 @@ function WorkDetail() {
                 >
                   <Pencil size={iconSize.md} aria-hidden />
                 </IconBtnLink>
-              )}
+              ) : null}
               <IconBtn label="Share Work" variant="outline" className="h-11 w-11" onClick={share}>
                 <Share2 size={iconSize.md} aria-hidden />
               </IconBtn>
-              <IconBtnLink
-                to="/portfolio/new"
-                label="Add Another Work"
-                variant="outline"
-                className="h-11 w-11"
-              >
-                <Plus size={iconSize.md} aria-hidden />
-              </IconBtnLink>
-              {demo ? null : (
+              {own ? (
+                <IconBtnLink
+                  to="/portfolio/new"
+                  label="Add Another Work"
+                  variant="outline"
+                  className="h-11 w-11"
+                >
+                  <Plus size={iconSize.md} aria-hidden />
+                </IconBtnLink>
+              ) : null}
+              {own ? (
                 <IconBtn
                   label="Delete This Work"
                   variant="outline"
                   className="ml-auto h-11 w-11 text-destructive"
-                  onClick={onDelete}
+                  onClick={() => setConfirmDelete(true)}
                 >
                   <Trash2 size={iconSize.md} aria-hidden />
                 </IconBtn>
-              )}
+              ) : null}
             </div>
           </>
         ) : null}
       </main>
+
+      <Dialog
+        open={confirmDelete}
+        title="Delete this work?"
+        body={
+          item ? `"${item.title}" comes off your portfolio for good. This can't be undone.` : ""
+        }
+        onClose={() => setConfirmDelete(false)}
+      >
+        <Btn onClick={() => void onDelete()}>Delete</Btn>
+        <Btn variant="ghost" onClick={() => setConfirmDelete(false)}>
+          Keep It
+        </Btn>
+      </Dialog>
 
       {/* New user: the first work is published; the flow carries on to Review profile. */}
       {onboarding && item?.published ? (

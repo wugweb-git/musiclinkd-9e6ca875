@@ -5,6 +5,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, Sheet } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented, StatusPill } from "@/components/ml/kit";
+import { PhotoSheet } from "@/components/ml/booking";
+import { GalleryEditor } from "@/components/ml/gallery";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import {
   deletePortfolioItem,
@@ -55,6 +57,7 @@ function BusinessPortfolio() {
   const queryClient = useQueryClient();
   const owner = Boolean(b && user && user.id === b.profileId);
   const [draft, setDraft] = useState<CreditDraft | null>(null);
+  const [viewing, setViewing] = useState(false);
 
   const fetchMine = useServerFn(listMyPortfolio);
   const save = useServerFn(savePortfolioItem);
@@ -236,23 +239,40 @@ function BusinessPortfolio() {
           )
         ) : (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              {b.gallery.map((g) => (
-                <div key={g} className="overflow-hidden rounded-lg border border-border">
-                  <img
-                    src={g}
-                    alt={`${b.name} space`}
-                    className="h-28 w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
-            </div>
-            <p className="text-1 text-muted-foreground">
-              The first photo is used as the cover on Discover. Drag to reorder once you have more
-              than three.
-            </p>
-            {/* No gallery upload yet (owner, 16 Sep), so there is no Add photos button to press. */}
+            {/* The owner adds, removes and drags photos into order; visitors open them full size. */}
+            {owner ? (
+              <>
+                <GalleryEditor title={b.name} onChange={() => void router.invalidate()} />
+                <p className="text-1 text-muted-foreground">
+                  The first photo is used as the cover on Discover. Drag to reorder once you have
+                  more than three.
+                </p>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                {b.gallery.map((g, i) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setViewing(true)}
+                    aria-label={`View photo ${i + 1} of ${b.gallery.length}`}
+                    className="block overflow-hidden rounded-lg border border-border"
+                  >
+                    <img
+                      src={g}
+                      alt={`${b.name} space`}
+                      className="h-28 w-full object-cover"
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+            <PhotoSheet
+              title={b.name}
+              photos={viewing ? b.gallery : []}
+              onClose={() => setViewing(false)}
+            />
           </div>
         )}
       </div>

@@ -431,6 +431,7 @@ export function ImagePickButton<K extends string = ProfileImageKind>({
   className,
   children,
   onPick,
+  multiple = false,
 }: {
   kind: K;
   label: string;
@@ -438,14 +439,16 @@ export function ImagePickButton<K extends string = ProfileImageKind>({
   children: ReactNode;
   /** The screen owns the upload and the save; this button owns the file input and the spinner. */
   onPick: (kind: K, file: File) => Promise<void>;
+  /** Several files in one pick, handed to onPick one after another in the order chosen. */
+  multiple?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
 
-  const pick = async (file: File | undefined) => {
-    if (!file) return;
+  const pick = async (files: File[]) => {
+    if (!files.length) return;
     setBusy(true);
     try {
-      await onPick(kind, file);
+      for (const file of files) await onPick(kind, file);
     } finally {
       setBusy(false);
     }
@@ -464,9 +467,10 @@ export function ImagePickButton<K extends string = ProfileImageKind>({
       <input
         type="file"
         accept={PROFILE_IMAGE_ACCEPT}
+        multiple={multiple}
         className="sr-only"
         onChange={(e) => {
-          void pick(e.target.files?.[0]);
+          void pick(Array.from(e.target.files ?? []));
           e.target.value = "";
         }}
       />
@@ -973,18 +977,41 @@ export function VideoCard({
   );
 }
 
-export function GalleryGrid({ images }: { images: string[] }) {
+/** A gallery's photos, the first one large. With onOpen each photo is a button that opens them. */
+export function GalleryGrid({
+  images,
+  onOpen,
+}: {
+  images: string[];
+  onOpen?: (index: number) => void;
+}) {
   return (
     <div className="grid grid-cols-3 gap-2">
-      {images.map((src, i) => (
-        <img
-          key={src}
-          src={src}
-          alt={`Portfolio work ${i + 1}`}
-          loading="lazy"
-          className={`w-full rounded-lg object-cover ${i === 0 ? "col-span-2 row-span-2 h-full min-h-[168px]" : "h-20"}`}
-        />
-      ))}
+      {images.map((src, i) => {
+        const size = i === 0 ? "col-span-2 row-span-2 h-full min-h-[168px]" : "h-20";
+        if (!onOpen) {
+          return (
+            <img
+              key={src}
+              src={src}
+              alt={`Portfolio work ${i + 1}`}
+              loading="lazy"
+              className={`w-full rounded-lg object-cover ${size}`}
+            />
+          );
+        }
+        return (
+          <button
+            key={src}
+            type="button"
+            onClick={() => onOpen(i)}
+            aria-label={`View photo ${i + 1} of ${images.length}`}
+            className={`block overflow-hidden rounded-lg ${size}`}
+          >
+            <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+          </button>
+        );
+      })}
     </div>
   );
 }

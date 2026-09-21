@@ -9,6 +9,7 @@ import {
   readRecentSearches,
   sinceThen,
   type RecentSearch,
+  type SearchScope,
 } from "@/lib/device-history";
 import { iconSize } from "@/lib/tokens";
 
@@ -28,6 +29,49 @@ export const Route = createFileRoute("/search/history")({
   }),
   component: SearchHistory,
 });
+
+/*
+ * Every search this device ran, grouped by where it ran, each one opening the screen it came from.
+ * Searches remembered before scopes existed ran on /search.
+ */
+const AREAS: { scope: SearchScope; label: string }[] = [
+  { scope: "global", label: "Search" },
+  { scope: "market", label: "Market" },
+  { scope: "rent", label: "Rent" },
+];
+
+/** /search took over Discover's search; both, and unscoped entries, open there. */
+const areaOf = (e: RecentSearch): SearchScope =>
+  e.scope === "market" || e.scope === "rent" ? e.scope : "global";
+
+function SearchLink({ e }: { e: RecentSearch }) {
+  const body = (
+    <>
+      <p className="truncate text-sm font-semibold">{e.query}</p>
+      <p className="truncate text-1 text-muted-foreground">
+        {e.results} {e.results === 1 ? "result" : "results"} · {sinceThen(e.at)}
+      </p>
+    </>
+  );
+  const area = areaOf(e);
+  if (area === "market")
+    return (
+      <Link to="/marketplace/search" search={{ q: e.query }} className="min-w-0 flex-1">
+        {body}
+      </Link>
+    );
+  if (area === "rent")
+    return (
+      <Link to="/marketplace/rent/search" search={{ q: e.query }} className="min-w-0 flex-1">
+        {body}
+      </Link>
+    );
+  return (
+    <Link to="/search" search={{ q: e.query }} className="min-w-0 flex-1">
+      {body}
+    </Link>
+  );
+}
 
 function SearchHistory() {
   const [list, setList] = useState<RecentSearch[]>([]);
@@ -58,33 +102,41 @@ function SearchHistory() {
 
       <div className="space-y-4 px-5 pt-4 pb-6">
         {list.length ? (
-          <Card className="p-0">
-            {list.map((e) => (
-              <div
-                key={e.query}
-                className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-0"
-              >
-                <Clock size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
-                <Link to="/search" search={{ q: e.query }} className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{e.query}</p>
-                  <p className="truncate text-1 text-muted-foreground">
-                    {e.results} {e.results === 1 ? "result" : "results"} · {sinceThen(e.at)}
-                  </p>
-                </Link>
-                <button
-                  type="button"
-                  aria-label={`Remove ${e.query}`}
-                  onClick={() => {
-                    forgetSearch(e.query);
-                    setList(readRecentSearches());
-                  }}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground"
-                >
-                  <X size={iconSize.sm} aria-hidden />
-                </button>
-              </div>
-            ))}
-          </Card>
+          AREAS.map(({ scope, label }) => {
+            const entries = list.filter((e) => areaOf(e) === scope);
+            if (!entries.length) return null;
+            return (
+              <section key={scope} className="space-y-2">
+                <h2 className="pill bg-subtle text-muted-foreground">{label}</h2>
+                <Card className="p-0">
+                  {entries.map((e) => (
+                    <div
+                      key={`${e.scope ?? ""}:${e.query}`}
+                      className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-0"
+                    >
+                      <Clock
+                        size={iconSize.sm}
+                        className="shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                      <SearchLink e={e} />
+                      <button
+                        type="button"
+                        aria-label={`Remove ${e.query}`}
+                        onClick={() => {
+                          forgetSearch(e.query);
+                          setList(readRecentSearches());
+                        }}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+                      >
+                        <X size={iconSize.sm} aria-hidden />
+                      </button>
+                    </div>
+                  ))}
+                </Card>
+              </section>
+            );
+          })
         ) : (
           <EmptyState
             title={cleared ? "History cleared" : "Nothing here yet"}

@@ -9,13 +9,15 @@ import { anonClient } from "@/lib/portfolio.functions";
  * (src/lib/search-events.ts writes them from the browser); what comes back out is only the
  * aggregate — the most-run searches per scope — never anyone's own rows. Saved searches are
  * owner-only. Both fail soft: before the tables exist every read here is empty.
- * Schema: supabase/migrations/20260918230000_section_sources.sql
+ * Schema: supabase/migrations/20260918230000_section_sources.sql; the 'global' scope (/search, every
+ * kind of result at once) is 20260921170000_search.sql — until that is applied a 'global' read is
+ * simply empty and a 'global' save is refused.
  */
 
 const db = (client: unknown) => client as unknown as SupabaseClient;
 
-export type SearchScope = "market" | "rent" | "discover";
-export type SavedSearchScope = "market" | "rent";
+export type SearchScope = "market" | "rent" | "discover" | "global";
+export type SavedSearchScope = "market" | "rent" | "global";
 
 export type SavedSearch = {
   id: string;
@@ -35,7 +37,7 @@ export const popularSearches = createServerFn({ method: "GET" })
   .inputValidator((d) =>
     z
       .object({
-        scope: z.enum(["market", "rent", "discover"]),
+        scope: z.enum(["market", "rent", "discover", "global"]),
         city: z.string().min(1).max(80).optional(),
       })
       .parse(d),
@@ -54,7 +56,8 @@ export const popularSearches = createServerFn({ method: "GET" })
     const run = error ? [] : (rows ?? []).map((r) => r.query);
     if (run.length >= 6) return { items: run, searched: true };
     // Until enough searches have been run, what people can find stands in: the kinds of item
-    // with the most live listings (Market, Rent), or the genres most profiles work in (Discover).
+    // with the most live listings (Market, Rent), the genres most profiles work in (Discover), or
+    // both together (everywhere at once).
     const fill = await mostListed(client as unknown as SupabaseClient, data.scope);
     const seen = new Set(run.map((q) => q.toLowerCase()));
     return {
@@ -69,15 +72,16 @@ async function mostListed(client: SupabaseClient, scope: SearchScope): Promise<s
     const id = `${key}:${slug}`;
     counts.set(id, { key, n: (counts.get(id)?.n ?? 0) + 1 });
   };
-  if (scope === "discover") {
+  if (scope === "discover" || scope === "global") {
     const { data } = await client.from("profiles").select("genres").eq("visibility", "public");
     for (const p of (data ?? []) as { genres: string[] | null }[])
       for (const g of p.genres ?? []) bump("genres", g);
-  } else {
-    const { data } = await client
-      .from("marketplace_listings")
-      .select("item_category, item_category_kind")
-      .eq("category", scope === "rent" ? "gear_rental" : "gear_sale");
+  }
+  if (scope !== "discover") {
+    let listings = client.from("marketplace_listings").select("item_category, item_category_kind");
+    if (scope !== "global")
+      listings = listings.eq("category", scope === "rent" ? "gear_rental" : "gear_sale");
+    const { data } = await listings;
     for (const l of (data ?? []) as {
       item_category: string | null;
       item_category_kind: string | null;
@@ -109,7 +113,7 @@ async function mostListed(client: SupabaseClient, scope: SearchScope): Promise<s
 /** This account's saved searches in one scope, newest first. */
 export const listMySavedSearches = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ scope: z.enum(["market", "rent"]) }).parse(d))
+  .inputValidator((d) => z.object({ scope: z.enum(["market", "rent", "global"]) }).parse(d))
   .handler(async ({ context, data }): Promise<SavedSearch[]> => {
     const { data: rows, error } = await db(context.supabase)
       .from("saved_searches")
@@ -129,7 +133,7 @@ export const saveSearch = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z
       .object({
-        scope: z.enum(["market", "rent"]),
+        scope: z.enum(["market", "rent", "global"]),
         query: z.string().trim().min(1).max(80),
       })
       .parse(d),

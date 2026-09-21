@@ -10,6 +10,7 @@ import { useRequireBusiness } from "@/hooks/use-require-business";
 import { Detail, StickyBar } from "@/components/ml/booking";
 import { answerBooking, getBookingRequest } from "@/lib/bookings.functions";
 import { iconSize } from "@/lib/tokens";
+import { useMessagePerson } from "@/hooks/use-message-person";
 
 export const Route = createFileRoute("/business/bookings/requests/$ref")({
   head: () => ({
@@ -61,6 +62,7 @@ function RequestReviewContent() {
   const queryClient = useQueryClient();
   const load = useServerFn(getBookingRequest);
   const answer = useServerFn(answerBooking);
+  const message = useMessagePerson();
   const q = useQuery({
     queryKey: ["booking", ref],
     queryFn: () => load({ data: { id: ref } }),
@@ -157,9 +159,16 @@ function RequestReviewContent() {
           ) : null}
         </div>
 
-        <BtnLink to="/messages" variant="outline" className="mt-3 w-full">
-          <MessageCircle size={iconSize.sm} className="mr-1.5" /> Ask a Question First
-        </BtnLink>
+        {bk.requester ? (
+          <Btn
+            variant="outline"
+            className="mt-3 w-full"
+            loading={message.pending}
+            onClick={() => bk.requester && void message.open(bk.requester.id)}
+          >
+            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Ask a Question First
+          </Btn>
+        ) : null}
 
         <Btn
           variant="ghost"

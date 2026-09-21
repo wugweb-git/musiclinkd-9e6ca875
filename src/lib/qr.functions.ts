@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { qrPrefsOf } from "@/lib/qr-prefs";
 
 /*
  * Scan history and analytics for the QR module (public.qr_scans, 20260918130000_qr_real.sql).
@@ -28,13 +29,17 @@ export const recordScan = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<ScannedProfile | null> => {
     const { data: row, error } = await context.supabase
       .from("profiles")
-      .select("id, username, display_name, avatar_url, visibility")
+      .select("id, username, display_name, avatar_url, visibility, discovery_prefs")
       .eq("username", data.username)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row || row.visibility === "private") return null;
+    // QR & sharing settings (profiles.discovery_prefs.qr): a code switched off, or not findable
+    // by code, resolves to nothing; with scan counting off, the scan isn't recorded.
+    const qr = qrPrefsOf(row.discovery_prefs);
+    if (row.id !== context.userId && (!qr.active || !qr.discoverable)) return null;
 
-    if (row.id !== context.userId) {
+    if (row.id !== context.userId && qr.analytics) {
       const { error: insertError } = await scansTable(context.supabase).insert({
         scanner_id: context.userId,
         scanned_profile_id: row.id,

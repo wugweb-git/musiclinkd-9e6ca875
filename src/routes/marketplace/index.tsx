@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { useEffect, useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { Screen, SearchBar, Chip } from "@/components/ml/ui";
@@ -59,9 +60,12 @@ function MarketHome() {
   const [view, setView] = useState<(typeof views)[number]["label"]>("For You");
   const navigate = useNavigate();
   const catalog = Route.useLoaderData();
-  // The catalogue comes newest first; services are Discover's and never reach it.
-  const forSale = catalog.filter((l) => l.type === "product").slice(0, 8);
-  const forRent = catalog.filter((l) => l.type === "rental").slice(0, 8);
+  // The catalogue comes newest first; services are Discover's and never reach it. Signed in, For
+  // You puts the listings matched to the viewer's instruments, saves, rentals and city first.
+  const recs = useRecommendations();
+  const ranked = rankBy(catalog, recs?.listings, (l) => l.dbId ?? l.id);
+  const forSale = ranked.filter((l) => l.type === "product").slice(0, 8);
+  const forRent = ranked.filter((l) => l.type === "rental").slice(0, 8);
   // Listings opened on this device, most recent first, read live from the catalog. Goods only:
   // services never sit in this rail.
   const [viewed, setViewed] = useState<Listing[]>([]);

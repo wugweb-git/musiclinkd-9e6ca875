@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -8,6 +8,8 @@ import { Card, EmptyState, Loading, StatusPill } from "@/components/ml/kit";
 import { leadStatusTone } from "@/data/business";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { listMyLeads, setLeadStatus, type EnquiryStatus } from "@/lib/enquiries.functions";
+import { conversationWith } from "@/lib/messages.functions";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/business/$id/leads")({
   loader: ({ params }) => loadBusiness(params.id),
@@ -35,7 +37,10 @@ function BusinessLeads() {
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const queryClient = useQueryClient();
   const load = useServerFn(listMyLeads);
-  const q = useQuery({ queryKey: ["leads", "mine"], queryFn: () => load() });
+  const { user, loading } = useAuth();
+  // Leads are the signed-in business's own; nobody else's inbox opens under this address.
+  const owner = Boolean(b && user && user.id === b.profileId);
+  const q = useQuery({ queryKey: ["leads", "mine"], queryFn: () => load(), enabled: owner });
   const answer = useServerFn(setLeadStatus);
   const [updating, setUpdating] = useState<string | null>(null);
 
@@ -52,7 +57,24 @@ function BusinessLeads() {
     }
   }
 
-  if (!b) {
+  // Answer in Messages: the conversation with whoever sent it, and the lead counts as replied.
+  const navigate = useNavigate();
+  const startConversation = useServerFn(conversationWith);
+  async function reply(id: string, senderId: string, status: EnquiryStatus) {
+    setUpdating(id);
+    try {
+      const { id: conversationId } = await startConversation({ data: { profileId: senderId } });
+      if (status === "new") await answer({ data: { id, status: "replied" } });
+      await queryClient.invalidateQueries({ queryKey: ["leads", "mine"] });
+      void navigate({ to: "/conversation/$id", params: { id: conversationId } });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't open that conversation — try again");
+    } finally {
+      setUpdating(null);
+    }
+  }
+
+  if (!b || (!loading && !owner)) {
     return (
       <Screen>
         <TopBar title="Leads" back="/business" />
@@ -114,6 +136,16 @@ function BusinessLeads() {
                 <p className="mt-3 text-1">{l.message}</p>
                 {l.status === "new" || l.status === "replied" ? (
                   <div className="mt-3 flex gap-2">
+                    {l.sender ? (
+                      <Btn
+                        variant="outline"
+                        className="flex-1"
+                        disabled={updating === l.id}
+                        onClick={() => void reply(l.id, l.sender!.id, l.status)}
+                      >
+                        Message
+                      </Btn>
+                    ) : null}
                     {l.status === "new" ? (
                       <Btn
                         className="flex-1"
@@ -122,7 +154,15 @@ function BusinessLeads() {
                       >
                         Mark replied
                       </Btn>
-                    ) : null}
+                    ) : (
+                      <Btn
+                        className="flex-1"
+                        disabled={updating === l.id}
+                        onClick={() => void updateStatus(l.id, "booked")}
+                      >
+                        Mark booked
+                      </Btn>
+                    )}
                     <Btn
                       variant="ghost"
                       className="flex-1"

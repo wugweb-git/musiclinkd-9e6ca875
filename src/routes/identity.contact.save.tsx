@@ -33,6 +33,7 @@ function vCard(me: ReturnType<typeof useMyIdentity>): string {
     "VERSION:3.0",
     `FN:${me.name || "MusicLinkd contact"}`,
     me.role ? `TITLE:${me.role}` : null,
+    me.company ? `ORG:${me.company}` : null,
     me.phone ? `TEL;TYPE=CELL:${me.phone}` : null,
     me.email ? `EMAIL:${me.email}` : null,
     me.url ? `URL:${me.url}` : null,
@@ -98,6 +99,13 @@ function SaveContact() {
                 ) : null}
                 {me.email ? (
                   <ActionRow icon={<Check size={iconSize.sm} />} label={me.email} hint="Email" />
+                ) : null}
+                {me.company ? (
+                  <ActionRow
+                    icon={<Check size={iconSize.sm} />}
+                    label={me.company}
+                    hint="Company"
+                  />
                 ) : null}
                 {me.url ? (
                   <ActionRow

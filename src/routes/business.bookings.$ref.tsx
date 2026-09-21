@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { MessageCircle, Users } from "lucide-react";
-import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { useMessagePerson } from "@/hooks/use-message-person";
 import { BusinessOnlyGate, EmptyState, Loading, StatusPill, type Tone } from "@/components/ml/kit";
 import { Detail } from "@/components/ml/booking";
 import { useRequireBusiness } from "@/hooks/use-require-business";
@@ -73,6 +74,7 @@ function ProviderBookingDetail() {
 
 function ProviderBookingDetailContent() {
   const { ref } = Route.useParams();
+  const message = useMessagePerson();
   const load = useServerFn(getBookingRequest);
   const q = useQuery({
     queryKey: ["booking", ref],
@@ -169,10 +171,17 @@ function ProviderBookingDetailContent() {
         </div>
 
         <div className="mt-6 space-y-2">
-          <BtnLink to="/messages" variant="outline" className="w-full">
-            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message{" "}
-            {customerName.split(" ")[0]}
-          </BtnLink>
+          {bk.requester ? (
+            <Btn
+              variant="outline"
+              className="w-full"
+              loading={message.pending}
+              onClick={() => bk.requester && void message.open(bk.requester.id)}
+            >
+              <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message{" "}
+              {customerName.split(" ")[0]}
+            </Btn>
+          ) : null}
           <BtnLink to="/business/availability" variant="ghost" className="w-full">
             Block or Adjust This Room's Calendar
           </BtnLink>

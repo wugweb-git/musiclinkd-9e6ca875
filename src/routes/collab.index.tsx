@@ -32,7 +32,8 @@ export const Route = createFileRoute("/collab/")({
 });
 
 function CollabRow({ c }: { c: Collab }) {
-  const members = c.members?.length ?? 0;
+  // People who have said yes; someone only asked is not in it yet.
+  const members = c.members?.filter((m) => m.status === "active").length ?? 0;
   return (
     <Link
       to="/collab/$id"

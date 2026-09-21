@@ -25,6 +25,7 @@ import { ChipPicker, OptionList } from "@/components/ml/onboarding";
 import { privacyControls } from "@/data/settings";
 import { availabilityFor, contactChannels, workModes } from "@/data/onboarding";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
+import { exportMyData } from "@/lib/account.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/settings/privacy")({
@@ -129,6 +130,26 @@ function PrivacyScreen() {
       phone: phoneFromDb[row.discovery_prefs?.show_phone ?? "booked"] ?? "Booked",
     }));
   }, [row]);
+
+  // Your data: the account's own rows, saved to this device as one JSON file.
+  const exportData = useServerFn(exportMyData);
+  const [exporting, setExporting] = useState(false);
+  async function requestCopy() {
+    setExporting(true);
+    try {
+      const { fileName, json } = await exportData();
+      const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Couldn't prepare your copy — try again");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   const [editing, setEditing] = useState<string | null>(null);
   const open = privacyControls.find((c) => c.key === editing);
@@ -273,18 +294,6 @@ function PrivacyScreen() {
         </section>
 
         <section>
-          <h2 className="pill mb-2 px-1 text-muted-foreground">Blocked people</h2>
-          <div className="flex items-center gap-3 rounded-lg bg-subtle px-4 py-3.5">
-            <span className="flex h-10 w-7 shrink-0 items-center justify-center">
-              <UserX size={iconSize.lg} strokeWidth={1.75} aria-hidden />
-            </span>
-            <p className="min-w-0 flex-1 text-1 text-muted-foreground">
-              Nobody blocked. Blocking hides your profile from them everywhere.
-            </p>
-          </div>
-        </section>
-
-        <section>
           <h2 className="pill mb-2 px-1 text-muted-foreground">Your data</h2>
           <p className="mb-3 px-1 text-1 text-muted-foreground">
             A copy covers your profile, portfolio and bookings. Deleting removes them.
@@ -294,7 +303,8 @@ function PrivacyScreen() {
               variant="outline"
               className="min-w-0 flex-1 px-3"
               icon={<Download size={iconSize.sm} aria-hidden />}
-              onClick={() => toast("Request copy — coming soon")}
+              loading={exporting}
+              onClick={() => void requestCopy()}
             >
               Request Copy
             </Btn>

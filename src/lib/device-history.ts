@@ -39,7 +39,8 @@ export type RecentSearch = {
   scope?: SearchScope;
 };
 
-export type SearchScope = "market" | "rent" | "discover";
+/** Where a search ran; "global" is /search, every kind of result at once. */
+export type SearchScope = "market" | "rent" | "discover" | "global";
 
 /** Every remembered search, or only those run in one place. */
 export function readRecentSearches(scope?: SearchScope): RecentSearch[] {

@@ -7,7 +7,7 @@ import { Check } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, EmptyState, Price, StatusPill } from "@/components/ml/kit";
 import { payParts } from "@/data/opportunities";
-import { demoPortfolio, workType } from "@/data/portfolio";
+import { workType } from "@/data/portfolio";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
 import { applyToOpportunity } from "@/lib/applications.functions";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
@@ -65,9 +65,10 @@ function ApplyFlow() {
     queryFn: () => fetchPortfolio(),
     enabled: signedIn,
   });
+  // The applicant's own works; signed out there are none to attach.
   const work = signedIn
     ? (portfolio.data ?? []).map((item) => ({ id: item.id, title: item.title, kind: item.kind }))
-    : demoPortfolio.map((item) => ({ id: item.id, title: item.title, kind: item.kind }));
+    : [];
 
   const apply = useMutation({
     mutationFn: () =>

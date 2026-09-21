@@ -33,11 +33,12 @@ import {
 } from "@/lib/portfolio.functions";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import { listOpportunities, listStudios } from "@/lib/catalog.functions";
-import { listPeopleByRole } from "@/lib/profile-groups.functions";
+import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
 import { priceParts } from "@/lib/price";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
+import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 
@@ -66,9 +67,10 @@ export const Route = createFileRoute("/home")({
       listStudios().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
     ]);
+    // All of them: signed in, the rails are ranked by recommendations before they are cut to six.
     return {
-      opportunities: opportunities.slice(0, 6),
-      studios: studios.map((row) => discoverStudioFromRow(row, labels)).slice(0, 6),
+      opportunities,
+      studios: studios.map((row) => discoverStudioFromRow(row, labels)),
       labels,
     };
   },
@@ -240,12 +242,20 @@ function Header() {
 function Body({ home }: { home: Home }) {
   const { data, cont } = home;
   const { user } = data;
-  const { opportunities, studios, labels } = Route.useLoaderData();
+  const loaded = Route.useLoaderData();
   const { displayName } = useViewer();
   const viewerFirstName = firstNameOf(displayName);
   const hello = useGreeting();
   const [qrOpen, setQrOpen] = useState(false);
-  const peers = usePeers(home.roleSlug);
+  // Ranked by the viewer's own signals (recommendations.functions.ts); newest first until then.
+  const recs = useRecommendations();
+  const opportunities = rankBy(loaded.opportunities, recs?.opportunities, (o) => o.id).slice(0, 6);
+  const studios = rankBy(loaded.studios, recs?.studios, (s) => s.id).slice(0, 6);
+  const reasonOf = new Map((recs?.opportunities ?? []).map((p) => [p.id, p.reason]));
+  const rolePeers = usePeers(home.roleSlug);
+  const peers: (DirectoryPerson & { reason?: string })[] = recs?.people.length
+    ? recs.people.slice(0, 8)
+    : rolePeers;
 
   return (
     <div className="min-w-0 pb-4">
@@ -325,6 +335,11 @@ function Body({ home }: { home: Home }) {
                       {o.location}
                     </span>
                   ) : null}
+                  {reasonOf.get(o.id) ? (
+                    <span className="mt-0.5 block truncate text-1 text-muted-foreground">
+                      {reasonOf.get(o.id)}
+                    </span>
+                  ) : null}
                   <span className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3 mt-3">
                     {/* A budget with no figure is a note, not a price, so it stays a quiet label. */}
                     {o.budget_paise == null ? (
@@ -391,7 +406,7 @@ function Body({ home }: { home: Home }) {
                   <span className="min-w-0">
                     <span className="block truncate text-1 font-semibold">{p.name}</span>
                     <span className="block truncate text-1 text-muted-foreground">
-                      {p.city ?? p.roles[0] ?? ""}
+                      {p.reason || (p.city ?? p.roles[0] ?? "")}
                     </span>
                   </span>
                 </Link>

@@ -4,7 +4,9 @@ import { CalendarCheck, type LucideIcon, Rocket, Scale, ShieldCheck, Store } fro
 import { Screen, TopBar, SearchBar } from "@/components/ml/ui";
 import { EmptyState, Row } from "@/components/ml/kit";
 import { ArticleGrid, TopicFilter, type Article } from "@/components/ml/marketing";
-import { contentCategories, contentPages, popularSlugs, type ContentPage } from "@/data/cms";
+import { ContactSupport } from "@/components/ml/help";
+import { TextLink } from "@/components/ml/links";
+import { getHelpCentre, searchHelp, type HelpCentre, type HelpPage } from "@/lib/help.functions";
 
 export const Route = createFileRoute("/help/")({
   head: () => ({
@@ -24,8 +26,21 @@ export const Route = createFileRoute("/help/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  // Topics and guides come from cms_categories / cms_pages; before the help migration the centre
+  // is empty and says so.
+  loader: () =>
+    getHelpCentre().catch((): HelpCentre => ({ ready: false, categories: [], pages: [] })),
   component: HelpIndex,
 });
+
+/** The site pages from cms_pages, linked under the help centre. */
+const sitePages = [
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
+  { to: "/legal/privacy", label: "Privacy" },
+  { to: "/legal/terms", label: "Terms" },
+  { to: "/legal/cookies", label: "Cookies" },
+] as const;
 
 /** One keyword per topic for the filter row; the category's full label stays on its own page. */
 const topics: Record<string, { short: string; icon: LucideIcon }> = {
@@ -39,7 +54,7 @@ const topics: Record<string, { short: string; icon: LucideIcon }> = {
 const topicOf = (key: string) => topics[key]?.short ?? key;
 
 /** Guides carry no pictures, so each card is a grey tile marked with its topic's icon. */
-function toArticle(p: ContentPage): Article {
+function toArticle(p: HelpPage): Article {
   const Icon = topics[p.category]?.icon ?? Rocket;
   return {
     id: p.slug,
@@ -51,21 +66,21 @@ function toArticle(p: ContentPage): Article {
   };
 }
 
-// Popular guides lead "All"; the rest keep their written order.
-const ordered = [
-  ...popularSlugs.flatMap((slug) => contentPages.filter((p) => p.slug === slug)),
-  ...contentPages.filter((p) => !popularSlugs.includes(p.slug)),
-];
+/** Popular guides lead "All" in their rank order; the rest keep their written order. */
+function popularFirst(pages: HelpPage[]) {
+  const popular = pages
+    .filter((p) => p.popularRank != null)
+    .sort((a, b) => (a.popularRank ?? 0) - (b.popularRank ?? 0));
+  return [...popular, ...pages.filter((p) => p.popularRank == null)];
+}
 
 function HelpIndex() {
+  const centre = Route.useLoaderData();
   const [q, setQ] = useState("");
   const [topic, setTopic] = useState("All");
-  const results = q
-    ? contentPages.filter((p) =>
-        `${p.title} ${p.summary} ${p.category}`.toLowerCase().includes(q.toLowerCase()),
-      )
-    : [];
-  const topicNames = ["All", ...contentCategories.map((c) => topicOf(c.key))];
+  const results = q.trim() ? searchHelp(centre, q) : [];
+  const ordered = popularFirst(centre.pages);
+  const topicNames = ["All", ...centre.categories.map((c) => topicOf(c.key))];
   const shown = ordered.filter((p) => topic === "All" || topicOf(p.category) === topic);
 
   return (
@@ -74,7 +89,12 @@ function HelpIndex() {
       <div className="space-y-4 px-5 pt-4">
         <SearchBar value={q} onChange={setQ} placeholder="Search guides, policies and answers" />
 
-        {q ? (
+        {!centre.ready ? (
+          <EmptyState
+            title="Help isn't available yet"
+            body="Guides and answers will show here once the help centre is published."
+          />
+        ) : q.trim() ? (
           results.length ? (
             <div className="space-y-2">
               {results.map((p) => (
@@ -103,6 +123,16 @@ function HelpIndex() {
             </div>
           </div>
         )}
+
+        {centre.ready ? <ContactSupport categories={centre.categories} /> : null}
+
+        <footer className="flex flex-wrap justify-center gap-x-5 gap-y-2 pb-8 pt-2">
+          {sitePages.map((p) => (
+            <TextLink key={p.to} to={p.to} className="text-1 text-muted-foreground">
+              {p.label}
+            </TextLink>
+          ))}
+        </footer>
       </div>
     </Screen>
   );

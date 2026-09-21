@@ -346,3 +346,117 @@ export const leaveCollab = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { left: true };
   });
+
+/**
+ * Change what the collab is: its name, what it is about, where, what kind, and when it wraps up.
+ * The people in it can (the collabs update policy); the room offers it to owners and admins.
+ */
+export const updateCollab = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        name: z.string().trim().min(2).max(80),
+        bio: z.string().max(2000),
+        city: z.string().max(80),
+        projectType: z.string().trim().max(60),
+        endsOn: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("collabs")
+      .update({
+        name: data.name,
+        bio: data.bio.trim() || null,
+        city: data.city.trim() || null,
+        project_type: data.projectType || null,
+        ends_on: data.endsOn || null,
+      } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { saved: true };
+  });
+
+/** Close a project for good. Only its owner can, and only a project — a band is not ended here. */
+export const deleteCollab = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const { data: rows, error } = await db(context.supabase)
+      .from("collabs")
+      .delete()
+      .eq("id", data.id)
+      .eq("type", "project")
+      .select("id");
+    if (error) throw new Error(error.message);
+    if (!rows?.length) throw new Error("Only the owner can delete this project.");
+    return { deleted: true };
+  });
+
+export type CollabMessage = {
+  id: string;
+  body: string;
+  created_at: string;
+  sender_id: string;
+  mine: boolean;
+  sender: {
+    username: string | null;
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
+};
+
+/** The table does not exist until 20260921180000_collab_complete.sql is applied. */
+const missingTable = (e: { code?: string; message?: string }) =>
+  e.code === "42P01" || e.code === "PGRST205" || /collab_messages/.test(e.message ?? "");
+
+/**
+ * The room's own thread, oldest first. `ready` is false while the table is not in the database
+ * yet, so the room can say so instead of failing.
+ */
+export const listCollabMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<{ ready: boolean; messages: CollabMessage[] }> => {
+    const { data: rows, error } = await db(context.supabase)
+      .from("collab_messages")
+      .select(
+        "id, body, created_at, sender_id, sender:profiles(username, display_name, avatar_url)",
+      )
+      .eq("collab_id", data.id)
+      .order("created_at", { ascending: true })
+      .limit(200);
+    if (error) {
+      if (missingTable(error)) return { ready: false, messages: [] };
+      throw new Error(error.message);
+    }
+    return {
+      ready: true,
+      messages: ((rows ?? []) as unknown as Omit<CollabMessage, "mine">[]).map((m) => ({
+        ...m,
+        mine: m.sender_id === context.userId,
+      })),
+    };
+  });
+
+/** Say something in the room. The database tells everyone else in it. */
+export const sendCollabMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ id: z.string().uuid(), body: z.string().trim().min(1).max(4000) }).parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("collab_messages")
+      .insert({ collab_id: data.id, sender_id: context.userId, body: data.body } as never);
+    if (error) {
+      if (missingTable(error)) throw new Error("This thread is not open yet. Try again later.");
+      throw new Error(
+        error.code === "42501" ? "Only the people in this project can write here." : error.message,
+      );
+    }
+    return { sent: true };
+  });

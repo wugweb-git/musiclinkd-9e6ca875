@@ -6,7 +6,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useMyIdentity } from "@/hooks/use-my-identity";
+import { defaultQrPrefs, type QrPrefs } from "@/lib/qr-prefs";
+import { useAuth } from "@/hooks/use-auth";
+import { saveMyProfile } from "@/lib/portfolio.functions";
 
 export const Route = createFileRoute("/identity/settings")({
   head: () => ({
@@ -53,28 +58,48 @@ function Toggle({
 
 function QrSettings() {
   const me = useMyIdentity();
-  const [state, setState] = useState({
-    active: true,
-    phone: false,
-    email: false,
-    website: false,
-    company: false,
-    analytics: true,
-    discoverable: true,
-  });
-  const set = (k: keyof typeof state) => (v: boolean) => setState((s) => ({ ...s, [k]: v }));
+  const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
+  const save = useServerFn(saveMyProfile);
+  const [state, setState] = useState<QrPrefs>(defaultQrPrefs);
+  const [saving, setSaving] = useState(false);
+  const set = (k: keyof QrPrefs) => (v: boolean) => setState((s) => ({ ...s, [k]: v }));
 
-  // Default each share toggle on only for a contact field the real profile actually has —
-  // there is nothing to share, or fabricate a preference for, on an empty field.
+  // What is stored (profiles.discovery_prefs.qr) wins; a share toggle for a contact field the
+  // profile doesn't have starts off — there is nothing to share on an empty field.
+  const stored = JSON.stringify(me.qr);
   useEffect(() => {
     if (!me.ready) return;
-    setState((s) => ({
-      ...s,
-      phone: Boolean(me.phone),
-      email: Boolean(me.email),
-      website: Boolean(me.website),
-    }));
-  }, [me.ready, me.phone, me.email, me.website]);
+    const qr = JSON.parse(stored) as QrPrefs;
+    setState({
+      ...qr,
+      phone: qr.phone && Boolean(me.contact.phone),
+      email: qr.email && Boolean(me.contact.email),
+      website: qr.website && Boolean(me.contact.website),
+      company: qr.company && Boolean(me.contact.company),
+    });
+  }, [
+    me.ready,
+    stored,
+    me.contact.phone,
+    me.contact.email,
+    me.contact.website,
+    me.contact.company,
+  ]);
+
+  async function onSave() {
+    if (!signedIn) return;
+    setSaving(true);
+    try {
+      await save({ data: { discovery_prefs: { qr: state } } });
+      await queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
+      toast.success("Sharing preferences updated");
+    } catch {
+      toast.error("That didn't save. Try again.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <Screen>
@@ -110,7 +135,12 @@ function QrSettings() {
         />
 
         <div className="mt-4 flex gap-2">
-          <Btn className="flex-1" onClick={() => toast.success("Sharing preferences updated")}>
+          <Btn
+            className="flex-1"
+            loading={saving}
+            disabled={!signedIn}
+            onClick={() => void onSave()}
+          >
             Save
           </Btn>
           <BtnLink to="/identity/analytics" variant="outline" className="flex-1 w-full">

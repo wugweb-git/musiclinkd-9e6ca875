@@ -3,7 +3,7 @@
  * Only fields the owner marked shareable appear here.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { Globe, Mail, Phone, UserRoundPlus } from "lucide-react";
+import { Building2, Globe, Mail, Phone, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { QrCode, ActionRow, nativeShare } from "@/components/ml/qr";
 import { useMyIdentity } from "@/hooks/use-my-identity";
@@ -35,6 +35,9 @@ function BusinessCard() {
     me.phone ? { icon: <Phone size={iconSize.sm} />, label: me.phone, hint: "Mobile" } : null,
     me.email ? { icon: <Mail size={iconSize.sm} />, label: me.email, hint: "Email" } : null,
     me.website ? { icon: <Globe size={iconSize.sm} />, label: me.website, hint: "Website" } : null,
+    me.company
+      ? { icon: <Building2 size={iconSize.sm} />, label: me.company, hint: "Company" }
+      : null,
   ].filter(Boolean) as { icon: React.ReactNode; label: string; hint: string }[];
 
   return (

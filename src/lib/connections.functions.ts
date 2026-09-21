@@ -124,6 +124,22 @@ export const connectionWith = createServerFn({ method: "GET" })
     },
   );
 
+/**
+ * The number to call this profile on, or null. contact_phone applies the owner's "Show phone
+ * number" setting (Privacy) server-side: always, only after a booking or other real relationship,
+ * or never. Null too before 20260921210000_contact_phone.sql is applied, so no Call button shows.
+ */
+export const contactPhone = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<{ phone: string | null }> => {
+    const { data: phone, error } = await db(context.supabase).rpc("contact_phone", {
+      p_profile: data.profileId,
+    });
+    if (error) return { phone: null };
+    return { phone: typeof phone === "string" && phone ? phone : null };
+  });
+
 /** Ask to connect. The pair index means a second request cannot be created either way round. */
 export const requestConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

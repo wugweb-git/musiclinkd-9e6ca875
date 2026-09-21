@@ -236,14 +236,21 @@ function BookingEntry() {
           <section className="mt-6">
             <h3 className="text-2">Gallery</h3>
             <div className="rail mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {b.gallery.map((g) => (
-                <img
+              {b.gallery.map((g, i) => (
+                <button
                   key={g}
-                  src={g}
-                  alt={`${b.name} interior`}
-                  className="h-32 w-48 shrink-0 rounded-lg object-cover"
-                  loading="lazy"
-                />
+                  type="button"
+                  onClick={() => setViewing({ title: b.name, photos: b.gallery })}
+                  aria-label={`View photo ${i + 1} of ${b.gallery.length}`}
+                  className="block shrink-0 overflow-hidden rounded-lg"
+                >
+                  <img
+                    src={g}
+                    alt={`${b.name} interior`}
+                    className="h-32 w-48 object-cover"
+                    loading="lazy"
+                  />
+                </button>
               ))}
             </div>
           </section>

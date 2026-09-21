@@ -624,10 +624,18 @@ function useMyStudioPhotos() {
 /** Each of the studio's facilities, with the photos customers can open on the studio page. */
 function FacilitiesEditor() {
   const q = useMyStudioPhotos();
+  const section = useRef<HTMLElement>(null);
+  // Manage > Photos & spaces lands here (#facilities) once the section has rendered.
+  const shown = Boolean(q.data?.ready && q.data.facilities.length);
+  useEffect(() => {
+    if (shown && window.location.hash === "#facilities") {
+      section.current?.scrollIntoView({ block: "start" });
+    }
+  }, [shown]);
   // Nothing to prove before the photos table exists, or when the studio lists no facilities.
   if (q.isLoading || q.isError || !q.data?.ready || !q.data.facilities.length) return null;
   return (
-    <section className="mt-8">
+    <section id="facilities" ref={section} className="mt-8 scroll-mt-4">
       <h2 className="text-2">Facilities</h2>
       <p className="mt-1 text-1 text-muted-foreground">
         Photos customers can open beside each facility on your studio page.

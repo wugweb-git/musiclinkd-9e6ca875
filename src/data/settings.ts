@@ -1,5 +1,5 @@
 /**
- * FLOW 21 — SETTINGS & SUPPORT (design-only mock data).
+ * FLOW 21 — SETTINGS & SUPPORT: the rows and options the settings screens render (UI copy).
  * Settings never duplicates a flow — every row links into the flow that owns the setting.
  */
 
@@ -102,7 +102,7 @@ export const settingsGroups: SettingsGroup[] = [
       {
         key: "security",
         label: "Security",
-        hint: "Password, sessions, 2-step",
+        hint: "Password, sessions",
         to: "/settings/security",
         icon: "shield",
       },
@@ -112,7 +112,6 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "Channels and quiet hours",
         to: "/notifications/settings",
         icon: "bell",
-        soon: true,
       },
     ],
   },
@@ -194,18 +193,12 @@ export const securityRows = [
     hint: "Sends a reset link to your email",
     to: "/auth/forgot",
   },
-  {
-    key: "2fa",
-    label: "Two-step verification",
-    hint: "Add an authenticator app",
-    to: "/settings/security/2fa",
-  },
+  // Two-step verification is off the menu for now (owner, 21 Sep 2026); /settings/security/2fa stays.
   {
     key: "delete",
     label: "Delete account",
     hint: "Permanently remove your data",
     to: "/settings/delete-account",
-    soon: true,
   },
 ];
 

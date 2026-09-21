@@ -76,6 +76,13 @@ function MyProfile() {
     }
   };
 
+  // After a gallery change: the sections carry the gallery the rest of the profile shows.
+  const reloadSections = () => {
+    loadSections()
+      .then(setSections)
+      .catch(() => undefined);
+  };
+
   useEffect(() => {
     if (loading || !signedIn) return;
     setState("loading");
@@ -136,6 +143,12 @@ function MyProfile() {
   );
   // Completion comes from the record itself; there are no insight figures for a real profile yet.
   return (
-    <PersonProfileExperience p={view} owner completion={profileGaps(row)} onPickImage={pickImage} />
+    <PersonProfileExperience
+      p={view}
+      owner
+      completion={profileGaps(row)}
+      onPickImage={pickImage}
+      onGalleryChange={reloadSections}
+    />
   );
 }

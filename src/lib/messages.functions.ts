@@ -119,6 +119,27 @@ export const conversationWith = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }): Promise<{ id: string }> => {
+    // Settings > Privacy > "Who can message you" (discovery_prefs.who_can_message): Nobody closes
+    // new conversations, Connections needs an accepted connection. Anyone is the default.
+    const { data: other } = await db(context.supabase)
+      .from("profiles")
+      .select("discovery_prefs")
+      .eq("id", data.profileId)
+      .maybeSingle();
+    const who = (other as { discovery_prefs?: { who_can_message?: string } | null } | null)
+      ?.discovery_prefs?.who_can_message;
+    if (who === "nobody") throw new Error("This person isn't taking messages.");
+    if (who === "connections") {
+      const { data: link } = await db(context.supabase)
+        .from("connections")
+        .select("id")
+        .eq("status", "accepted")
+        .or(
+          `and(requester_id.eq.${context.userId},addressee_id.eq.${data.profileId}),and(requester_id.eq.${data.profileId},addressee_id.eq.${context.userId})`,
+        )
+        .limit(1);
+      if (!link?.length) throw new Error("Only their connections can message this person.");
+    }
     // One call: the members-only policies leave no moment when a half-built conversation is
     // readable, so creating it and adding both people happens in the database.
     const { data: id, error } = await db(context.supabase).rpc("start_conversation", {

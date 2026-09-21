@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { ChevronRight, Laptop, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, Loading, SoonBadge } from "@/components/ml/kit";
+import { Card, Loading } from "@/components/ml/kit";
 import { securityRows } from "@/data/settings";
 import { listMySessions, revokeMySession } from "@/lib/security.functions";
 import { iconSize } from "@/lib/tokens";
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/settings/security")({
       { title: "Security | MusicLinkd" },
       {
         name: "description",
-        content: "Password, two-step verification and the devices signed in to your account.",
+        content: "Password and the devices signed in to your account.",
       },
       { property: "og:title", content: "Security | MusicLinkd" },
       { property: "og:description", content: "Keep your MusicLinkd account safe." },
@@ -71,35 +71,19 @@ function SecurityScreen() {
       <TopBar title="Security" subtitle="Password and devices" back="/settings" />
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="p-0">
-          {securityRows.map((r) =>
-            r.soon ? (
-              <button
-                key={r.key}
-                type="button"
-                aria-disabled="true"
-                onClick={() => toast(`${r.label} — coming soon`)}
-                className="flex w-full items-center gap-3 border-b border-border p-4 text-left last:border-0"
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="block text-1 font-semibold">{r.label}</span>
-                  <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
-                </span>
-                <SoonBadge />
-              </button>
-            ) : (
-              <Link
-                key={r.key}
-                to={r.to}
-                className="flex items-center gap-3 border-b border-border p-4 last:border-0"
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="block text-1 font-semibold">{r.label}</span>
-                  <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
-                </span>
-                <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" />
-              </Link>
-            ),
-          )}
+          {securityRows.map((r) => (
+            <Link
+              key={r.key}
+              to={r.to}
+              className="flex items-center gap-3 border-b border-border p-4 last:border-0"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-1 font-semibold">{r.label}</span>
+                <span className="block truncate text-1 text-muted-foreground">{r.hint}</span>
+              </span>
+              <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" />
+            </Link>
+          ))}
         </Card>
 
         <div>

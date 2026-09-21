@@ -79,14 +79,16 @@ function BusinessServices() {
         subtitle={b.name}
         back={`/business/${b.id}`}
         right={
-          <Link
-            to="/services/new"
-            search={{ step: "category" as const }}
-            aria-label="Add service"
-            className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
-          >
-            <Plus size={iconSize.md} />
-          </Link>
+          owner ? (
+            <Link
+              to="/services/new"
+              search={{ step: "category" as const }}
+              aria-label="Add service"
+              className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
+            >
+              <Plus size={iconSize.md} />
+            </Link>
+          ) : undefined
         }
       />
 

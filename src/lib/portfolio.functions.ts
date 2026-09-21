@@ -109,6 +109,24 @@ export const getMyPortfolioItem = createServerFn({ method: "GET" })
     return row;
   });
 
+/**
+ * One published work, for anybody holding its link (the Share button sends /portfolio/$id).
+ * Drafts stay the owner's: only a published row comes back.
+ */
+export const getPublicPortfolioItem = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    const client = await anonClient();
+    const { data: row, error } = await client
+      .from("portfolio_items")
+      .select("*")
+      .eq("id", data.id)
+      .eq("published", true)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
 export const savePortfolioItem = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => itemSchema.parse(d))
@@ -297,6 +315,21 @@ export const saveMyProfile = createServerFn({ method: "POST" })
     const patch = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== undefined),
     ) as Record<string, unknown>;
+    // discovery_prefs holds keys from several screens (onboarding's topics and instrument
+    // experience, Privacy's appear/who_can_message/show_phone, QR sharing), so a save merges into
+    // what is stored instead of replacing it and dropping the other screens' keys.
+    if (patch["discovery_prefs"]) {
+      const { data: current } = await context.supabase
+        .from("profiles")
+        .select("discovery_prefs")
+        .eq("id", context.userId)
+        .maybeSingle();
+      const stored = (current as { discovery_prefs?: unknown } | null)?.discovery_prefs;
+      patch["discovery_prefs"] = {
+        ...(stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {}),
+        ...(patch["discovery_prefs"] as Record<string, unknown>),
+      };
+    }
     const write = (values: Record<string, unknown>) =>
       context.supabase
         .from("profiles")

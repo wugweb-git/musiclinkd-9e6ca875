@@ -1,11 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState, Row, StatusPill } from "@/components/ml/kit";
-import { getPage } from "@/data/cms";
+import { EmptyState, Row, StatusPill } from "@/components/ml/kit";
+import { ContactSupport, ContentBlocks, HelpFeedback } from "@/components/ml/help";
+import { getHelpArticle, getHelpCentre, type HelpCategory } from "@/lib/help.functions";
 
 export const Route = createFileRoute("/help/$slug")({
-  head: ({ params }) => {
-    const page = getPage(params.slug);
+  // The guide from cms_pages; anything unpublished, missing or unreadable is the "moved" page.
+  loader: async ({ params }) => {
+    const [article, centre] = await Promise.all([
+      getHelpArticle({ data: { slug: params.slug } }).catch(() => null),
+      getHelpCentre().catch(() => null),
+    ]);
+    return { article, categories: (centre?.categories ?? []) as HelpCategory[] };
+  },
+  head: ({ loaderData }) => {
+    const page = loaderData?.article?.page;
     const title = page ? `${page.title} | MusicLinkd` : "Guide not found | MusicLinkd";
     const description = page?.summary ?? "This MusicLinkd guide is no longer available.";
     return {
@@ -24,10 +33,10 @@ export const Route = createFileRoute("/help/$slug")({
 });
 
 function HelpPage() {
-  const { slug } = Route.useParams();
-  const page = getPage(slug);
+  const { article, categories } = Route.useLoaderData();
+  const page = article?.page;
 
-  if (!page) {
+  if (!article || !page) {
     return (
       <Screen bottomNav={false}>
         <TopBar title="Not found" back="/help" />
@@ -58,68 +67,28 @@ function HelpPage() {
           </p>
         </header>
 
-        <div className="space-y-4">
-          {page.blocks.map((b, i) => {
-            if (b.type === "heading")
-              return (
-                <h2 key={i} className="pt-1 text-2">
-                  {b.text}
-                </h2>
-              );
-            if (b.type === "para")
-              return (
-                <p key={i} className="text-sm leading-relaxed text-muted-foreground">
-                  {b.text}
-                </p>
-              );
-            if (b.type === "list")
-              return (
-                <ul key={i} className="space-y-2">
-                  {b.items.map((it) => (
-                    <li
-                      key={it}
-                      className="flex gap-2.5 text-sm leading-relaxed text-muted-foreground"
-                    >
-                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                      <span className="min-w-0">{it}</span>
-                    </li>
-                  ))}
-                </ul>
-              );
-            if (b.type === "callout")
-              return (
-                <Card key={i} className="bg-background">
-                  <p className="text-1 leading-relaxed">{b.text}</p>
-                </Card>
-              );
-            return (
-              <BtnLink key={i} {...b.link} className="w-full">
-                {b.label}
-              </BtnLink>
-            );
-          })}
-        </div>
+        <ContentBlocks blocks={page.blocks} />
 
-        {page.related.length ? (
+        {article.related.length ? (
           <section className="pt-2">
             <h2 className="text-sm">Related</h2>
             <div className="mt-3 space-y-2">
-              {page.related.map((r) => {
-                const rel = getPage(r);
-                if (!rel) return null;
-                return (
-                  <Row
-                    key={r}
-                    title={rel.title}
-                    subtitle={rel.readTime}
-                    to="/help/$slug"
-                    params={{ slug: r }}
-                  />
-                );
-              })}
+              {article.related.map((rel) => (
+                <Row
+                  key={rel.slug}
+                  title={rel.title}
+                  subtitle={rel.readTime}
+                  to="/help/$slug"
+                  params={{ slug: rel.slug }}
+                />
+              ))}
             </div>
           </section>
         ) : null}
+
+        <HelpFeedback slug={page.slug} />
+
+        <ContactSupport categories={categories} pageSlug={page.slug} defaultTopic={page.category} />
       </article>
     </Screen>
   );

@@ -28,8 +28,8 @@ export const Route = createFileRoute("/settings/account")({
 
 type FieldKey = "email" | "phone" | "username" | "language" | "currency";
 
-/** Language and currency have no schema or consumer yet — the app only ever shows English/₹. */
-const SOON_FIELDS = new Set<FieldKey>(["language", "currency"]);
+/** Fixed for everyone (owner, 18 Sep 2026): English and ₹. Shown, not changeable. */
+const FIXED_FIELDS = new Set<FieldKey>(["language", "currency"]);
 
 function AccountScreen() {
   const queryClient = useQueryClient();
@@ -118,7 +118,7 @@ function AccountScreen() {
       <div className="space-y-4 px-5 pt-4 pb-6">
         <Card className="p-0">
           {fields.map((f) => {
-            const soon = SOON_FIELDS.has(f.key);
+            const fixed = FIXED_FIELDS.has(f.key);
             const locked = f.key === "username" && f.action === "Locked";
             return (
               <div
@@ -132,9 +132,7 @@ function AccountScreen() {
                     {f.verified ? <StatusPill label="verified" tone="good" /> : null}
                   </p>
                 </div>
-                {soon ? (
-                  <SoonBadge />
-                ) : locked ? (
+                {fixed ? null : locked ? (
                   <span className="shrink-0 text-1 text-muted-foreground">Locked</span>
                 ) : (
                   <button

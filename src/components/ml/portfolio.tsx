@@ -19,6 +19,8 @@ import {
   X,
   type LucideIcon,
   ChevronDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
@@ -128,6 +130,9 @@ export function WorkCard({
     /** False when three works already lead and this one is not one of them. */
     canFeature: boolean;
     busy: boolean;
+    /** Move one place up or down the list; omitted at the top or bottom. */
+    onMoveUp?: (() => void) | undefined;
+    onMoveDown?: (() => void) | undefined;
   };
 }) {
   const t = workType(item.kind);
@@ -245,6 +250,26 @@ export function WorkCard({
               </>
             ) : null}
           </div>
+          {actions && (actions.onMoveUp || actions.onMoveDown) ? (
+            <div className="flex items-center justify-end gap-2">
+              <IconBtn
+                label="Move up"
+                variant="outline"
+                disabled={actions.busy || !actions.onMoveUp}
+                onClick={() => actions.onMoveUp?.()}
+              >
+                <ArrowUp size={iconSize.sm} aria-hidden />
+              </IconBtn>
+              <IconBtn
+                label="Move down"
+                variant="outline"
+                disabled={actions.busy || !actions.onMoveDown}
+                onClick={() => actions.onMoveDown?.()}
+              >
+                <ArrowDown size={iconSize.sm} aria-hidden />
+              </IconBtn>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

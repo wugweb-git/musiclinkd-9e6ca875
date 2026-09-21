@@ -412,6 +412,12 @@ export type DirectoryPerson = {
   reviewCount: number;
 };
 
+/**
+ * Settings > Privacy > "Appear in Discover": No stores discovery_prefs.appear = false, and those
+ * people drop out of the directory and search. Unset (the default) means they appear.
+ */
+const APPEARS_IN_DISCOVER = "discovery_prefs->>appear.is.null,discovery_prefs->>appear.neq.false";
+
 /** A stored profile as a directory entry. */
 function directoryPerson(r: ProfileBase): DirectoryPerson {
   const reviewCount = r.review_count ?? 0;
@@ -449,7 +455,11 @@ export const listPeopleByRole = createServerFn({ method: "GET" })
     const client = await anonClient();
     const { data: rows, error } = await softSelect(
       (columns) => {
-        let query = client.from("profiles").select(columns).eq("visibility", "public");
+        let query = client
+          .from("profiles")
+          .select(columns)
+          .eq("visibility", "public")
+          .or(APPEARS_IN_DISCOVER);
         if (data.role) query = query.contains("roles", [data.role]);
         return query.order("is_verified", { ascending: false }).limit(data.limit ?? 40);
       },
@@ -485,9 +495,11 @@ export const searchPeople = createServerFn({ method: "GET" })
       let query = client
         .from("profiles")
         .select(columns, { count: "exact" })
-        .eq("visibility", "public");
-      if (text) {
-        const like = `%${text}%`;
+        .eq("visibility", "public")
+        .or(APPEARS_IN_DISCOVER);
+      // Every word has to appear somewhere, so "tabla mumbai" finds a tabla player in Mumbai.
+      for (const word of text.split(/\s+/).filter(Boolean).slice(0, 4)) {
+        const like = `%${word}%`;
         query = query.or(
           `display_name.ilike.${like},username.ilike.${like},headline.ilike.${like},city.ilike.${like}`,
         );
@@ -523,6 +535,42 @@ export const isMyAccountBusiness = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     return Boolean(data);
+  });
+
+/**
+ * The company line on the signed-in account's share card: a business's registered name
+ * (profile_business.legal_name) or its name; for talent, the org of their current experience
+ * (profile_experience with no end year), if any. Null when there is none.
+ */
+export const getMyCompany = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<string | null> => {
+    const client = context.supabase as unknown as SupabaseClient;
+    const [business, profile, current] = await Promise.all([
+      client
+        .from("profile_business")
+        .select("legal_name")
+        .eq("profile_id", context.userId)
+        .maybeSingle(),
+      client.from("profiles").select("display_name").eq("id", context.userId).maybeSingle(),
+      client
+        .from("profile_experience")
+        .select("org")
+        .eq("profile_id", context.userId)
+        .is("end_year", null)
+        .not("org", "is", null)
+        .order("sort_order")
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    if (business.error) throw new Error(business.error.message);
+    if (business.data) {
+      const legal = (business.data as { legal_name: string | null }).legal_name?.trim();
+      const name = (profile.data as { display_name: string | null } | null)?.display_name?.trim();
+      return legal || name || null;
+    }
+    if (current.error) throw new Error(current.error.message);
+    return (current.data as { org: string | null } | null)?.org?.trim() || null;
   });
 
 /*

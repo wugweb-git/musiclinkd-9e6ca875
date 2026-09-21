@@ -26,6 +26,7 @@ import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import { TextLink } from "@/components/ml/links";
 import { CoverHero, ReviewCard } from "@/components/ml/profile";
+import { CallBtn } from "@/components/ml/person-profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
@@ -387,6 +388,7 @@ function BusinessActions({
         Message
       </Btn>
       {book}
+      <CallBtn profileId={profileId} />
       <IconBtn
         label={followOn ? "Following" : "Follow"}
         variant={followOn ? "ghost" : "outline"}
