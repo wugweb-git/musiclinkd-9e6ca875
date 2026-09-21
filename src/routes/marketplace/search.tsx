@@ -16,6 +16,7 @@ import { readRecentSearches } from "@/lib/device-history";
 import { useSearchRecorder } from "@/lib/search-events";
 import { popularSearches, saveSearch } from "@/lib/searches.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { applyMarketFilter, emptyMarketFilter, type MarketFilter } from "@/lib/market-filter";
 
 export const Route = createFileRoute("/marketplace/search")({
   validateSearch: (search: Record<string, unknown>): { q?: string } =>
@@ -56,13 +57,15 @@ function MarketSearch() {
   const [sort, setSort] = useState(sorts[0]!);
   const catalog = Route.useLoaderData();
 
-  const results = q.trim()
+  const [filter, setFilter] = useState<MarketFilter>(emptyMarketFilter);
+  const matched = q.trim()
     ? catalog.filter((l) =>
         `${l.title} ${l.subtitle} ${l.subcategory} ${l.brand ?? ""} ${l.location}`
           .toLowerCase()
           .includes(q.toLowerCase().split(" ")[0] ?? ""),
       )
     : [];
+  const results = applyMarketFilter(matched, filter);
 
   // Recent searches are this device's own (src/lib/device-history.ts); popular ones are the
   // searches most run in the Market city over the last 30 days (search_events). A search counts
@@ -169,7 +172,9 @@ function MarketSearch() {
       <MarketFilterSheet
         open={filters}
         onClose={() => setFilters(false)}
-        results={results.length}
+        items={matched}
+        value={filter}
+        onApply={setFilter}
       />
       <SortSheet
         open={sortOpen}

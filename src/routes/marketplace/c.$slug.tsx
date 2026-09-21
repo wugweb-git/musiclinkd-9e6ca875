@@ -4,6 +4,7 @@ import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { EmptyState, ListingGrid, MarketFilterSheet, SortSheet } from "@/components/ml/market";
 import { rentalCategories } from "@/data/rentals";
 import { loadCatalogListings } from "@/lib/market-view";
+import { applyMarketFilter, emptyMarketFilter, type MarketFilter } from "@/lib/market-filter";
 
 export const Route = createFileRoute("/marketplace/c/$slug")({
   // Database listings in their mapped category.
@@ -38,7 +39,11 @@ function CategoryScreen() {
   const catalog = Route.useLoaderData();
 
   const inCategory = catalog.filter((l) => l.gear === slug);
-  const items = inCategory.filter((l) => sub === "All" || l.subcategory === sub);
+  const [filter, setFilter] = useState<MarketFilter>(emptyMarketFilter);
+  const items = applyMarketFilter(
+    inCategory.filter((l) => sub === "All" || l.subcategory === sub),
+    filter,
+  );
 
   return (
     <Screen>
@@ -74,7 +79,13 @@ function CategoryScreen() {
           />
         )}
       </div>
-      <MarketFilterSheet open={filters} onClose={() => setFilters(false)} results={items.length} />
+      <MarketFilterSheet
+        open={filters}
+        onClose={() => setFilters(false)}
+        items={inCategory}
+        value={filter}
+        onApply={setFilter}
+      />
       <SortSheet
         open={sortOpen}
         onClose={() => setSortOpen(false)}

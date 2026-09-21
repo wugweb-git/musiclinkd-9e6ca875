@@ -34,6 +34,9 @@ export type Listing = {
   category: string;
   /** Goods: the market category (instruments, audio, studio, dj, live, other). */
   gear?: string;
+  /** Goods: whether it can be picked up, or delivered. */
+  pickup?: boolean;
+  deliverable?: boolean;
   subcategory: string;
   brand?: string;
   rating?: number;

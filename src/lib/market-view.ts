@@ -130,7 +130,11 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     distance: "",
     category,
     ...(type === "product" || type === "rental"
-      ? { gear: gearCategoryOf(row.item_category, row.item_category_kind) }
+      ? {
+          gear: gearCategoryOf(row.item_category, row.item_category_kind),
+          pickup: row.pickup_available ?? true,
+          deliverable: row.delivery_available ?? false,
+        }
       : {}),
     subcategory: subcategoryOf(row, category, labels),
     saves: 0,

@@ -30,7 +30,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Listing } from "@/data/market";
-import type { RentalItem } from "@/data/rentals";
+import { rentalCategories, type RentalItem } from "@/data/rentals";
+import {
+  applyMarketFilter,
+  emptyMarketFilter,
+  priceBands,
+  rateOptions,
+  type MarketFilter,
+} from "@/lib/market-filter";
 import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
 import { EmptyState as BaseEmptyState, Price, Segmented } from "./kit";
 import { rupeeParts, unitLabel, type PriceParts } from "@/lib/price";
@@ -749,71 +756,126 @@ export function CategorySheet({
   );
 }
 
-/** Everything but Listing type: pick as many as apply, so they render as Chip clusters. */
-const filterGroups: { label: string; options: string[] }[] = [
-  { label: "Category", options: ["Instruments", "Audio Gear", "Studio", "Services", "Spaces"] },
-  { label: "Condition", options: ["New", "Like New", "Excellent", "Good", "Fair"] },
-  { label: "Brand", options: ["Fender", "Neumann", "Focusrite", "Roland", "Swaraj", "Yamaha"] },
-  { label: "Location", options: marketCities },
-  { label: "Distance", options: ["Within 5 km", "Within 15 km", "Within 50 km", "Anywhere"] },
-  { label: "Price", options: ["Under ₹10k", "₹10k–50k", "₹50k–1L", "Above ₹1L"] },
+/** The filter sheet's pick-as-many groups; which one a chip toggles is its key in MarketFilter. */
+const filterGroups: {
+  key: "categories" | "conditions" | "rates" | "fulfilment" | "prices";
+  label: string;
+  options: { label: string; value: string }[];
+  /** Only for rentals: shown unless the type is For sale. */
+  rentalOnly?: boolean;
+}[] = [
+  {
+    key: "categories",
+    label: "Category",
+    options: rentalCategories.map((c) => ({ label: c.label, value: c.slug })),
+  },
+  {
+    key: "conditions",
+    label: "Condition",
+    options: ["New", "Like New", "Used"].map((c) => ({ label: c, value: c })),
+  },
+  { key: "rates", label: "Rental rate", options: rateOptions, rentalOnly: true },
+  {
+    key: "fulfilment",
+    label: "Fulfilment",
+    options: ["Pickup", "Delivery"].map((c) => ({ label: c, value: c })),
+  },
+  {
+    key: "prices",
+    label: "Price",
+    options: priceBands.map((b) => ({ label: b.label, value: b.label })),
+  },
 ];
 
-/** A listing is exactly one of these, so it's a tab row (Segmented), not a Chip cluster. */
-// Services live in Discover, not Market (owner, 18 Sep 2026).
-const listingTypes = ["For sale", "Rental", "Space"] as const;
+/** Sale or rental is one or the other, so it's a tab row (Segmented), not a Chip cluster. */
+const listingTypes = ["All", "For sale", "For rent"] as const;
 
+/**
+ * Market's filters. The sheet edits its own copy and hands it back on Show; the count on that
+ * button is what the copy would show from `items`.
+ */
 export function MarketFilterSheet({
   open,
   onClose,
-  results = 214,
+  items,
+  value,
+  onApply,
 }: {
   open: boolean;
   onClose: () => void;
-  results?: number;
+  items: Listing[];
+  value: MarketFilter;
+  onApply: (f: MarketFilter) => void;
 }) {
-  const [type, setType] = useState<(typeof listingTypes)[number]>("For sale");
-  const [selected, setSelected] = useState<string[]>(["Mumbai"]);
-  const [verified, setVerified] = useState(true);
-  const [available, setAvailable] = useState(false);
+  const [f, setF] = useState<MarketFilter>(value);
+  useEffect(() => {
+    if (open) setF(value);
+  }, [open, value]);
+  const results = applyMarketFilter(items, f).length;
 
-  const toggle = (v: string) =>
-    setSelected((s) => (s.includes(v) ? s.filter((x) => x !== v) : [...s, v]));
+  const toggle = (key: (typeof filterGroups)[number]["key"], v: string) =>
+    setF((cur) => ({
+      ...cur,
+      [key]: cur[key].includes(v) ? cur[key].filter((x) => x !== v) : [...cur[key], v],
+    }));
 
   return (
     <Sheet open={open} onClose={onClose}>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-3">Filters</h2>
-        <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
+        <button
+          type="button"
+          onClick={() => setF(emptyMarketFilter)}
+          className="text-1 font-semibold text-foreground"
+        >
           Clear all
         </button>
       </div>
 
       <div className="mb-5">
-        <h3 className="pill mb-2 bg-background text-muted-foreground">Listing type</h3>
-        <Segmented value={type} options={listingTypes} onChange={setType} />
+        <h3 className="mb-2 text-sm font-semibold text-foreground">Listing type</h3>
+        <Segmented
+          value={f.type}
+          options={listingTypes}
+          onChange={(type) => setF((cur) => ({ ...cur, type }))}
+        />
       </div>
 
-      {filterGroups.map((g) => (
-        <div key={g.label} className="mb-5">
-          <h3 className="pill mb-2 bg-background text-muted-foreground">{g.label}</h3>
-          <div className="flex flex-wrap gap-2">
-            {g.options.map((o) => (
-              <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
-                {o}
-              </Chip>
-            ))}
+      {filterGroups
+        .filter((g) => !(g.rentalOnly && f.type === "For sale"))
+        .map((g) => (
+          <div key={g.key} className="mb-5">
+            <h3 className="mb-2 text-sm font-semibold text-foreground">{g.label}</h3>
+            <div className="flex flex-wrap gap-2">
+              {g.options.map((o) => (
+                <Chip
+                  key={o.value}
+                  active={f[g.key].includes(o.value)}
+                  onClick={() => toggle(g.key, o.value)}
+                >
+                  {o.label}
+                </Chip>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      <div className="mb-6 divide-y divide-border rounded-lg border border-border">
-        <SwitchRow label="Verified sellers only" value={verified} onChange={setVerified} />
-        <SwitchRow label="Available right now" value={available} onChange={setAvailable} />
+      <div className="mb-6 rounded-lg border border-border">
+        <SwitchRow
+          label="Verified sellers only"
+          value={f.verifiedOnly}
+          onChange={(verifiedOnly) => setF((cur) => ({ ...cur, verifiedOnly }))}
+        />
       </div>
 
-      <Btn className="w-full" onClick={onClose}>
-        Show {results} results
+      <Btn
+        className="w-full"
+        onClick={() => {
+          onApply(f);
+          onClose();
+        }}
+      >
+        Show {results} result{results === 1 ? "" : "s"}
       </Btn>
     </Sheet>
   );
@@ -836,7 +898,7 @@ function SwitchRow({
       onClick={() => onChange(!value)}
       className="flex w-full items-center justify-between px-4 py-4 text-left"
     >
-      <span className="text-sm font-medium">{label}</span>
+      <span className="text-sm font-medium text-foreground">{label}</span>
       <span
         className={`relative h-7 w-12 rounded-full transition-colors ${value ? "bg-primary" : "bg-border"}`}
       >

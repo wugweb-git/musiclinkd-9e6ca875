@@ -22,6 +22,7 @@ import { GearCta } from "@/components/ml/gear-cta";
 import { iconSize } from "@/lib/tokens";
 import { loadCatalogListings } from "@/lib/market-view";
 import { readListingVisits } from "@/lib/device-history";
+import { applyMarketFilter, emptyMarketFilter, type MarketFilter } from "@/lib/market-filter";
 
 export const Route = createFileRoute("/marketplace/")({
   head: () => ({
@@ -68,8 +69,10 @@ function MarketHome() {
   // You puts the listings matched to the viewer's instruments, saves, rentals and city first.
   const recs = useRecommendations();
   const ranked = rankBy(catalog, recs?.listings, (l) => l.dbId ?? l.id);
-  const allForSale = ranked.filter((l) => l.type === "product");
-  const allForRent = ranked.filter((l) => l.type === "rental");
+  const [filter, setFilter] = useState<MarketFilter>(emptyMarketFilter);
+  const shown = applyMarketFilter(ranked, filter);
+  const allForSale = shown.filter((l) => l.type === "product");
+  const allForRent = shown.filter((l) => l.type === "rental");
   const forSale = allForSale.slice(0, 8);
   const forRent = allForRent.slice(0, 8);
   // Listings opened on this device, most recent first, read live from the catalog. Goods only:
@@ -208,7 +211,13 @@ function MarketHome() {
         <GearCta />
       </div>
 
-      <MarketFilterSheet open={filters} onClose={() => setFilters(false)} />
+      <MarketFilterSheet
+        open={filters}
+        onClose={() => setFilters(false)}
+        items={ranked}
+        value={filter}
+        onApply={setFilter}
+      />
       <LocationSheet
         open={locationOpen}
         onClose={() => setLocationOpen(false)}
