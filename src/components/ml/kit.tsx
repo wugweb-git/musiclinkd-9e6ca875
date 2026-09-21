@@ -5,7 +5,7 @@
  */
 import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { ChevronRight, Star, WifiOff } from "lucide-react";
+import { ChevronRight, Star, WifiOff, type LucideIcon } from "lucide-react";
 import { unitLabel, type PriceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 
@@ -153,12 +153,15 @@ export function SegmentedField<T extends string>({
   options,
   onChange,
   label,
+  icons,
 }: {
   value: T;
   options: readonly T[];
   onChange: (v: T) => void;
   /** Names the group for screen readers when there is no visible label beside it. */
   label?: string;
+  /** An icon before an option's label. */
+  icons?: Partial<Record<T, LucideIcon>>;
 }) {
   return (
     <div
@@ -173,10 +176,16 @@ export function SegmentedField<T extends string>({
           role="radio"
           aria-checked={value === o}
           onClick={() => onChange(o)}
-          className={`min-w-0 flex-1 truncate rounded-full px-2 py-2 text-1 font-semibold transition-colors ${
+          className={`flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-full px-2 py-2 text-1 font-semibold transition-colors ${
             value === o ? "bg-brand/20 text-pink-on-tint" : "text-muted-foreground"
           }`}
         >
+          {icons?.[o]
+            ? (() => {
+                const Icon: LucideIcon = icons[o]!;
+                return <Icon size={iconSize.sm} strokeWidth={2} aria-hidden />;
+              })()
+            : null}
           {o}
         </button>
       ))}

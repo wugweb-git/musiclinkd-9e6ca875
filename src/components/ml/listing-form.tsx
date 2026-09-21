@@ -15,6 +15,8 @@ import {
   Search,
   Truck,
   ArrowLeftRight,
+  CalendarClock,
+  Tag,
   Sparkles,
   Star,
   type LucideIcon,
@@ -335,6 +337,7 @@ export function ListingWhatStep({ value, onChange }: StepProps) {
         label="Listing for"
         value={value.mode}
         options={listingModes}
+        icons={{ Sell: Tag, "Rent out": CalendarClock }}
         onChange={(mode) => onChange({ mode })}
       />
       <Field label="Product type" id="listing-type">
