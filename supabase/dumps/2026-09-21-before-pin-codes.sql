@@ -1,0 +1,44 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921290000_pin_codes_and_maps.sql.
+--
+-- Columns profiles.pin_code and profile_business.maps_url did not exist.
+-- blue.sitar.venues and sound.solutions: profiles.city, state, avatar_url NULL; profile_business
+-- business_address, logo_url NULL.
+--
+-- profiles.area (username: area):
+--   basement.jam.rooms: Hauz Khas; dj.noor: Bandra; headroom.mastering: Indiranagar; krimson.avenue: Koramangala;
+--   marigold.reel: Andheri West; meher.kaur: Hauz Khas; nine.lamps.media: Indiranagar; nithya.balan: T. Nagar;
+--   octave.sound.labs: Andheri West; pulse.live.systems: Lower Parel; rahul.iyer: Indiranagar; ravi.deshmukh: Dadar;
+--   soundhouse.studio: Andheri West; swaraj.instruments: Girgaon; tarang.audio.visual: Nungambakkam;
+--   waveform.podcast.studio: Lower Parel; yash.raj.sound.studios: Andheri West; zaid.qureshi: Dharavi.
+--   Every other profile: area NULL or empty.
+--
+-- profile_business.business_address (username: address):
+--   analog.ensemble.studios: Park Street, Kolkata; basement.jam.rooms: Hauz Khas, Delhi;
+--   beatcraft.studios: Andheri West, Mumbai; beatroute.spaces: Bandra, Mumbai; blue.room.mixing.suite: Juhu, Mumbai;
+--   crimson.owls.academy: Anjuna, Goa; echo.parade.academy: Sector 17, Chandigarh;
+--   headroom.mastering: Indiranagar, Bengaluru; ironwood.live.hall.and.venue: Baner, Pune;
+--   ironwood.records: Hauz Khas, New Delhi; jam.room.bandra: Bandra East, Mumbai; krimson.avenue: Koramangala, Bengaluru;
+--   marigold.reel: Andheri West, Mumbai; monsoon.machine.records: Jubilee Hills, Hyderabad;
+--   neon.ensemble.agency: Indiranagar, Bengaluru; nine.lamps.media: Indiranagar, Bengaluru;
+--   nisha.rao.events: Koramangala, Bengaluru; octave.sound.labs: Andheri West, Mumbai;
+--   paper.parade.studios: Andheri West, Mumbai; pulse.live.systems: Lower Parel, Mumbai;
+--   resonance.acoustic.suites: Indiranagar, Bengaluru; silver.riot.agency: Indiranagar, Bengaluru;
+--   soundhouse.bandra: Off Carter Road, Bandra West, Mumbai 400050; soundhouse.studio: Andheri West, Mumbai;
+--   swar.academy.of.music: Juhu, Mumbai; swaraj.instruments: Girgaon, Mumbai; tarang.audio.visual: Nungambakkam, Chennai;
+--   the.hive.recording.studio: Andheri West, Mumbai; the.humming.tree.live.room: Mumbai, Maharashtra;
+--   velvet.static.records: Jubilee Hills, Hyderabad; velvet.vocal.and.foley.studio: Juhu, Mumbai;
+--   waveform.podcast.studio: Lower Parel, Mumbai; wugweb: Bandra West, Link Road, Mumbai 400050;
+--   yash.raj.sound.studios: Andheri West, Mumbai.
+--
+-- studios.location (slug: location):
+--   analog-ensemble-studios: Park Street, Kolkata; basement-jam: Hauz Khas, Delhi; beatcraft-studios: Andheri West, Mumbai;
+--   beatroute-spaces: Bandra, Mumbai; blue-room-mixing-suite: Juhu, Mumbai; headroom-mastering: Indiranagar, Bengaluru;
+--   ironwood-live-hall-and-venue: Baner, Pune; jam-room-bandra: Bandra East, Mumbai; krimson-avenue: Koramangala, Bengaluru;
+--   octave-sound-labs: Andheri West, Mumbai; paper-parade-studios: Andheri West, Mumbai;
+--   resonance-acoustic-suites: Indiranagar, Bengaluru; soundhouse-bandra: Off Carter Road, Bandra West, Mumbai 400050;
+--   soundhouse-studio: Andheri West, Mumbai; the-hive-recording-studio: Andheri West, Mumbai;
+--   the-humming-tree-live-room: Mumbai, Maharashtra; velvet-vocal-and-foley-studio: Juhu, Mumbai;
+--   waveform-podcast: Lower Parel, Mumbai; wugweb: Bandra West, Link Road, Mumbai; yash-raj-sound-studios: Andheri West, Mumbai.
+--
+-- To undo: see the Rollback note at the top of the migration.
