@@ -686,6 +686,10 @@ export const createMyBusiness = createServerFn({ method: "POST" })
         ...(data.pinCode ? { pin_code: data.pinCode } : {}),
         ...(data.tagline ? { headline: data.tagline } : {}),
         ...(role && !current?.roles?.length ? { roles: [role] } : {}),
+        // Creating the business is the end of a business account's onboarding; without this the
+        // next sign-in would send it back to /onboarding.
+        onboarding_complete: true,
+        onboarding_step: null,
       } as never)
       .eq("id", context.userId);
     if (error) throw new Error(error.message);
