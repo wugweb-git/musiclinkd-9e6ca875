@@ -973,6 +973,164 @@ export function PhotoPicker({
   );
 }
 
+/**
+ * A labelled field that opens a bottom drawer (owner, 22 Sep 2026: every choice list in onboarding
+ * is a drawer). The drawer itself is the shared SheetSelect / SheetMultiSelect.
+ */
+export function DrawerField({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string | undefined;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <p className="mb-1.5 block text-sm font-medium text-foreground">{label}</p>
+      {children}
+      {hint ? <p className="mt-1.5 text-1 text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/**
+ * A date picked in a bottom drawer: day, month and year columns, then Done. `value` and
+ * `onChange` use YYYY-MM-DD ("" when empty). Years run from `maxYear` back to 1920.
+ */
+export function DateDrawerField({
+  title,
+  value,
+  onChange,
+  placeholder = "Choose",
+  maxYear = new Date().getFullYear(),
+}: {
+  title: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  maxYear?: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const [y0 = "", m0 = "", d0 = ""] = value ? value.split("-") : [];
+  const [year, setYear] = useState(y0);
+  const [month, setMonth] = useState(m0);
+  const [day, setDay] = useState(d0);
+  const years = Array.from({ length: maxYear - 1919 }, (_, i) => String(maxYear - i));
+  const daysIn = year && month ? new Date(Number(year), Number(month), 0).getDate() : 31;
+  const days = Array.from({ length: daysIn }, (_, i) => String(i + 1).padStart(2, "0"));
+  const shown = value
+    ? new Date(`${value}T00:00:00`).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : placeholder;
+
+  function openDrawer() {
+    setYear(y0);
+    setMonth(m0);
+    setDay(d0);
+    setOpen(true);
+  }
+
+  const column = (
+    label: string,
+    items: { value: string; label: string }[],
+    picked: string,
+    pick: (v: string) => void,
+  ) => (
+    <div className="min-w-0 flex-1">
+      <p className="mb-2 text-center text-1 font-semibold text-muted-foreground">{label}</p>
+      <ul className="max-h-[40vh] space-y-1 overflow-y-auto" role="listbox" aria-label={label}>
+        {items.map((it) => {
+          const on = it.value === picked;
+          return (
+            <li key={it.value} role="option" aria-selected={on}>
+              <button
+                type="button"
+                onClick={() => pick(it.value)}
+                className={cn(
+                  "state-layer min-h-11 w-full rounded-lg text-sm font-semibold",
+                  on ? "bg-foreground text-background" : "bg-subtle",
+                )}
+              >
+                {it.label}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        onClick={openDrawer}
+        className="flex h-13 w-full items-center justify-between gap-2 rounded-full border border-border bg-card px-5 text-left text-sm"
+      >
+        <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
+          {shown}
+        </span>
+        <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
+      </button>
+      <Sheet open={open} onClose={() => setOpen(false)} title={title}>
+        <div className="flex gap-2">
+          {column(
+            "Day",
+            days.map((d) => ({ value: d, label: String(Number(d)) })),
+            day,
+            setDay,
+          )}
+          {column(
+            "Month",
+            MONTHS.map((m, i) => ({ value: String(i + 1).padStart(2, "0"), label: m })),
+            month,
+            setMonth,
+          )}
+          {column(
+            "Year",
+            years.map((y) => ({ value: y, label: y })),
+            year,
+            setYear,
+          )}
+        </div>
+        <div className="mt-4 flex gap-2">
+          {value ? (
+            <Btn
+              variant="outline"
+              className="flex-1"
+              onClick={() => {
+                onChange("");
+                setOpen(false);
+              }}
+            >
+              Clear
+            </Btn>
+          ) : null}
+          <Btn
+            className="flex-1"
+            disabled={!day || !month || !year}
+            onClick={() => {
+              const d = String(Math.min(Number(day), daysIn)).padStart(2, "0");
+              onChange(`${year}-${month}-${d}`);
+              setOpen(false);
+            }}
+          >
+            Done
+          </Btn>
+        </div>
+      </Sheet>
+    </>
+  );
+}
+
 export function SelectField({
   label,
   value,

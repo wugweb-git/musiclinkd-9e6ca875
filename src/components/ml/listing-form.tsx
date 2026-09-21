@@ -282,6 +282,35 @@ export function Field({
   );
 }
 
+/** One row in a SheetSelect or SheetMultiSelect drawer. */
+export type DrawerOption = {
+  value: string;
+  label: string;
+  /** A second line under the label ("Studios, stages, sets"). */
+  hint?: string | undefined;
+  icon?: LucideIcon;
+  iconNode?: ReactNode;
+};
+
+/** The round icon at the start of a drawer row; text-only lists (states, cities) have none. */
+function OptionIcon({ option: o }: { option: DrawerOption }) {
+  if (!o.iconNode && !o.icon) return null;
+  return (
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip">
+      {o.iconNode ?? (o.icon ? <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden /> : null)}
+    </span>
+  );
+}
+
+function OptionText({ option: o }: { option: DrawerOption }) {
+  return (
+    <span className="min-w-0 flex-1">
+      <span className="block truncate text-sm font-semibold">{o.label}</span>
+      {o.hint ? <span className="mt-0.5 block text-1 text-muted-foreground">{o.hint}</span> : null}
+    </span>
+  );
+}
+
 /**
  * Like SheetSelect, for picking several (up to `max`): rows toggle, Done closes. The field reads
  * the picked labels joined.
@@ -296,7 +325,7 @@ export function SheetMultiSelect({
 }: {
   title: string;
   value: string[];
-  options: readonly { value: string; label: string; icon?: LucideIcon; iconNode?: ReactNode }[];
+  options: readonly DrawerOption[];
   onChange: (value: string[]) => void;
   placeholder: string;
   max: number;
@@ -340,13 +369,8 @@ export function SheetMultiSelect({
                   }
                   className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${on ? "border-foreground" : "border-transparent"} ${blocked ? "opacity-50" : ""}`}
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip">
-                    {o.iconNode ??
-                      (o.icon ? (
-                        <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden />
-                      ) : null)}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">{o.label}</span>
+                  <OptionIcon option={o} />
+                  <OptionText option={o} />
                   {on ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
                 </button>
               </li>
@@ -376,7 +400,7 @@ export function SheetSelect({
 }: {
   title: string;
   value: string | null;
-  options: readonly { value: string; label: string; icon?: LucideIcon; iconNode?: ReactNode }[];
+  options: readonly DrawerOption[];
   onChange: (value: string) => void;
   placeholder: string;
   searchable?: boolean;
@@ -437,13 +461,8 @@ export function SheetSelect({
                   }}
                   className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${on ? "border-foreground" : "border-transparent"}`}
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
-                    {o.iconNode ??
-                      (o.icon ? (
-                        <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden />
-                      ) : null)}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">{o.label}</span>
+                  <OptionIcon option={o} />
+                  <OptionText option={o} />
                   {on ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
                 </button>
               </li>

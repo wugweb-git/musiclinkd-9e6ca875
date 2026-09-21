@@ -10,7 +10,24 @@ import { supabase } from "@/integrations/supabase/client";
  * The generated Supabase types predate these tables, hence the casts at the two call sites.
  */
 
-export type TaxonomyCategory = "person_types" | "instruments" | "genres" | "languages";
+const CATEGORIES = [
+  "person_types",
+  "instruments",
+  "genres",
+  "languages",
+  // Onboarding choices (20260922170000_onboarding_choices.sql and earlier): metadata.app_key is
+  // the value profiles store, metadata.description the hint a drawer shows.
+  "work_modes",
+  "available_for",
+  "intents",
+  "discovery_prefs",
+  "experience_levels",
+  "genders",
+  "indian_states",
+  "cities",
+] as const;
+
+export type TaxonomyCategory = (typeof CATEGORIES)[number];
 
 /** The `flow` filter on person_types: which kind of user an option is for. */
 export type UserFlow = "talent_user" | "business_user";
@@ -19,7 +36,18 @@ export type TaxonomyOption = {
   slug: string;
   label: string;
   sortOrder: number;
-  metadata: { group?: string; flow?: UserFlow; family?: string; scope?: string } | null;
+  metadata: {
+    group?: string;
+    flow?: UserFlow;
+    family?: string;
+    scope?: string;
+    /** The value profiles store for this option, when it isn't the slug. */
+    app_key?: string;
+    /** A one-line hint under the label. */
+    description?: string;
+    /** cities: the state the city is in. */
+    state?: string;
+  } | null;
 };
 
 export type PersonaBucket = { instruments: TaxonomyOption[]; genres: TaxonomyOption[] };
@@ -54,16 +82,14 @@ export function loadTaxonomy(): Promise<Record<TaxonomyCategory, TaxonomyOption[
     };
     allOptions = query
       .select("category_key,slug,label,sort_order,metadata")
-      .in("category_key", ["person_types", "instruments", "genres", "languages"])
+      .in("category_key", [...CATEGORIES])
       .order("sort_order")
       .then(({ data, error }) => {
         if (error || !data) throw error ?? new Error("No taxonomy returned");
-        const out: Record<TaxonomyCategory, TaxonomyOption[]> = {
-          person_types: [],
-          instruments: [],
-          genres: [],
-          languages: [],
-        };
+        const out = Object.fromEntries(CATEGORIES.map((c) => [c, []])) as unknown as Record<
+          TaxonomyCategory,
+          TaxonomyOption[]
+        >;
         for (const r of data) {
           out[r.category_key]?.push({
             slug: r.slug,
@@ -126,6 +152,18 @@ export function talentTypes(options: TaxonomyOption[]): TaxonomyOption[] {
 
 function isBusinessFlow(flow: string | undefined) {
   return flow === "business_user" || flow === "business";
+}
+
+/**
+ * A category's options as drawer rows: the value profiles store (metadata.app_key, else the slug),
+ * the label, and the hint line.
+ */
+export function choicesFor(options: TaxonomyOption[] | undefined) {
+  return (options ?? []).map((o) => ({
+    value: o.metadata?.app_key ?? o.slug,
+    label: o.label,
+    hint: o.metadata?.description,
+  }));
 }
 
 /** slug → label for display; falls back to the slug so nothing renders blank. */

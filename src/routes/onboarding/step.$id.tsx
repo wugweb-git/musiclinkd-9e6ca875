@@ -5,6 +5,7 @@ import { Btn } from "@/components/ml/ui";
 import { AuthNotice, AuthTextButton } from "@/components/ml/auth";
 import { BrandIcon } from "@/components/ml/brand-icons";
 import {
+  choicesFor,
   labelFor,
   talentGroups,
   talentTypes,
@@ -27,11 +28,11 @@ import { useUsernameAvailability, type UsernameStatus } from "@/lib/username";
 import { listMyPortfolio, type UsernameClaim } from "@/lib/portfolio.functions";
 import {
   ChipPicker,
+  DateDrawerField,
+  DrawerField,
   PersonTypePicker,
   InlineField,
   OnboardingProvider,
-  OptionList,
-  SelectField,
   StepShell,
   StepSkeleton,
   SyncBanner,
@@ -40,23 +41,19 @@ import {
 } from "@/components/ml/onboarding";
 import {
   BIO_LIMIT,
-  availabilityFor,
   citiesByState,
   cityAliases,
-  discoveryPrefs,
-  experienceLevels,
-  intents,
   linkPlatforms,
   statesByCountry,
   steps,
   validateUrl,
   validateUsername,
   visibleSteps,
-  workModes,
   type OnboardingDraft,
   type StepDef,
 } from "@/data/onboarding";
 import { instrumentIcon } from "@/lib/instrument-icons";
+import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
 import { iconSize } from "@/lib/tokens";
 
 function typeIcon(o: TaxonomyOption) {
@@ -488,7 +485,15 @@ function StepBody({
       .filter((slug): slug is string => Boolean(slug));
     if (picks.length) set({ languages: [...new Set(picks)] });
   }, [id, taxonomy.options, d.languages.length, set]);
-  const needsTaxonomy = ["role", "instruments", "genres", "languages"].includes(id);
+  const needsTaxonomy = [
+    "identity",
+    "role",
+    "instruments",
+    "genres",
+    "languages",
+    "work-mode",
+    "intent",
+  ].includes(id);
   const needsBucket = id === "instruments" || id === "genres";
   if (needsTaxonomy && taxonomy.state === "error") {
     return (
@@ -553,23 +558,36 @@ function StepBody({
                           : { hint: check.message })}
           />
           <div className="grid grid-cols-2 gap-3">
-            <SelectField
-              selectId="state"
-              label="State"
-              value={d.state}
-              options={statesByCountry[d.country] ?? []}
-              placeholder="Choose"
-              onChange={(v) => set({ state: v, city: "" })}
-            />
-            <SelectField
-              selectId="city"
-              label="City"
-              value={d.city}
-              options={citiesByState[d.state] ?? []}
-              placeholder={d.state ? "Choose" : "State first"}
-              disabled={!d.state}
-              onChange={(v) => set({ city: v })}
-            />
+            <DrawerField label="State">
+              <SheetSelect
+                title="State"
+                value={d.state || null}
+                options={choicesFor(tx?.indian_states)}
+                placeholder="Choose"
+                searchable
+                onChange={(v) => set({ state: v, city: "" })}
+              />
+            </DrawerField>
+            <DrawerField label="City">
+              {d.state ? (
+                <SheetSelect
+                  title="City"
+                  value={d.city || null}
+                  options={choicesFor(tx?.cities.filter((c) => c.metadata?.state === d.state))}
+                  placeholder="Choose"
+                  searchable
+                  onChange={(v) => set({ city: v })}
+                />
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="flex h-13 w-full items-center rounded-full border border-border bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                >
+                  State first
+                </button>
+              )}
+            </DrawerField>
           </div>
           <PrivateDetailsFields />
           <InlineField
@@ -654,36 +672,28 @@ function StepBody({
       // profile header shows; the per-instrument answers stay with each instrument.
       return (
         <div key="secondary" className="space-y-4">
-          <SelectField
-            selectId="experience-music"
-            label="How long have you worked in music?"
-            value={experienceLevels.find((e) => e.key === d.experience)?.label ?? ""}
-            options={experienceLevels.map((e) => e.label)}
-            placeholder="Choose"
-            onChange={(label) =>
-              set({ experience: experienceLevels.find((e) => e.label === label)?.key ?? null })
-            }
-          />
-          {d.instruments.map((slug) => {
-            const key = d.instrumentExperience[slug];
-            return (
-              <SelectField
-                key={slug}
-                selectId={`experience-${slug}`}
-                label={labelFor(tx?.instruments, slug)}
-                value={experienceLevels.find((e) => e.key === key)?.label ?? ""}
-                options={experienceLevels.map((e) => e.label)}
+          <DrawerField label="How long have you worked in music?">
+            <SheetSelect
+              title="How long have you worked in music?"
+              value={d.experience}
+              options={choicesFor(tx?.experience_levels)}
+              placeholder="Choose"
+              onChange={(v) => set({ experience: v as OnboardingDraft["experience"] })}
+            />
+          </DrawerField>
+          {d.instruments.map((slug) => (
+            <DrawerField key={slug} label={labelFor(tx?.instruments, slug)}>
+              <SheetSelect
+                title={labelFor(tx?.instruments, slug)}
+                value={d.instrumentExperience[slug] ?? null}
+                options={choicesFor(tx?.experience_levels)}
                 placeholder="Choose"
-                onChange={(label) => {
-                  const nextKey = experienceLevels.find((e) => e.label === label)?.key;
-                  const map = { ...d.instrumentExperience };
-                  if (nextKey) map[slug] = nextKey;
-                  else delete map[slug];
-                  set({ instrumentExperience: map });
-                }}
+                onChange={(v) =>
+                  set({ instrumentExperience: { ...d.instrumentExperience, [slug]: v } })
+                }
               />
-            );
-          })}
+            </DrawerField>
+          ))}
         </div>
       );
     }
@@ -709,44 +719,52 @@ function StepBody({
     case "work-mode":
       return (
         <div className="space-y-6">
-          <div>
-            <p className="mb-2 text-sm font-medium text-muted-foreground">Where you work</p>
-            <OptionList
-              options={workModes}
-              selected={d.workModes}
-              onToggle={(k) => toggle("workModes", k)}
+          <DrawerField label="Where you work">
+            <SheetMultiSelect
+              title="Where you work"
+              value={d.workModes}
+              options={choicesFor(tx?.work_modes)}
+              max={tx?.work_modes.length ?? 4}
+              placeholder="Choose"
+              onChange={(v) => set({ workModes: v })}
             />
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium text-muted-foreground">Available for</p>
-            <ChipPicker
-              options={availabilityFor}
-              selected={d.availability}
-              onToggle={(v) => toggle("availability", v)}
+          </DrawerField>
+          <DrawerField label="Available for">
+            <SheetMultiSelect
+              title="Available for"
+              value={d.availability}
+              options={choicesFor(tx?.available_for)}
+              max={tx?.available_for.length ?? 9}
+              placeholder="Choose"
+              onChange={(v) => set({ availability: v })}
             />
-          </div>
+          </DrawerField>
         </div>
       );
 
     case "intent":
       return (
         <div className="space-y-6">
-          <div>
-            <p className="mb-2 text-sm font-medium text-muted-foreground">You're here to</p>
-            <ChipPicker
-              options={intents}
-              selected={d.intents}
-              onToggle={(v) => toggle("intents", v)}
+          <DrawerField label="You're here to">
+            <SheetMultiSelect
+              title="You're here to"
+              value={d.intents}
+              options={choicesFor(tx?.intents)}
+              max={tx?.intents.length ?? 11}
+              placeholder="Choose"
+              onChange={(v) => set({ intents: v })}
             />
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium text-muted-foreground">Show me more</p>
-            <ChipPicker
-              options={discoveryPrefs}
-              selected={d.discovery}
-              onToggle={(v) => toggle("discovery", v)}
+          </DrawerField>
+          <DrawerField label="Show me more">
+            <SheetMultiSelect
+              title="Show me more"
+              value={d.discovery}
+              options={choicesFor(tx?.discovery_prefs)}
+              max={tx?.discovery_prefs.length ?? 9}
+              placeholder="Choose"
+              onChange={(v) => set({ discovery: v })}
             />
-          </div>
+          </DrawerField>
         </div>
       );
 
@@ -859,6 +877,7 @@ function PrivateDetailsFields() {
   const save = useServerFn(saveMyPrivateDetails);
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState<string | null>(null);
+  const genders = useTaxonomy();
   const loaded = useRef(false);
   const today = new Date().toISOString().slice(0, 10);
   const dobError =
@@ -894,27 +913,18 @@ function PrivateDetailsFields() {
 
   return (
     <div className="space-y-5">
-      <InlineField
-        inputId="dateOfBirth"
-        label="Date of birth"
-        type="date"
-        max={today}
-        value={dob}
-        onChange={setDob}
-        placeholder="DD/MM/YYYY"
-        autoComplete="bday"
-        hint="Only you can see this."
-        {...(dobError ? { error: dobError } : {})}
-      />
-      <div>
-        <p className="mb-2 text-sm font-medium text-muted-foreground">Gender</p>
-        <ChipPicker
-          options={GENDERS.map((g) => ({ value: g.value, label: g.label }))}
-          selected={gender ? [gender] : []}
-          onToggle={(v) => setGender((cur) => (cur === v ? null : v))}
+      <DrawerField label="Date of birth" hint={dobError ?? "Only you can see this."}>
+        <DateDrawerField title="Date of birth" value={dob} onChange={setDob} />
+      </DrawerField>
+      <DrawerField label="Gender" hint="Only you can see this.">
+        <SheetSelect
+          title="Gender"
+          value={gender}
+          options={choicesFor(genders.options?.genders)}
+          placeholder="Choose"
+          onChange={setGender}
         />
-        <p className="mt-1.5 text-1 text-muted-foreground">Only you can see this.</p>
-      </div>
+      </DrawerField>
     </div>
   );
 }
