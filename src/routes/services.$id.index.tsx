@@ -239,7 +239,7 @@ function ServiceDetail() {
         <div className="space-y-2">
           <BtnLink
             to="/services/new"
-            search={{ step: "category" as const, id }}
+            search={{ step: "what" as const, id }}
             variant="outline"
             className="w-full"
           >

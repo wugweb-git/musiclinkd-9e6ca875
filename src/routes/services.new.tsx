@@ -3,9 +3,31 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import {
+  Building2,
+  CalendarDays,
+  Clock,
+  Gauge,
+  GraduationCap,
+  Guitar,
+  Handshake,
+  MicVocal,
+  Music,
+  Package,
+  PenLine,
+  SlidersVertical,
+  Sparkles,
+  Speaker,
+  Tag,
+  type LucideIcon,
+} from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, Dialog, EmptyState, Loading, Price, SegmentedField } from "@/components/ml/kit";
+import { Dialog, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
+import { ListingStepFooter } from "@/components/ml/market";
+import { Field, inputClass, SheetSelect, TagListField } from "@/components/ml/listing-form";
+import { ServiceCard } from "@/components/ml/profile";
+import type { ServiceItem } from "@/data/profile";
 import {
   pricingModelUnit,
   bookingWindows,
@@ -14,7 +36,6 @@ import {
 } from "@/data/services";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  categoryEmoji,
   optionLabel,
   useRefreshServices,
   useService,
@@ -22,19 +43,40 @@ import {
 } from "@/hooks/use-services";
 import { haptic } from "@/lib/haptics";
 import { getMyProfile } from "@/lib/portfolio.functions";
-import { priceParts, type PriceParts } from "@/lib/price";
+import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
-import { TextLink } from "@/components/ml/links";
 
-const steps = ["category", "basics", "pricing", "delivery", "review"] as const;
+/*
+ * Add or edit a service, in three steps like the listing flow and on the same pieces (plain field
+ * labels, drawer pickers with icons, the icon footer, a preview of the card as it shows on your
+ * profile): what it is and what it costs, the details, then delivery and publish.
+ */
+const steps = ["what", "details", "delivery"] as const;
 type Step = (typeof steps)[number];
+const stepLabels: Record<Step, string> = {
+  what: "What & price",
+  details: "Details",
+  delivery: "Delivery & publish",
+};
+/** Older links name the five steps this flow used to have. */
+const legacySteps: Record<string, Step> = {
+  category: "what",
+  basics: "what",
+  pricing: "what",
+  delivery: "delivery",
+  review: "delivery",
+};
 
 export const Route = createFileRoute("/services/new")({
-  validateSearch: (search: Record<string, unknown>): { step: Step; id?: string } => {
-    const step = (steps.includes(search["step"] as Step) ? search["step"] : "category") as Step;
+  validateSearch: (search: Record<string, unknown>): { step?: Step; id?: string } => {
+    const raw = typeof search["step"] === "string" ? search["step"] : "";
+    const step = (steps as readonly string[]).includes(raw) ? (raw as Step) : legacySteps[raw];
     const id = search["id"];
     // `id` edits one of your services; without it the flow adds a new one.
-    return typeof id === "string" && /^[0-9a-f-]{36}$/i.test(id) ? { step, id } : { step };
+    return {
+      ...(step ? { step } : {}),
+      ...(typeof id === "string" && /^[0-9a-f-]{36}$/i.test(id) ? { id } : {}),
+    };
   },
   head: () => ({
     meta: [
@@ -44,7 +86,7 @@ export const Route = createFileRoute("/services/new")({
         content: "Describe what you offer, set a price and let people book it directly.",
       },
       { property: "og:title", content: "Add a service | MusicLinkd" },
-      { property: "og:description", content: "Create a bookable service in five short steps." },
+      { property: "og:description", content: "Create a bookable service in three short steps." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -52,8 +94,30 @@ export const Route = createFileRoute("/services/new")({
   component: NewService,
 });
 
+/** A line icon per service category and pricing model, for the drawers. */
+const categoryIcons: Record<string, LucideIcon> = {
+  vocals: MicVocal,
+  mixing: SlidersVertical,
+  mastering: Gauge,
+  production: Music,
+  instrument: Guitar,
+  songwriting: PenLine,
+  live: Speaker,
+  studio: Building2,
+  teaching: GraduationCap,
+};
+const modelIcons: Record<string, LucideIcon> = {
+  hourly: Clock,
+  per_song: Music,
+  per_day: CalendarDays,
+  package: Package,
+  custom: Handshake,
+};
+
 function NewService() {
-  const { step, id } = Route.useSearch();
+  const search = Route.useSearch();
+  const id = search.id;
+  const step: Step = search.step ?? "what";
   const navigate = useNavigate();
   const idx = steps.indexOf(step);
   const go = (s: Step) =>
@@ -74,8 +138,8 @@ function NewService() {
   const [category, setCategory] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [deliverables, setDeliverables] = useState("");
-  const [requirements, setRequirements] = useState("");
+  const [deliverables, setDeliverables] = useState<string[]>([]);
+  const [requirements, setRequirements] = useState<string[]>([]);
   const [model, setModel] = useState<string | null>(null);
   const [price, setPrice] = useState("");
   const [minHours, setMinHours] = useState("");
@@ -94,8 +158,8 @@ function NewService() {
     setCategory(source.category);
     setTitle(source.name);
     setDescription(source.description ?? "");
-    setDeliverables(source.deliverables.join("\n"));
-    setRequirements(source.requirements.join("\n"));
+    setDeliverables(source.deliverables);
+    setRequirements(source.requirements);
     setModel(source.pricing_model);
     setPrice(source.price_paise == null ? "" : String(source.price_paise / 100));
     setMinHours(source.min_hours == null ? "" : String(source.min_hours));
@@ -107,7 +171,7 @@ function NewService() {
   if (id && (editing.pending || !source)) {
     return (
       <Screen bottomNav={false}>
-        <TopBar title="Edit details & pricing" back="/services" />
+        <TopBar title="Edit service" back="/services" />
         <div className="px-5 pt-6">
           {editing.pending ? (
             <Loading />
@@ -131,9 +195,14 @@ function NewService() {
   const roles = ((profile.data as { roles?: string[] | null } | null | undefined)?.roles ??
     []) as string[];
   const offered = new Set(roles.flatMap((r) => options?.categoriesByRole[r] ?? []));
-  const categories = (options?.categories ?? []).filter(
-    (c) => offered.size === 0 || offered.has(c.slug) || c.slug === source?.category,
-  );
+  const categories = (options?.categories ?? [])
+    .filter((c) => offered.size === 0 || offered.has(c.slug) || c.slug === source?.category)
+    .map((c) => ({ value: c.slug, label: c.label, icon: categoryIcons[c.slug] ?? Sparkles }));
+  const models = (options?.pricingModels ?? []).map((m) => ({
+    value: m.slug,
+    label: m.label,
+    icon: modelIcons[m.slug] ?? Tag,
+  }));
 
   const unit = model ? pricingModelUnit[model as PricingModel] : undefined;
   const modelLabel = optionLabel(options?.pricingModels, model);
@@ -141,27 +210,18 @@ function NewService() {
   const pricePaise =
     rupees && Number.isFinite(Number(rupees)) ? Math.round(Number(rupees) * 100) : null;
   const hours = /^\d+$/.test(minHours.trim()) ? Number(minHours.trim()) : null;
-  const categoryLabel = optionLabel(options?.categories, category);
-  const reviewPrice = priceParts(pricePaise, unit, unit ? null : modelLabel);
-  const list = (text: string) =>
-    text
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean);
+  const previewPrice = priceParts(pricePaise, unit, unit ? null : modelLabel);
+  const quoted = model === "custom";
+
+  // Each step's Continue waits for that step's own fields.
+  const ready =
+    step === "what"
+      ? Boolean(category && title.trim() && model && (quoted || (pricePaise ?? 0) > 0))
+      : step === "details"
+        ? Boolean(description.trim())
+        : Boolean(turnaround.trim() && workModes.length);
 
   async function submit(status: "draft" | "active") {
-    if (!title.trim()) {
-      haptic("error");
-      toast.error("Give this service a title.");
-      void go("basics");
-      return;
-    }
-    if (rupees && pricePaise == null) {
-      haptic("error");
-      toast.error("Use a number for the starting price.");
-      void go("pricing");
-      return;
-    }
     if (!signedIn) {
       void navigate({ to: "/welcome" });
       return;
@@ -171,7 +231,7 @@ function NewService() {
       await save({
         data: {
           ...(source ? { id: source.id } : {}),
-          name: title.trim(),
+          name: title.trim() || "Untitled service",
           description: description.trim() || null,
           category,
           pricing_model: model,
@@ -185,8 +245,8 @@ function NewService() {
           turnaround: turnaround.trim() || null,
           notice: notice || null,
           work_modes: workModes,
-          deliverables: list(deliverables),
-          requirements: list(requirements),
+          deliverables,
+          requirements,
           status,
         },
       });
@@ -206,27 +266,38 @@ function NewService() {
     }
   }
 
+  const modeText = (() => {
+    const remote = workModes.includes("remote") || workModes.includes("hybrid");
+    const inPerson = workModes.some((m) => m !== "remote");
+    return remote && inPerson
+      ? "Remote · In person"
+      : remote
+        ? "Remote"
+        : inPerson
+          ? "In person"
+          : undefined;
+  })() as ServiceItem["mode"];
+
   return (
-    <Screen bottomNav={false}>
+    <Screen bottomNav={false} className="pb-8">
       <TopBar
-        title={source ? "Edit details & pricing" : "Add a service"}
-        subtitle={`Step ${idx + 1} of ${steps.length}`}
+        title={source ? "Edit service" : "Add a service"}
+        subtitle={`Step ${idx + 1} of ${steps.length} · ${stepLabels[step]}`}
         back={source ? `/services/${source.id}` : "/services"}
       />
 
-      <div className="px-5 pt-3">
-        <div className="flex gap-1.5" aria-hidden>
+      <div className="px-5 pt-4">
+        <div className="mb-5 flex gap-1.5" aria-hidden>
           {steps.map((s, i) => (
             <span
               key={s}
-              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-background"}`}
+              className="h-1 flex-1 rounded-full"
+              style={{ background: i <= idx ? "var(--primary)" : "var(--border)" }}
             />
           ))}
         </div>
-      </div>
 
-      <div className="space-y-4 px-5 pt-5 pb-8">
-        {optionsError && (step === "category" || step === "pricing" || step === "delivery") ? (
+        {optionsError ? (
           <StateCard
             tone="error"
             title="We couldn't load the choices"
@@ -234,114 +305,111 @@ function NewService() {
           />
         ) : null}
 
-        {step === "category" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">What are you offering?</h1>
-            {optionsPending ? (
-              <Loading rows={2} />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {categories.map((c) => (
-                  <Chip
-                    key={c.slug}
-                    active={category === c.slug}
-                    onClick={() => setCategory(c.slug)}
-                  >
-                    {joinEmoji(categoryEmoji(c.slug), c.label)}
-                  </Chip>
-                ))}
-              </div>
-            )}
-          </Card>
+        {step === "what" ? (
+          optionsPending ? (
+            <Loading rows={3} />
+          ) : (
+            <div className="space-y-4">
+              <Field label="Category" id="service-category">
+                <SheetSelect
+                  title="Category"
+                  value={category}
+                  options={categories}
+                  onChange={setCategory}
+                  placeholder="What are you offering?"
+                />
+              </Field>
+              <Field label="Title" id="service-title">
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Session vocals — lead & harmonies"
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Price (₹)" id="service-price">
+                <div className="grid grid-cols-5 gap-2">
+                  <input
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    inputMode="decimal"
+                    placeholder={quoted ? "On enquiry" : "8,000"}
+                    className={`${inputClass} col-span-3`}
+                  />
+                  <SheetSelect
+                    title="How you charge"
+                    value={model}
+                    options={models}
+                    onChange={setModel}
+                    placeholder="Per…"
+                    className="col-span-2"
+                  />
+                </div>
+              </Field>
+              {model === "hourly" ? (
+                <Field label="Minimum hours" id="service-min-hours">
+                  <input
+                    value={minHours}
+                    onChange={(e) => setMinHours(e.target.value.replace(/\D/g, ""))}
+                    inputMode="numeric"
+                    placeholder="1"
+                    className={inputClass}
+                  />
+                </Field>
+              ) : null}
+            </div>
+          )
         ) : null}
 
-        {step === "basics" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">Describe it plainly</h1>
-            <Field
-              label="Title"
-              value={title}
-              onChange={setTitle}
-              placeholder="Session vocals — lead & harmonies"
-            />
-            <label className="block">
-              <span className="pill bg-background text-muted-foreground">Description</span>
+        {step === "details" ? (
+          <div className="space-y-4">
+            <Field label="Description" id="service-description">
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 placeholder="What the client gets, how you work, what makes it yours."
-                className="mt-1.5 w-full rounded-lg border border-border bg-background p-3 text-1 outline-none focus:border-primary"
+                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
               />
-            </label>
-            <Lines label="Deliverables" value={deliverables} onChange={setDeliverables} />
-            <Lines label="Requirements" value={requirements} onChange={setRequirements} />
-            <p className="text-1 text-muted-foreground">
-              Services with a clear deliverable list get roughly twice the enquiries.
-            </p>
-          </Card>
-        ) : null}
-
-        {step === "pricing" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">How do you charge?</h1>
-            {optionsPending ? (
-              <Loading rows={1} />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {(options?.pricingModels ?? []).map((m) => (
-                  <Chip key={m.slug} active={model === m.slug} onClick={() => setModel(m.slug)}>
-                    {m.label}
-                  </Chip>
-                ))}
-              </div>
-            )}
-            <Field
-              label="Starting price (₹)"
-              value={price}
-              onChange={setPrice}
-              placeholder="8000"
-              inputMode="decimal"
+            </Field>
+            <TagListField
+              label="Deliverables (optional)"
+              id="service-deliverables"
+              placeholder="Dry WAV stems"
+              value={deliverables}
+              onChange={setDeliverables}
             />
-            {model === "hourly" ? (
-              <Field
-                label="Minimum"
-                value={minHours}
-                onChange={setMinHours}
-                placeholder="1"
-                inputMode="numeric"
-              />
-            ) : null}
-            <p className="text-1 text-muted-foreground">
-              You can still send a custom quote from a booking request.
-            </p>
-          </Card>
+            <TagListField
+              label="What you need from the client (optional)"
+              id="service-requirements"
+              placeholder="Guide track"
+              value={requirements}
+              onChange={setRequirements}
+            />
+          </div>
         ) : null}
 
         {step === "delivery" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">Delivery & notice</h1>
-            <Field
-              label="Turnaround"
-              value={turnaround}
-              onChange={setTurnaround}
-              placeholder="3–4 days"
-            />
-            <div>
-              <span className="pill bg-background text-muted-foreground">Notice needed</span>
-              <div className="mt-2">
-                <SegmentedField
-                  label="Notice needed"
-                  value={notice}
-                  options={bookingWindows}
-                  onChange={setNotice}
-                />
-              </div>
-            </div>
+          <div className="space-y-4">
+            <Field label="Turnaround" id="service-turnaround">
+              <input
+                value={turnaround}
+                onChange={(e) => setTurnaround(e.target.value)}
+                placeholder="3–4 days"
+                className={inputClass}
+              />
+            </Field>
+            <Field label="Notice needed" id="service-notice">
+              <SegmentedField
+                label="Notice needed"
+                value={notice}
+                options={bookingWindows}
+                onChange={setNotice}
+              />
+            </Field>
             {options?.workModes.length ? (
-              <div>
-                <span className="pill bg-background text-muted-foreground">Mode</span>
-                <div className="mt-2 flex flex-wrap gap-2">
+              <Field label="Where you work" id="service-modes">
+                <div className="flex flex-wrap gap-2">
                   {options.workModes.map((m) => {
                     const on = workModes.includes(m.slug);
                     return (
@@ -359,84 +427,37 @@ function NewService() {
                     );
                   })}
                 </div>
-              </div>
+              </Field>
             ) : null}
-            <TextLink to="/services/availability" className="block text-1">
-              Check Your Availability →
-            </TextLink>
-          </Card>
+            <Field label="Preview" id="service-preview">
+              <ServiceCard
+                s={{
+                  id: "preview",
+                  name: title.trim() || "Untitled service",
+                  description: description.trim(),
+                  from: previewPrice ?? undefined,
+                  turnaround: turnaround.trim() || undefined,
+                  mode: modeText,
+                }}
+                onEnquire={() => undefined}
+              />
+            </Field>
+          </div>
         ) : null}
+      </div>
 
-        {step === "review" ? (
-          <Card className="space-y-2">
-            <h1 className="text-2 font-bold">Review</h1>
-            {(
-              [
-                ["Category", categoryLabel || "—"],
-                ["Title", title || "Untitled service"],
-                ["Pricing", reviewPrice ?? "—"],
-                ["Turnaround", turnaround || "—"],
-                ["Notice", notice || "—"],
-              ] as [string, string | PriceParts][]
-            ).map(([k, v]) => (
-              <div
-                key={k}
-                className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
-              >
-                <span className="pill bg-background text-muted-foreground">{k}</span>
-                {typeof v === "string" ? (
-                  <span className="max-w-[60%] text-right text-1 font-semibold">{v}</span>
-                ) : (
-                  <Price
-                    price={v}
-                    align="end"
-                    className="max-w-[60%]"
-                    amountClassName="text-1 font-semibold"
-                  />
-                )}
-              </div>
-            ))}
-            {categoryLabel ? (
-              <p className="pt-1 text-1 text-muted-foreground">
-                Publishing adds this to your profile and to Discover results for{" "}
-                {categoryLabel.toLowerCase()}.
-              </p>
-            ) : null}
-          </Card>
-        ) : null}
-
-        <div className="flex gap-2">
-          {idx > 0 ? (
-            <Btn variant="outline" className="flex-1" onClick={() => go(steps[idx - 1]!)}>
-              Back
-            </Btn>
-          ) : null}
-          {idx < steps.length - 1 ? (
-            <Btn className="flex-1" onClick={() => go(steps[idx + 1]!)}>
-              Continue
-            </Btn>
-          ) : (
-            <Btn
-              className="flex-1"
-              loading={busy === "active"}
-              disabled={busy !== null}
-              onClick={() => void submit("active")}
-            >
-              Publish Service
-            </Btn>
-          )}
-        </div>
-        {step === "review" ? (
-          <Btn
-            variant="ghost"
-            className="w-full"
-            loading={busy === "draft"}
-            disabled={busy !== null}
-            onClick={() => void submit("draft")}
-          >
-            Save Draft
-          </Btn>
-        ) : null}
+      <div className="px-5 py-6">
+        <ListingStepFooter
+          step={idx}
+          last={step === "delivery"}
+          onCancel={() => void navigate({ to: source ? `/services/${source.id}` : "/services" })}
+          onBack={() => void go(steps[idx - 1]!)}
+          onNext={() => (step === "delivery" ? void submit("active") : void go(steps[idx + 1]!))}
+          onSaveDraft={() => void submit("draft")}
+          disabled={!ready}
+          busy={busy !== null}
+          publishLabel={source ? "Save changes" : "Publish"}
+        />
       </div>
 
       <Dialog
@@ -450,58 +471,5 @@ function NewService() {
         </BtnLink>
       </Dialog>
     </Screen>
-  );
-}
-
-const joinEmoji = (emoji: string, label: string) => (emoji ? `${emoji} ${label}` : label);
-
-/** A list typed one item per line. */
-function Lines({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <label className="block">
-      <span className="pill bg-background text-muted-foreground">{label}</span>
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        rows={3}
-        placeholder="One per line"
-        className="mt-1.5 w-full rounded-lg border border-border bg-background p-3 text-1 outline-none focus:border-primary"
-      />
-    </label>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-  inputMode,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  inputMode?: "decimal" | "numeric";
-}) {
-  return (
-    <label className="block">
-      <span className="pill bg-background text-muted-foreground">{label}</span>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder ?? ""}
-        {...(inputMode ? { inputMode } : {})}
-        className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
-      />
-    </label>
   );
 }

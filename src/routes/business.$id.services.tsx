@@ -82,7 +82,7 @@ function BusinessServices() {
           owner ? (
             <Link
               to="/services/new"
-              search={{ step: "category" as const }}
+              search={{ step: "what" as const }}
               aria-label="Add service"
               className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
             >
@@ -118,7 +118,7 @@ function BusinessServices() {
                 <div className="mt-3 flex gap-2">
                   <BtnLink
                     to="/services/new"
-                    search={{ step: "category" as const, id: s.id }}
+                    search={{ step: "what" as const, id: s.id }}
                     variant="outline"
                     className="flex-1"
                   >

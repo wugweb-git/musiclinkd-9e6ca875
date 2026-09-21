@@ -49,7 +49,7 @@ function ServicesHome() {
         right={
           <Link
             to="/services/new"
-            search={{ step: "category" as const }}
+            search={{ step: "what" as const }}
             aria-label="Add service"
             className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
           >
@@ -123,7 +123,7 @@ function ServicesHome() {
             title={`No ${filter.toLowerCase()} services`}
             body="Publish a service so people can book you without asking for a quote first."
           >
-            <BtnLink to="/services/new" search={{ step: "category" as const }} className="w-full">
+            <BtnLink to="/services/new" search={{ step: "what" as const }} className="w-full">
               Add a Service
             </BtnLink>
           </EmptyState>

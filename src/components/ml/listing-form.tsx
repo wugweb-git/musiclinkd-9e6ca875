@@ -255,10 +255,11 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
   };
 }
 
-const inputClass =
+export const inputClass =
   "h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary";
 
-function Field({ label, id, children }: { label: string; id: string; children: ReactNode }) {
+/** A form field: a plain label over its control (not a pill). Shared by every create flow. */
+export function Field({ label, id, children }: { label: string; id: string; children: ReactNode }) {
   return (
     <div role="group" aria-labelledby={id}>
       <span id={id} className="mb-1.5 block text-1 font-medium text-foreground">
@@ -273,7 +274,7 @@ function Field({ label, id, children }: { label: string; id: string; children: R
  * A field that looks like an input and opens a bottom drawer of options; picking one closes it.
  * `searchable` adds a search box at the top of the drawer for long lists (product types).
  */
-function SheetSelect({
+export function SheetSelect({
   title,
   value,
   options,
@@ -359,7 +360,7 @@ function SheetSelect({
           })}
         </ul>
         {shown.length === 0 ? (
-          <p className="px-4 py-3 text-1 text-foreground">No type matches — try a broader word.</p>
+          <p className="px-4 py-3 text-1 text-foreground">Nothing matches — try a broader word.</p>
         ) : null}
       </Sheet>
     </>
@@ -571,14 +572,32 @@ export function ListingMediaStep({ value, onChange }: StepProps) {
           className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
       </Field>
-      <IncludedField value={value.included} onChange={(included) => onChange({ included })} />
+      <TagListField
+        label="What's included (optional)"
+        id="listing-included"
+        placeholder="Flight case"
+        value={value.included}
+        onChange={(included) => onChange({ included })}
+      />
       <SpecsField value={value.specs} onChange={(specs) => onChange({ specs })} />
     </div>
   );
 }
 
-/** What comes with it: type one, Add; each shows as a tag with a remove button. */
-function IncludedField({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+/** A list typed one item at a time: type it, tap +; each shows as a tag with a remove button. */
+export function TagListField({
+  label,
+  id,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label: string;
+  id: string;
+  placeholder: string;
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
   const [draft, setDraft] = useState("");
   const add = () => {
     const v = draft.trim();
@@ -586,7 +605,7 @@ function IncludedField({ value, onChange }: { value: string[]; onChange: (v: str
     setDraft("");
   };
   return (
-    <Field label="What's included (optional)" id="listing-included">
+    <Field label={label} id={id}>
       <div className="flex gap-2">
         <input
           value={draft}
@@ -597,7 +616,7 @@ function IncludedField({ value, onChange }: { value: string[]; onChange: (v: str
               add();
             }
           }}
-          placeholder="Flight case"
+          placeholder={placeholder}
           className={inputClass}
         />
         <IconBtn label="Add item" className="h-13 w-13" onClick={add} disabled={!draft.trim()}>
