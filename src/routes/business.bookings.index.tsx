@@ -3,9 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarClock, XCircle } from "lucide-react";
-import { Screen, TopBar, Chip } from "@/components/ml/ui";
+import { Screen, TopBar } from "@/components/ml/ui";
 import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
-import { BusinessOnlyGate } from "@/components/ml/kit";
+import { BusinessOnlyGate, Segmented } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { formatDate, formatTime, isoDate, type BookingStatus } from "@/data/booking";
 import { listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
@@ -104,12 +104,8 @@ function ProviderBookingsContent() {
           <WorkspaceLink to="/business/policies" label="Policies" />
         </div>
 
-        <div className="rail -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar">
-          {tabs.map((t) => (
-            <Chip key={t} active={t === tab} onClick={() => setTab(t)}>
-              {t}
-            </Chip>
-          ))}
+        <div className="mt-4 px-5 pb-1">
+          <Segmented value={tab} options={tabs} onChange={setTab} />
         </div>
 
         <div className="mt-4">

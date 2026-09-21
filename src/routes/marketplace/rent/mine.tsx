@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
-import { Loading } from "@/components/ml/kit";
+import { Loading, Segmented } from "@/components/ml/kit";
 import { BookingCard } from "@/components/ml/rental";
 import { type RentalStatus } from "@/data/rentals";
 import { listMyRentalBookings } from "@/lib/rentals.functions";
@@ -62,12 +62,8 @@ function MyRentals() {
           </TextLink>
         }
       />
-      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
-        {tabs.map((t) => (
-          <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
-            {t}
-          </Chip>
-        ))}
+      <div className="px-5 py-4">
+        <Segmented value={tab} options={tabs} onChange={setTab} />
       </div>
 
       <div className="space-y-3 px-5 pb-6">

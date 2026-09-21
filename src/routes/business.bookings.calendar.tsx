@@ -2,8 +2,15 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Screen, TopBar, Chip } from "@/components/ml/ui";
-import { BusinessOnlyGate, EmptyState, Loading, StatusPill, type Tone } from "@/components/ml/kit";
+import { Screen, TopBar } from "@/components/ml/ui";
+import {
+  BusinessOnlyGate,
+  EmptyState,
+  Loading,
+  StatusPill,
+  type Tone,
+  Segmented,
+} from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { isoDate } from "@/data/booking";
 import {
@@ -101,12 +108,8 @@ function ProviderCalendarContent() {
     <Screen>
       <TopBar title="Calendar" subtitle="Your studio" back="/business/bookings" />
 
-      <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
-        {views.map((v) => (
-          <Chip key={v} active={view === v} onClick={() => setView(v)}>
-            {v}
-          </Chip>
-        ))}
+      <div className="px-5 pt-4">
+        <Segmented value={view} options={views} onChange={setView} />
       </div>
 
       <main className="px-5 pt-4">

@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, EmptyState } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Card, EmptyState, Segmented } from "@/components/ml/kit";
 import { listStudios } from "@/lib/catalog.functions";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
@@ -73,12 +73,8 @@ function Nearby() {
       <TopBar title="Nearby" subtitle="Sorted by distance" back="/discover" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
-          {radii.map((r) => (
-            <Chip key={r} active={radius === r} onClick={() => setRadius(r)}>
-              {r}
-            </Chip>
-          ))}
+        <div className="">
+          <Segmented value={radius} options={radii} onChange={setRadius} />
         </div>
 
         <section>

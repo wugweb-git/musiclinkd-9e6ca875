@@ -4,8 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { X } from "lucide-react";
-import { Chip, Screen, TopBar } from "@/components/ml/ui";
-import { EmptyState, Loading } from "@/components/ml/kit";
+import { Screen, TopBar } from "@/components/ml/ui";
+import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import {
   listMySaved,
   unsaveTarget,
@@ -65,12 +65,12 @@ function Saved() {
   return (
     <Screen>
       <TopBar title="Saved profiles" back="/discover" />
-      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
-        {tabs.map((t) => (
-          <Chip key={t.type} active={tab === t.type} onClick={() => setTab(t.type)}>
-            {t.label}
-          </Chip>
-        ))}
+      <div className="px-5 pb-4">
+        <Segmented
+          value={tabs.find((t) => t.type === tab)?.label ?? tabs[0]!.label}
+          options={tabs.map((t) => t.label)}
+          onChange={(label) => setTab(tabs.find((t) => t.label === label)?.type ?? "talent")}
+        />
       </div>
 
       <div className="space-y-3 px-5 pb-8">

@@ -3,8 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Btn, BtnLink, Screen, TopBar, Chip } from "@/components/ml/ui";
-import { BusinessOnlyGate } from "@/components/ml/kit";
+import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
+import { BusinessOnlyGate, Segmented } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
 import { formatDate, formatTime, type BookingStatus } from "@/data/booking";
@@ -86,12 +86,8 @@ function RequestsContent() {
         back="/business/bookings"
       />
 
-      <div className="rail no-scrollbar flex gap-2 overflow-x-auto px-5 pt-4">
-        {tabs.map((t) => (
-          <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
-            {t}
-          </Chip>
-        ))}
+      <div className="px-5 pt-4">
+        <Segmented value={tab} options={tabs} onChange={setTab} />
       </div>
 
       <main className="space-y-3 px-5 pt-4">

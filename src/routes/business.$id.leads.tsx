@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, StatusPill } from "@/components/ml/kit";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Card, EmptyState, Loading, StatusPill, Segmented } from "@/components/ml/kit";
 import { leadStatusTone } from "@/data/business";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { listMyLeads, setLeadStatus, type EnquiryStatus } from "@/lib/enquiries.functions";
@@ -98,12 +98,8 @@ function BusinessLeads() {
       <TopBar title="Leads" subtitle={b.name} back={`/business/${b.id}/dashboard`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
-          {filters.map((f) => (
-            <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
-              {f}
-            </Chip>
-          ))}
+        <div className="">
+          <Segmented value={filter} options={filters} onChange={setFilter} />
         </div>
 
         {q.isLoading ? (

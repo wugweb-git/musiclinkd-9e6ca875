@@ -1,8 +1,9 @@
+import { Segmented } from "@/components/ml/kit";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Screen, TopBar, BtnLink, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import {
   BookingSkeleton,
   BookingStatusPill,
@@ -67,12 +68,12 @@ function MyBookings() {
     <Screen>
       <TopBar title="My bookings" subtitle="Studios, rooms and sessions" />
 
-      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
-        {tabs.map((t) => (
-          <Chip key={t.key} active={t.key === tab} onClick={() => setTab(t.key)}>
-            {t.label}
-          </Chip>
-        ))}
+      <div className="px-5 pb-3">
+        <Segmented
+          value={tabs.find((t) => t.key === tab)?.label ?? tabs[0]!.label}
+          options={tabs.map((t) => t.label)}
+          onChange={(label) => setTab(tabs.find((t) => t.label === label)?.key ?? tabs[0]!.key)}
+        />
       </div>
 
       <main className="px-5">

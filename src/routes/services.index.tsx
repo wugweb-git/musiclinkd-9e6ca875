@@ -1,8 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CalendarClock, Plus, Settings2 } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Loading, Price, Row, SoonBadge } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import {
+  Card,
+  StatusPill,
+  EmptyState,
+  Loading,
+  Price,
+  Row,
+  SoonBadge,
+  Segmented,
+} from "@/components/ml/kit";
 import { toast } from "sonner";
 import { StateCard } from "@/components/ml/portfolio";
 import { serviceStatusTone } from "@/data/services";
@@ -70,12 +79,8 @@ function ServicesHome() {
           </div>
         ) : null}
 
-        <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
-          {filters.map((f) => (
-            <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
-              {f}
-            </Chip>
-          ))}
+        <div className="">
+          <Segmented value={filter} options={filters} onChange={setFilter} />
         </div>
 
         {pending ? (

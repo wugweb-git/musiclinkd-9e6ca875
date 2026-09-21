@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Screen, TopBar, Btn, BtnLink, Chip, VerifiedBadge } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, VerifiedBadge } from "@/components/ml/ui";
 import { EmptyState, EquipmentGrid, Followers, Rating, ReviewTags } from "@/components/ml/market";
-import { Loading } from "@/components/ml/kit";
+import { Loading, Segmented } from "@/components/ml/kit";
 import { RentalReportSheet } from "@/components/ml/rental";
 import { getRentalProvider } from "@/lib/rentals.functions";
 import { getSellerListings } from "@/lib/catalog.functions";
@@ -127,12 +127,8 @@ function ProviderProfile() {
         </div>
       </div>
 
-      <div className="rail flex gap-2 overflow-x-auto px-5 pb-3 no-scrollbar">
-        {tabs.map((t) => (
-          <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
-            {t}
-          </Chip>
-        ))}
+      <div className="px-5 pb-3">
+        <Segmented value={tab} options={tabs} onChange={setTab} />
       </div>
 
       <div className="space-y-3 px-5 pb-6">
