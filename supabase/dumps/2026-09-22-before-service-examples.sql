@@ -1,0 +1,6 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922180000_service_examples.sql.
+--
+-- Scope: the migration adds profile_services.example_ids (uuid[]), which did not exist at snapshot
+-- time. It writes no existing rows. Row counts: profile_services 56.
+-- To undo: ALTER TABLE public.profile_services DROP COLUMN IF EXISTS example_ids;
