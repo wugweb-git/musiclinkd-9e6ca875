@@ -181,14 +181,15 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
               </Card>
             ) : null}
             {b.policies.length ? (
-              <Card className="space-y-2">
+              // Rules read as a plain list on the page, not a card.
+              <section className="space-y-2 px-1">
                 <h2 className="text-sm">Policies</h2>
-                <ul className="list-disc space-y-1.5 pl-5 text-1">
+                <ul className="list-disc space-y-1.5 pl-5 text-1 text-muted-foreground">
                   {b.policies.map((p) => (
                     <li key={p}>{p}</li>
                   ))}
                 </ul>
-              </Card>
+              </section>
             ) : null}
             {b.address || b.mapsUrl || b.website ? (
               <Card className="space-y-2">
