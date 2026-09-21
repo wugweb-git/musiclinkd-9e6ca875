@@ -6,7 +6,7 @@ import type { Listing } from "@/data/market";
  * a rental's rate, how it changes hands, price and verified sellers.
  */
 export type MarketFilter = {
-  type: "All" | "For sale" | "For rent";
+  types: string[];
   categories: string[];
   conditions: string[];
   rates: string[];
@@ -16,7 +16,7 @@ export type MarketFilter = {
 };
 
 export const emptyMarketFilter: MarketFilter = {
-  type: "All",
+  types: [],
   categories: [],
   conditions: [],
   rates: [],
@@ -42,7 +42,7 @@ const rupeesOf = (l: Listing) => Number((l.price.amount ?? "").replace(/[^0-9]/g
 
 export function filterCount(f: MarketFilter) {
   return (
-    (f.type === "All" ? 0 : 1) +
+    f.types.length +
     f.categories.length +
     f.conditions.length +
     f.rates.length +
@@ -54,8 +54,8 @@ export function filterCount(f: MarketFilter) {
 
 export function applyMarketFilter(items: Listing[], f: MarketFilter): Listing[] {
   return items.filter((l) => {
-    if (f.type === "For sale" && l.type !== "product") return false;
-    if (f.type === "For rent" && l.type !== "rental") return false;
+    if (f.types.length && !f.types.includes(l.type === "rental" ? "For rent" : "For sale"))
+      return false;
     if (f.categories.length && !f.categories.includes(l.gear ?? "")) return false;
     if (f.conditions.length && !f.conditions.includes(l.condition ?? "")) return false;
     if (f.rates.length && l.type === "rental" && !f.rates.includes(l.price.unit ?? ""))

@@ -6,6 +6,7 @@ import { Screen, IconBtn } from "@/components/ml/ui";
 import { Segmented } from "@/components/ml/kit";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
+  ActiveFilters,
   CategoryTile,
   EmptyState,
   ListingGrid,
@@ -20,9 +21,19 @@ import { type Listing } from "@/data/market";
 import { rentalCategories } from "@/data/rentals";
 import { GearCta } from "@/components/ml/gear-cta";
 import { iconSize } from "@/lib/tokens";
-import { loadCatalogListings } from "@/lib/market-view";
+import { inCity, loadCatalogListings, nearFirst } from "@/lib/market-view";
+import { samePinArea } from "@/lib/place";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useAuth } from "@/hooks/use-auth";
+import { getMyProfile } from "@/lib/portfolio.functions";
 import { readListingVisits } from "@/lib/device-history";
-import { applyMarketFilter, emptyMarketFilter, type MarketFilter } from "@/lib/market-filter";
+import {
+  applyMarketFilter,
+  emptyMarketFilter,
+  filterCount,
+  type MarketFilter,
+} from "@/lib/market-filter";
 
 export const Route = createFileRoute("/marketplace/")({
   head: () => ({
@@ -47,12 +58,13 @@ export const Route = createFileRoute("/marketplace/")({
   component: MarketHome,
 });
 
-// Explore, Buy and Rent change what this screen lists; Nearby and Saved are their own screens.
+// Explore, Buy, Rent and Nearby narrow this screen's list; Saved is its own screen. Nearby is
+// your PIN code's postal district (never shown), else the Market city.
 const views = [
   { label: "Explore", to: null },
   { label: "Buy", to: null },
   { label: "Rent", to: null },
-  { label: "Nearby", to: "/marketplace/nearby" },
+  { label: "Nearby", to: null },
   { label: "Saved", to: "/marketplace/saved" },
 ] as const;
 
@@ -71,6 +83,14 @@ function MarketHome() {
   const ranked = rankBy(catalog, recs?.listings, (l) => l.dbId ?? l.id);
   const [filter, setFilter] = useState<MarketFilter>(emptyMarketFilter);
   const shown = applyMarketFilter(ranked, filter);
+  const active = filterCount(filter);
+  const { signedIn } = useAuth();
+  const loadMe = useServerFn(getMyProfile);
+  const me = useQuery({ queryKey: ["profile", "me"], queryFn: () => loadMe(), enabled: signedIn });
+  const myPin = (me.data as { pin_code?: string | null } | null | undefined)?.pin_code;
+  const goods = shown.filter((l) => l.type === "product" || l.type === "rental");
+  const inMyDistrict = myPin ? goods.filter((l) => samePinArea(l.pin, myPin)) : [];
+  const nearby = inMyDistrict.length ? inMyDistrict : nearFirst(inCity(goods, city), myPin);
   const allForSale = shown.filter((l) => l.type === "product");
   const allForRent = shown.filter((l) => l.type === "rental");
   const forSale = allForSale.slice(0, 8);
@@ -100,11 +120,16 @@ function MarketHome() {
               <Plus size={iconSize.sm} /> List
             </Link>
             <button
-              aria-label="Filters"
+              aria-label={active ? `Filters, ${active} applied` : "Filters"}
               onClick={() => setFilters(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+              className={`relative flex h-10 w-10 items-center justify-center rounded-full border ${active ? "border-foreground bg-ink text-background" : "border-border bg-card"}`}
             >
               <SlidersHorizontal size={iconSize.sm} />
+              {active ? (
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[11px] font-bold text-white">
+                  {active}
+                </span>
+              ) : null}
             </button>
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
           </div>
@@ -138,6 +163,8 @@ function MarketHome() {
         </div>
       </header>
 
+      <ActiveFilters value={filter} onChange={setFilter} />
+
       <SectionRow
         title="Browse categories"
         action={
@@ -162,10 +189,12 @@ function MarketHome() {
         </div>
       </SectionRow>
 
-      {view === "Buy" || view === "Rent" ? (
+      {view !== "Explore" ? (
         <section className="px-5 pb-6">
-          {(view === "Buy" ? allForSale : allForRent).length ? (
-            <ListingGrid items={view === "Buy" ? allForSale : allForRent} />
+          {(view === "Buy" ? allForSale : view === "Rent" ? allForRent : nearby).length ? (
+            <ListingGrid
+              items={view === "Buy" ? allForSale : view === "Rent" ? allForRent : nearby}
+            />
           ) : (
             <EmptyState
               emoji="🎸"

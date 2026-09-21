@@ -758,12 +758,17 @@ export function CategorySheet({
 
 /** The filter sheet's pick-as-many groups; which one a chip toggles is its key in MarketFilter. */
 const filterGroups: {
-  key: "categories" | "conditions" | "rates" | "fulfilment" | "prices";
+  key: "types" | "categories" | "conditions" | "rates" | "fulfilment" | "prices";
   label: string;
   options: { label: string; value: string }[];
-  /** Only for rentals: shown unless the type is For sale. */
+  /** Only for rentals: hidden when only For sale is picked. */
   rentalOnly?: boolean;
 }[] = [
+  {
+    key: "types",
+    label: "Listing type",
+    options: ["For sale", "For rent"].map((c) => ({ label: c, value: c })),
+  },
   {
     key: "categories",
     label: "Category",
@@ -786,9 +791,6 @@ const filterGroups: {
     options: priceBands.map((b) => ({ label: b.label, value: b.label })),
   },
 ];
-
-/** Sale or rental is one or the other, so it's a tab row (Segmented), not a Chip cluster. */
-const listingTypes = ["All", "For sale", "For rent"] as const;
 
 /**
  * Market's filters. The sheet edits its own copy and hands it back on Show; the count on that
@@ -832,20 +834,11 @@ export function MarketFilterSheet({
         </button>
       </div>
 
-      <div className="mb-5">
-        <h3 className="mb-2 text-sm font-semibold text-foreground">Listing type</h3>
-        <Segmented
-          value={f.type}
-          options={listingTypes}
-          onChange={(type) => setF((cur) => ({ ...cur, type }))}
-        />
-      </div>
-
       {filterGroups
-        .filter((g) => !(g.rentalOnly && f.type === "For sale"))
+        .filter((g) => !(g.rentalOnly && f.types.length === 1 && f.types[0] === "For sale"))
         .map((g) => (
           <div key={g.key} className="mb-5">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">{g.label}</h3>
+            <h3 className="mb-2 text-1 font-semibold text-foreground">{g.label}</h3>
             <div className="flex flex-wrap gap-2">
               {g.options.map((o) => (
                 <Chip
@@ -878,6 +871,61 @@ export function MarketFilterSheet({
         Show {results} result{results === 1 ? "" : "s"}
       </Btn>
     </Sheet>
+  );
+}
+
+/**
+ * The filters in force, under the view tabs: one chip each (tap to drop it) and Clear all. Shows
+ * nothing when no filter is set.
+ */
+export function ActiveFilters({
+  value,
+  onChange,
+}: {
+  value: MarketFilter;
+  onChange: (f: MarketFilter) => void;
+}) {
+  const chips = filterGroups.flatMap((g) =>
+    value[g.key].map((v) => ({
+      key: g.key,
+      value: v,
+      label: g.options.find((o) => o.value === v)?.label ?? v,
+    })),
+  );
+  if (value.verifiedOnly)
+    chips.push({ key: "verified" as never, value: "verified", label: "Verified sellers" });
+  if (!chips.length) return null;
+  return (
+    <div className="rail no-scrollbar flex items-center gap-2 overflow-x-auto px-5 pb-4">
+      {chips.map((c) => (
+        <Chip
+          key={`${c.key}-${c.value}`}
+          active
+          onClick={() =>
+            onChange(
+              c.value === "verified"
+                ? { ...value, verifiedOnly: false }
+                : {
+                    ...value,
+                    [c.key]: (value[c.key as (typeof filterGroups)[number]["key"]] ?? []).filter(
+                      (x) => x !== c.value,
+                    ),
+                  },
+            )
+          }
+        >
+          {c.label}
+          <X size={iconSize.xs} aria-label="Remove" />
+        </Chip>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange(emptyMarketFilter)}
+        className="shrink-0 px-2 text-1 font-semibold text-foreground"
+      >
+        Clear all
+      </button>
+    </div>
   );
 }
 

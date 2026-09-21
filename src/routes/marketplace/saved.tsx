@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { EmptyState, ListingGrid } from "@/components/ml/market";
-import { Loading } from "@/components/ml/kit";
+import { Loading, Segmented } from "@/components/ml/kit";
 import { SavedSearchRow, SellerRow, sellersOf } from "@/components/ml/saved-market";
 import { loadCatalogListings } from "@/lib/market-view";
 import { listMySavedIds } from "@/lib/saved.functions";
@@ -17,19 +17,19 @@ export const Route = createFileRoute("/marketplace/saved")({
       { title: "Saved in Market | MusicLinkd" },
       {
         name: "description",
-        content: "Your saved listings, searches, sellers, services and studios.",
+        content: "Your saved listings, searches and sellers.",
       },
       { property: "og:title", content: "Saved in Market | MusicLinkd" },
-      { property: "og:description", content: "Come back to the gear and studios you shortlisted." },
+      { property: "og:description", content: "Come back to the gear you shortlisted." },
     ],
   }),
   component: SavedMarket,
 });
 
-const tabs = ["Listings", "Searches", "Sellers", "Studios"];
+const tabs = ["Listings", "Searches", "Sellers"] as const;
 
 function SavedMarket() {
-  const [tab, setTab] = useState(tabs[0]!);
+  const [tab, setTab] = useState<(typeof tabs)[number]>("Listings");
   const { signedIn } = useAuth();
   const fetchIds = useServerFn(listMySavedIds);
   const savedIds = useQuery({
@@ -73,14 +73,10 @@ function SavedMarket() {
   return (
     <Screen>
       <TopBar title="Saved" back="/marketplace" />
-      <div className="rail flex gap-2 overflow-x-auto px-5 py-4 no-scrollbar">
-        {tabs.map((t) => (
-          <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
-            {t}
-          </Chip>
-        ))}
+      <div className="px-5">
+        <Segmented value={tab} options={tabs} onChange={setTab} />
       </div>
-      <div className="space-y-3 px-5">
+      <div className="space-y-3 px-5 py-4">
         {tab === "Listings" ? (
           savedIds.isLoading || allListings.isLoading ? (
             <Loading rows={3} />
@@ -122,14 +118,6 @@ function SavedMarket() {
               action={<BtnLink to="/marketplace">Explore Market</BtnLink>}
             />
           )
-        ) : null}
-        {tab === "Studios" ? (
-          <EmptyState
-            emoji="🏢"
-            title="No saved studios yet"
-            body="Save rooms you like and compare availability before you book."
-            action={<BtnLink to="/marketplace">Explore Market</BtnLink>}
-          />
         ) : null}
       </div>
     </Screen>
