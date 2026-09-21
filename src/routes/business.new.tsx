@@ -86,6 +86,7 @@ function NewBusiness() {
   const [city, setCity] = useState("");
   const [pinCode, setPinCode] = useState("");
   const [languages, setLanguages] = useState<string[]>([]);
+  const [genres, setGenres] = useState<string[]>([]);
   const [amenities, setAmenities] = useState<string[]>([]);
   const [equipment, setEquipment] = useState<string[]>([]);
   const isStudio = type === "studio";
@@ -141,6 +142,7 @@ function NewBusiness() {
           ...(tagline.trim() ? { tagline } : {}),
           ...(link ? { mapsUrl: link } : {}),
           languages,
+          genres,
           ...(isStudio ? { amenities, equipment } : {}),
         },
       }),
@@ -197,10 +199,10 @@ function NewBusiness() {
     },
     offer: {
       group: "Details",
-      title: isStudio ? "What does it offer?" : "Which languages do you work in?",
+      title: "What does it offer?",
       subtitle: isStudio
-        ? "Languages you work in, the studio's amenities and its equipment."
-        : "Pick every language your team works in.",
+        ? "Genres and languages you work in, the studio's amenities and its equipment."
+        : "Genres and languages you work in.",
       why: "These show on your page and help the right people find you.",
     },
     review: {
@@ -344,6 +346,16 @@ function NewBusiness() {
           </div>
         ) : step === "offer" ? (
           <div className="space-y-5">
+            <DrawerField label="Genres" hint="Optional. The music you work with most.">
+              <SheetMultiSelect
+                title="Genres"
+                value={genres}
+                options={(tx.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
+                max={10}
+                placeholder="Choose"
+                onChange={setGenres}
+              />
+            </DrawerField>
             <DrawerField label="Supported languages">
               <SheetMultiSelect
                 title="Supported languages"
@@ -391,6 +403,7 @@ function NewBusiness() {
                 ["Name", name, "basics"],
                 ["Tagline", tagline.trim() || "Not added", "basics"],
                 ["City", [city, state].filter(Boolean).join(", "), "location"],
+                ["Genres", labelsOf(tx.genres, genres), "offer"],
                 ["Languages", labelsOf(tx.languages, languages), "offer"],
                 ...(isStudio
                   ? ([

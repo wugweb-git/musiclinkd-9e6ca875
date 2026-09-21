@@ -642,7 +642,11 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           .refine((v) => (INDIAN_STATES as readonly string[]).includes(v))
           .optional(),
         mapsUrl: z.string().trim().max(500).regex(GOOGLE_MAPS).optional(),
-        /** Taxonomy slugs: languages, studio_amenities and equipment_categories. */
+        /** Taxonomy slugs: languages, genres, studio_amenities and equipment_categories. */
+        genres: z
+          .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
+          .max(10)
+          .optional(),
         languages: z
           .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
           .max(20)
@@ -719,6 +723,7 @@ async function setUpBusiness(
     state?: string | undefined;
     mapsUrl?: string | undefined;
     languages?: string[] | undefined;
+    genres?: string[] | undefined;
     amenities?: string[] | undefined;
     equipment?: string[] | undefined;
   },
@@ -733,6 +738,7 @@ async function setUpBusiness(
       city: data.city,
       ...(data.state ? { state: data.state, country: "India" } : {}),
       ...(data.languages?.length ? { languages: data.languages } : {}),
+      ...(data.genres?.length ? { genres: data.genres } : {}),
       ...(data.pinCode ? { pin_code: data.pinCode } : {}),
       ...(data.tagline ? { headline: data.tagline } : {}),
       ...(role && !current?.roles?.length ? { roles: [role] } : {}),

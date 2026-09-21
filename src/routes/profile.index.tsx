@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { isMyAccountBusiness } from "@/lib/profile-groups.functions";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
@@ -41,7 +43,40 @@ export const Route = createFileRoute("/profile/")({
   component: MyProfile,
 });
 
+/**
+ * /profile is "my profile": a business account's is its business page, so it opens that
+ * (/business/<username>, with Manage for the owner) instead of the talent profile.
+ */
 function MyProfile() {
+  const { signedIn } = useAuth();
+  const navigate = useNavigate();
+  const checkBusiness = useServerFn(isMyAccountBusiness);
+  const loadProfile = useServerFn(getMyProfile);
+  const business = useQuery({
+    queryKey: ["profile", "me", "business-username"],
+    queryFn: async () => {
+      if (!(await checkBusiness())) return null;
+      const p = (await loadProfile()) as { username?: string | null } | null;
+      return p?.username ?? null;
+    },
+    enabled: signedIn,
+  });
+  useEffect(() => {
+    if (business.data) {
+      void navigate({ to: "/business/$id", params: { id: business.data }, replace: true });
+    }
+  }, [business.data, navigate]);
+  if (signedIn && (business.isPending || business.data)) {
+    return (
+      <Screen>
+        <ProfileSkeleton />
+      </Screen>
+    );
+  }
+  return <PersonProfile />;
+}
+
+function PersonProfile() {
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);
   const save = useServerFn(saveMyProfile);
