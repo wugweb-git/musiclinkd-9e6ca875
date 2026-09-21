@@ -1,0 +1,23 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921210000_contact_phone.sql.
+--
+-- Scope: row counts and what the migration reads. It adds one function,
+-- public.contact_phone(uuid), and changes no table, row or policy.
+--
+-- Row counts: profiles 125, auth.users 125, profile_private 84, profile_business 31,
+-- booking_requests 4, rental_bookings 2, opportunity_applications 2, connections 1.
+--
+-- Where a phone number lives at snapshot time:
+--   auth.users.phone          0 rows set, 0 with phone_confirmed_at
+--   profile_private.business_phone  1 row set (a business account); CHECK '^\+[1-9][0-9]{7,14}$'
+--   profile_private RLS: owner-only policies (read, insert, update); nobody else can read it
+--   no function public.contact_phone
+--
+-- profiles.discovery_prefs: no row holds a 'show_phone' key yet (125 unset), so every profile
+-- reads as the app's default, 'booked'. profiles.visibility: public 124, members 1.
+--
+-- Relationships the 'booked' rule counts, by status at snapshot time:
+--   booking_requests          confirmed 2, requested 1, declined 1
+--   rental_bookings           confirmed 1, requested 1
+--   opportunity_applications  pending 1, shortlisted 1 (none accepted)
+--   connections               accepted 1
