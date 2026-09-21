@@ -1,0 +1,19 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921270000_business_content.sql.
+--
+-- Scope: the fields the migration fills. Every one below was empty at snapshot time.
+--   profile_business.operating_hours NULL for: analog.ensemble.studios, beatcraft.studios, beatroute.spaces,
+--     blue.room.mixing.suite, blue.sitar.venues, crimson.owls.academy, echo.parade.academy, ironwood.records,
+--     krimson.avenue, monsoon.machine.records, neon.ensemble.agency, nisha.rao.events, paper.parade.studios,
+--     pulse.live.systems, resonance.acoustic.suites, silver.riot.agency, sound.solutions, soundhouse.studio,
+--     swar.academy.of.music, swaraj.instruments, the.hive.recording.studio, the.humming.tree.live.room,
+--     velvet.static.records, velvet.vocal.and.foley.studio.
+--   studios.weekly_hours '{}' and operating_hours NULL for the studios of: analog.ensemble.studios, beatroute.spaces,
+--     blue.room.mixing.suite, krimson.avenue, paper.parade.studios, resonance.acoustic.suites, soundhouse.studio,
+--     the.hive.recording.studio, the.humming.tree.live.room, velvet.vocal.and.foley.studio.
+--   profiles.bio NULL for: beatcraft.studios, krimson.avenue, sound.solutions, blue.sitar.venues.
+--   beatcraft.studios (0550d73a-8f3a-524e-ad14-f881f9bf4ae8): city, state, avatar_url NULL; profile_business
+--     business_address and logo_url NULL; no studio (slug beatcraft-studios unused).
+--   studios had no foreign key to profile_business; every studio's owner had a profile_business row.
+--
+-- To undo: see the Rollback note at the top of the migration.
