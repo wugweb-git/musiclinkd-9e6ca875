@@ -2,14 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Chip } from "@/components/ml/ui";
 import { EmptyState, ListingGrid, MarketFilterSheet, SortSheet } from "@/components/ml/market";
-import { marketCategories, subcategories } from "@/data/market";
+import { rentalCategories } from "@/data/rentals";
 import { loadCatalogListings } from "@/lib/market-view";
 
 export const Route = createFileRoute("/marketplace/c/$slug")({
   // Database listings in their mapped category.
   loader: () => loadCatalogListings(),
   head: ({ params }) => {
-    const c = marketCategories.find((m) => m.slug === params.slug);
+    const c = rentalCategories.find((m) => m.slug === params.slug);
     const title = `${c?.label ?? "Category"} | MusicLinkd Market`;
     const desc = `Browse ${c?.label ?? "listings"} from verified music professionals across India.`;
     return {
@@ -28,15 +28,16 @@ const sorts = ["Recommended", "Newest", "Price: Low to High", "Price: High to Lo
 
 function CategoryScreen() {
   const { slug } = Route.useParams();
-  const cat = marketCategories.find((m) => m.slug === slug);
-  const subs = subcategories[slug] ?? [];
+  // The market's categories are the instrument and equipment ones the listing flow uses.
+  const cat = rentalCategories.find((m) => m.slug === slug);
+  const subs = cat?.subs ?? [];
   const [sub, setSub] = useState("All");
   const [filters, setFilters] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
   const [sort, setSort] = useState(sorts[0]!);
   const catalog = Route.useLoaderData();
 
-  const inCategory = catalog.filter((l) => l.category === slug);
+  const inCategory = catalog.filter((l) => l.gear === slug);
   const items = inCategory.filter((l) => sub === "All" || l.subcategory === sub);
 
   return (

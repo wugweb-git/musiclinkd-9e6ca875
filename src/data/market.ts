@@ -32,6 +32,8 @@ export type Listing = {
   pin?: string;
   distance: string;
   category: string;
+  /** Goods: the market category (instruments, audio, studio, dj, live, other). */
+  gear?: string;
   subcategory: string;
   brand?: string;
   rating?: number;

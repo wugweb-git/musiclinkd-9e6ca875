@@ -24,3 +24,27 @@ export function subCategorySlug(sub: string) {
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/(^_|_$)/g, "");
 }
+
+/** Stored item_category slugs that aren't a product-type name, and the category they sit in. */
+const extraSlugs: Record<string, string> = {
+  preamps: "studio",
+  controllers: "dj",
+  dj_controller: "dj",
+};
+
+const categoryBySlug = new Map(
+  rentalCategories.flatMap((c) => c.subs.map((s) => [subCategorySlug(s), c.slug] as const)),
+);
+
+/**
+ * Which of the market's categories (instruments, audio, studio, dj, live, other) a stored listing
+ * belongs to, from its item_category slug; instruments with an unknown slug stay instruments.
+ */
+export function gearCategoryOf(itemCategory: string | null, kind: string | null): string {
+  const slug = itemCategory ?? "";
+  return (
+    categoryBySlug.get(slug) ??
+    extraSlugs[slug] ??
+    (kind === "instrument" ? "instruments" : "other")
+  );
+}

@@ -202,16 +202,16 @@ export function Segmented<T extends string>({
   value,
   options,
   onChange,
+  className = "-mx-5 border-b border-border px-5",
 }: {
   value: T;
   options: readonly T[];
   onChange: (v: T) => void;
+  /** Its edge-to-edge underline by default; pass "" when a row around it draws the line. */
+  className?: string;
 }) {
   return (
-    <div
-      className="rail no-scrollbar -mx-5 flex overflow-x-auto border-b border-border px-5"
-      role="tablist"
-    >
+    <div className={`rail no-scrollbar flex overflow-x-auto ${className}`} role="tablist">
       {options.map((o) => {
         const active = value === o;
         return (

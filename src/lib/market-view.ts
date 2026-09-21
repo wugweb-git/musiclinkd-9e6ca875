@@ -11,6 +11,7 @@ import { priceParts } from "@/lib/price";
 import { getRentalBookingCounts } from "@/lib/rentals.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { parsePlace, samePinArea, shownPlace } from "@/lib/place";
+import { gearCategoryOf } from "@/lib/listing-category";
 
 /*
  * Database marketplace listings shaped as the static `Listing` the market screens render.
@@ -128,6 +129,9 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     ...(parsePlace(row.pickup_location).pin ? { pin: parsePlace(row.pickup_location).pin } : {}),
     distance: "",
     category,
+    ...(type === "product" || type === "rental"
+      ? { gear: gearCategoryOf(row.item_category, row.item_category_kind) }
+      : {}),
     subcategory: subcategoryOf(row, category, labels),
     saves: 0,
     postedAt: postedAt(row.created_at, now),

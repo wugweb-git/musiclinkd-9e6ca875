@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { useEffect, useState } from "react";
 import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
-import { Screen, SearchBar, Chip } from "@/components/ml/ui";
+import { Screen, IconBtn } from "@/components/ml/ui";
+import { Segmented } from "@/components/ml/kit";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   CategoryTile,
@@ -13,7 +14,8 @@ import {
   SectionRow,
   useMarketCity,
 } from "@/components/ml/market";
-import { marketCategories, type Listing } from "@/data/market";
+import { type Listing } from "@/data/market";
+import { rentalCategories } from "@/data/rentals";
 import { GearCta } from "@/components/ml/gear-cta";
 import { iconSize } from "@/lib/tokens";
 import { loadCatalogListings } from "@/lib/market-view";
@@ -80,24 +82,15 @@ function MarketHome() {
 
   return (
     <Screen>
-      <header className="sticky top-0 z-bar bg-background/90 px-5 pb-3 pt-4 backdrop-blur">
-        <div className="mb-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-3 leading-tight">Market</h1>
-            <button
-              type="button"
-              onClick={() => setLocationOpen(true)}
-              className="mt-0.5 inline-flex items-center gap-1 text-1 font-semibold text-muted-foreground"
-            >
-              <MapPin size={iconSize.xs} /> {city} · change
-            </button>
-          </div>
+      <header className="sticky top-0 z-bar bg-background/90 pt-4 backdrop-blur">
+        <div className="mb-1 flex items-center justify-between px-5">
+          <h1 className="text-3 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
             <Link
               to="/marketplace/sell"
               className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
             >
-              <Plus size={iconSize.sm} /> Sell
+              <Plus size={iconSize.sm} /> List
             </Link>
             <button
               aria-label="Filters"
@@ -110,28 +103,38 @@ function MarketHome() {
           </div>
         </div>
         {searchOpen ? (
-          <SearchField
-            to="/marketplace/search"
-            placeholder="Search instruments, equipment, services"
-            onClose={() => setSearchOpen(false)}
-          />
+          <div className="px-5 pt-2">
+            <SearchField
+              to="/marketplace/search"
+              placeholder="Search instruments, equipment, services"
+              onClose={() => setSearchOpen(false)}
+            />
+          </div>
         ) : null}
-      </header>
-
-      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
-        {views.map((v) => (
-          <Chip
-            key={v.label}
-            active={view === v.label}
-            onClick={() => {
-              setView(v.label);
-              if (v.to) void navigate({ to: v.to });
-            }}
+        {/* Views as tabs, and where you are at the end of the row (it opens the city sheet). */}
+        <div className="flex items-center gap-2 border-b border-border pl-5 pr-3">
+          <div className="min-w-0 flex-1">
+            <Segmented
+              className=""
+              value={view}
+              options={views.map((v) => v.label)}
+              onChange={(label) => {
+                setView(label);
+                const to = views.find((v) => v.label === label)?.to;
+                if (to) void navigate({ to });
+              }}
+            />
+          </div>
+          <span aria-hidden className="h-6 w-px shrink-0 bg-border" />
+          <IconBtn
+            label={`Location: ${city}`}
+            variant="ghost"
+            onClick={() => setLocationOpen(true)}
           >
-            {v.label}
-          </Chip>
-        ))}
-      </div>
+            <MapPin size={iconSize.md} />
+          </IconBtn>
+        </div>
+      </header>
 
       <SectionRow
         title="Browse categories"
@@ -146,7 +149,7 @@ function MarketHome() {
         }
       >
         <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-          {marketCategories.map((c) => (
+          {rentalCategories.map((c) => (
             <CategoryTile
               key={c.slug}
               slug={c.slug}
@@ -202,7 +205,7 @@ function MarketHome() {
       <CategorySheet
         open={categoriesOpen}
         onClose={() => setCategoriesOpen(false)}
-        categories={marketCategories}
+        categories={rentalCategories}
       />
     </Screen>
   );
