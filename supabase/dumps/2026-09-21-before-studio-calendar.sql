@@ -1,0 +1,24 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921110000_studio_calendar.sql.
+--
+-- Scope: row counts and what the migration replaces. It adds studios.weekly_hours, a new table
+-- studio_blocks and a new function studio_busy(uuid, date, date); none of them existed at snapshot
+-- time (to_regclass('public.studio_blocks') null, no pg_proc row named studio_busy), so there is no
+-- earlier definition to keep. The only existing rows it writes are studios.weekly_hours on the eight
+-- studios below, all of which had no weekly_hours column yet.
+--
+-- Row counts: studios 18, studio_rooms 14, booking_requests 4 (confirmed 2, requested 1,
+-- declined 1), studio_blocks does not exist.
+--
+-- studios.operating_hours at snapshot time (the only per-studio hours text there was):
+--   ironwood-live-hall-and-venue  'By event booking'                       -> left '{}'
+--   jam-room-bandra               '9 am – 11 pm'                           -> daily 09:00–23:00
+--   soundhouse-bandra             E'Mon–Fri: 10:00 – 22:00\nSaturday: 11:00 – 23:00\nSunday: Closed'
+--                                                                         -> Mon–Fri 10–22, Sat 11–23
+--   wugweb                        '09:00 AM – 11:00 PM (Mon–Sat)'          -> Mon–Sat 09:00–23:00
+--   yash-raj-sound-studios        '09:00 AM – 11:00 PM (Mon–Sat)'          -> Mon–Sat 09:00–23:00
+--   every other studio            NULL
+-- From src/data/booking.ts (calendar hours 10:00–20:00): octave-sound-labs, headroom-mastering,
+-- basement-jam daily; waveform-podcast Mon–Fri.
+--
+-- To undo: see the Rollback note at the top of the migration.
