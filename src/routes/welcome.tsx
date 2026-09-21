@@ -32,6 +32,8 @@ import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
 import { MadeByWugweb } from "@/components/ml/kit";
+import { useServerFn } from "@tanstack/react-start";
+import { signUpWithPassword } from "@/lib/sign-up.functions";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -146,6 +148,7 @@ type Mode = "signup" | "signin";
 function WelcomeScreen() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
+  const signUp = useServerFn(signUpWithPassword);
   // A new talent account is a sign-up, so that is where Welcome starts; Sign In is one tap away.
   const [mode, setMode] = useState<Mode>("signup");
   const [email, setEmail] = useState(carriedEmail);
@@ -185,27 +188,22 @@ function WelcomeScreen() {
     }
     setBusy("email");
     if (mode === "signup") {
-      const { data, error: err } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      setBusy(null);
-      if (err) {
+      // No email code: the account is created confirmed, then signed in below with the same password.
+      try {
+        const created = await signUp({ data: { email: email.trim(), password } });
+        if (created.status === "exists") {
+          setBusy(null);
+          haptic("error");
+          setMode("signin");
+          setError(classifyAuthError("already registered"));
+          return;
+        }
+      } catch (e) {
+        setBusy(null);
         haptic("error");
-        const problem = classifyAuthError(err.message);
-        if (problem.kind === "account_exists") setMode("signin");
-        setError(problem);
+        setError(classifyAuthError(e instanceof Error ? e.message : "network"));
         return;
       }
-      haptic("confirm");
-      // With email confirmation on, there is no session yet: the code that was just sent finishes it.
-      if (!data.session) {
-        void navigate({ to: "/auth/verify-email", search: { email: email.trim() } });
-        return;
-      }
-      void navigate({ to: "/", replace: true });
-      return;
     }
     const { error: err } = await supabase.auth.signInWithPassword({
       email: email.trim(),

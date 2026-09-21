@@ -33,7 +33,7 @@ export const recordScan = createServerFn({ method: "POST" })
       .eq("username", data.username)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    if (!row || row.visibility === "private") return null;
+    if (!row || row.visibility === "private" || row.visibility === "deactivated") return null;
     // QR & sharing settings (profiles.discovery_prefs.qr): a code switched off, or not findable
     // by code, resolves to nothing; with scan counting off, the scan isn't recorded.
     const qr = qrPrefsOf(row.discovery_prefs);

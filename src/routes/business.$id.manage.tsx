@@ -16,8 +16,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import { deleteMyBusiness } from "@/lib/business-account.functions";
-import { deactivateMyAccount } from "@/lib/account.functions";
+import { deactivateMyAccount, deleteMyAccount } from "@/lib/account.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
@@ -46,10 +46,10 @@ function ManageBusiness() {
   const { user, loading } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const remove = useServerFn(deleteMyBusiness);
+  // One business is one account, so deleting the business deletes the account (owner, 21 Sep 2026).
+  const remove = useServerFn(deleteMyAccount);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [deleted, setDeleted] = useState(false);
   const deactivate = useServerFn(deactivateMyAccount);
   const [confirmDeactivate, setConfirmDeactivate] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
@@ -77,10 +77,12 @@ function ManageBusiness() {
         toast.error(
           `${result.count} upcoming ${result.count === 1 ? "booking" : "bookings"} must be cancelled or handed over first.`,
         );
-      } else {
-        setDeleted(true);
-        await queryClient.invalidateQueries();
+        return;
       }
+      await supabase.auth.signOut();
+      queryClient.clear();
+      toast.success("Your business and account are deleted.");
+      void navigate({ to: "/welcome" });
     } catch {
       toast.error("That didn't go through. Try again.");
     } finally {
@@ -90,7 +92,7 @@ function ManageBusiness() {
   }
 
   // Everything here acts on the signed-in account's own business, so only its owner sees it.
-  if (!b || (!loading && !deleted && user?.id !== b.profileId)) {
+  if (!b || (!loading && user?.id !== b.profileId)) {
     return (
       <Screen>
         <TopBar title="Manage" back="/business" />
@@ -183,8 +185,8 @@ function ManageBusiness() {
             <Trash2 size={iconSize.sm} /> Delete business
           </p>
           <p className="text-1 text-muted-foreground">
-            Permanently deletes the profile, studio, equipment, photos and reviews. Customers keep
-            their own record of past sessions.
+            Permanently deletes your account: the sign-in, profile, studio, equipment, photos and
+            reviews. Customers keep their own record of past sessions.
           </p>
           <Btn variant="outline" className="w-full" onClick={() => setConfirmDelete(true)}>
             Delete {b.name}
@@ -222,17 +224,6 @@ function ManageBusiness() {
             Keep It
           </Btn>
         </div>
-      </Dialog>
-
-      <Dialog
-        open={deleted}
-        title="Business deleted"
-        body="The business and its studio are deleted from MusicLinkd."
-        onClose={() => setDeleted(false)}
-      >
-        <BtnLink to="/business" className="w-full">
-          Back to Businesses
-        </BtnLink>
       </Dialog>
     </Screen>
   );

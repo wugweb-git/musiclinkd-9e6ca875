@@ -143,7 +143,15 @@ export type ListingRow = {
   seller: SellerOwnerSummary | null;
 };
 
-const OWNER = "id, username, display_name, avatar_url, city, is_verified";
+const OWNER = "id, username, display_name, avatar_url, city, is_verified, visibility";
+
+/** Leaves out anything whose owner has deactivated their account. */
+function fromLiveOwners<T>(rows: T[], owner: "seller" | "creator"): T[] {
+  return rows.filter(
+    (r) =>
+      (r as Record<string, { visibility?: string } | null>)[owner]?.visibility !== "deactivated",
+  );
+}
 const SELLER = `${OWNER}, rating, review_count, followers_count`;
 const STUDIO_FIELDS = `id, slug, name, description, location, hourly_rate_paise, rating, review_count, verified_gold,
   console_type, services, amenities, cancellation_policy, operating_hours, image_url, images,
@@ -252,7 +260,7 @@ export const listOpportunities = createServerFn({ method: "GET" }).handler(async
     .eq("status", "open")
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
-  return (data ?? []) as unknown as OpportunityRow[];
+  return fromLiveOwners((data ?? []) as unknown as OpportunityRow[], "creator");
 });
 
 /** Opportunities the signed-in user created, every status, newest first. */
@@ -315,14 +323,15 @@ export const listListings = createServerFn({ method: "GET" }).handler(async () =
         .order("created_at", { ascending: false }),
     [LISTING, LISTING_BEFORE],
   );
-  if (!browsing.error) return (browsing.data ?? []) as unknown as ListingRow[];
+  if (!browsing.error)
+    return fromLiveOwners((browsing.data ?? []) as unknown as ListingRow[], "seller");
   const { data, error } = await withFallback(
     (select) =>
       client.from("marketplace_listings").select(select).order("created_at", { ascending: false }),
     [LISTING, LISTING_BEFORE],
   );
   if (error) throw new Error(error.message);
-  return (data ?? []) as unknown as ListingRow[];
+  return fromLiveOwners((data ?? []) as unknown as ListingRow[], "seller");
 });
 
 /** Listings the signed-in user is selling, newest first. */
@@ -353,7 +362,8 @@ export const getListing = createServerFn({ method: "GET" })
       [LISTING, LISTING_BEFORE],
     );
     if (error) throw new Error(error.message);
-    return (row ?? null) as unknown as ListingRow | null;
+    const listing = (row ?? null) as unknown as ListingRow | null;
+    return listing && fromLiveOwners([listing], "seller").length ? listing : null;
   });
 
 /** One seller's public listings (any category), newest first — for their profile page. */
@@ -371,7 +381,7 @@ export const getSellerListings = createServerFn({ method: "GET" })
       [LISTING, LISTING_BEFORE],
     );
     if (error) throw new Error(error.message);
-    return (rows ?? []) as unknown as ListingRow[];
+    return fromLiveOwners((rows ?? []) as unknown as ListingRow[], "seller");
   });
 
 const listingSlug = (title: string) =>

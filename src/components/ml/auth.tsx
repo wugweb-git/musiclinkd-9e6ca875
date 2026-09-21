@@ -749,13 +749,13 @@ export function classifyAuthError(message: string): {
     return {
       kind: "account_exists",
       title: "This email already has an account",
-      body: "Sign in instead, or reset your password if you have forgotten it.",
+      body: "Sign in instead, or continue with Google if you joined with Google.",
     };
   if (m.includes("invalid login") || m.includes("invalid credentials"))
     return {
       kind: "invalid_credentials",
       title: "Email or password is incorrect",
-      body: "Check for typos, or reset your password. Nothing was changed on your account.",
+      body: "Check for typos or reset your password. If you joined with Google, continue with Google.",
     };
   if (m.includes("email not confirmed") || m.includes("not confirmed"))
     return {
