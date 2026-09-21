@@ -1,0 +1,12 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921260000_business_gaps.sql.
+--
+-- Scope: what the migration changes (all additions except one null hours line).
+--   profile_business for 2c29531c-68cf-4b7d-84e1-08ae729a6c69 (@octave.sound.labs): no row.
+--     Its studio "Octave Sound Labs": location 'Andheri West, Mumbai', operating_hours 'Mon–Sun 10:00–20:00'.
+--   profile_business f2ece64c-c18d-5f28-bc3e-d72e6e25fa69 (@ironwood.live.hall.and.venue): operating_hours NULL;
+--     its studio's operating_hours 'By event booking'.
+--   studios owned by 7d175f7d-88fd-5a16-ab64-48f852c60c7e (@soundhouse.studio): none; slug 'soundhouse-studio' unused.
+--   @beatcraft.studios (0550d73a-8f3a-524e-ad14-f881f9bf4ae8): no studio, city, avatar or bio (not changed).
+--
+-- To undo: see the Rollback note at the top of the migration.
