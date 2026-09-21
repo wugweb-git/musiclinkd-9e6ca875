@@ -117,6 +117,8 @@ function ServiceEnquiry() {
         <Card>
           <p className="text-sm font-semibold">{s.name}</p>
           <Price
+            from
+            inline
             price={priceParts(s.price_paise, s.price_unit, s.price_note)}
             className="mt-1"
             amountClassName="text-1 font-semibold"

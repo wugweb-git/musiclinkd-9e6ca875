@@ -149,6 +149,8 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                     >
                       <span className="min-w-0 flex-1 truncate text-1">{s.label}</span>
                       <Price
+                        from
+                        inline
                         price={s.price}
                         align="end"
                         className="shrink-0"
