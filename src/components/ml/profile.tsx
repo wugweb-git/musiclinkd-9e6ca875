@@ -423,20 +423,21 @@ function isVerifiedTier(tier: PersonProfile["verification"]) {
 /**
  * The owner's photo and cover buttons. Picking a file uploads it to the person's own storage folder
  * and writes the URL to the profile, so the change is done here rather than on another screen.
+ * The studio's facility and equipment photos use the same button with their own kind.
  */
-function ImagePickButton({
+export function ImagePickButton<K extends string = ProfileImageKind>({
   kind,
   label,
   className,
   children,
   onPick,
 }: {
-  kind: ProfileImageKind;
+  kind: K;
   label: string;
   className?: string;
   children: ReactNode;
   /** The screen owns the upload and the save; this button owns the file input and the spinner. */
-  onPick: (kind: ProfileImageKind, file: File) => Promise<void>;
+  onPick: (kind: K, file: File) => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
 

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { ImagePlus, Trash2, X } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, Sheet } from "@/components/ml/ui";
 import { BusinessOnlyGate, Card, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import { PhotoSheet } from "@/components/ml/booking";
+import { ImagePickButton } from "@/components/ml/profile";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { formatDate, formatTime } from "@/data/booking";
 import { iconSize } from "@/lib/tokens";
@@ -27,6 +29,14 @@ import {
   updateMyStudio,
 } from "@/lib/studio-owner.functions";
 import { type Weekday, type WeeklyHours } from "@/lib/studio-slots";
+import {
+  MAX_STUDIO_PHOTOS,
+  type StudioPhotoSubject,
+  addMyStudioPhoto,
+  listMyStudioPhotos,
+  removeMyStudioPhoto,
+} from "@/lib/studio-photos.functions";
+import { uploadStudioPhoto } from "@/lib/studio-photos";
 
 export const Route = createFileRoute("/business/availability")({
   head: () => ({
@@ -120,6 +130,7 @@ function AvailabilityContent() {
 
         <WeeklyHoursEditor studio={q.data} />
         <ClosedTimes studio={q.data} />
+        <FacilitiesEditor />
         <EquipmentEditor />
 
         <BtnLink to="/business/bookings" variant="ghost" className="mt-2 w-full">
@@ -465,7 +476,12 @@ function EquipmentEditor() {
       if (ctx?.before) queryClient.setQueryData(EQUIPMENT_KEY, ctx.before);
       toast.error("Couldn't remove that. Try again.");
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEY }),
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: EQUIPMENT_KEY }),
+        // The item's photos go with it.
+        queryClient.invalidateQueries({ queryKey: PHOTOS_KEY }),
+      ]),
   });
 
   const edit = (i: StudioEquipment) =>
@@ -496,22 +512,25 @@ function EquipmentEditor() {
           </EmptyState>
         ) : (
           (q.data?.items ?? []).map((i) => (
-            <Card key={i.id} className="flex items-center gap-3">
-              <button type="button" onClick={() => edit(i)} className="min-w-0 flex-1 text-left">
-                <span className="block truncate text-sm font-semibold">{i.name}</span>
-                <span className="block truncate text-1 text-muted-foreground">
-                  {[categoryLabel(i.category), i.quantity ? `× ${i.quantity}` : ""]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
-              </button>
-              <IconBtn
-                label={`Remove ${i.name}`}
-                variant="ghost"
-                onClick={() => removeItem.mutate(i.id)}
-              >
-                <Trash2 size={iconSize.sm} aria-hidden />
-              </IconBtn>
+            <Card key={i.id}>
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => edit(i)} className="min-w-0 flex-1 text-left">
+                  <span className="block truncate text-sm font-semibold">{i.name}</span>
+                  <span className="block truncate text-1 text-muted-foreground">
+                    {[categoryLabel(i.category), i.quantity ? `× ${i.quantity}` : ""]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
+                </button>
+                <IconBtn
+                  label={`Remove ${i.name}`}
+                  variant="ghost"
+                  onClick={() => removeItem.mutate(i.id)}
+                >
+                  <Trash2 size={iconSize.sm} aria-hidden />
+                </IconBtn>
+              </div>
+              <ProofPhotos subjectType="equipment" subjectId={i.id} name={i.name} />
             </Card>
           ))
         )}
@@ -588,5 +607,126 @@ function EquipmentEditor() {
         ) : null}
       </Sheet>
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Photos as proof: facilities and equipment on the studio page        */
+/* ------------------------------------------------------------------ */
+
+const PHOTOS_KEY = ["studio-photos", "mine"];
+
+function useMyStudioPhotos() {
+  const load = useServerFn(listMyStudioPhotos);
+  return useQuery({ queryKey: PHOTOS_KEY, queryFn: () => load() });
+}
+
+/** Each of the studio's facilities, with the photos customers can open on the studio page. */
+function FacilitiesEditor() {
+  const q = useMyStudioPhotos();
+  // Nothing to prove before the photos table exists, or when the studio lists no facilities.
+  if (q.isLoading || q.isError || !q.data?.ready || !q.data.facilities.length) return null;
+  return (
+    <section className="mt-8">
+      <h2 className="text-2">Facilities</h2>
+      <p className="mt-1 text-1 text-muted-foreground">
+        Photos customers can open beside each facility on your studio page.
+      </p>
+      <div className="mt-3 space-y-2">
+        {q.data.facilities.map((f) => (
+          <Card key={f.slug}>
+            <p className="truncate text-sm font-semibold">{f.label}</p>
+            <ProofPhotos subjectType="facility" subjectId={f.slug} name={f.label} />
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * One facility's or equipment item's photos: tap one to view it, remove it, or add another, up to
+ * MAX_STUDIO_PHOTOS. Shows nothing until the photos table exists.
+ */
+function ProofPhotos({
+  subjectType,
+  subjectId,
+  name,
+}: {
+  subjectType: StudioPhotoSubject;
+  subjectId: string;
+  name: string;
+}) {
+  const queryClient = useQueryClient();
+  const q = useMyStudioPhotos();
+  const add = useServerFn(addMyStudioPhoto);
+  const remove = useServerFn(removeMyStudioPhoto);
+  const [viewing, setViewing] = useState(false);
+  if (!q.data?.ready) return null;
+  const { studioId } = q.data;
+  const photos = q.data.photos.filter(
+    (p) => p.subject_type === subjectType && p.subject_id === subjectId,
+  );
+
+  async function onPick(kind: StudioPhotoSubject, file: File) {
+    try {
+      const url = await uploadStudioPhoto(studioId, file);
+      await add({ data: { subjectType: kind, subjectId, url } });
+      await queryClient.invalidateQueries({ queryKey: PHOTOS_KEY });
+      toast.success("Photo added");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't add that photo");
+    }
+  }
+
+  async function onRemove(id: string) {
+    try {
+      await remove({ data: { id } });
+      await queryClient.invalidateQueries({ queryKey: PHOTOS_KEY });
+      toast.success("Photo removed");
+    } catch {
+      toast.error("Couldn't remove that photo");
+    }
+  }
+
+  return (
+    <div className="mt-3 flex flex-wrap gap-2">
+      {photos.map((p, i) => (
+        <div key={p.id} className="relative">
+          <button
+            type="button"
+            onClick={() => setViewing(true)}
+            aria-label={`View photo ${i + 1} of ${name}`}
+            className="block overflow-hidden rounded-lg"
+          >
+            <img src={p.url} alt="" className="h-14 w-14 object-cover" loading="lazy" />
+          </button>
+          <button
+            type="button"
+            onClick={() => void onRemove(p.id)}
+            aria-label={`Remove photo ${i + 1} of ${name}`}
+            title="Remove photo"
+            className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-foreground"
+          >
+            <X size={iconSize.xs} aria-hidden />
+          </button>
+        </div>
+      ))}
+      {photos.length < MAX_STUDIO_PHOTOS ? (
+        <ImagePickButton
+          kind={subjectType}
+          label={`Add a photo of ${name}`}
+          className="h-14 w-14 rounded-lg border border-dashed border-border text-muted-foreground"
+          onPick={onPick}
+        >
+          <ImagePlus size={iconSize.sm} aria-hidden />
+        </ImagePickButton>
+      ) : null}
+      <PhotoSheet
+        title={name}
+        photos={viewing ? photos.map((p) => p.url) : []}
+        onClose={() => setViewing(false)}
+      />
+    </div>
   );
 }

@@ -23,12 +23,16 @@ const EXTENSION: Record<string, string> = {
 /** Value for an `<input type="file" accept>` that matches what the buckets take. */
 export const PROFILE_IMAGE_ACCEPT = Object.keys(EXTENSION).join(",");
 
-export async function uploadProfileImage(kind: ProfileImageKind, file: File): Promise<string> {
+/** The file's extension once it is an image the buckets take and under `maxBytes`; throws if not. */
+export function checkImageFile(file: File, maxBytes: number): string {
   const ext = EXTENSION[file.type];
   if (!ext) throw new Error("Use a JPEG, PNG or WebP image.");
-  if (file.size > MAX_BYTES[kind]) {
-    throw new Error(`Use an image under ${MAX_BYTES[kind] / (1024 * 1024)} MB.`);
-  }
+  if (file.size > maxBytes) throw new Error(`Use an image under ${maxBytes / (1024 * 1024)} MB.`);
+  return ext;
+}
+
+export async function uploadProfileImage(kind: ProfileImageKind, file: File): Promise<string> {
+  const ext = checkImageFile(file, MAX_BYTES[kind]);
 
   const { data: session } = await supabase.auth.getSession();
   const userId = session.session?.user.id;

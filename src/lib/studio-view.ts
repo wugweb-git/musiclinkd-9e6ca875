@@ -3,6 +3,7 @@ import { taxonomyLabel, type RoomTier, type StudioRow } from "@/lib/catalog.func
 import { priceParts, type PriceParts } from "@/lib/price";
 import { hasWeeklyHours, type WeeklyHours } from "@/lib/studio-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
+import type { StudioPhoto } from "@/lib/studio-photos.functions";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
@@ -101,10 +102,20 @@ function hourlyResource(
   };
 }
 
+/** Photo URLs per subject id, in order. */
+function photosBy(photos: StudioPhoto[], type: StudioPhoto["subject_type"]) {
+  const by = new Map<string, string[]>();
+  for (const p of photos) {
+    if (p.subject_type === type) by.set(p.subject_id, [...(by.get(p.subject_id) ?? []), p.url]);
+  }
+  return by;
+}
+
 export function bookableFromStudio(
   row: StudioRow,
   labels: TaxonomyLabels,
   weeklyHours: WeeklyHours = {},
+  photos: StudioPhoto[] = [],
 ): Bookable | null {
   const resources = row.rooms.length
     ? row.rooms.map((room) =>
@@ -123,6 +134,12 @@ export function bookableFromStudio(
   const priced = resources.filter((r): r is Resource => r !== null);
   // Without a rate there is nothing honest to price, so the space stays unavailable.
   if (!priced.length) return null;
+
+  // Proof photos are keyed by what the page shows: the facility's label, the equipment's name.
+  const facilityPhotos = photosBy(photos, "facility");
+  const equipmentPhotos = photosBy(photos, "equipment");
+  const proof = (pairs: [string, string[] | undefined][]) =>
+    Object.fromEntries(pairs.filter((p): p is [string, string[]] => !!p[1]?.length));
 
   return {
     id: row.slug,
@@ -144,6 +161,13 @@ export function bookableFromStudio(
     facilities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),
     resources: priced,
     equipment: row.equipment.map((e) => e.name),
+    facilityPhotos: proof(
+      row.amenities.map((a) => [
+        taxonomyLabel(labels, "studio_amenities", a),
+        facilityPhotos.get(a),
+      ]),
+    ),
+    equipmentPhotos: proof(row.equipment.map((e) => [e.name, equipmentPhotos.get(e.id)])),
     addOns: (row.add_ons ?? []).map((a, i): AddOn => ({
       id: `addon-${i}`,
       name: a.name,

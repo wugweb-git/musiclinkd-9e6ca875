@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { myStudioId } from "@/lib/studio-calendar.functions";
+import { removeSubjectPhotos } from "@/lib/studio-photos.functions";
 
 /*
  * The studio owner's own edit surface for the real, flat columns that exist today:
@@ -186,5 +187,7 @@ export const removeMyStudioEquipment = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .eq("studio_id", studioId);
     if (error) throw new Error(error.message);
+    // Its photos go with it; studio_photos has no foreign key to the item (subject_id is text).
+    await removeSubjectPhotos(client, studioId, "equipment", data.id);
     return { ok: true };
   });

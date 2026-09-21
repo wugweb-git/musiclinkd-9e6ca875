@@ -131,6 +131,9 @@ export type Bookable = {
   responseTime: string;
   /** Studio-wide house gear not tied to one room (database studios). */
   equipment?: string[];
+  /** Photos the owner added as proof, by facility label and by equipment name. */
+  facilityPhotos?: Record<string, string[]>;
+  equipmentPhotos?: Record<string, string[]>;
   /** false when there is no availability calendar (database studios): no date, time or later steps. */
   hasCalendar?: boolean;
 };

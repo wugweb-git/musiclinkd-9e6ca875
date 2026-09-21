@@ -14,7 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { Btn, VerifiedBadge } from "@/components/ml/ui";
+import { Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import {
   EmptyState as BaseEmptyState,
   OfflineBanner as BaseOfflineBanner,
@@ -877,5 +877,65 @@ export function StepDots({ step, total }: { step: number; total: number }) {
         />
       ))}
     </div>
+  );
+}
+
+/**
+ * Photos a studio added as proof of one facility or equipment item, each at full width in a sheet.
+ * Open while `photos` has any; the studio page and the owner's editor both use it.
+ */
+export function PhotoSheet({
+  title,
+  photos,
+  onClose,
+}: {
+  title: string;
+  photos: string[];
+  onClose: () => void;
+}) {
+  return (
+    <Sheet open={photos.length > 0} onClose={onClose} title={title}>
+      <div className="space-y-3">
+        {photos.map((src, i) => (
+          <img
+            key={src}
+            src={src}
+            alt={`${title}, ${i + 1} of ${photos.length}`}
+            className="w-full rounded-lg bg-subtle object-contain"
+            loading="lazy"
+          />
+        ))}
+      </div>
+    </Sheet>
+  );
+}
+
+/**
+ * A facility or equipment pill. With photos it becomes a button showing the first one as a small
+ * thumbnail and the count, and opens them; without, it stays a plain label.
+ */
+export function ProofPill({
+  label,
+  photos,
+  onOpen,
+  className,
+}: {
+  label: string;
+  photos: string[] | undefined;
+  onOpen: () => void;
+  className: string;
+}) {
+  if (!photos?.length) return <span className={`px-3 py-1.5 ${className}`}>{label}</span>;
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={`${label}, ${photos.length} ${photos.length === 1 ? "photo" : "photos"}`}
+      className={`state-layer flex items-center gap-1.5 py-1 pl-1 pr-3 ${className}`}
+    >
+      <img src={photos[0]} alt="" className="h-6 w-6 rounded-full object-cover" loading="lazy" />
+      {label}
+      <span className="tabular-nums text-foreground">{photos.length}</span>
+    </button>
   );
 }

@@ -2,6 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { BookingDraftProvider } from "@/components/ml/booking-context";
 import { getStudio } from "@/lib/catalog.functions";
 import { getStudioCalendar } from "@/lib/studio-calendar.functions";
+import { getStudioPhotos } from "@/lib/studio-photos.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { bookableFromStudio } from "@/lib/studio-view";
 
@@ -14,8 +15,10 @@ export const Route = createFileRoute("/booking/$id")({
       // Weekly hours turn the date and time steps on; without them the studio is asked directly.
       getStudioCalendar({ data: { slug: params.id } }).catch(() => null),
     ]);
+    // Facility and equipment photos need the studio's id; none before the table exists.
+    const photos = row ? await getStudioPhotos({ data: { studioId: row.id } }).catch(() => []) : [];
     return {
-      studio: row ? bookableFromStudio(row, labels, calendar?.weeklyHours) : null,
+      studio: row ? bookableFromStudio(row, labels, calendar?.weeklyHours, photos) : null,
     };
   },
   component: BookingLayout,

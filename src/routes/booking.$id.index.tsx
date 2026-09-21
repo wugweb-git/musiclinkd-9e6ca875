@@ -3,7 +3,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Bookmark, MessageCircle, Share2 } from "lucide-react";
 import { Btn, BtnLink, IconBtn } from "@/components/ml/ui";
-import { BookableHero, EntityMetaRow, PolicyCard, StickyBar } from "@/components/ml/booking";
+import {
+  BookableHero,
+  EntityMetaRow,
+  PhotoSheet,
+  PolicyCard,
+  ProofPill,
+  StickyBar,
+} from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr, lowestRate } from "@/data/booking";
 import { rupeeParts } from "@/lib/price";
@@ -39,6 +46,8 @@ function BookingEntry() {
   const navigate = useNavigate();
   // Saved on this visit only: there is no saved-spaces store yet.
   const [saved, setSaved] = useState(false);
+  // The facility or equipment item whose photos are open.
+  const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const from = Math.min(...b.resources.flatMap((r) => r.tiers.map((t) => t.price)));
   const equipment = [
     ...new Set([...(b.equipment ?? []), ...b.resources.flatMap((r) => r.equipment)]),
@@ -135,12 +144,13 @@ function BookingEntry() {
             <h3 className="text-2">Facilities</h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {b.facilities.map((f) => (
-                <span
+                <ProofPill
                   key={f}
-                  className="rounded-full bg-background px-3 py-1.5 text-1 text-muted-foreground"
-                >
-                  {f}
-                </span>
+                  label={f}
+                  photos={b.facilityPhotos?.[f]}
+                  onOpen={() => setViewing({ title: f, photos: b.facilityPhotos?.[f] ?? [] })}
+                  className="rounded-full bg-background text-1 text-muted-foreground"
+                />
               ))}
             </div>
           </section>
@@ -151,12 +161,13 @@ function BookingEntry() {
             <h3 className="text-2">Equipment highlights</h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {equipment.map((e) => (
-                <span
+                <ProofPill
                   key={e}
-                  className="rounded-full border border-border px-3 py-1.5 text-1 text-muted-foreground"
-                >
-                  {e}
-                </span>
+                  label={e}
+                  photos={b.equipmentPhotos?.[e]}
+                  onOpen={() => setViewing({ title: e, photos: b.equipmentPhotos?.[e] ?? [] })}
+                  className="rounded-full border border-border text-1 text-muted-foreground"
+                />
               ))}
             </div>
           </section>
@@ -238,6 +249,12 @@ function BookingEntry() {
           </section>
         ) : null}
       </main>
+
+      <PhotoSheet
+        title={viewing?.title ?? ""}
+        photos={viewing?.photos ?? []}
+        onClose={() => setViewing(null)}
+      />
 
       <StickyBar
         price={`From ${inr(from)}`}
