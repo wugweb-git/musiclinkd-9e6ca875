@@ -175,10 +175,13 @@ export function CategoryTile({
   slug,
   label,
   onOpen,
+  icon,
 }: {
   slug: string;
   label: string;
   onOpen: () => void;
+  /** In place of the category's own icon (See all's arrow). */
+  icon?: ReactNode;
 }) {
   return (
     <button
@@ -186,9 +189,7 @@ export function CategoryTile({
       onClick={onOpen}
       className="state-layer flex w-[104px] shrink-0 flex-col gap-2 rounded-lg bg-subtle p-3 text-left"
     >
-      <span className="flex h-8 items-center">
-        <MarketCategoryIcon slug={slug} />
-      </span>
+      <span className="flex h-8 items-center">{icon ?? <MarketCategoryIcon slug={slug} />}</span>
       <span className="text-1 font-semibold leading-tight text-foreground">{label}</span>
     </button>
   );
@@ -626,7 +627,36 @@ export function useMarketCity() {
   return [city, choose] as const;
 }
 
-/** Choose a location: locate me or edit, then a flat list of suggested places. */
+/** Where each Market city is, for Locate me (nearest city) and the map. */
+const cityCentres: Record<string, [number, number]> = {
+  Mumbai: [19.076, 72.8777],
+  "Delhi NCR": [28.6139, 77.209],
+  Bengaluru: [12.9716, 77.5946],
+  Chennai: [13.0827, 80.2707],
+  Pune: [18.5204, 73.8567],
+  Goa: [15.2993, 74.124],
+};
+
+function nearestCity(lat: number, lng: number) {
+  let best = marketCities[0]!;
+  let bestD = Infinity;
+  for (const c of marketCities) {
+    const centre = cityCentres[c];
+    if (!centre) continue;
+    const d = (centre[0] - lat) ** 2 + (centre[1] - lng) ** 2;
+    if (d < bestD) {
+      bestD = d;
+      best = c;
+    }
+  }
+  return best;
+}
+
+/**
+ * Choose a location, drawn after Facebook Marketplace's: a map of where you are with the place
+ * under it, Locate me and Edit, then suggested places. Locate me reads the device's position and
+ * picks the nearest Market city; Edit searches the list.
+ */
 export function LocationSheet({
   open,
   onClose,
@@ -641,6 +671,7 @@ export function LocationSheet({
   const [locating, setLocating] = useState(false);
   const [editing, setEditing] = useState(false);
   const [query, setQuery] = useState("");
+  const [here, setHere] = useState<[number, number] | null>(null);
   const pick = (next: string) => {
     onChoose(next);
     setEditing(false);
@@ -648,56 +679,87 @@ export function LocationSheet({
     onClose();
   };
   const locate = () => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      toast.error("This device can't share its location");
+      return;
+    }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        setHere([pos.coords.latitude, pos.coords.longitude]);
+        onChoose(nearestCity(pos.coords.latitude, pos.coords.longitude));
+      },
       () => {
         setLocating(false);
-        pick("Current location");
+        toast.error("Couldn't get your location — pick a city instead");
       },
-      () => setLocating(false),
       { timeout: 10000 },
     );
   };
+  const centre = here ?? cityCentres[city];
+  const mapSrc = centre
+    ? `https://maps.google.com/maps?q=${centre[0]},${centre[1]}&z=${here ? 13 : 10}&output=embed`
+    : `https://maps.google.com/maps?q=${encodeURIComponent(`${city}, India`)}&z=10&output=embed`;
   const shown = marketCities.filter((c) => c.toLowerCase().includes(query.toLowerCase()));
   return (
     <Sheet open={open} onClose={onClose} title="Choose a location">
-      <p className="mb-4 flex items-center gap-2 text-sm font-semibold">
-        <MapPin size={iconSize.sm} aria-hidden /> {city}
-      </p>
-      <div className="mb-5 flex gap-2">
-        <Btn
-          className="flex-1"
-          icon={<LocateFixed size={iconSize.sm} />}
-          loading={locating}
-          onClick={locate}
-        >
-          Locate me
-        </Btn>
-        <Btn variant="ghost" className="flex-1" onClick={() => setEditing((v) => !v)}>
-          Edit
-        </Btn>
+      <div className="mb-5 overflow-hidden rounded-lg bg-card">
+        {open ? (
+          <iframe
+            key={mapSrc}
+            title={`Map of ${city}`}
+            src={mapSrc}
+            loading="lazy"
+            className="pointer-events-none h-40 w-full border-0"
+          />
+        ) : null}
+        <div className="p-4">
+          <p className="mb-3 text-sm font-semibold text-foreground">{city}</p>
+          <div className="flex gap-2">
+            <Btn
+              className="flex-1"
+              icon={<LocateFixed size={iconSize.sm} />}
+              loading={locating}
+              onClick={locate}
+            >
+              Locate me
+            </Btn>
+            <Btn variant="outline" className="flex-1" onClick={() => setEditing((v) => !v)}>
+              Edit
+            </Btn>
+          </div>
+        </div>
       </div>
       {editing ? (
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search"
-          aria-label="Search places"
-          className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
-        />
+        <div className="relative mb-3">
+          <Search
+            size={18}
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-foreground"
+            aria-hidden
+          />
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search a city"
+            aria-label="Search places"
+            className="h-12 w-full rounded-full border border-border bg-card pl-11 pr-4 text-sm outline-none focus:border-foreground"
+          />
+        </div>
       ) : null}
-      <p className="pill mb-1 text-muted-foreground">Suggested for you</p>
-      <ul>
+      <h3 className="mb-2 text-sm font-semibold text-foreground">Suggested for you</h3>
+      <ul className="overflow-hidden rounded-lg bg-card">
         {shown.map((c) => (
           <li key={c}>
             <button
               type="button"
               onClick={() => pick(c)}
-              className="state-layer flex w-full items-center gap-3 py-3 text-left text-sm"
+              className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm text-foreground"
             >
-              <Search size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
-              <span className={c === city ? "font-semibold" : ""}>{c}</span>
+              <Search size={iconSize.md} className="shrink-0" aria-hidden />
+              <span className={`flex-1 ${c === city ? "font-semibold" : ""}`}>{c}</span>
+              {c === city ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
             </button>
           </li>
         ))}

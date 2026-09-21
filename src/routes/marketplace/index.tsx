@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { useEffect, useState } from "react";
-import { MapPin, SlidersHorizontal, Plus } from "lucide-react";
+import { ArrowRight, MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { Screen, IconBtn } from "@/components/ml/ui";
 import { Segmented } from "@/components/ml/kit";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
@@ -165,29 +165,23 @@ function MarketHome() {
 
       <ActiveFilters value={filter} onChange={setFilter} />
 
-      <SectionRow
-        title="Browse categories"
-        action={
-          <button
-            type="button"
-            onClick={() => setCategoriesOpen(true)}
-            className="link-action text-1 font-semibold text-foreground"
-          >
-            See All
-          </button>
-        }
-      >
-        <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-          {rentalCategories.map((c) => (
-            <CategoryTile
-              key={c.slug}
-              slug={c.slug}
-              label={c.label}
-              onOpen={() => setCategoriesOpen(true)}
-            />
-          ))}
-        </div>
-      </SectionRow>
+      {/* Categories: each opens its page; the last tile opens every category. */}
+      <div className="rail mb-7 flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+        {rentalCategories.map((c) => (
+          <CategoryTile
+            key={c.slug}
+            slug={c.slug}
+            label={c.label}
+            onOpen={() => void navigate({ to: "/marketplace/c/$slug", params: { slug: c.slug } })}
+          />
+        ))}
+        <CategoryTile
+          slug="see-all"
+          label="See all"
+          icon={<ArrowRight size={iconSize.lg} strokeWidth={1.75} aria-hidden />}
+          onOpen={() => setCategoriesOpen(true)}
+        />
+      </div>
 
       {view !== "Explore" ? (
         <section className="px-5 pb-6">
