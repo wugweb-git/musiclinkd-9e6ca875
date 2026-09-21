@@ -1,102 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
-import { EmptyState, EquipmentGrid, SortSheet } from "@/components/ml/market";
-import { RentalFilterSheet, rentalSortOptions } from "@/components/ml/rental";
-import { rentalCategories } from "@/data/rentals";
-import { loadCatalogRentals } from "@/lib/market-view";
-import { iconSize } from "@/lib/tokens";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+/**
+ * The old rental categories aren't Market's categories (those come from the taxonomy), so a rental category opens the Rent view. Market is one marketplace (owner, 22 Sep 2026); this path stays so links keep working.
+ */
 export const Route = createFileRoute("/marketplace/rent/c/$slug")({
-  // Live rentals in their mapped category.
-  loader: () => loadCatalogRentals(),
-  head: ({ params }) => {
-    const c = rentalCategories.find((x) => x.slug === params.slug);
-    const title = `${c?.label ?? "Equipment"} for Rent | MusicLinkd`;
-    return {
-      meta: [
-        { title },
-        {
-          name: "description",
-          content: `Rent ${c?.label.toLowerCase() ?? "music"} equipment from verified providers near you, with clear pricing, deposits and availability.`,
-        },
-        { property: "og:title", content: title },
-        {
-          property: "og:description",
-          content: "Browse rental equipment by category on MusicLinkd.",
-        },
-      ],
-    };
+  beforeLoad: () => {
+    throw redirect({ to: "/marketplace", search: { view: "Rent" }, replace: true });
   },
-  component: RentCategory,
 });
-
-function RentCategory() {
-  const { slug } = Route.useParams();
-  const cat = rentalCategories.find((c) => c.slug === slug);
-  const catalog = Route.useLoaderData();
-  const items = catalog.filter((e) => e.category === slug);
-  const [sub, setSub] = useState("All");
-  const [filters, setFilters] = useState(false);
-  const [sortOpen, setSortOpen] = useState(false);
-  const [sort, setSort] = useState(rentalSortOptions[0]!);
-
-  const shown = sub === "All" ? items : items.filter((e) => e.subcategory === sub);
-
-  return (
-    <Screen>
-      <TopBar
-        title={cat?.label ?? "Equipment"}
-        subtitle={`${items.length} available · Mumbai`}
-        back="/marketplace/rent"
-      />
-      <div className="rail flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
-        {["All", ...(cat?.subs ?? [])].map((s) => (
-          <Chip key={s} active={sub === s} onClick={() => setSub(s)}>
-            {s}
-          </Chip>
-        ))}
-      </div>
-      <div className="flex items-center justify-between gap-2 px-5 pb-3">
-        <p className="text-1 font-semibold text-muted-foreground">
-          {shown.length} results · {sort}
-        </p>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setSortOpen(true)}
-            className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-1 font-semibold"
-          >
-            <ArrowUpDown size={iconSize.xs} /> Sort
-          </button>
-          <button
-            onClick={() => setFilters(true)}
-            className="inline-flex h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-1 font-semibold"
-          >
-            <SlidersHorizontal size={iconSize.xs} /> Filter
-          </button>
-        </div>
-      </div>
-      <div className="space-y-3 px-5 pb-6">
-        {shown.length ? (
-          <EquipmentGrid items={shown} />
-        ) : (
-          <EmptyState
-            emoji="📦"
-            title="Nothing listed here yet"
-            body="No providers have listed this sub-category in Mumbai. Try a wider area or set an alert."
-            action={<BtnLink to="/marketplace/rent/search">Search All Rentals</BtnLink>}
-          />
-        )}
-      </div>
-      <RentalFilterSheet open={filters} onClose={() => setFilters(false)} results={shown.length} />
-      <SortSheet
-        open={sortOpen}
-        onClose={() => setSortOpen(false)}
-        value={sort}
-        onChange={setSort}
-        options={rentalSortOptions}
-      />
-    </Screen>
-  );
-}

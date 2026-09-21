@@ -55,6 +55,11 @@ export const Route = createFileRoute("/marketplace/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  // ?view=Buy|Rent|Nearby opens the hub on that view (the old rent pages forward here).
+  validateSearch: (search: Record<string, unknown>): { view?: "Buy" | "Rent" | "Nearby" } =>
+    search["view"] === "Buy" || search["view"] === "Rent" || search["view"] === "Nearby"
+      ? { view: search["view"] }
+      : {},
   loader: () => loadCatalogListings(),
   component: MarketHome,
 });
@@ -75,7 +80,9 @@ function MarketHome() {
   const [locationOpen, setLocationOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [city, setCity] = useMarketCity();
-  const [view, setView] = useState<(typeof views)[number]["label"]>("Explore");
+  const [view, setView] = useState<(typeof views)[number]["label"]>(
+    Route.useSearch().view ?? "Explore",
+  );
   const navigate = useNavigate();
   const catalog = Route.useLoaderData();
   const taxonomy = useGearTaxonomy();
