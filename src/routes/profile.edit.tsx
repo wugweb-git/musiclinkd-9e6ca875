@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, RefreshCw, Save } from "lucide-react";
 import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { SegmentedField } from "@/components/ml/kit";
 import {
@@ -32,6 +32,7 @@ import {
 import { SelectField } from "@/components/ml/onboarding";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
+import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
 
 export const Route = createFileRoute("/profile/edit")({
   // ?section= opens that section (a profile section's edit pencil links straight to it).
@@ -187,6 +188,33 @@ function EditProfile() {
       .then((r) => setMapsUrl(r?.business.maps_url ?? ""))
       .catch(() => undefined);
   }, [isBusiness, loadBusiness]);
+
+  // Sync from Google: the business's details from its Google profile, written straight away and
+  // mirrored into this form so Save keeps them.
+  const syncFromGoogle = useServerFn(syncBusinessFromGoogle);
+  const [syncing, setSyncing] = useState(false);
+  async function syncGoogle() {
+    setSyncing(true);
+    try {
+      const { place, updated } = await syncFromGoogle({ data: { url: mapsUrl.trim() } });
+      setForm((f) => ({
+        ...f,
+        ...(updated.includes("city") && place.city ? { city: place.city } : {}),
+        ...(updated.includes("state") && place.state ? { state: place.state } : {}),
+        ...(updated.includes("PIN code") && place.pinCode ? { pin_code: place.pinCode } : {}),
+        ...(place.website ? { links: { ...f.links, website: place.website } } : {}),
+      }));
+      toast.success(
+        updated.length
+          ? `Synced from Google: ${updated.join(", ")}`
+          : "Google had nothing new for this place.",
+      );
+    } catch (e) {
+      toast.error(e instanceof Error && e.message ? e.message : "Couldn't sync. Try again.");
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   const { section: openSection } = Route.useSearch();
   const [open, setOpen] = useState<string | null>(openSection ?? "identity");
@@ -637,13 +665,25 @@ function EditProfile() {
           />
           <Field label="Country" value={DEFAULT_COUNTRY} onChange={() => undefined} readOnly />
           {isBusiness ? (
-            <Field
-              label="Google Maps link"
-              value={mapsUrl}
-              onChange={setMapsUrl}
-              hint="Opens as Directions on your profile"
-              error={problems.maps}
-            />
+            <div>
+              <Field
+                label="Google Maps link"
+                value={mapsUrl}
+                onChange={setMapsUrl}
+                hint="Opens as Directions on your profile. Sync brings your details from Google."
+                error={problems.maps}
+              />
+              <Btn
+                variant="outline"
+                className="mt-2 w-full"
+                icon={<RefreshCw size={iconSize.sm} aria-hidden />}
+                loading={syncing}
+                disabled={!GOOGLE_MAPS.test(mapsUrl.trim())}
+                onClick={() => void syncGoogle()}
+              >
+                Sync from Google
+              </Btn>
+            </div>
           ) : null}
           <Field
             label="Availability"

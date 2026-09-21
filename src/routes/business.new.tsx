@@ -19,6 +19,7 @@ import { createMyBusiness } from "@/lib/profile-groups.functions";
 import { AmenitiesEditor, EquipmentEditor, PoliciesEditor } from "@/components/ml/studio-setup";
 import { enterLinkedProfile } from "@/lib/pages.functions";
 import { readMapsLink, type MapsPlace } from "@/lib/maps-link.functions";
+import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
 import { switchToLinked } from "@/lib/saved-accounts";
 import { GOOGLE_MAPS } from "@/lib/place";
 import { cityProblem, pinProblem } from "@/lib/validation";
@@ -164,6 +165,7 @@ function NewBusiness() {
 
   const queryClient = useQueryClient();
   const save = useServerFn(createMyBusiness);
+  const syncGoogle = useServerFn(syncBusinessFromGoogle);
   const enter = useServerFn(enterLinkedProfile);
   const create = useMutation({
     mutationFn: () =>
@@ -189,6 +191,15 @@ function NewBusiness() {
           await switchToLinked(res.pageId, enter);
         } catch {
           toast.error("Your page is ready. Switch to it from Switch account.");
+        }
+      }
+      // The page's phone, website and opening hours come from its Google profile. Setup is done
+      // either way; a failed sync can be run again from Edit profile.
+      if (link) {
+        try {
+          await syncGoogle({ data: { url: link } });
+        } catch {
+          toast.error("Your page is ready. Sync from Google again in Edit profile.");
         }
       }
       await queryClient.invalidateQueries();
