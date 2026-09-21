@@ -7,6 +7,7 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Dialog } from "@/components/ml/kit";
 import { businessTypes, type BusinessType } from "@/data/business";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
+import { GOOGLE_MAPS, PIN_CODE, placeLine } from "@/lib/place";
 
 // Spaces and Team are off for now (owner, 21 Sep 2026): a business starts with one space, rooms are
 // added after it exists, and one business profile belongs to one account (one email).
@@ -46,7 +47,8 @@ function NewBusiness() {
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
   const [city, setCity] = useState("Mumbai");
-  const [address, setAddress] = useState("");
+  const [pinCode, setPinCode] = useState("");
+  const [mapsUrl, setMapsUrl] = useState("");
   const queryClient = useQueryClient();
   const save = useServerFn(createMyBusiness);
   const create = useMutation({
@@ -57,7 +59,8 @@ function NewBusiness() {
           name,
           city,
           ...(tagline.trim() ? { tagline } : {}),
-          ...(address.trim() ? { address } : {}),
+          ...(PIN_CODE.test(pinCode) ? { pinCode } : {}),
+          ...(GOOGLE_MAPS.test(mapsUrl.trim()) ? { mapsUrl: mapsUrl.trim() } : {}),
         },
       }),
     onSuccess: () => queryClient.invalidateQueries(),
@@ -143,13 +146,22 @@ function NewBusiness() {
               ))}
             </div>
             <Field
-              label="Address"
-              value={address}
-              onChange={setAddress}
-              placeholder="Street, area, pin code"
+              label="PIN code"
+              value={pinCode}
+              onChange={(v) => setPinCode(v.replace(/\D/g, "").slice(0, 6))}
+              placeholder="400053"
             />
+            <Field
+              label="Google Maps link"
+              value={mapsUrl}
+              onChange={setMapsUrl}
+              placeholder="https://maps.app.goo.gl/…"
+            />
+            {mapsUrl.trim() && !GOOGLE_MAPS.test(mapsUrl.trim()) ? (
+              <p className="text-1 text-destructive">Paste the link from Share in Google Maps.</p>
+            ) : null}
             <p className="text-1 text-muted-foreground">
-              The exact address is only shown once a booking is confirmed.
+              Your profile shows the city and PIN code; Directions opens the Maps link.
             </p>
           </Card>
         ) : null}
@@ -160,7 +172,7 @@ function NewBusiness() {
             {[
               ["Type", businessTypes.find((t) => t.key === type)?.label ?? ""],
               ["Name", name || "Untitled business"],
-              ["City", city],
+              ["Place", placeLine(city, pinCode)],
             ].map(([k, v]) => (
               <div
                 key={k}

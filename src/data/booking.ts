@@ -108,6 +108,7 @@ export type Bookable = {
   rating: number;
   reviews: number;
   city: string;
+  /** The PIN code (Bookable keeps the field name `area`). */
   area: string;
   distanceKm: number;
   timezone: string;
@@ -220,7 +221,7 @@ export const bookables: Bookable[] = [
     rating: 4.9,
     reviews: 218,
     city: "Mumbai",
-    area: "Andheri West",
+    area: "400053",
     distanceKm: 3.2,
     timezone: "IST (UTC+5:30)",
     hero: img(STUDIO_A, 1200, 800),
@@ -336,7 +337,7 @@ export const bookables: Bookable[] = [
     rating: 4.8,
     reviews: 96,
     city: "Bengaluru",
-    area: "Indiranagar",
+    area: "560038",
     distanceKm: 6.4,
     timezone: "IST (UTC+5:30)",
     hero: img(STUDIO_C, 1200, 800),
@@ -390,7 +391,7 @@ export const bookables: Bookable[] = [
     rating: 4.5,
     reviews: 341,
     city: "Delhi",
-    area: "Hauz Khas",
+    area: "110016",
     distanceKm: 1.8,
     timezone: "IST (UTC+5:30)",
     hero: img(STUDIO_D, 1200, 800),
@@ -454,7 +455,7 @@ export const bookables: Bookable[] = [
     rating: 4.7,
     reviews: 74,
     city: "Mumbai",
-    area: "Lower Parel",
+    area: "400013",
     distanceKm: 8.1,
     timezone: "IST (UTC+5:30)",
     hero: img(STUDIO_E, 1200, 800),

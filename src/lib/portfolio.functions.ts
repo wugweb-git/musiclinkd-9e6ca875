@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { FEATURED_LIMIT } from "@/data/portfolio";
 import type { ListingRow } from "@/lib/catalog.functions";
+import { placeLine } from "@/lib/place";
 
 export type PortfolioKind = "track" | "ep" | "album" | "video" | "credit" | "live";
 
@@ -297,7 +298,11 @@ const profilePatchSchema = z.object({
   onboarding_step: z.string().max(40).optional().nullable(),
   onboarding_draft: z.record(z.string(), z.unknown()).optional(),
   onboarding_complete: z.boolean().optional(),
-  area: z.string().max(80).optional().nullable(),
+  pin_code: z
+    .string()
+    .regex(/^[1-9]\d{5}$/)
+    .optional()
+    .nullable(),
   influences: strList(20, 80),
   hourly_rate_paise: z.number().int().min(0).max(1_000_000_000).optional().nullable(),
   rate_paise: z.number().int().min(0).max(1_000_000_000).optional().nullable(),
@@ -305,7 +310,7 @@ const profilePatchSchema = z.object({
 });
 
 /** Columns the missing-data migration adds; a save before it lands drops them and keeps the rest. */
-const PENDING_COLUMNS = ["area", "influences", "rate_paise", "rate_unit"];
+const PENDING_COLUMNS = ["pin_code", "influences", "rate_paise", "rate_unit"];
 
 export const saveMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -345,6 +350,22 @@ export const saveMyProfile = createServerFn({ method: "POST" })
       ({ data: row, error } = await write(rest));
     }
     if (error) throw new Error(usernameError(error) ?? error.message);
+
+    // A business's address and its studio's location are its city and PIN code, so they follow
+    // the profile when either changes. Accounts with no business row are untouched.
+    if ("city" in patch || "pin_code" in patch) {
+      const saved = row as { city?: string | null; pin_code?: string | null } | null;
+      const place = placeLine(saved?.city, saved?.pin_code) || null;
+      const client = context.supabase as unknown as import("@supabase/supabase-js").SupabaseClient;
+      await client
+        .from("profile_business")
+        .update({ business_address: place } as never)
+        .eq("profile_id", context.userId);
+      await client
+        .from("studios")
+        .update({ location: place } as never)
+        .eq("owner_profile_id", context.userId);
+    }
     return row;
   });
 
@@ -425,7 +446,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     const { data: row } = await softSelect(
       (columns) =>
         client.from("profiles").select(columns).eq("username", data.username).maybeSingle(),
-      `${PUBLIC_PROFILE}, area, influences, rating, review_count, followers_count`,
+      `${PUBLIC_PROFILE}, pin_code, influences, rating, review_count, followers_count`,
       PUBLIC_PROFILE,
     );
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient, softSelect } from "@/lib/portfolio.functions";
+import { GOOGLE_MAPS, placeLine } from "@/lib/place";
 
 /*
  * Business accounts. MusicLinkd has two account kinds, talent and business, in one username
@@ -29,7 +30,7 @@ type ProfileBase = {
   hourly_rate_paise: number | null;
   visibility: string | null;
   /** Neighbourhood within the city. The columns below arrive with 20260918240000_missing_data.sql. */
-  area?: string | null;
+  pin_code?: string | null;
   /** Kept from reviews by the database; null while there are none. */
   rating?: number | string | null;
   review_count?: number;
@@ -44,6 +45,8 @@ export type BusinessRecord = {
     logo_url: string | null;
     hero_banner_url: string | null;
     founded_year: number | null;
+    /** The Google Maps link the business added (20260921290000_pin_codes_and_maps.sql). */
+    maps_url?: string | null;
     /** The registered name ("SoundHouse Studio LLP"). */
     legal_name?: string | null;
   };
@@ -112,9 +115,10 @@ const isHidden = (visibility: string | null) =>
 const PROFILE =
   "id, username, display_name, headline, bio, city, roles, genres, avatar_url, cover_url, is_verified, hourly_rate_paise, visibility";
 /** PROFILE with the missing-data columns; reads fall back to PROFILE until they exist. */
-const PROFILE_FULL = `${PROFILE}, area, rating, review_count, followers_count`;
+const PROFILE_FULL = `${PROFILE}, pin_code, rating, review_count, followers_count`;
 
-const BUSINESS = "business_address, operating_hours, logo_url, hero_banner_url, founded_year";
+const BUSINESS =
+  "business_address, operating_hours, logo_url, hero_banner_url, founded_year, maps_url";
 const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
 const REVIEW_FULL = `${REVIEW}, tags`;
 const STUDIO = (review: string) =>
@@ -258,12 +262,28 @@ export const getMyBusiness = createServerFn({ method: "GET" })
 /** The signed-in business updates its own profile_business row (e.g. operating hours). */
 export const updateMyBusiness = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ operating_hours: z.string().max(500).nullable() }).parse(d))
+  .inputValidator((d) =>
+    z
+      .object({
+        operating_hours: z.string().max(500).nullable().optional(),
+        maps_url: z
+          .string()
+          .trim()
+          .max(500)
+          .refine((v) => v === "" || GOOGLE_MAPS.test(v), "Use a Google Maps link")
+          .nullable()
+          .optional(),
+      })
+      .parse(d),
+  )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = context.supabase as unknown as SupabaseClient;
+    const patch: Record<string, string | null> = {};
+    if (data.operating_hours !== undefined) patch["operating_hours"] = data.operating_hours;
+    if (data.maps_url !== undefined) patch["maps_url"] = data.maps_url || null;
     const { error } = await client
       .from("profile_business")
-      .update({ operating_hours: data.operating_hours } as never)
+      .update(patch as never)
       .eq("profile_id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -410,7 +430,7 @@ export type DirectoryPerson = {
   avatarUrl: string | null;
   verified: boolean;
   /** Neighbourhood within the city. */
-  area: string | null;
+  pin_code: string | null;
   /** Null while the person has no reviews. */
   rating: number | null;
   reviewCount: number;
@@ -435,7 +455,7 @@ function directoryPerson(r: ProfileBase): DirectoryPerson {
     genres: r.genres ?? [],
     avatarUrl: r.avatar_url,
     verified: Boolean(r.is_verified),
-    area: r.area ?? null,
+    pin_code: r.pin_code ?? null,
     rating: reviewCount && r.rating != null ? Number(r.rating) : null,
     reviewCount,
   };
@@ -600,7 +620,11 @@ export const createMyBusiness = createServerFn({ method: "POST" })
         name: z.string().trim().min(1).max(80),
         tagline: z.string().trim().max(160).optional(),
         city: z.string().trim().max(80),
-        address: z.string().trim().max(300).optional(),
+        pinCode: z
+          .string()
+          .regex(/^[1-9]\d{5}$/)
+          .optional(),
+        mapsUrl: z.string().trim().max(500).regex(GOOGLE_MAPS).optional(),
       })
       .parse(d),
   )
@@ -620,6 +644,7 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       .update({
         display_name: data.name,
         city: data.city,
+        ...(data.pinCode ? { pin_code: data.pinCode } : {}),
         ...(data.tagline ? { headline: data.tagline } : {}),
         ...(role && !current?.roles?.length ? { roles: [role] } : {}),
       } as never)
@@ -628,7 +653,9 @@ export const createMyBusiness = createServerFn({ method: "POST" })
 
     const { error: businessError } = await client.from("profile_business").upsert({
       profile_id: context.userId,
-      business_address: data.address || null,
+      // The address is the city and PIN code; Directions opens the Maps link.
+      business_address: placeLine(data.city, data.pinCode) || null,
+      maps_url: data.mapsUrl ?? null,
       updated_at: new Date().toISOString(),
     } as never);
     if (businessError) throw new Error(businessError.message);
@@ -656,7 +683,7 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           owner_profile_id: context.userId,
           slug,
           name: data.name,
-          location: data.city || null,
+          location: placeLine(data.city, data.pinCode) || null,
         } as never);
         if (studioError) throw new Error(studioError.message);
       }

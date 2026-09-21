@@ -8,6 +8,7 @@ import { SavedToggle } from "./saved-toggle";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
 import { labelFor, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
+import { placeLine } from "@/lib/place";
 
 /*
  * Message and Save are disabled until there is somewhere for them to go: there is no thread to
@@ -121,9 +122,9 @@ export function TalentGridCard({ t }: { t: Talent }) {
   );
 }
 
-/** Neighbourhood and city, "Indiranagar, Bengaluru". */
+/** City and PIN code, "Bengaluru 560038". */
 function personPlace(person: DirectoryPerson) {
-  return [person.area, person.city].filter(Boolean).join(", ");
+  return placeLine(person.city, person.pin_code);
 }
 
 /** The stored rating and review count; nothing while there are no reviews. */

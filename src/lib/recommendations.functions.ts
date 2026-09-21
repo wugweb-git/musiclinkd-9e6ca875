@@ -41,7 +41,7 @@ type Candidate = {
   display_name: string | null;
   headline: string | null;
   city: string | null;
-  area: string | null;
+  pin_code: string | null;
   roles: string[] | null;
   genres: string[] | null;
   instruments: string[] | null;
@@ -178,7 +178,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
         client
           .from("profiles")
           .select(
-            "id, username, display_name, headline, city, area, roles, genres, instruments, avatar_url, is_verified, rating, review_count, discovery_prefs",
+            "id, username, display_name, headline, city, pin_code, roles, genres, instruments, avatar_url, is_verified, rating, review_count, discovery_prefs",
           )
           .eq("visibility", "public")
           .neq("id", me)
@@ -301,7 +301,7 @@ export const getMyRecommendations = createServerFn({ method: "GET" })
         genres: c.genres ?? [],
         avatarUrl: c.avatar_url,
         verified: Boolean(c.is_verified),
-        area: c.area ?? null,
+        pin_code: c.pin_code ?? null,
         rating: reviewCount && c.rating != null ? Number(c.rating) : null,
         reviewCount,
         reason: s.reason,

@@ -4,6 +4,7 @@ import { priceParts, type PriceParts } from "@/lib/price";
 import { hasWeeklyHours, type WeeklyHours } from "@/lib/studio-slots";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import type { StudioPhoto } from "@/lib/studio-photos.functions";
+import { parsePlace } from "@/lib/place";
 
 /*
  * Database studios shaped for the existing studio screens. Only fields the database holds are
@@ -42,12 +43,10 @@ export function discoverStudioFromRow(row: StudioRow, labels: TaxonomyLabels): D
   };
 }
 
-/** "Bandra, Mumbai" → area "Bandra", city "Mumbai"; rendered back as "{area}, {city}". */
+/** "Mumbai 400053" → city "Mumbai", and the PIN code in `area` (the Bookable field it fills). */
 function splitLocation(location: string | null) {
-  const value = location?.trim() ?? "";
-  const cut = value.lastIndexOf(",");
-  if (cut < 0) return { area: "", city: value };
-  return { area: value.slice(0, cut).trim(), city: value.slice(cut + 1).trim() };
+  const { city, pin } = parsePlace(location);
+  return { area: pin, city };
 }
 
 const unitIsHour = (unit: string) => ["hour", "hr", "hourly"].includes(unit.trim().toLowerCase());

@@ -10,6 +10,7 @@ import { listings, sellerById } from "./market";
 import { demoPortfolio } from "./portfolio";
 import { getBookable, lowestRate } from "./booking";
 import type { PriceParts } from "@/lib/price";
+import { placeLine } from "@/lib/place";
 
 /** Canonical entity kinds a MusicLinkd QR may resolve to. */
 export type QrEntityType =
@@ -198,7 +199,7 @@ export function previewFor(d: QrDestination): DestinationPreview | null {
       kind: "business",
       title: b?.name ?? myBusiness.name,
       subtitle: myBusiness.category,
-      meta: `${b?.area ?? ""}, ${b?.city ?? myBusiness.city}`.replace(/^, /, ""),
+      meta: placeLine(b?.city ?? myBusiness.city, b?.area),
       extra: b ? `${b.rating} · ${b.reviews} reviews` : undefined,
       image: b?.hero ?? myBusiness.logo,
       verified: true,
@@ -216,7 +217,7 @@ export function previewFor(d: QrDestination): DestinationPreview | null {
       subtitle: b.name,
       meta: "",
       ...(from ? { price: { ...from, amount: `From ${from.amount}` } } : {}),
-      extra: `${b.area}, ${b.city}`,
+      extra: placeLine(b.city, b.area),
       image: r.photo,
       verified: true,
       route: d.publicRoute,

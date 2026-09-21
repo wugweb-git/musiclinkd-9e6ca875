@@ -10,6 +10,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
 import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
+import { GOOGLE_MAPS, PIN_CODE } from "@/lib/place";
+import { useRequireBusiness } from "@/hooks/use-require-business";
+import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 
 export const Route = createFileRoute("/profile/edit")({
   head: () => ({
@@ -39,7 +42,7 @@ type Form = {
   headline: string;
   bio: string;
   city: string;
-  area: string;
+  pin_code: string;
   state: string;
   availability: string;
   /** Whole rupees as typed; empty for no rate. */
@@ -64,7 +67,7 @@ const empty: Form = {
   headline: "",
   bio: "",
   city: "",
-  area: "",
+  pin_code: "",
   state: "",
   availability: "",
   rate: "",
@@ -123,7 +126,7 @@ function fromRow(row: ProfileRow | null): Form {
     headline: row.headline ?? "",
     bio: row.bio ?? "",
     city: row.city ?? "",
-    area: row.area ?? "",
+    pin_code: row.pin_code ?? "",
     state: row.state ?? "",
     availability: row.availability ?? "",
     // Before a rate has a unit, the hourly rate is the rate.
@@ -145,6 +148,17 @@ function EditProfile() {
   const navigate = useNavigate();
   const load = useServerFn(getMyProfile);
   const persist = useServerFn(saveMyProfile);
+  // A business account also keeps its Google Maps link, shown as Directions on its profile.
+  const { allowed: isBusiness } = useRequireBusiness();
+  const loadBusiness = useServerFn(getMyBusiness);
+  const saveBusiness = useServerFn(updateMyBusiness);
+  const [mapsUrl, setMapsUrl] = useState("");
+  useEffect(() => {
+    if (!isBusiness) return;
+    void loadBusiness()
+      .then((r) => setMapsUrl(r?.business.maps_url ?? ""))
+      .catch(() => undefined);
+  }, [isBusiness, loadBusiness]);
 
   const [open, setOpen] = useState<string | null>("identity");
   const [form, setForm] = useState<Form>(empty);
@@ -218,7 +232,7 @@ function EditProfile() {
           headline: form.headline || null,
           bio: form.bio || null,
           city: form.city || null,
-          area: form.area.trim() || null,
+          pin_code: PIN_CODE.test(form.pin_code.trim()) ? form.pin_code.trim() : null,
           state: form.state || null,
           availability: form.availability || null,
           rate_paise: ratePaise,
@@ -241,6 +255,10 @@ function EditProfile() {
           links: form.links,
         },
       });
+      if (isBusiness) {
+        const link = mapsUrl.trim();
+        await saveBusiness({ data: { maps_url: GOOGLE_MAPS.test(link) ? link : null } });
+      }
       setRow(saved as ProfileRow);
       setStatus("saved");
     } catch (e) {
@@ -415,17 +433,30 @@ function EditProfile() {
     {
       id: "availability",
       label: "Location & availability",
-      detail: "Area, city, state, current status",
+      detail: "City, PIN code, state, current status",
       done: Boolean(form.city && form.availability),
       body: (
         <div className="space-y-3">
-          <Field
-            label="Area"
-            value={form.area}
-            onChange={(v) => update({ area: v })}
-            hint="Your neighbourhood, e.g. Indiranagar"
-          />
           <Field label="City" value={form.city} onChange={(v) => update({ city: v })} />
+          <Field
+            label="PIN code"
+            value={form.pin_code}
+            onChange={(v) => update({ pin_code: v.replace(/\D/g, "").slice(0, 6) })}
+            hint="6 digits, e.g. 560038"
+            inputMode="numeric"
+          />
+          {isBusiness ? (
+            <Field
+              label="Google Maps link"
+              value={mapsUrl}
+              onChange={setMapsUrl}
+              hint={
+                mapsUrl.trim() && !GOOGLE_MAPS.test(mapsUrl.trim())
+                  ? "Paste the link from Share in Google Maps"
+                  : "Opens as Directions on your profile"
+              }
+            />
+          ) : null}
           <Field label="State" value={form.state} onChange={(v) => update({ state: v })} />
           <Field
             label="Availability"
@@ -601,7 +632,7 @@ function Field({
   hint?: string;
   multiline?: boolean;
   readOnly?: boolean;
-  inputMode?: "decimal";
+  inputMode?: "decimal" | "numeric";
 }) {
   return (
     <label className="block">

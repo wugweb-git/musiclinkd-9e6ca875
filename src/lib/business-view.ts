@@ -8,6 +8,7 @@ import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.function
 import { priceParts, type PriceParts } from "@/lib/price";
 import { getPublicBusiness, type BusinessRecord } from "@/lib/profile-groups.functions";
 import { joinParts } from "@/lib/utils";
+import { placeLine } from "@/lib/place";
 
 export type BusinessView = {
   /** The account's username: the id in /business/$id. */
@@ -40,6 +41,8 @@ export type BusinessView = {
   }[];
   hours: { day: string; hours: string }[];
   address: string;
+  /** The business's Google Maps link, opened for directions. */
+  mapsUrl: string | null;
   spaces: {
     id: string;
     name: string;
@@ -105,7 +108,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
   const { profile, business, studio } = r;
   const role = profile.roles?.[0];
   const typeLabel = role ? taxonomyLabel(labels, "person_types", role) : "";
-  const place = [profile.area, profile.city].filter(Boolean).join(", ");
+  const place = placeLine(profile.city, profile.pin_code);
   const reviews = combinedRating([
     { rating: profile.rating, count: profile.review_count },
     { rating: studio?.rating, count: studio?.review_count },
@@ -157,6 +160,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     })),
     hours: hoursFrom(business.operating_hours),
     address: business.business_address ?? "",
+    mapsUrl: business.maps_url ?? null,
     spaces: (studio?.rooms ?? []).map((room) => {
       const capacity = room.capacity ? `Up to ${room.capacity}` : "";
       return {

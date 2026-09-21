@@ -24,6 +24,7 @@ import {
 } from "@/lib/portfolio.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
 import { joinParts } from "@/lib/utils";
+import { placeLine } from "@/lib/place";
 
 /** Profiles store taxonomy slugs; show the published label, or the slug if it has none. */
 function labelled(labels: TaxonomyLabels | undefined, category: string, slugs: string[]): string[] {
@@ -134,7 +135,8 @@ export function mergeProfileRow(
     primaryRole: primary ?? base.primaryRole,
     secondaryRoles: (row.roles ?? []).slice(1).map((r) => roleLabel(r, labels) ?? r),
     roleSlugs: row.roles ?? [],
-    location: [row.area, row.city, row.state].filter(Boolean).join(", ") || base.location,
+    location:
+      [placeLine(row.city, row.pin_code), row.state].filter(Boolean).join(", ") || base.location,
     shortBio: row.bio || base.shortBio,
     longBio: row.bio || base.longBio,
     genres: row.genres?.length ? labelled(labels, "genres", row.genres) : base.genres,

@@ -32,7 +32,7 @@ export type ProfileRow = {
   onboarding_draft?: unknown;
   onboarding_complete?: boolean | null;
   /** Neighbourhood within the city ("Indiranagar"). */
-  area?: string | null;
+  pin_code?: string | null;
   influences?: string[] | null;
   hourly_rate_paise?: number | null;
   rate_paise?: number | null;

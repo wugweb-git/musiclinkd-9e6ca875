@@ -6,6 +6,7 @@ import {
   Pencil,
   Share2,
   MapPin,
+  Navigation,
   Music,
   Plus,
   Send,
@@ -175,12 +176,24 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 ))}
               </Card>
             ) : null}
-            {b.address ? (
+            {b.address || b.mapsUrl ? (
               <Card className="space-y-2">
                 <h2 className="text-sm">Find & contact</h2>
-                <p className="flex items-start gap-2 text-1">
-                  <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" /> {b.address}
-                </p>
+                {b.address ? (
+                  <p className="flex items-start gap-2 text-1">
+                    <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" /> {b.address}
+                  </p>
+                ) : null}
+                {b.mapsUrl ? (
+                  <a
+                    href={b.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-touch items-center gap-2 text-1 font-semibold underline-offset-4 hover:underline"
+                  >
+                    <Navigation size={iconSize.sm} aria-hidden /> Directions
+                  </a>
+                ) : null}
               </Card>
             ) : null}
             {b.reviews.length ? (
