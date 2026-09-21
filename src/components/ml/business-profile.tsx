@@ -12,7 +12,6 @@ import {
   Settings2,
   Sparkles,
   Star,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
