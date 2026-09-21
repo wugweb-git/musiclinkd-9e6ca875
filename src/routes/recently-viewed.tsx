@@ -2,11 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/kit";
-import { forgetVisits, readVisits, sinceThen, type Visit } from "@/lib/device-history";
+import {
+  forgetVisits,
+  readVisits,
+  sinceThen,
+  syncRecentlyViewed,
+  type Visit,
+} from "@/lib/device-history";
+import { useAuth } from "@/hooks/use-auth";
 
 /*
- * The pages this person opened, kept on this device (see src/lib/device-history.ts). Nothing is
- * stored about it anywhere else, so the list is only ever as long as this browser remembers.
+ * The pages this person opened (src/lib/device-history.ts). Signed in, the list follows the
+ * account across devices; signed out, it is this device's own.
  */
 export const Route = createFileRoute("/recently-viewed")({
   head: () => ({
@@ -27,17 +34,30 @@ export const Route = createFileRoute("/recently-viewed")({
 
 function RecentlyViewed() {
   const [visits, setVisits] = useState<Visit[]>([]);
-  useEffect(() => setVisits(readVisits()), []);
+  const { user } = useAuth();
+  // Shown straight from the device, then again once the account's list is merged in.
+  useEffect(() => {
+    setVisits(readVisits());
+    if (user) void syncRecentlyViewed().then(() => setVisits(readVisits()));
+  }, [user]);
 
   return (
     <Screen>
-      <TopBar title="Recently viewed" subtitle="Kept on this device" back="/discover" />
+      <TopBar
+        title="Recently viewed"
+        subtitle={user ? "On all your devices" : "Kept on this device"}
+        back="/discover"
+      />
 
       <div className="space-y-5 px-5 pt-4 pb-8">
         {!visits.length ? (
           <EmptyState
             title="Nothing here yet"
-            body="Profiles and studios you open are listed here, on this device only."
+            body={
+              user
+                ? "Profiles and studios you open are listed here, on every device you sign in on."
+                : "Profiles and studios you open are listed here, on this device only."
+            }
           >
             <BtnLink to="/discover">Start Discovering</BtnLink>
           </EmptyState>

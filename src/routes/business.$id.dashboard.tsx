@@ -93,9 +93,8 @@ function BusinessDashboard() {
           <Row
             icon={<CalendarClock size={iconSize.sm} />}
             title="Availability"
-            subtitle="Hours, notice and blackout dates"
-            to="/business/$id/availability"
-            params={{ id: b.id }}
+            subtitle="Opening hours and closed times"
+            to="/business/availability"
           />
           <Row
             icon={<Images size={iconSize.sm} />}

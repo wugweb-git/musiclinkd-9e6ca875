@@ -38,6 +38,39 @@ export function parseWeeklyHours(raw: unknown): WeeklyHours {
   return out;
 }
 
+const DAY_SHORT: Record<Weekday, string> = {
+  mon: "Mon",
+  tue: "Tue",
+  wed: "Wed",
+  thu: "Thu",
+  fri: "Fri",
+  sat: "Sat",
+  sun: "Sun",
+};
+const WEEK_FROM_MONDAY: Weekday[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+/**
+ * The weekly hours as the one line profiles show, e.g. "Mon–Sat 10:00–20:00 · Sun closed".
+ * Neighbouring days with the same hours are joined. Null when no day is open.
+ */
+export function hoursLine(w: WeeklyHours): string | null {
+  if (!hasWeeklyHours(w)) return null;
+  const label = (d: Weekday) => {
+    const spans = w[d] ?? [];
+    return spans.length ? spans.map((s) => `${s.open}–${s.close}`).join(", ") : "closed";
+  };
+  const runs: { from: Weekday; to: Weekday; hours: string }[] = [];
+  for (const d of WEEK_FROM_MONDAY) {
+    const hours = label(d);
+    const last = runs[runs.length - 1];
+    if (last && last.hours === hours) last.to = d;
+    else runs.push({ from: d, to: d, hours });
+  }
+  return runs
+    .map((r) => `${DAY_SHORT[r.from]}${r.from === r.to ? "" : `–${DAY_SHORT[r.to]}`} ${r.hours}`)
+    .join(" · ");
+}
+
 export const hasWeeklyHours = (w: WeeklyHours) => WEEKDAYS.some((d) => (w[d]?.length ?? 0) > 0);
 
 function minutes(hhmm: string) {

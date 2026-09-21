@@ -9,6 +9,7 @@ import { Card, EmptyState, StatusPill, Loading } from "@/components/ml/kit";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { answerBooking, listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
+import { findConflicts } from "@/lib/booking-overlaps";
 import { formatDate, formatTime } from "@/data/booking";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
@@ -30,30 +31,6 @@ export const Route = createFileRoute("/services/conflicts")({
   }),
   component: Conflicts,
 });
-
-type ConflictPair = { a: BookingRequest; b: BookingRequest };
-
-/** Two active requests for the same room on the same day, with overlapping times. */
-function findConflicts(bookings: BookingRequest[]): ConflictPair[] {
-  const active = bookings.filter((b) => ["requested", "reviewing", "confirmed"].includes(b.status));
-  const groups = new Map<string, BookingRequest[]>();
-  for (const b of active) {
-    if (!b.start_time || !b.end_time) continue;
-    const key = `${b.studio?.id ?? ""}:${b.room?.id ?? ""}:${b.session_date}`;
-    groups.set(key, [...(groups.get(key) ?? []), b]);
-  }
-  const pairs: ConflictPair[] = [];
-  for (const rows of groups.values()) {
-    for (let i = 0; i < rows.length; i++) {
-      for (let j = i + 1; j < rows.length; j++) {
-        const a = rows[i]!;
-        const b = rows[j]!;
-        if (a.start_time! < b.end_time! && b.start_time! < a.end_time!) pairs.push({ a, b });
-      }
-    }
-  }
-  return pairs;
-}
 
 function requesterName(b: BookingRequest) {
   return b.requester?.display_name ?? b.requester?.username ?? b.requester_name ?? "Someone";

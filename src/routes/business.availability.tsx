@@ -26,8 +26,8 @@ import {
   getMyStudioEquipment,
   removeMyStudioEquipment,
   saveMyStudioEquipment,
-  updateMyStudio,
 } from "@/lib/studio-owner.functions";
+import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { type Weekday, type WeeklyHours } from "@/lib/studio-slots";
 import {
   MAX_STUDIO_PHOTOS,
@@ -70,18 +70,25 @@ function Availability() {
 function AvailabilityContent() {
   const queryClient = useQueryClient();
   const load = useServerFn(getMyStudio);
-  const save = useServerFn(updateMyStudio);
   const q = useQuery({ queryKey: ["business", "studio", "mine"], queryFn: () => load() });
+  // A business without a studio (a label, an agency) has only the hours line on its profile.
+  const loadBusiness = useServerFn(getMyBusiness);
+  const business = useQuery({
+    queryKey: ["business", "mine"],
+    queryFn: () => loadBusiness(),
+    enabled: !q.isLoading && !q.data,
+  });
+  const saveBusiness = useServerFn(updateMyBusiness);
   const [hours, setHours] = useState("");
-  useEffect(() => setHours(q.data?.operating_hours ?? ""), [q.data]);
+  useEffect(() => setHours(business.data?.business.operating_hours ?? ""), [business.data]);
 
-  async function onSave() {
+  async function onSaveHours() {
     try {
-      await save({ data: { operating_hours: hours.trim() || null } });
-      await queryClient.invalidateQueries({ queryKey: ["business", "studio", "mine"] });
-      toast.success("Availability saved");
+      await saveBusiness({ data: { operating_hours: hours.trim() || null } });
+      await queryClient.invalidateQueries({ queryKey: ["business", "mine"] });
+      toast.success("Opening hours saved");
     } catch {
-      toast.error("Couldn't save availability");
+      toast.error("Couldn't save opening hours");
     }
   }
 
@@ -99,9 +106,20 @@ function AvailabilityContent() {
     return (
       <Screen>
         <TopBar title="Availability" back="/business/bookings" />
-        <div className="px-5 pt-4">
-          <EmptyState title="No studio yet" body="Set up your studio profile first." />
-        </div>
+        <main className="px-5 pt-4">
+          <h2 className="text-2">Opening hours</h2>
+          <p className="mt-1 text-1 text-muted-foreground">Shown on your business profile.</p>
+          <textarea
+            rows={3}
+            value={hours}
+            placeholder="e.g. Mon–Sat, 10am–7pm. Closed Sundays."
+            onChange={(e) => setHours(e.target.value)}
+            className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
+          />
+          <Btn className="mt-4 w-full" onClick={() => void onSaveHours()}>
+            Save Opening Hours
+          </Btn>
+        </main>
       </Screen>
     );
   }
@@ -110,24 +128,6 @@ function AvailabilityContent() {
     <Screen>
       <TopBar title="Availability" subtitle={q.data.name} back="/business/bookings" />
       <main className="px-5 pt-4">
-        <p className="rounded-lg bg-subtle px-4 py-3 text-1 text-muted-foreground">
-          A single opening-hours line customers see on your studio page. Instant-booking rules
-          aren't supported yet.
-        </p>
-
-        <h2 className="mt-6 text-2">Opening hours</h2>
-        <textarea
-          rows={3}
-          value={hours}
-          placeholder="e.g. Mon–Sat, 10am–10pm. Closed Sundays."
-          onChange={(e) => setHours(e.target.value)}
-          className="mt-2 w-full resize-none rounded-lg border border-border bg-card p-4 text-1 leading-relaxed outline-none placeholder:text-muted-foreground focus:border-primary"
-        />
-
-        <Btn className="mt-6 w-full" onClick={() => void onSave()}>
-          Save Availability
-        </Btn>
-
         <WeeklyHoursEditor studio={q.data} />
         <ClosedTimes studio={q.data} />
         <FacilitiesEditor />
@@ -180,19 +180,21 @@ function WeeklyHoursEditor({ studio }: { studio: MyStudio }) {
     try {
       await save({ data: { weeklyHours: week } });
       await queryClient.invalidateQueries({ queryKey: ["studio-calendar", studio.slug] });
-      toast.success("Weekly hours saved");
+      await queryClient.invalidateQueries({ queryKey: ["business"] });
+      toast.success("Opening hours saved");
     } catch {
-      toast.error("Couldn't save weekly hours");
+      toast.error("Couldn't save opening hours");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <section className="mt-8">
-      <h2 className="text-2">Weekly hours</h2>
+    <section>
+      <h2 className="text-2">Opening hours</h2>
       <p className="mt-1 text-1 text-muted-foreground">
-        The hours customers can book on your calendar. With none set, they send a request instead.
+        The hours customers can book on your calendar, also shown on your studio page and business
+        profile. With none set, they send a request instead.
       </p>
       {q.isLoading ? (
         <div className="mt-3">
@@ -238,7 +240,7 @@ function WeeklyHoursEditor({ studio }: { studio: MyStudio }) {
             );
           })}
           <Btn className="w-full" onClick={() => void onSave()} loading={saving}>
-            Save weekly hours
+            Save Opening Hours
           </Btn>
         </div>
       )}

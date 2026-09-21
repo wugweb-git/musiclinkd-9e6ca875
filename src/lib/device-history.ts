@@ -1,9 +1,13 @@
 /*
- * What this person did on this device: the searches they ran, the profiles they opened. It is a
- * convenience, not a record — it never leaves the browser, so there is no table for it and nothing
- * to keep in step across devices. Every read and write is guarded, because a private window or
- * blocked site data must not take a screen down with it.
+ * What this person did on this device: the searches they ran, the profiles they opened. Every read
+ * and write is guarded, because a private window or blocked site data must not take a screen down
+ * with it. Recently viewed (pages and listings) is also kept with the account when signed in
+ * (recently-viewed.functions.ts), so every device shows the same list: each view is sent as it
+ * happens, and syncRecentlyViewed merges the two lists when a session starts. Searches stay on
+ * the device.
  */
+import { supabase } from "@/integrations/supabase/client";
+import { clearMyViews, listMyViews, recordViews } from "@/lib/recently-viewed.functions";
 
 /** One keyed list on this device, capped so it cannot grow forever. */
 function readList<T>(key: string, valid: (e: unknown) => e is T): T[] {
@@ -121,11 +125,14 @@ export function readVisits(): Visit[] {
 export function rememberVisit(visit: Omit<Visit, "at">) {
   if (!visit.handle || !visit.name) return;
   const rest = readVisits().filter((v) => !(v.kind === visit.kind && v.handle === visit.handle));
-  writeList(VISIT_KEY, [{ ...visit, at: new Date().toISOString() }, ...rest], VISIT_LIMIT);
+  const at = new Date().toISOString();
+  writeList(VISIT_KEY, [{ ...visit, at }, ...rest], VISIT_LIMIT);
+  void keep([{ ...visit, at }]);
 }
 
 export function forgetVisits() {
   writeList(VISIT_KEY, [], VISIT_LIMIT);
+  void whenSignedIn(() => clearMyViews({ data: { scope: "pages" } }));
 }
 
 const LISTING_KEY = "ml.recently-viewed-listings";
@@ -152,5 +159,85 @@ export function readListingVisits(): ListingVisit[] {
 export function rememberListingVisit(id: string) {
   if (!id) return;
   const rest = readListingVisits().filter((v) => v.id !== id);
-  writeList(LISTING_KEY, [{ id, at: new Date().toISOString() }, ...rest], LISTING_LIMIT);
+  const at = new Date().toISOString();
+  writeList(LISTING_KEY, [{ id, at }, ...rest], LISTING_LIMIT);
+  void keep([{ kind: "listing", handle: id, name: null, detail: null, avatarUrl: null, at }]);
+}
+
+type Kept = {
+  kind: "person" | "studio" | "listing";
+  handle: string;
+  name: string | null;
+  detail: string | null;
+  avatarUrl: string | null;
+  at: string;
+};
+
+/** Runs only with a session: signed out, the device copy is the whole list. */
+async function whenSignedIn(run: () => Promise<unknown>) {
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) await run();
+  } catch {
+    // The device copy already has it; the next sync sends it.
+  }
+}
+
+const keep = (views: Kept[]) => whenSignedIn(() => recordViews({ data: { views } }));
+
+/**
+ * Merge this device's list with the account's, newest first, and send the account whatever it is
+ * missing. Called once a session is known (src/routes/__root.tsx).
+ */
+export async function syncRecentlyViewed() {
+  await whenSignedIn(async () => {
+    const remote = await listMyViews();
+    const pages = new Map<string, Visit>();
+    for (const v of readVisits()) pages.set(`${v.kind}:${v.handle}`, v);
+    const listings = new Map<string, ListingVisit>();
+    for (const v of readListingVisits()) listings.set(v.id, v);
+    const remoteAt = new Map(remote.map((r) => [`${r.kind}:${r.handle}`, r.viewed_at]));
+
+    for (const r of remote) {
+      if (r.kind === "listing") {
+        const mine = listings.get(r.handle);
+        if (!mine || mine.at < r.viewed_at)
+          listings.set(r.handle, { id: r.handle, at: r.viewed_at });
+      } else {
+        const key = `${r.kind}:${r.handle}`;
+        const mine = pages.get(key);
+        if (!mine || mine.at < r.viewed_at) {
+          pages.set(key, {
+            kind: r.kind,
+            handle: r.handle,
+            name: r.name ?? r.handle,
+            detail: r.detail,
+            avatarUrl: r.avatar_url,
+            at: r.viewed_at,
+          });
+        }
+      }
+    }
+    const newest = <T extends { at: string }>(list: T[]) =>
+      list.sort((a, b) => (a.at < b.at ? 1 : -1));
+    writeList(VISIT_KEY, newest([...pages.values()]), VISIT_LIMIT);
+    writeList(LISTING_KEY, newest([...listings.values()]), LISTING_LIMIT);
+
+    const missing: Kept[] = [
+      ...[...pages.values()]
+        .filter((v) => (remoteAt.get(`${v.kind}:${v.handle}`) ?? "") < v.at)
+        .map((v) => ({ ...v })),
+      ...[...listings.values()]
+        .filter((v) => (remoteAt.get(`listing:${v.id}`) ?? "") < v.at)
+        .map((v) => ({
+          kind: "listing" as const,
+          handle: v.id,
+          name: null,
+          detail: null,
+          avatarUrl: null,
+          at: v.at,
+        })),
+    ];
+    if (missing.length) await recordViews({ data: { views: missing.slice(0, 60) } });
+  });
 }

@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
 import {
   WEEKDAYS,
+  hoursLine,
   parseWeeklyHours,
   type BusyInterval,
   type WeeklyHours,
@@ -78,11 +79,20 @@ export const updateMyWeeklyHours = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    // One set of hours: the calendar's weekly hours also write the line the studio page and the
+    // business profile show.
+    const weekly = parseWeeklyHours(data.weeklyHours);
+    const line = hoursLine(weekly);
     const { error } = await db(context.supabase)
       .from("studios")
-      .update({ weekly_hours: parseWeeklyHours(data.weeklyHours) } as never)
+      .update({ weekly_hours: weekly, operating_hours: line } as never)
       .eq("owner_profile_id", context.userId);
     if (error) throw new Error(error.message);
+    const { error: businessError } = await db(context.supabase)
+      .from("profile_business")
+      .update({ operating_hours: line } as never)
+      .eq("profile_id", context.userId);
+    if (businessError) throw new Error(businessError.message);
     return { ok: true };
   });
 

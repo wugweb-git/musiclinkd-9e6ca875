@@ -878,3 +878,25 @@ export const providerStats = {
   utilisation: 68,
   cancellations: 1,
 };
+
+/*
+ * Ready-made replies a business can send with its answer to a booking request (owner, 21 Sep 2026).
+ * Tapping one fills the reply; it can still be edited before sending.
+ */
+export const bookingReplies = {
+  confirmed: [
+    "Confirmed. See you then.",
+    "Confirmed. Please arrive 15 minutes early to set up.",
+    "Confirmed. Message us if your plans change.",
+  ],
+  declined: [
+    "Sorry, that time is already booked.",
+    "Sorry, we're closed that day.",
+    "Sorry, the room doesn't suit this session.",
+  ],
+  /** Sent to the others who asked for the same time once one request is accepted. */
+  taken: [
+    "Sorry, that time has just been booked. Please pick another time.",
+    "That slot is taken now. We'd be glad to host you at another time.",
+  ],
+} as const;

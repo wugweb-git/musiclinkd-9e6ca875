@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { AppNav } from "@/components/ml/ui";
+import { useAuth } from "@/hooks/use-auth";
+import { syncRecentlyViewed } from "@/lib/device-history";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -143,6 +145,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { user } = useAuth();
+  const userId = user?.id;
+  // Recently viewed follows the account: merge this device's list once a session is known.
+  useEffect(() => {
+    if (userId) void syncRecentlyViewed();
+  }, [userId]);
 
   return (
     <QueryClientProvider client={queryClient}>

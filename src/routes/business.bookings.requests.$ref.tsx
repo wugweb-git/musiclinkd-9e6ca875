@@ -4,11 +4,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { BusinessOnlyGate, EmptyState, Loading } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { BusinessOnlyGate, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { Detail, StickyBar } from "@/components/ml/booking";
-import { answerBooking, getBookingRequest } from "@/lib/bookings.functions";
+import { answerBooking, getBookingRequest, listStudioBookings } from "@/lib/bookings.functions";
+import { waitingAlongside } from "@/lib/booking-overlaps";
+import { bookingReplies } from "@/data/booking";
 import { iconSize } from "@/lib/tokens";
 import { useMessagePerson } from "@/hooks/use-message-person";
 
@@ -48,6 +50,8 @@ function formatTime(t: string | null) {
   return `${twelve}:${m} ${period}`;
 }
 
+const OTHERS_CHOICES = ["Decline them", "Leave them waiting"] as const;
+
 function RequestReview() {
   const gate = useRequireBusiness();
   return (
@@ -68,11 +72,28 @@ function RequestReviewContent() {
     queryFn: () => load({ data: { id: ref } }),
   });
   const [decision, setDecision] = useState<"none" | "declining" | "sending">("none");
+  const [reply, setReply] = useState("");
+  // Requests don't hold their slot: the others who asked for this time are answered here too.
+  const loadAll = useServerFn(listStudioBookings);
+  const all = useQuery({ queryKey: ["studio-bookings"], queryFn: () => loadAll() });
+  const others = q.data ? waitingAlongside(q.data, all.data ?? []) : [];
+  const [othersChoice, setOthersChoice] = useState<(typeof OTHERS_CHOICES)[number]>(
+    OTHERS_CHOICES[0],
+  );
+  const [takenReply, setTakenReply] = useState<string>(bookingReplies.taken[0]);
 
   async function respond(status: "confirmed" | "declined") {
     setDecision("sending");
     try {
-      await answer({ data: { id: ref, status } });
+      await answer({ data: { id: ref, status, ...(reply.trim() ? { reply: reply.trim() } : {}) } });
+      if (status === "confirmed" && others.length && othersChoice === OTHERS_CHOICES[0]) {
+        await Promise.all(
+          others.map((o) =>
+            answer({ data: { id: o.id, status: "declined", reply: takenReply.trim() } }),
+          ),
+        );
+      }
+      await queryClient.invalidateQueries({ queryKey: ["studio-bookings"] });
       await queryClient.invalidateQueries({ queryKey: ["booking", ref] });
       await queryClient.invalidateQueries({ queryKey: ["business", "bookings", "mine"] });
       toast.success(status === "confirmed" ? "Request accepted" : "Request declined");
@@ -171,10 +192,72 @@ function RequestReviewContent() {
           </Btn>
         ) : null}
 
+        <div className="mt-3 rounded-lg bg-subtle p-4">
+          <label htmlFor="booking-reply" className="text-sm font-semibold">
+            Reply
+          </label>
+          <div className="rail mt-2 flex gap-2 overflow-x-auto no-scrollbar">
+            {bookingReplies[decision === "declining" ? "declined" : "confirmed"].map((r) => (
+              <Chip key={r} active={reply === r} onClick={() => setReply(r)}>
+                {r}
+              </Chip>
+            ))}
+          </div>
+          <textarea
+            id="booking-reply"
+            value={reply}
+            onChange={(e) => setReply(e.target.value)}
+            rows={3}
+            maxLength={1000}
+            placeholder="Optional. Sent with your answer."
+            className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
+          />
+        </div>
+
+        {others.length ? (
+          <div className="mt-3 rounded-lg bg-subtle p-4">
+            <p className="text-sm font-semibold">
+              {others.length} {others.length === 1 ? "other asks" : "others ask"} for this time
+            </p>
+            <ul className="mt-1 space-y-0.5 text-1 text-muted-foreground">
+              {others.map((o) => (
+                <li key={o.id}>
+                  {o.requester?.display_name ??
+                    o.requester?.username ??
+                    o.requester_name ??
+                    "Someone"}{" "}
+                  · {formatTime(o.start_time)} – {formatTime(o.end_time)}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-1 text-muted-foreground">When you accept this one:</p>
+            <div className="mt-2">
+              <SegmentedField
+                label="When you accept this one"
+                value={othersChoice}
+                options={OTHERS_CHOICES}
+                onChange={setOthersChoice}
+              />
+            </div>
+            {othersChoice === OTHERS_CHOICES[0] ? (
+              <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">
+                {bookingReplies.taken.map((r) => (
+                  <Chip key={r} active={takenReply === r} onClick={() => setTakenReply(r)}>
+                    {r}
+                  </Chip>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
         <Btn
           variant="ghost"
           className="mt-2 w-full"
-          onClick={() => setDecision(decision === "declining" ? "none" : "declining")}
+          onClick={() => {
+            setReply("");
+            setDecision(decision === "declining" ? "none" : "declining");
+          }}
         >
           Decline
         </Btn>
