@@ -1,0 +1,21 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921180000_collab_complete.sql.
+--
+-- Scope: row counts and what the migration touches. It adds a table collab_messages (its policies,
+-- index) and a function + trigger notify_collab_message; none of them existed at snapshot time
+-- (to_regclass('public.collab_messages') null, no function named notify_collab_message), so there
+-- is no earlier definition to keep. It writes no existing rows and changes no existing object.
+--
+-- Row counts: collabs 3 (all type 'band', none 'project'), collab_members 11 (11 active,
+-- 0 invited), notifications 12.
+--
+-- notifications_kind_check at snapshot time (unchanged by the migration; it reuses 'message'):
+--   CHECK (kind = ANY (ARRAY['connection_request', 'connection_accepted', 'message',
+--     'application_received', 'application_status', 'booking_requested', 'booking_answered',
+--     'review_received', 'review_reply', 'review_request', 'collab_invite', 'collab_joined',
+--     'rental_requested', 'rental_answered']))
+--
+-- Foreign keys onto collabs at snapshot time: collab_members, collab_events, collab_releases all
+-- ON DELETE CASCADE.
+--
+-- To undo: see the Rollback note at the top of the migration.

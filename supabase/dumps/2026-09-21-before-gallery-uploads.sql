@@ -1,0 +1,38 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921160000_gallery_uploads.sql.
+--
+-- Scope: row counts and what the migration touches. It adds a storage bucket gallery, four
+-- storage.objects policies named "Users … their own gallery images" and a check constraint
+-- profile_gallery_image_url_check; none of them existed at snapshot time (no bucket, policy or
+-- constraint of those names), so there is no earlier definition to keep. It writes no existing rows.
+--
+-- Row counts: profile_gallery 36 rows across 12 profiles (at most 6 per profile), no captions;
+-- every image_url starts with https:// and is under 1000 characters.
+--
+-- public.profile_gallery at snapshot time:
+--   id          uuid        NOT NULL DEFAULT gen_random_uuid()   PRIMARY KEY
+--   profile_id  uuid        NOT NULL   REFERENCES profiles(id) ON DELETE CASCADE
+--   image_url   text        NOT NULL
+--   caption     text
+--   sort_order  integer     NOT NULL DEFAULT 0
+--   created_at  timestamptz NOT NULL DEFAULT now()
+--   index profile_gallery_profile_idx (profile_id, sort_order)
+--   policy "Readable with its profile"  SELECT  public         USING profile_is_readable(profile_id)
+--   policy "Owners write their own"     ALL     authenticated  USING / WITH CHECK auth.uid() = profile_id
+--
+-- storage.buckets at snapshot time:
+--   avatars                 public   5 MB  image/jpeg, image/png, image/webp
+--   covers                  public  10 MB  image/jpeg, image/png, image/webp
+--   verification-documents  private 10 MB  image/jpeg, image/png, image/webp, application/pdf
+--   studio-media            public  10 MB  image/jpeg, image/png, image/webp
+--
+-- storage.objects policies at snapshot time:
+--   "Users read their own profile images", "Users upload their own profile images",
+--   "Users replace their own profile images", "Users delete their own profile images",
+--   "Owners read their verification documents", "Owners upload verification documents to a draft",
+--   "Owners replace verification documents in a draft",
+--   "Owners delete verification documents of a draft or withdrawn re…" (name as listed),
+--   "Owners read their studio media", "Owners upload their studio media",
+--   "Owners replace their studio media", "Owners delete their studio media"
+--
+-- To undo: see the Rollback note at the top of the migration.
