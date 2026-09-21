@@ -632,5 +632,34 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       updated_at: new Date().toISOString(),
     } as never);
     if (businessError) throw new Error(businessError.message);
+
+    // A studio business gets its studio too, so weekly hours, the calendar, equipment and proof
+    // photos work from day one. Its slug follows the account's username when that is free.
+    if (data.type === "studio") {
+      const { data: existing } = await client
+        .from("studios")
+        .select("id")
+        .eq("owner_profile_id", context.userId)
+        .limit(1);
+      if (!existing?.length) {
+        const base =
+          current?.username ||
+          data.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, "")
+            .slice(0, 60) ||
+          "studio";
+        const { data: taken } = await client.from("studios").select("id").eq("slug", base).limit(1);
+        const slug = taken?.length ? `${base}-${Math.random().toString(36).slice(2, 7)}` : base;
+        const { error: studioError } = await client.from("studios").insert({
+          owner_profile_id: context.userId,
+          slug,
+          name: data.name,
+          location: data.city || null,
+        } as never);
+        if (studioError) throw new Error(studioError.message);
+      }
+    }
     return { username: current?.username ?? null };
   });
