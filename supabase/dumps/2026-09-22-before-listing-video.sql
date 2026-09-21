@@ -1,0 +1,8 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922100000_listing_video_url.sql.
+--
+-- Scope: the migration adds one nullable column, public.marketplace_listings.video_url. It did not
+-- exist at snapshot time (information_schema.columns: 0 rows), and the migration writes no
+-- existing rows.
+--
+-- Row counts: marketplace_listings 20.
