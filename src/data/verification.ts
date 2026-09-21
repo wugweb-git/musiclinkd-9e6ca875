@@ -344,8 +344,8 @@ export function verificationTypesFor(
   personTypes: readonly { slug: string; metadata: { flow?: string } | null }[],
 ): VerificationType[] {
   const flowOf = (slug: string) => personTypes.find((o) => o.slug === slug)?.metadata?.flow;
-  const business = roles.some((r) => flowOf(r) === "business");
-  const talent = roles.length === 0 || roles.some((r) => flowOf(r) !== "business");
+  const business = roles.some((r) => flowOf(r) === "business_user");
+  const talent = roles.length === 0 || roles.some((r) => flowOf(r) !== "business_user");
   const space = roles.some((r) => SPACE_ROLES.includes(r));
   const keys: VerificationType["key"][] = [
     "identity",

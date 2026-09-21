@@ -12,11 +12,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type TaxonomyCategory = "person_types" | "instruments" | "genres" | "languages";
 
+/** The `flow` filter on person_types: which kind of user an option is for. */
+export type UserFlow = "talent_user" | "business_user";
+
 export type TaxonomyOption = {
   slug: string;
   label: string;
   sortOrder: number;
-  metadata: { group?: string; flow?: string; family?: string; scope?: string } | null;
+  metadata: { group?: string; flow?: UserFlow; family?: string; scope?: string } | null;
 };
 
 export type PersonaBucket = { instruments: TaxonomyOption[]; genres: TaxonomyOption[] };
@@ -116,7 +119,7 @@ export const talentGroups = [
 ] as const;
 
 export function talentTypes(options: TaxonomyOption[]): TaxonomyOption[] {
-  return options.filter((o) => o.metadata?.flow !== "business");
+  return options.filter((o) => o.metadata?.flow !== "business_user");
 }
 
 /** slug → label for display; falls back to the slug so nothing renders blank. */
