@@ -102,7 +102,8 @@ export type ServiceExample = {
   media_url: string | null;
 };
 
-export type ServiceOption = { slug: string; label: string };
+/** A taxonomy option; a specific service category names its broad one in `parent`. */
+export type ServiceOption = { slug: string; label: string; parent?: string };
 
 /** The option lists the service screens pick from, and which categories each person type offers. */
 export type ServiceOptions = {
@@ -202,7 +203,7 @@ export const getServiceOptions = createServerFn({ method: "GET" }).handler(
     const [options, mapping] = await Promise.all([
       client
         .from("taxonomy_options" as never)
-        .select("category_key, slug, label, sort_order")
+        .select("category_key, slug, label, sort_order, metadata")
         .in("category_key", ["service_categories", "pricing_models", "work_modes"])
         .order("sort_order"),
       client
@@ -216,9 +217,16 @@ export const getServiceOptions = createServerFn({ method: "GET" }).handler(
       category_key: string;
       slug: string;
       label: string;
+      metadata: { parent?: string } | null;
     }[];
     const pick = (key: string) =>
-      rows.filter((r) => r.category_key === key).map(({ slug, label }) => ({ slug, label }));
+      rows
+        .filter((r) => r.category_key === key)
+        .map(({ slug, label, metadata }) => ({
+          slug,
+          label,
+          ...(metadata?.parent ? { parent: metadata.parent } : {}),
+        }));
     const categoriesByRole: Record<string, string[]> = {};
     for (const m of (mapping.data ?? []) as unknown as {
       person_type_slug: string;

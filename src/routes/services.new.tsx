@@ -16,6 +16,7 @@ import {
   MicVocal,
   Music,
   PenLine,
+  Radio,
   Plane,
   SlidersVertical,
   Sparkles,
@@ -112,6 +113,7 @@ const categoryIcons: Record<string, LucideIcon> = {
   live: Speaker,
   studio: Building2,
   teaching: GraduationCap,
+  hosting: Radio,
 };
 
 function NewService() {
@@ -198,9 +200,21 @@ function NewService() {
   const roles = ((profile.data as { roles?: string[] | null } | null | undefined)?.roles ??
     []) as string[];
   const offered = new Set(roles.flatMap((r) => options?.categoriesByRole[r] ?? []));
-  const categoryOptions = (options?.categories ?? [])
-    .filter((c) => offered.size === 0 || offered.has(c.slug) || source?.categories.includes(c.slug))
-    .map((c) => ({ value: c.slug, label: c.label, icon: categoryIcons[c.slug] ?? Sparkles }));
+  // The specific categories (Playback singing, Club nights…); a broad one (Vocals, Live) shows only
+  // when nothing specific sits under it, or when this service already uses it.
+  const allCategories = options?.categories ?? [];
+  const broadWithChildren = new Set(allCategories.map((c) => c.parent).filter(Boolean));
+  const categoryOptions = allCategories
+    .filter(
+      (c) =>
+        source?.categories.includes(c.slug) ||
+        ((offered.size === 0 || offered.has(c.slug)) && !broadWithChildren.has(c.slug)),
+    )
+    .map((c) => ({
+      value: c.slug,
+      label: c.label,
+      icon: categoryIcons[c.slug] ?? categoryIcons[c.parent ?? ""] ?? Sparkles,
+    }));
 
   const deliveryOptions = [
     ...deliveryTimes,
