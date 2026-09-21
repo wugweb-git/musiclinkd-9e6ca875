@@ -48,8 +48,6 @@ const views = [
   { label: "For You", to: null },
   { label: "Nearby", to: "/marketplace/nearby" },
   { label: "Rentals", to: "/marketplace/rent" },
-  { label: "Services", to: "/marketplace/search" },
-  { label: "Studios", to: "/studio" },
   { label: "Saved", to: "/marketplace/saved" },
 ] as const;
 
@@ -82,9 +80,9 @@ function MarketHome() {
 
   return (
     <Screen>
-      <header className="sticky top-0 z-bar bg-background/90 pt-4 backdrop-blur">
-        <div className="mb-1 flex items-center justify-between px-5">
-          <h1 className="text-3 leading-tight">Market</h1>
+      <header className="sticky top-0 z-bar mb-5 bg-background/90 pt-6 backdrop-blur">
+        <div className="mb-3 flex items-center justify-between px-5">
+          <h1 className="text-4 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
             <Link
               to="/marketplace/sell"
@@ -112,7 +110,7 @@ function MarketHome() {
           </div>
         ) : null}
         {/* Views as tabs, and where you are at the end of the row (it opens the city sheet). */}
-        <div className="flex items-center gap-2 border-b border-border pl-5 pr-3">
+        <div className="flex items-center gap-3 border-b border-border px-5 py-1">
           <div className="min-w-0 flex-1">
             <Segmented
               className=""
@@ -126,11 +124,7 @@ function MarketHome() {
             />
           </div>
           <span aria-hidden className="h-6 w-px shrink-0 bg-border" />
-          <IconBtn
-            label={`Location: ${city}`}
-            variant="ghost"
-            onClick={() => setLocationOpen(true)}
-          >
+          <IconBtn label={`Location: ${city}`} onClick={() => setLocationOpen(true)}>
             <MapPin size={iconSize.md} />
           </IconBtn>
         </div>
