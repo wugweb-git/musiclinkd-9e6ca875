@@ -1,0 +1,13 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921250000_one_business_one_studio.sql.
+--
+-- Scope: what the migration changes.
+--   studios b84bbaa9-f4e2-40c8-8f27-959b220c7410 (slug jam-room-bandra, "Bandra Jam Room — Hourly Rehearsal"):
+--     owner_profile_id = '86a5d555-61eb-5619-b452-3a9387baa66f' (@yash.raj.sound.studios).
+--     0 rooms, 0 bookings, 0 reviews, 0 equipment, 0 photos. Full row at snapshot time:
+--     {"add_ons":[],"amenities":["rehearsal_room","drums_included","parking_space","air_conditioning","drinking_water"],"archived_at":null,"cancellation_policy":null,"console_type":null,"created_at":"2026-09-18T14:05:43.518298+00:00","description":"Drum kit, two amps, PA with four mics and a fully treated room. Ideal for band rehearsals and pre-production before studio dates.","geo_lat":null,"geo_lng":null,"hourly_rate_paise":80000,"image_url":"https://images.unsplash.com/photo-1524230572899-a752b3835840?auto=format&fit=crop&w=800&q=80","images":["https://images.unsplash.com/photo-1524230572899-a752b3835840?auto=format&fit=crop&w=800&q=80","https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80"],"location":"Bandra East, Mumbai","name":"Bandra Jam Room — Hourly Rehearsal","operating_hours":"Mon–Sun 09:00–23:00","rating":null,"response_time":null,"review_count":0,"services":[],"slug":"jam-room-bandra","updated_at":"2026-09-18T14:05:43.518298+00:00","verified_gold":false,"weekly_hours":{"mon..sun":"09:00-23:00"}}
+--   profile_business 86a5d555-61eb-5619-b452-3a9387baa66f: operating_hours = '09:00 AM – 11:00 PM (Mon–Sat)'.
+--   Account b968e63a-0ff6-5378-81f7-9fab18f22d3b and username jam.room.bandra: did not exist.
+--   studios: at most 2 per owner (only 86a5d555…); no unique index on owner_profile_id.
+--
+-- To undo: see the Rollback note at the top of the migration.
