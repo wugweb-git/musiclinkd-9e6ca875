@@ -152,8 +152,8 @@ function WelcomeScreen() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
   const signUp = useServerFn(signUpWithPassword);
-  // A new talent account is a sign-up, so that is where Welcome starts; Sign In is one tap away.
-  const [mode, setMode] = useState<Mode>("signup");
+  // Welcome opens on Sign In (owner, 21 Sep 2026); creating an account is one tap away.
+  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState(carriedEmail);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState<"email" | "google" | "linkedin" | null>(null);
@@ -313,9 +313,9 @@ function WelcomeScreen() {
         </div>
 
         {/*
-         * Email and password first, then Google and LinkedIn. New talent signs up here; returning
-         * people switch to Sign In. Both routes end on the splash, which sends a new account to
-         * onboarding and a returning one home.
+         * Accounts saved on this device first, then email and password (Sign In; new people switch
+         * to Create Account), then Google and LinkedIn. Every route ends on the splash, which sends
+         * a new account to onboarding and a returning one home.
          */}
         <div className={cn(rise)} style={beat(6.5)}>
           {saved.length ? (
