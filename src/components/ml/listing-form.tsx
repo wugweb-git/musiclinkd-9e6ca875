@@ -20,8 +20,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Sheet } from "./ui";
-import { Price } from "./kit";
-import { ConditionBadge, MarketCategoryIcon } from "./market";
+import { SegmentedField } from "./kit";
+import { MarketCategoryIcon, ProductCard } from "./market";
 import {
   categoryOfSubCategory,
   subCategorySlug,
@@ -34,9 +34,10 @@ import { placeLine } from "@/lib/place";
 import { pinProblem } from "@/lib/validation";
 
 /*
- * The details step and the preview shared by selling and renting out. Both list the same thing —
- * an instrument or a piece of equipment, new or used — so the fields are the same; only the price
- * reads differently: one amount for a sale, an amount per day, week or month for a rental.
+ * The one listing flow (/marketplace/sell): sell or rent out an instrument or a piece of
+ * equipment. Both carry the same fields; renting out only gives the price a unit (per day, week
+ * or month). Three steps — what & price, photos & description, where & publish — and the preview
+ * is the Market product card itself.
  */
 
 export const listingConditions = [
@@ -57,7 +58,11 @@ export const fulfilmentOptions = [
   { label: "Pickup or delivery", value: "both", icon: ArrowLeftRight },
 ] as const;
 
+export const listingModes = ["Sell", "Rent out"] as const;
+export type ListingMode = (typeof listingModes)[number];
+
 export type ListingDraft = {
+  mode: ListingMode;
   name: string;
   brand: string;
   model: string;
@@ -73,6 +78,7 @@ export type ListingDraft = {
 };
 
 export const emptyListingDraft: ListingDraft = {
+  mode: "Sell",
   name: "",
   brand: "",
   model: "",
@@ -87,12 +93,47 @@ export const emptyListingDraft: ListingDraft = {
   videoUrl: "",
 };
 
-/**
- * The draft both flows edit. City and PIN code start from the seller's profile (the shared
- * ["profile","me"] query) and stay editable; they're filled once, and never over what was typed.
+export const listingSteps = ["What & price", "Photos & description", "Where & publish"] as const;
+
+/*
+ * A saved draft lives on this device (the listings table has no draft status, and the schema
+ * stays as it is). Guarded: a private window or blocked storage just means no draft.
  */
-export function useListingDraft() {
-  const [draft, setDraft] = useState<ListingDraft>(emptyListingDraft);
+const DRAFT_KEY = "ml.listing-draft";
+
+function readDraft(): Partial<ListingDraft> | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as Partial<ListingDraft>) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveListingDraft(d: ListingDraft) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function clearListingDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    // Nothing to clear.
+  }
+}
+
+/**
+ * The draft the flow edits. It opens on a saved draft if there is one, in the mode the link asked
+ * for; City and PIN code start from the seller's profile (the shared ["profile","me"] query), are
+ * filled once, and never over what was typed.
+ */
+export function useListingDraft(mode: ListingMode) {
+  const [draft, setDraft] = useState<ListingDraft>({ ...emptyListingDraft, mode });
   const { signedIn } = useAuth();
   const load = useServerFn(getMyProfile);
   const profile = useQuery({
@@ -101,6 +142,11 @@ export function useListingDraft() {
     enabled: signedIn,
   });
   const row = profile.data as ProfileRow | null | undefined;
+  // Storage is read after mount, so the server render and the first client render agree.
+  useEffect(() => {
+    const saved = readDraft();
+    if (saved) setDraft((d) => ({ ...d, ...saved }));
+  }, []);
   useEffect(() => {
     if (!row) return;
     setDraft((d) => ({
@@ -113,19 +159,16 @@ export function useListingDraft() {
   return [draft, patch] as const;
 }
 
-/** Every details field is required (owner, 21 Sep 2026); Continue waits until they're all in. */
-export function listingDetailsComplete(d: ListingDraft) {
-  return Boolean(
-    d.name.trim() &&
-    d.brand.trim() &&
-    d.model.trim() &&
-    d.sub &&
-    d.description.trim() &&
-    rupees(d.price) > 0 &&
-    d.city.trim() &&
-    d.pin.trim() &&
-    !pinProblem(d.pin),
-  );
+const rupees = (v: string) => Number(v.replace(/[^0-9]/g, ""));
+
+/** Every field is required (owner, 21 Sep 2026) except the video; each step waits for its own. */
+export function listingStepComplete(d: ListingDraft, step: number) {
+  if (step === 0)
+    return Boolean(
+      d.sub && d.name.trim() && d.brand.trim() && d.model.trim() && rupees(d.price) > 0,
+    );
+  if (step === 1) return Boolean(d.description.trim()) && !videoProblem(d.videoUrl);
+  return Boolean(d.city.trim() && d.pin.trim() && !pinProblem(d.pin));
 }
 
 /** A short video is a link (YouTube, Instagram, Drive…): any https URL. */
@@ -135,55 +178,11 @@ export function videoProblem(value: string) {
   return /^https:\/\/\S+\.\S+/.test(v) ? null : "Paste a full link, starting with https://";
 }
 
-/**
- * Photos and a short video: the second step of both flows. The video is optional and a link.
- */
-export function ListingMediaStep({
-  value,
-  onChange,
-}: {
-  value: ListingDraft;
-  onChange: (patch: Partial<ListingDraft>) => void;
-}) {
-  const problem = videoProblem(value.videoUrl);
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-2 row-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-center text-1 text-foreground">
-          Cover photo
-          <br />
-          Tap to add
-        </div>
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-2 text-foreground"
-          >
-            +
-          </div>
-        ))}
-      </div>
-      <p className="text-1 text-foreground">First photo becomes the cover.</p>
-      <Field label="Short video link (optional)" id="listing-video">
-        <input
-          value={value.videoUrl}
-          onChange={(e) => onChange({ videoUrl: e.target.value })}
-          inputMode="url"
-          placeholder="https://youtu.be/…"
-          aria-invalid={Boolean(problem)}
-          className={inputClass}
-        />
-      </Field>
-      {problem ? <p className="-mt-2 px-1 text-1 text-destructive">{problem}</p> : null}
-    </div>
-  );
-}
-
-const rupees = (v: string) => Number(v.replace(/[^0-9]/g, ""));
-
-/** The createListing fields every listing carries, sale or rental. */
-export function listingPayload(d: ListingDraft, rental: boolean) {
+/** What createListing gets from the draft. */
+export function listingPayload(d: ListingDraft) {
+  const rental = d.mode === "Rent out";
   return {
+    category: rental ? ("gear_rental" as const) : ("gear_sale" as const),
     title: d.name.trim() || "Untitled listing",
     ...(d.sub
       ? { itemCategoryKind: kindOfSubCategory(d.sub), itemCategory: subCategorySlug(d.sub) }
@@ -325,17 +324,29 @@ const productTypeOptions = listingSubCategories.map((s) => {
   };
 });
 
-export function ListingDetailsForm({
-  value,
-  onChange,
-  rental,
-}: {
-  value: ListingDraft;
-  onChange: (patch: Partial<ListingDraft>) => void;
-  rental: boolean;
-}) {
+type StepProps = { value: ListingDraft; onChange: (patch: Partial<ListingDraft>) => void };
+
+/** Step 1 — what it is and what it costs. */
+export function ListingWhatStep({ value, onChange }: StepProps) {
+  const rental = value.mode === "Rent out";
   return (
     <div className="space-y-4">
+      <SegmentedField
+        label="Listing for"
+        value={value.mode}
+        options={listingModes}
+        onChange={(mode) => onChange({ mode })}
+      />
+      <Field label="Product type" id="listing-type">
+        <SheetSelect
+          title="Product type"
+          value={value.sub}
+          options={productTypeOptions}
+          onChange={(sub) => onChange({ sub })}
+          placeholder="Guitar, drums, mixer…"
+          searchable
+        />
+      </Field>
       {(
         [
           { key: "name", label: "Name", ph: "Shure SM7B" },
@@ -352,16 +363,6 @@ export function ListingDetailsForm({
           />
         </Field>
       ))}
-      <Field label="Product type" id="listing-type">
-        <SheetSelect
-          title="Product type"
-          value={value.sub}
-          options={productTypeOptions}
-          onChange={(sub) => onChange({ sub })}
-          placeholder="Guitar, drums, mixer…"
-          searchable
-        />
-      </Field>
       <Field label="Condition" id="listing-condition">
         <SheetSelect
           title="Condition"
@@ -369,15 +370,6 @@ export function ListingDetailsForm({
           options={listingConditions}
           onChange={(v) => onChange({ condition: v as ListingDraft["condition"] })}
           placeholder="Condition"
-        />
-      </Field>
-      <Field label="Description" id="listing-description">
-        <textarea
-          rows={4}
-          value={value.description}
-          onChange={(e) => onChange({ description: e.target.value })}
-          placeholder="Condition, history, what's included..."
-          className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
       </Field>
       <Field label="Price (₹)" id="listing-price">
@@ -401,6 +393,60 @@ export function ListingDetailsForm({
           ) : null}
         </div>
       </Field>
+    </div>
+  );
+}
+
+/** Step 2 — photos, a short video link (optional) and the description. */
+export function ListingMediaStep({ value, onChange }: StepProps) {
+  const problem = videoProblem(value.videoUrl);
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <div className="col-span-2 row-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-center text-1 text-foreground">
+          Cover photo
+          <br />
+          Tap to add
+        </div>
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-2 text-foreground"
+          >
+            +
+          </div>
+        ))}
+      </div>
+      <p className="text-1 text-foreground">First photo becomes the cover.</p>
+      <Field label="Short video link (optional)" id="listing-video">
+        <input
+          value={value.videoUrl}
+          onChange={(e) => onChange({ videoUrl: e.target.value })}
+          inputMode="url"
+          placeholder="https://youtu.be/…"
+          aria-invalid={Boolean(problem)}
+          className={inputClass}
+        />
+      </Field>
+      {problem ? <p className="-mt-2 px-1 text-1 text-destructive">{problem}</p> : null}
+      <Field label="Description" id="listing-description">
+        <textarea
+          rows={4}
+          value={value.description}
+          onChange={(e) => onChange({ description: e.target.value })}
+          placeholder="Condition, history, what's included..."
+          className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+        />
+      </Field>
+    </div>
+  );
+}
+
+/** Step 3 — where it is and how it changes hands, then the card as it will show in Market. */
+export function ListingWhereStep({ value, onChange }: StepProps) {
+  const pin = pinProblem(value.pin);
+  return (
+    <div className="space-y-4">
       <div className="grid grid-cols-5 gap-2">
         <div className="col-span-3">
           <Field label="City" id="listing-city">
@@ -419,15 +465,13 @@ export function ListingDetailsForm({
               onChange={(e) => onChange({ pin: e.target.value.replace(/\D/g, "").slice(0, 6) })}
               inputMode="numeric"
               placeholder="400053"
-              aria-invalid={Boolean(pinProblem(value.pin))}
+              aria-invalid={Boolean(pin)}
               className={inputClass}
             />
           </Field>
         </div>
       </div>
-      {pinProblem(value.pin) ? (
-        <p className="-mt-2 px-1 text-1 text-destructive">{pinProblem(value.pin)}</p>
-      ) : null}
+      {pin ? <p className="-mt-2 px-1 text-1 text-destructive">{pin}</p> : null}
       <Field label="Fulfilment" id="listing-fulfilment">
         <SheetSelect
           title="Fulfilment"
@@ -437,49 +481,34 @@ export function ListingDetailsForm({
           placeholder="Pickup"
         />
       </Field>
+      <Field label="Preview" id="listing-preview">
+        <div className="flex justify-center rounded-lg bg-subtle py-5">
+          <ListingCardPreview value={value} />
+        </div>
+      </Field>
     </div>
   );
 }
 
-/** What buyers or renters will see, from the draft. `extra` adds a rental's terms line. */
-export function ListingPreview({
-  value,
-  rental,
-  extra,
-}: {
-  value: ListingDraft;
-  rental: boolean;
-  extra?: string;
-}) {
+/** The draft drawn as the Market product card, at rail width, not linked anywhere. */
+export function ListingCardPreview({ value }: { value: ListingDraft }) {
+  const rental = value.mode === "Rent out";
   return (
-    <article className="overflow-hidden rounded-lg bg-subtle">
-      <div className="flex h-44 items-center justify-center bg-background text-1 text-foreground">
-        Cover photo
-      </div>
-      <div className="p-4">
-        <Price
-          price={{
-            amount: value.price ? `₹${value.price}` : "₹0",
-            ...(rental ? { unit: value.unit } : {}),
-          }}
-          amountClassName="text-sm font-bold"
-          unitClassName="text-1"
-        />
-        <h3 className="mt-1 text-sm leading-snug">{value.name || "Untitled listing"}</h3>
-        <p className="text-1 text-foreground">
-          {[value.brand, value.model, value.sub].filter(Boolean).join(" · ")}
-        </p>
-        <div className="mt-2.5 flex flex-wrap items-center gap-2">
-          <ConditionBadge
-            value={listingConditions.find((c) => c.value === value.condition)!.label}
-          />
-        </div>
-        <p className="mt-2 text-1 text-foreground">
-          {[fulfilmentOptions.find((f) => f.value === value.fulfilment)!.label, extra ?? null]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
-      </div>
-    </article>
+    <ProductCard
+      preview
+      rail
+      item={{
+        opens: "listing",
+        id: "preview",
+        title: value.name.trim() || "Untitled listing",
+        photos: [],
+        category: value.sub ? categoryOfSubCategory(value.sub) : "other",
+        badge: listingConditions.find((c) => c.value === value.condition)!.label,
+        price: {
+          amount: `₹${value.price || "0"}`,
+          ...(rental ? { unit: value.unit } : {}),
+        },
+      }}
+    />
   );
 }

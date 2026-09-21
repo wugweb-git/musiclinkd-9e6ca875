@@ -26,6 +26,7 @@ import {
   ArrowRight,
   X,
   Send,
+  Save,
   type LucideIcon,
 } from "lucide-react";
 import type { Listing } from "@/data/market";
@@ -268,11 +269,14 @@ export function ProductCard({
   saved,
   onSave,
   rail = false,
+  preview = false,
 }: {
   item: ProductItem;
   saved?: boolean;
   onSave?: () => void;
   rail?: boolean;
+  /** Drawn for a listing still being written: the same card, not a link. */
+  preview?: boolean;
 }) {
   const [localSaved, setLocalSaved] = useState(false);
   const [shown, setShown] = useState(0);
@@ -390,6 +394,7 @@ export function ProductCard({
     </div>
   );
 
+  if (preview) return <div className={className}>{body}</div>;
   return item.opens === "equipment" ? (
     <Link to="/marketplace/rent/e/$id" params={{ id: item.id }} className={className}>
       {body}
@@ -1101,6 +1106,7 @@ export function ListingStepFooter({
   disabled = false,
   busy = false,
   publishLabel,
+  onSaveDraft,
 }: {
   step: number;
   last: boolean;
@@ -1110,25 +1116,35 @@ export function ListingStepFooter({
   disabled?: boolean;
   busy?: boolean;
   publishLabel: string;
+  /** On the last step, a Save draft button beside Publish. */
+  onSaveDraft?: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <IconBtn label="Cancel" className="h-control w-control" onClick={onCancel}>
-        <X size={iconSize.md} aria-hidden />
-      </IconBtn>
-      {step > 0 ? (
-        <IconBtn label="Back" className="h-control w-control" onClick={onBack}>
-          <ArrowLeft size={iconSize.md} aria-hidden />
-        </IconBtn>
+    <div className="space-y-3">
+      {last && onSaveDraft ? (
+        <Btn variant="outline" className="w-full" disabled={busy} onClick={onSaveDraft}>
+          <Save size={iconSize.sm} aria-hidden />
+          Save draft
+        </Btn>
       ) : null}
-      <Btn className="flex-1" disabled={disabled || busy} onClick={onNext}>
-        {last ? (busy ? "Publishing…" : publishLabel) : "Continue"}
-        {last ? (
-          <Send size={iconSize.sm} aria-hidden />
-        ) : (
-          <ArrowRight size={iconSize.sm} aria-hidden />
-        )}
-      </Btn>
+      <div className="flex items-center gap-3">
+        <IconBtn label="Cancel" className="h-control w-control" onClick={onCancel}>
+          <X size={iconSize.md} aria-hidden />
+        </IconBtn>
+        {step > 0 ? (
+          <IconBtn label="Back" className="h-control w-control" onClick={onBack}>
+            <ArrowLeft size={iconSize.md} aria-hidden />
+          </IconBtn>
+        ) : null}
+        <Btn className="flex-1" disabled={disabled || busy} onClick={onNext}>
+          {last ? (busy ? "Publishing…" : publishLabel) : "Continue"}
+          {last ? (
+            <Send size={iconSize.sm} aria-hidden />
+          ) : (
+            <ArrowRight size={iconSize.sm} aria-hidden />
+          )}
+        </Btn>
+      </div>
     </div>
   );
 }
