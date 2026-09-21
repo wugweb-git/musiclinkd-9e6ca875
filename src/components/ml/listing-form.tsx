@@ -482,7 +482,7 @@ export function ListingWhereStep({ value, onChange }: StepProps) {
         />
       </Field>
       <Field label="Preview" id="listing-preview">
-        <div className="flex justify-center rounded-lg bg-subtle py-5">
+        <div className="flex justify-center">
           <ListingCardPreview value={value} />
         </div>
       </Field>
