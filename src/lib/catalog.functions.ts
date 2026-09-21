@@ -122,6 +122,7 @@ export type ListingRow = {
   created_at: string;
   seller_name: string | null;
   /** Where a rental is picked up, when the owner said. */
+  photos?: string[] | null;
   pickup_location: string | null;
   brand: string | null;
   model: string | null;
@@ -171,7 +172,7 @@ const LISTING_FIELDS = `id, slug, title, category, item_category, item_category_
   price_unit, price_note, image_url, created_at, seller_name, pickup_location, brand, model,
   listing_description, specs, included, weekly_price_paise, monthly_price_paise, deposit_paise,
   quantity_available, pickup_available, delivery_available, delivery_fee_paise, delivery_note,
-  min_days, max_days, notice_period`;
+  min_days, max_days, notice_period, photos`;
 const LISTING = `${LISTING_FIELDS},
   seller:profiles!marketplace_listings_seller_profile_id_fkey(${SELLER})`;
 /** The seller without the standing columns, while 20260918240000_missing_data.sql is not applied. */
@@ -415,6 +416,8 @@ const listingInput = z.object({
   // "City PIN", as every place is stored (src/lib/place.ts).
   pickupLocation: z.string().trim().max(120).optional(),
   videoUrl: z.string().trim().url().max(500).optional(),
+  // Uploaded photo URLs in order; the first is the cover.
+  photos: z.array(z.string().url().max(1000)).max(5).optional(),
 });
 
 type ListingInput = z.infer<typeof listingInput>;
@@ -442,6 +445,7 @@ function listingColumns(data: ListingInput) {
     ...(data.noticePeriod ? { notice_period: data.noticePeriod } : {}),
     ...(data.pickupLocation ? { pickup_location: data.pickupLocation } : {}),
     video_url: data.videoUrl ?? null,
+    ...(data.photos?.length ? { photos: data.photos, image_url: data.photos[0] } : {}),
   };
 }
 
@@ -480,6 +484,7 @@ export type MyListing = {
   pickup_available: boolean | null;
   delivery_available: boolean | null;
   video_url: string | null;
+  photos: string[] | null;
   listing_status: string | null;
   created_at: string;
 };
@@ -491,7 +496,7 @@ export const listMyManagedListings = createServerFn({ method: "GET" })
     const { data, error } = await client
       .from("marketplace_listings")
       .select(
-        "id, slug, title, category, item_category, item_category_kind, condition, price_paise, price_unit, image_url, brand, model, listing_description, pickup_location, pickup_available, delivery_available, video_url, listing_status, created_at",
+        "id, slug, title, category, item_category, item_category_kind, condition, price_paise, price_unit, image_url, brand, model, listing_description, pickup_location, pickup_available, delivery_available, video_url, photos, listing_status, created_at",
       )
       .eq("seller_profile_id", context.userId)
       .order("created_at", { ascending: false });

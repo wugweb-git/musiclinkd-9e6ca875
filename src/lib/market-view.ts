@@ -139,7 +139,7 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     subcategory: subcategoryOf(row, category, labels),
     saves: 0,
     postedAt: postedAt(row.created_at, now),
-    photos: row.image_url ? [row.image_url] : [],
+    photos: row.photos?.length ? row.photos : row.image_url ? [row.image_url] : [],
     description: row.listing_description ?? "",
     specs: specsOf(row),
     sellerId: "",

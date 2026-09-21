@@ -9,7 +9,11 @@ import {
   Calendar,
   CalendarDays,
   CalendarRange,
+  Camera,
   Check,
+  LoaderCircle,
+  Plus,
+  X,
   ChevronDown,
   History,
   MapPin,
@@ -22,7 +26,10 @@ import {
   Star,
   type LucideIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Sheet } from "./ui";
+import { PROFILE_IMAGE_ACCEPT } from "@/lib/profile-images";
+import { MAX_LISTING_PHOTOS, uploadListingPhoto } from "@/lib/listing-photos";
 import { SegmentedField } from "./kit";
 import { MarketCategoryIcon, ProductCard } from "./market";
 import {
@@ -78,6 +85,8 @@ export type ListingDraft = {
   city: string;
   pin: string;
   videoUrl: string;
+  /** Uploaded photo URLs, in order; the first is the cover. */
+  photos: string[];
 };
 
 export const emptyListingDraft: ListingDraft = {
@@ -94,6 +103,7 @@ export const emptyListingDraft: ListingDraft = {
   city: "",
   pin: "",
   videoUrl: "",
+  photos: [],
 };
 
 export const listingSteps = ["What & price", "Photos & description", "Where & publish"] as const;
@@ -186,6 +196,7 @@ export function draftFromListing(row: MyListing): ListingDraft {
     city: place.city,
     pin: place.pin,
     videoUrl: row.video_url ?? "",
+    photos: row.photos?.length ? row.photos : row.image_url ? [row.image_url] : [],
   };
 }
 
@@ -228,6 +239,7 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
       ? { pickupLocation: placeLine(d.city, pinProblem(d.pin) ? "" : d.pin) }
       : {}),
     ...(d.videoUrl.trim() && !videoProblem(d.videoUrl) ? { videoUrl: d.videoUrl.trim() } : {}),
+    ...(d.photos.length ? { photos: d.photos } : {}),
   };
 }
 
@@ -428,26 +440,104 @@ export function ListingWhatStep({ value, onChange }: StepProps) {
   );
 }
 
+/**
+ * Five photo slots — the cover large, four small. An empty slot opens the file picker and uploads
+ * straight away; a filled one shows the photo with a remove button.
+ */
+function PhotoSlots({
+  photos,
+  onChange,
+}: {
+  photos: string[];
+  onChange: (photos: string[]) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  async function add(files: FileList | null) {
+    const room = MAX_LISTING_PHOTOS - photos.length;
+    const picked = Array.from(files ?? []).slice(0, room);
+    if (!picked.length) return;
+    setUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const f of picked) urls.push(await uploadListingPhoto(f));
+      onChange([...photos, ...urls]);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't upload that photo");
+    } finally {
+      setUploading(false);
+    }
+  }
+  // The file stays in storage: an edit can still be cancelled, and the saved listing may use it.
+  function remove(url: string) {
+    onChange(photos.filter((p) => p !== url));
+  }
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {Array.from({ length: MAX_LISTING_PHOTOS }, (_, i) => {
+        const url = photos[i];
+        const cover = i === 0;
+        const box = `relative flex aspect-square items-center justify-center overflow-hidden rounded-lg ${cover ? "col-span-2 row-span-2" : ""}`;
+        if (url)
+          return (
+            <div key={url} className={box}>
+              <img
+                src={url}
+                alt={cover ? "Cover photo" : `Photo ${i + 1}`}
+                className="h-full w-full object-cover"
+              />
+              <button
+                type="button"
+                aria-label="Remove photo"
+                onClick={() => remove(url)}
+                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white"
+              >
+                <X size={iconSize.sm} aria-hidden />
+              </button>
+            </div>
+          );
+        const next = i === photos.length;
+        return (
+          <label
+            key={`slot-${i}`}
+            className={`${box} border border-dashed border-border bg-card text-center text-1 text-foreground ${next ? "cursor-pointer" : "opacity-60"}`}
+          >
+            {next && uploading ? (
+              <LoaderCircle size={iconSize.md} className="animate-spin" aria-hidden />
+            ) : cover ? (
+              <span className="flex flex-col items-center gap-1">
+                <Camera size={iconSize.md} aria-hidden />
+                Add cover photo
+              </span>
+            ) : (
+              <Plus size={iconSize.md} aria-hidden />
+            )}
+            {next ? (
+              <input
+                type="file"
+                accept={PROFILE_IMAGE_ACCEPT}
+                multiple
+                disabled={uploading}
+                className="sr-only"
+                aria-label={cover ? "Add cover photo" : "Add photo"}
+                onChange={(e) => {
+                  void add(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            ) : null}
+          </label>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Step 2 — photos, a short video link (optional) and the description. */
 export function ListingMediaStep({ value, onChange }: StepProps) {
   const problem = videoProblem(value.videoUrl);
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-2 row-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-center text-1 text-foreground">
-          Cover photo
-          <br />
-          Tap to add
-        </div>
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-2 text-foreground"
-          >
-            +
-          </div>
-        ))}
-      </div>
+      <PhotoSlots photos={value.photos} onChange={(photos) => onChange({ photos })} />
       <p className="text-1 text-foreground">First photo becomes the cover.</p>
       <Field label="Short video link (optional)" id="listing-video">
         <input
@@ -533,7 +623,7 @@ export function ListingCardPreview({ value }: { value: ListingDraft }) {
         opens: "listing",
         id: "preview",
         title: value.name.trim() || "Untitled listing",
-        photos: [],
+        photos: value.photos,
         category: gearCategoryOf(value.sub, taxonomy) ?? "other",
         badge: listingConditions.find((c) => c.value === value.condition)!.label,
         price: {
