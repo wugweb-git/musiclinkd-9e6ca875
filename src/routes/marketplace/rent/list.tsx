@@ -29,7 +29,7 @@ export const Route = createFileRoute("/marketplace/rent/list")({
   component: ListForRent,
 });
 
-const steps = ["Media", "Details", "Availability", "Review"];
+const steps = ["Details", "Media", "Availability", "Review"];
 const conditions = [
   { label: "New", value: "new" },
   { label: "Like New", value: "like_new" },
@@ -138,7 +138,7 @@ function ListForRent() {
           </div>
         ) : null}
 
-        {!published && step === 0 ? (
+        {!published && step === 1 ? (
           <>
             <h2 className="text-2">Add photos</h2>
             <p className="mt-1 text-1 text-muted-foreground">
@@ -156,7 +156,7 @@ function ListForRent() {
           </>
         ) : null}
 
-        {!published && step === 1 ? (
+        {!published && step === 0 ? (
           <>
             <h2 className="text-2">Equipment details</h2>
             <div className="mt-4 space-y-3">

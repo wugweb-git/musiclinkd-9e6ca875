@@ -45,7 +45,7 @@ function Sell() {
   const [description, setDescription] = useState("");
   const [condition, setCondition] = useState<(typeof conditions)[number]["value"]>("used");
   const [publishing, setPublishing] = useState(false);
-  const labels = ["Add photos", "Listing details", "Preview"];
+  const labels = ["Listing details", "Add photos", "Preview"];
   const last = labels.length - 1;
 
   async function publish() {
@@ -87,7 +87,7 @@ function Sell() {
           ))}
         </div>
 
-        {step === 0 ? (
+        {step === 1 ? (
           <div>
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-center text-1 text-muted-foreground">
@@ -111,7 +111,7 @@ function Sell() {
           </div>
         ) : null}
 
-        {step === 1 ? (
+        {step === 0 ? (
           <div className="space-y-4">
             <Field label="Title">
               <input
