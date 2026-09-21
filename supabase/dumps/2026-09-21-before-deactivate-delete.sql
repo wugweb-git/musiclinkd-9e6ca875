@@ -1,0 +1,20 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921230000_deactivate_delete.sql.
+--
+-- Scope: what the migration touches.
+--   profiles_visibility_values: CHECK ((visibility = ANY (ARRAY['public'::text, 'members'::text, 'limited'::text])))
+--   profiles by visibility: public 124, members 1.
+--   booking_requests foreign keys:
+--     booking_requests_requester_profile_id_fkey FOREIGN KEY (requester_profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+--     booking_requests_room_id_fkey FOREIGN KEY (room_id) REFERENCES studio_rooms(id) ON DELETE SET NULL
+--     booking_requests_studio_id_fkey FOREIGN KEY (studio_id) REFERENCES studios(id) ON DELETE CASCADE
+--   qr_scans: 0 rows; policies "Record a scan as yourself", "Scanned owner reads their analytics", "Scanner reads own history".
+--
+-- booking_requests rows at snapshot time (4):
+-- INSERT INTO public.booking_requests (id, studio_id, room_id, requester_profile_id, session_date, start_time, end_time, hours, people, purpose, notes, status, reply, created_at, updated_at) VALUES
+--   ('ec04fc9b-17fd-4c8c-8ea6-4244ab7a1d31', 'a19d59a5-b5f7-567d-a3da-aeab60b4893e', NULL, 'e94add2a-8b45-4648-8429-fcb6c30dc128', '2026-09-25', '18:00:00', NULL, 3, 2, NULL, 'Tracking sitar and tanpura, need a quiet live room.', 'confirmed', NULL, '2026-09-17 18:50:07.947353+00', '2026-09-17 18:52:51.404655+00'),
+--   ('411d630e-6740-4b6b-9083-99f59386bedd', '29833230-3ca8-58e3-b0c2-f87756c18008', '2980ca81-3ed7-5083-9701-6e839d095d93', '79d38ce7-8f99-4dbf-9a37-8a927c8f1166', '2026-09-26', '14:00:00', '18:00:00', 4, 4, NULL, 'Full band rehearsal before a show, need the live room mic''d up.', 'requested', NULL, '2026-09-17 22:29:31.275914+00', '2026-09-17 22:29:31.275914+00'),
+--   ('99404496-2f07-41c0-a03a-2e6dda91f9f9', '3b0324b2-a7e7-5ba3-b3fc-a64a0b87b348', '415d2f7f-3ffb-5e20-a027-73272dd219ae', 'ff850259-fb61-4634-a850-f4d8c631feac', '2026-09-29', '11:00:00', '15:00:00', 4, 1, NULL, 'Mixing a 5-track EP, need Atmos monitoring.', 'confirmed', 'Confirmed, see you at 11.', '2026-09-17 22:29:31.275914+00', '2026-09-17 22:29:31.275914+00'),
+--   ('23676d18-62b2-48c8-bb63-2727c29048bf', '76f7d7c8-274e-5109-89e6-63ed65658c05', '1166a091-4224-5425-b994-53a5cf4c8f4d', '9a5eaae1-90b7-5a8c-beb6-10f5607337d8', '2026-09-20', '10:00:00', '13:00:00', 3, 2, NULL, 'Vocal + guitar duo session for a cover EP.', 'declined', 'Fully booked that day, try the 23rd instead.', '2026-09-17 22:29:31.275914+00', '2026-09-17 22:29:31.275914+00');
+--
+-- To undo: see the Rollback note at the top of the migration.
