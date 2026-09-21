@@ -253,7 +253,7 @@ function Scanner() {
           <p className="pill px-1 bg-subtle text-muted-foreground">Recently scanned</p>
           <ActionRow
             icon={<ShieldQuestion size={iconSize.sm} />}
-            label="See your scan history"
+            label="Scanned QR history"
             hint="Everyone you've scanned"
             onClick={() => void nav({ to: "/identity/history" })}
           />

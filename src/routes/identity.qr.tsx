@@ -214,7 +214,7 @@ function DigitalId() {
             />
             <ActionRow
               icon={<History size={iconSize.sm} />}
-              label="Scan history"
+              label="Scanned QR history"
               to="/identity/history"
             />
             <ActionRow

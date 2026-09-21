@@ -1,5 +1,5 @@
 /**
- * FLOW-23 · QR-24 "Scan history" · route: /identity/history
+ * FLOW-23 · QR-24 "Scanned QR history" · route: /identity/history
  * states: populated, empty · actions: open, scan
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -17,13 +17,13 @@ import { iconSize } from "@/lib/tokens";
 export const Route = createFileRoute("/identity/history")({
   head: () => ({
     meta: [
-      { title: "Scan history — MusicLinkd" },
+      { title: "Scanned QR history — MusicLinkd" },
       {
         name: "description",
         content:
           "Every MusicLinkd code you've scanned, so a conversation started at a gig doesn't get lost.",
       },
-      { property: "og:title", content: "Scan history on MusicLinkd" },
+      { property: "og:title", content: "Scanned QR history on MusicLinkd" },
       { property: "og:description", content: "Pick a connection back up later." },
     ],
   }),
@@ -65,7 +65,7 @@ function ScanHistory() {
   return (
     <Screen>
       <TopBar
-        title="Scan history"
+        title="Scanned QR history"
         subtitle="Your account"
         back="/identity/qr"
         right={
@@ -92,7 +92,7 @@ function ScanHistory() {
           <StateCard title="Couldn't load your history" body="Check your connection and retry." />
         ) : items.length === 0 ? (
           <StateCard
-            title="No scans yet"
+            title="No scanned QRs yet"
             body="Codes you scan appear here so you can find that studio or session player again."
           >
             <BtnLink to="/identity/scan" className="w-full">
@@ -119,7 +119,7 @@ function ScanHistory() {
       </main>
       <Dialog
         open={confirming}
-        title="Clear scan history?"
+        title="Clear scanned QR history?"
         body="Every scan in your history is deleted. This cannot be undone."
         onClose={() => setConfirming(false)}
       >
