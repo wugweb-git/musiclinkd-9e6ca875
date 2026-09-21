@@ -1,0 +1,8 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922210000_portfolio_examples.sql.
+--
+-- Scope: portfolio_items 98 rows, none belonging to the ten profiles the migration adds works for;
+-- their 17 services had empty example_ids.
+-- To undo:
+--   UPDATE public.profile_services SET example_ids = '{}' WHERE profile_id IN ('0550d73a-8f3a-524e-ad14-f881f9bf4ae8', '61d15aab-b011-54ef-8644-b185711b608f', 'ba5786ec-11fd-5ee9-b013-176f102e6fa9', '0662ace1-0642-5590-832f-f55fa23438f1', '689e3ab6-0309-58d2-9e9e-b7983d7dc132', '7b97ed4d-499b-5723-b116-04b2c14be958', '3fc0b746-3c09-5140-9270-549088a046db', 'ef3160ef-b8ea-5d08-9eb7-8efd08b98917', '86a5d555-61eb-5619-b452-3a9387baa66f', '224b80f9-2a74-579a-8c7c-84dd30a5edcb');
+--   DELETE FROM public.portfolio_items WHERE user_id IN ('0550d73a-8f3a-524e-ad14-f881f9bf4ae8', '61d15aab-b011-54ef-8644-b185711b608f', 'ba5786ec-11fd-5ee9-b013-176f102e6fa9', '0662ace1-0642-5590-832f-f55fa23438f1', '689e3ab6-0309-58d2-9e9e-b7983d7dc132', '7b97ed4d-499b-5723-b116-04b2c14be958', '3fc0b746-3c09-5140-9270-549088a046db', 'ef3160ef-b8ea-5d08-9eb7-8efd08b98917', '86a5d555-61eb-5619-b452-3a9387baa66f', '224b80f9-2a74-579a-8c7c-84dd30a5edcb');
