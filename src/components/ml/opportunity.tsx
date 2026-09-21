@@ -142,7 +142,7 @@ export function PosterRow({ o }: { o: Opportunity }) {
     meta.push(
       <>
         <Star size={iconSize.xs} fill="currentColor" className="inline" aria-hidden />{" "}
-        {o.poster.rating}
+        {Number(o.poster.rating).toFixed(1)}
       </>,
     );
   if (o.poster.hires) meta.push(`${o.poster.hires} hires`);

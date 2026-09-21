@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, Save } from "lucide-react";
 import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
-import { Segmented } from "@/components/ml/kit";
+import { SegmentedField } from "@/components/ml/kit";
 import { getMyProfile, saveMyProfile, RATE_UNITS, type RateUnit } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
@@ -359,13 +359,17 @@ function EditProfile() {
           />
           <div>
             <span className="block text-1 font-medium text-muted-foreground">Per</span>
-            {/* Segmented bleeds 20px each side; this section's body is inset 16px. */}
-            <div className="px-1">
-              <Segmented
-                value={UNIT_LABELS[form.rate_unit]}
-                options={UNIT_ORDER.map((u) => UNIT_LABELS[u])}
-                onChange={(label) => update({ rate_unit: unitFromLabel(label) })}
-              />
+            {/* Eight units don't fit one row at phone width: two rows of four, one choice. */}
+            <div className="mt-1.5 space-y-1.5">
+              {[UNIT_ORDER.slice(0, 4), UNIT_ORDER.slice(4)].map((row) => (
+                <SegmentedField
+                  key={row[0]}
+                  label="Rate unit"
+                  value={UNIT_LABELS[form.rate_unit]}
+                  options={row.map((u) => UNIT_LABELS[u])}
+                  onChange={(label) => update({ rate_unit: unitFromLabel(label) })}
+                />
+              ))}
             </div>
           </div>
         </div>

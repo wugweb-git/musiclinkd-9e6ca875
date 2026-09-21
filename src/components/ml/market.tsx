@@ -80,7 +80,7 @@ export function Rating({
   return (
     <span className="inline-flex items-center gap-1 text-1 font-semibold text-warn">
       <Star size={iconSize.xs} fill="currentColor" strokeWidth={0} />
-      {value}
+      {value.toFixed(1)}
       {count ? <span className="text-muted-foreground">({count})</span> : null}
     </span>
   );

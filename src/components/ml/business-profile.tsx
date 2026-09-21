@@ -5,6 +5,7 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import { TextLink } from "@/components/ml/links";
+import { ReviewCard } from "@/components/ml/profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
@@ -167,6 +168,35 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                   <MapPin size={iconSize.sm} className="mt-0.5 shrink-0" /> {b.address}
                 </p>
               </Card>
+            ) : null}
+            {b.reviews.length ? (
+              <section className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-sm">Reviews</h2>
+                  <TextLink
+                    to="/business/$id/reviews"
+                    params={{ id: b.id }}
+                    className="shrink-0 text-1"
+                  >
+                    See All
+                  </TextLink>
+                </div>
+                {b.reviews.slice(0, 3).map((rv) => (
+                  <ReviewCard
+                    key={rv.id}
+                    r={{
+                      id: rv.id,
+                      by: rv.author,
+                      org: rv.org,
+                      context: rv.context,
+                      stars: Number(rv.rating),
+                      text: rv.body,
+                      ...(rv.response ? { response: rv.response } : {}),
+                      tags: rv.tags ?? [],
+                    }}
+                  />
+                ))}
+              </section>
             ) : null}
           </>
         ) : null}

@@ -19,7 +19,6 @@ import {
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { BetaBadge, Price, SoonBadge } from "@/components/ml/kit";
 import { stageOf } from "@/lib/release";
-import { TalentCard } from "@/components/ml/cards";
 import { ViewerAvatar } from "@/components/ml/viewer";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { SectionActionLink } from "@/components/ml/links";

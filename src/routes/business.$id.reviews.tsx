@@ -71,7 +71,9 @@ function BusinessReviews() {
       <TopBar
         title="Reviews"
         subtitle={
-          b.rating != null && b.reviewCount != null ? `${b.rating} · ${b.reviewCount} reviews` : ""
+          b.rating != null && b.reviewCount != null
+            ? `${b.rating.toFixed(1)} · ${b.reviewCount} reviews`
+            : ""
         }
         back={`/business/${b.id}`}
       />

@@ -91,7 +91,7 @@ function BusinessDashboard() {
             title="Reviews"
             subtitle={
               b.rating != null && b.reviewCount != null
-                ? `${b.rating} from ${b.reviewCount} reviews`
+                ? `${b.rating.toFixed(1)} from ${b.reviewCount} reviews`
                 : ""
             }
             to="/business/$id/reviews"

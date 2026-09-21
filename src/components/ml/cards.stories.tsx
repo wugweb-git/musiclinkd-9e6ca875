@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { talents } from "@/data/discover";
-import { TalentCard, TalentGridCard, TalentRow } from "./cards";
+import { TalentGridCard, TalentRow } from "./cards";
 
 /*
  * The three shapes a person takes in a list: the full row (search), the rail card (Home) and the
@@ -27,17 +27,6 @@ export const Row: Story = {};
 export const RowWithActions: Story = {
   name: "Row: handlers wired",
   args: { onMessage: () => {}, onSave: () => {}, onPreview: () => {} },
-};
-
-export const Rail: Story = {
-  name: "TalentCard (Home rail)",
-  render: () => (
-    <div className="flex gap-3 overflow-x-auto">
-      {talents.slice(0, 3).map((t) => (
-        <TalentCard key={t.id} t={t} />
-      ))}
-    </div>
-  ),
 };
 
 /** The grid card is the one that shows a rate — amount, then the unit on its own grey line. */

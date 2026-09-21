@@ -145,7 +145,7 @@ export function EntityMetaRow({ b }: { b: Bookable }) {
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-1 text-muted-foreground">
       {b.rating ? (
         <span className="inline-flex items-center gap-1">
-          <Star size={iconSize.xs} className="text-primary" /> {b.rating} ({b.reviews})
+          <Star size={iconSize.xs} className="text-primary" /> {b.rating.toFixed(1)} ({b.reviews})
         </span>
       ) : null}
       {where ? (

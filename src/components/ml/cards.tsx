@@ -96,41 +96,6 @@ export function TalentRow({
   );
 }
 
-export function TalentCard({ t }: { t: Talent }) {
-  return (
-    <Link
-      to="/profile/$username"
-      params={{ username: t.id }}
-      className="state-layer block w-[172px] shrink-0 overflow-hidden rounded-lg bg-subtle transition-transform duration-125 ease-standard active:scale-97"
-    >
-      <div className="relative h-[150px]">
-        <img
-          src={t.photo}
-          alt={`${t.name}, ${t.role}`}
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute left-2 top-2">
-          <StatusPill label={t.availability} tone={availabilityTone(t.availability)} onMedia />
-        </div>
-      </div>
-      <div className="p-3">
-        <div className="flex items-center gap-1">
-          <h3 className="truncate text-1">{t.name}</h3>
-          {t.verified ? <VerifiedBadge size={12} /> : null}
-        </div>
-        <p className="truncate text-1 text-muted-foreground">{t.role}</p>
-        <div className="mt-2 flex items-center justify-between text-1">
-          <span className="inline-flex items-center gap-0.5 font-semibold text-warn">
-            {t.rating} <Star size={iconSize.xs} fill="currentColor" aria-hidden />
-          </span>
-          <span className="text-muted-foreground">{t.followers}</span>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
 export function TalentGridCard({ t }: { t: Talent }) {
   return (
     <Link
@@ -167,7 +132,7 @@ function PersonRating({ person }: { person: DirectoryPerson }) {
   return (
     <span
       className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-warn"
-      aria-label={`${person.rating} out of 5 from ${person.reviewCount} reviews`}
+      aria-label={`${person.rating.toFixed(1)} out of 5 from ${person.reviewCount} reviews`}
     >
       <Star size={iconSize.xs} fill="currentColor" aria-hidden />
       {person.rating.toFixed(1)}
@@ -318,7 +283,7 @@ export function StudioCard({
       <span className="block p-3">
         <span className="block truncate text-sm font-semibold">{studio.name}</span>
         <span className="mt-0.5 block truncate text-1 text-muted-foreground">
-          {[studio.location, studio.rating == null ? "" : `${studio.rating} out of 5`]
+          {[studio.location, studio.rating == null ? "" : `${studio.rating.toFixed(1)} out of 5`]
             .filter(Boolean)
             .join(" · ")}
         </span>

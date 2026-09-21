@@ -136,7 +136,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
                 : profile.followers_count.toLocaleString("en-IN"),
             ],
             ["Bookings", "—"],
-            ["Rating", reviews.rating == null ? "—" : String(reviews.rating)],
+            ["Rating", reviews.rating == null ? "—" : reviews.rating.toFixed(1)],
             ["Reviews", String(reviews.count)],
           ]
         : null,
