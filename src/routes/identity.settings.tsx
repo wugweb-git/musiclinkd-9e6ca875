@@ -103,7 +103,7 @@ function QrSettings() {
 
   return (
     <Screen>
-      <TopBar title="QR & sharing" subtitle="Privacy controls" back="/identity/qr" />
+      <TopBar title="QR & sharing" subtitle="Privacy controls" back="/settings" />
       <main className="flex flex-col gap-2 px-5 pt-4">
         <Toggle
           label="My QR is active"

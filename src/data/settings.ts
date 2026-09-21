@@ -100,6 +100,13 @@ export const settingsGroups: SettingsGroup[] = [
         icon: "lock",
       },
       {
+        key: "qr-sharing",
+        label: "QR & sharing",
+        hint: "What your QR card shares",
+        to: "/identity/settings",
+        icon: "qr",
+      },
+      {
         key: "security",
         label: "Security",
         hint: "Password, sessions",
