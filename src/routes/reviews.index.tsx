@@ -6,6 +6,8 @@ import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, Segmented, Stars, EmptyState, Loading, Meter, Row } from "@/components/ml/kit";
+import { ReviewCard, ReviewRail } from "@/components/ml/profile";
+import { reviewItemFrom } from "@/lib/review-item";
 import { reviewPolicy } from "@/data/reviews";
 import {
   listMyReviews,
@@ -117,7 +119,11 @@ function ReviewsHub() {
               about.isLoading ? (
                 <Loading rows={2} />
               ) : received.length ? (
-                received.map((r) => <ReceivedReview key={r.id} r={r} />)
+                <ReviewRail label="Reviews you received">
+                  {received.map((r) => (
+                    <ReceivedReview key={r.id} r={r} />
+                  ))}
+                </ReviewRail>
               ) : (
                 <EmptyState
                   title="No reviews yet"
@@ -153,23 +159,11 @@ function ReviewsHub() {
               mine.isLoading ? (
                 <Loading rows={2} />
               ) : (mine.data ?? []).length ? (
-                (mine.data ?? []).map((r) => (
-                  <Card key={r.id} className="space-y-2">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="truncate text-1 text-muted-foreground">
-                        {r.context ?? "Your review"}
-                      </p>
-                      <Stars value={Number(r.rating)} />
-                    </div>
-                    <p className="text-1 leading-relaxed">{r.body}</p>
-                    {r.response ? (
-                      <div className="rounded-lg bg-background p-3">
-                        <p className="pill bg-subtle text-muted-foreground">Their reply</p>
-                        <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
-                      </div>
-                    ) : null}
-                  </Card>
-                ))
+                <ReviewRail label="Reviews you gave">
+                  {(mine.data ?? []).map((r) => (
+                    <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel="Their reply" />
+                  ))}
+                </ReviewRail>
               ) : (
                 <EmptyState
                   title="You have not reviewed anyone yet"
@@ -231,68 +225,65 @@ function ReceivedReview({ r }: { r: ReviewRow }) {
   });
 
   return (
-    <Card className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{r.author_name}</p>
-          {r.context ? <p className="truncate text-1 text-muted-foreground">{r.context}</p> : null}
-        </div>
-        <Stars value={Number(r.rating)} />
-      </div>
-      <p className="text-1 leading-relaxed">{r.body}</p>
-
-      {r.response ? (
-        <div className="rounded-lg bg-background p-3">
-          <p className="pill bg-subtle text-muted-foreground">Your reply</p>
-          <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
-        </div>
-      ) : open ? (
-        <form
-          className="space-y-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (text.trim() && !answer.isPending) answer.mutate();
-          }}
-        >
-          <label className="sr-only" htmlFor={`reply-${r.id}`}>
-            Your reply
-          </label>
-          <textarea
-            id={`reply-${r.id}`}
-            rows={3}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Answer publicly, once."
-            className="w-full resize-none rounded-lg border border-border bg-card p-3 text-1 outline-none"
-          />
-          <div className="flex gap-2">
-            <Btn variant="ghost" className="min-h-10 flex-1 text-1" onClick={() => setOpen(false)}>
-              Cancel
-            </Btn>
-            <Btn
-              type="submit"
-              className="min-h-10 flex-1 text-1"
-              disabled={!text.trim()}
-              loading={answer.isPending}
+    <ReviewCard
+      r={reviewItemFrom(r)}
+      responseLabel="Your reply"
+      footer={
+        <>
+          {r.response ? null : open ? (
+            <form
+              className="space-y-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (text.trim() && !answer.isPending) answer.mutate();
+              }}
             >
-              Reply
+              <label className="sr-only" htmlFor={`reply-${r.id}`}>
+                Your reply
+              </label>
+              <textarea
+                id={`reply-${r.id}`}
+                rows={3}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Answer publicly, once."
+                className="w-full resize-none rounded-lg border border-border bg-card p-3 text-1 outline-none"
+              />
+              <div className="flex gap-2">
+                <Btn
+                  variant="ghost"
+                  className="min-h-10 flex-1 text-1"
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Btn>
+                <Btn
+                  type="submit"
+                  className="min-h-10 flex-1 text-1"
+                  disabled={!text.trim()}
+                  loading={answer.isPending}
+                >
+                  Reply
+                </Btn>
+              </div>
+            </form>
+          ) : (
+            <Btn variant="outline" className="min-h-10 w-full text-1" onClick={() => setOpen(true)}>
+              Respond
             </Btn>
+          )}
+          <div className="mt-2 flex justify-end">
+            <TextLink
+              to="/reviews/$id/report"
+              params={{ id: r.id }}
+              className="text-1 text-muted-foreground"
+            >
+              Report
+            </TextLink>
           </div>
-        </form>
-      ) : (
-        <Btn variant="outline" className="min-h-10 w-full text-1" onClick={() => setOpen(true)}>
-          Respond
-        </Btn>
-      )}
-      <div className="flex justify-end">
-        <TextLink
-          to="/reviews/$id/report"
-          params={{ id: r.id }}
-          className="text-1 text-muted-foreground"
-        >
-          Report
-        </TextLink>
-      </div>
-    </Card>
+        </>
+      }
+    />
   );
 }
+

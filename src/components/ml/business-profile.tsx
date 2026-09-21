@@ -28,7 +28,7 @@ import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, IconBtnLink } from "@/comp
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import { TextLink } from "@/components/ml/links";
-import { CoverHero, ReviewCard } from "@/components/ml/profile";
+import { CoverHero, ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { CallBtn } from "@/components/ml/person-profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
@@ -224,9 +224,11 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                     See All
                   </TextLink>
                 </div>
-                {b.reviews.slice(0, 3).map((rv) => (
-                  <ReviewCard key={rv.id} r={reviewItem(rv)} />
-                ))}
+                <ReviewRail>
+                  {b.reviews.map((rv) => (
+                    <ReviewCard key={rv.id} r={reviewItem(rv)} />
+                  ))}
+                </ReviewRail>
               </section>
             ) : null}
           </>
@@ -234,11 +236,11 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
 
         {tab === "Reviews" ? (
           b.reviews.length ? (
-            <div className="space-y-3">
+            <ReviewRail>
               {b.reviews.map((rv) => (
                 <ReviewCard key={rv.id} r={reviewItem(rv)} />
               ))}
-            </div>
+            </ReviewRail>
           ) : (
             <EmptyState title="No reviews yet" body="No one has reviewed this business yet." />
           )

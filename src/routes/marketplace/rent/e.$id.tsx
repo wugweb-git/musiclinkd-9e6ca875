@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { reviewItemFrom } from "@/lib/review-item";
+import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -299,25 +301,15 @@ function RentalDetail() {
         {ownerId ? (
           <>
             <h2 className="mt-6 text-2">Reviews</h2>
-            <div className="mt-2 space-y-3">
+            <div className="mt-2">
               {reviews.isLoading ? (
                 <Loading rows={2} />
               ) : reviews.data?.length ? (
-                reviews.data.slice(0, 2).map((r) => (
-                  <article key={r.id} className="rounded-lg bg-subtle p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="truncate text-1 font-semibold">{r.author_name}</p>
-                        {r.context ? (
-                          <p className="truncate text-1 text-muted-foreground">{r.context}</p>
-                        ) : null}
-                      </div>
-                      <Rating value={r.rating} />
-                    </div>
-                    <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
-                    <ReviewTags tags={r.tags} />
-                  </article>
-                ))
+                <ReviewRail>
+                  {reviews.data.map((r) => (
+                    <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel="Provider replied" />
+                  ))}
+                </ReviewRail>
               ) : (
                 <EmptyState
                   title="No reviews yet"

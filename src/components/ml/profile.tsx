@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import { Children, useEffect, useState, type ComponentProps, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
   CalendarDays,
@@ -45,7 +45,8 @@ import type {
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "./ui";
-import { Price } from "./kit";
+import { Price, Stars } from "./kit";
+import { PersonAvatar } from "./person-avatar";
 import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
@@ -715,32 +716,6 @@ export function ProfileHero({
   );
 }
 
-/** The four counts. An empty count reads "—", never a fabricated 0. */
-export function StatRow({
-  stats: s,
-  className,
-}: {
-  stats: PersonProfile["stats"];
-  className?: string;
-}) {
-  const stats = [
-    { label: "Connections", value: s.connections || "—" },
-    { label: "Followers", value: s.followers || "—" },
-    { label: "Plays", value: s.plays || "—" },
-    { label: "Credits", value: s.credits ? String(s.credits) : "—" },
-  ];
-  return (
-    <div className={cn("grid grid-cols-4 gap-2 rounded-lg bg-subtle p-3", className)}>
-      {stats.map((s) => (
-        <div key={s.label} className="text-center">
-          <p className="text-2 font-bold leading-tight">{s.value}</p>
-          <p className="mt-0.5 text-1 text-muted-foreground">{s.label}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
 export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile["featured"]> }) {
@@ -1191,39 +1166,85 @@ export function CollaboratorCard({ c }: { c: Collaborator }) {
   );
 }
 
-export function ReviewCard({ r }: { r: ReviewItem }) {
+/**
+ * One review, read the way a liner note reads: the rating, then what they said, then who said it.
+ * Reviews always sit side by side in a ReviewRail and scroll left to right; they never stack
+ * (owner, 22 Sep 2026). `footer` holds the owner's reply controls where there are any.
+ */
+export function ReviewCard({
+  r,
+  responseLabel = "Reply",
+  footer,
+}: {
+  r: ReviewItem;
+  /** Whose reply the response is: "Reply", "Your reply", "Their reply". */
+  responseLabel?: string;
+  footer?: ReactNode;
+}) {
   return (
-    <article className="rounded-lg bg-subtle p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate text-2">{r.by}</h3>
-          <p className="truncate text-1 text-muted-foreground">{r.org}</p>
-        </div>
-        <span className="flex shrink-0 items-center gap-1 text-1 font-semibold text-warn">
-          <Star size={iconSize.xs} fill="currentColor" aria-hidden />
-          {r.stars.toFixed(1)}
+    <article className="flex h-full w-[min(300px,82vw)] flex-col rounded-[20px] bg-card p-4">
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex items-center gap-1.5">
+          <Stars value={r.stars} size={14} />
+          <span className="text-1 font-semibold">{r.stars.toFixed(1)}</span>
         </span>
+        {r.context ? (
+          <span className="min-w-0 truncate text-1 text-muted-foreground">{r.context}</span>
+        ) : null}
       </div>
-      {r.context ? (
-        <p className="pill mt-1.5 bg-background text-muted-foreground">{r.context}</p>
-      ) : null}
-      <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.text}</p>
+
+      <p className="mt-3 line-clamp-6 text-sm leading-relaxed text-foreground">{r.text}</p>
+
       {r.tags?.length ? (
-        <ul className="mt-2 flex flex-wrap gap-1.5" aria-label="Tags">
+        <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Tags">
           {r.tags.map((tag) => (
-            <li key={tag} className="pill bg-background text-muted-foreground">
+            <li key={tag} className="rounded-md bg-subtle px-2 py-1 text-1 text-foreground">
               {tag}
             </li>
           ))}
         </ul>
       ) : null}
+
       {r.response ? (
-        <div className="mt-3 rounded-lg bg-subtle p-3">
-          <p className="pill bg-background text-muted-foreground">Response</p>
-          <p className="mt-1 text-1 text-muted-foreground">{r.response}</p>
+        <div className="mt-3 border-l-2 border-foreground pl-3">
+          <p className="text-1 font-semibold">{responseLabel}</p>
+          <p className="mt-0.5 line-clamp-3 text-1 text-muted-foreground">{r.response}</p>
         </div>
       ) : null}
+
+      <div className="mt-auto flex items-center gap-2.5 pt-4">
+        <PersonAvatar name={r.by} photo={null} className="h-9 w-9 shrink-0 text-1" />
+        <span className="min-w-0">
+          <span className="block truncate text-1 font-semibold">{r.by}</span>
+          {r.org ? (
+            <span className="block truncate text-1 text-muted-foreground">{r.org}</span>
+          ) : null}
+        </span>
+      </div>
+      {footer ? <div className="pt-3">{footer}</div> : null}
     </article>
+  );
+}
+
+/** The one way reviews are laid out: cards side by side, scrolling left to right, edge to edge. */
+export function ReviewRail({
+  children,
+  label = "Reviews",
+}: {
+  children: ReactNode;
+  label?: string;
+}) {
+  return (
+    <ul
+      aria-label={label}
+      className="rail no-scrollbar -mx-5 flex snap-x snap-mandatory items-stretch gap-3 overflow-x-auto scroll-px-5 px-5 pb-1"
+    >
+      {Children.toArray(children).map((child, i) => (
+        <li key={i} className="flex shrink-0 snap-start">
+          {child}
+        </li>
+      ))}
+    </ul>
   );
 }
 

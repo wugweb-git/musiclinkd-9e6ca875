@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { reviewItemFrom } from "@/lib/review-item";
+import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
@@ -110,23 +112,15 @@ function SellerProfile() {
         </div>
 
         <h2 className="mt-6 text-2">Reviews</h2>
-        <div className="mt-2 space-y-3">
+        <div className="mt-2">
           {reviews.isLoading ? (
             <Loading rows={2} />
           ) : reviews.data?.length ? (
-            reviews.data.map((r) => (
-              <article key={r.id} className="rounded-lg bg-subtle p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-1 font-semibold">{r.author_name}</p>
-                  <Rating value={r.rating} />
-                </div>
-                <p className="text-1 text-muted-foreground">
-                  {new Date(r.created_at).toLocaleDateString("en-IN")}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">{r.body}</p>
-                <ReviewTags tags={r.tags} />
-              </article>
-            ))
+            <ReviewRail>
+              {reviews.data.map((r) => (
+                <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel="Seller replied" />
+              ))}
+            </ReviewRail>
           ) : (
             <EmptyState title="No reviews yet" body="No one has reviewed this seller yet." />
           )}

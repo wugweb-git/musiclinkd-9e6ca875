@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState } from "@/components/ml/kit";
-import { ReviewCard } from "@/components/ml/profile";
+import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { replyToReview } from "@/lib/reviews.functions";
 
@@ -84,12 +84,13 @@ function BusinessReviews() {
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         {b.reviews.length ? (
-          b.reviews.map((r) => {
-            const response = sent[r.id] ?? r.response;
-            return (
-              <Card key={r.id} className="p-0">
-                {/* The review itself is the card the person profile uses; the reply sits under it. */}
+          <ReviewRail>
+            {b.reviews.map((r) => {
+              const response = sent[r.id] ?? r.response;
+              return (
+                // The shared review card; the owner's reply controls sit at its foot.
                 <ReviewCard
+                  key={r.id}
                   r={{
                     id: r.id,
                     by: r.author,
@@ -98,45 +99,42 @@ function BusinessReviews() {
                     stars: r.rating,
                     text: r.body,
                     tags: r.tags,
+                    ...(response ? { response } : {}),
                   }}
-                />
-                <div className="px-4 pb-4">
-                  {response ? (
-                    <div className="mt-3 rounded-lg bg-subtle p-3">
-                      <p className="text-1 font-semibold">{b.name} replied</p>
-                      <p className="mt-1 text-1 text-muted-foreground">{response}</p>
-                    </div>
-                  ) : replyTo === r.id ? (
-                    <div className="mt-3">
-                      <textarea
-                        value={drafts[r.id] ?? ""}
-                        onChange={(e) => setDrafts({ ...drafts, [r.id]: e.target.value })}
-                        rows={3}
-                        placeholder="Reply once, publicly. Keep it short and factual."
-                        className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
-                      />
-                      <div className="mt-2 flex gap-2">
-                        <Btn
-                          className="flex-1"
-                          disabled={(drafts[r.id] ?? "").trim().length < 4 || sending === r.id}
-                          onClick={() => void postReply(r.id)}
-                        >
-                          {sending === r.id ? "Posting…" : "Post reply"}
-                        </Btn>
-                        <Btn variant="ghost" className="flex-1" onClick={() => setReplyTo(null)}>
-                          Cancel
-                        </Btn>
+                  responseLabel={`${b.name} replied`}
+                  footer={
+                    response ? null : replyTo === r.id ? (
+                      <div>
+                        <textarea
+                          value={drafts[r.id] ?? ""}
+                          onChange={(e) => setDrafts({ ...drafts, [r.id]: e.target.value })}
+                          rows={3}
+                          placeholder="Reply once, publicly. Keep it short and factual."
+                          className="w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
+                        />
+                        <div className="mt-2 flex gap-2">
+                          <Btn
+                            className="flex-1"
+                            disabled={(drafts[r.id] ?? "").trim().length < 4 || sending === r.id}
+                            onClick={() => void postReply(r.id)}
+                          >
+                            {sending === r.id ? "Posting…" : "Post reply"}
+                          </Btn>
+                          <Btn variant="ghost" className="flex-1" onClick={() => setReplyTo(null)}>
+                            Cancel
+                          </Btn>
+                        </div>
                       </div>
-                    </div>
-                  ) : owner ? (
-                    <Btn variant="outline" className="mt-3 w-full" onClick={() => setReplyTo(r.id)}>
-                      Reply as {b.name}
-                    </Btn>
-                  ) : null}
-                </div>
-              </Card>
-            );
-          })
+                    ) : owner ? (
+                      <Btn variant="outline" className="w-full" onClick={() => setReplyTo(r.id)}>
+                        Reply as {b.name}
+                      </Btn>
+                    ) : null
+                  }
+                />
+              );
+            })}
+          </ReviewRail>
         ) : (
           <EmptyState
             title="No reviews yet"

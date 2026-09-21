@@ -60,6 +60,7 @@ import {
   ClampedText,
   ProjectCard,
   ReviewCard,
+  ReviewRail,
   ServiceCard,
   ServicesProvided,
   ReviewInviteCard,
@@ -839,11 +840,11 @@ function OwnerStack({
 
       <StackSection title="Reviews">
         {p.reviews.length ? (
-          <div className="space-y-3">
-            {p.reviews.slice(0, 2).map((review) => (
+          <ReviewRail>
+            {p.reviews.map((review) => (
               <ReviewCard key={review.id} r={review} />
             ))}
-          </div>
+          </ReviewRail>
         ) : (
           <p className="text-1 text-foreground">
             You haven't received enough reviews to show an overall rating.
@@ -1176,11 +1177,11 @@ function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
           </p>
         ) : null}
         {p.reviews.length ? (
-          <div className="space-y-3">
+          <ReviewRail>
             {p.reviews.map((review) => (
               <ReviewCard key={review.id} r={review} />
             ))}
-          </div>
+          </ReviewRail>
         ) : (
           <ProfileEmpty
             title="No reviews yet"

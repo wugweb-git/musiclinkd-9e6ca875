@@ -14,7 +14,7 @@ import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr, lowestRate } from "@/data/booking";
 import { rupeeParts } from "@/lib/price";
 import { Price } from "@/components/ml/kit";
-import { ReviewCard } from "@/components/ml/profile";
+import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { TextLink } from "@/components/ml/links";
 import { shareLink } from "@/lib/booking-actions";
 import { iconSize } from "@/lib/tokens";
@@ -198,10 +198,12 @@ function BookingEntry() {
         {b.reviewItems?.length ? (
           <section className="mt-6">
             <h3 className="text-2">Reviews</h3>
-            <div className="mt-3 space-y-3">
-              {b.reviewItems.map((r) => (
-                <ReviewCard key={r.id} r={r} />
-              ))}
+            <div className="mt-3">
+              <ReviewRail>
+                {b.reviewItems.map((r) => (
+                  <ReviewCard key={r.id} r={r} />
+                ))}
+              </ReviewRail>
             </div>
           </section>
         ) : null}

@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { reviewItemFrom } from "@/lib/review-item";
+import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -150,26 +152,11 @@ function ProviderProfile() {
           reviews.isLoading ? (
             <Loading rows={2} />
           ) : reviews.data?.length ? (
-            reviews.data.map((r) => (
-              <article key={r.id} className="rounded-lg bg-subtle p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-1 font-semibold">{r.author_name}</p>
-                    <p className="truncate text-1 text-muted-foreground">
-                      {new Date(r.created_at).toLocaleDateString("en-IN")}
-                    </p>
-                  </div>
-                  <Rating value={r.rating} />
-                </div>
-                <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{r.body}</p>
-                <ReviewTags tags={r.tags} />
-                {r.response ? (
-                  <p className="mt-2 rounded-lg bg-subtle p-3 text-1 text-muted-foreground">
-                    <span className="font-semibold">{p.name}:</span> {r.response}
-                  </p>
-                ) : null}
-              </article>
-            ))
+            <ReviewRail>
+              {reviews.data.map((r) => (
+                <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel={`${p.name} replied`} />
+              ))}
+            </ReviewRail>
           ) : (
             <EmptyState
               emoji="⭐"
