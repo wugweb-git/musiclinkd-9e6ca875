@@ -1,0 +1,16 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922170000_onboarding_choices.sql.
+-- The migration only inserts; this records that none of its categories exist yet.
+--
+-- taxonomy_categories present (key: option count): availability_status 6, available_for 9,
+-- booking_statuses 5, budget_type 3, collaboration_types 4, composition_styles 5, daw_tools 7,
+-- director_specializations 4, dj_types 5, engineer_specialties 4, equipment_categories 9, genres 47,
+-- instruments 37, intents 11, languages 15, link_platforms 10, lyricist_specializations 6,
+-- marketplace_categories 6, opportunity_types 23, person_types 38, persona_badges 7,
+-- podcast_categories 6, pricing_models 5, profile_fields 30, profile_visibility 3, project_roles 11,
+-- project_types 10, service_categories 49, session_duration_tiers 3, session_types 5,
+-- singing_styles 9, studio_amenities 33, studio_services 3, trust_badges 4,
+-- verification_id_type 5, verification_types 4, vocal_range 6, work_modes 4, work_types 10.
+-- Absent: discovery_prefs, experience_levels, genders, indian_states, cities.
+--
+-- To undo: see the Rollback note at the top of the migration.
