@@ -1,7 +1,24 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { MapPin, Settings2 } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import {
+  House,
+  MapPin,
+  Music,
+  Plus,
+  Send,
+  Settings2,
+  Sparkles,
+  Star,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { connectionWith, setFollowing as setFollowingFn } from "@/lib/connections.functions";
+import { conversationWith } from "@/lib/messages.functions";
+import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
+import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, IconBtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import { TextLink } from "@/components/ml/links";
@@ -10,11 +27,20 @@ import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
-const tabs = ["Overview", "Spaces", "Team", "Credits"] as const;
+type BusinessTab = "Overview" | "Spaces" | "Team" | "Credits" | "Reviews";
+
+/** Same row as the person profile: icon alone until selected, then solid with its move. */
+const tabs: { key: BusinessTab; icon: LucideIcon; solid: SolidIcon; move: Move }[] = [
+  { key: "Overview", icon: Sparkles, solid: "sparkle", move: "spin" },
+  { key: "Spaces", icon: House, solid: "home", move: "hop" },
+  { key: "Team", icon: Users, solid: "person", move: "dance" },
+  { key: "Credits", icon: Music, solid: "music", move: "dance" },
+  { key: "Reviews", icon: Star, solid: "star", move: "stamp" },
+];
 
 /** A business account's profile: /business/$id and /profile/$username for a business. */
 export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }) {
-  const [tab, setTab] = useState<(typeof tabs)[number]>("Overview");
+  const [tab, setTab] = useState<BusinessTab>("Overview");
   const { user } = useAuth();
   const isOwner = !!b && user?.id === b.profileId;
 
@@ -82,17 +108,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
 
         {b.tagline ? <p className="text-1 leading-relaxed">{b.tagline}</p> : null}
 
-        <div className="grid grid-cols-3 gap-2">
-          <BtnLink to="/messages" variant="ink" className="w-full px-2 text-1">
-            Message
-          </BtnLink>
-          <BtnLink to="/business/$id/enquiry" params={{ id: b.id }} className="w-full px-2 text-1">
-            Book
-          </BtnLink>
-          <Btn variant="outline" className="w-full px-2 text-1">
-            Follow
-          </Btn>
-        </div>
+        <BusinessActions id={b.id} profileId={b.profileId} owner={isOwner} />
 
         {b.stats ? (
           <div className="grid grid-cols-4 gap-2 rounded-lg bg-subtle p-3 text-center">
@@ -104,15 +120,11 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
             ))}
           </div>
         ) : null}
+      </div>
 
-        <div className="rail no-scrollbar flex gap-2 overflow-x-auto">
-          {tabs.map((t) => (
-            <Chip key={t} active={tab === t} onClick={() => setTab(t)}>
-              {t}
-            </Chip>
-          ))}
-        </div>
+      <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Business sections" />
 
+      <div className="space-y-4 px-5 pt-4 pb-6">
         {tab === "Overview" ? (
           <>
             {b.about || b.legalName ? (
@@ -182,23 +194,23 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                   </TextLink>
                 </div>
                 {b.reviews.slice(0, 3).map((rv) => (
-                  <ReviewCard
-                    key={rv.id}
-                    r={{
-                      id: rv.id,
-                      by: rv.author,
-                      org: rv.org,
-                      context: rv.context,
-                      stars: Number(rv.rating),
-                      text: rv.body,
-                      ...(rv.response ? { response: rv.response } : {}),
-                      tags: rv.tags ?? [],
-                    }}
-                  />
+                  <ReviewCard key={rv.id} r={reviewItem(rv)} />
                 ))}
               </section>
             ) : null}
           </>
+        ) : null}
+
+        {tab === "Reviews" ? (
+          b.reviews.length ? (
+            <div className="space-y-3">
+              {b.reviews.map((rv) => (
+                <ReviewCard key={rv.id} r={reviewItem(rv)} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState title="No reviews yet" body="No one has reviewed this business yet." />
+          )
         ) : null}
 
         {tab === "Spaces" ? (
@@ -274,5 +286,110 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
         ) : null}
       </div>
     </Screen>
+  );
+}
+
+type BusinessReview = BusinessView["reviews"][number];
+
+/** A business review in the shape the person profile's ReviewCard takes. */
+const reviewItem = (rv: BusinessReview) => ({
+  id: rv.id,
+  by: rv.author,
+  org: rv.org,
+  context: rv.context,
+  stars: Number(rv.rating),
+  text: rv.body,
+  ...(rv.response ? { response: rv.response } : {}),
+  tags: rv.tags ?? [],
+});
+
+/**
+ * What a visitor can do about a business: message it (the thread starts on first message), book
+ * it, and follow it. Follow turns the moment it's tapped and settles when the database answers,
+ * the same as on a person's profile. Signed out, Message and Follow lead to Welcome.
+ */
+function BusinessActions({
+  id,
+  profileId,
+  owner,
+}: {
+  id: string;
+  profileId: string;
+  owner: boolean;
+}) {
+  const { signedIn } = useAuth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const readConnection = useServerFn(connectionWith);
+  const follow = useServerFn(setFollowingFn);
+  const openConversation = useServerFn(conversationWith);
+  const key = ["connection", profileId] as const;
+  const q = useQuery({
+    queryKey: key,
+    queryFn: () => readConnection({ data: { profileId } }),
+    enabled: signedIn && !owner,
+  });
+  const message = useMutation({
+    mutationFn: () => openConversation({ data: { profileId } }),
+    onSuccess: ({ id: conversation }) =>
+      void navigate({ to: "/conversation/$id", params: { id: conversation } }),
+    onError: () => toast.error("Couldn't open that conversation. Try again."),
+  });
+  const act = useMutation({
+    mutationFn: (on: boolean) => follow({ data: { profileId, following: on } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+    onError: () => toast.error("That didn't save. Try again."),
+  });
+  const followOn = act.isPending ? act.variables : (q.data?.following ?? false);
+
+  const book = (
+    <BtnLink to="/business/$id/enquiry" params={{ id }} className="min-w-0 flex-1 px-3">
+      Book
+    </BtnLink>
+  );
+  if (owner) return <div className="flex items-center gap-2">{book}</div>;
+
+  if (!signedIn) {
+    return (
+      <div className="flex items-center gap-2">
+        <BtnLink
+          to="/welcome"
+          variant="outline"
+          className="min-w-0 flex-1 px-3"
+          icon={<Send size={iconSize.sm} aria-hidden />}
+        >
+          Message
+        </BtnLink>
+        {book}
+        <IconBtnLink label="Follow" to="/welcome" variant="outline" className="h-12 w-12">
+          <Plus size={iconSize.md} aria-hidden />
+        </IconBtnLink>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Btn
+        variant="outline"
+        className="min-w-0 flex-1 px-3"
+        icon={<Send size={iconSize.sm} aria-hidden />}
+        loading={message.isPending}
+        onClick={() => message.mutate()}
+      >
+        Message
+      </Btn>
+      {book}
+      <IconBtn
+        label={followOn ? "Following" : "Follow"}
+        variant={followOn ? "ghost" : "outline"}
+        className="h-12 w-12"
+        onClick={() => {
+          if (!act.isPending) act.mutate(!followOn);
+        }}
+      >
+        <StateIcon outline={Plus} solid="check" active={followOn} size={iconSize.md} move="stamp" />
+      </IconBtn>
+    </div>
   );
 }

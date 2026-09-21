@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import homeRaw from "@/assets/icons/gestalt/home.svg?raw";
 import compassRaw from "@/assets/icons/gestalt/compass.svg?raw";
 import speechRaw from "@/assets/icons/gestalt/speech-ellipsis-fill.svg?raw";
@@ -133,4 +134,60 @@ export function TabIcon(props: {
   size: number;
 }) {
   return <StateIcon {...props} move={tabMoves[props.solid] ?? "stamp"} />;
+}
+
+/**
+ * A profile's section tabs: icon only until selected, then the icon goes solid with its move and
+ * the name slides in. The person profile and the business profile both use this one row.
+ */
+export function SectionTabs<K extends string>({
+  tabs,
+  value,
+  onChange,
+  label,
+}: {
+  tabs: readonly { key: K; icon: LucideIcon; solid: SolidIcon; move: Move }[];
+  value: K;
+  onChange: (key: K) => void;
+  label: string;
+}) {
+  return (
+    <nav
+      aria-label={label}
+      className="sticky top-0 z-tabs border-b border-border bg-background/95 px-2 backdrop-blur"
+    >
+      <div role="tablist" aria-label={label} className="flex items-stretch">
+        {tabs.map(({ key, icon: Icon, solid, move }) => {
+          const active = value === key;
+          return (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-label={key}
+              onClick={() => onChange(key)}
+              className={cn(
+                "state-layer relative flex items-center justify-center gap-1.5 rounded-t-sm py-3.5 transition-[flex,color] duration-200 ease-standard",
+                active ? "flex-1 px-2 text-foreground" : "w-11 shrink-0 text-muted-foreground",
+              )}
+            >
+              <StateIcon outline={Icon} solid={solid} active={active} size={20} move={move} />
+              <span
+                className={cn(
+                  "overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold transition-all duration-200 ease-standard motion-reduce:transition-none",
+                  active ? "max-w-40 opacity-100" : "max-w-0 opacity-0",
+                )}
+              >
+                {key}
+              </span>
+              {active ? (
+                <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-foreground" />
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
 }
