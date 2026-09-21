@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AppNav } from "@/components/ml/ui";
 import { useAuth } from "@/hooks/use-auth";
 import { syncRecentlyViewed } from "@/lib/device-history";
+import { useRememberAccounts } from "@/hooks/use-remember-accounts";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -151,6 +152,7 @@ function RootComponent() {
   useEffect(() => {
     if (userId) void syncRecentlyViewed();
   }, [userId]);
+  useRememberAccounts(userId);
 
   return (
     <QueryClientProvider client={queryClient}>

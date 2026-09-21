@@ -22,6 +22,7 @@ import {
   Mic,
   Search,
   Menu,
+  ArrowLeftRight,
   Bell,
   FolderKanban,
   BriefcaseBusiness,
@@ -153,6 +154,7 @@ const menuGroups: {
   {
     title: "Account",
     items: [
+      { to: "/accounts", label: "Switch account", icon: ArrowLeftRight },
       { to: "/settings", label: "Settings", icon: Settings },
       { to: "/help", label: "Help", icon: CircleHelp },
     ],

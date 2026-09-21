@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as BandRouteImport } from './routes/band'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FeedRouteImport } from './routes/feed'
@@ -191,6 +192,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountsRoute = AccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BandRoute = BandRouteImport.update({
@@ -1062,6 +1068,7 @@ const OpportunitiesIdApplicantsAidRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accounts': typeof AccountsRoute
   '/band': typeof BandRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
@@ -1237,6 +1244,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accounts': typeof AccountsRoute
   '/band': typeof BandRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
@@ -1412,6 +1420,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accounts': typeof AccountsRoute
   '/band': typeof BandRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
@@ -1589,6 +1598,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/accounts'
     | '/band'
     | '/contact'
     | '/feed'
@@ -1764,6 +1774,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/accounts'
     | '/band'
     | '/contact'
     | '/feed'
@@ -1938,6 +1949,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/accounts'
     | '/band'
     | '/contact'
     | '/feed'
@@ -2114,6 +2126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AccountsRoute: typeof AccountsRoute
   BandRoute: typeof BandRoute
   ContactRoute: typeof ContactRoute
   FeedRoute: typeof FeedRoute
@@ -2294,6 +2307,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accounts': {
+      id: '/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof AccountsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/band': {
@@ -3532,6 +3552,7 @@ const SettingsSecurityRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AccountsRoute: AccountsRoute,
   BandRoute: BandRoute,
   ContactRoute: ContactRoute,
   FeedRoute: FeedRoute,

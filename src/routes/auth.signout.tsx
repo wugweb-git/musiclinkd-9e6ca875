@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { Btn } from "@/components/ml/ui";
 import { AuthHeading, AuthScreen, TrustNote } from "@/components/ml/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { forgetAccount } from "@/lib/saved-accounts";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/auth/signout")({
@@ -26,6 +27,9 @@ function SignOutScreen() {
 
   async function signOut() {
     setBusy(true);
+    // Signed out means gone from this device's account list too.
+    const { data } = await supabase.auth.getSession();
+    if (data.session) forgetAccount(data.session.user.id);
     await supabase.auth.signOut();
     setBusy(false);
     void navigate({ to: "/welcome" });

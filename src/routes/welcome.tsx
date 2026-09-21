@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type CSSProperties } from "react";
+import { toast } from "sonner";
 
 import { Linkedin } from "lucide-react";
 import {
@@ -34,6 +35,8 @@ import { cn } from "@/lib/utils";
 import { MadeByWugweb } from "@/components/ml/kit";
 import { useServerFn } from "@tanstack/react-start";
 import { signUpWithPassword } from "@/lib/sign-up.functions";
+import { AccountRow } from "@/components/ml/accounts";
+import { forgetAccount, readAccounts, switchTo, type SavedAccount } from "@/lib/saved-accounts";
 
 export const Route = createFileRoute("/welcome")({
   head: () => ({
@@ -268,6 +271,19 @@ function WelcomeScreen() {
 
   const signup = mode === "signup";
 
+  // Accounts already signed in on this device (Switch account): one tap back in.
+  const [saved, setSaved] = useState<SavedAccount[]>([]);
+  useEffect(() => setSaved(readAccounts()), []);
+  async function continueAs(userId: string) {
+    try {
+      await switchTo(userId);
+      window.location.assign("/");
+    } catch (e) {
+      setSaved(readAccounts());
+      toast.error(e instanceof Error ? e.message : "Couldn't continue as that account");
+    }
+  }
+
   return (
     <AuthScreen brand={false} className="bg-card">
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
@@ -304,6 +320,26 @@ function WelcomeScreen() {
          * onboarding and a returning one home.
          */}
         <div className={cn(rise)} style={beat(6.5)}>
+          {saved.length ? (
+            <section className="mb-6">
+              <h2 className="mb-3 text-3 font-semibold">Continue as</h2>
+              <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+                {saved.map((a) => (
+                  <AccountRow
+                    key={a.userId}
+                    account={a}
+                    current={false}
+                    busy={busy !== null}
+                    onPick={() => void continueAs(a.userId)}
+                    onRemove={() => {
+                      forgetAccount(a.userId);
+                      setSaved(readAccounts());
+                    }}
+                  />
+                ))}
+              </ul>
+            </section>
+          ) : null}
           <form
             noValidate
             onSubmit={(e) => {
