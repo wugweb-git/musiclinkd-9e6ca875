@@ -122,7 +122,12 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     subtitle: [row.brand, row.model].filter(Boolean).join(" · "),
     ...(row.brand ? { brand: row.brand } : {}),
     // Amount, unit and note as parts; with no amount the note is the price.
-    price: priceParts(row.price_paise, row.price_unit, row.price_note) ?? { amount: "" },
+    // Gear shows only its amount and unit; the flow takes no deposit or other price note.
+    price: priceParts(
+      row.price_paise,
+      row.price_unit,
+      type === "product" || type === "rental" ? null : row.price_note,
+    ) ?? { amount: "" },
     // Condition describes goods; a service stored as "new" is not shown with a condition badge.
     ...(condition ? { condition } : {}),
     location: placeOf(row),

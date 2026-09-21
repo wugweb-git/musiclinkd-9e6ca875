@@ -131,8 +131,8 @@ function ListingDetail() {
   const rental = l.type === "rental";
   const mine = Boolean(user?.id && l.owner?.id === user.id);
   const where = shownPlace(l.location);
-  // The listing's own fields as one details list; any older stored spec rows follow, without
-  // repeating a label already shown.
+  // The listing's own fields as one details list (condition is the badge by the price); the
+  // seller's specifications follow, without repeating a label already shown.
   const fulfil =
     l.pickup && l.deliverable
       ? "Pickup or delivery"
@@ -147,14 +147,17 @@ function ListingDetail() {
         { label: "Type", value: gearTypeOf(l.itemCategory, taxonomy)?.label ?? "" },
         { label: "Brand", value: l.brand ?? "" },
         { label: "Model", value: l.model ?? "" },
-        { label: "Condition", value: l.condition ?? "" },
         { label: "Fulfilment", value: fulfil },
         { label: "City", value: where },
       ].filter((f) => f.value)
     : [];
   const details = [
     ...facts,
-    ...l.specs.filter((sp) => !facts.some((f) => f.label.toLowerCase() === sp.label.toLowerCase())),
+    ...l.specs.filter(
+      (sp) =>
+        sp.label.toLowerCase() !== "condition" &&
+        !facts.some((f) => f.label.toLowerCase() === sp.label.toLowerCase()),
+    ),
   ];
   const related = all.filter(
     (x) => x.id !== l.id && (l.gear ? x.gear === l.gear : x.category === l.category),
