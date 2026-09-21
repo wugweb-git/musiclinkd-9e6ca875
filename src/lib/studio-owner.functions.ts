@@ -45,6 +45,11 @@ export const updateMyStudio = createServerFn({ method: "POST" })
         hourly_rate_paise: z.number().int().min(0).optional().nullable(),
         operating_hours: z.string().max(500).optional().nullable(),
         cancellation_policy: z.string().max(2000).optional().nullable(),
+        /** studio_amenities slugs: what the place has (Live Room, Parking, Wi-Fi). */
+        amenities: z
+          .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
+          .max(40)
+          .optional(),
       })
       .parse(d),
   )
@@ -92,8 +97,11 @@ export const updateStudioRoomRate = createServerFn({ method: "POST" })
 export type StudioEquipment = {
   id: string;
   name: string;
+  /** An equipment_categories slug, or an instrument's slug (the gear list Market uses). */
   category: string | null;
   quantity: number | null;
+  /** Part of the booking, or at extra cost. */
+  included: boolean;
 };
 
 export type MyStudioEquipment = {
@@ -112,7 +120,7 @@ export const getMyStudioEquipment = createServerFn({ method: "GET" })
     const [items, categories] = await Promise.all([
       client
         .from("studio_equipment")
-        .select("id, name, category, quantity")
+        .select("id, name, category, quantity, included")
         .eq("studio_id", studioId)
         .order("sort_order")
         .order("name"),
@@ -136,6 +144,7 @@ const EQUIPMENT = z.object({
   name: z.string().trim().min(1).max(120),
   category: z.string().max(60).nullable(),
   quantity: z.number().int().min(1).max(999).nullable(),
+  included: z.boolean().optional(),
 });
 
 /** Adds an item after the last one, or with an id changes that item. */
@@ -145,7 +154,12 @@ export const saveMyStudioEquipment = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<{ id: string }> => {
     const client = db(context.supabase);
     const studioId = await myStudioId(client, context.userId);
-    const fields = { name: data.name, category: data.category, quantity: data.quantity };
+    const fields = {
+      name: data.name,
+      category: data.category,
+      quantity: data.quantity,
+      ...(data.included === undefined ? {} : { included: data.included }),
+    };
     if (data.id) {
       const { error } = await client
         .from("studio_equipment")

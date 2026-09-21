@@ -15,6 +15,7 @@ import {
 } from "@/components/ml/onboarding";
 import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
+import { AmenitiesEditor, EquipmentEditor, PoliciesEditor } from "@/components/ml/studio-setup";
 import { enterLinkedProfile } from "@/lib/pages.functions";
 import { readMapsLink, type MapsPlace } from "@/lib/maps-link.functions";
 import { switchToLinked } from "@/lib/saved-accounts";
@@ -29,7 +30,18 @@ import { iconSize } from "@/lib/tokens";
  * Step 1 is the type, picked like a talent's person type, and the Google Maps link, which fills in
  * the name and place (src/lib/maps-link.functions.ts). One business profile per account.
  */
-const steps = ["type", "basics", "location", "offer", "review"] as const;
+const steps = [
+  "type",
+  "basics",
+  "location",
+  "offer",
+  "policies",
+  "review",
+  // After Create, for studios: these need the studio to exist, since photos belong to it.
+  "amenities",
+  "equipment",
+] as const;
+const AFTER_CREATE: readonly Step[] = ["amenities", "equipment"];
 type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
@@ -87,8 +99,7 @@ function NewBusiness() {
   const [pinCode, setPinCode] = useState("");
   const [languages, setLanguages] = useState<string[]>([]);
   const [genres, setGenres] = useState<string[]>([]);
-  const [amenities, setAmenities] = useState<string[]>([]);
-  const [equipment, setEquipment] = useState<string[]>([]);
+  const [policies, setPolicies] = useState<string[]>([]);
   const isStudio = type === "studio";
 
   // A pasted Maps link fills in what it can; anything already typed is kept.
@@ -124,6 +135,9 @@ function NewBusiness() {
     basics: Boolean(name.trim()),
     location: Boolean(state) && !cityError && !pinError,
     offer: languages.length > 0,
+    policies: policies.some((p) => p.trim()),
+    amenities: true,
+    equipment: true,
     review: Boolean(type && name.trim() && state && !cityError && !pinError && !mapsError),
   };
 
@@ -143,7 +157,7 @@ function NewBusiness() {
           ...(link ? { mapsUrl: link } : {}),
           languages,
           genres,
-          ...(isStudio ? { amenities, equipment } : {}),
+          policies: policies.map((p) => p.trim()).filter(Boolean),
         },
       }),
     onSuccess: async (res) => {
@@ -156,18 +170,21 @@ function NewBusiness() {
         }
       }
       await queryClient.invalidateQueries();
+      if (isStudio) go("amenities");
     },
     onError: (e) =>
       toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again."),
   });
 
   const [nudge, setNudge] = useState(0);
+  const finish = () => void navigate({ to: "/profile" });
   function submit() {
     if (!valid[step]) {
       setNudge((n) => n + 1);
       return;
     }
     if (step === "review") create.mutate();
+    else if (step === "equipment") finish();
     else go(steps[idx + 1]!);
   }
 
@@ -200,16 +217,34 @@ function NewBusiness() {
     offer: {
       group: "Details",
       title: "What does it offer?",
-      subtitle: isStudio
-        ? "Genres and languages you work in, the studio's amenities and its equipment."
-        : "Genres and languages you work in.",
+      subtitle: "Genres and languages you work in.",
       why: "These show on your page and help the right people find you.",
+    },
+    policies: {
+      group: "Policies",
+      title: "What are your rules?",
+      subtitle: "Write your own or tap a suggestion. At least one.",
+      why: "Customers see these on your page before they book or visit.",
     },
     review: {
       group: "Review",
       title: "Review your business",
       subtitle: "Tap a row to change it.",
-      why: "You can edit all of this later from Manage.",
+      why: isStudio
+        ? "Next you'll add amenities and equipment, with photos."
+        : "You can edit all of this later from Manage.",
+    },
+    amenities: {
+      group: "Amenities",
+      title: "What does the place have?",
+      subtitle: "Pick its amenities, then add a photo of each.",
+      why: "Photos show customers it's real. You can add more later.",
+    },
+    equipment: {
+      group: "Equipment",
+      title: "What gear can people use?",
+      subtitle: "Add each item: make and model, type, quantity, and included or extra.",
+      why: "A photo of each item builds trust. You can add more later under Manage.",
     },
   };
   const c = copy[step];
@@ -218,12 +253,14 @@ function NewBusiness() {
     <>
       <StepShell
         step={idx + 1}
-        total={steps.length}
+        total={isStudio ? steps.length : steps.length - AFTER_CREATE.length}
         group={c.group}
         title={c.title}
         subtitle={c.subtitle}
         why={c.why}
-        onBack={() => (idx > 0 ? go(steps[idx - 1]!) : router.history.back())}
+        onBack={() =>
+          step === "amenities" ? finish() : idx > 0 ? go(steps[idx - 1]!) : router.history.back()
+        }
         onSubmit={submit}
         footer={
           <Btn
@@ -233,7 +270,7 @@ function NewBusiness() {
             pending={!valid[step]}
             className={`w-full ${nudge ? "animate-shake" : ""}`}
           >
-            {step === "review" ? "Create Business" : "Continue"}
+            {step === "review" ? "Create Business" : step === "equipment" ? "Finish" : "Continue"}
           </Btn>
         }
       >
@@ -366,34 +403,13 @@ function NewBusiness() {
                 onChange={setLanguages}
               />
             </DrawerField>
-            {isStudio ? (
-              <>
-                <DrawerField label="Amenities" hint="Optional. Add more later.">
-                  <SheetMultiSelect
-                    title="Amenities"
-                    value={amenities}
-                    options={choicesFor(tx.studio_amenities)}
-                    max={tx.studio_amenities.length}
-                    placeholder="Choose"
-                    onChange={setAmenities}
-                  />
-                </DrawerField>
-                <DrawerField
-                  label="Equipment"
-                  hint="Optional. Add makes and models later under Manage → Equipment."
-                >
-                  <SheetMultiSelect
-                    title="Equipment"
-                    value={equipment}
-                    options={choicesFor(tx.equipment_categories)}
-                    max={tx.equipment_categories.length}
-                    placeholder="Choose"
-                    onChange={setEquipment}
-                  />
-                </DrawerField>
-              </>
-            ) : null}
           </div>
+        ) : step === "policies" ? (
+          <PoliciesEditor value={policies} onChange={setPolicies} />
+        ) : step === "amenities" ? (
+          <AmenitiesEditor />
+        ) : step === "equipment" ? (
+          <EquipmentEditor />
         ) : (
           <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card">
             {(
@@ -405,12 +421,11 @@ function NewBusiness() {
                 ["City", [city, state].filter(Boolean).join(", "), "location"],
                 ["Genres", labelsOf(tx.genres, genres), "offer"],
                 ["Languages", labelsOf(tx.languages, languages), "offer"],
-                ...(isStudio
-                  ? ([
-                      ["Amenities", labelsOf(tx.studio_amenities, amenities), "offer"],
-                      ["Equipment", labelsOf(tx.equipment_categories, equipment), "offer"],
-                    ] as const)
-                  : []),
+                [
+                  "Policies",
+                  `${policies.filter((p) => p.trim()).length} added`,
+                  "policies",
+                ] as const,
               ] as const
             ).map(([k, v, to]) => (
               <li key={k}>
@@ -430,7 +445,7 @@ function NewBusiness() {
       </StepShell>
 
       <Dialog
-        open={create.isSuccess}
+        open={create.isSuccess && !isStudio}
         title="Business created"
         body="Add your spaces, hours and rates next."
         onClose={() => create.reset()}

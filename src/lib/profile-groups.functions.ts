@@ -49,6 +49,8 @@ export type BusinessRecord = {
     founded_year: number | null;
     /** The Google Maps link the business added (20260921290000_pin_codes_and_maps.sql). */
     maps_url?: string | null;
+    /** Its rules, one per entry (20260922180000_amenities_equipment_policies.sql). */
+    policies?: string[] | null;
     /** The registered name ("SoundHouse Studio LLP"). */
     legal_name?: string | null;
   };
@@ -120,7 +122,7 @@ const PROFILE =
 const PROFILE_FULL = `${PROFILE}, pin_code, rating, review_count, followers_count`;
 
 const BUSINESS =
-  "business_address, operating_hours, logo_url, hero_banner_url, founded_year, maps_url";
+  "business_address, operating_hours, logo_url, hero_banner_url, founded_year, maps_url, policies";
 const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
 const REVIEW_FULL = `${REVIEW}, tags`;
 const STUDIO = (review: string) =>
@@ -275,12 +277,15 @@ export const updateMyBusiness = createServerFn({ method: "POST" })
           .refine((v) => v === "" || GOOGLE_MAPS.test(v), "Use a Google Maps link")
           .nullable()
           .optional(),
+        /** The business's rules, one per line (20260922180000_amenities_equipment_policies.sql). */
+        policies: z.array(z.string().trim().min(1).max(200)).min(1).max(12).optional(),
       })
       .parse(d),
   )
   .handler(async ({ context, data }): Promise<{ ok: true }> => {
     const client = context.supabase as unknown as SupabaseClient;
-    const patch: Record<string, string | null> = {};
+    const patch: Record<string, string | string[] | null> = {};
+    if (data.policies !== undefined) patch["policies"] = data.policies;
     if (data.operating_hours !== undefined) patch["operating_hours"] = data.operating_hours;
     if (data.maps_url !== undefined) patch["maps_url"] = data.maps_url || null;
     const { error } = await client
@@ -643,6 +648,7 @@ export const createMyBusiness = createServerFn({ method: "POST" })
           .optional(),
         mapsUrl: z.string().trim().max(500).regex(GOOGLE_MAPS).optional(),
         /** Taxonomy slugs: languages, genres, studio_amenities and equipment_categories. */
+        policies: z.array(z.string().trim().min(1).max(200)).min(1).max(12),
         genres: z
           .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
           .max(10)
@@ -724,6 +730,7 @@ async function setUpBusiness(
     mapsUrl?: string | undefined;
     languages?: string[] | undefined;
     genres?: string[] | undefined;
+    policies?: string[] | undefined;
     amenities?: string[] | undefined;
     equipment?: string[] | undefined;
   },
@@ -755,6 +762,7 @@ async function setUpBusiness(
     // The address is the city and PIN code; Directions opens the Maps link.
     business_address: placeLine(data.city, data.pinCode) || null,
     maps_url: data.mapsUrl ?? null,
+    ...(data.policies?.length ? { policies: data.policies } : {}),
     updated_at: new Date().toISOString(),
   } as never);
   if (businessError) throw new Error(businessError.message);

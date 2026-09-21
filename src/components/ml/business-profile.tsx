@@ -177,6 +177,16 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 ))}
               </Card>
             ) : null}
+            {b.policies.length ? (
+              <Card className="space-y-2">
+                <h2 className="text-sm">Policies</h2>
+                <ul className="list-disc space-y-1.5 pl-5 text-1">
+                  {b.policies.map((p) => (
+                    <li key={p}>{p}</li>
+                  ))}
+                </ul>
+              </Card>
+            ) : null}
             {b.address || b.mapsUrl ? (
               <Card className="space-y-2">
                 <h2 className="text-sm">Find & contact</h2>

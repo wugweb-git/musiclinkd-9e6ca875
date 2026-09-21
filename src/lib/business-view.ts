@@ -39,6 +39,8 @@ export type BusinessView = {
     status: "active" | "paused" | "draft";
   }[];
   hours: { day: string; hours: string }[];
+  /** The business's rules, one per entry. */
+  policies: string[];
   address: string;
   /** The business's Google Maps link, opened for directions. */
   mapsUrl: string | null;
@@ -158,6 +160,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
       status: s.status,
     })),
     hours: hoursFrom(business.operating_hours),
+    policies: (business.policies ?? []).filter((p) => p.trim()),
     address: business.business_address ?? "",
     mapsUrl: business.maps_url ?? null,
     spaces: (studio?.rooms ?? []).map((room) => {

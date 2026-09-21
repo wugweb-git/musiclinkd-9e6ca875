@@ -28,6 +28,7 @@ const CATEGORIES = [
   // Business setup (Create business, step 4).
   "studio_amenities",
   "equipment_categories",
+  "business_policies",
 ] as const;
 
 export type TaxonomyCategory = (typeof CATEGORIES)[number];
