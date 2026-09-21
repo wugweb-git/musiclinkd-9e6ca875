@@ -226,6 +226,7 @@ async function businessRecord(
     reviews: allReviews,
     studio: studio
       ? {
+          ...(studio.slug ? { slug: studio.slug } : {}),
           rating: studio.rating == null ? null : Number(studio.rating),
           review_count: studio.review_count,
           rooms: [...(studio.rooms ?? [])]
