@@ -1,0 +1,27 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration
+-- 20260922180000_amenities_equipment_policies.sql.
+--
+-- Studios whose amenities the migration changes (id | slug | amenities | services):
+--   b84bbaa9-f4e2-40c8-8f27-959b220c7410 | jam-room-bandra | {rehearsal_room,drums_included,parking_space,air_conditioning,drinking_water} | {}
+--   29159501-1987-5152-8b0e-954b5cf11bdf | headroom-mastering | {attended_sessions,stem_mastering,analogue_chain,reference_library} | {mastering}
+--   f87044d2-fe01-5d9b-936b-1f3755fa3f26 | ironwood-live-hall-and-venue | {live_room,stage_monitors,parking_space} | {recording}
+--   9ac144a3-afdd-573b-b823-224ef271d4c5 | basement-jam | {rehearsal_room,drums_included,backline_included,open_till_2am,lockers,cafe} | {}
+--   29833230-3ca8-58e3-b0c2-f87756c18008 | wugweb | {dolby_atmos,vocal_booth,live_room,access_24x7,private_lounge} | {recording,mixing,mastering}
+--   62102fef-efc3-4cb4-b8b2-36b1fadd660e | octave-sound-labs | {live_room,vocal_booth,resident_engineers,parking_space,green_room,wifi} | {recording,mixing}
+--   dfce6dfa-e21c-5000-bb2d-bb45457e0039 | waveform-podcast | {four_mic_positions,multicam_video,producer,same_day_audio} | {}
+--   3b0324b2-a7e7-5ba3-b3fc-a64a0b87b348 | yash-raj-sound-studios | {dolby_atmos,live_room,resident_engineers,valet_parking,parking_space,private_lounge,catering} | {recording,mixing,mastering}
+-- No studio_equipment rows exist for these studios with the names the migration adds.
+--
+-- taxonomy_options studio_amenities: all 33 published (dolby_atmos, vocal_booth, live_room, valet_parking,
+-- resident_engineers, private_lounge, access_24x7, rehearsal_room, chill_lounge, drums_included,
+-- parking_space, instruments_support, acoustics_optimized, fiber_internet, stage_monitors,
+-- bar_and_diner_access, green_room, wifi, attended_sessions, stem_mastering, analogue_chain,
+-- reference_library, backline_included, open_till_2am, lockers, cafe, four_mic_positions,
+-- multicam_video, producer, same_day_audio, air_conditioning, drinking_water, catering).
+-- taxonomy_options studio_services: mastering, mixing, recording.
+-- taxonomy_options equipment_categories: microphones, audio_interfaces, studio_monitors, mixers, preamps,
+-- headphones, controllers, pa_systems, backline.
+-- profile_business has no policies column. No taxonomy category business_policies.
+--
+-- To undo: see the Rollback note at the top of the migration.
