@@ -1,0 +1,23 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921220000_cms_site_pages.sql.
+--
+-- Scope: the site pages (cms_pages rows with category null). The migration updates title, summary,
+-- seo_description, updated_at and body on legal-privacy and legal-terms only; the other seven rows
+-- are listed so the slug-to-route map is on record. No schema, policy or other row changes.
+--
+-- Row counts: cms_pages rows with category null 9. At snapshot time every one had body '[]',
+-- summary, kind, read_time and category null.
+--
+-- cms_pages site-page rows at snapshot time (slug, route, title, status, content, seo_description, updated_at):
+-- INSERT INTO public.cms_pages (slug, route, title, status, content, seo_description, updated_at) VALUES
+--   ('about', '/about', 'About MusicLinkd', 'published', 'MusicLinkd was built to make it easier for independent artists, studios, and venues across India to find and book each other.', 'Learn about MusicLinkd''s mission to connect India''s music community.', '2026-08-01 09:00:00+00'),
+--   ('blog', '/blog', 'MusicLinkd Blog', 'draft', 'Stories from India''s independent music scene — coming soon.', 'News and stories from the MusicLinkd community.', '2026-07-18 09:00:00+00'),
+--   ('careers', '/careers', 'Careers at MusicLinkd', 'draft', 'We''re not actively hiring right now, but we''re always open to hearing from people passionate about music and technology.', 'Careers and open roles at MusicLinkd.', '2026-07-20 09:00:00+00'),
+--   ('contact', '/contact', 'Contact MusicLinkd', 'published', 'Reach the MusicLinkd team for support, partnerships, or press inquiries.', 'Get in touch with the MusicLinkd team.', '2026-08-13 09:00:00+00'),
+--   ('home', '/', 'MusicLinkd — Find your next collaborator', 'published', 'MusicLinkd connects singers, musicians, producers, studios, and venues across India for collaboration, booking, and hire.', 'MusicLinkd is India''s marketplace for music talent, studios, and collaboration.', '2026-08-01 09:00:00+00'),
+--   ('legal-cookies', '/legal/cookies', 'Cookie Policy', 'published', 'This Cookie Policy explains how MusicLinkd uses cookies and similar technologies.', 'MusicLinkd cookie policy.', '2026-06-01 09:00:00+00'),
+--   ('legal-privacy', '/legal/privacy', 'Privacy Policy', 'published', 'This Privacy Policy explains how MusicLinkd collects, uses, and protects your information.', 'MusicLinkd privacy policy.', '2026-06-01 09:00:00+00'),
+--   ('legal-terms', '/legal/terms', 'Terms of Service', 'published', 'These Terms of Service govern your use of MusicLinkd.', 'MusicLinkd terms of service.', '2026-06-01 09:00:00+00'),
+--   ('pricing', '/pricing', 'Pricing', 'published', 'Free to join. Studios and businesses can upgrade to a Pro plan for advanced booking and analytics tools.', 'MusicLinkd pricing plans for talent, studios, and businesses.', '2026-08-01 09:00:00+00');
+--
+-- To undo: see the Rollback note at the top of the migration.
