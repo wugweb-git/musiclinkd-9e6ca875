@@ -18,7 +18,7 @@ import {
   useMarketCity,
 } from "@/components/ml/market";
 import { type Listing } from "@/data/market";
-import { rentalCategories } from "@/data/rentals";
+import { useGearTaxonomy } from "@/lib/listing-category";
 import { GearCta } from "@/components/ml/gear-cta";
 import { iconSize } from "@/lib/tokens";
 import { inCity, loadCatalogListings, nearFirst } from "@/lib/market-view";
@@ -77,6 +77,7 @@ function MarketHome() {
   const [view, setView] = useState<(typeof views)[number]["label"]>("Explore");
   const navigate = useNavigate();
   const catalog = Route.useLoaderData();
+  const taxonomy = useGearTaxonomy();
   // The catalogue comes newest first; services are Discover's and never reach it. Signed in, For
   // You puts the listings matched to the viewer's instruments, saves, rentals and city first.
   const recs = useRecommendations();
@@ -167,7 +168,7 @@ function MarketHome() {
 
       {/* Categories: each opens its page; the last tile opens every category. */}
       <div className="rail mb-7 flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-        {rentalCategories.map((c) => (
+        {taxonomy.categories.map((c) => (
           <CategoryTile
             key={c.slug}
             slug={c.slug}
@@ -250,7 +251,7 @@ function MarketHome() {
       <CategorySheet
         open={categoriesOpen}
         onClose={() => setCategoriesOpen(false)}
-        categories={rentalCategories}
+        categories={taxonomy.categories}
       />
     </Screen>
   );

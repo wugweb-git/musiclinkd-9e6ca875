@@ -11,7 +11,7 @@ import { priceParts } from "@/lib/price";
 import { getRentalBookingCounts } from "@/lib/rentals.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { parsePlace, samePinArea, shownPlace } from "@/lib/place";
-import { gearCategoryOf } from "@/lib/listing-category";
+import { gearCategoryOf, loadGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
 
 /*
  * Database marketplace listings shaped as the static `Listing` the market screens render.
@@ -131,7 +131,7 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
     category,
     ...(type === "product" || type === "rental"
       ? {
-          gear: gearCategoryOf(row.item_category, row.item_category_kind),
+          ...(row.item_category ? { itemCategory: row.item_category } : {}),
           pickup: row.pickup_available ?? true,
           deliverable: row.delivery_available ?? false,
         }
@@ -159,9 +159,20 @@ async function loadRows() {
  * (owner, 18 Sep 2026), so they're left out here. Empty when the catalog cannot be read.
  */
 export async function loadCatalogListings(): Promise<Listing[]> {
-  const [rows, labels] = await loadRows();
+  const [[rows, labels], gear] = await Promise.all([loadRows(), gearOrEmpty()]);
   const now = Date.now();
-  return rows.map((row) => listingFromRow(row, labels, now)).filter((l) => l.type !== "service");
+  return rows
+    .map((row) => withGear(listingFromRow(row, labels, now), gear))
+    .filter((l) => l.type !== "service");
+}
+
+const gearOrEmpty = () =>
+  loadGearTaxonomy().catch((): GearTaxonomy => ({ types: [], categories: [] }));
+
+/** A good's Market category (instrument family or equipment category), from the taxonomy. */
+function withGear(l: Listing, gear: GearTaxonomy): Listing {
+  const category = gearCategoryOf(l.itemCategory, gear);
+  return category ? { ...l, gear: category } : l;
 }
 
 /** The signed-in user's own listings, newest first — for /marketplace/mine. */
@@ -171,7 +182,8 @@ export async function loadMyCatalogListings(): Promise<Listing[]> {
     getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
   ]);
   const now = Date.now();
-  return rows.map((row) => listingFromRow(row, labels, now));
+  const gear = await gearOrEmpty();
+  return rows.map((row) => withGear(listingFromRow(row, labels, now), gear));
 }
 
 /** Item taxonomy slugs with an obvious static rental category and sub-category. */

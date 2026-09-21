@@ -26,10 +26,10 @@ import { Sheet } from "./ui";
 import { SegmentedField } from "./kit";
 import { MarketCategoryIcon, ProductCard } from "./market";
 import {
-  categoryOfSubCategory,
-  subCategorySlug,
-  kindOfSubCategory,
-  listingSubCategories,
+  gearCategoryOf,
+  gearTypeOf,
+  useGearTaxonomy,
+  type GearTaxonomy,
 } from "@/lib/listing-category";
 import { instrumentIcon } from "@/lib/instrument-icons";
 import { iconSize } from "@/lib/tokens";
@@ -172,7 +172,7 @@ export function draftFromListing(row: MyListing): ListingDraft {
     name: row.title,
     brand: row.brand ?? "",
     model: row.model ?? "",
-    sub: listingSubCategories.find((s) => subCategorySlug(s) === row.item_category) ?? null,
+    sub: row.item_category,
     condition: row.condition ?? "used",
     description: row.listing_description ?? "",
     price: row.price_paise != null ? String(Math.round(row.price_paise / 100)) : "",
@@ -209,14 +209,13 @@ export function videoProblem(value: string) {
 }
 
 /** What createListing gets from the draft. */
-export function listingPayload(d: ListingDraft) {
+export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
+  const type = gearTypeOf(d.sub, taxonomy);
   const rental = d.mode === "Rent out";
   return {
     category: rental ? ("gear_rental" as const) : ("gear_sale" as const),
     title: d.name.trim() || "Untitled listing",
-    ...(d.sub
-      ? { itemCategoryKind: kindOfSubCategory(d.sub), itemCategory: subCategorySlug(d.sub) }
-      : {}),
+    ...(type ? { itemCategoryKind: type.kind, itemCategory: type.slug } : {}),
     ...(d.brand.trim() ? { brand: d.brand.trim() } : {}),
     ...(d.model.trim() ? { model: d.model.trim() } : {}),
     ...(d.description.trim() ? { description: d.description.trim() } : {}),
@@ -343,21 +342,22 @@ function SheetSelect({
   );
 }
 
-const productTypeOptions = listingSubCategories.map((s) => {
-  const category = categoryOfSubCategory(s);
-  return {
-    value: s,
-    label: s,
-    ...(category === "instruments"
-      ? { icon: instrumentIcon(s.toLowerCase().replace(/\s+/g, "_")) }
-      : { iconNode: <MarketCategoryIcon slug={category} size={iconSize.md} /> }),
-  };
-});
+/** Product types from the taxonomy, each with its icon. */
+function productTypeOptions(taxonomy: GearTaxonomy) {
+  return taxonomy.types.map((t) => ({
+    value: t.slug,
+    label: t.label,
+    ...(t.kind === "instrument"
+      ? { icon: instrumentIcon(t.slug) }
+      : { iconNode: <MarketCategoryIcon slug={t.slug} size={iconSize.md} /> }),
+  }));
+}
 
 type StepProps = { value: ListingDraft; onChange: (patch: Partial<ListingDraft>) => void };
 
 /** Step 1 — what it is and what it costs. */
 export function ListingWhatStep({ value, onChange }: StepProps) {
+  const taxonomy = useGearTaxonomy();
   const rental = value.mode === "Rent out";
   return (
     <div className="space-y-4">
@@ -372,7 +372,7 @@ export function ListingWhatStep({ value, onChange }: StepProps) {
         <SheetSelect
           title="Product type"
           value={value.sub}
-          options={productTypeOptions}
+          options={productTypeOptions(taxonomy)}
           onChange={(sub) => onChange({ sub })}
           placeholder="Guitar, drums, mixer…"
           searchable
@@ -523,6 +523,7 @@ export function ListingWhereStep({ value, onChange }: StepProps) {
 
 /** The draft drawn as the Market product card, at rail width, not linked anywhere. */
 export function ListingCardPreview({ value }: { value: ListingDraft }) {
+  const taxonomy = useGearTaxonomy();
   const rental = value.mode === "Rent out";
   return (
     <ProductCard
@@ -533,7 +534,7 @@ export function ListingCardPreview({ value }: { value: ListingDraft }) {
         id: "preview",
         title: value.name.trim() || "Untitled listing",
         photos: [],
-        category: value.sub ? categoryOfSubCategory(value.sub) : "other",
+        category: gearCategoryOf(value.sub, taxonomy) ?? "other",
         badge: listingConditions.find((c) => c.value === value.condition)!.label,
         price: {
           amount: `₹${value.price || "0"}`,

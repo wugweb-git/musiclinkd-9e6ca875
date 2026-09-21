@@ -17,6 +17,7 @@ import {
   saveListingDraft,
   useListingDraft,
 } from "@/components/ml/listing-form";
+import { useGearTaxonomy } from "@/lib/listing-category";
 import { createListing, listMyManagedListings, updateListing } from "@/lib/catalog.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -59,6 +60,7 @@ function Sell() {
   const [step, setStep] = useState(0);
   const [draft, patch] = useListingDraft(type === "rent" ? "Rent out" : "Sell", Boolean(edit));
   const [publishing, setPublishing] = useState(false);
+  const taxonomy = useGearTaxonomy();
   const last = listingSteps.length - 1;
   const exit = "/marketplace/mine";
 
@@ -80,7 +82,7 @@ function Sell() {
     if (!edit) return;
     setPublishing(true);
     try {
-      await save({ data: { id: edit, ...listingPayload(draft) } });
+      await save({ data: { id: edit, ...listingPayload(draft, taxonomy) } });
       await queryClient.invalidateQueries({ queryKey: ["marketplace", "mine"] });
       toast.success("Changes saved");
       void navigate({ to: "/marketplace/mine" });
@@ -93,7 +95,7 @@ function Sell() {
   async function publish() {
     setPublishing(true);
     try {
-      const { slug } = await submit({ data: listingPayload(draft) });
+      const { slug } = await submit({ data: listingPayload(draft, taxonomy) });
       clearListingDraft();
       await queryClient.invalidateQueries({ queryKey: ["marketplace", "mine"] });
       void navigate({ to: "/marketplace/l/$id", params: { id: slug } });

@@ -22,6 +22,16 @@ import {
   Disc3,
   Speaker,
   ShoppingCart,
+  Piano,
+  Drum,
+  Wind,
+  AudioWaveform,
+  Music,
+  SlidersHorizontal,
+  AudioLines,
+  Gauge,
+  Megaphone,
+  Cable,
   ArrowLeft,
   ArrowRight,
   X,
@@ -30,7 +40,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Listing } from "@/data/market";
-import { rentalCategories, type RentalItem } from "@/data/rentals";
+import type { RentalItem } from "@/data/rentals";
+import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
 import {
   applyMarketFilter,
   emptyMarketFilter,
@@ -152,6 +163,23 @@ export function TrustPill({ label }: { label: string }) {
 }
 
 const categoryIcons: Record<string, LucideIcon> = {
+  // Instrument families and equipment categories (the taxonomy's Market categories).
+  guitar: Guitar,
+  keys: Piano,
+  percussion: Drum,
+  wind: Wind,
+  bowed: AudioWaveform,
+  indian_string: Music,
+  electronic: SlidersHorizontal,
+  microphones: MicVocal,
+  audio_interfaces: AudioLines,
+  studio_monitors: Speaker,
+  mixers: SlidersVertical,
+  preamps: Gauge,
+  headphones: Headphones,
+  controllers: Disc3,
+  pa_systems: Megaphone,
+  backline: Cable,
   instruments: Guitar,
   "audio-gear": MicVocal,
   audio: MicVocal,
@@ -739,7 +767,6 @@ export function LocationSheet({
             aria-hidden
           />
           <input
-            autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search a city"
@@ -819,13 +846,16 @@ export function CategorySheet({
 }
 
 /** The filter sheet's pick-as-many groups; which one a chip toggles is its key in MarketFilter. */
-const filterGroups: {
+type FilterGroup = {
   key: "types" | "categories" | "conditions" | "rates" | "fulfilment" | "prices";
   label: string;
   options: { label: string; value: string }[];
   /** Only for rentals: hidden when only For sale is picked. */
   rentalOnly?: boolean;
-}[] = [
+};
+
+/** The filter groups; categories come from the taxonomy. */
+const filterGroupsFor = (taxonomy: GearTaxonomy): FilterGroup[] => [
   {
     key: "types",
     label: "Listing type",
@@ -834,7 +864,7 @@ const filterGroups: {
   {
     key: "categories",
     label: "Category",
-    options: rentalCategories.map((c) => ({ label: c.label, value: c.slug })),
+    options: taxonomy.categories.map((c) => ({ label: c.label, value: c.slug })),
   },
   {
     key: "conditions",
@@ -871,13 +901,14 @@ export function MarketFilterSheet({
   value: MarketFilter;
   onApply: (f: MarketFilter) => void;
 }) {
+  const taxonomy = useGearTaxonomy();
   const [f, setF] = useState<MarketFilter>(value);
   useEffect(() => {
     if (open) setF(value);
   }, [open, value]);
   const results = applyMarketFilter(items, f).length;
 
-  const toggle = (key: (typeof filterGroups)[number]["key"], v: string) =>
+  const toggle = (key: FilterGroup["key"], v: string) =>
     setF((cur) => ({
       ...cur,
       [key]: cur[key].includes(v) ? cur[key].filter((x) => x !== v) : [...cur[key], v],
@@ -896,7 +927,7 @@ export function MarketFilterSheet({
         </button>
       </div>
 
-      {filterGroups
+      {filterGroupsFor(taxonomy)
         .filter((g) => !(g.rentalOnly && f.types.length === 1 && f.types[0] === "For sale"))
         .map((g) => (
           <div key={g.key} className="mb-5">
@@ -947,7 +978,8 @@ export function ActiveFilters({
   value: MarketFilter;
   onChange: (f: MarketFilter) => void;
 }) {
-  const chips = filterGroups.flatMap((g) =>
+  const taxonomy = useGearTaxonomy();
+  const chips = filterGroupsFor(taxonomy).flatMap((g) =>
     value[g.key].map((v) => ({
       key: g.key,
       value: v,
@@ -969,7 +1001,7 @@ export function ActiveFilters({
                 ? { ...value, verifiedOnly: false }
                 : {
                     ...value,
-                    [c.key]: (value[c.key as (typeof filterGroups)[number]["key"]] ?? []).filter(
+                    [c.key]: (value[c.key as FilterGroup["key"]] ?? []).filter(
                       (x) => x !== c.value,
                     ),
                   },

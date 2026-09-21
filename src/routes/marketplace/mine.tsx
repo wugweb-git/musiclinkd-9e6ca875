@@ -25,7 +25,7 @@ import {
 import { deleteListing, listMyManagedListings, type MyListing } from "@/lib/catalog.functions";
 import { setMyListingStatus } from "@/lib/rentals.functions";
 import { answerOffer, listOffersOnMyListings } from "@/lib/offers.functions";
-import { gearCategoryOf } from "@/lib/listing-category";
+import { gearCategoryOf, useGearTaxonomy } from "@/lib/listing-category";
 import { inr, priceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
@@ -346,6 +346,7 @@ function ManagedListing({
   onDelete: () => void;
 }) {
   const isLive = live(l);
+  const taxonomy = useGearTaxonomy();
   return (
     <article className="rounded-lg bg-subtle p-4">
       <div className="flex gap-3">
@@ -360,7 +361,7 @@ function ManagedListing({
         ) : (
           <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-icon-chip">
             <MarketCategoryIcon
-              slug={gearCategoryOf(l.item_category, l.item_category_kind)}
+              slug={gearCategoryOf(l.item_category, taxonomy) ?? "other"}
               size={iconSize.lg}
             />
           </span>

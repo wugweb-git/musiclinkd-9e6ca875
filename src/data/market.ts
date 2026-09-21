@@ -32,7 +32,9 @@ export type Listing = {
   pin?: string;
   distance: string;
   category: string;
-  /** Goods: the market category (instruments, audio, studio, dj, live, other). */
+  /** Goods: the product type's taxonomy slug (item_category). */
+  itemCategory?: string;
+  /** Goods: the Market category — an instrument family or an equipment category. */
   gear?: string;
   /** Goods: whether it can be picked up, or delivered. */
   pickup?: boolean;
