@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient, softSelect } from "@/lib/portfolio.functions";
 import { GOOGLE_MAPS, placeLine } from "@/lib/place";
-import { CITY_PATTERN } from "@/lib/validation";
+import { CITY_PATTERN, INDIAN_STATES } from "@/lib/validation";
 import { createBusinessPage } from "@/lib/pages.functions";
 
 /*
@@ -600,35 +600,30 @@ export const getMyCompany = createServerFn({ method: "GET" })
   });
 
 /*
- * Create Business extends the signed-in account's own profile (owner's call): the name, tagline
- * and city go on the profile, the address on its profile_business row — and that row is what
- * makes the account a business. The type sets the profile's role only when it has none yet, so a
- * role picked in onboarding is never overwritten. Types with no matching role (production house,
- * rental house) leave roles alone.
+ * Create Business extends a business account's own profile (owner's call): the name, tagline and
+ * place go on the profile, the address on its profile_business row — and that row is what makes
+ * the account a business. The type is a business person type from the taxonomy (Recording Studio,
+ * Music Label, Venue…) and becomes the profile's role when it has none yet.
  */
-const ROLE_FOR_TYPE: Record<string, string> = {
-  studio: "studio",
-  label: "music_label",
-  venue: "venue",
-  agency: "booking_agency",
-};
 
-/**
- * True when the account already has talent roles: any person type the taxonomy doesn't flag as a
- * business type (taxonomy_options metadata.flow = 'business').
- */
+/** The business person types (taxonomy_options metadata.flow business / business_user). */
+async function businessTypeSlugs(client: SupabaseClient) {
+  const { data, error } = await client
+    .from("taxonomy_options")
+    .select("slug")
+    .eq("category_key", "person_types")
+    .in("metadata->>flow", ["business", "business_user"]);
+  if (error) throw new Error(error.message);
+  return new Set((data as { slug: string }[] | null)?.map((o) => o.slug) ?? []);
+}
+
+/** True when the account already has talent roles: any person type that isn't a business type. */
 async function isTalentAccount(
   client: SupabaseClient,
   roles: readonly string[] | null | undefined,
 ) {
   if (!roles?.length) return false;
-  const { data, error } = await client
-    .from("taxonomy_options")
-    .select("slug")
-    .eq("category_key", "person_types")
-    .eq("metadata->>flow", "business");
-  if (error) throw new Error(error.message);
-  const business = new Set((data as { slug: string }[] | null)?.map((o) => o.slug) ?? []);
+  const business = await businessTypeSlugs(client);
   return roles.some((r) => !business.has(r));
 }
 
@@ -637,12 +632,29 @@ export const createMyBusiness = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z
       .object({
-        type: z.enum(["studio", "label", "production_house", "venue", "agency", "rental"]),
+        type: z.string().regex(/^[a-z_]{2,40}$/),
         name: z.string().trim().min(1).max(80),
         tagline: z.string().trim().max(160).optional(),
         city: z.string().trim().regex(CITY_PATTERN),
         pinCode: z.string().regex(/^[1-9]\d{5}$/),
+        state: z
+          .string()
+          .refine((v) => (INDIAN_STATES as readonly string[]).includes(v))
+          .optional(),
         mapsUrl: z.string().trim().max(500).regex(GOOGLE_MAPS).optional(),
+        /** Taxonomy slugs: languages, studio_amenities and equipment_categories. */
+        languages: z
+          .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
+          .max(20)
+          .optional(),
+        amenities: z
+          .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
+          .max(40)
+          .optional(),
+        equipment: z
+          .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
+          .max(20)
+          .optional(),
       })
       .parse(d),
   )
@@ -655,6 +667,9 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       .maybeSingle();
     if (readError) throw new Error(readError.message);
     const current = (me as { username: string | null; roles: string[] | null } | null) ?? null;
+    if (!(await businessTypeSlugs(client)).has(data.type)) {
+      throw new Error("Pick a business type from the list.");
+    }
     // A talent login gets a business page it owns (owner, 22 Sep 2026), so its own profile is
     // never touched. A login that signed up as a business is the business itself, as before.
     if (await isTalentAccount(client, current?.roles)) {
@@ -701,17 +716,23 @@ async function setUpBusiness(
     tagline?: string | undefined;
     city: string;
     pinCode: string;
+    state?: string | undefined;
     mapsUrl?: string | undefined;
+    languages?: string[] | undefined;
+    amenities?: string[] | undefined;
+    equipment?: string[] | undefined;
   },
   current: { username: string | null; roles: string[] | null } | null,
   hasStudio: boolean,
 ) {
-  const role = ROLE_FOR_TYPE[data.type];
+  const role = data.type;
   const { error } = await client
     .from("profiles")
     .update({
       display_name: data.name,
       city: data.city,
+      ...(data.state ? { state: data.state, country: "India" } : {}),
+      ...(data.languages?.length ? { languages: data.languages } : {}),
       ...(data.pinCode ? { pin_code: data.pinCode } : {}),
       ...(data.tagline ? { headline: data.tagline } : {}),
       ...(role && !current?.roles?.length ? { roles: [role] } : {}),
@@ -746,13 +767,42 @@ async function setUpBusiness(
         "studio";
       const { data: taken } = await client.from("studios").select("id").eq("slug", base).limit(1);
       const slug = taken?.length ? `${base}-${Math.random().toString(36).slice(2, 7)}` : base;
-      const { error: studioError } = await client.from("studios").insert({
-        owner_profile_id: profileId,
-        slug,
-        name: data.name,
-        location: placeLine(data.city, data.pinCode) || null,
-      } as never);
+      const { data: studio, error: studioError } = await client
+        .from("studios")
+        .insert({
+          owner_profile_id: profileId,
+          slug,
+          name: data.name,
+          location: placeLine(data.city, data.pinCode) || null,
+          amenities: data.amenities ?? [],
+        } as never)
+        .select("id")
+        .single();
       if (studioError) throw new Error(studioError.message);
+      // Equipment starts as the categories picked (Microphones, Studio Monitors…); the owner adds
+      // makes and models later under Manage → Equipment.
+      const studioId = (studio as { id: string }).id;
+      if (data.equipment?.length) {
+        const { data: labels } = await client
+          .from("taxonomy_options")
+          .select("slug, label")
+          .eq("category_key", "equipment_categories")
+          .in("slug", data.equipment);
+        const byslug = new Map(
+          ((labels ?? []) as { slug: string; label: string }[]).map((l) => [l.slug, l.label]),
+        );
+        const { error: equipmentError } = await client.from("studio_equipment").insert(
+          data.equipment
+            .filter((e) => byslug.has(e))
+            .map((e, i) => ({
+              studio_id: studioId,
+              name: byslug.get(e)!,
+              category: e,
+              sort_order: i,
+            })) as never,
+        );
+        if (equipmentError) throw new Error(equipmentError.message);
+      }
     }
   }
 }

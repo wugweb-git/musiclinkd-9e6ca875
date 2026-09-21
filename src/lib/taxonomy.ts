@@ -25,6 +25,9 @@ const CATEGORIES = [
   "genders",
   "indian_states",
   "cities",
+  // Business setup (Create business, step 4).
+  "studio_amenities",
+  "equipment_categories",
 ] as const;
 
 export type TaxonomyCategory = (typeof CATEGORIES)[number];
@@ -148,6 +151,11 @@ export function talentTypes(options: TaxonomyOption[]): TaxonomyOption[] {
   // The live rows still say "business" until 20260921300000_business_types_cleanup.sql is applied
   // (it renames them "business_user"); both mean a business type.
   return options.filter((o) => !isBusinessFlow(o.metadata?.flow));
+}
+
+/** The business person types (Recording Studio, Music Label, Venue…), for Create business. */
+export function businessTypes(options: TaxonomyOption[]): TaxonomyOption[] {
+  return options.filter((o) => isBusinessFlow(o.metadata?.flow));
 }
 
 function isBusinessFlow(flow: string | undefined) {

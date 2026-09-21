@@ -1,20 +1,35 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, Dialog } from "@/components/ml/kit";
-import { businessTypes, type BusinessType } from "@/data/business";
+import { ChevronRight, CircleCheck } from "lucide-react";
+import { Btn, BtnLink } from "@/components/ml/ui";
+import { Dialog } from "@/components/ml/kit";
+import {
+  DrawerField,
+  InlineField,
+  PersonTypePicker,
+  StepShell,
+  StepSkeleton,
+} from "@/components/ml/onboarding";
+import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
 import { enterLinkedProfile } from "@/lib/pages.functions";
+import { readMapsLink, type MapsPlace } from "@/lib/maps-link.functions";
 import { switchToLinked } from "@/lib/saved-accounts";
 import { GOOGLE_MAPS } from "@/lib/place";
 import { cityProblem, pinProblem } from "@/lib/validation";
+import { businessTypes, choicesFor, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
+import { roleIcon } from "@/lib/role-icons";
+import { iconSize } from "@/lib/tokens";
 
-// Spaces and Team are off for now (owner, 21 Sep 2026): a business starts with one space, rooms are
-// added after it exists, and one business profile belongs to one account (one email).
-const steps = ["type", "basics", "location", "review"] as const;
+/*
+ * Create business, on the same wizard as talent onboarding (StepShell, drawers, fixed Continue).
+ * Step 1 is the type, picked like a talent's person type, and the Google Maps link, which fills in
+ * the name and place (src/lib/maps-link.functions.ts). One business profile per account.
+ */
+const steps = ["type", "basics", "location", "offer", "review"] as const;
 type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
@@ -26,7 +41,7 @@ export const Route = createFileRoute("/business/new")({
       { title: "Create a business | MusicLinkd" },
       {
         name: "description",
-        content: "Set up a studio, label, venue or agency with its own team, spaces and bookings.",
+        content: "Set up a studio, label, venue or agency with its own page and bookings.",
       },
       { property: "og:title", content: "Create a business | MusicLinkd" },
       {
@@ -40,18 +55,77 @@ export const Route = createFileRoute("/business/new")({
   component: NewBusiness,
 });
 
+function typeIcon(o: TaxonomyOption) {
+  const Icon = roleIcon(o);
+  return <Icon size={16} aria-hidden />;
+}
+
+/** Picked slugs as their labels, or "Not added". */
+function labelsOf(options: TaxonomyOption[] | undefined, slugs: string[]) {
+  return slugs.map((s) => options?.find((o) => o.slug === s)?.label ?? s).join(", ") || "Not added";
+}
+
+const BUSINESS_GROUPS = [{ key: "business", label: "Business" }] as const;
+
 function NewBusiness() {
   const { step } = Route.useSearch();
   const navigate = useNavigate();
+  const router = useRouter();
   const idx = steps.indexOf(step);
   const go = (s: Step) => navigate({ to: "/business/new", search: { step: s } });
+  const taxonomy = useTaxonomy();
+  const tx = taxonomy.options;
+  const types = businessTypes(tx?.person_types ?? []);
 
-  const [type, setType] = useState<BusinessType>("studio");
+  const [type, setType] = useState<string | null>(null);
+  const [mapsUrl, setMapsUrl] = useState("");
+  const [place, setPlace] = useState<MapsPlace | null>(null);
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
-  const [city, setCity] = useState("Mumbai");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
   const [pinCode, setPinCode] = useState("");
-  const [mapsUrl, setMapsUrl] = useState("");
+  const [languages, setLanguages] = useState<string[]>([]);
+  const [amenities, setAmenities] = useState<string[]>([]);
+  const [equipment, setEquipment] = useState<string[]>([]);
+  const isStudio = type === "studio";
+
+  // A pasted Maps link fills in what it can; anything already typed is kept.
+  const read = useServerFn(readMapsLink);
+  const [reading, setReading] = useState(false);
+  const lastRead = useRef("");
+  const link = mapsUrl.trim();
+  const mapsError =
+    link && !GOOGLE_MAPS.test(link) ? "Paste the link from Share in Google Maps." : undefined;
+  useEffect(() => {
+    if (!link || mapsError || lastRead.current === link) return;
+    const t = window.setTimeout(() => {
+      lastRead.current = link;
+      setReading(true);
+      read({ data: { url: link } })
+        .then((p) => {
+          setPlace(p);
+          if (p.name) setName((cur) => cur || p.name!);
+          if (p.state) setState((cur) => cur || p.state!);
+          if (p.city) setCity((cur) => cur || p.city!);
+          if (p.pinCode) setPinCode((cur) => cur || p.pinCode!);
+        })
+        .catch(() => setPlace(null))
+        .finally(() => setReading(false));
+    }, 500);
+    return () => window.clearTimeout(t);
+  }, [link, mapsError, read]);
+
+  const cityError = city.trim() ? cityProblem(city) : "Choose the city.";
+  const pinError = pinCode ? pinProblem(pinCode) : "Enter the 6-digit PIN code.";
+  const valid: Record<Step, boolean> = {
+    type: Boolean(type) && !mapsError,
+    basics: Boolean(name.trim()),
+    location: Boolean(state) && !cityError && !pinError,
+    offer: languages.length > 0,
+    review: Boolean(type && name.trim() && state && !cityError && !pinError && !mapsError),
+  };
+
   const queryClient = useQueryClient();
   const save = useServerFn(createMyBusiness);
   const enter = useServerFn(enterLinkedProfile);
@@ -59,12 +133,15 @@ function NewBusiness() {
     mutationFn: () =>
       save({
         data: {
-          type,
+          type: type!,
           name,
-          city,
-          ...(tagline.trim() ? { tagline } : {}),
+          city: city.trim(),
+          state,
           pinCode,
-          ...(mapsUrl.trim() ? { mapsUrl: mapsUrl.trim() } : {}),
+          ...(tagline.trim() ? { tagline } : {}),
+          ...(link ? { mapsUrl: link } : {}),
+          languages,
+          ...(isStudio ? { amenities, equipment } : {}),
         },
       }),
     onSuccess: async (res) => {
@@ -81,215 +158,274 @@ function NewBusiness() {
     onError: (e) =>
       toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again."),
   });
-  const created = create.isSuccess;
 
-  // Each step's Continue waits for that step's fields to be valid.
-  const cityError = city.trim() ? cityProblem(city) : "Enter the city.";
-  const pinError = pinCode ? pinProblem(pinCode) : "Enter the 6-digit PIN code.";
-  const mapsError =
-    mapsUrl.trim() && !GOOGLE_MAPS.test(mapsUrl.trim())
-      ? "Paste the link from Share in Google Maps."
-      : null;
-  const stepReady =
-    step === "basics"
-      ? Boolean(name.trim())
-      : step === "location"
-        ? !cityError && !pinError && !mapsError
-        : true;
+  const [nudge, setNudge] = useState(0);
+  function submit() {
+    if (!valid[step]) {
+      setNudge((n) => n + 1);
+      return;
+    }
+    if (step === "review") create.mutate();
+    else go(steps[idx + 1]!);
+  }
+
+  const typeLabel = types.find((o) => o.slug === type)?.label ?? "";
+  const cityOptions = choicesFor(tx?.cities.filter((c) => c.metadata?.state === state));
+  // A city from the Maps link that isn't in the list still shows as picked.
+  if (city && !cityOptions.some((c) => c.value === city)) {
+    cityOptions.unshift({ value: city, label: city, hint: undefined });
+  }
+
+  const copy: Record<Step, { group: string; title: string; subtitle: string; why: string }> = {
+    type: {
+      group: "Business",
+      title: "What kind of business?",
+      subtitle: "Pick the one that fits best, then add its Google Maps link.",
+      why: "Your type shapes your page and who finds you. The link fills in the rest.",
+    },
+    basics: {
+      group: "Name",
+      title: "What's it called?",
+      subtitle: "Its name and one line about it.",
+      why: "The name appears on your page, in search and on every booking.",
+    },
+    location: {
+      group: "Location",
+      title: "Where is it?",
+      subtitle: "State, city and PIN code.",
+      why: "Your page shows the city. The PIN code is never shown; it finds people near you.",
+    },
+    offer: {
+      group: "Details",
+      title: isStudio ? "What does it offer?" : "Which languages do you work in?",
+      subtitle: isStudio
+        ? "Languages you work in, the studio's amenities and its equipment."
+        : "Pick every language your team works in.",
+      why: "These show on your page and help the right people find you.",
+    },
+    review: {
+      group: "Review",
+      title: "Review your business",
+      subtitle: "Tap a row to change it.",
+      why: "You can edit all of this later from Manage.",
+    },
+  };
+  const c = copy[step];
 
   return (
-    <Screen bottomNav={false}>
-      <TopBar
-        title="Create business"
-        subtitle={`Step ${idx + 1} of ${steps.length}`}
-        back="/business"
-      />
-
-      <div className="px-5 pt-3">
-        <div className="flex gap-1.5" aria-hidden>
-          {steps.map((s, i) => (
-            <span
-              key={s}
-              className={`h-1 flex-1 rounded-full ${i <= idx ? "bg-primary" : "bg-background"}`}
+    <>
+      <StepShell
+        step={idx + 1}
+        total={steps.length}
+        group={c.group}
+        title={c.title}
+        subtitle={c.subtitle}
+        why={c.why}
+        onBack={() => (idx > 0 ? go(steps[idx - 1]!) : router.history.back())}
+        onSubmit={submit}
+        footer={
+          <Btn
+            key={nudge}
+            type="submit"
+            loading={create.isPending}
+            pending={!valid[step]}
+            className={`w-full ${nudge ? "animate-shake" : ""}`}
+          >
+            {step === "review" ? "Create Business" : "Continue"}
+          </Btn>
+        }
+      >
+        {!tx ? (
+          <StepSkeleton />
+        ) : step === "type" ? (
+          <div className="space-y-6">
+            <PersonTypePicker
+              groups={BUSINESS_GROUPS}
+              options={types.map((o) => ({
+                ...o,
+                metadata: { ...o.metadata, group: "business" },
+              }))}
+              selected={type ? [type] : []}
+              icon={typeIcon}
+              onToggle={(slug) => setType(slug)}
             />
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-4 px-5 pt-5 pb-8">
-        {step === "type" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">What kind of business?</h1>
-            <div className="space-y-2">
-              {businessTypes.map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  onClick={() => setType(t.key)}
-                  className={`flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left ${
-                    type === t.key ? "border-foreground bg-subtle" : "border-transparent bg-subtle"
-                  }`}
-                >
-                  <span aria-hidden className="text-3">
-                    {t.emoji}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-1 font-semibold">{t.label}</span>
-                    <span className="block text-1 text-muted-foreground">{t.blurb}</span>
-                  </span>
-                </button>
-              ))}
+            <div>
+              <InlineField
+                inputId="mapsUrl"
+                label="Google Maps link"
+                value={mapsUrl}
+                onChange={setMapsUrl}
+                placeholder="https://maps.app.goo.gl/…"
+                inputMode="url"
+                {...(mapsError
+                  ? { error: mapsError }
+                  : reading
+                    ? { hint: "Reading the link…" }
+                    : { hint: "In Google Maps, tap Share and copy the link. Optional." })}
+              />
+              {place && !reading && (place.name || place.city) ? (
+                <p className="mt-2 flex items-start gap-1.5 text-1 text-foreground">
+                  <CircleCheck size={iconSize.sm} className="mt-0.5 shrink-0" aria-hidden />
+                  Found {[place.name, place.city, place.state].filter(Boolean).join(" · ")}. We've
+                  filled these in; you can change them.
+                </p>
+              ) : null}
             </div>
-          </Card>
-        ) : null}
-
-        {step === "basics" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">Name and one line</h1>
-            <Field
+          </div>
+        ) : step === "basics" ? (
+          <div className="space-y-5">
+            <InlineField
+              inputId="businessName"
               label="Business name"
               value={name}
               onChange={setName}
               placeholder="Soundhouse Bandra"
+              maxLength={80}
+              hint="Use the name on your signboard."
             />
-            <Field
-              label="Tagline"
+            <InlineField
+              inputId="tagline"
+              label="Tagline (optional)"
               value={tagline}
               onChange={setTagline}
               placeholder="Two rooms, one tape machine."
+              maxLength={160}
+              hint="This is a separate profile. Your personal profile stays as it is."
             />
-            <p className="text-1 text-muted-foreground">
-              This is a separate profile — your personal profile stays exactly as it is.
-            </p>
-          </Card>
-        ) : null}
-
-        {step === "location" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">Where is it?</h1>
-            <Field label="City" value={city} onChange={setCity} placeholder="Mumbai" />
-            <div className="flex flex-wrap gap-2">
-              {["Mumbai", "Delhi", "Bengaluru", "Chennai", "Pune", "Kolkata"].map((c) => (
-                <Chip key={c} active={city === c} onClick={() => setCity(c)}>
-                  {c}
-                </Chip>
-              ))}
+          </div>
+        ) : step === "location" ? (
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-3">
+              <DrawerField label="State">
+                <SheetSelect
+                  title="State"
+                  value={state || null}
+                  options={choicesFor(tx.indian_states)}
+                  placeholder="Choose"
+                  searchable
+                  onChange={(v) => {
+                    setState(v);
+                    setCity("");
+                  }}
+                />
+              </DrawerField>
+              <DrawerField label="City">
+                {state ? (
+                  <SheetSelect
+                    title="City"
+                    value={city || null}
+                    options={cityOptions}
+                    placeholder="Choose"
+                    searchable
+                    onChange={setCity}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="flex h-13 w-full items-center rounded-full border border-border bg-card px-5 text-left text-sm text-muted-foreground opacity-60"
+                  >
+                    State first
+                  </button>
+                )}
+              </DrawerField>
             </div>
-            {city.trim() && cityError ? (
-              <p className="text-1 text-destructive">{cityError}</p>
-            ) : null}
-            <Field
+            <InlineField
+              inputId="pinCode"
               label="PIN code"
               value={pinCode}
               onChange={(v) => setPinCode(v.replace(/\D/g, "").slice(0, 6))}
               placeholder="400053"
               inputMode="numeric"
+              {...(pinCode.length === 6 && pinError
+                ? { error: pinError }
+                : { hint: "Never shown. It finds people near you." })}
             />
-            {pinCode.length === 6 && pinError ? (
-              <p className="text-1 text-destructive">{pinError}</p>
+          </div>
+        ) : step === "offer" ? (
+          <div className="space-y-5">
+            <DrawerField label="Supported languages">
+              <SheetMultiSelect
+                title="Supported languages"
+                value={languages}
+                options={(tx.languages ?? []).map((o) => ({ value: o.slug, label: o.label }))}
+                max={tx.languages.length}
+                placeholder="Choose"
+                onChange={setLanguages}
+              />
+            </DrawerField>
+            {isStudio ? (
+              <>
+                <DrawerField label="Amenities" hint="Optional. Add more later.">
+                  <SheetMultiSelect
+                    title="Amenities"
+                    value={amenities}
+                    options={choicesFor(tx.studio_amenities)}
+                    max={tx.studio_amenities.length}
+                    placeholder="Choose"
+                    onChange={setAmenities}
+                  />
+                </DrawerField>
+                <DrawerField
+                  label="Equipment"
+                  hint="Optional. Add makes and models later under Manage → Equipment."
+                >
+                  <SheetMultiSelect
+                    title="Equipment"
+                    value={equipment}
+                    options={choicesFor(tx.equipment_categories)}
+                    max={tx.equipment_categories.length}
+                    placeholder="Choose"
+                    onChange={setEquipment}
+                  />
+                </DrawerField>
+              </>
             ) : null}
-            <Field
-              label="Google Maps link"
-              value={mapsUrl}
-              onChange={setMapsUrl}
-              placeholder="https://maps.app.goo.gl/…"
-            />
-            {mapsError ? <p className="text-1 text-destructive">{mapsError}</p> : null}
-            <p className="text-1 text-muted-foreground">
-              Your profile shows the city. The PIN code is never shown; it finds people near you.
-              Directions opens the Maps link.
-            </p>
-          </Card>
-        ) : null}
-
-        {step === "review" ? (
-          <Card className="space-y-2">
-            <h1 className="text-2 font-bold">Review</h1>
-            {[
-              ["Type", businessTypes.find((t) => t.key === type)?.label ?? ""],
-              ["Name", name || "Untitled business"],
-              ["City", city.trim()],
-              ["Maps link", mapsUrl.trim() ? "Added" : "Not added"],
-            ].map(([k, v]) => (
-              <div
-                key={k}
-                className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
-              >
-                <span className="pill bg-background text-muted-foreground">{k}</span>
-                <span className="max-w-[60%] text-right text-1 font-semibold">{v}</span>
-              </div>
+          </div>
+        ) : (
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card">
+            {(
+              [
+                ["Type", typeLabel, "type"],
+                ["Maps link", link ? "Added" : "Not added", "type"],
+                ["Name", name, "basics"],
+                ["Tagline", tagline.trim() || "Not added", "basics"],
+                ["City", [city, state].filter(Boolean).join(", "), "location"],
+                ["Languages", labelsOf(tx.languages, languages), "offer"],
+                ...(isStudio
+                  ? ([
+                      ["Amenities", labelsOf(tx.studio_amenities, amenities), "offer"],
+                      ["Equipment", labelsOf(tx.equipment_categories, equipment), "offer"],
+                    ] as const)
+                  : []),
+              ] as const
+            ).map(([k, v, to]) => (
+              <li key={k}>
+                <button
+                  type="button"
+                  onClick={() => go(to)}
+                  className="state-layer flex min-h-14 w-full items-center gap-3 px-4 text-left"
+                >
+                  <span className="w-24 shrink-0 text-sm font-medium">{k}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{v}</span>
+                  <ChevronRight size={iconSize.sm} className="shrink-0" aria-hidden />
+                </button>
+              </li>
             ))}
-            <p className="pt-1 text-1 text-muted-foreground">
-              Business verification is a separate step and unlocks the verified badge.
-            </p>
-          </Card>
-        ) : null}
-
-        <div className="flex gap-2">
-          {idx > 0 ? (
-            <Btn variant="outline" className="flex-1" onClick={() => go(steps[idx - 1]!)}>
-              Back
-            </Btn>
-          ) : null}
-          {idx < steps.length - 1 ? (
-            <Btn className="flex-1" disabled={!stepReady} onClick={() => go(steps[idx + 1]!)}>
-              Continue
-            </Btn>
-          ) : (
-            <Btn
-              className="flex-1"
-              disabled={!name.trim() || Boolean(cityError || pinError || mapsError)}
-              loading={create.isPending}
-              onClick={() => create.mutate()}
-            >
-              Create Business
-            </Btn>
-          )}
-        </div>
-      </div>
+          </ul>
+        )}
+      </StepShell>
 
       <Dialog
-        open={created}
+        open={create.isSuccess}
         title="Business created"
-        body="Add spaces and rates next, then request business verification to get the badge."
+        body="Add your spaces, hours and rates next."
         onClose={() => create.reset()}
       >
-        <div className="space-y-2">
-          <BtnLink to="/business" className="w-full">
-            Open Business
-          </BtnLink>
-          <BtnLink to="/verification/choose" variant="ghost" className="w-full">
-            Verify This Business
-          </BtnLink>
-        </div>
+        <BtnLink to="/business" className="w-full">
+          Open Business
+        </BtnLink>
       </Dialog>
-    </Screen>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-  inputMode,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  inputMode?: "numeric";
-}) {
-  return (
-    <label className="block">
-      <span className="pill bg-background text-muted-foreground">{label}</span>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder ?? ""}
-        {...(inputMode ? { inputMode } : {})}
-        className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
-      />
-    </label>
+    </>
   );
 }
