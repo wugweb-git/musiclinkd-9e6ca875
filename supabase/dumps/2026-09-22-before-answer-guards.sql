@@ -1,0 +1,26 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922150000_answer_guards.sql.
+-- The migration adds two BEFORE UPDATE triggers and changes no rows; this records the rules they sit on.
+--
+-- booking_requests columns: id, studio_id, room_id, requester_profile_id, session_date, start_time,
+--   end_time, hours, people, purpose, notes, status, reply, created_at, updated_at, studio_name,
+--   requester_name
+-- booking_requests policies:
+--   SELECT "Requester and studio read"          USING (requester_profile_id = auth.uid() OR studio_is_mine(studio_id))
+--   INSERT "Ask as yourself"                    WITH CHECK (requester_profile_id = auth.uid())
+--   UPDATE "Studio answers, requester cancels"  USING/WITH CHECK (studio_is_mine(studio_id) OR requester_profile_id = auth.uid())
+--   DELETE "Requester removes their own"        USING (requester_profile_id = auth.uid())
+-- booking_requests triggers: booking_requests_names (BEFORE INSERT), booking_requests_touch_updated_at
+--   (BEFORE UPDATE), notify_booking (AFTER INSERT, UPDATE)
+--
+-- reviews columns: id, target_profile_id, author_profile_id, author_name, author_org, context, rating,
+--   body, response, created_at, target_studio_id, tags
+-- reviews policies:
+--   SELECT "Readable with its profile or studio" USING (target_studio_id IS NOT NULL OR profile_is_readable(target_profile_id))
+--   INSERT "Write about work you have done"      (author = auth.uid(), rating 1-5, can_review_profile/studio)
+--   UPDATE "Authors edit their own"              USING/WITH CHECK (author_profile_id = auth.uid())
+--   UPDATE "The reviewed may reply"              USING/WITH CHECK (target_profile_id = auth.uid() OR studio_is_mine(target_studio_id))
+--   DELETE "Authors remove their own"            USING (author_profile_id = auth.uid())
+-- reviews triggers: notify_review (AFTER INSERT, UPDATE), reviews_refresh_stats (AFTER INSERT, UPDATE, DELETE)
+--
+-- To undo: see the Rollback note at the top of the migration.
