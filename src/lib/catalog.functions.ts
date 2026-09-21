@@ -419,6 +419,16 @@ const listingInput = z.object({
   videoUrl: z.string().trim().url().max(500).optional(),
   // Uploaded photo URLs in order; the first is the cover.
   photos: z.array(z.string().url().max(1000)).max(5).optional(),
+  included: z.array(z.string().trim().min(1).max(60)).max(20).optional(),
+  specs: z
+    .array(
+      z.object({
+        label: z.string().trim().min(1).max(40),
+        value: z.string().trim().min(1).max(80),
+      }),
+    )
+    .max(12)
+    .optional(),
 });
 
 type ListingInput = z.infer<typeof listingInput>;
@@ -447,6 +457,8 @@ function listingColumns(data: ListingInput) {
     ...(data.pickupLocation ? { pickup_location: data.pickupLocation } : {}),
     video_url: data.videoUrl ?? null,
     ...(data.photos?.length ? { photos: data.photos, image_url: data.photos[0] } : {}),
+    ...(data.included ? { included: data.included } : {}),
+    ...(data.specs ? { specs: data.specs } : {}),
   };
 }
 
@@ -486,6 +498,8 @@ export type MyListing = {
   delivery_available: boolean | null;
   video_url: string | null;
   photos: string[] | null;
+  included: string[] | null;
+  specs: { label: string; value: string }[] | null;
   listing_status: string | null;
   created_at: string;
 };
@@ -497,7 +511,7 @@ export const listMyManagedListings = createServerFn({ method: "GET" })
     const { data, error } = await client
       .from("marketplace_listings")
       .select(
-        "id, slug, title, category, item_category, item_category_kind, condition, price_paise, price_unit, image_url, brand, model, listing_description, pickup_location, pickup_available, delivery_available, video_url, photos, listing_status, created_at",
+        "id, slug, title, category, item_category, item_category_kind, condition, price_paise, price_unit, image_url, brand, model, listing_description, pickup_location, pickup_available, delivery_available, video_url, photos, included, specs, listing_status, created_at",
       )
       .eq("seller_profile_id", context.userId)
       .order("created_at", { ascending: false });

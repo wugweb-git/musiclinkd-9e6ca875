@@ -27,7 +27,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Sheet } from "./ui";
+import { Btn, IconBtn, Sheet } from "./ui";
 import { PROFILE_IMAGE_ACCEPT } from "@/lib/profile-images";
 import { MAX_LISTING_PHOTOS, uploadListingPhoto } from "@/lib/listing-photos";
 import { SegmentedField } from "./kit";
@@ -87,6 +87,10 @@ export type ListingDraft = {
   videoUrl: string;
   /** Uploaded photo URLs, in order; the first is the cover. */
   photos: string[];
+  /** What comes with it ("Flight case", "Cables"). Optional. */
+  included: string[];
+  /** Extra specifications as label and value ("Weight", "18.5 kg"). Optional. */
+  specs: { label: string; value: string }[];
 };
 
 export const emptyListingDraft: ListingDraft = {
@@ -104,6 +108,8 @@ export const emptyListingDraft: ListingDraft = {
   pin: "",
   videoUrl: "",
   photos: [],
+  included: [],
+  specs: [],
 };
 
 export const listingSteps = ["What & price", "Photos & description", "Where & publish"] as const;
@@ -197,6 +203,8 @@ export function draftFromListing(row: MyListing): ListingDraft {
     pin: place.pin,
     videoUrl: row.video_url ?? "",
     photos: row.photos?.length ? row.photos : row.image_url ? [row.image_url] : [],
+    included: row.included ?? [],
+    specs: row.specs ?? [],
   };
 }
 
@@ -240,6 +248,10 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
       : {}),
     ...(d.videoUrl.trim() && !videoProblem(d.videoUrl) ? { videoUrl: d.videoUrl.trim() } : {}),
     ...(d.photos.length ? { photos: d.photos } : {}),
+    included: d.included.map((x) => x.trim()).filter(Boolean),
+    specs: d.specs
+      .map((sp) => ({ label: sp.label.trim(), value: sp.value.trim() }))
+      .filter((sp) => sp.label && sp.value),
   };
 }
 
@@ -559,7 +571,113 @@ export function ListingMediaStep({ value, onChange }: StepProps) {
           className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
         />
       </Field>
+      <IncludedField value={value.included} onChange={(included) => onChange({ included })} />
+      <SpecsField value={value.specs} onChange={(specs) => onChange({ specs })} />
     </div>
+  );
+}
+
+/** What comes with it: type one, Add; each shows as a tag with a remove button. */
+function IncludedField({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+  const [draft, setDraft] = useState("");
+  const add = () => {
+    const v = draft.trim();
+    if (v && !value.includes(v) && value.length < 20) onChange([...value, v]);
+    setDraft("");
+  };
+  return (
+    <Field label="What's included (optional)" id="listing-included">
+      <div className="flex gap-2">
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              add();
+            }
+          }}
+          placeholder="Flight case"
+          className={inputClass}
+        />
+        <IconBtn label="Add item" className="h-13 w-13" onClick={add} disabled={!draft.trim()}>
+          <Plus size={iconSize.md} aria-hidden />
+        </IconBtn>
+      </div>
+      {value.length ? (
+        <ul className="mt-2 flex flex-wrap gap-2">
+          {value.map((x) => (
+            <li
+              key={x}
+              className="inline-flex items-center gap-1.5 rounded-sm bg-card py-1.5 pl-2.5 pr-1.5 text-1 font-medium text-foreground"
+            >
+              {x}
+              <button
+                type="button"
+                aria-label={`Remove ${x}`}
+                onClick={() => onChange(value.filter((y) => y !== x))}
+                className="flex h-5 w-5 items-center justify-center"
+              >
+                <X size={iconSize.xs} aria-hidden />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </Field>
+  );
+}
+
+/** Specifications: rows of label and value, added one at a time. */
+function SpecsField({
+  value,
+  onChange,
+}: {
+  value: { label: string; value: string }[];
+  onChange: (v: { label: string; value: string }[]) => void;
+}) {
+  const set = (i: number, patch: Partial<{ label: string; value: string }>) =>
+    onChange(value.map((sp, j) => (j === i ? { ...sp, ...patch } : sp)));
+  return (
+    <Field label="Specifications (optional)" id="listing-specs">
+      <div className="space-y-2">
+        {value.map((sp, i) => (
+          <div key={i} className="flex gap-2">
+            <input
+              value={sp.label}
+              onChange={(e) => set(i, { label: e.target.value })}
+              placeholder="Weight"
+              aria-label="Specification"
+              className={`${inputClass} flex-[2]`}
+            />
+            <input
+              value={sp.value}
+              onChange={(e) => set(i, { value: e.target.value })}
+              placeholder="18.5 kg"
+              aria-label="Value"
+              className={`${inputClass} flex-[3]`}
+            />
+            <IconBtn
+              label="Remove specification"
+              className="h-13 w-13"
+              onClick={() => onChange(value.filter((_, j) => j !== i))}
+            >
+              <X size={iconSize.sm} aria-hidden />
+            </IconBtn>
+          </div>
+        ))}
+        {value.length < 12 ? (
+          <Btn
+            variant="outline"
+            className="w-full"
+            onClick={() => onChange([...value, { label: "", value: "" }])}
+          >
+            <Plus size={iconSize.sm} aria-hidden />
+            Add a specification
+          </Btn>
+        ) : null}
+      </div>
+    </Field>
   );
 }
 
