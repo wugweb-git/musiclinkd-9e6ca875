@@ -61,6 +61,8 @@ import {
   ProjectCard,
   ReviewCard,
   ServiceCard,
+  ServicesProvided,
+  ReviewInviteCard,
   ShareSheet,
   SocialLinks,
   VideoCard,
@@ -721,13 +723,9 @@ function OwnerStack({
         </StackSection>
       ) : null}
 
-      <StackSection title="Services" editTo="/services" collapsible>
+      <StackSection title="Services provided" editTo="/services" collapsible>
         {p.services.length ? (
-          <div className="space-y-2">
-            {p.services.slice(0, 2).map((service) => (
-              <ServiceCard key={service.id} s={service} onEnquire={onHire} />
-            ))}
-          </div>
+          <ServicesProvided services={p.services} />
         ) : (
           <ProfileEmpty
             title="No services yet"
@@ -838,7 +836,7 @@ function OwnerStack({
         )}
       </StackSection>
 
-      <StackSection title="Reviews" showAll="Request a review" showAllTo="/reviews">
+      <StackSection title="Reviews">
         {p.reviews.length ? (
           <div className="space-y-3">
             {p.reviews.slice(0, 2).map((review) => (
@@ -846,11 +844,13 @@ function OwnerStack({
             ))}
           </div>
         ) : (
-          <ProfileEmpty
-            title="No reviews yet"
-            body="Reviews appear here once work booked through MusicLinkd is complete."
-          />
+          <p className="text-1 text-foreground">
+            You haven't received enough reviews to show an overall rating.
+          </p>
         )}
+        <div className="mt-3">
+          <ReviewInviteCard />
+        </div>
       </StackSection>
 
       {p.collaborators.length ? (
@@ -1062,12 +1062,10 @@ function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
 
 function Services({ p, onHire }: { p: PersonProfile; onHire: () => void }) {
   return (
-    <ProfileSection title="Services">
+    <ProfileSection title="Services provided">
       <div className="space-y-3">
         {p.services.length ? (
-          p.services.map((service) => (
-            <ServiceCard key={service.id} s={service} onEnquire={onHire} />
-          ))
+          <ServicesProvided services={p.services} />
         ) : (
           // No owner button: the new-service flow does not save a service yet.
           <ProfileEmpty
@@ -1188,16 +1186,20 @@ function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
         )}
       </ProfileSection>
       {/* Reviews follow completed work, so the path to writing one runs through Reviews. */}
-      <div className="mt-5 rounded-lg bg-subtle p-4">
-        <p className="text-1 text-muted-foreground">
-          {owner
-            ? "Ask the people you have worked with to review you. Requests go out from Reviews."
-            : `You can review ${p.name || "this profile"} once a booking, order or rental with them is complete. It stays open for 14 days.`}
-        </p>
-        <BtnLink to="/reviews" variant="outline" className="mt-3 w-full">
-          {owner ? "Request a review" : "Write a review"}
-        </BtnLink>
-      </div>
+      {owner ? (
+        <div className="mt-5">
+          <ReviewInviteCard />
+        </div>
+      ) : (
+        <div className="mt-5 rounded-lg bg-subtle p-4">
+          <p className="text-1 text-muted-foreground">
+            {`You can review ${p.name || "this profile"} once a booking, order or rental with them is complete. It stays open for 14 days.`}
+          </p>
+          <BtnLink to="/reviews" variant="outline" className="mt-3 w-full">
+            Write a review
+          </BtnLink>
+        </div>
+      )}
     </>
   );
 }

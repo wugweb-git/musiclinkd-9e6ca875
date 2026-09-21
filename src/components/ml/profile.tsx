@@ -28,6 +28,7 @@ import {
   Instagram,
   Laptop,
   Youtube,
+  MessageSquareQuote,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -1032,6 +1033,50 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
         <p className="mt-1 text-1 font-semibold text-foreground">{joinParts(p.genre, p.year)}</p>
       </div>
     </article>
+  );
+}
+
+/**
+ * Services provided: each service's name as a small tag (LinkedIn's pattern). A tag opens the
+ * service, where its price, terms and Enquire live.
+ */
+export function ServicesProvided({ services }: { services: ServiceItem[] }) {
+  return (
+    <ul className="flex flex-wrap gap-2">
+      {services.map((s) => (
+        <li key={s.id}>
+          <Link
+            to="/services/$id"
+            params={{ id: s.id }}
+            className="state-layer inline-flex rounded-sm bg-background px-3 py-1.5 text-sm font-medium text-foreground"
+          >
+            {s.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** The owner's prompt to ask past clients for a review, in the Reviews section. */
+export function ReviewInviteCard() {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-border p-4">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip">
+        <MessageSquareQuote size={iconSize.md} strokeWidth={1.75} aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold text-foreground">
+          Invite past clients to review
+        </span>
+        <span className="block text-1 text-foreground">
+          Ask the people who can best speak to your work.
+        </span>
+      </span>
+      <BtnLink to="/reviews/request" variant="outline" className="min-h-control-sm shrink-0 px-4">
+        Invite
+      </BtnLink>
+    </div>
   );
 }
 
