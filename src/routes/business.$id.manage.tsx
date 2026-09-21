@@ -94,13 +94,6 @@ function ManageBusiness() {
             params={{ id }}
           />
           <Row
-            icon={<Users size={iconSize.sm} />}
-            title="Team & roles"
-            subtitle={`${b.members.filter((m) => !m.invited).length} active`}
-            to="/business/$id/team"
-            params={{ id }}
-          />
-          <Row
             icon={<CalendarClock size={iconSize.sm} />}
             title="Availability & bookings"
             subtitle="Calendar, requests, policies"

@@ -8,9 +8,9 @@ import { Card, Dialog } from "@/components/ml/kit";
 import { businessTypes, type BusinessType } from "@/data/business";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
 
-// Spaces is deferred (owner, 21 Sep 2026): a business starts with one space, and rooms are added
-// after it exists.
-const steps = ["type", "basics", "location", "team", "review"] as const;
+// Spaces and Team are off for now (owner, 21 Sep 2026): a business starts with one space, rooms are
+// added after it exists, and one business profile belongs to one account (one email).
+const steps = ["type", "basics", "location", "review"] as const;
 type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
@@ -47,7 +47,6 @@ function NewBusiness() {
   const [tagline, setTagline] = useState("");
   const [city, setCity] = useState("Mumbai");
   const [address, setAddress] = useState("");
-  const [invites, setInvites] = useState("");
   const queryClient = useQueryClient();
   const save = useServerFn(createMyBusiness);
   const create = useMutation({
@@ -155,21 +154,6 @@ function NewBusiness() {
           </Card>
         ) : null}
 
-        {step === "team" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">Invite your team</h1>
-            <Field
-              label="Emails or @usernames"
-              value={invites}
-              onChange={setInvites}
-              placeholder="@kabir, farah@studio.in"
-            />
-            <p className="text-1 text-muted-foreground">
-              Managers can edit and accept bookings. Engineers only see sessions assigned to them.
-            </p>
-          </Card>
-        ) : null}
-
         {step === "review" ? (
           <Card className="space-y-2">
             <h1 className="text-2 font-bold">Review</h1>
@@ -177,7 +161,6 @@ function NewBusiness() {
               ["Type", businessTypes.find((t) => t.key === type)?.label ?? ""],
               ["Name", name || "Untitled business"],
               ["City", city],
-              ["Invites", invites || "None yet"],
             ].map(([k, v]) => (
               <div
                 key={k}

@@ -31,13 +31,13 @@ import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
-type BusinessTab = "Overview" | "Spaces" | "Team" | "Credits" | "Reviews";
+// Team is off for now: one business profile belongs to one account (owner, 21 Sep 2026).
+type BusinessTab = "Overview" | "Spaces" | "Credits" | "Reviews";
 
 /** Same row as the person profile: icon alone until selected, then solid with its move. */
 const tabs: { key: BusinessTab; icon: LucideIcon; solid: SolidIcon; move: Move }[] = [
   { key: "Overview", icon: Sparkles, solid: "sparkle", move: "spin" },
   { key: "Spaces", icon: House, solid: "home", move: "hop" },
-  { key: "Team", icon: Users, solid: "person", move: "dance" },
   { key: "Credits", icon: Music, solid: "music", move: "dance" },
   { key: "Reviews", icon: Star, solid: "star", move: "stamp" },
 ];
@@ -249,36 +249,6 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
               </Card>
             ))}
           </div>
-        ) : null}
-
-        {tab === "Team" ? (
-          <Card className="space-y-3">
-            {b.members.map((m) => (
-              <div
-                key={m.id}
-                className="flex items-center gap-3 border-b border-border py-2.5 last:border-0"
-              >
-                {m.photo ? (
-                  <img
-                    src={m.photo}
-                    alt=""
-                    className="h-10 w-10 shrink-0 rounded-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div aria-hidden className="h-10 w-10 shrink-0 rounded-full bg-background" />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-1 font-semibold">{m.name}</p>
-                  {m.detail ? <p className="text-1 text-muted-foreground">{m.detail}</p> : null}
-                </div>
-                {m.invited ? <StatusPill label="invited" tone="warn" /> : null}
-              </div>
-            ))}
-            <TextLink to="/business/$id/team" params={{ id: b.id }} className="block text-1">
-              Manage Team →
-            </TextLink>
-          </Card>
         ) : null}
 
         {tab === "Credits" ? (
