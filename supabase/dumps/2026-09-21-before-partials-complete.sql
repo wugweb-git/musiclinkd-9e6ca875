@@ -1,0 +1,28 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921200000_partials_complete.sql.
+--
+-- Scope: row counts and what the migration touches. It adds one nullable column,
+-- studios.archived_at (timestamptz, no default), and one partial index on studios. It changes no
+-- existing row: every studio stays live (archived_at null) until its owner deletes the business.
+--
+-- Row counts: studios 18, profile_business 31, profile_members (kind 'team') 7,
+-- booking_requests 4, profiles 125.
+-- profiles.discovery_prefs: no row holds an 'appear' key or a 'qr' key yet (both 0), so Privacy's
+-- "Appear in Discover" and QR & sharing start from their defaults for everyone.
+--
+-- studios at snapshot time:
+--   columns     id uuid, owner_profile_id uuid, slug text, name text, description text, location text,
+--               geo_lat double precision, geo_lng double precision, hourly_rate_paise bigint,
+--               rating numeric, review_count integer, verified_gold boolean, console_type text,
+--               services text[], amenities text[], cancellation_policy text, operating_hours text,
+--               image_url text, images text[], created_at timestamptz, updated_at timestamptz,
+--               response_time text, add_ons jsonb, weekly_hours jsonb
+--   indexes     studios_pkey, studios_slug_key, studios_owner_idx
+--   RLS on; policies: "Readable by everyone" FOR SELECT USING (true);
+--               "Owners write their own" FOR ALL USING (auth.uid() = owner_profile_id)
+--   no column archived_at
+--
+-- Foreign keys into studios at snapshot time (all ON DELETE CASCADE): studio_rooms, studio_equipment,
+-- reviews.target_studio_id, booking_requests.studio_id, studio_blocks, studio_photos. This is why a
+-- deleted business archives its studio instead of deleting it: a delete would take the customers'
+-- past bookings and reviews with it.
