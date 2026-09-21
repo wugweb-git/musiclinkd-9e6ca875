@@ -121,3 +121,21 @@ export function addAnotherAccount() {
   }
   window.location.assign("/welcome");
 }
+
+/**
+ * Switch into a profile linked to this sign-in: your business page, or back from it to you. The
+ * server checks the link and returns a one-time sign-in, exchanged here for that profile's
+ * session, which is then saved like any other (src/lib/pages.functions.ts).
+ */
+export async function switchToLinked(
+  profileId: string,
+  enter: (args: { data: { profileId: string } }) => Promise<{ tokenHash: string }>,
+) {
+  const { tokenHash } = await enter({ data: { profileId } });
+  const { data, error } = await supabase.auth.verifyOtp({
+    token_hash: tokenHash,
+    type: "magiclink",
+  });
+  if (error || !data.session) throw new Error("Couldn't switch. Try again.");
+  rememberSession(data.session);
+}

@@ -8,6 +8,7 @@ import { Card, SoonBadge, StatusPill } from "@/components/ml/kit";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { claimMyUsername, getMyProfile } from "@/lib/portfolio.functions";
+import { isPageEmail } from "@/lib/pages";
 import { emailProblem, indianPhone, phoneProblem } from "@/lib/validation";
 
 export const Route = createFileRoute("/settings/account")({
@@ -47,13 +48,18 @@ function AccountScreen() {
     verified: boolean;
     action: string;
   }[] = [
-    {
-      key: "email",
-      label: "Email",
-      value: user?.email ?? "—",
-      verified: !!user?.email_confirmed_at,
-      action: "Change",
-    },
+    // A business page signs in through its owner, so it has no email of its own to show.
+    ...(isPageEmail(user?.email)
+      ? []
+      : [
+          {
+            key: "email" as FieldKey,
+            label: "Email",
+            value: user?.email ?? "—",
+            verified: !!user?.email_confirmed_at,
+            action: "Change",
+          },
+        ]),
     {
       key: "phone",
       label: "Phone",

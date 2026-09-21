@@ -137,10 +137,10 @@ function Complete() {
           {d.businessIntent ? (
             <HandoffCard
               title={`Set up your ${labelFor(tx?.person_types, d.businessIntent).toLowerCase()} profile`}
-              body="A business has its own account, so clients can book the business, not just you. Add it, then switch between the two."
+              body="Your business gets its own page, so clients can book the business, not just you. Switch between the two from the menu."
               action={
-                <BtnLink to="/accounts" className="w-full">
-                  Add a Business Account
+                <BtnLink to="/business/new" search={{ step: "type" }} className="w-full">
+                  Start Business Setup
                 </BtnLink>
               }
             />

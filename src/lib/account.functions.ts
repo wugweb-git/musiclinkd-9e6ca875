@@ -185,9 +185,22 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
   .handler(async ({ context }): Promise<DeleteAccountResult> => {
     const client = context.supabase as unknown as Client;
     const me = context.userId;
-    const count = await upcomingBookingsOf(client, me);
-    if (count) return { status: "upcoming", count };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // The business page this sign-in owns goes with it, so its sessions end too.
+    const { data: page } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("owner_id" as never, me)
+      .maybeSingle();
+    const pageId = (page as { id: string } | null)?.id ?? null;
+    const count =
+      (await upcomingBookingsOf(client, me)) +
+      (pageId ? await upcomingBookingsOf(supabaseAdmin as unknown as Client, pageId) : 0);
+    if (count) return { status: "upcoming", count };
+    if (pageId) {
+      const { error: pageError } = await supabaseAdmin.auth.admin.deleteUser(pageId);
+      if (pageError) throw new Error(pageError.message);
+    }
     const { error } = await supabaseAdmin.auth.admin.deleteUser(me);
     if (error) throw new Error(error.message);
     return { status: "deleted" };

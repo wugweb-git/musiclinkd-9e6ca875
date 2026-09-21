@@ -7,6 +7,8 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Dialog } from "@/components/ml/kit";
 import { businessTypes, type BusinessType } from "@/data/business";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
+import { enterLinkedProfile } from "@/lib/pages.functions";
+import { switchToLinked } from "@/lib/saved-accounts";
 import { GOOGLE_MAPS } from "@/lib/place";
 import { cityProblem, pinProblem } from "@/lib/validation";
 
@@ -52,6 +54,7 @@ function NewBusiness() {
   const [mapsUrl, setMapsUrl] = useState("");
   const queryClient = useQueryClient();
   const save = useServerFn(createMyBusiness);
+  const enter = useServerFn(enterLinkedProfile);
   const create = useMutation({
     mutationFn: () =>
       save({
@@ -64,7 +67,17 @@ function NewBusiness() {
           ...(mapsUrl.trim() ? { mapsUrl: mapsUrl.trim() } : {}),
         },
       }),
-    onSuccess: () => queryClient.invalidateQueries(),
+    onSuccess: async (res) => {
+      // A talent sign-in got a business page: switch into it, so the next screens are the page's.
+      if (res.pageId) {
+        try {
+          await switchToLinked(res.pageId, enter);
+        } catch {
+          toast.error("Your page is ready. Switch to it from Switch account.");
+        }
+      }
+      await queryClient.invalidateQueries();
+    },
     onError: (e) =>
       toast.error(e instanceof Error && e.message ? e.message : "That didn't save. Try again."),
   });

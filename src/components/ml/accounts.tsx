@@ -11,7 +11,7 @@ export function AccountRow({
   onPick,
   onRemove,
 }: {
-  account: SavedAccount;
+  account: Pick<SavedAccount, "name" | "username" | "email" | "avatarUrl" | "kind">;
   current: boolean;
   busy: boolean;
   onPick: () => void;

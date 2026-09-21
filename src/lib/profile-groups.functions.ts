@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient, softSelect } from "@/lib/portfolio.functions";
 import { GOOGLE_MAPS, placeLine } from "@/lib/place";
 import { CITY_PATTERN } from "@/lib/validation";
+import { createBusinessPage } from "@/lib/pages.functions";
 
 /*
  * Business accounts. MusicLinkd has two account kinds, talent and business, in one username
@@ -645,7 +646,7 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       })
       .parse(d),
   )
-  .handler(async ({ context, data }): Promise<{ username: string | null }> => {
+  .handler(async ({ context, data }): Promise<CreatedBusiness> => {
     const client = context.supabase as unknown as SupabaseClient;
     const { data: me, error: readError } = await client
       .from("profiles")
@@ -654,11 +655,13 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       .maybeSingle();
     if (readError) throw new Error(readError.message);
     const current = (me as { username: string | null; roles: string[] | null } | null) ?? null;
-    const role = ROLE_FOR_TYPE[data.type];
-    // The profile row is the business, so a talent account can't become one: its name, city and
-    // headline would be overwritten. A business needs its own account (Switch account → Add).
+    // A talent login gets a business page it owns (owner, 22 Sep 2026), so its own profile is
+    // never touched. A login that signed up as a business is the business itself, as before.
     if (await isTalentAccount(client, current?.roles)) {
-      throw new Error("A business needs its own account. Add one from Switch account.");
+      const page = await createBusinessPage(context.userId, data.name, (admin, pageId, username) =>
+        setUpBusiness(admin, pageId, data, { username, roles: null }, false),
+      );
+      return { username: page.username, pageId: page.pageId };
     }
     // One account, one business profile. A studio whose studio row failed last time may retry,
     // which finishes the setup instead of leaving it without one.
@@ -678,67 +681,78 @@ export const createMyBusiness = createServerFn({ method: "POST" })
       throw new Error("This account already has a business profile.");
     }
 
-    const { error } = await client
-      .from("profiles")
-      .update({
-        display_name: data.name,
-        city: data.city,
-        ...(data.pinCode ? { pin_code: data.pinCode } : {}),
-        ...(data.tagline ? { headline: data.tagline } : {}),
-        ...(role && !current?.roles?.length ? { roles: [role] } : {}),
-        // Creating the business is the end of a business account's onboarding; without this the
-        // next sign-in would send it back to /onboarding.
-        onboarding_complete: true,
-        onboarding_step: null,
-      } as never)
-      .eq("id", context.userId);
-    if (error) throw new Error(error.message);
+    await setUpBusiness(client, context.userId, data, current, hasStudio);
+    return { username: current?.username ?? null, pageId: null };
+  });
 
-    const { error: businessError } = await client.from("profile_business").upsert({
-      profile_id: context.userId,
-      // The address is the city and PIN code; Directions opens the Maps link.
-      business_address: placeLine(data.city, data.pinCode) || null,
-      maps_url: data.mapsUrl ?? null,
-      updated_at: new Date().toISOString(),
-    } as never);
-    if (businessError) throw new Error(businessError.message);
+export type CreatedBusiness = {
+  username: string | null;
+  /** Set when a talent login got a business page; the owner is switched into it next. */
+  pageId: string | null;
+};
 
-    // A studio business gets its studio too, so weekly hours, the calendar, equipment and proof
-    // photos work from day one. Its slug follows the account's username when that is free.
-    if (data.type === "studio") {
-      if (!hasStudio) {
-        const base =
-          current?.username ||
-          data.name
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)/g, "")
-            .slice(0, 60) ||
-          "studio";
-        const { data: taken } = await client.from("studios").select("id").eq("slug", base).limit(1);
-        const slug = taken?.length ? `${base}-${Math.random().toString(36).slice(2, 7)}` : base;
-        const { error: studioError } = await client.from("studios").insert({
-          owner_profile_id: context.userId,
-          slug,
-          name: data.name,
-          location: placeLine(data.city, data.pinCode) || null,
-        } as never);
-        if (studioError) throw new Error(studioError.message);
-      }
+/** Writes a business onto a profile row: its name and place, business details, and its studio. */
+async function setUpBusiness(
+  client: SupabaseClient,
+  profileId: string,
+  data: {
+    type: string;
+    name: string;
+    tagline?: string | undefined;
+    city: string;
+    pinCode: string;
+    mapsUrl?: string | undefined;
+  },
+  current: { username: string | null; roles: string[] | null } | null,
+  hasStudio: boolean,
+) {
+  const role = ROLE_FOR_TYPE[data.type];
+  const { error } = await client
+    .from("profiles")
+    .update({
+      display_name: data.name,
+      city: data.city,
+      ...(data.pinCode ? { pin_code: data.pinCode } : {}),
+      ...(data.tagline ? { headline: data.tagline } : {}),
+      ...(role && !current?.roles?.length ? { roles: [role] } : {}),
+      // Creating the business is the end of a business account's onboarding; without this the
+      // next sign-in would send it back to /onboarding.
+      onboarding_complete: true,
+      onboarding_step: null,
+    } as never)
+    .eq("id", profileId);
+  if (error) throw new Error(error.message);
+
+  const { error: businessError } = await client.from("profile_business").upsert({
+    profile_id: profileId,
+    // The address is the city and PIN code; Directions opens the Maps link.
+    business_address: placeLine(data.city, data.pinCode) || null,
+    maps_url: data.mapsUrl ?? null,
+    updated_at: new Date().toISOString(),
+  } as never);
+  if (businessError) throw new Error(businessError.message);
+
+  // A studio business gets its studio too, so weekly hours, the calendar, equipment and proof
+  // photos work from day one. Its slug follows the account's username when that is free.
+  if (data.type === "studio") {
+    if (!hasStudio) {
+      const base =
+        current?.username?.replace(/[._]+/g, "-") ||
+        data.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "")
+          .slice(0, 60) ||
+        "studio";
+      const { data: taken } = await client.from("studios").select("id").eq("slug", base).limit(1);
+      const slug = taken?.length ? `${base}-${Math.random().toString(36).slice(2, 7)}` : base;
+      const { error: studioError } = await client.from("studios").insert({
+        owner_profile_id: profileId,
+        slug,
+        name: data.name,
+        location: placeLine(data.city, data.pinCode) || null,
+      } as never);
+      if (studioError) throw new Error(studioError.message);
     }
-    return { username: current?.username ?? null };
-  });
-
-/** Whether the signed-in account is a talent account, which can't create a business on itself. */
-export const getMyAccountIsTalent = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<boolean> => {
-    const client = context.supabase as unknown as SupabaseClient;
-    const { data, error } = await client
-      .from("profiles")
-      .select("roles")
-      .eq("id", context.userId)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    return isTalentAccount(client, (data as { roles: string[] | null } | null)?.roles);
-  });
+  }
+}

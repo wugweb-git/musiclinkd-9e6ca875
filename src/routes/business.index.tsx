@@ -6,7 +6,8 @@ import { Card, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { businessViewFromRecord, type BusinessView } from "@/lib/business-view";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { getMyAccountIsTalent, getMyBusiness } from "@/lib/profile-groups.functions";
+import { getMyBusiness } from "@/lib/profile-groups.functions";
+import { listLinkedProfiles } from "@/lib/pages.functions";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
@@ -44,15 +45,16 @@ function BusinessHome() {
     queryFn: loadMyBusiness,
     enabled: signedIn,
   });
-  // A talent account can't turn into a business; a business needs its own account.
-  const talent = useQuery({
-    queryKey: ["account", "is-talent", user?.id ?? null],
-    queryFn: () => getMyAccountIsTalent(),
+  // A talent sign-in owns at most one business page; once it has one, this points to it.
+  const linked = useQuery({
+    queryKey: ["accounts", "linked", user?.id ?? null],
+    queryFn: () => listLinkedProfiles(),
     enabled: signedIn,
   });
-  const pending = loading || (signedIn && (q.isPending || talent.isPending));
+  const pending = loading || (signedIn && (q.isPending || linked.isPending));
   const businesses = signedIn ? (q.data ?? []) : [];
-  const canCreate = !businesses.length && !talent.data;
+  const page = (linked.data ?? []).find((p) => p.id !== user?.id && p.kind === "business");
+  const canCreate = !businesses.length && !page;
 
   return (
     <Screen>
@@ -122,13 +124,13 @@ function BusinessHome() {
               </Card>
             </Link>
           ))
-        ) : talent.data ? (
+        ) : page ? (
           <EmptyState
-            title="A business has its own account"
-            body="Your talent profile stays as it is. Add a business account, then switch between the two."
+            title={page.name ?? "Your business page"}
+            body="Your business page has its own spaces, services and bookings. Switch to it to manage them."
           >
             <BtnLink to="/accounts" className="w-full">
-              Add a Business Account
+              Switch to {page.name ?? "Business Page"}
             </BtnLink>
           </EmptyState>
         ) : (
