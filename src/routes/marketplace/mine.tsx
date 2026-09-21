@@ -23,7 +23,13 @@ import {
   type ListingDraft,
 } from "@/components/ml/listing-form";
 import { deleteListing, listMyManagedListings, type MyListing } from "@/lib/catalog.functions";
-import { setMyListingStatus } from "@/lib/rentals.functions";
+import {
+  listMyIncomingRentalRequests,
+  listMyListingStandings,
+  setMyListingStatus,
+  setRentalBookingStatus,
+} from "@/lib/rentals.functions";
+import { RentalStatusPill } from "@/components/ml/rental";
 import { answerOffer, listOffersOnMyListings } from "@/lib/offers.functions";
 import { gearCategoryOf, useGearTaxonomy } from "@/lib/listing-category";
 import { inr, priceParts } from "@/lib/price";
@@ -80,6 +86,33 @@ function Mine() {
     enabled: signedIn,
   });
   const offers = offersQuery.data ?? [];
+
+  // Rentals: requests from renters to accept or decline, and which listings are out right now.
+  const loadRequests = useServerFn(listMyIncomingRentalRequests);
+  const requests = useQuery({
+    queryKey: ["rental-bookings", "incoming"],
+    queryFn: () => loadRequests(),
+    enabled: signedIn,
+  });
+  const loadStandings = useServerFn(listMyListingStandings);
+  const standings = useQuery({
+    queryKey: ["marketplace", "mine", "standings"],
+    queryFn: () => loadStandings(),
+    enabled: signedIn,
+  });
+  const decideRental = useServerFn(setRentalBookingStatus);
+  async function decide(id: string, status: "confirmed" | "declined") {
+    setBusy(id);
+    try {
+      await decideRental({ data: { id, status } });
+      await queryClient.invalidateQueries({ queryKey: ["rental-bookings", "incoming"] });
+      await queryClient.invalidateQueries({ queryKey: ["marketplace", "mine", "standings"] });
+    } catch {
+      toast.error("That didn't save. Try again.");
+    } finally {
+      setBusy(null);
+    }
+  }
 
   const setStatus = useServerFn(setMyListingStatus);
   const remove = useServerFn(deleteListing);
@@ -146,7 +179,12 @@ function Mine() {
     { label: "Unpublished", value: listings.filter((l) => !live(l)).length },
     { label: "For sale", value: listings.filter((l) => l.category === "gear_sale").length },
     { label: "For rent", value: listings.filter((l) => l.category === "gear_rental").length },
-    { label: "Open offers", value: offers.filter((o) => o.status === "pending").length },
+    {
+      label: "Open requests",
+      value:
+        offers.filter((o) => o.status === "pending").length +
+        (requests.data ?? []).filter((r) => r.status === "Requested").length,
+    },
   ];
 
   return (
@@ -211,6 +249,13 @@ function Mine() {
                 <ManagedListing
                   key={l.id}
                   l={l}
+                  out={
+                    standings.data?.[l.id]?.rented
+                      ? "Rented"
+                      : standings.data?.[l.id]?.reserved
+                        ? "Reserved"
+                        : null
+                  }
                   busy={busy === l.id}
                   onToggle={() => void togglePublished(l)}
                   onDelete={() => setToDelete(l)}
@@ -225,6 +270,69 @@ function Mine() {
             />
           )}
         </section>
+
+        {(requests.data ?? []).length ? (
+          <section>
+            <h2 className="mb-2 text-2">Rental requests</h2>
+            <div className="space-y-3">
+              {(requests.data ?? []).map((r) => (
+                <article key={r.id} className="rounded-lg bg-subtle p-4">
+                  <div className="flex items-start gap-3">
+                    {r.listingPhoto ? (
+                      <img
+                        src={r.listingPhoto}
+                        alt=""
+                        className="h-14 w-14 shrink-0 rounded-sm object-cover"
+                      />
+                    ) : (
+                      <div className="h-14 w-14 shrink-0 rounded-sm bg-background" aria-hidden />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-1 font-semibold">{r.listingTitle ?? "Listing"}</p>
+                      <p className="truncate text-1 text-muted-foreground">
+                        {new Date(r.startDate).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                        })}{" "}
+                        –{" "}
+                        {new Date(r.endDate).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                        })}{" "}
+                        · {r.quantity} unit{r.quantity > 1 ? "s" : ""}
+                      </p>
+                      {r.totalPaise != null ? (
+                        <p className="mt-1 text-1 font-semibold">
+                          {inr(Math.round(r.totalPaise / 100))}
+                        </p>
+                      ) : null}
+                    </div>
+                    <RentalStatusPill status={r.status} />
+                  </div>
+                  {r.status === "Requested" ? (
+                    <div className="mt-3 flex gap-2">
+                      <Btn
+                        className="flex-1 text-1"
+                        disabled={busy === r.id}
+                        onClick={() => void decide(r.id, "confirmed")}
+                      >
+                        Accept
+                      </Btn>
+                      <Btn
+                        variant="outline"
+                        className="flex-1 text-1"
+                        disabled={busy === r.id}
+                        onClick={() => void decide(r.id, "declined")}
+                      >
+                        Decline
+                      </Btn>
+                    </div>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section>
           <h2 className="mb-2 text-2">Offers</h2>
@@ -336,11 +444,14 @@ function Mine() {
 /** One of the seller's listings, with its actions always in reach. */
 function ManagedListing({
   l,
+  out,
   busy,
   onToggle,
   onDelete,
 }: {
   l: MyListing;
+  /** A rental that's out with a renter now, or booked to go. */
+  out: "Rented" | "Reserved" | null;
   busy: boolean;
   onToggle: () => void;
   onDelete: () => void;
@@ -370,8 +481,8 @@ function ManagedListing({
           <div className="flex items-start justify-between gap-2">
             <h3 className="truncate text-sm font-semibold">{l.title}</h3>
             <StatusPill
-              label={isLive ? "Live" : "Unpublished"}
-              tone={isLive ? "good" : "warn"}
+              label={out ?? (isLive ? "Live" : "Unpublished")}
+              tone={out ? "neutral" : isLive ? "good" : "warn"}
               className="shrink-0"
             />
           </div>
