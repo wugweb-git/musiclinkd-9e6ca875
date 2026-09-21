@@ -50,7 +50,7 @@ export type Collab = {
 };
 
 const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, project_type, visibility, status, ends_on, created_at,
-  members:collab_members(profile_id, role, status, instrument, profile:profiles(username, display_name, avatar_url))`;
+  members:collab_members(profile_id, role, status, instrument, profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url))`;
 
 /** What kind of project it is, from the taxonomy the database already carries. */
 export const listProjectTypes = createServerFn({ method: "GET" }).handler(

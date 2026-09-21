@@ -3,7 +3,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
+import { Field, SheetMultiSelect, SheetSelect, inputClass } from "@/components/ml/listing-form";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { SegmentedField } from "@/components/ml/kit";
 import { createCollab, listProjectTypes } from "@/lib/collabs.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,6 +40,9 @@ function NewCollab() {
     "Only the people in it",
   );
   const [kind, setKind] = useState("");
+  const [genres, setGenres] = useState<string[]>([]);
+  const [endsOn, setEndsOn] = useState("");
+  const taxonomy = useTaxonomy().options;
 
   // What kind of project it is comes from the taxonomy, not from a list written here.
   const readTypes = useServerFn(listProjectTypes);
@@ -52,6 +57,8 @@ function NewCollab() {
           ...(city.trim() ? { city: city.trim() } : {}),
           visibility: who === "Anyone on MusicLinkd" ? "public" : "private",
           ...(kind ? { projectType: kind } : {}),
+          ...(genres.length ? { genres } : {}),
+          ...(endsOn ? { endsOn } : {}),
         },
       }),
     onSuccess: ({ id }) => void navigate({ to: "/collab/$id", params: { id } }),
@@ -68,64 +75,71 @@ function NewCollab() {
           if (name.trim().length >= 2 && !start.isPending) start.mutate();
         }}
       >
-        <div>
-          <label htmlFor="collab-name" className="block text-1 font-semibold">
-            What are you calling it
-          </label>
+        <Field label="Name" id="collab-name">
           <input
-            id="collab-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Monsoon EP"
             maxLength={80}
-            className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
+            aria-labelledby="collab-name"
+            className={inputClass}
           />
-        </div>
+        </Field>
 
-        <div>
-          <p className="text-1 font-semibold">
-            What kind <span className="font-normal text-muted-foreground">· optional</span>
-          </p>
-          <div className="mt-1.5 flex flex-wrap gap-2">
-            {(types.data ?? []).map((t) => (
-              <Chip
-                key={t.slug}
-                active={kind === t.slug}
-                onClick={() => setKind(kind === t.slug ? "" : t.slug)}
-              >
-                {t.label}
-              </Chip>
-            ))}
-          </div>
-        </div>
+        <Field label="What kind (optional)" id="collab-kind">
+          <SheetSelect
+            title="What kind"
+            value={kind || null}
+            options={(types.data ?? []).map((t) => ({ value: t.slug, label: t.label }))}
+            onChange={setKind}
+            placeholder="Song, EP, film score…"
+          />
+        </Field>
 
-        <div>
-          <label htmlFor="collab-about" className="block text-1 font-semibold">
-            What it is
-          </label>
+        <Field label="Genres (optional)" id="collab-genres" hint="Up to 5">
+          <SheetMultiSelect
+            title="Genres"
+            value={genres}
+            options={(taxonomy?.genres ?? []).map((g) => ({ value: g.slug, label: g.label }))}
+            onChange={setGenres}
+            placeholder="Pick genres"
+            max={5}
+          />
+        </Field>
+
+        <Field label="What it is" id="collab-about">
           <textarea
-            id="collab-about"
             rows={3}
             value={about}
             onChange={(e) => setAbout(e.target.value)}
             placeholder="Four tracks, live drums, tracking in Bengaluru over the winter."
             maxLength={2000}
-            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
+            aria-labelledby="collab-about"
+            className="w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
           />
-        </div>
+        </Field>
 
-        <div>
-          <label htmlFor="collab-city" className="block text-1 font-semibold">
-            Where <span className="font-normal text-muted-foreground">· optional</span>
-          </label>
-          <input
-            id="collab-city"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="Bengaluru"
-            maxLength={80}
-            className="mt-1.5 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none"
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Where (optional)" id="collab-city">
+            <input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Bengaluru"
+              maxLength={80}
+              aria-labelledby="collab-city"
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Ends (optional)" id="collab-ends">
+            <input
+              type="date"
+              value={endsOn}
+              min={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => setEndsOn(e.target.value)}
+              aria-labelledby="collab-ends"
+              className={inputClass}
+            />
+          </Field>
         </div>
 
         <div>
