@@ -7,6 +7,8 @@ import { Segmented } from "@/components/ml/kit";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   CategoryTile,
+  EmptyState,
+  ListingGrid,
   ListingTile,
   CategorySheet,
   LocationSheet,
@@ -44,10 +46,12 @@ export const Route = createFileRoute("/marketplace/")({
   component: MarketHome,
 });
 
+// Explore, Buy and Rent change what this screen lists; Nearby and Saved are their own screens.
 const views = [
-  { label: "For You", to: null },
+  { label: "Explore", to: null },
+  { label: "Buy", to: null },
+  { label: "Rent", to: null },
   { label: "Nearby", to: "/marketplace/nearby" },
-  { label: "Rentals", to: "/marketplace/rent" },
   { label: "Saved", to: "/marketplace/saved" },
 ] as const;
 
@@ -57,15 +61,17 @@ function MarketHome() {
   const [locationOpen, setLocationOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [city, setCity] = useMarketCity();
-  const [view, setView] = useState<(typeof views)[number]["label"]>("For You");
+  const [view, setView] = useState<(typeof views)[number]["label"]>("Explore");
   const navigate = useNavigate();
   const catalog = Route.useLoaderData();
   // The catalogue comes newest first; services are Discover's and never reach it. Signed in, For
   // You puts the listings matched to the viewer's instruments, saves, rentals and city first.
   const recs = useRecommendations();
   const ranked = rankBy(catalog, recs?.listings, (l) => l.dbId ?? l.id);
-  const forSale = ranked.filter((l) => l.type === "product").slice(0, 8);
-  const forRent = ranked.filter((l) => l.type === "rental").slice(0, 8);
+  const allForSale = ranked.filter((l) => l.type === "product");
+  const allForRent = ranked.filter((l) => l.type === "rental");
+  const forSale = allForSale.slice(0, 8);
+  const forRent = allForRent.slice(0, 8);
   // Listings opened on this device, most recent first, read live from the catalog. Goods only:
   // services never sit in this rail.
   const [viewed, setViewed] = useState<Listing[]>([]);
@@ -123,7 +129,6 @@ function MarketHome() {
               }}
             />
           </div>
-          <span aria-hidden className="h-6 w-px shrink-0 bg-border" />
           <IconBtn label={`Location: ${city}`} onClick={() => setLocationOpen(true)}>
             <MapPin size={iconSize.md} />
           </IconBtn>
@@ -154,8 +159,22 @@ function MarketHome() {
         </div>
       </SectionRow>
 
+      {view === "Buy" || view === "Rent" ? (
+        <section className="px-5 pb-6">
+          {(view === "Buy" ? allForSale : allForRent).length ? (
+            <ListingGrid items={view === "Buy" ? allForSale : allForRent} />
+          ) : (
+            <EmptyState
+              emoji="🎸"
+              title="Nothing listed yet"
+              body="New listings show up here as soon as they're published."
+            />
+          )}
+        </section>
+      ) : null}
+
       {/* What's listed, newest first, on the product card. Each rail shows once it has something. */}
-      {forSale.length ? (
+      {view === "Explore" && forSale.length ? (
         <SectionRow title="For sale" to="/marketplace/search">
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {forSale.map((l) => (
@@ -165,7 +184,7 @@ function MarketHome() {
         </SectionRow>
       ) : null}
 
-      {forRent.length ? (
+      {view === "Explore" && forRent.length ? (
         <SectionRow title="For rent" to="/marketplace/rent">
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {forRent.map((l) => (
@@ -175,7 +194,7 @@ function MarketHome() {
         </SectionRow>
       ) : null}
 
-      {viewed.length ? (
+      {view === "Explore" && viewed.length ? (
         <SectionRow title="Recently viewed" to="/recently-viewed">
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {viewed.map((l) => (
