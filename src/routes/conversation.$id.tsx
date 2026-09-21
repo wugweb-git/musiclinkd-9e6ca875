@@ -2,19 +2,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowUp, User } from "lucide-react";
+import { ArrowLeft, ArrowUp } from "lucide-react";
 import { toast } from "sonner";
 import { Screen } from "@/components/ml/ui";
 import { Loading } from "@/components/ml/kit";
 import { CallBtn } from "@/components/ml/person-profile";
-import { initialsOf } from "@/components/ml/viewer";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  getConversation,
-  sendMessage,
-  type Message,
-  type MessagePerson,
-} from "@/lib/messages.functions";
+import { PersonAvatar } from "@/components/ml/person-avatar";
+import { getConversation, sendMessage, type Message } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
@@ -64,18 +58,6 @@ function dayLabel(iso: string) {
 
 function timeLabel(iso: string) {
   return new Date(iso).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
-}
-
-function PersonAvatar({ person, className }: { person: MessagePerson | null; className: string }) {
-  const name = person?.display_name ?? person?.username ?? null;
-  return (
-    <Avatar className={className}>
-      {person?.avatar_url ? <AvatarImage src={person.avatar_url} alt="" /> : null}
-      <AvatarFallback className="bg-subtle font-semibold text-foreground">
-        {initialsOf(name) || <User size={iconSize.sm} aria-hidden />}
-      </AvatarFallback>
-    </Avatar>
-  );
 }
 
 type Shown = Message & { pending?: boolean };
@@ -176,7 +158,7 @@ function Conversation() {
               params={{ username: person.username }}
               className="flex min-w-0 flex-1 items-center gap-3"
             >
-              <PersonAvatar person={person} className="h-10 w-10 text-1" />
+              <PersonAvatar name={name} photo={person?.avatar_url} className="h-10 w-10 text-1" />
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold leading-tight">{name}</span>
                 {person.headline ? (
@@ -198,7 +180,7 @@ function Conversation() {
           {q.data && messages.length === 0 ? (
             // First contact: who you're writing to, the way LinkedIn opens a new thread.
             <div className="flex flex-col items-center pt-10 text-center">
-              <PersonAvatar person={person} className="h-20 w-20 text-sm" />
+              <PersonAvatar name={name} photo={person?.avatar_url} className="h-20 w-20 text-sm" />
               <p className="mt-3 text-sm font-semibold">{name}</p>
               {person?.headline ? (
                 <p className="mt-0.5 max-w-[28ch] text-1 text-muted-foreground">
@@ -248,7 +230,11 @@ function Conversation() {
                       joinsNext ? (
                         <span aria-hidden className="w-7 shrink-0" />
                       ) : (
-                        <PersonAvatar person={person} className="h-7 w-7 shrink-0 text-[10px]" />
+                        <PersonAvatar
+                          name={name}
+                          photo={person?.avatar_url}
+                          className="h-7 w-7 shrink-0 text-[10px]"
+                        />
                       )
                     ) : null}
                     <p

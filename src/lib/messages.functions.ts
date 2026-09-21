@@ -25,6 +25,8 @@ export type ConversationSummary = {
   person: MessagePerson | null;
   lastMessage: string | null;
   lastMessageAt: string;
+  /** The last line was this account's own ("You: …"). */
+  lastMine: boolean;
   /** Messages from the other person since this account last opened the thread. */
   unread: number;
 };
@@ -70,6 +72,7 @@ export const listConversations = createServerFn({ method: "GET" })
         person: other?.profile ?? null,
         lastMessage: last?.body ?? null,
         lastMessageAt: row.last_message_at,
+        lastMine: last?.sender_id === context.userId,
         unread: ordered.filter(
           (m) => m.sender_id !== context.userId && (!since || m.created_at > since),
         ).length,

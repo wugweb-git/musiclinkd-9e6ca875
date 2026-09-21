@@ -1,20 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { MessageCircle, UserRoundPlus } from "lucide-react";
+import { useState } from "react";
+import { Check, MessageCircle, Send, UserRoundPlus, X } from "lucide-react";
 import { toast } from "sonner";
-import { Btn, Screen, TopBar } from "@/components/ml/ui";
-import { EmptyState, Loading } from "@/components/ml/kit";
+import { IconBtn, Screen, TopBar } from "@/components/ml/ui";
+import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { TextLink } from "@/components/ml/links";
-import { answerConnection, listMyConnections } from "@/lib/connections.functions";
+import { DrawerSearch } from "@/components/ml/drawer-list";
+import { PersonAvatar } from "@/components/ml/person-avatar";
+import { useMessagePerson } from "@/hooks/use-message-person";
+import {
+  answerConnection,
+  listMyConnections,
+  type ConnectionPerson,
+} from "@/lib/connections.functions";
 import { listConversations } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
 /*
- * Messages and connections, both read from the database: the conversations you are in, the people
- * who asked to connect, and the ones you are connected to.
+ * Messages and connections, both read from the database, laid out like a 2026 inbox: one search
+ * over names, then tabs — Chats (newest first, unread in bold with a count, "You:" on your own last
+ * line), Requests (asked to connect, and waiting on them), Connected (a Message button on each).
  */
 export const Route = createFileRoute("/messages")({
   head: () => ({
@@ -31,27 +40,35 @@ export const Route = createFileRoute("/messages")({
   component: Connections,
 });
 
-type Person = {
-  username: string | null;
-  display_name: string | null;
-  avatar_url: string | null;
-  headline: string | null;
-  city: string | null;
-};
+type Tab = "Chats" | "Requests" | "Connected";
+const TABS: readonly Tab[] = ["Chats", "Requests", "Connected"];
 
-function PersonRow({ person, children }: { person: Person; children?: React.ReactNode }) {
-  const name = person.display_name ?? person.username ?? "";
+/** Today → "11:43 pm"; yesterday → "Yesterday"; this week → "Mon"; older → "17 Sep". */
+function whenLabel(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const days = Math.round((startOf(now) - startOf(d)) / 86_400_000);
+  if (days <= 0) return d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+  if (days === 1) return "Yesterday";
+  if (days < 7) return d.toLocaleDateString("en-IN", { weekday: "short" });
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    ...(d.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }),
+  });
+}
+
+function nameOf(p: { display_name: string | null; username: string | null } | null) {
+  return p?.display_name ?? p?.username ?? "";
+}
+
+/** A person on a row: photo, name, then headline · city, opening their profile. */
+function PersonRow({ person, children }: { person: ConnectionPerson; children?: React.ReactNode }) {
+  const name = nameOf(person);
   const body = (
     <>
-      {person.avatar_url ? (
-        <img
-          src={person.avatar_url}
-          alt=""
-          className="h-12 w-12 shrink-0 rounded-full object-cover"
-        />
-      ) : (
-        <span aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-background" />
-      )}
+      <PersonAvatar name={name} photo={person.avatar_url} className="h-12 w-12 shrink-0 text-1" />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-semibold">{name}</span>
         <span className="block truncate text-1 text-muted-foreground">
@@ -61,7 +78,7 @@ function PersonRow({ person, children }: { person: Person; children?: React.Reac
     </>
   );
   return (
-    <div className="flex items-center gap-3 py-3">
+    <div className="flex items-center gap-3 py-2.5">
       {person.username ? (
         <Link
           to="/profile/$username"
@@ -84,6 +101,9 @@ function Connections() {
   const load = useServerFn(listMyConnections);
   const loadConversations = useServerFn(listConversations);
   const answer = useServerFn(answerConnection);
+  const message = useMessagePerson();
+  const [tab, setTab] = useState<Tab>("Chats");
+  const [query, setQuery] = useState("");
 
   const q = useQuery({
     queryKey: ["connections", "mine"],
@@ -104,139 +124,228 @@ function Connections() {
     onError: () => toast.error("That didn't save. Try again."),
   });
 
-  const received = q.data?.received ?? [];
-  const connected = q.data?.connected ?? [];
-  const sent = q.data?.sent ?? [];
+  const chats = matchingPeople(threads.data ?? [], query, (t) => t.person);
+  const received = matchingPeople(q.data?.received ?? [], query, (c) => c.person);
+  const connected = matchingPeople(q.data?.connected ?? [], query, (c) => c.person);
+  const sent = matchingPeople(q.data?.sent ?? [], query, (c) => c.person);
+  const unread = (threads.data ?? []).reduce((n, t) => n + (t.unread ? 1 : 0), 0);
+  const busy = signedIn && (q.isLoading || threads.isLoading);
 
   return (
     <Screen>
       <TopBar
         title="Messages"
-        subtitle={connected.length ? `${connected.length} connected` : "People you work with"}
+        subtitle={
+          unread
+            ? `${unread} unread`
+            : q.data?.connected.length
+              ? `${q.data.connected.length} connected`
+              : "People you work with"
+        }
         right={
-          <TextLink to="/collab" className="pill bg-background text-muted-foreground">
+          <TextLink to="/collab" className="text-sm font-semibold">
             Collabs
           </TextLink>
         }
       />
-      <div className="space-y-6 px-5 pt-4">
-        {!signedIn && !loading ? (
+
+      {!signedIn && !loading ? (
+        <div className="px-5 pt-4">
           <EmptyState
             icon={<UserRoundPlus size={iconSize.md} className="text-muted-foreground" />}
             title="Sign in to see your connections"
             body="Requests to connect, and the people you are connected to, live here."
           />
-        ) : null}
+        </div>
+      ) : (
+        <>
+          <div className="px-5 pt-1">
+            <DrawerSearch
+              value={query}
+              onChange={setQuery}
+              placeholder="Search messages and people"
+              label="Search messages and people"
+            />
+            <Segmented value={tab} options={TABS} onChange={setTab} />
+          </div>
 
-        {signedIn && (q.isLoading || threads.isLoading) ? <Loading rows={3} /> : null}
+          <div className="px-5 pt-2">
+            {busy ? <Loading rows={3} /> : null}
 
-        {threads.data?.length ? (
-          <section>
-            <h2 className="mb-1 text-sm">Messages</h2>
-            <ul className="divide-y divide-border">
-              {threads.data.map((t) => (
-                <li key={t.id}>
-                  <Link
-                    to="/conversation/$id"
-                    params={{ id: t.id }}
-                    className="state-layer flex items-center gap-3 py-3"
-                  >
-                    {t.person?.avatar_url ? (
-                      <img
-                        src={t.person.avatar_url}
-                        alt=""
-                        className="h-12 w-12 shrink-0 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span aria-hidden className="h-12 w-12 shrink-0 rounded-full bg-background" />
-                    )}
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold">
-                        {t.person?.display_name ?? t.person?.username ?? "Conversation"}
-                      </span>
-                      <span className="block truncate text-1 text-muted-foreground">
-                        {t.lastMessage ?? "No messages yet"}
-                      </span>
-                    </span>
-                    {t.unread ? (
-                      <span className="pill shrink-0 bg-pink-container text-pink-strong">
-                        {t.unread}
-                      </span>
-                    ) : null}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+            {!busy && tab === "Chats" ? (
+              chats.length ? (
+                <ul>
+                  {chats.map((t) => {
+                    const name = nameOf(t.person) || "Conversation";
+                    const unreadRow = t.unread > 0;
+                    return (
+                      <li key={t.id}>
+                        <Link
+                          to="/conversation/$id"
+                          params={{ id: t.id }}
+                          className="state-layer -mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5"
+                        >
+                          <PersonAvatar
+                            name={name}
+                            photo={t.person?.avatar_url}
+                            className="h-13 w-13 shrink-0 text-1"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-baseline gap-2">
+                              <span
+                                className={`min-w-0 flex-1 truncate text-sm ${unreadRow ? "font-bold" : "font-semibold"}`}
+                              >
+                                {name}
+                              </span>
+                              <span
+                                className={`shrink-0 text-[11px] ${unreadRow ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                              >
+                                {whenLabel(t.lastMessageAt)}
+                              </span>
+                            </span>
+                            <span className="mt-0.5 flex items-center gap-2">
+                              <span
+                                className={`min-w-0 flex-1 truncate text-1 ${unreadRow ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                              >
+                                {t.lastMessage
+                                  ? `${t.lastMine ? "You: " : ""}${t.lastMessage}`
+                                  : "No messages yet"}
+                              </span>
+                              {unreadRow ? (
+                                <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-ink px-1.5 text-[11px] font-bold text-background">
+                                  {t.unread}
+                                </span>
+                              ) : null}
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <EmptyState
+                  icon={<MessageCircle size={iconSize.md} className="text-muted-foreground" />}
+                  title={query ? "No chats match" : "No messages yet"}
+                  body={
+                    query
+                      ? "Try another name."
+                      : "Message someone from their profile, or from Connected."
+                  }
+                />
+              )
+            ) : null}
 
-        {received.length ? (
-          <section>
-            <h2 className="mb-1 text-sm">Requests</h2>
-            <ul className="divide-y divide-border">
-              {received.map((c) => (
-                <li key={c.id}>
-                  <PersonRow person={c.person}>
-                    <span className="flex shrink-0 gap-2">
-                      <Btn
-                        variant="outline"
-                        className="min-h-10 px-3 text-1"
-                        loading={act.isPending}
-                        onClick={() => act.mutate({ id: c.id, accept: false })}
-                      >
-                        Ignore
-                      </Btn>
-                      <Btn
-                        className="min-h-10 px-3 text-1"
-                        loading={act.isPending}
-                        onClick={() => act.mutate({ id: c.id, accept: true })}
-                      >
-                        Accept
-                      </Btn>
-                    </span>
-                  </PersonRow>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+            {!busy && tab === "Requests" ? (
+              received.length || sent.length ? (
+                <div className="space-y-5">
+                  {received.length ? (
+                    <section>
+                      <h2 className="mb-1 text-sm">Asked to connect</h2>
+                      <ul>
+                        {received.map((c) => (
+                          <li key={c.id}>
+                            <PersonRow person={c.person}>
+                              <span className="flex shrink-0 gap-2">
+                                <IconBtn
+                                  label="Ignore"
+                                  variant="outline"
+                                  className="h-10 w-10"
+                                  onClick={() => act.mutate({ id: c.id, accept: false })}
+                                >
+                                  <X size={iconSize.md} aria-hidden />
+                                </IconBtn>
+                                <IconBtn
+                                  label="Accept"
+                                  variant="ink"
+                                  className="h-10 w-10"
+                                  onClick={() => act.mutate({ id: c.id, accept: true })}
+                                >
+                                  <Check size={iconSize.md} aria-hidden />
+                                </IconBtn>
+                              </span>
+                            </PersonRow>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  ) : null}
+                  {sent.length ? (
+                    <section>
+                      <h2 className="mb-1 text-sm">Waiting on them</h2>
+                      <ul>
+                        {sent.map((c) => (
+                          <li key={c.id}>
+                            <PersonRow person={c.person}>
+                              <span className="shrink-0 text-1 text-muted-foreground">
+                                Requested
+                              </span>
+                            </PersonRow>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  ) : null}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={<UserRoundPlus size={iconSize.md} className="text-muted-foreground" />}
+                  title={query ? "No requests match" : "No requests"}
+                  body={
+                    query ? "Try another name." : "When someone asks to connect, it shows here."
+                  }
+                />
+              )
+            ) : null}
 
-        {signedIn && !q.isLoading ? (
-          <section>
-            <h2 className="mb-1 text-sm">Connected</h2>
-            {connected.length ? (
-              <ul className="divide-y divide-border">
-                {connected.map((c) => (
-                  <li key={c.id}>
-                    <PersonRow person={c.person} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <EmptyState
-                icon={<MessageCircle size={iconSize.md} className="text-muted-foreground" />}
-                title="No connections yet"
-                body="Open a profile and tap Connect. Once they accept, they appear here."
-              />
-            )}
-          </section>
-        ) : null}
-
-        {sent.length ? (
-          <section className="pb-4">
-            <h2 className="mb-1 text-sm">Waiting on them</h2>
-            <ul className="divide-y divide-border">
-              {sent.map((c) => (
-                <li key={c.id}>
-                  <PersonRow person={c.person}>
-                    <span className="pill shrink-0 bg-subtle text-muted-foreground">Requested</span>
-                  </PersonRow>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-      </div>
+            {!busy && tab === "Connected" ? (
+              connected.length ? (
+                <ul>
+                  {connected.map((c) => (
+                    <li key={c.id}>
+                      <PersonRow person={c.person}>
+                        <IconBtn
+                          label={`Message ${nameOf(c.person)}`}
+                          variant="outline"
+                          className="h-10 w-10"
+                          disabled={message.pending}
+                          onClick={() => void message.open(c.person.id)}
+                        >
+                          <Send size={iconSize.sm} aria-hidden />
+                        </IconBtn>
+                      </PersonRow>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <EmptyState
+                  icon={<MessageCircle size={iconSize.md} className="text-muted-foreground" />}
+                  title={query ? "No one matches" : "No connections yet"}
+                  body={
+                    query
+                      ? "Try another name."
+                      : "Open a profile and tap Connect. Once they accept, they appear here."
+                  }
+                />
+              )
+            ) : null}
+          </div>
+        </>
+      )}
     </Screen>
   );
+}
+
+/** Rows whose person's name or username contains the query. */
+function matchingPeople<T>(
+  rows: readonly T[],
+  query: string,
+  personOf: (row: T) => { display_name: string | null; username: string | null } | null,
+): T[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return [...rows];
+  return rows.filter((r) => {
+    const p = personOf(r);
+    return `${p?.display_name ?? ""} ${p?.username ?? ""}`.toLowerCase().includes(needle);
+  });
 }
