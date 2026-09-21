@@ -142,7 +142,7 @@ function MarketHome() {
           </div>
         ) : null}
         {/* Views as tabs, and where you are at the end of the row (it opens the city sheet). */}
-        <div className="flex items-center gap-3 border-b border-border px-5 py-1">
+        <div className="flex items-center gap-3 border-b border-border px-5">
           <div className="min-w-0 flex-1">
             <Segmented
               className=""
