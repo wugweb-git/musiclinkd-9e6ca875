@@ -107,7 +107,7 @@ function CategoryScreen() {
           <EmptyState
             emoji="🎚"
             title="Nothing here yet"
-            body="No live listings in this subcategory near Mumbai. Widen the distance or save a search."
+            body="No listings in this category yet. Clear a filter to see more."
           />
         )}
       </div>

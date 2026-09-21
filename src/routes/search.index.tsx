@@ -339,7 +339,7 @@ function SearchResults() {
 
   return (
     <Screen>
-      <div className="sticky top-0 z-bar border-b border-border bg-background/95 px-5 pt-4 backdrop-blur">
+      <div className="sticky top-0 z-bar bg-background/95 px-5 pt-4 backdrop-blur">
         <div className="mb-3 flex items-center gap-3">
           <Link
             to="/discover"

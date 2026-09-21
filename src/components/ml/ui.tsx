@@ -282,7 +282,7 @@ export function TopBar({
   right?: ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-bar flex items-center gap-3 border-b border-border bg-background/90 px-5 py-4 backdrop-blur">
+    <header className="sticky top-0 z-bar flex items-center gap-3 bg-background/90 px-5 py-4 backdrop-blur">
       {back ? (
         <Link
           to={back}

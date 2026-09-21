@@ -202,12 +202,12 @@ export function Segmented<T extends string>({
   value,
   options,
   onChange,
-  className = "-mx-5 border-b border-border px-5",
+  className = "-mx-5 px-5",
 }: {
   value: T;
   options: readonly T[];
   onChange: (v: T) => void;
-  /** Its edge-to-edge underline by default; pass "" when a row around it draws the line. */
+  /** Edge to edge by default; pass "" inside a row that sets its own padding. */
   className?: string;
 }) {
   return (
