@@ -8,7 +8,9 @@ import { Card, Dialog } from "@/components/ml/kit";
 import { businessTypes, type BusinessType } from "@/data/business";
 import { createMyBusiness } from "@/lib/profile-groups.functions";
 
-const steps = ["type", "basics", "location", "spaces", "team", "review"] as const;
+// Spaces is deferred (owner, 21 Sep 2026): a business starts with one space, and rooms are added
+// after it exists.
+const steps = ["type", "basics", "location", "team", "review"] as const;
 type Step = (typeof steps)[number];
 
 export const Route = createFileRoute("/business/new")({
@@ -45,7 +47,6 @@ function NewBusiness() {
   const [tagline, setTagline] = useState("");
   const [city, setCity] = useState("Mumbai");
   const [address, setAddress] = useState("");
-  const [spaces, setSpaces] = useState("2");
   const [invites, setInvites] = useState("");
   const queryClient = useQueryClient();
   const save = useServerFn(createMyBusiness);
@@ -154,22 +155,6 @@ function NewBusiness() {
           </Card>
         ) : null}
 
-        {step === "spaces" ? (
-          <Card className="space-y-3">
-            <h1 className="text-2 font-bold">Rooms or spaces</h1>
-            <Field
-              label="How many bookable spaces?"
-              value={spaces}
-              onChange={setSpaces}
-              placeholder="2"
-            />
-            <p className="text-1 text-muted-foreground">
-              You can add photos, gear lists and hourly rates for each space after creating the
-              business.
-            </p>
-          </Card>
-        ) : null}
-
         {step === "team" ? (
           <Card className="space-y-3">
             <h1 className="text-2 font-bold">Invite your team</h1>
@@ -192,7 +177,6 @@ function NewBusiness() {
               ["Type", businessTypes.find((t) => t.key === type)?.label ?? ""],
               ["Name", name || "Untitled business"],
               ["City", city],
-              ["Spaces", spaces],
               ["Invites", invites || "None yet"],
             ].map(([k, v]) => (
               <div
