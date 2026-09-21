@@ -28,6 +28,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, IconBtn, Sheet } from "./ui";
+import {
+  DrawerList,
+  DrawerOptionRow,
+  DrawerSearch,
+  matching,
+  type DrawerOption,
+} from "./drawer-list";
 import { PROFILE_IMAGE_ACCEPT } from "@/lib/profile-images";
 import { MAX_LISTING_PHOTOS, uploadListingPhoto } from "@/lib/listing-photos";
 import { SegmentedField } from "./kit";
@@ -283,37 +290,14 @@ export function Field({
 }
 
 /** One row in a SheetSelect or SheetMultiSelect drawer. */
-export type DrawerOption = {
-  value: string;
-  label: string;
-  /** A second line under the label ("Studios, stages, sets"). */
-  hint?: string | undefined;
-  icon?: LucideIcon;
-  iconNode?: ReactNode;
-};
+export type { DrawerOption } from "./drawer-list";
 
-/** The round icon at the start of a drawer row; text-only lists (states, cities) have none. */
-function OptionIcon({ option: o }: { option: DrawerOption }) {
-  if (!o.iconNode && !o.icon) return null;
-  return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip">
-      {o.iconNode ?? (o.icon ? <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden /> : null)}
-    </span>
-  );
-}
-
-function OptionText({ option: o }: { option: DrawerOption }) {
-  return (
-    <span className="min-w-0 flex-1">
-      <span className="block truncate text-sm font-semibold">{o.label}</span>
-      {o.hint ? <span className="mt-0.5 block text-1 text-muted-foreground">{o.hint}</span> : null}
-    </span>
-  );
-}
+/** Lists longer than this get a search box at the top of the drawer. */
+const SEARCH_FROM = 8;
 
 /**
  * Like SheetSelect, for picking several (up to `max`): rows toggle, Done closes. The field reads
- * the picked labels joined.
+ * the picked labels joined. The drawer is the shared option list (drawer-list.tsx).
  */
 export function SheetMultiSelect({
   title,
@@ -331,8 +315,10 @@ export function SheetMultiSelect({
   max: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const picked = options.filter((o) => value.includes(o.value));
   const full = value.length >= max;
+  const shown = matching(options, query);
   return (
     <>
       <button
@@ -346,37 +332,36 @@ export function SheetMultiSelect({
         </span>
         <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
       </button>
-      <Sheet open={open} onClose={() => setOpen(false)} title={title}>
+      <Sheet
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setQuery("");
+        }}
+        title={title}
+      >
+        {options.length > SEARCH_FROM ? (
+          <DrawerSearch value={query} onChange={setQuery} label={`Search ${title.toLowerCase()}`} />
+        ) : null}
         <p className="mb-3 text-1 text-foreground">
           {value.length} of {max} picked
         </p>
-        <ul
-          className="max-h-[50vh] space-y-2 overflow-y-auto"
-          role="listbox"
-          aria-multiselectable
-          aria-label={title}
-        >
-          {options.map((o) => {
+        <DrawerList label={title} multiple empty="Nothing matches — try a broader word.">
+          {shown.map((o) => {
             const on = value.includes(o.value);
-            const blocked = !on && full;
             return (
-              <li key={o.value} role="option" aria-selected={on}>
-                <button
-                  type="button"
-                  disabled={blocked}
-                  onClick={() =>
-                    onChange(on ? value.filter((v) => v !== o.value) : [...value, o.value])
-                  }
-                  className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${on ? "border-foreground" : "border-transparent"} ${blocked ? "opacity-50" : ""}`}
-                >
-                  <OptionIcon option={o} />
-                  <OptionText option={o} />
-                  {on ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
-                </button>
-              </li>
+              <DrawerOptionRow
+                key={o.value}
+                option={o}
+                selected={on}
+                disabled={!on && full}
+                onClick={() =>
+                  onChange(on ? value.filter((v) => v !== o.value) : [...value, o.value])
+                }
+              />
             );
           })}
-        </ul>
+        </DrawerList>
         <Btn className="mt-4 w-full" onClick={() => setOpen(false)}>
           Done
         </Btn>
@@ -387,7 +372,7 @@ export function SheetMultiSelect({
 
 /**
  * A field that looks like an input and opens a bottom drawer of options; picking one closes it.
- * `searchable` adds a search box at the top of the drawer for long lists (product types).
+ * Long lists (and any with `searchable`) get a search box. The drawer is the shared option list.
  */
 export function SheetSelect({
   title,
@@ -408,9 +393,12 @@ export function SheetSelect({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const q = query.trim().toLowerCase();
-  const shown = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
+  const shown = matching(options, query);
   const current = options.find((o) => o.value === value);
+  const close = () => {
+    setOpen(false);
+    setQuery("");
+  };
 
   return (
     <>
@@ -423,55 +411,28 @@ export function SheetSelect({
         <span className="truncate text-foreground">{current?.label ?? placeholder}</span>
         <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
       </button>
-      <Sheet
-        open={open}
-        onClose={() => {
-          setOpen(false);
-          setQuery("");
-        }}
-        title={title}
-      >
-        {searchable ? (
-          <div className="relative mb-3">
-            <Search
-              size={18}
-              className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-foreground"
-              aria-hidden
-            />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={placeholder}
-              aria-label={`Search ${title.toLowerCase()}`}
-              className={`${inputClass} pl-12`}
-            />
-          </div>
+      <Sheet open={open} onClose={close} title={title}>
+        {searchable || options.length > SEARCH_FROM ? (
+          <DrawerSearch
+            value={query}
+            onChange={setQuery}
+            placeholder={placeholder}
+            label={`Search ${title.toLowerCase()}`}
+          />
         ) : null}
-        <ul className="max-h-[50vh] space-y-2 overflow-y-auto" role="listbox" aria-label={title}>
-          {shown.map((o) => {
-            const on = o.value === value;
-            return (
-              <li key={o.value} role="option" aria-selected={on}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onChange(o.value);
-                    setOpen(false);
-                    setQuery("");
-                  }}
-                  className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${on ? "border-foreground" : "border-transparent"}`}
-                >
-                  <OptionIcon option={o} />
-                  <OptionText option={o} />
-                  {on ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        {shown.length === 0 ? (
-          <p className="px-4 py-3 text-1 text-foreground">Nothing matches — try a broader word.</p>
-        ) : null}
+        <DrawerList label={title} empty="Nothing matches — try a broader word.">
+          {shown.map((o) => (
+            <DrawerOptionRow
+              key={o.value}
+              option={o}
+              selected={o.value === value}
+              onClick={() => {
+                onChange(o.value);
+                close();
+              }}
+            />
+          ))}
+        </DrawerList>
       </Sheet>
     </>
   );

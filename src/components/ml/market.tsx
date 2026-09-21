@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ import {
 import type { Listing } from "@/data/market";
 import type { RentalItem } from "@/data/rentals";
 import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
+import { DrawerList, DrawerOptionRow, DrawerSearch, matching } from "./drawer-list";
 import {
   applyMarketFilter,
   emptyMarketFilter,
@@ -823,42 +824,29 @@ export function LocationSheet({
         </div>
       </div>
       {editing ? (
-        <div className="relative mb-3">
-          <Search
-            size={18}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-foreground"
-            aria-hidden
-          />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search a city"
-            aria-label="Search places"
-            className="h-12 w-full rounded-full border border-border bg-card pl-11 pr-4 text-sm outline-none focus:border-foreground"
-          />
-        </div>
+        <DrawerSearch
+          value={query}
+          onChange={setQuery}
+          placeholder="Search a city"
+          label="Search places"
+        />
       ) : null}
       <h3 className="mb-2 text-sm font-semibold text-foreground">Suggested for you</h3>
-      <ul className="overflow-hidden rounded-lg bg-card">
+      <DrawerList label="Suggested places">
         {shown.map((c) => (
-          <li key={c}>
-            <button
-              type="button"
-              onClick={() => pick(c)}
-              className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm text-foreground"
-            >
-              <Search size={iconSize.md} className="shrink-0" aria-hidden />
-              <span className={`flex-1 ${c === city ? "font-semibold" : ""}`}>{c}</span>
-              {c === city ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
-            </button>
-          </li>
+          <DrawerOptionRow
+            key={c}
+            option={{ value: c, label: c, icon: MapPin }}
+            selected={c === city}
+            onClick={() => pick(c)}
+          />
         ))}
-      </ul>
+      </DrawerList>
     </Sheet>
   );
 }
 
-/** Every category: a search field, then rows with the icon in a grey circle. */
+/** Every category: the shared option list (search, then rows with the icon); a row opens it. */
 export function CategorySheet({
   open,
   onClose,
@@ -871,39 +859,34 @@ export function CategorySheet({
   /** Rental categories open under /marketplace/rent. */
   rental?: boolean;
 }) {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const shown = categories.filter((c) => c.label.toLowerCase().includes(query.toLowerCase()));
+  const shown = matching(
+    categories.map((c) => ({
+      value: c.slug,
+      label: c.label,
+      iconNode: <MarketCategoryIcon slug={c.slug} size={iconSize.md} />,
+    })),
+    query,
+  );
   return (
     <Sheet open={open} onClose={onClose} title="Categories">
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search"
-        aria-label="Search categories"
-        className="press-brand mb-3 h-12 w-full rounded-sm border border-border bg-card px-3.5 text-sm outline-none focus:border-foreground"
-      />
-      <ul>
-        {shown.map((c) => (
-          <li key={c.slug}>
-            <Link
-              to={rental ? "/marketplace/rent/c/$slug" : "/marketplace/c/$slug"}
-              params={{ slug: c.slug }}
-              onClick={onClose}
-              className="state-layer flex items-center gap-3 py-2.5"
-            >
-              <span
-                aria-hidden
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip"
-              >
-                <MarketCategoryIcon slug={c.slug} />
-              </span>
-              <span className="min-w-0 flex-1 text-sm font-semibold text-foreground">
-                {c.label}
-              </span>
-            </Link>
-          </li>
+      <DrawerSearch value={query} onChange={setQuery} label="Search categories" />
+      <DrawerList label="Categories" empty="Nothing matches — try a broader word.">
+        {shown.map((o) => (
+          <DrawerOptionRow
+            key={o.value}
+            option={o}
+            onClick={() => {
+              onClose();
+              void navigate({
+                to: rental ? "/marketplace/rent/c/$slug" : "/marketplace/c/$slug",
+                params: { slug: o.value },
+              });
+            }}
+          />
         ))}
-      </ul>
+      </DrawerList>
     </Sheet>
   );
 }
@@ -1161,24 +1144,19 @@ export function SortSheet({
 }) {
   return (
     <Sheet open={open} onClose={onClose} title="Sort by">
-      <div className="divide-y divide-border rounded-lg border border-border">
+      <DrawerList label="Sort by">
         {options.map((o) => (
-          <button
+          <DrawerOptionRow
             key={o}
-            type="button"
+            option={{ value: o, label: o }}
+            selected={value === o}
             onClick={() => {
               onChange(o);
               onClose();
             }}
-            className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-medium"
-          >
-            {o}
-            {value === o ? (
-              <Check size={iconSize.md} className="text-primary" aria-label="Selected" />
-            ) : null}
-          </button>
+          />
         ))}
-      </div>
+      </DrawerList>
     </Sheet>
   );
 }
