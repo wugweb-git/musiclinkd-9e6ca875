@@ -59,6 +59,9 @@ function MarketHome() {
   const [view, setView] = useState<(typeof views)[number]["label"]>("For You");
   const navigate = useNavigate();
   const catalog = Route.useLoaderData();
+  // The catalogue comes newest first; services are Discover's and never reach it.
+  const forSale = catalog.filter((l) => l.type === "product").slice(0, 8);
+  const forRent = catalog.filter((l) => l.type === "rental").slice(0, 8);
   // Listings opened on this device, most recent first, read live from the catalog. Goods only:
   // services never sit in this rail.
   const [viewed, setViewed] = useState<Listing[]>([]);
@@ -149,6 +152,27 @@ function MarketHome() {
           ))}
         </div>
       </SectionRow>
+
+      {/* What's listed, newest first, on the product card. Each rail shows once it has something. */}
+      {forSale.length ? (
+        <SectionRow title="For sale" to="/marketplace/search">
+          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+            {forSale.map((l) => (
+              <ListingTile key={l.id} l={l} />
+            ))}
+          </div>
+        </SectionRow>
+      ) : null}
+
+      {forRent.length ? (
+        <SectionRow title="For rent" to="/marketplace/rent">
+          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
+            {forRent.map((l) => (
+              <ListingTile key={l.id} l={l} />
+            ))}
+          </div>
+        </SectionRow>
+      ) : null}
 
       {viewed.length ? (
         <SectionRow title="Recently viewed" to="/recently-viewed">
