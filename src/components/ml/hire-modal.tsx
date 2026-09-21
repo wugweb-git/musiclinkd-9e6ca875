@@ -202,7 +202,6 @@ export function HireModal({
             submit();
           }}
         >
-          <h2 className="text-3">Contact professional</h2>
           <p className="mb-4 text-1 text-muted-foreground">
             {subject ? [subject.name, subject.detail].filter(Boolean).join(" · ") : null}
           </p>

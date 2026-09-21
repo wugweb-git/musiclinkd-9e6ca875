@@ -2,12 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Check, MessageCircle, Send, UserRoundPlus, X } from "lucide-react";
+import { Check, MessageCircle, Send, SquarePen, UserRoundPlus, X } from "lucide-react";
 import { toast } from "sonner";
-import { IconBtn, Screen, TopBar } from "@/components/ml/ui";
+import { IconBtn, Screen, Sheet, TopBar } from "@/components/ml/ui";
 import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { TextLink } from "@/components/ml/links";
-import { DrawerSearch } from "@/components/ml/drawer-list";
+import { DrawerList, DrawerOptionRow, DrawerSearch } from "@/components/ml/drawer-list";
 import { PersonAvatar } from "@/components/ml/person-avatar";
 import { useMessagePerson } from "@/hooks/use-message-person";
 import {
@@ -104,6 +104,8 @@ function Connections() {
   const message = useMessagePerson();
   const [tab, setTab] = useState<Tab>("Chats");
   const [query, setQuery] = useState("");
+  const [starting, setStarting] = useState(false);
+  const [pick, setPick] = useState("");
 
   const q = useQuery({
     queryKey: ["connections", "mine"],
@@ -330,6 +332,60 @@ function Connections() {
               )
             ) : null}
           </div>
+
+          {/* Start a chat, the 2026 way: one extended button above the nav, then pick a person. */}
+          <div className="pointer-events-none fixed inset-x-0 bottom-nav-clear z-bar mx-auto flex w-full max-w-app justify-end px-5">
+            <button
+              type="button"
+              onClick={() => setStarting(true)}
+              className="state-layer pointer-events-auto inline-flex h-14 items-center gap-2 rounded-2xl bg-ink px-5 text-sm font-semibold text-background shadow-[0_6px_20px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-standard active:scale-97"
+            >
+              <SquarePen size={iconSize.md} aria-hidden />
+              Start chat
+            </button>
+          </div>
+
+          <Sheet
+            open={starting}
+            onClose={() => {
+              setStarting(false);
+              setPick("");
+            }}
+            title="Start chat"
+          >
+            {(q.data?.connected.length ?? 0) > 8 ? (
+              <DrawerSearch
+                value={pick}
+                onChange={setPick}
+                placeholder="Search your connections"
+                label="Search your connections"
+              />
+            ) : null}
+            <DrawerList
+              label="Your connections"
+              empty="Connect with people from their profiles to message them here."
+            >
+              {matchingPeople(q.data?.connected ?? [], pick, (c) => c.person).map((c) => (
+                <DrawerOptionRow
+                  key={c.id}
+                  option={{
+                    value: c.person.id,
+                    label: nameOf(c.person),
+                    hint: c.person.headline ?? c.person.city ?? undefined,
+                    iconNode: (
+                      <PersonAvatar
+                        name={nameOf(c.person)}
+                        photo={c.person.avatar_url}
+                        className="h-10 w-10 text-1"
+                      />
+                    ),
+                  }}
+                  disabled={message.pending}
+                  onClick={() => void message.open(c.person.id)}
+                />
+              ))}
+            </DrawerList>
+          </Sheet>
         </>
       )}
     </Screen>

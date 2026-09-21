@@ -97,7 +97,6 @@ function ShareSheet({
   const published = (works.data ?? []).filter((w) => w.published);
   return (
     <Sheet open={open} onClose={onClose} title="Share">
-      <h2 className="mb-3 text-3">Share</h2>
       <DrawerList label="Share">
         {username ? (
           <DrawerOptionRow
