@@ -1,0 +1,18 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before bringing the 122 services added by
+-- 20260922190000_talent_services_rest.sql up to the Add service rules (owner, 22 Sep 2026: one starting
+-- price with no pricing model or unit, specific categories, deliverables, delivery time from the four choices).
+--
+-- What changes, on those 122 rows only: categories and category, deliverables, turnaround (mapped to
+-- "1–2 days", "3–5 days", "1 week" or "2 weeks"), price_unit / pricing_model / min_hours set to NULL, a starting
+-- price added to the two sound design services, and status 'draft' on the 7 services that have no starting price
+-- (four for the two profiles with no rate, three quote-only second services).
+--
+-- Before state: exactly what 20260922190000_talent_services_rest.sql wrote (categories '{}', deliverables '{}',
+-- turnaround Same week / 3 days / 5 days / 1 week / 2 weeks' notice ..., price_unit and pricing_model set,
+-- 9 rows with price_paise NULL, all status 'active'). 64 services existed before that migration, 186 after it.
+--
+-- To undo (back to the state before this fix): remove the rows, then run the migration again.
+--   1. Run the DELETE in supabase/dumps/2026-09-22-before-talent-services-rest.sql (it removes exactly these rows).
+--   2. Run supabase/migrations/20260922190000_talent_services_rest.sql.
+-- To undo everything (back to 64 services): run only step 1.
