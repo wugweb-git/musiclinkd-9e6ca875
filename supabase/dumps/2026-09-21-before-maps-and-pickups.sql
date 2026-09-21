@@ -1,0 +1,21 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921300000_maps_links_and_pickups.sql.
+--
+-- profile_business.maps_url: NULL for all 36 business accounts.
+--
+-- marketplace_listings.pickup_location (id | slug | value):
+--   720f478b-c916-443c-bce3-ce81bc7dc160 | nord-stage-3 | Andheri West, Mumbai
+--   db7a9ebf-ea72-492b-bad7-213c903f4b53 | shure-sm7b | Andheri West, Mumbai
+--   67dd4cf0-597a-4507-9074-eda3dd30c3ec | neumann-tlm103 | Andheri, Mumbai
+--   2bae87d3-094b-4d86-8410-b21460f68e3a | focusrite-18i20 | Bandra, Mumbai
+--   7703e7b1-61ef-41bd-919d-e934c42c6041 | focusrite-18i20-rent | Bandra, Mumbai
+--   484a8252-412f-4d74-aed0-ec6334202db5 | backline-rental | Dadar, Mumbai
+--   665283bd-4f5a-4684-9d17-22d376d81ddd | fender-strat-62 | Dadar, Mumbai
+--   1894ccf8-c595-4f49-8bc5-311c30699aeb | fender-twin | Dadar, Mumbai
+--   88a50b01-7d5c-424c-994e-288f0a9e82a1 | sitar-swaraj | Girgaon, Mumbai
+--   09af6466-c2e3-4f3d-9081-358b0ece114f | swaraj-tabla | Girgaon, Mumbai
+--   a57f1cb8-3d2c-493c-bbff-376a812964d0 | jbl-pa-2k | Lower Parel, Mumbai
+--   c60ce189-b65a-4b42-ae20-4c30a2d2e97f | pioneer-xdj-rx3 | Lower Parel, Mumbai
+--   All other listings: pickup_location NULL.
+--
+-- To undo: see the Rollback note at the top of the migration.
