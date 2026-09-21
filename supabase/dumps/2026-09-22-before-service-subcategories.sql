@@ -1,0 +1,11 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922190000_service_subcategories.sql.
+--
+-- Scope: service_categories (taxonomy_options) and person_type_service_categories; the migration only
+-- adds rows. At snapshot time: service_categories 9 rows (vocals, mixing, mastering, production,
+-- instrument, songwriting, live, studio, teaching; none with metadata.parent);
+-- person_type_service_categories 63 rows.
+-- To undo:
+--   DELETE FROM public.taxonomy_options WHERE category_key = 'service_categories'
+--     AND (metadata ? 'parent' OR slug = 'hosting');
+--   (their person_type_service_categories rows go with them: ON DELETE CASCADE)
