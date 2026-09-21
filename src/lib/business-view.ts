@@ -29,7 +29,6 @@ export type BusinessView = {
   /** Real follower count; null before the column exists. */
   followers: number | null;
   tagline: string;
-  stats: [label: string, value: string][] | null;
   /** Across the account's own reviews and its studio's; null while there are none. */
   rating: number | null;
   reviewCount: number | null;
@@ -151,22 +150,6 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
       business.founded_year ? `since ${business.founded_year}` : "",
     ),
     tagline: profile.headline ?? "",
-    // Followers and reviews are kept by the database; bookings are not counted, so they read "—".
-    // Before followers_count exists, only a studio has figures to show.
-    stats:
-      profile.followers_count != null || studio
-        ? [
-            [
-              "Followers",
-              profile.followers_count == null
-                ? "—"
-                : profile.followers_count.toLocaleString("en-IN"),
-            ],
-            ["Bookings", "—"],
-            ["Rating", reviews.rating == null ? "—" : reviews.rating.toFixed(1)],
-            ["Reviews", String(reviews.count)],
-          ]
-        : null,
     rating: reviews.rating,
     reviewCount: reviews.count || (studio ? 0 : null),
     about: profile.bio ?? "",

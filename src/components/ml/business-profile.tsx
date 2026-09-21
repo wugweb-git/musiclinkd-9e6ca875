@@ -120,16 +120,6 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
           <BusinessActions id={b.id} name={b.name} profileId={b.profileId} owner={isOwner} />
         )}
 
-        {b.stats ? (
-          <div className="grid grid-cols-4 gap-2 rounded-lg bg-subtle p-3 text-center">
-            {b.stats.map(([k, v]) => (
-              <div key={k}>
-                <p className="text-sm font-bold leading-tight">{v}</p>
-                <p className="mt-0.5 text-1 text-muted-foreground">{k}</p>
-              </div>
-            ))}
-          </div>
-        ) : null}
       </div>
 
       <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Business sections" />
