@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { AudioWaveform, Guitar, Package, type LucideIcon } from "lucide-react";
+import { AudioWaveform, Guitar, type LucideIcon } from "lucide-react";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
 import { PriceBlock, TrustPill } from "@/components/ml/market";
 import { createListing } from "@/lib/catalog.functions";
@@ -35,7 +35,6 @@ const types = [
     category: "gear_sale",
     itemCategoryKind: "equipment",
   },
-  { label: "Rental", icon: Package, category: "gear_rental", itemCategoryKind: "equipment" },
 ] as const satisfies {
   label: string;
   icon: LucideIcon;
