@@ -1,0 +1,16 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922150000_service_type_map.sql.
+--
+-- Scope: taxonomy_options (service_categories) and person_type_service_categories. The migration
+-- only adds rows; it changes and removes none.
+--   service_categories at snapshot time (8): vocals, mixing, mastering, production, instrument,
+--   songwriting, live, studio (sort 1–8). No 'teaching'.
+--   person_type_service_categories: 53 rows over 29 person types. None for music_teacher,
+--   music_school, podcaster, rj, event_organizer, artist_manager, music_label, music_publisher, dealer.
+--
+-- To undo:
+--   DELETE FROM public.person_type_service_categories WHERE (person_type_slug, service_category_slug) IN
+--     (('music_teacher','teaching'),('music_school','teaching'),('other','teaching'),('podcaster','production'),
+--      ('podcaster','vocals'),('rj','vocals'),('event_organizer','live'),('artist_manager','live'),
+--      ('music_label','production'),('music_publisher','songwriting'));
+--   DELETE FROM public.taxonomy_options WHERE category_key = 'service_categories' AND slug = 'teaching';
