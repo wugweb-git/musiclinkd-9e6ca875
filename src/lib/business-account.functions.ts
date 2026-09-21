@@ -3,18 +3,15 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /*
- * Delete business (Manage hub). One account is one business, so this removes the account's
- * business profile (profile_business) and its team rows, and archives its studio
- * (studios.archived_at, 20260921200000_partials_complete.sql). The studio row itself stays: past
- * bookings and reviews of it are the customers' too, and a delete would cascade them away.
- * Refused while the studio has a session still to come, as the confirmation says.
+ * Delete business (Manage hub). One account is one business, so this deletes the account's
+ * business for good: its studio (rooms, equipment, photos, calendar and reviews go with it), its
+ * services, gallery and team, and its profile_business row. Customers keep their own record of
+ * past sessions: booking_requests keep the studio's name (20260921230000_deactivate_delete.sql).
+ * Refused while a session is still to come. To hide the business for a while instead, the account
+ * is deactivated (deactivateMyAccount).
  */
 
-export type DeleteBusinessResult =
-  | { status: "deleted" }
-  | { status: "upcoming"; count: number }
-  /** Before the migration: nothing was changed. */
-  | { status: "unavailable" };
+export type DeleteBusinessResult = { status: "deleted" } | { status: "upcoming"; count: number };
 
 export const deleteMyBusiness = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -40,16 +37,26 @@ export const deleteMyBusiness = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       if (upcoming?.length) return { status: "upcoming", count: upcoming.length };
 
-      const { error: archiveError } = await client
+      // The studio's proof photos live in its own storage folder.
+      await Promise.all(
+        ids.map(async (id) => {
+          const { data: files } = await client.storage.from("studio-media").list(id);
+          const paths = (files ?? []).map((f) => `${id}/${f.name}`);
+          if (paths.length) await client.storage.from("studio-media").remove(paths);
+        }),
+      );
+
+      const { error: deleteError } = await client
         .from("studios")
-        .update({ archived_at: new Date().toISOString() } as never)
+        .delete()
         .eq("owner_profile_id", me);
-      if (archiveError) {
-        if (archiveError.message.includes("archived_at")) return { status: "unavailable" };
-        throw new Error(archiveError.message);
-      }
+      if (deleteError) throw new Error(deleteError.message);
     }
 
+    for (const table of ["profile_services", "profile_gallery"]) {
+      const { error } = await client.from(table).delete().eq("profile_id", me);
+      if (error) throw new Error(error.message);
+    }
     const { error: teamError } = await client
       .from("profile_members")
       .delete()

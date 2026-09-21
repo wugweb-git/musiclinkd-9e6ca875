@@ -42,6 +42,7 @@ import {
 } from "@/data/booking";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
+import { earliestBookingDate } from "@/lib/studio-slots";
 
 /* ------------------------------------------------------------------ */
 /* Status                                                            */
@@ -276,8 +277,15 @@ export function AvailabilityCalendar({
   dayOf?: ((date: string) => DayAvailability) | undefined;
 }) {
   const today = new Date();
-  const [cursor, setCursor] = useState({ y: today.getFullYear(), m: today.getMonth() });
+  const earliest = earliestBookingDate(today);
+  const [cursor, setCursor] = useState(() => {
+    const d = new Date(`${earliest}T00:00:00`);
+    return { y: d.getFullYear(), m: d.getMonth() };
+  });
   const days = useMemo(() => monthGrid(cursor.y, cursor.m), [cursor]);
+  // Nothing before tomorrow is shown, so the calendar opens on tomorrow's month and stops there.
+  const first = new Date(`${earliest}T00:00:00`);
+  const atFirstMonth = cursor.y === first.getFullYear() && cursor.m === first.getMonth();
   const monthLabel = new Date(cursor.y, cursor.m, 1).toLocaleDateString("en-IN", {
     month: "long",
     year: "numeric",
@@ -289,10 +297,13 @@ export function AvailabilityCalendar({
         <button
           type="button"
           aria-label="Previous month"
+          disabled={atFirstMonth}
           onClick={() =>
             setCursor((c) => (c.m === 0 ? { y: c.y - 1, m: 11 } : { ...c, m: c.m - 1 }))
           }
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
+          className={`flex h-10 w-10 items-center justify-center rounded-full border border-border ${
+            atFirstMonth ? "invisible" : ""
+          }`}
         >
           ‹
         </button>
@@ -319,7 +330,9 @@ export function AvailabilityCalendar({
         {days.map((d) => {
           const iso = isoDate(d);
           const inMonth = d.getMonth() === cursor.m;
+          if (iso < earliest) return <span key={iso} aria-hidden className="h-12" />;
           const a = dayOf ? dayOf(iso) : availabilityFor(resourceId, iso, fromPrice);
+          // Bookings start tomorrow at the earliest, whatever the schedule says.
           const disabled = a.state === "unavailable" || a.state === "closed";
           const isSel = selected === iso;
           return (

@@ -42,7 +42,7 @@ export const sendEnquiry = createServerFn({ method: "POST" })
       })
       .parse(d),
   )
-  .handler(async ({ context, data }): Promise<{ id: string }> => {
+  .handler(async ({ context, data }): Promise<{ id: string; conversationId: string | null }> => {
     const { data: row, error } = await db(context.supabase)
       .from("enquiries")
       .insert({
@@ -54,7 +54,24 @@ export const sendEnquiry = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
-    return row as { id: string };
+
+    // The enquiry also opens (or continues) the conversation with the business, so both sides
+    // carry on in Messages. The lead is already saved if this part fails.
+    let conversationId: string | null = null;
+    const { data: convo } = await db(context.supabase).rpc("start_conversation", {
+      p_other_profile_id: data.businessProfileId,
+    });
+    if (typeof convo === "string") {
+      const { error: messageError } = await db(context.supabase)
+        .from("messages")
+        .insert({
+          conversation_id: convo,
+          sender_id: context.userId,
+          body: `${data.intent}\n\n${data.message}`,
+        } as never);
+      if (!messageError) conversationId = convo;
+    }
+    return { id: (row as { id: string }).id, conversationId };
   });
 
 /** The signed-in business's own leads inbox, newest first. */

@@ -20,7 +20,6 @@ import {
   Palette,
   Printer,
   ScanLine,
-  Settings2,
   Share2,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -101,15 +100,6 @@ function DigitalId() {
           >
             <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
-          <button
-            type="button"
-            aria-label="QR settings"
-            aria-disabled="true"
-            onClick={() => toast("QR settings — coming soon")}
-            className="hit-area state-layer flex h-10 w-10 items-center justify-center rounded-full border border-background/25 bg-background/10"
-          >
-            <Settings2 size={iconSize.sm} aria-hidden />
-          </button>
         </div>
 
         {phase === "loading" || !me.ready ? (

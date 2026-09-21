@@ -18,7 +18,13 @@ import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { durationOptions, formatDate, formatTime, inr } from "@/data/booking";
 import { showDemoControls } from "@/lib/dev";
 import { getStudioCalendar } from "@/lib/studio-calendar.functions";
-import { calendarWindow, nextOpenDay, spanIsOpen, studioDay } from "@/lib/studio-slots";
+import {
+  calendarWindow,
+  earliestBookingDate,
+  nextOpenDay,
+  spanIsOpen,
+  studioDay,
+} from "@/lib/studio-slots";
 
 export const Route = createFileRoute("/booking/$id/schedule")({
   head: () => ({
@@ -82,6 +88,12 @@ function Schedule() {
   const next = useMemo(() => (cal ? nextOpenDay(dayOf) : undefined), [cal, dayOf]);
   // The whole session has to sit on open hours, not only its first one.
   const fits = Boolean(draft.start && spanIsOpen(day, draft.start, draft.hours));
+
+  // A draft kept from an earlier visit can hold a day that is now too soon: drop it.
+  useEffect(() => {
+    if (draft.date && draft.date < earliestBookingDate())
+      set({ date: undefined, start: undefined });
+  }, [draft.date, set]);
 
   useEffect(() => {
     if (!draft.start || !day) return;

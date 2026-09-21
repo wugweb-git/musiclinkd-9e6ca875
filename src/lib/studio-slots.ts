@@ -48,6 +48,13 @@ function minutes(hhmm: string) {
 const pad = (n: number) => String(n).padStart(2, "0");
 const at = (date: string, hour: number) => new Date(`${date}T${pad(hour)}:00:00`).getTime();
 
+/** The earliest day a session can be asked for: tomorrow. Today and earlier are never offered. */
+export function earliestBookingDate(now = new Date()) {
+  const d = new Date(now);
+  d.setDate(now.getDate() + 1);
+  return isoDate(d);
+}
+
 /** How far ahead the calendar reads bookings; later dates are not offered. */
 export const WINDOW_DAYS = 180;
 
@@ -67,10 +74,9 @@ export function studioDay(
   now = new Date(),
 ): DayAvailability {
   const d = new Date(`${date}T00:00:00`);
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
   const { to } = calendarWindow(now);
-  if (d < today || date > to) return { date, state: "unavailable", slots: [] };
+  if (date < earliestBookingDate(now) || date > to)
+    return { date, state: "unavailable", slots: [] };
 
   const spans = weekly[WEEKDAYS[d.getDay()]!] ?? [];
   if (!spans.length) return { date, state: "closed", slots: [] };

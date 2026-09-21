@@ -1,4 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useAuth } from "@/hooks/use-auth";
+import { listMyLeads } from "@/lib/enquiries.functions";
 import { BarChart3, CalendarClock, Images, Inbox, ShieldCheck, Star, Wrench } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { EmptyState, Row } from "@/components/ml/kit";
@@ -29,6 +33,15 @@ export const Route = createFileRoute("/business/$id/dashboard")({
 
 function BusinessDashboard() {
   const b = businessView(Route.useLoaderData());
+  const { user } = useAuth();
+  const load = useServerFn(listMyLeads);
+  // Same query as the Leads screen, so opening it after this is instant.
+  const leads = useQuery({
+    queryKey: ["leads", "mine"],
+    queryFn: () => load(),
+    enabled: Boolean(b && user && user.id === b.profileId),
+  });
+  const fresh = (leads.data ?? []).filter((l) => l.status === "new").length;
 
   if (!b) {
     return (
@@ -49,12 +62,17 @@ function BusinessDashboard() {
       <TopBar title="Dashboard" subtitle={b.name} back={`/business/${b.id}`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
-        {/* Leads, views, enquiries and bookings are not stored yet: no card or figures. */}
         <div className="space-y-2">
           <Row
             icon={<Inbox size={iconSize.sm} />}
             title="Leads"
-            subtitle=""
+            subtitle={
+              leads.data
+                ? fresh
+                  ? `${fresh} new`
+                  : `${leads.data.length} in total`
+                : "Enquiries from people"
+            }
             to="/business/$id/leads"
             params={{ id: b.id }}
           />

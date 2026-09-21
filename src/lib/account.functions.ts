@@ -83,3 +83,112 @@ export const exportMyData = createServerFn({ method: "POST" })
       json: JSON.stringify(copy, null, 2),
     };
   });
+
+/*
+ * Deactivate or delete (Settings > Delete account, and the business Manage hub), the same for talent
+ * and business accounts (owner, 21 Sep 2026). Deactivating hides the profile everywhere and
+ * archives a business's studio; reactivating undoes both. Deleting is permanent: the sign-in, the
+ * profile and everything the account owns go. Whoever was on the other side of a booking keeps
+ * their record of it (20260921230000_deactivate_delete.sql). Schema: that migration.
+ */
+
+type Client = SupabaseClient;
+
+/** Sessions still to come on either side of a booking; a delete waits until these are settled. */
+export async function upcomingBookingsOf(client: Client, me: string): Promise<number> {
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: studios } = await client.from("studios").select("id").eq("owner_profile_id", me);
+  const ids = ((studios ?? []) as { id: string }[]).map((s) => s.id);
+  const who = ids.length
+    ? `requester_profile_id.eq.${me},studio_id.in.(${ids.join(",")})`
+    : `requester_profile_id.eq.${me}`;
+  const { data, error } = await client
+    .from("booking_requests")
+    .select("id")
+    .or(who)
+    .in("status", ["requested", "reviewing", "confirmed"])
+    .gte("session_date", today);
+  if (error) throw new Error(error.message);
+  return data?.length ?? 0;
+}
+
+export const deactivateMyAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const client = context.supabase as unknown as Client;
+    const me = context.userId;
+    const { data: row, error: readError } = await client
+      .from("profiles")
+      .select("visibility, discovery_prefs")
+      .eq("id", me)
+      .maybeSingle();
+    if (readError) throw new Error(readError.message);
+    const current = row as { visibility: string | null; discovery_prefs: unknown } | null;
+    if (current?.visibility === "deactivated") return { status: "deactivated" as const };
+    const prefs =
+      current?.discovery_prefs && typeof current.discovery_prefs === "object"
+        ? (current.discovery_prefs as Record<string, unknown>)
+        : {};
+    const { error } = await client
+      .from("profiles")
+      .update({
+        visibility: "deactivated",
+        discovery_prefs: { ...prefs, visibility_before: current?.visibility ?? "public" },
+      } as never)
+      .eq("id", me);
+    if (error) throw new Error(error.message);
+    const { error: studioError } = await client
+      .from("studios")
+      .update({ archived_at: new Date().toISOString() } as never)
+      .eq("owner_profile_id", me);
+    if (studioError) throw new Error(studioError.message);
+    return { status: "deactivated" as const };
+  });
+
+export const reactivateMyAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const client = context.supabase as unknown as Client;
+    const me = context.userId;
+    const { data: row, error: readError } = await client
+      .from("profiles")
+      .select("discovery_prefs")
+      .eq("id", me)
+      .maybeSingle();
+    if (readError) throw new Error(readError.message);
+    const prefs = ((row as { discovery_prefs: unknown } | null)?.discovery_prefs ?? {}) as Record<
+      string,
+      unknown
+    >;
+    const before = prefs["visibility_before"];
+    const visibility =
+      before === "members" || before === "limited" || before === "public" ? before : "public";
+    const { visibility_before: _before, ...rest } = prefs;
+    const { error } = await client
+      .from("profiles")
+      .update({ visibility, discovery_prefs: rest } as never)
+      .eq("id", me);
+    if (error) throw new Error(error.message);
+    const { error: studioError } = await client
+      .from("studios")
+      .update({ archived_at: null } as never)
+      .eq("owner_profile_id", me);
+    if (studioError) throw new Error(studioError.message);
+    return { status: "active" as const };
+  });
+
+export type DeleteAccountResult = { status: "deleted" } | { status: "upcoming"; count: number };
+
+/** Deletes the sign-in itself; the profile and everything it owns go with it. */
+export const deleteMyAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<DeleteAccountResult> => {
+    const client = context.supabase as unknown as Client;
+    const me = context.userId;
+    const count = await upcomingBookingsOf(client, me);
+    if (count) return { status: "upcoming", count };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(me);
+    if (error) throw new Error(error.message);
+    return { status: "deleted" };
+  });

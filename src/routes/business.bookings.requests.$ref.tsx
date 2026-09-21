@@ -109,13 +109,14 @@ function RequestReviewContent() {
     );
   }
 
-  const customerName = bk.requester?.display_name ?? bk.requester?.username ?? "Someone";
+  const customerName =
+    bk.requester?.display_name ?? bk.requester?.username ?? bk.requester_name ?? "Someone";
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
       <TopBar
         title="Request"
-        subtitle={bk.room?.name ?? bk.studio?.name ?? "Studio"}
+        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.studio_name ?? "Studio"}
         back="/business/bookings"
       />
       <main className="px-5 pt-4">

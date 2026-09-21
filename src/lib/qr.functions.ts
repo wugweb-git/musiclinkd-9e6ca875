@@ -99,6 +99,15 @@ export const getMyScanHistory = createServerFn({ method: "GET" })
       .filter((x): x is ScannedProfile & { scannedAt: string } => x !== null);
   });
 
+/** Clear history: the scans this account made are deleted for good. */
+export const clearMyScanHistory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { error } = await scansTable(context.supabase).delete().eq("scanner_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { cleared: true };
+  });
+
 export type QrAnalytics = {
   totalScans: number;
   uniqueScanners: number;

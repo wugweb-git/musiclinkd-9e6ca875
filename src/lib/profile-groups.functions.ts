@@ -105,6 +105,10 @@ export type BusinessSummary = {
   city: string | null;
 };
 
+/** Private and deactivated profiles are left out of every public read. */
+const isHidden = (visibility: string | null) =>
+  visibility === "private" || visibility === "deactivated";
+
 const PROFILE =
   "id, username, display_name, headline, bio, city, roles, genres, avatar_url, cover_url, is_verified, hourly_rate_paise, visibility";
 /** PROFILE with the missing-data columns; reads fall back to PROFILE until they exist. */
@@ -233,7 +237,7 @@ export const getPublicBusiness = createServerFn({ method: "GET" })
     );
     if (error) throw new Error(error.message);
     const profile = row as unknown as ProfileBase | null;
-    if (!profile || profile.visibility === "private") return null;
+    if (!profile || isHidden(profile.visibility)) return null;
     return businessRecord(client as unknown as SupabaseClient, profile);
   });
 
@@ -335,7 +339,7 @@ export const listPublicBusinesses = createServerFn({ method: "GET" }).handler(
     if (error) throw new Error(error.message);
     return ((data ?? []) as unknown as { profile: BusinessSummary & { visibility: string } }[])
       .map((r) => r.profile)
-      .filter((p) => p.username && p.visibility !== "private")
+      .filter((p) => p.username && !isHidden(p.visibility))
       .map(({ visibility: _visibility, ...p }) => p)
       .sort((a, b) => (a.display_name ?? "").localeCompare(b.display_name ?? ""));
   },
@@ -354,7 +358,7 @@ async function publicProfile(client: Awaited<ReturnType<typeof anonClient>>, nam
   );
   if (error) throw new Error(error.message);
   const row = data as unknown as ProfileBase | null;
-  return row && row.visibility !== "private" ? row : null;
+  return row && !isHidden(row.visibility) ? row : null;
 }
 
 export type BandRecord = {

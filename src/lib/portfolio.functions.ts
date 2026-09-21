@@ -429,7 +429,9 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       PUBLIC_PROFILE,
     );
 
-    if (!row || (row as { visibility?: string }).visibility === "private") return null;
+    const visibility = (row as { visibility?: string } | null)?.visibility;
+    // A deactivated account is hidden like a private one.
+    if (!row || visibility === "private" || visibility === "deactivated") return null;
     return row;
   });
 

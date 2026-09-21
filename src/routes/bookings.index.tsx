@@ -9,7 +9,7 @@ import {
   EmptyState,
   ErrorState,
 } from "@/components/ml/booking";
-import { formatDate, formatTime, type BookingStatus } from "@/data/booking";
+import { formatDate, formatTime, isoDate, type BookingStatus } from "@/data/booking";
 import { listMyBookings } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
@@ -53,9 +53,15 @@ function MyBookings() {
     enabled: signedIn,
   });
   const active = tabs.find((t) => t.key === tab)!;
-  const list = (q.data ?? []).filter((b) =>
-    active.match.includes((b.status === "declined" ? "rejected" : b.status) as BookingStatus),
-  );
+  const today = isoDate(new Date());
+  // A confirmed session whose day has passed is history: it leaves Upcoming for Completed.
+  const shownAs = (b: { status: string; session_date: string }): BookingStatus =>
+    b.status === "declined"
+      ? "rejected"
+      : b.status === "confirmed" && b.session_date < today
+        ? "completed"
+        : (b.status as BookingStatus);
+  const list = (q.data ?? []).filter((b) => active.match.includes(shownAs(b)));
 
   return (
     <Screen>
@@ -100,14 +106,14 @@ function MyBookings() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-2 font-semibold">{b.studio?.name ?? "Studio"}</p>
+                      <p className="truncate text-2 font-semibold">
+                        {b.studio?.name ?? b.studio_name ?? "Studio"}
+                      </p>
                       <p className="mt-0.5 truncate text-1 text-muted-foreground">
                         {joinParts(b.room?.name ?? "", b.studio?.location ?? "")}
                       </p>
                     </div>
-                    <BookingStatusPill
-                      status={(b.status === "declined" ? "rejected" : b.status) as BookingStatus}
-                    />
+                    <BookingStatusPill status={shownAs(b)} />
                   </div>
                   <p className="mt-2 text-1 text-muted-foreground">
                     {joinParts(

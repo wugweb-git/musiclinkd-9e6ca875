@@ -3,13 +3,15 @@
  * states: populated, empty · actions: open, scan
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ScanLine, Trash2 } from "lucide-react";
-import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Dialog } from "@/components/ml/kit";
+import { useState } from "react";
 import { ActionRow, StateCard, Skeleton } from "@/components/ml/qr";
-import { getMyScanHistory } from "@/lib/qr.functions";
+import { clearMyScanHistory, getMyScanHistory } from "@/lib/qr.functions";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/history")({
@@ -40,6 +42,26 @@ function ScanHistory() {
   const load = useServerFn(getMyScanHistory);
   const q = useQuery({ queryKey: ["qr", "history"], queryFn: () => load() });
   const items = q.data ?? [];
+  const queryClient = useQueryClient();
+  const clear = useServerFn(clearMyScanHistory);
+
+  const [confirming, setConfirming] = useState(false);
+  const [clearing, setClearing] = useState(false);
+
+  async function clearHistory() {
+    setClearing(true);
+    try {
+      await clear();
+      await queryClient.invalidateQueries({ queryKey: ["qr", "history"] });
+      toast.success("History cleared");
+    } catch {
+      toast.error("Couldn't clear your history — try again");
+    } finally {
+      setClearing(false);
+      setConfirming(false);
+    }
+  }
+
   return (
     <Screen>
       <TopBar
@@ -50,9 +72,9 @@ function ScanHistory() {
           items.length ? (
             <button
               type="button"
-              onClick={() => toast("Clearing history — coming soon")}
+              onClick={() => setConfirming(true)}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
-              aria-label="Clear history — coming soon"
+              aria-label="Clear history"
             >
               <Trash2 size={iconSize.sm} />
             </button>
@@ -95,6 +117,21 @@ function ScanHistory() {
           </div>
         )}
       </main>
+      <Dialog
+        open={confirming}
+        title="Clear scan history?"
+        body="Every scan in your history is deleted. This cannot be undone."
+        onClose={() => setConfirming(false)}
+      >
+        <div className="space-y-2">
+          <Btn className="w-full" loading={clearing} onClick={() => void clearHistory()}>
+            Yes, Clear
+          </Btn>
+          <Btn variant="ghost" className="w-full" onClick={() => setConfirming(false)}>
+            Keep It
+          </Btn>
+        </div>
+      </Dialog>
     </Screen>
   );
 }

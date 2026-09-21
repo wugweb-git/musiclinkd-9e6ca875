@@ -37,6 +37,7 @@ function BusinessEnquiry() {
   const [intent, setIntent] = useState(intents[0]!);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const submit = useServerFn(sendEnquiry);
 
@@ -44,7 +45,10 @@ function BusinessEnquiry() {
     if (!b) return;
     setSending(true);
     try {
-      await submit({ data: { businessProfileId: b.profileId, intent, message: message.trim() } });
+      const res = await submit({
+        data: { businessProfileId: b.profileId, intent, message: message.trim() },
+      });
+      setConversationId(res.conversationId);
       setSent(true);
     } catch {
       toast.error("Couldn't send that — try again");
@@ -76,9 +80,14 @@ function BusinessEnquiry() {
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
             <h2 className="mt-3 text-3 leading-tight">Your enquiry is with {b.name}</h2>
             <p className="mt-2 text-1 text-muted-foreground">
-              It's in their leads inbox now. They'll reach out directly to reply.
+              It's in their leads inbox and in your Messages, where their reply lands.
             </p>
           </Card>
+          {conversationId ? (
+            <BtnLink to="/conversation/$id" params={{ id: conversationId }} className="w-full">
+              Open Conversation
+            </BtnLink>
+          ) : null}
           <BtnLink to="/business/$id" params={{ id: b.id }} variant="ghost" className="w-full">
             Back to {b.name}
           </BtnLink>

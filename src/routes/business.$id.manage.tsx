@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   CalendarClock,
+  EyeOff,
   Image,
   Headphones,
   LayoutDashboard,
@@ -16,6 +17,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { deleteMyBusiness } from "@/lib/business-account.functions";
+import { deactivateMyAccount } from "@/lib/account.functions";
 import { businessView, loadBusiness } from "@/lib/business-view";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
@@ -43,10 +45,29 @@ function ManageBusiness() {
   const b = businessView(Route.useLoaderData());
   const { user, loading } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const remove = useServerFn(deleteMyBusiness);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const deactivate = useServerFn(deactivateMyAccount);
+  const [confirmDeactivate, setConfirmDeactivate] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
+
+  async function onDeactivate() {
+    setDeactivating(true);
+    try {
+      await deactivate();
+      await queryClient.invalidateQueries();
+      toast.success("Deactivated. Reactivate any time from Settings.");
+      setConfirmDeactivate(false);
+      void navigate({ to: "/settings" });
+    } catch {
+      toast.error("That didn't go through. Try again.");
+    } finally {
+      setDeactivating(false);
+    }
+  }
 
   async function onDelete() {
     setDeleting(true);
@@ -56,8 +77,6 @@ function ManageBusiness() {
         toast.error(
           `${result.count} upcoming ${result.count === 1 ? "booking" : "bookings"} must be cancelled or handed over first.`,
         );
-      } else if (result.status === "unavailable") {
-        toast.error("Deleting a business isn't available yet. Nothing was changed.");
       } else {
         setDeleted(true);
         await queryClient.invalidateQueries();
@@ -149,11 +168,23 @@ function ManageBusiness() {
 
         <Card className="space-y-2">
           <p className="flex items-center gap-2 text-1 font-semibold">
+            <EyeOff size={iconSize.sm} /> Deactivate business
+          </p>
+          <p className="text-1 text-muted-foreground">
+            Hides the profile and studio from everyone until you reactivate. Nothing is deleted.
+          </p>
+          <Btn variant="outline" className="w-full" onClick={() => setConfirmDeactivate(true)}>
+            Deactivate {b.name}
+          </Btn>
+        </Card>
+
+        <Card className="space-y-2">
+          <p className="flex items-center gap-2 text-1 font-semibold">
             <Trash2 size={iconSize.sm} /> Delete business
           </p>
           <p className="text-1 text-muted-foreground">
-            Removes the profile, spaces and team. Past bookings and reviews stay with the people
-            involved.
+            Permanently deletes the profile, studio, equipment, photos and reviews. Customers keep
+            their own record of past sessions.
           </p>
           <Btn variant="outline" className="w-full" onClick={() => setConfirmDelete(true)}>
             Delete {b.name}
@@ -178,9 +209,25 @@ function ManageBusiness() {
       </Dialog>
 
       <Dialog
+        open={confirmDeactivate}
+        title={`Deactivate ${b.name}?`}
+        body="Nobody can find or open it until you reactivate it from Settings. Bookings already made stay as they are."
+        onClose={() => setConfirmDeactivate(false)}
+      >
+        <div className="space-y-2">
+          <Btn className="w-full" loading={deactivating} onClick={() => void onDeactivate()}>
+            Yes, Deactivate
+          </Btn>
+          <Btn variant="ghost" className="w-full" onClick={() => setConfirmDeactivate(false)}>
+            Keep It
+          </Btn>
+        </div>
+      </Dialog>
+
+      <Dialog
         open={deleted}
         title="Business deleted"
-        body="The profile is no longer visible on MusicLinkd."
+        body="The business and its studio are deleted from MusicLinkd."
         onClose={() => setDeleted(false)}
       >
         <BtnLink to="/business" className="w-full">

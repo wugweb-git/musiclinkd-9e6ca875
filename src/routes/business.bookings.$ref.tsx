@@ -108,13 +108,14 @@ function ProviderBookingDetailContent() {
     );
   }
 
-  const customerName = bk.requester?.display_name ?? bk.requester?.username ?? "Someone";
+  const customerName =
+    bk.requester?.display_name ?? bk.requester?.username ?? bk.requester_name ?? "Someone";
 
   return (
     <Screen>
       <TopBar
         title="Session"
-        subtitle={bk.room?.name ?? bk.studio?.name ?? "Studio"}
+        subtitle={bk.room?.name ?? bk.studio?.name ?? bk.studio_name ?? "Studio"}
         back="/business/bookings"
       />
       <main className="px-5 pt-4">

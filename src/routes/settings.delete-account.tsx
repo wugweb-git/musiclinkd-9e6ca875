@@ -3,6 +3,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Btn, Screen, TopBar } from "@/components/ml/ui";
 import { AuthNotice } from "@/components/ml/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
+import { deactivateMyAccount, deleteMyAccount } from "@/lib/account.functions";
 
 export const Route = createFileRoute("/settings/delete-account")({
   head: () => ({
@@ -36,13 +40,65 @@ const kept = [
 
 function DeleteAccount() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState<"deactivate" | "delete" | null>(null);
+  const deactivate = useServerFn(deactivateMyAccount);
+  const remove = useServerFn(deleteMyAccount);
+
+  async function onDeactivate() {
+    setBusy("deactivate");
+    try {
+      await deactivate();
+      await queryClient.invalidateQueries();
+      toast.success("Deactivated. Reactivate any time from Settings.");
+      void navigate({ to: "/settings" });
+    } catch {
+      toast.error("That didn't go through. Try again.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function onDelete() {
+    setBusy("delete");
+    try {
+      const result = await remove();
+      if (result.status === "upcoming") {
+        toast.error(
+          `${result.count} upcoming ${result.count === 1 ? "booking" : "bookings"} must be cancelled first.`,
+        );
+        return;
+      }
+      await supabase.auth.signOut();
+      queryClient.clear();
+      toast.success("Your account is deleted.");
+      void navigate({ to: "/welcome" });
+    } catch {
+      toast.error("That didn't go through. Try again.");
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
     <Screen bottomNav={false}>
       <TopBar title="Delete account" subtitle="This cannot be undone" back="/profile" />
       <main className="px-5 pb-12 pt-4">
-        <AuthNotice tone="warn" title="Consider deactivating instead">
+        <AuthNotice
+          tone="warn"
+          title="Consider deactivating instead"
+          action={
+            <Btn
+              variant="outline"
+              className="w-full"
+              loading={busy === "deactivate"}
+              onClick={() => void onDeactivate()}
+            >
+              Deactivate
+            </Btn>
+          }
+        >
           Hiding your profile keeps your work safe and you can come back any time.
         </AuthNotice>
 
@@ -81,11 +137,8 @@ function DeleteAccount() {
             className="w-full"
             variant="outline"
             disabled={confirm.trim().toUpperCase() !== "DELETE"}
-            onClick={() =>
-              toast.error(
-                "Account deletion is handled by support on this build. Contact us from Help.",
-              )
-            }
+            loading={busy === "delete"}
+            onClick={() => void onDelete()}
           >
             Delete my account
           </Btn>

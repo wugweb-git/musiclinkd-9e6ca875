@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { earliestBookingDate } from "@/lib/studio-slots";
 
 /*
  * Booking requests: someone asks a studio for a room at a time, the studio answers. No money is
@@ -28,6 +29,9 @@ export type BookingRequest = {
   status: BookingStatus;
   created_at: string;
   studio: { id: string; slug: string; name: string; location: string | null } | null;
+  /** Copied when the booking is made, so the history reads after the studio or person is gone. */
+  studio_name: string | null;
+  requester_name: string | null;
   room: { id: string; name: string } | null;
   requester: {
     id: string;
@@ -38,6 +42,7 @@ export type BookingRequest = {
 };
 
 const SELECT = `id, session_date, start_time, end_time, hours, people, purpose, notes, reply, status, created_at,
+  studio_name, requester_name,
   studio:studios(id, slug, name, location),
   room:studio_rooms(id, name),
   requester:profiles!booking_requests_requester_profile_id_fkey(id, username, display_name, avatar_url)`;
@@ -67,6 +72,7 @@ export const requestBooking = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }): Promise<{ id: string }> => {
+    if (data.date < earliestBookingDate()) throw new Error("Pick a day from tomorrow onwards.");
     const client = db(context.supabase);
     const { data: studio, error: studioError } = await client
       .from("studios")
@@ -220,6 +226,7 @@ export const rescheduleBooking = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }) => {
+    if (data.date < earliestBookingDate()) throw new Error("Pick a day from tomorrow onwards.");
     const { error } = await db(context.supabase)
       .from("booking_requests")
       .update({

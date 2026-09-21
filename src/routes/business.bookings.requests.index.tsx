@@ -124,7 +124,7 @@ function RequestsContent() {
                     <p className="truncate text-2 font-semibold">Someone</p>
                   )}
                   <p className="mt-0.5 truncate text-1 text-muted-foreground">
-                    {joinParts(b.studio?.name ?? "", b.room?.name ?? "")}
+                    {joinParts(b.studio?.name ?? b.studio_name ?? "", b.room?.name ?? "")}
                   </p>
                 </div>
                 <BookingStatusPill

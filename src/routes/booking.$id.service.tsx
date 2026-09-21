@@ -8,6 +8,7 @@ import { ResourceCard, StepDots, StickyBar } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { requestBooking } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { earliestBookingDate } from "@/lib/studio-slots";
 
 export const Route = createFileRoute("/booking/$id/service")({
   head: () => ({
@@ -114,6 +115,7 @@ function SelectService() {
           <input
             id="booking-date"
             type="date"
+            min={earliestBookingDate()}
             required
             value={date}
             onChange={(e) => setDate(e.target.value)}

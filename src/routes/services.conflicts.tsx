@@ -56,7 +56,7 @@ function findConflicts(bookings: BookingRequest[]): ConflictPair[] {
 }
 
 function requesterName(b: BookingRequest) {
-  return b.requester?.display_name ?? b.requester?.username ?? "Someone";
+  return b.requester?.display_name ?? b.requester?.username ?? b.requester_name ?? "Someone";
 }
 
 function Conflicts() {
