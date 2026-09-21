@@ -117,9 +117,14 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
         {ownsPage ? (
           <SwitchToManage id={b.id} profileId={b.profileId} name={b.name} />
         ) : (
-          <BusinessActions id={b.id} name={b.name} profileId={b.profileId} owner={isOwner} />
+          <BusinessActions
+            id={b.id}
+            name={b.name}
+            profileId={b.profileId}
+            owner={isOwner}
+            studioSlug={b.studioSlug}
+          />
         )}
-
       </div>
 
       <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Business sections" />
@@ -399,11 +404,13 @@ function BusinessActions({
   name,
   profileId,
   owner,
+  studioSlug,
 }: {
   id: string;
   name: string;
   profileId: string;
   owner: boolean;
+  studioSlug: string | null;
 }) {
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
@@ -423,9 +430,14 @@ function BusinessActions({
   });
   const followOn = act.isPending ? act.variables : (q.data?.following ?? false);
 
-  const book = (
-    <BtnLink to="/business/$id/enquiry" params={{ id }} className="min-w-0 flex-1 px-3">
+  // A studio is booked through its rooms and calendar; any other business takes an enquiry.
+  const book = studioSlug ? (
+    <BtnLink to="/booking/$id" params={{ id: studioSlug }} className="min-w-0 flex-1 px-3">
       Book
+    </BtnLink>
+  ) : (
+    <BtnLink to="/business/$id/enquiry" params={{ id }} className="min-w-0 flex-1 px-3">
+      Enquire
     </BtnLink>
   );
   // The owner sees what the person profile's owner sees: edit, share, stats — not Book or Follow.

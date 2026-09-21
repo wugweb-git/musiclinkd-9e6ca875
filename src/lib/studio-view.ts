@@ -154,6 +154,7 @@ export function bookableFromStudio(
     hero: row.image_url ?? "",
     logo: row.owner?.avatar_url ?? "",
     ...(row.owner?.username ? { username: row.owner.username } : {}),
+    ...(row.owner?.id ? { ownerProfileId: row.owner.id } : {}),
     ...(row.owner?.followers_count ? { followers: row.owner.followers_count } : {}),
     gallery: row.images,
     about: row.description ?? "",

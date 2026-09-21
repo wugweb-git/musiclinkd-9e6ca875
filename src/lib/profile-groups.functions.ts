@@ -91,6 +91,8 @@ export type BusinessRecord = {
     tags: string[];
   }[];
   studio: {
+    /** The studio's booking address, /booking/<slug>. */
+    slug?: string;
     rating: number | null;
     review_count: number;
     rooms: {
@@ -128,7 +130,7 @@ const BUSINESS =
 const REVIEW = "id, author_name, author_org, context, rating, body, response, created_at";
 const REVIEW_FULL = `${REVIEW}, tags`;
 const STUDIO = (review: string) =>
-  `id, rating, review_count, rooms:studio_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), reviews(${review})`;
+  `id, slug, rating, review_count, rooms:studio_rooms(id, name, kind, capacity, hourly_rate_paise, gear, photo_url, sort_order), reviews(${review})`;
 
 async function businessRecord(
   client: SupabaseClient,

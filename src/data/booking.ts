@@ -117,6 +117,8 @@ export type Bookable = {
   logo?: string;
   /** The owning business's username — a studio is a business profile. */
   username?: string;
+  /** The owning business's profile id, for Message and Save. */
+  ownerProfileId?: string;
   /** The business's real follower count. */
   followers?: number;
   gallery: string[];

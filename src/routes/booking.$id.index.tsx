@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
-import { Bookmark, MessageCircle, Share2 } from "lucide-react";
-import { Btn, BtnLink, IconBtn } from "@/components/ml/ui";
+import { MessageCircle, Share2 } from "lucide-react";
+import { Btn, IconBtn } from "@/components/ml/ui";
 import {
   BookableHero,
   EntityMetaRow,
@@ -19,6 +18,8 @@ import { ReviewCard } from "@/components/ml/profile";
 import { TextLink } from "@/components/ml/links";
 import { shareLink } from "@/lib/booking-actions";
 import { iconSize } from "@/lib/tokens";
+import { SavedToggle } from "@/components/ml/saved-toggle";
+import { useMessagePerson } from "@/hooks/use-message-person";
 
 export const Route = createFileRoute("/booking/$id/")({
   head: () => ({
@@ -44,8 +45,7 @@ export const Route = createFileRoute("/booking/$id/")({
 function BookingEntry() {
   const { bookable: b } = useBookingDraft();
   const navigate = useNavigate();
-  // Saved on this visit only: there is no saved-spaces store yet.
-  const [saved, setSaved] = useState(false);
+  const message = useMessagePerson();
   // The facility or equipment item whose photos are open.
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const from = Math.min(...b.resources.flatMap((r) => r.tiers.map((t) => t.price)));
@@ -64,20 +64,20 @@ function BookingEntry() {
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.about}</p>
         ) : null}
 
-        <div className="mt-4 flex gap-2">
-          <BtnLink to="/messages" variant="outline" className="flex-1 w-full">
-            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message
-          </BtnLink>
-          <IconBtn
-            label={saved ? "Remove from saved" : "Save space"}
-            className="h-12 w-12"
-            onClick={() => {
-              setSaved((s) => !s);
-              toast.success(saved ? "Removed from saved" : "Saved");
-            }}
+        <div className="mt-4 flex items-center gap-2">
+          {/* Message opens a conversation with the studio's business; Save is the saved list. */}
+          <Btn
+            variant="outline"
+            className="flex-1 w-full"
+            disabled={!b.ownerProfileId}
+            loading={message.pending}
+            onClick={() => b.ownerProfileId && void message.open(b.ownerProfileId)}
           >
-            <Bookmark size={iconSize.sm} fill={saved ? "currentColor" : "none"} aria-hidden />
-          </IconBtn>
+            <MessageCircle size={iconSize.sm} className="mr-1.5" /> Message
+          </Btn>
+          {b.ownerProfileId ? (
+            <SavedToggle targetType="business" targetId={b.ownerProfileId} size={48} />
+          ) : null}
           <IconBtn
             label="Share space"
             className="h-12 w-12"
