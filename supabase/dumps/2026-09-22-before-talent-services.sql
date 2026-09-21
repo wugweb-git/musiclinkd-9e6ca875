@@ -1,0 +1,8 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922160000_talent_services.sql.
+--
+-- Scope: profile_services for the 9 profiles the migration adds to. At snapshot time none of them
+-- had any service (0 rows each); total profile_services rows: 37.
+-- To undo:
+--   DELETE FROM public.profile_services WHERE profile_id IN ('224b80f9-2a74-579a-8c7c-84dd30a5edcb', '3fc0b746-3c09-5140-9270-549088a046db', '576fc434-bf67-50a6-8f58-6f31c6f73dfe', '61d15aab-b011-54ef-8644-b185711b608f', '689e3ab6-0309-58d2-9e9e-b7983d7dc132', '715c16b9-286e-582e-950b-0613140cca38', 'ba5786ec-11fd-5ee9-b013-176f102e6fa9', 'e82a88ea-8233-5661-838f-aa3082d23c01', 'ef3160ef-b8ea-5d08-9eb7-8efd08b98917')
+--     AND created_at >= '2026-09-22';
