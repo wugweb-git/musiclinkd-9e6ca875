@@ -307,7 +307,7 @@ function RentalDetail() {
               ) : reviews.data?.length ? (
                 <ReviewRail>
                   {reviews.data.map((r) => (
-                    <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel="Provider replied" />
+                    <ReviewCard key={r.id} r={reviewItemFrom(r)} />
                   ))}
                 </ReviewRail>
               ) : (

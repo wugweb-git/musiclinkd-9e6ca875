@@ -302,7 +302,6 @@ const reviewItem = (rv: BusinessReview) => ({
   context: rv.context,
   stars: Number(rv.rating),
   text: rv.body,
-  ...(rv.response ? { response: rv.response } : {}),
   tags: rv.tags ?? [],
 });
 

@@ -98,7 +98,7 @@ function WriteReview() {
         <div className="space-y-3 px-5 pt-8 text-center">
           <p className="text-3 leading-tight">Thanks — that's published</p>
           <p className="text-1 text-muted-foreground">
-            It is on their profile now, and they can reply to it.
+            It is on their profile now.
           </p>
           <BtnLink to="/reviews" className="w-full">
             Back to Reviews

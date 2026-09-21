@@ -340,7 +340,7 @@ function ListingDetail() {
               ) : realReviews.data?.length ? (
                 <ReviewRail>
                   {realReviews.data.map((r) => (
-                    <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel="Seller replied" />
+                    <ReviewCard key={r.id} r={reviewItemFrom(r)} />
                   ))}
                 </ReviewRail>
               ) : (

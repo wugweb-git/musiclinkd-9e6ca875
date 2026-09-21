@@ -13,7 +13,6 @@ import {
   listMyReviews,
   listReviewable,
   listReviewsAboutMe,
-  replyToReview,
   type ReviewRow,
 } from "@/lib/reviews.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -161,7 +160,7 @@ function ReviewsHub() {
               ) : (mine.data ?? []).length ? (
                 <ReviewRail label="Reviews you gave">
                   {(mine.data ?? []).map((r) => (
-                    <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel="Their reply" />
+                    <ReviewCard key={r.id} r={reviewItemFrom(r)} />
                   ))}
                 </ReviewRail>
               ) : (
@@ -207,81 +206,21 @@ function ReviewsHub() {
   );
 }
 
-/** One review about you, with the reply box until you have answered it. */
+/** One review about you. Reviews take no replies; you can report one that breaks the rules. */
 function ReceivedReview({ r }: { r: ReviewRow }) {
-  const queryClient = useQueryClient();
-  const reply = useServerFn(replyToReview);
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState("");
-
-  const answer = useMutation({
-    mutationFn: () => reply({ data: { id: r.id, response: text.trim() } }),
-    onSuccess: () => {
-      setOpen(false);
-      setText("");
-      void queryClient.invalidateQueries({ queryKey: ["reviews", "about-me"] });
-    },
-    onError: () => toast.error("That didn't save. Try again."),
-  });
-
   return (
     <ReviewCard
       r={reviewItemFrom(r)}
-      responseLabel="Your reply"
       footer={
-        <>
-          {r.response ? null : open ? (
-            <form
-              className="space-y-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (text.trim() && !answer.isPending) answer.mutate();
-              }}
-            >
-              <label className="sr-only" htmlFor={`reply-${r.id}`}>
-                Your reply
-              </label>
-              <textarea
-                id={`reply-${r.id}`}
-                rows={3}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Answer publicly, once."
-                className="w-full resize-none rounded-lg border border-border bg-card p-3 text-1 outline-none"
-              />
-              <div className="flex gap-2">
-                <Btn
-                  variant="ghost"
-                  className="min-h-10 flex-1 text-1"
-                  onClick={() => setOpen(false)}
-                >
-                  Cancel
-                </Btn>
-                <Btn
-                  type="submit"
-                  className="min-h-10 flex-1 text-1"
-                  disabled={!text.trim()}
-                  loading={answer.isPending}
-                >
-                  Reply
-                </Btn>
-              </div>
-            </form>
-          ) : (
-            <Btn variant="outline" className="min-h-10 w-full text-1" onClick={() => setOpen(true)}>
-              Respond
-            </Btn>
-          )}
-          <div className="mt-2 flex justify-end">
-            <TextLink
-              to="/reviews/$id/report"
-              params={{ id: r.id }}
-              className="text-1 text-muted-foreground"
-            >
-              Report
-            </TextLink>
-          </div>
-        </>
+        <div className="flex justify-end">
+          <TextLink
+            to="/reviews/$id/report"
+            params={{ id: r.id }}
+            className="text-1 text-muted-foreground"
+          >
+            Report
+          </TextLink>
+        </div>
       }
     />
   );

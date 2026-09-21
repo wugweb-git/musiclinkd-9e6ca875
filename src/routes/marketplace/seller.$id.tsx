@@ -118,7 +118,7 @@ function SellerProfile() {
           ) : reviews.data?.length ? (
             <ReviewRail>
               {reviews.data.map((r) => (
-                <ReviewCard key={r.id} r={reviewItemFrom(r)} responseLabel="Seller replied" />
+                <ReviewCard key={r.id} r={reviewItemFrom(r)} />
               ))}
             </ReviewRail>
           ) : (

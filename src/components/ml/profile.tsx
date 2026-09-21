@@ -1169,18 +1169,10 @@ export function CollaboratorCard({ c }: { c: Collaborator }) {
 /**
  * One review, read the way a liner note reads: the rating, then what they said, then who said it.
  * Reviews always sit side by side in a ReviewRail and scroll left to right; they never stack
- * (owner, 22 Sep 2026). `footer` holds the owner's reply controls where there are any.
+ * (owner, 22 Sep 2026). Reviews take no replies (owner, 22 Sep 2026). `footer` holds a
+ * screen's own controls, such as Report.
  */
-export function ReviewCard({
-  r,
-  responseLabel = "Reply",
-  footer,
-}: {
-  r: ReviewItem;
-  /** Whose reply the response is: "Reply", "Your reply", "Their reply". */
-  responseLabel?: string;
-  footer?: ReactNode;
-}) {
+export function ReviewCard({ r, footer }: { r: ReviewItem; footer?: ReactNode }) {
   return (
     <article className="flex h-full w-[min(300px,82vw)] flex-col rounded-[20px] bg-card p-4">
       <div className="flex items-center justify-between gap-3">
@@ -1203,13 +1195,6 @@ export function ReviewCard({
             </li>
           ))}
         </ul>
-      ) : null}
-
-      {r.response ? (
-        <div className="mt-3 border-l-2 border-foreground pl-3">
-          <p className="text-1 font-semibold">{responseLabel}</p>
-          <p className="mt-0.5 line-clamp-3 text-1 text-muted-foreground">{r.response}</p>
-        </div>
       ) : null}
 
       <div className="mt-auto flex items-center gap-2.5 pt-4">

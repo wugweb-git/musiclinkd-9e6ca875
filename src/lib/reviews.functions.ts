@@ -247,21 +247,6 @@ export const listReviewsAboutMe = createServerFn({ method: "GET" })
     return (data ?? []) as unknown as ReviewRow[];
   });
 
-/** Answer a review written about you, or about a studio you own. */
-export const replyToReview = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z.object({ id: z.string().uuid(), response: z.string().trim().min(1).max(1000) }).parse(d),
-  )
-  .handler(async ({ context, data }) => {
-    const { error } = await db(context.supabase)
-      .from("reviews")
-      .update({ response: data.response } as never)
-      .eq("id", data.id);
-    if (error) throw new Error(error.message);
-    return { replied: true };
-  });
-
 /** Public reviews about one profile, for their page. */
 export const listReviewsFor = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))

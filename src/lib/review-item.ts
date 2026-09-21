@@ -7,7 +7,6 @@ type StoredReview = {
   body: string;
   author_name: string;
   context?: string | null;
-  response?: string | null;
   tags?: string[] | null;
   created_at?: string;
 };
@@ -32,6 +31,5 @@ export function reviewItemFrom(r: StoredReview, org = ""): ReviewItem {
     stars: Number(r.rating),
     text: r.body,
     tags: r.tags ?? undefined,
-    ...(r.response ? { response: r.response } : {}),
   };
 }

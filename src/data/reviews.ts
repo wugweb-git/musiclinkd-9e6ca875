@@ -133,7 +133,7 @@ export const ratingSummary = {
 // existed; a review now publishes when it is written, and the database decides who may write one.
 export const reviewPolicy = [
   "You can review a studio you had a confirmed session with, or someone whose application you accepted.",
-  "A review publishes as soon as you write it, and the person reviewed can reply once.",
+  "A review publishes as soon as you write it.",
   "One review per studio or person; you can edit your own.",
   "Contact details, abuse and off-platform payment requests do not belong in a review.",
 ];
