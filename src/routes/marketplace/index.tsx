@@ -142,7 +142,7 @@ function MarketHome() {
           </div>
         ) : null}
         {/* Views as tabs, and where you are at the end of the row (it opens the city sheet). */}
-        <div className="flex items-center gap-3 px-5 py-1">
+        <div className="flex items-center gap-3 border-b border-border px-5 py-1">
           <div className="min-w-0 flex-1">
             <Segmented
               className=""
@@ -155,6 +155,7 @@ function MarketHome() {
               }}
             />
           </div>
+          <span aria-hidden className="h-6 w-px shrink-0 bg-border" />
           <IconBtn label={`Location: ${city}`} onClick={() => setLocationOpen(true)}>
             <MapPin size={iconSize.md} />
           </IconBtn>
