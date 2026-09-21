@@ -131,6 +131,7 @@ function ServiceDetail() {
             </div>
             <div className="flex items-start justify-between gap-2">
               <Price
+                from
                 price={priceParts(s.price_paise, s.price_unit, s.price_note)}
                 amountClassName="text-2 font-bold"
               />

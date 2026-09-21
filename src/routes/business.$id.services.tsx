@@ -110,7 +110,7 @@ function BusinessServices() {
                   {s.category ? (
                     <p className="truncate text-1 text-muted-foreground">{s.category}</p>
                   ) : null}
-                  <Price price={s.price} className="mt-1" amountClassName="text-1" />
+                  <Price from price={s.price} className="mt-1" amountClassName="text-1" />
                 </div>
                 <StatusPill label={statusPill[s.status].label} tone={statusPill[s.status].tone} />
               </div>

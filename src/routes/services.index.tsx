@@ -107,6 +107,7 @@ function ServicesHome() {
                         </p>
                       ) : null}
                       <Price
+                        from
                         price={priceParts(s.price_paise, s.price_unit, s.price_note)}
                         amountClassName="text-1 font-semibold"
                         unitClassName="text-1"

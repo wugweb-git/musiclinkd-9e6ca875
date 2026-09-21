@@ -59,6 +59,7 @@ export function Price({
   amountClassName = "",
   unitClassName = "text-1",
   inline = false,
+  from = false,
 }: {
   price: PriceParts | null | undefined;
   align?: "start" | "center" | "end" | undefined;
@@ -70,6 +71,8 @@ export function Price({
   unitClassName?: string | undefined;
   /** The unit on the amount's line as "/day" (Market's rates), not on a line of its own. */
   inline?: boolean | undefined;
+  /** A starting price: a small grey "From" before the amount (services). */
+  from?: boolean | undefined;
 }) {
   if (!price?.amount) return null;
   const unit = unitLabel(price.unit);
@@ -82,6 +85,9 @@ export function Price({
   return (
     <span className={`inline-flex min-w-0 flex-col ${alignment} ${className}`}>
       <span className={`${tone === "price" ? "text-price" : ""} ${amountClassName}`}>
+        {from ? (
+          <span className="mr-1 align-baseline text-1 font-normal text-muted-foreground">From</span>
+        ) : null}
         {price.amount}
         {inline && price.unit ? (
           <span className={`${unitClassName} font-normal text-muted-foreground`}>

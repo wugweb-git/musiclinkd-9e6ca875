@@ -1093,6 +1093,7 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
         <h3 className="min-w-0 text-2 font-semibold leading-snug">{s.name}</h3>
         {s.from ? (
           <Price
+            from
             price={s.from}
             align="end"
             className="shrink-0"
