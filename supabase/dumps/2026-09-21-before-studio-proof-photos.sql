@@ -1,0 +1,24 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921150000_studio_proof_photos.sql.
+--
+-- Scope: row counts and what the migration touches. It adds a storage bucket studio-media, four
+-- storage.objects policies named "Owners … their studio media" and a new table studio_photos; none
+-- of them existed at snapshot time (to_regclass('public.studio_photos') null, no bucket or policy of
+-- those names), so there is no earlier definition to keep. It writes no existing rows.
+--
+-- Row counts: studios 18 (16 with at least one amenity), studio_equipment 42 (id is uuid),
+-- studio_photos does not exist.
+--
+-- storage.buckets at snapshot time:
+--   avatars                 public   5 MB  image/jpeg, image/png, image/webp
+--   covers                  public  10 MB  image/jpeg, image/png, image/webp
+--   verification-documents  private 10 MB  image/jpeg, image/png, image/webp, application/pdf
+--
+-- storage.objects policies at snapshot time:
+--   "Users read their own profile images", "Users upload their own profile images",
+--   "Users replace their own profile images", "Users delete their own profile images",
+--   "Owners read their verification documents", "Owners upload verification documents to a draft",
+--   "Owners replace verification documents in a draft",
+--   "Owners delete verification documents of a draft or withdrawn re…" (name as listed)
+--
+-- To undo: see the Rollback note at the top of the migration.
