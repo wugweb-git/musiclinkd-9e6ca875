@@ -1,0 +1,16 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921280000_business_locations.sql.
+--
+-- Values at snapshot time (username | business_address | city | state | bio | studio location):
+--   analog.ensemble.studios | 'Kolkata, Park Street' | Mumbai | Maharashtra | 'Studio serving the Chennai music scene.' | 'Mumbai, Andheri West'
+--   crimson.owls.academy | 'Goa, Anjuna' | Pune | Maharashtra | 'School serving the New Delhi music scene.' | -
+--   echo.parade.academy | 'Chandigarh, Sector 17' | Chennai | Tamil Nadu | 'School serving the Kolkata music scene.' | -
+--   ironwood.live.hall.and.venue | NULL | Pune | Maharashtra | (unchanged) | 'Baner, Pune'
+--   monsoon.machine.records | 'Hyderabad, Jubilee Hills' | Anjuna | Goa | 'Label serving the Kolkata music scene.' | -
+--   neon.ensemble.agency | 'Bengaluru, Indiranagar' | Ahmedabad | Gujarat | 'Booking Agency serving the New Delhi music scene.' | -
+--   paper.parade.studios | 'Mumbai, Andheri West' | Bengaluru | Karnataka | 'Studio serving the Pune music scene.' | 'Bengaluru, Indiranagar'
+--   silver.riot.agency | 'Bengaluru, Indiranagar' | Chandigarh | Chandigarh | 'Booking Agency serving the Pune music scene.' | -
+--   velvet.static.records | 'Hyderabad, Jubilee Hills' | Pune | Maharashtra | 'Label serving the Pune music scene.' | -
+--   soundhouse.bandra | (unchanged) | Mumbai | NULL | (unchanged) | (unchanged)
+--
+-- To undo: set each value back as listed.
