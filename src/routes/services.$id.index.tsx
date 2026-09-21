@@ -1,4 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight, FolderKanban, Guitar, Languages, Music, UserRound } from "lucide-react";
+import { ChipGroup, ChipGroupList } from "@/components/ml/profile";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -41,6 +44,7 @@ export const Route = createFileRoute("/services/$id/")({
 function ServiceDetail() {
   const { id } = Route.useParams();
   const { service: s, owner, pending, error, retry } = useService(id);
+  const { options: taxonomy } = useTaxonomy();
   const { options } = useServiceOptions();
   const refresh = useRefreshServices();
   const updateStatus = useServerFn(setServiceStatus);
@@ -136,6 +140,78 @@ function ServiceDetail() {
               <p className="text-1 leading-relaxed text-muted-foreground">{s.description}</p>
             ) : null}
           </Card>
+
+          {s.examples.length ? (
+            <Card className="space-y-2">
+              <h2 className="text-sm">Examples</h2>
+              <ul className="space-y-2">
+                {s.examples.map((w) => (
+                  <li key={w.id}>
+                    <Link
+                      to="/portfolio/$id"
+                      params={{ id: w.id }}
+                      className="state-layer flex items-center gap-3 rounded-lg p-1"
+                    >
+                      {w.cover_url ? (
+                        <img
+                          src={w.cover_url}
+                          alt=""
+                          className="h-12 w-12 shrink-0 rounded-sm object-cover"
+                        />
+                      ) : (
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip">
+                          <FolderKanban size={18} strokeWidth={1.75} aria-hidden />
+                        </span>
+                      )}
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold">{w.title}</span>
+                        <span className="block text-1 capitalize text-foreground">{w.kind}</span>
+                      </span>
+                      <ChevronRight size={18} className="shrink-0" aria-hidden />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ) : null}
+
+          {s.provider ? (
+            <Card className="space-y-3">
+              <h2 className="text-sm">About {s.provider.name || "the provider"}</h2>
+              <ChipGroupList>
+                <ChipGroup
+                  label="Type"
+                  icon={UserRound}
+                  items={s.provider.roles.map((r) => labelFor(taxonomy?.person_types, r))}
+                />
+                <ChipGroup
+                  label="Genres"
+                  icon={Music}
+                  items={s.provider.genres.map((g) => labelFor(taxonomy?.genres, g))}
+                />
+                <ChipGroup
+                  label="Instruments"
+                  icon={Guitar}
+                  items={s.provider.instruments.map((i) => labelFor(taxonomy?.instruments, i))}
+                />
+                <ChipGroup
+                  label="Languages"
+                  icon={Languages}
+                  items={s.provider.languages.map((l) => labelFor(taxonomy?.languages, l))}
+                />
+              </ChipGroupList>
+              {s.provider.username ? (
+                <BtnLink
+                  to="/profile/$username"
+                  params={{ username: s.provider.username }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  View Profile
+                </BtnLink>
+              ) : null}
+            </Card>
+          ) : null}
 
           {s.deliverables.length || s.turnaround ? (
             <Card className="space-y-2">

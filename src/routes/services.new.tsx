@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
+  ArrowLeftRight,
   Building2,
   CalendarDays,
   Clock,
@@ -11,29 +12,37 @@ import {
   GraduationCap,
   Guitar,
   Handshake,
+  FolderKanban,
+  Hourglass,
+  Laptop,
+  MapPin,
   MicVocal,
   Music,
   Package,
   PenLine,
+  Plane,
   SlidersVertical,
   Sparkles,
   Speaker,
   Tag,
   type LucideIcon,
 } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Dialog, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Dialog, EmptyState, Loading } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import { ListingStepFooter } from "@/components/ml/market";
-import { Field, inputClass, SheetSelect, TagListField } from "@/components/ml/listing-form";
+import {
+  Field,
+  inputClass,
+  SheetMultiSelect,
+  SheetSelect,
+  TagListField,
+} from "@/components/ml/listing-form";
+import { iconSize } from "@/lib/tokens";
+import type { PortfolioItem } from "@/data/portfolio";
 import { ServiceCard } from "@/components/ml/profile";
 import type { ServiceItem } from "@/data/profile";
-import {
-  pricingModelUnit,
-  bookingWindows,
-  noticeDefault,
-  type PricingModel,
-} from "@/data/services";
+import { pricingModelUnit, type PricingModel } from "@/data/services";
 import { useAuth } from "@/hooks/use-auth";
 import {
   optionLabel,
@@ -42,29 +51,38 @@ import {
   useServiceOptions,
 } from "@/hooks/use-services";
 import { haptic } from "@/lib/haptics";
-import { getMyProfile } from "@/lib/portfolio.functions";
+import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
 
 /*
- * Add or edit a service, in three steps like the listing flow and on the same pieces (plain field
- * labels, drawer pickers with icons, the icon footer, a preview of the card as it shows on your
- * profile): what it is and what it costs, the details, then delivery and publish.
+ * Add or edit a service in two steps, on the listing flow's pieces (plain labels with a hint line,
+ * drawer pickers with icons, the icon footer, a preview of the card as it shows on your profile):
+ * what you offer, then price and publish.
  */
-const steps = ["what", "details", "delivery"] as const;
+const steps = ["what", "price"] as const;
 type Step = (typeof steps)[number];
 const stepLabels: Record<Step, string> = {
-  what: "What & price",
-  details: "Details",
-  delivery: "Delivery & publish",
+  what: "What you offer",
+  price: "Price & publish",
 };
-/** Older links name the five steps this flow used to have. */
+/** Older links name the steps this flow used to have. */
 const legacySteps: Record<string, Step> = {
   category: "what",
   basics: "what",
-  pricing: "what",
-  delivery: "delivery",
-  review: "delivery",
+  details: "what",
+  pricing: "price",
+  delivery: "price",
+  review: "price",
+};
+
+/** Delivery times offered in the drawer; a stored value outside the list stays pickable. */
+const deliveryTimes = ["Same day", "1–2 days", "3–5 days", "1 week", "2 weeks", "1 month"];
+const modeIcons: Record<string, LucideIcon> = {
+  in_person: MapPin,
+  remote: Laptop,
+  hybrid: ArrowLeftRight,
+  touring: Plane,
 };
 
 export const Route = createFileRoute("/services/new")({
@@ -135,17 +153,23 @@ function NewService() {
   const save = useServerFn(saveService);
   const refresh = useRefreshServices();
 
-  const [category, setCategory] = useState<string | null>(null);
+  const loadPortfolio = useServerFn(listMyPortfolio);
+  const portfolio = useQuery({
+    queryKey: ["portfolio", "mine"],
+    queryFn: () => loadPortfolio(),
+    enabled: signedIn,
+  });
+
+  const [categories, setCategories] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deliverables, setDeliverables] = useState<string[]>([]);
-  const [requirements, setRequirements] = useState<string[]>([]);
+  const [exampleIds, setExampleIds] = useState<string[]>([]);
   const [model, setModel] = useState<string | null>(null);
   const [price, setPrice] = useState("");
   const [minHours, setMinHours] = useState("");
-  const [notice, setNotice] = useState(noticeDefault);
-  const [turnaround, setTurnaround] = useState("");
-  const [workModes, setWorkModes] = useState<string[]>([]);
+  const [turnaround, setTurnaround] = useState<string | null>(null);
+  const [mode, setMode] = useState<string | null>(null);
   const [busy, setBusy] = useState<"draft" | "active" | null>(null);
   const [published, setPublished] = useState(false);
   const [filled, setFilled] = useState<string | null>(null);
@@ -155,17 +179,16 @@ function NewService() {
   useEffect(() => {
     if (!source || filled === source.id) return;
     setFilled(source.id);
-    setCategory(source.category);
+    setCategories(source.categories);
     setTitle(source.name);
     setDescription(source.description ?? "");
     setDeliverables(source.deliverables);
-    setRequirements(source.requirements);
+    setExampleIds(source.example_ids);
     setModel(source.pricing_model);
     setPrice(source.price_paise == null ? "" : String(source.price_paise / 100));
     setMinHours(source.min_hours == null ? "" : String(source.min_hours));
-    setNotice(source.notice ?? "");
-    setTurnaround(source.turnaround ?? "");
-    setWorkModes(source.work_modes);
+    setTurnaround(source.turnaround);
+    setMode(source.work_modes[0] ?? null);
   }, [source, filled]);
 
   if (id && (editing.pending || !source)) {
@@ -191,17 +214,37 @@ function NewService() {
   }
 
   // Categories this person's roles offer; every category when they have no role, or when none of
-  // their roles maps to a category. A stored category stays pickable.
+  // their roles maps to a category. Stored categories stay pickable.
   const roles = ((profile.data as { roles?: string[] | null } | null | undefined)?.roles ??
     []) as string[];
   const offered = new Set(roles.flatMap((r) => options?.categoriesByRole[r] ?? []));
-  const categories = (options?.categories ?? [])
-    .filter((c) => offered.size === 0 || offered.has(c.slug) || c.slug === source?.category)
+  const categoryOptions = (options?.categories ?? [])
+    .filter((c) => offered.size === 0 || offered.has(c.slug) || source?.categories.includes(c.slug))
     .map((c) => ({ value: c.slug, label: c.label, icon: categoryIcons[c.slug] ?? Sparkles }));
-  const models = (options?.pricingModels ?? []).map((m) => ({
+  const modelOptions = (options?.pricingModels ?? []).map((m) => ({
     value: m.slug,
     label: m.label,
     icon: modelIcons[m.slug] ?? Tag,
+  }));
+  const deliveryOptions = [
+    ...deliveryTimes,
+    ...(turnaround && !deliveryTimes.includes(turnaround) ? [turnaround] : []),
+  ].map((d) => ({ value: d, label: d, icon: Hourglass }));
+  const modeOptions = (options?.workModes ?? []).map((m) => ({
+    value: m.slug,
+    label: m.label,
+    icon: modeIcons[m.slug] ?? MapPin,
+  }));
+  // Examples come from the owner's own published portfolio.
+  const works = ((portfolio.data ?? []) as PortfolioItem[]).filter((w) => w.published);
+  const exampleOptions = works.map((w) => ({
+    value: w.id,
+    label: w.title,
+    iconNode: w.cover_url ? (
+      <img src={w.cover_url} alt="" className="h-full w-full object-cover" />
+    ) : (
+      <FolderKanban size={iconSize.md} strokeWidth={1.75} aria-hidden />
+    ),
   }));
 
   const unit = model ? pricingModelUnit[model as PricingModel] : undefined;
@@ -216,10 +259,8 @@ function NewService() {
   // Each step's Continue waits for that step's own fields.
   const ready =
     step === "what"
-      ? Boolean(category && title.trim() && model && (quoted || (pricePaise ?? 0) > 0))
-      : step === "details"
-        ? Boolean(description.trim())
-        : Boolean(turnaround.trim() && workModes.length);
+      ? Boolean(categories.length && title.trim() && description.trim())
+      : Boolean(model && (quoted || (pricePaise ?? 0) > 0) && turnaround && mode);
 
   async function submit(status: "draft" | "active") {
     if (!signedIn) {
@@ -233,7 +274,9 @@ function NewService() {
           ...(source ? { id: source.id } : {}),
           name: title.trim() || "Untitled service",
           description: description.trim() || null,
-          category,
+          category: categories[0] ?? null,
+          categories,
+          example_ids: exampleIds,
           pricing_model: model,
           price_paise: pricePaise,
           // A stored unit the pricing models do not name ("film") is kept while the model is unchanged.
@@ -242,11 +285,12 @@ function NewService() {
               ? null
               : (unit ?? (model === source?.pricing_model ? source?.price_unit : null) ?? null),
           min_hours: model === "hourly" && hours ? hours : null,
-          turnaround: turnaround.trim() || null,
-          notice: notice || null,
-          work_modes: workModes,
+          turnaround: turnaround ?? null,
+          // Not asked any more; a stored value is kept as it was.
+          notice: source?.notice ?? null,
+          work_modes: mode ? [mode] : [],
           deliverables,
-          requirements,
+          requirements: source?.requirements ?? [],
           status,
         },
       });
@@ -266,17 +310,15 @@ function NewService() {
     }
   }
 
-  const modeText = (() => {
-    const remote = workModes.includes("remote") || workModes.includes("hybrid");
-    const inPerson = workModes.some((m) => m !== "remote");
-    return remote && inPerson
-      ? "Remote · In person"
-      : remote
-        ? "Remote"
-        : inPerson
+  const modeText = (
+    mode === "remote"
+      ? "Remote"
+      : mode === "hybrid"
+        ? "Remote · In person"
+        : mode
           ? "In person"
-          : undefined;
-  })() as ServiceItem["mode"];
+          : undefined
+  ) as ServiceItem["mode"];
 
   return (
     <Screen bottomNav={false} className="pb-8">
@@ -310,13 +352,18 @@ function NewService() {
             <Loading rows={3} />
           ) : (
             <div className="space-y-4">
-              <Field label="Category" id="service-category">
-                <SheetSelect
-                  title="Category"
-                  value={category}
-                  options={categories}
-                  onChange={setCategory}
+              <Field
+                label="Categories"
+                id="service-categories"
+                hint="Select up to 3 categories to help clients find your service"
+              >
+                <SheetMultiSelect
+                  title="Categories"
+                  value={categories}
+                  options={categoryOptions}
+                  onChange={setCategories}
                   placeholder="What are you offering?"
+                  max={3}
                 />
               </Field>
               <Field label="Title" id="service-title">
@@ -327,108 +374,98 @@ function NewService() {
                   className={inputClass}
                 />
               </Field>
-              <Field label="Price (₹)" id="service-price">
-                <div className="grid grid-cols-5 gap-2">
-                  <input
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    inputMode="decimal"
-                    placeholder={quoted ? "On enquiry" : "8,000"}
-                    className={`${inputClass} col-span-3`}
-                  />
-                  <SheetSelect
-                    title="How you charge"
-                    value={model}
-                    options={models}
-                    onChange={setModel}
-                    placeholder="Per…"
-                    className="col-span-2"
-                  />
-                </div>
+              <Field label="Description" id="service-description">
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  placeholder="What the client gets, how you work, what makes it yours."
+                  className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                />
               </Field>
-              {model === "hourly" ? (
-                <Field label="Minimum hours" id="service-min-hours">
-                  <input
-                    value={minHours}
-                    onChange={(e) => setMinHours(e.target.value.replace(/\D/g, ""))}
-                    inputMode="numeric"
-                    placeholder="1"
-                    className={inputClass}
+              <TagListField
+                label="Deliverables (optional)"
+                id="service-deliverables"
+                placeholder="Dry WAV stems"
+                value={deliverables}
+                onChange={setDeliverables}
+              />
+              <Field
+                label="Examples from your portfolio (optional)"
+                id="service-examples"
+                hint="Shown on the service, so clients hear or see the work"
+              >
+                {works.length ? (
+                  <SheetMultiSelect
+                    title="Examples"
+                    value={exampleIds}
+                    options={exampleOptions}
+                    onChange={setExampleIds}
+                    placeholder="Pick from your portfolio"
+                    max={6}
                   />
-                </Field>
-              ) : null}
+                ) : (
+                  <p className="text-1 text-foreground">Nothing published in your portfolio yet.</p>
+                )}
+              </Field>
             </div>
           )
         ) : null}
 
-        {step === "details" ? (
+        {step === "price" ? (
           <div className="space-y-4">
-            <Field label="Description" id="service-description">
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
-                placeholder="What the client gets, how you work, what makes it yours."
-                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
-              />
+            <Field
+              label="Starting Pricing"
+              id="service-price"
+              hint="Your fees will be deducted from this amount. Your client fees will be billed to them separately."
+            >
+              <div className="grid grid-cols-5 gap-2">
+                <input
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  inputMode="decimal"
+                  placeholder={quoted ? "On enquiry" : "₹8,000"}
+                  className={`${inputClass} col-span-3`}
+                />
+                <SheetSelect
+                  title="How you charge"
+                  value={model}
+                  options={modelOptions}
+                  onChange={setModel}
+                  placeholder="Per…"
+                  className="col-span-2"
+                />
+              </div>
             </Field>
-            <TagListField
-              label="Deliverables (optional)"
-              id="service-deliverables"
-              placeholder="Dry WAV stems"
-              value={deliverables}
-              onChange={setDeliverables}
-            />
-            <TagListField
-              label="What you need from the client (optional)"
-              id="service-requirements"
-              placeholder="Guide track"
-              value={requirements}
-              onChange={setRequirements}
-            />
-          </div>
-        ) : null}
-
-        {step === "delivery" ? (
-          <div className="space-y-4">
-            <Field label="Turnaround" id="service-turnaround">
-              <input
-                value={turnaround}
-                onChange={(e) => setTurnaround(e.target.value)}
-                placeholder="3–4 days"
-                className={inputClass}
-              />
-            </Field>
-            <Field label="Notice needed" id="service-notice">
-              <SegmentedField
-                label="Notice needed"
-                value={notice}
-                options={bookingWindows}
-                onChange={setNotice}
-              />
-            </Field>
-            {options?.workModes.length ? (
-              <Field label="Where you work" id="service-modes">
-                <div className="flex flex-wrap gap-2">
-                  {options.workModes.map((m) => {
-                    const on = workModes.includes(m.slug);
-                    return (
-                      <Chip
-                        key={m.slug}
-                        active={on}
-                        onClick={() =>
-                          setWorkModes((cur) =>
-                            on ? cur.filter((x) => x !== m.slug) : [...cur, m.slug],
-                          )
-                        }
-                      >
-                        {m.label}
-                      </Chip>
-                    );
-                  })}
-                </div>
+            {model === "hourly" ? (
+              <Field label="Minimum hours" id="service-min-hours">
+                <input
+                  value={minHours}
+                  onChange={(e) => setMinHours(e.target.value.replace(/\D/g, ""))}
+                  inputMode="numeric"
+                  placeholder="1"
+                  className={inputClass}
+                />
               </Field>
             ) : null}
+            <Field label="Delivery time" id="service-delivery">
+              <SheetSelect
+                title="Delivery time"
+                value={turnaround}
+                options={deliveryOptions}
+                onChange={setTurnaround}
+                placeholder="How long it takes"
+              />
+            </Field>
+            <Field label="Where you work" id="service-mode">
+              <SheetSelect
+                title="Where you work"
+                value={mode}
+                options={modeOptions}
+                onChange={setMode}
+                placeholder="In person, remote…"
+              />
+            </Field>
             <Field label="Preview" id="service-preview">
               <ServiceCard
                 s={{
@@ -436,7 +473,7 @@ function NewService() {
                   name: title.trim() || "Untitled service",
                   description: description.trim(),
                   from: previewPrice ?? undefined,
-                  turnaround: turnaround.trim() || undefined,
+                  turnaround: turnaround ?? undefined,
                   mode: modeText,
                 }}
                 onEnquire={() => undefined}
@@ -449,10 +486,10 @@ function NewService() {
       <div className="px-5 py-6">
         <ListingStepFooter
           step={idx}
-          last={step === "delivery"}
+          last={step === "price"}
           onCancel={() => void navigate({ to: source ? `/services/${source.id}` : "/services" })}
           onBack={() => void go(steps[idx - 1]!)}
-          onNext={() => (step === "delivery" ? void submit("active") : void go(steps[idx + 1]!))}
+          onNext={() => (step === "price" ? void submit("active") : void go(steps[idx + 1]!))}
           onSaveDraft={() => void submit("draft")}
           disabled={!ready}
           busy={busy !== null}

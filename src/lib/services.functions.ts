@@ -20,6 +20,8 @@ export type ServiceRow = {
   name: string;
   description: string | null;
   category: string | null;
+  /** Up to 3 service_categories slugs; `category` is the first. */
+  categories: string[];
   pricing_model: string | null;
   price_paise: number | null;
   price_unit: string | null;
@@ -31,6 +33,8 @@ export type ServiceRow = {
   work_modes: string[];
   deliverables: string[];
   requirements: string[];
+  /** portfolio_items ids shown as examples, in order. */
+  example_ids: string[];
   status: ServiceStatus;
   sort_order: number;
 };
@@ -60,6 +64,42 @@ export type ServiceDetail = ServiceRow & {
   addons: ServiceAddonRow[];
   /** profiles.availability for the service's owner — null means not open for work right now. */
   ownerAvailability: string | null;
+  /** The owner's published portfolio items picked as examples, in the chosen order. */
+  examples: ServiceExample[];
+  /** Who offers it: name and their music identity (taxonomy slugs), for the service page. */
+  provider: ServiceProvider | null;
+};
+
+export type ServiceProvider = {
+  name: string;
+  username: string | null;
+  photo: string | null;
+  roles: string[];
+  genres: string[];
+  instruments: string[];
+  languages: string[];
+};
+
+function providerFrom(row: Record<string, unknown> | null): ServiceProvider | null {
+  if (!row) return null;
+  const list = (v: unknown) => (Array.isArray(v) ? (v as string[]) : []);
+  return {
+    name: (row["display_name"] as string | null) ?? (row["username"] as string | null) ?? "",
+    username: (row["username"] as string | null) ?? null,
+    photo: (row["avatar_url"] as string | null) ?? null,
+    roles: list(row["roles"]),
+    genres: list(row["genres"]),
+    instruments: list(row["instruments"]),
+    languages: list(row["languages"]),
+  };
+}
+
+export type ServiceExample = {
+  id: string;
+  title: string;
+  kind: string;
+  cover_url: string | null;
+  media_url: string | null;
 };
 
 export type ServiceOption = { slug: string; label: string };
@@ -74,7 +114,7 @@ export type ServiceOptions = {
 };
 
 const SERVICE =
-  "id, profile_id, name, description, category, pricing_model, price_paise, price_unit, price_note, min_hours, turnaround, notice, mode, work_modes, deliverables, requirements, status, sort_order";
+  "id, profile_id, name, description, category, categories, example_ids, pricing_model, price_paise, price_unit, price_note, min_hours, turnaround, notice, mode, work_modes, deliverables, requirements, status, sort_order";
 const PACKAGE =
   "id, name, price_paise, price_unit, includes, turnaround, revisions, is_popular, sort_order";
 const ADDON = "id, label, price_paise, price_unit, sort_order";
@@ -90,6 +130,8 @@ function serviceFrom(row: Record<string, unknown>): ServiceRow {
     work_modes: r.work_modes ?? [],
     deliverables: r.deliverables ?? [],
     requirements: r.requirements ?? [],
+    categories: r.categories?.length ? r.categories : r.category ? [r.category] : [],
+    example_ids: r.example_ids ?? [],
   };
 }
 
@@ -113,8 +155,25 @@ async function serviceDetail(
       .eq("service_id", id)
       .order("sort_order"),
     client.from("profile_service_addons").select(ADDON).eq("service_id", id).order("sort_order"),
-    client.from("profiles").select("availability").eq("id", serviceRow.profile_id).maybeSingle(),
+    client
+      .from("profiles")
+      .select(
+        "availability, display_name, username, avatar_url, roles, genres, instruments, languages",
+      )
+      .eq("id", serviceRow.profile_id)
+      .maybeSingle(),
   ]);
+  const exampleIds = ((serviceRow["example_ids"] as string[] | null) ?? []).filter(Boolean);
+  const exampleRows = exampleIds.length
+    ? await client
+        .from("portfolio_items")
+        .select("id, title, kind, cover_url, media_url")
+        .in("id", exampleIds)
+        .eq("user_id", serviceRow.profile_id)
+        .eq("published", true)
+    : { data: [], error: null };
+  if (exampleRows.error) throw new Error(exampleRows.error.message);
+  const byId = new Map(((exampleRows.data ?? []) as ServiceExample[]).map((e) => [e.id, e]));
   if (packages.error) throw new Error(packages.error.message);
   if (addons.error) throw new Error(addons.error.message);
   if (owner.error) throw new Error(owner.error.message);
@@ -131,6 +190,8 @@ async function serviceDetail(
       price_paise: Number(a.price_paise),
     })),
     ownerAvailability: (owner.data as { availability: string | null } | null)?.availability ?? null,
+    provider: providerFrom(owner.data as Record<string, unknown> | null),
+    examples: exampleIds.map((i) => byId.get(i)).filter((e): e is ServiceExample => Boolean(e)),
   };
 }
 
@@ -231,6 +292,8 @@ const saveSchema = z.object({
   name: text(120).min(1),
   description: text(2000).nullable(),
   category: slug.nullable(),
+  categories: z.array(slug).max(3).optional(),
+  example_ids: z.array(z.string().uuid()).max(6).optional(),
   pricing_model: slug.nullable(),
   price_paise: z.number().int().min(0).nullable(),
   price_unit: text(24).nullable(),
@@ -334,7 +397,18 @@ export const duplicateService = createServerFn({ method: "POST" })
     const client = context.supabase as unknown as SupabaseClient;
     const source = await serviceDetail(client, data.id, context.userId);
     if (!source) throw new Error("Service not found");
-    const { id: _id, profile_id: _profile, packages, addons, status: _status, ...fields } = source;
+    // Read-only extras on the detail (owner availability, examples, provider) aren't columns.
+    const {
+      id: _id,
+      profile_id: _profile,
+      packages,
+      addons,
+      status: _status,
+      ownerAvailability: _availability,
+      examples: _examples,
+      provider: _provider,
+      ...fields
+    } = source;
     const { data: row, error } = await client
       .from("profile_services")
       .insert({ ...fields, profile_id: context.userId, status: "draft" })

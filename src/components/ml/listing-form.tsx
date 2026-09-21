@@ -259,14 +259,105 @@ export const inputClass =
   "h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary";
 
 /** A form field: a plain label over its control (not a pill). Shared by every create flow. */
-export function Field({ label, id, children }: { label: string; id: string; children: ReactNode }) {
+export function Field({
+  label,
+  id,
+  hint,
+  children,
+}: {
+  label: string;
+  id: string;
+  /** One line under the label that says what the field is for. */
+  hint?: string;
+  children: ReactNode;
+}) {
   return (
     <div role="group" aria-labelledby={id}>
-      <span id={id} className="mb-1.5 block text-1 font-medium text-foreground">
+      <span id={id} className="block text-1 font-medium text-foreground">
         {label}
       </span>
-      {children}
+      {hint ? <span className="mt-0.5 block text-1 text-muted-foreground">{hint}</span> : null}
+      <div className="mt-1.5">{children}</div>
     </div>
+  );
+}
+
+/**
+ * Like SheetSelect, for picking several (up to `max`): rows toggle, Done closes. The field reads
+ * the picked labels joined.
+ */
+export function SheetMultiSelect({
+  title,
+  value,
+  options,
+  onChange,
+  placeholder,
+  max,
+}: {
+  title: string;
+  value: string[];
+  options: readonly { value: string; label: string; icon?: LucideIcon; iconNode?: ReactNode }[];
+  onChange: (value: string[]) => void;
+  placeholder: string;
+  max: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const picked = options.filter((o) => value.includes(o.value));
+  const full = value.length >= max;
+  return (
+    <>
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+        className="flex min-h-13 w-full items-center justify-between gap-2 rounded-full border border-border bg-card px-5 py-3 text-left text-sm"
+      >
+        <span className="min-w-0 truncate text-foreground">
+          {picked.length ? picked.map((o) => o.label).join(", ") : placeholder}
+        </span>
+        <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
+      </button>
+      <Sheet open={open} onClose={() => setOpen(false)} title={title}>
+        <p className="mb-3 text-1 text-foreground">
+          {value.length} of {max} picked
+        </p>
+        <ul
+          className="max-h-[50vh] space-y-2 overflow-y-auto"
+          role="listbox"
+          aria-multiselectable
+          aria-label={title}
+        >
+          {options.map((o) => {
+            const on = value.includes(o.value);
+            const blocked = !on && full;
+            return (
+              <li key={o.value} role="option" aria-selected={on}>
+                <button
+                  type="button"
+                  disabled={blocked}
+                  onClick={() =>
+                    onChange(on ? value.filter((v) => v !== o.value) : [...value, o.value])
+                  }
+                  className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${on ? "border-foreground" : "border-transparent"} ${blocked ? "opacity-50" : ""}`}
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip">
+                    {o.iconNode ??
+                      (o.icon ? (
+                        <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden />
+                      ) : null)}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">{o.label}</span>
+                  {on ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <Btn className="mt-4 w-full" onClick={() => setOpen(false)}>
+          Done
+        </Btn>
+      </Sheet>
+    </>
   );
 }
 
