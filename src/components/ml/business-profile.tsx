@@ -1,10 +1,11 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   BarChart3,
   House,
   Pencil,
   Share2,
+  Globe,
   MapPin,
   Navigation,
   Music,
@@ -19,7 +20,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { connectionWith, setFollowing as setFollowingFn } from "@/lib/connections.functions";
-import { conversationWith } from "@/lib/messages.functions";
 import { shareLink } from "@/lib/booking-actions";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, IconBtnLink } from "@/components/ml/ui";
@@ -30,7 +30,7 @@ import { CoverHero, ReviewCard } from "@/components/ml/profile";
 import { CallBtn } from "@/components/ml/person-profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
-import { joinParts } from "@/lib/utils";
+import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 
@@ -99,16 +99,8 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
         {b.tagline ? (
           <p className="mt-1.5 text-sm leading-snug text-foreground">{b.tagline}</p>
         ) : null}
-        {b.subtitle || b.followers ? (
-          <p className="mt-1.5 text-1 text-muted-foreground">
-            {joinParts(
-              b.subtitle,
-              b.followers
-                ? `${b.followers.toLocaleString("en-IN")} follower${b.followers === 1 ? "" : "s"}`
-                : "",
-            )}
-          </p>
-        ) : null}
+        <HeaderFacts b={b} />
+        {b.website ? <WebsiteLink url={b.website} className="mt-1" /> : null}
       </CoverHero>
 
       <div className="space-y-4 px-5 pt-4 pb-6">
@@ -187,7 +179,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                 </ul>
               </Card>
             ) : null}
-            {b.address || b.mapsUrl ? (
+            {b.address || b.mapsUrl || b.website ? (
               <Card className="space-y-2">
                 <h2 className="text-sm">Find & contact</h2>
                 {b.address ? (
@@ -206,6 +198,7 @@ export function BusinessProfileExperience({ b }: { b: BusinessView | undefined }
                     <Navigation size={iconSize.sm} aria-hidden /> Directions
                   </a>
                 ) : null}
+                {b.website ? <WebsiteLink url={b.website} className="min-h-touch" /> : null}
               </Card>
             ) : null}
             {b.reviews.length ? (
@@ -300,6 +293,66 @@ const reviewItem = (rv: BusinessReview) => ({
   tags: rv.tags ?? [],
 });
 
+/** The header's one line of facts: type · 📍 city · since · followers. */
+function HeaderFacts({ b }: { b: BusinessView }) {
+  const parts = [
+    b.typeLabel ? <span key="type">{b.typeLabel}</span> : null,
+    b.city ? (
+      <span key="city" className="inline-flex items-center gap-1">
+        <MapPin size={iconSize.sm} className="shrink-0" aria-hidden />
+        {b.city}
+      </span>
+    ) : null,
+    b.since ? <span key="since">{b.since}</span> : null,
+    b.followers ? (
+      <span key="followers">
+        {`${b.followers.toLocaleString("en-IN")} follower${b.followers === 1 ? "" : "s"}`}
+      </span>
+    ) : null,
+  ].filter(Boolean);
+  if (!parts.length) return null;
+  return (
+    <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-1 text-muted-foreground">
+      {parts.flatMap((part, i) =>
+        i
+          ? [
+              <span key={`dot${i}`} aria-hidden>
+                ·
+              </span>,
+              part,
+            ]
+          : [part],
+      )}
+    </p>
+  );
+}
+
+/** The business's website, in the header and under Find & contact. */
+function WebsiteLink({ url, className = "" }: { url: string; className?: string }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`flex max-w-full items-center gap-2 text-1 font-semibold text-foreground underline-offset-4 hover:underline ${className}`}
+    >
+      <Globe size={iconSize.sm} className="shrink-0" aria-hidden />
+      <span className="truncate">{hostOf(url)}</span>
+    </a>
+  );
+}
+
+/** "https://www.hive.in/about" reads "hive.in/about". */
+function hostOf(url: string) {
+  try {
+    const u = new URL(url);
+    const path = u.pathname === "/" ? "" : u.pathname.replace(/\/$/, "");
+    return u.hostname.replace(/^www\./, "") + path;
+  } catch {
+    return url;
+  }
+}
+
 /**
  * What a visitor can do about a business: message it (the thread starts on first message), book
  * it, and follow it. Follow turns the moment it's tapped and settles when the database answers,
@@ -318,22 +371,15 @@ function BusinessActions({
 }) {
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const readConnection = useServerFn(connectionWith);
   const follow = useServerFn(setFollowingFn);
-  const openConversation = useServerFn(conversationWith);
   const key = ["connection", profileId] as const;
   const q = useQuery({
     queryKey: key,
     queryFn: () => readConnection({ data: { profileId } }),
     enabled: signedIn && !owner,
   });
-  const message = useMutation({
-    mutationFn: () => openConversation({ data: { profileId } }),
-    onSuccess: ({ id: conversation }) =>
-      void navigate({ to: "/conversation/$id", params: { id: conversation } }),
-    onError: () => toast.error("Couldn't open that conversation. Try again."),
-  });
+  const message = useMessagePerson();
   const act = useMutation({
     mutationFn: (on: boolean) => follow({ data: { profileId, following: on } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
@@ -407,8 +453,8 @@ function BusinessActions({
         variant="outline"
         className="min-w-0 flex-1 px-3"
         icon={<Send size={iconSize.sm} aria-hidden />}
-        loading={message.isPending}
-        onClick={() => message.mutate()}
+        loading={message.pending}
+        onClick={() => void message.open(profileId)}
       >
         Message
       </Btn>

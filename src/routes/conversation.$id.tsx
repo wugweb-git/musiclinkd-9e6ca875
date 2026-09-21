@@ -22,11 +22,14 @@ export const Route = createFileRoute("/conversation/$id")({
       { name: "robots", content: "noindex" },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>): { compose?: boolean } =>
+    s["compose"] === true || s["compose"] === "true" ? { compose: true } : {},
   component: Conversation,
 });
 
 function Conversation() {
   const { id } = Route.useParams();
+  const { compose } = Route.useSearch();
   const navigate = useNavigate();
   const { signedIn, loading } = useAuth();
   const queryClient = useQueryClient();
@@ -34,6 +37,7 @@ function Conversation() {
   const send = useServerFn(sendMessage);
   const [draft, setDraft] = useState("");
   const end = useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (!loading && !signedIn) void navigate({ to: "/welcome", replace: true });
@@ -48,6 +52,12 @@ function Conversation() {
   useEffect(() => {
     end.current?.scrollIntoView({ block: "end" });
   }, [q.data?.messages.length]);
+
+  // Opened from a Message button, or a thread with nothing in it yet: ready to type (LinkedIn).
+  const fresh = q.data?.messages.length === 0;
+  useEffect(() => {
+    if (compose || fresh) box.current?.focus();
+  }, [compose, fresh]);
 
   const post = useMutation({
     mutationFn: (body: string) => send({ data: { conversationId: id, body } }),
@@ -103,6 +113,7 @@ function Conversation() {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Write a message"
+          ref={box}
           className="min-h-control w-full resize-none rounded-3xl border border-border bg-card px-4 py-3 text-sm outline-none"
         />
         {/* A plain button, because this one submits the form. */}

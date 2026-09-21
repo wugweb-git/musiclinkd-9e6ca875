@@ -13,7 +13,8 @@ export function useMessagePerson() {
     setPending(true);
     try {
       const { id } = await start({ data: { profileId } });
-      void navigate({ to: "/conversation/$id", params: { id } });
+      // Like LinkedIn: the thread opens with the message box ready to type in.
+      void navigate({ to: "/conversation/$id", params: { id }, search: { compose: true } });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't open that conversation. Try again.");
     } finally {

@@ -6,6 +6,7 @@
 import { taxonomyLabel } from "@/lib/catalog.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
+import { asLinkMap } from "@/lib/profile-map";
 import { getPublicBusiness, type BusinessRecord } from "@/lib/profile-groups.functions";
 import { joinParts } from "@/lib/utils";
 
@@ -20,6 +21,10 @@ export type BusinessView = {
   cover: string;
   logo: string;
   city: string;
+  /** "since 2012"; empty when the year isn't known. */
+  since: string;
+  /** The business's own website (profiles.links.website), opened in a new tab. */
+  website: string | null;
   subtitle: string;
   /** Real follower count; null before the column exists. */
   followers: number | null;
@@ -105,6 +110,18 @@ function hoursFrom(text: string | null) {
     });
 }
 
+/** A stored website as a link: "yourname.com" gains https://; anything not http(s) is dropped. */
+function websiteOf(links: unknown): string | null {
+  const raw = asLinkMap(links)["website"]?.trim();
+  if (!raw) return null;
+  const url = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    return new URL(url).protocol.startsWith("http") ? url : null;
+  } catch {
+    return null;
+  }
+}
+
 export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels): BusinessView {
   const { profile, business, studio } = r;
   const role = profile.roles?.[0];
@@ -125,6 +142,8 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     // The business's logo is its profile picture (owner, 21 Sep 2026); the old logo field only fills in.
     logo: profile.avatar_url ?? business.logo_url ?? "",
     city: place,
+    since: business.founded_year ? `since ${business.founded_year}` : "",
+    website: websiteOf(profile.links),
     followers: profile.followers_count ?? null,
     subtitle: joinParts(
       typeLabel,

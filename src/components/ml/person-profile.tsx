@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
   BadgeCheck,
@@ -85,10 +85,10 @@ import {
   setFollowing as setFollowingFn,
   type ConnectionState,
 } from "@/lib/connections.functions";
-import { conversationWith } from "@/lib/messages.functions";
 import { BottomCta } from "./marketing";
 import { PhotoSheet } from "./booking";
 import { useAuth } from "@/hooks/use-auth";
+import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
 
 type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About" | "Reviews";
@@ -252,8 +252,6 @@ function ViewerActions({
   const answer = useServerFn(answerConnection);
   const remove = useServerFn(removeConnection);
   const follow = useServerFn(setFollowingFn);
-  const openConversation = useServerFn(conversationWith);
-  const navigate = useNavigate();
   const live = Boolean(signedIn && profileId);
   const key = ["connection", profileId] as const;
 
@@ -266,11 +264,7 @@ function ViewerActions({
   const following = q.data?.following ?? false;
 
   // Message opens the thread with this person, starting it if this is the first message.
-  const message = useMutation({
-    mutationFn: () => openConversation({ data: { profileId: profileId ?? "" } }),
-    onSuccess: ({ id }) => void navigate({ to: "/conversation/$id", params: { id } }),
-    onError: () => toast.error("Couldn't open that conversation. Try again."),
-  });
+  const message = useMessagePerson();
 
   const act = useMutation({
     mutationFn: async (what: "ask" | "accept" | "remove" | "follow" | "unfollow") => {
@@ -388,8 +382,8 @@ function ViewerActions({
         variant={shown === "connected" ? "primary" : "outline"}
         className="min-w-0 flex-1 px-3"
         icon={<Send size={iconSize.sm} aria-hidden />}
-        loading={message.isPending}
-        onClick={() => message.mutate()}
+        loading={message.pending}
+        onClick={() => void message.open(profileId ?? "")}
       >
         Message
       </Btn>

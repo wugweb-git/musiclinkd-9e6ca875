@@ -31,6 +31,8 @@ type ProfileBase = {
   is_verified: boolean;
   hourly_rate_paise: number | null;
   visibility: string | null;
+  /** Website and socials by platform key ("website", "instagram"). */
+  links?: Record<string, string> | null;
   /** Neighbourhood within the city. The columns below arrive with 20260918240000_missing_data.sql. */
   pin_code?: string | null;
   /** Kept from reviews by the database; null while there are none. */
@@ -117,7 +119,7 @@ const isHidden = (visibility: string | null) =>
   visibility === "private" || visibility === "deactivated";
 
 const PROFILE =
-  "id, username, display_name, headline, bio, city, roles, genres, avatar_url, cover_url, is_verified, hourly_rate_paise, visibility";
+  "id, username, display_name, headline, bio, city, roles, genres, avatar_url, cover_url, is_verified, hourly_rate_paise, visibility, links";
 /** PROFILE with the missing-data columns; reads fall back to PROFILE until they exist. */
 const PROFILE_FULL = `${PROFILE}, pin_code, rating, review_count, followers_count`;
 
