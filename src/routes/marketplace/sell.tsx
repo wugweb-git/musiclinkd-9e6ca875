@@ -5,11 +5,12 @@ import { toast } from "sonner";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { ListingStepFooter, TrustPill } from "@/components/ml/market";
 import {
-  emptyListingDraft,
   ListingDetailsForm,
+  listingDetailsComplete,
+  ListingMediaStep,
   listingPayload,
   ListingPreview,
-  type ListingDraft,
+  useListingDraft,
 } from "@/components/ml/listing-form";
 import { createListing } from "@/lib/catalog.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,8 +39,7 @@ function Sell() {
   const { signedIn } = useAuth();
   const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [draft, setDraft] = useState<ListingDraft>(emptyListingDraft);
-  const patch = (p: Partial<ListingDraft>) => setDraft((d) => ({ ...d, ...p }));
+  const [draft, patch] = useListingDraft();
   const [publishing, setPublishing] = useState(false);
   const labels = ["Listing details", "Add photos", "Preview"];
   const last = labels.length - 1;
@@ -75,35 +75,19 @@ function Sell() {
           ))}
         </div>
 
-        {step === 1 ? (
-          <div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="col-span-2 flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-center text-1 text-muted-foreground">
-                Cover photo
-                <br />
-                Tap to add
-              </div>
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="flex aspect-square items-center justify-center rounded-lg border border-dashed border-border bg-card text-2 text-muted-foreground"
-                >
-                  +
-                </div>
-              ))}
-            </div>
-            <p className="mt-3 text-1 text-muted-foreground">
-              Drag to reorder. First photo becomes the cover. Video and audio previews are supported
-              for services.
-            </p>
-          </div>
-        ) : null}
+        {step === 1 ? <ListingMediaStep value={draft} onChange={patch} /> : null}
 
         {step === 0 ? <ListingDetailsForm value={draft} onChange={patch} rental={false} /> : null}
 
         {step === last ? (
           <>
-            <ListingPreview value={draft} rental={false} />
+            <h2 className="text-2">Preview your listing</h2>
+            <p className="mt-1 text-1 text-muted-foreground">
+              This is exactly what buyers will see.
+            </p>
+            <div className="mt-4">
+              <ListingPreview value={draft} rental={false} />
+            </div>
             <div className="mt-3">
               <TrustPill label="Posted as you" />
             </div>
@@ -115,9 +99,10 @@ function Sell() {
         <ListingStepFooter
           step={step}
           last={step === last}
+          onCancel={() => void navigate({ to: "/marketplace" })}
           onBack={() => setStep(step - 1)}
           onNext={() => (step === last ? void publish() : setStep(step + 1))}
-          disabled={step === last && (!draft.name.trim() || !draft.price || !signedIn)}
+          disabled={!listingDetailsComplete(draft) || (step === last && !signedIn)}
           busy={publishing}
           publishLabel="Publish Listing"
         />

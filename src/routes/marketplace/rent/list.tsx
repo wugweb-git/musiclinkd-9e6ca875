@@ -1,19 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Camera } from "lucide-react";
-import { Screen, TopBar, BtnLink, Chip } from "@/components/ml/ui";
+import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { ListingStepFooter } from "@/components/ml/market";
 import {
-  emptyListingDraft,
   ListingDetailsForm,
+  listingDetailsComplete,
+  ListingMediaStep,
   listingPayload,
   ListingPreview,
-  type ListingDraft,
+  useListingDraft,
 } from "@/components/ml/listing-form";
 import { createListing } from "@/lib/catalog.functions";
-import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/rent/list")({
   head: () => ({
@@ -34,19 +33,14 @@ export const Route = createFileRoute("/marketplace/rent/list")({
   component: ListForRent,
 });
 
-const steps = ["Details", "Media", "Availability", "Review"];
+const steps = ["Listing details", "Add photos", "Preview"];
 function ListForRent() {
+  const navigate = useNavigate();
   const submit = useServerFn(createListing);
   const [step, setStep] = useState(0);
-  const [draft, setDraft] = useState<ListingDraft>(emptyListingDraft);
-  const patch = (p: Partial<ListingDraft>) => setDraft((d) => ({ ...d, ...p }));
-  const [minDays, setMinDays] = useState("1 day");
-  const [maxDays, setMaxDays] = useState("30 days");
-  const [noticePeriod, setNoticePeriod] = useState("Same day");
+  const [draft, patch] = useListingDraft();
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
-
-  const daysFrom = (label: string) => parseInt(label, 10) || 1;
 
   async function publish() {
     setPublishing(true);
@@ -55,9 +49,6 @@ function ListForRent() {
         data: {
           category: "gear_rental",
           ...listingPayload(draft, true),
-          minDays: daysFrom(minDays),
-          maxDays: daysFrom(maxDays),
-          noticePeriod,
         },
       });
       setPublished(true);
@@ -115,23 +106,7 @@ function ListForRent() {
           </div>
         ) : null}
 
-        {!published && step === 1 ? (
-          <>
-            <h2 className="text-2">Add photos</h2>
-            <p className="mt-1 text-1 text-muted-foreground">
-              Show the actual equipment you are renting — not stock images. First photo becomes the
-              cover.
-            </p>
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              <button className="flex h-24 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border text-1 font-semibold text-muted-foreground">
-                <Camera size={iconSize.sm} /> Add
-              </button>
-            </div>
-            <button className="mt-3 w-full rounded-lg border border-dashed border-border py-5 text-1 font-semibold text-muted-foreground">
-              + Add a short video (optional)
-            </button>
-          </>
-        ) : null}
+        {!published && step === 1 ? <ListingMediaStep value={draft} onChange={patch} /> : null}
 
         {!published && step === 0 ? (
           <ListingDetailsForm value={draft} onChange={patch} rental />
@@ -139,56 +114,12 @@ function ListForRent() {
 
         {!published && step === 2 ? (
           <>
-            <h2 className="text-2">Availability</h2>
-            <p className="mt-1 text-1 text-muted-foreground">
-              Blocking specific dates comes after publishing, from your listing's own page.
-            </p>
-            <div className="mt-4 space-y-3">
-              {[
-                {
-                  label: "Minimum rental duration",
-                  options: ["1 day", "2 days", "1 week"],
-                  value: minDays,
-                  set: setMinDays,
-                },
-                {
-                  label: "Maximum rental duration",
-                  options: ["14 days", "30 days", "90 days"],
-                  value: maxDays,
-                  set: setMaxDays,
-                },
-                {
-                  label: "Notice period",
-                  options: ["Same day", "24 hours", "48 hours"],
-                  value: noticePeriod,
-                  set: setNoticePeriod,
-                },
-              ].map((f) => (
-                <div key={f.label}>
-                  <label className="mb-1.5 block text-1 font-medium text-muted-foreground">
-                    {f.label}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {f.options.map((o) => (
-                      <Chip key={o} active={f.value === o} onClick={() => f.set(o)}>
-                        {o}
-                      </Chip>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : null}
-
-        {!published && step === 3 ? (
-          <>
             <h2 className="text-2">Preview your listing</h2>
             <p className="mt-1 text-1 text-muted-foreground">
               This is exactly what renters will see.
             </p>
             <div className="mt-4">
-              <ListingPreview value={draft} rental extra={`min ${minDays}`} />
+              <ListingPreview value={draft} rental />
             </div>
           </>
         ) : null}
@@ -198,9 +129,10 @@ function ListForRent() {
             <ListingStepFooter
               step={step}
               last={step === steps.length - 1}
+              onCancel={() => void navigate({ to: "/marketplace/rent" })}
               onBack={() => setStep((s) => s - 1)}
               onNext={() => (step === steps.length - 1 ? void publish() : setStep((s) => s + 1))}
-              disabled={step === steps.length - 1 && (!draft.name.trim() || !draft.price)}
+              disabled={!listingDetailsComplete(draft)}
               busy={publishing}
               publishLabel="Publish rental"
             />

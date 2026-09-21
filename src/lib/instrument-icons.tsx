@@ -39,6 +39,7 @@ const bySlug: Record<string, LucideIcon> = {
   drum_machine: Drum,
 
   flute_bansuri: Wind,
+  bansuri: Wind,
   saxophone: Wind,
   trumpet: Wind,
   clarinet: Wind,

@@ -416,6 +416,9 @@ export const createListing = createServerFn({ method: "POST" })
         minDays: z.number().int().min(1).optional(),
         maxDays: z.number().int().min(1).optional(),
         noticePeriod: z.string().max(60).optional(),
+        // "City PIN", as every place is stored (src/lib/place.ts).
+        pickupLocation: z.string().trim().max(120).optional(),
+        videoUrl: z.string().trim().url().max(500).optional(),
       })
       .parse(d),
   )
@@ -443,6 +446,8 @@ export const createListing = createServerFn({ method: "POST" })
       ...(data.minDays != null ? { min_days: data.minDays } : {}),
       ...(data.maxDays != null ? { max_days: data.maxDays } : {}),
       ...(data.noticePeriod ? { notice_period: data.noticePeriod } : {}),
+      ...(data.pickupLocation ? { pickup_location: data.pickupLocation } : {}),
+      ...(data.videoUrl ? { video_url: data.videoUrl } : {}),
     } as never);
     if (error) throw new Error(error.message);
     return { slug };

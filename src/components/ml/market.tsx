@@ -24,6 +24,7 @@ import {
   ShoppingCart,
   ArrowLeft,
   ArrowRight,
+  X,
   Send,
   type LucideIcon,
 } from "lucide-react";
@@ -1087,12 +1088,14 @@ export function SectionRow({
 }
 
 /*
- * Footer for the listing flows (sell, rent out): an icon-only Back beside the one primary action.
+ * Footer for the listing flows (sell, rent out): icon-only Cancel (leave the flow) and Back beside
+ * the one primary action.
  * The last step publishes; every step before it continues.
  */
 export function ListingStepFooter({
   step,
   last,
+  onCancel,
   onBack,
   onNext,
   disabled = false,
@@ -1101,6 +1104,7 @@ export function ListingStepFooter({
 }: {
   step: number;
   last: boolean;
+  onCancel: () => void;
   onBack: () => void;
   onNext: () => void;
   disabled?: boolean;
@@ -1109,6 +1113,9 @@ export function ListingStepFooter({
 }) {
   return (
     <div className="flex items-center gap-3">
+      <IconBtn label="Cancel" className="h-control w-control" onClick={onCancel}>
+        <X size={iconSize.md} aria-hidden />
+      </IconBtn>
       {step > 0 ? (
         <IconBtn label="Back" className="h-control w-control" onClick={onBack}>
           <ArrowLeft size={iconSize.md} aria-hidden />
