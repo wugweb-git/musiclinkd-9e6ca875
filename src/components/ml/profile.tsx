@@ -26,10 +26,10 @@ import {
   Globe,
   Hourglass,
   Instagram,
-  Laptop,
   Youtube,
   MessageSquareQuote,
   Clock,
+  Check,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -51,7 +51,7 @@ import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
 import { LogoMark } from "./logo";
 import { roleIcon } from "@/lib/role-icons";
-import { useTaxonomy } from "@/lib/taxonomy";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { PROFILE_IMAGE_ACCEPT, type ProfileImageKind } from "@/lib/profile-images";
 import { MediaEmbed } from "./media-embed";
 import { recordPlay } from "@/lib/plays";
@@ -1057,71 +1057,80 @@ export function ReviewInviteCard() {
 }
 
 /**
- * A service as a card (a talent's Services tab, the Overview, the Add service preview): name and
- * "From" price on one row, the delivery time under it, the description, then how they work and
- * one Book Service button. The button opens the service's booking request; the preview's does
- * nothing.
+ * A service as a booking ticket (a talent's Services tab, the Overview, the Add service preview).
+ * The ticket says what you get — category and how they work, the name, a short description, up
+ * to three deliverables — and its tear-off stub says what it costs and how long it takes, with the
+ * one Book button. Book opens the service's booking request; the preview's does nothing.
  */
 export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () => void }) {
   const real = /^[0-9a-f-]{36}$/i.test(s.id);
+  const taxonomy = useTaxonomy().options;
+  const category = s.categories?.[0] ? labelFor(taxonomy?.service_categories, s.categories[0]) : "";
+  const meta = [category, s.mode].filter(Boolean).join(" · ");
+  const gets = (s.deliverables ?? []).slice(0, 3);
+  const book = real ? (
+    <BtnLink
+      to="/services/$id/enquiry"
+      params={{ id: s.id }}
+      className="min-h-control-sm shrink-0 px-5 text-sm"
+    >
+      Book
+    </BtnLink>
+  ) : (
+    <Btn className="min-h-control-sm shrink-0 px-5 text-sm" onClick={onEnquire}>
+      Book
+    </Btn>
+  );
   return (
-    <article className="rounded-lg bg-subtle p-4">
-      <div className="flex items-start justify-between gap-3">
+    <article className="overflow-hidden rounded-[20px] bg-card">
+      <div className="px-4 pb-4 pt-4">
+        {meta ? <p className="truncate text-1 text-muted-foreground">{meta}</p> : null}
         {real ? (
           <Link
             to="/services/$id"
             params={{ id: s.id }}
-            className="min-w-0 text-2 font-semibold leading-snug"
+            className="mt-0.5 block text-3 font-semibold leading-snug underline-offset-4 hover:underline"
           >
             {s.name}
           </Link>
         ) : (
-          <h3 className="min-w-0 text-2 font-semibold leading-snug">{s.name}</h3>
+          <h3 className="mt-0.5 text-3 font-semibold leading-snug">{s.name}</h3>
         )}
-        {s.from ? (
-          <Price
-            from
-            inline
-            price={s.from}
-            align="end"
-            className="shrink-0"
-            amountClassName="text-sm font-semibold"
-          />
-        ) : (
-          <span className="shrink-0 text-1 font-semibold text-foreground">On enquiry</span>
-        )}
+        {s.description ? (
+          <p className="mt-1.5 line-clamp-2 text-1 leading-relaxed text-muted-foreground">
+            {s.description}
+          </p>
+        ) : null}
+        {gets.length ? (
+          <ul className="mt-3 space-y-1.5" aria-label="What you get">
+            {gets.map((d) => (
+              <li key={d} className="flex items-start gap-2 text-1 text-foreground">
+                <Check size={14} strokeWidth={2.25} className="mt-0.5 shrink-0" aria-hidden />
+                <span className="min-w-0">{d}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
-      {s.turnaround ? (
-        <p className="mt-1 flex items-center gap-1.5 text-1 text-foreground">
-          <Clock size={12} className="shrink-0" aria-hidden />
-          Est. {s.turnaround}
-        </p>
-      ) : null}
-      {s.description ? (
-        <p className="mt-2 line-clamp-3 text-1 leading-relaxed text-foreground">{s.description}</p>
-      ) : null}
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <span className="flex min-w-0 items-center gap-1.5 truncate text-1 text-foreground">
-          {s.mode ? (
-            <>
-              <Laptop size={12} className="shrink-0" aria-hidden />
-              {s.mode}
-            </>
+
+      {/* The stub: torn off at the notches, it carries the price, the time and Book. */}
+      <div className="relative flex items-center gap-3 bg-subtle px-4 py-3">
+        <span aria-hidden className="absolute -left-2 -top-2 h-4 w-4 rounded-full bg-background" />
+        <span aria-hidden className="absolute -right-2 -top-2 h-4 w-4 rounded-full bg-background" />
+        <div className="min-w-0 flex-1">
+          {s.from ? (
+            <Price from inline price={s.from} amountClassName="text-3 font-bold" />
+          ) : (
+            <span className="text-sm font-semibold text-foreground">On enquiry</span>
+          )}
+          {s.turnaround ? (
+            <p className="mt-0.5 flex items-center gap-1.5 text-1 text-muted-foreground">
+              <Clock size={12} className="shrink-0" aria-hidden />
+              Delivered in {s.turnaround}
+            </p>
           ) : null}
-        </span>
-        {real ? (
-          <BtnLink
-            to="/services/$id/enquiry"
-            params={{ id: s.id }}
-            className="min-h-control-sm shrink-0 px-4 text-sm"
-          >
-            Book Service
-          </BtnLink>
-        ) : (
-          <Btn className="min-h-control-sm shrink-0 px-4 text-sm" onClick={onEnquire}>
-            Book Service
-          </Btn>
-        )}
+        </div>
+        {book}
       </div>
     </article>
   );

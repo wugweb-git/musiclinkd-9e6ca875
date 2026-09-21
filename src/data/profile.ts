@@ -73,6 +73,10 @@ export type ServiceItem = {
   turnaround?: string | undefined;
   mode?: "Remote" | "In person" | "Remote · In person" | undefined;
   availability?: string | undefined;
+  /** service_categories slugs, most specific first; the card names the first. */
+  categories?: string[] | undefined;
+  /** What the client gets, as the owner listed it. */
+  deliverables?: string[] | undefined;
 };
 
 export type ExperienceItem = {

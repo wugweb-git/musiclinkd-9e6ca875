@@ -403,6 +403,8 @@ export function mergeSections(
         turnaround: s.turnaround ?? undefined,
         mode: serviceModes.find((m) => m === s.mode) ?? modeFromWorkModes(s.work_modes),
         availability: s.availability ?? undefined,
+        categories: s.categories?.length ? s.categories : s.category ? [s.category] : [],
+        deliverables: s.deliverables ?? [],
       })),
     ),
     experience: pick(

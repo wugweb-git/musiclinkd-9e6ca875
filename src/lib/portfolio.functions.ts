@@ -522,6 +522,8 @@ export type ProfileSections = {
     pricing_model: string | null;
     /** work_modes slugs. */
     work_modes: string[];
+    categories?: string[];
+    deliverables?: string[];
   }[];
   experience: {
     id: string;
@@ -630,7 +632,7 @@ async function loadSections(client: SupabaseClient, profileId: string): Promise<
     client
       .from("profile_services")
       .select(
-        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability, category, pricing_model, work_modes",
+        "id, name, description, price_paise, price_unit, price_note, turnaround, mode, availability, category, categories, deliverables, pricing_model, work_modes",
       )
       .eq("profile_id", profileId)
       // Profile cards show live services only: drafts are the owner's, paused ones take no enquiries.

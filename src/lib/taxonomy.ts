@@ -29,6 +29,8 @@ const CATEGORIES = [
   "studio_amenities",
   "equipment_categories",
   "business_policies",
+  // Service cards name their category.
+  "service_categories",
 ] as const;
 
 export type TaxonomyCategory = (typeof CATEGORIES)[number];
