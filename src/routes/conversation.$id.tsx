@@ -2,9 +2,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowUp } from "lucide-react";
+import { ArrowLeft, BriefcaseBusiness, Music, Plus, SendHorizontal, UserRound } from "lucide-react";
 import { toast } from "sonner";
-import { Screen } from "@/components/ml/ui";
+import { Screen, Sheet } from "@/components/ml/ui";
+import { DrawerList, DrawerOptionRow } from "@/components/ml/drawer-list";
+import { useViewer } from "@/components/ml/viewer";
+import { listMyServices } from "@/lib/services.functions";
+import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { Loading } from "@/components/ml/kit";
 import { CallBtn } from "@/components/ml/person-profile";
 import { PersonAvatar } from "@/components/ml/person-avatar";
@@ -62,6 +66,69 @@ function timeLabel(iso: string) {
 
 type Shown = Message & { pending?: boolean };
 
+/**
+ * What the + shares into the message: a link to your profile, one of your live services, or one of
+ * your published works. Picking one drops its link into the box; nothing sends until you do.
+ */
+function ShareSheet({
+  open,
+  onClose,
+  onPick,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onPick: (url: string) => void;
+}) {
+  const { username } = useViewer();
+  const readServices = useServerFn(listMyServices);
+  const readWorks = useServerFn(listMyPortfolio);
+  const services = useQuery({
+    queryKey: ["services", "mine"],
+    queryFn: () => readServices(),
+    enabled: open,
+  });
+  const works = useQuery({
+    queryKey: ["portfolio", "mine"],
+    queryFn: () => readWorks(),
+    enabled: open,
+  });
+  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const live = (services.data ?? []).filter((s) => s.status === "active");
+  const published = (works.data ?? []).filter((w) => w.published);
+  return (
+    <Sheet open={open} onClose={onClose} title="Share">
+      <h2 className="mb-3 text-3">Share</h2>
+      <DrawerList label="Share">
+        {username ? (
+          <DrawerOptionRow
+            option={{
+              value: "profile",
+              label: "Your profile",
+              hint: `@${username}`,
+              icon: UserRound,
+            }}
+            onClick={() => onPick(`${origin}/profile/${username}`)}
+          />
+        ) : null}
+        {live.map((s) => (
+          <DrawerOptionRow
+            key={s.id}
+            option={{ value: s.id, label: s.name, hint: "Service", icon: BriefcaseBusiness }}
+            onClick={() => onPick(`${origin}/services/${s.id}`)}
+          />
+        ))}
+        {published.map((w) => (
+          <DrawerOptionRow
+            key={w.id}
+            option={{ value: w.id, label: w.title, hint: "Portfolio", icon: Music }}
+            onClick={() => onPick(`${origin}/portfolio/${w.id}`)}
+          />
+        ))}
+      </DrawerList>
+    </Sheet>
+  );
+}
+
 function Conversation() {
   const { id } = Route.useParams();
   const { compose } = Route.useSearch();
@@ -72,6 +139,7 @@ function Conversation() {
   const send = useServerFn(sendMessage);
   const [draft, setDraft] = useState("");
   const [outbox, setOutbox] = useState<Shown[]>([]);
+  const [sharing, setSharing] = useState(false);
   const list = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLTextAreaElement>(null);
 
@@ -258,14 +326,24 @@ function Conversation() {
           </ol>
         </div>
 
+        {/* The composer, the 2026 way: a round + for sharing your work, a borderless field that
+            grows with the message, and a squared send key that fills in once there is text. */}
         <form
-          className="shrink-0 bg-background px-5 pb-[max(12px,env(safe-area-inset-bottom))] pt-2"
+          className="flex shrink-0 items-end gap-2 bg-background px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2"
           onSubmit={(e) => {
             e.preventDefault();
             submit();
           }}
         >
-          <div className="flex items-end gap-2 rounded-[24px] border border-border bg-card py-1.5 pl-4 pr-1.5 focus-within:border-foreground">
+          <button
+            type="button"
+            aria-label="Share your profile, a service or a work"
+            onClick={() => setSharing(true)}
+            className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-card text-foreground transition-transform duration-200 ease-standard active:scale-97"
+          >
+            <Plus size={iconSize.md} strokeWidth={2} aria-hidden />
+          </button>
+          <div className="flex min-h-12 min-w-0 flex-1 items-center rounded-[26px] bg-card px-5 transition-shadow duration-200 focus-within:shadow-[0_0_0_2px_var(--color-foreground)]">
             <label htmlFor="message" className="sr-only">
               Message
             </label>
@@ -288,19 +366,29 @@ function Conversation() {
                 }
               }}
               placeholder={firstName ? `Message ${firstName}` : "Write a message"}
-              className="max-h-[132px] min-h-9 flex-1 resize-none bg-transparent py-2 text-sm leading-snug outline-none"
+              className="no-scrollbar max-h-[132px] w-full resize-none bg-transparent py-3 text-sm leading-snug outline-none placeholder:text-muted-foreground"
             />
-            {/* A plain button, because this one submits the form. */}
-            <button
-              type="submit"
-              aria-label="Send"
-              disabled={!draft.trim()}
-              className="state-layer flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-background transition-[transform,opacity] duration-200 ease-standard active:scale-97 disabled:opacity-30"
-            >
-              <ArrowUp size={iconSize.md} strokeWidth={2.25} aria-hidden />
-            </button>
           </div>
+          {/* A plain button, because this one submits the form. */}
+          <button
+            type="submit"
+            aria-label="Send"
+            disabled={!draft.trim()}
+            className="state-layer flex h-12 w-14 shrink-0 items-center justify-center rounded-2xl bg-ink text-background transition-[transform,background-color,color,border-radius] duration-200 ease-standard active:scale-97 active:rounded-full disabled:bg-card disabled:text-muted-foreground"
+          >
+            <SendHorizontal size={iconSize.md} strokeWidth={2} aria-hidden />
+          </button>
         </form>
+
+        <ShareSheet
+          open={sharing}
+          onClose={() => setSharing(false)}
+          onPick={(url) => {
+            setSharing(false);
+            setDraft((d) => (d.trim() ? `${d.trimEnd()} ${url}` : url));
+            box.current?.focus();
+          }}
+        />
       </div>
     </Screen>
   );

@@ -21,6 +21,7 @@ import {
   Truck,
   ArrowLeftRight,
   CalendarClock,
+  CircleAlert,
   Tag,
   Sparkles,
   Star,
@@ -270,12 +271,15 @@ export function Field({
   label,
   id,
   hint,
+  error,
   children,
 }: {
   label: string;
   id: string;
   /** One line under the label that says what the field is for. */
   hint?: string;
+  /** What is wrong and how to fix it, under the control; nothing when the field is fine. */
+  error?: string | null | undefined;
   children: ReactNode;
 }) {
   return (
@@ -285,6 +289,15 @@ export function Field({
       </span>
       {hint ? <span className="mt-0.5 block text-1 text-muted-foreground">{hint}</span> : null}
       <div className="mt-1.5">{children}</div>
+      {error ? (
+        <p
+          role="alert"
+          className="mt-1.5 flex animate-message items-start gap-1.5 text-1 text-destructive"
+        >
+          <CircleAlert size={iconSize.sm} className="mt-px shrink-0" aria-hidden />
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

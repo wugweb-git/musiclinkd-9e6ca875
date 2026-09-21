@@ -227,6 +227,7 @@ export function PersonProfileExperience({
       <HireModal
         open={hireOpen}
         onClose={() => setHireOpen(false)}
+        profileId={p.profileId}
         subject={{ name: p.name, detail: [p.primaryRole, p.location].filter(Boolean).join(" · ") }}
       />
     </Screen>
