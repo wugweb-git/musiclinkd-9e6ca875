@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { getMyBusiness } from "@/lib/profile-groups.functions";
 import { getTaxonomyLabels } from "@/lib/portfolio.functions";
 import { taxonomyLabel } from "@/lib/catalog.functions";
-import { myBusiness, SHORT_HOST } from "@/data/identity";
+import { SHORT_HOST } from "@/data/identity";
 
 function businessUrl(username: string) {
   const origin = typeof window === "undefined" ? `https://${SHORT_HOST}` : window.location.origin;
@@ -15,7 +15,7 @@ function businessUrl(username: string) {
  * The real business identity behind the QR module's "Business" subject — the signed-in account's
  * own business profile, sharing the isMyAccountBusiness/getMyBusiness read already used to gate
  * business.* screens (see useRequireBusiness). Signed out, or when the account has no business
- * profile, the seed identity stands in, same fallback useMyIdentity uses.
+ * profile, there is no identity (hasBusiness false, no URL).
  */
 export function useMyBusinessIdentity() {
   const { signedIn, loading } = useAuth();
@@ -35,14 +35,15 @@ export function useMyBusinessIdentity() {
 
   if (!signedIn || (business.isFetched && !record)) {
     return {
-      ready: !loading,
-      username: myBusiness.username,
-      name: myBusiness.name,
-      category: myBusiness.category,
-      city: myBusiness.city,
-      logo: myBusiness.logo,
-      verified: myBusiness.verified,
-      url: businessUrl(myBusiness.username),
+      ready: !loading && (!signedIn || business.isFetched),
+      hasBusiness: false,
+      username: null as string | null,
+      name: "",
+      category: "",
+      city: "",
+      logo: "",
+      verified: false,
+      url: "",
     };
   }
 
@@ -51,6 +52,7 @@ export function useMyBusinessIdentity() {
   const username = record?.profile.username ?? null;
   return {
     ready: !business.isLoading,
+    hasBusiness: true,
     username,
     name: record?.profile.display_name ?? "",
     category: role ? taxonomyLabel(labels, "person_types", role) : "",

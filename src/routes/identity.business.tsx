@@ -7,14 +7,20 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Download, Printer, Share2 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { QrIdentityCard, CopyLinkRow, ShareActions, DownloadNote } from "@/components/ml/qr";
+import {
+  QrIdentityCard,
+  CopyLinkRow,
+  ShareActions,
+  DownloadNote,
+  downloadQr,
+} from "@/components/ml/qr";
 import { useMyBusinessIdentity } from "@/hooks/use-my-business-identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/business")({
   head: () => ({
     meta: [
-      { title: "Business QR — Octave Sound Labs on MusicLinkd" },
+      { title: "Business QR | MusicLinkd" },
       {
         name: "description",
         content:
@@ -41,6 +47,16 @@ function BusinessQr() {
       <main className="px-5 pt-4">
         {!business.ready ? (
           <div className="h-[280px] animate-pulse rounded-lg bg-subtle" aria-busy />
+        ) : !business.hasBusiness ? (
+          <div className="rounded-lg bg-subtle p-5 text-center">
+            <h1 className="text-2 font-semibold">No business on this account</h1>
+            <p className="mt-1 text-1 text-muted-foreground">
+              A business QR belongs to a business account. Switch to it, or add one.
+            </p>
+            <BtnLink to="/accounts" className="mt-4 w-full">
+              Switch Account
+            </BtnLink>
+          </div>
         ) : url ? (
           <QrIdentityCard
             name={business.name}
@@ -71,7 +87,7 @@ function BusinessQr() {
           <Btn
             variant="outline"
             className="flex-1"
-            onClick={() => toast.success("Business QR saved")}
+            onClick={() => void downloadQr(url, business.username ?? "business")}
           >
             <Download size={iconSize.sm} className="mr-2" /> Download
           </Btn>
@@ -93,7 +109,7 @@ function BusinessQr() {
         <ShareActions
           url={url}
           title={business.name}
-          onDownload={() => toast.success("Business QR saved")}
+          onDownload={() => void downloadQr(url, business.username ?? "business")}
         />
         <div className="mt-3">
           <DownloadNote />

@@ -80,7 +80,9 @@ function BusinessEnquiry() {
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
             <h2 className="mt-3 text-3 leading-tight">Your enquiry is with {b.name}</h2>
             <p className="mt-2 text-1 text-muted-foreground">
-              It's in their leads inbox and in your Messages, where their reply lands.
+              {conversationId
+                ? "It's in their leads inbox and in your Messages, where their reply lands."
+                : "It's in their leads inbox. They'll reply to you in Messages."}
             </p>
           </Card>
           {conversationId ? (

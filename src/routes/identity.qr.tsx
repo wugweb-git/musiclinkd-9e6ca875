@@ -35,6 +35,7 @@ import {
   StateCard,
   Skeleton,
   DownloadNote,
+  downloadQr,
   nativeShare,
 } from "@/components/ml/qr";
 import { qrStyles, type QrStyle } from "@/data/identity";
@@ -236,7 +237,7 @@ function DigitalId() {
         <ShareActions
           url={url}
           title={`${me.name || "My profile"} on MusicLinkd`}
-          onDownload={() => toast.success("QR image saved")}
+          onDownload={() => void downloadQr(url, me.username ?? "profile")}
           onSaveContact={() => void nativeShare({ title: me.name || "MusicLinkd", url })}
         />
         <div className="mt-3">

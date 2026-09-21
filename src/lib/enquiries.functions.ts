@@ -58,9 +58,13 @@ export const sendEnquiry = createServerFn({ method: "POST" })
     // The enquiry also opens (or continues) the conversation with the business, so both sides
     // carry on in Messages. The lead is already saved if this part fails.
     let conversationId: string | null = null;
-    const { data: convo } = await db(context.supabase).rpc("start_conversation", {
-      p_other_profile_id: data.businessProfileId,
-    });
+    const { data: convo, error: convoError } = await db(context.supabase).rpc(
+      "start_conversation",
+      {
+        p_other_profile_id: data.businessProfileId,
+      },
+    );
+    if (convoError) console.error("enquiry: start_conversation failed", convoError.message);
     if (typeof convo === "string") {
       const { error: messageError } = await db(context.supabase)
         .from("messages")

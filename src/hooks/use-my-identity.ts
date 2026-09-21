@@ -24,7 +24,7 @@ function profileUrl(username: string) {
  * The real identity behind the QR module: the signed-in person's own profile, plus the contact
  * fields their card can show (phone/email from auth, website from profiles.links, company from
  * the business's name or the current experience's org). Signed out,
- * the seed identity stands in, as it does on /profile. Shares the ["profile","me"] query used by
+ * there is no identity: every field is empty and there is no URL to encode. Shares the ["profile","me"] query used by
  * Settings, so a change there (or here) is visible everywhere without a refetch.
  */
 export function useMyIdentity() {
@@ -53,15 +53,15 @@ export function useMyIdentity() {
   if (!signedIn) {
     return {
       ready: !loading,
-      username: myIdentity.username,
-      name: myIdentity.name,
-      role: myIdentity.role,
-      photo: myIdentity.photo,
-      verified: myIdentity.verified,
-      url: profileUrl(myIdentity.username),
-      phone: myIdentity.contact.phone.shared ? myIdentity.contact.phone.value : null,
-      email: myIdentity.contact.email.shared ? myIdentity.contact.email.value : null,
-      website: myIdentity.contact.website.shared ? myIdentity.contact.website.value : null,
+      username: null as string | null,
+      name: "",
+      role: "",
+      photo: undefined,
+      verified: false,
+      url: "",
+      phone: null,
+      email: null,
+      website: null,
       company: null as string | null,
       qrStyle: "light" as QrStyle,
       qr: defaultQrPrefs,

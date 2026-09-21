@@ -660,13 +660,23 @@ export const createMyBusiness = createServerFn({ method: "POST" })
     if (await isTalentAccount(client, current?.roles)) {
       throw new Error("A business needs its own account. Add one from Switch account.");
     }
-    // One account, one business profile.
-    const { data: owned } = await client
-      .from("profile_business")
-      .select("profile_id")
-      .eq("profile_id", context.userId)
-      .maybeSingle();
-    if (owned) throw new Error("This account already has a business profile.");
+    // One account, one business profile. A studio whose studio row failed last time may retry,
+    // which finishes the setup instead of leaving it without one.
+    const [{ data: owned, error: ownedError }, { data: existing, error: existingError }] =
+      await Promise.all([
+        client
+          .from("profile_business")
+          .select("profile_id")
+          .eq("profile_id", context.userId)
+          .maybeSingle(),
+        client.from("studios").select("id").eq("owner_profile_id", context.userId).limit(1),
+      ]);
+    if (ownedError) throw new Error(ownedError.message);
+    if (existingError) throw new Error(existingError.message);
+    const hasStudio = Boolean(existing?.length);
+    if (owned && (data.type !== "studio" || hasStudio)) {
+      throw new Error("This account already has a business profile.");
+    }
 
     const { error } = await client
       .from("profiles")
@@ -692,12 +702,7 @@ export const createMyBusiness = createServerFn({ method: "POST" })
     // A studio business gets its studio too, so weekly hours, the calendar, equipment and proof
     // photos work from day one. Its slug follows the account's username when that is free.
     if (data.type === "studio") {
-      const { data: existing } = await client
-        .from("studios")
-        .select("id")
-        .eq("owner_profile_id", context.userId)
-        .limit(1);
-      if (!existing?.length) {
+      if (!hasStudio) {
         const base =
           current?.username ||
           data.name
