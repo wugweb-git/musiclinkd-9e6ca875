@@ -234,6 +234,7 @@ export function Row({
   right,
   to,
   params,
+  hash,
   onClick,
 }: {
   icon?: ReactNode;
@@ -242,6 +243,8 @@ export function Row({
   right?: ReactNode;
   to?: LinkProps["to"];
   params?: LinkProps["params"];
+  /** A section on the target screen, without the "#". */
+  hash?: string;
   onClick?: () => void;
 }) {
   const inner = (
@@ -265,7 +268,7 @@ export function Row({
   const cls = "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3";
   if (to) {
     return (
-      <Link to={to} {...(params ? { params } : {})} className={cls}>
+      <Link to={to} {...(params ? { params } : {})} {...(hash ? { hash } : {})} className={cls}>
         {inner}
       </Link>
     );

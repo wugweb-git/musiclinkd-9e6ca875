@@ -94,8 +94,8 @@ export type StudioBlock = {
   reason: string | null;
 };
 
-/** The owner's own studio id, which every block write is scoped through. */
-async function myStudioId(client: SupabaseClient, userId: string) {
+/** The owner's own studio id, which every block and equipment write is scoped through. */
+export async function myStudioId(client: SupabaseClient, userId: string) {
   const { data, error } = await client
     .from("studios")
     .select("id")

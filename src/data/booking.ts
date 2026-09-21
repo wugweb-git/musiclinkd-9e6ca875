@@ -112,6 +112,8 @@ export type Bookable = {
   distanceKm: number;
   timezone: string;
   hero: string;
+  /** The owning business's profile picture, shown as its logo. Empty when there is none. */
+  logo?: string;
   gallery: string[];
   about: string;
   facilities: string[];

@@ -130,6 +130,13 @@ export function BookableHero({ b }: { b: Bookable }) {
           </span>
         ) : null}
         <h1 className="mt-2 flex items-center gap-2 text-3 leading-tight text-background">
+          {b.logo ? (
+            <img
+              src={b.logo}
+              alt=""
+              className="h-10 w-10 shrink-0 rounded-full border-2 border-background object-cover"
+            />
+          ) : null}
           <span className="truncate">{b.name}</span>
           {b.verified ? <VerifiedBadge size={16} /> : null}
         </h1>

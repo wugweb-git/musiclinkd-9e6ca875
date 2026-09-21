@@ -116,7 +116,8 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     typeLabel,
     verified: profile.is_verified,
     cover: business.hero_banner_url ?? profile.cover_url ?? "",
-    logo: business.logo_url ?? profile.avatar_url ?? "",
+    // The business's logo is its profile picture (owner, 21 Sep 2026); the old logo field only fills in.
+    logo: profile.avatar_url ?? business.logo_url ?? "",
     city: place,
     subtitle: joinParts(
       typeLabel,

@@ -136,6 +136,7 @@ export function bookableFromStudio(
     distanceKm: 0,
     timezone: "",
     hero: row.image_url ?? "",
+    logo: row.owner?.avatar_url ?? "",
     gallery: row.images,
     about: row.description ?? "",
     facilities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),

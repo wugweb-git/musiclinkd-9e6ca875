@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { CalendarClock, Image, LayoutDashboard, Pencil, ShieldCheck, Trash2 } from "lucide-react";
+import {
+  CalendarClock,
+  Image,
+  Headphones,
+  LayoutDashboard,
+  Pencil,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Card, Row, EmptyState, Dialog, StatusPill, SoonBadge } from "@/components/ml/kit";
 import { businessView, loadBusiness } from "@/lib/business-view";
@@ -90,6 +98,13 @@ function ManageBusiness() {
             title="Availability & bookings"
             subtitle="Calendar, requests, policies"
             to="/business/bookings/calendar"
+          />
+          <Row
+            icon={<Headphones size={iconSize.sm} />}
+            title="Equipment"
+            subtitle="Gear on your studio page"
+            to="/business/availability"
+            hash="equipment"
           />
           <Row
             icon={<ShieldCheck size={iconSize.sm} />}
