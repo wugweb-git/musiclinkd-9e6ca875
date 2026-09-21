@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, Building2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
@@ -53,15 +53,18 @@ function BusinessHome() {
         title="Businesses"
         subtitle="Studios, labels, venues"
         back="/profile"
+        // One account, one business: adding shows only while there is none.
         right={
-          <Link
-            to="/business/new"
-            search={{ step: "type" as const }}
-            aria-label="Add business"
-            className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
-          >
-            <Plus size={iconSize.md} />
-          </Link>
+          businesses.length ? undefined : (
+            <Link
+              to="/business/new"
+              search={{ step: "type" as const }}
+              aria-label="Add business"
+              className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
+            >
+              <Plus size={iconSize.md} />
+            </Link>
+          )
         }
       />
 
@@ -115,23 +118,13 @@ function BusinessHome() {
         ) : (
           <EmptyState
             title="No business yet"
-            body="A business profile is separate from you — it has its own team, spaces and bookings."
+            body="A business profile has its own spaces, services and bookings."
           >
             <BtnLink to="/business/new" search={{ step: "type" as const }} className="w-full">
               Create a Business
             </BtnLink>
           </EmptyState>
         )}
-
-        <Card className="space-y-1">
-          <p className="flex items-center gap-2 text-1 font-semibold">
-            <Building2 size={iconSize.sm} /> Work at a studio you do not own?
-          </p>
-          <p className="text-1 text-muted-foreground">
-            Ask the owner to invite you as staff — you keep your own profile and appear on their
-            team.
-          </p>
-        </Card>
       </div>
     </Screen>
   );

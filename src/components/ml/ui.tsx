@@ -46,6 +46,7 @@ import {
 import { iconSize } from "@/lib/tokens";
 import { BetaBadge, SoonBadge } from "./kit";
 import { stageOf } from "@/lib/release";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { TabIcon, type SolidIcon } from "./tab-icon";
 
 /*
@@ -165,6 +166,8 @@ const menuGroups: {
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [menuOpen, setMenuOpen] = useState(false);
+  // Business is a business account's own area; a talent account doesn't see it (journey lock).
+  const { allowed: isBusiness } = useRequireBusiness();
   return (
     <>
       <nav className="fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app border-t border-border bg-card/95 backdrop-blur">
@@ -234,26 +237,28 @@ export function BottomNav() {
             <section key={group.title}>
               <h2 className="mb-1 text-1 font-semibold text-muted-foreground">{group.title}</h2>
               <ul className="divide-y divide-border">
-                {group.items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <li key={item.to}>
-                      <Link
-                        to={item.to}
-                        onClick={() => setMenuOpen(false)}
-                        className="state-layer flex min-h-control items-center gap-3 py-2 text-sm font-semibold text-foreground"
-                      >
-                        <Icon size={iconSize.md} className="shrink-0" aria-hidden />
-                        <span className="min-w-0 flex-1">{item.label}</span>
-                        {stageOf(item.to) === "soon" ? (
-                          <SoonBadge />
-                        ) : stageOf(item.to) === "beta" ? (
-                          <BetaBadge />
-                        ) : null}
-                      </Link>
-                    </li>
-                  );
-                })}
+                {group.items
+                  .filter((item) => item.to !== "/business" || isBusiness)
+                  .map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <li key={item.to}>
+                        <Link
+                          to={item.to}
+                          onClick={() => setMenuOpen(false)}
+                          className="state-layer flex min-h-control items-center gap-3 py-2 text-sm font-semibold text-foreground"
+                        >
+                          <Icon size={iconSize.md} className="shrink-0" aria-hidden />
+                          <span className="min-w-0 flex-1">{item.label}</span>
+                          {stageOf(item.to) === "soon" ? (
+                            <SoonBadge />
+                          ) : stageOf(item.to) === "beta" ? (
+                            <BetaBadge />
+                          ) : null}
+                        </Link>
+                      </li>
+                    );
+                  })}
               </ul>
             </section>
           ))}
