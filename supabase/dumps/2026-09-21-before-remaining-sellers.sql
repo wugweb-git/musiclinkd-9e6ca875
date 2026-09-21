@@ -1,0 +1,13 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-21 via Lovable query_database, before migration 20260921100000_remaining_sellers.sql.
+--
+-- Scope: row counts. That migration only adds rows (6 account-less profiles, 3 profile_business
+-- rows, 2 profile_services rows, 10 studio_equipment rows) and sets seller_profile_id on the 6
+-- listings that had none. None of its usernames or ids existed at snapshot time.
+--
+-- Row counts: auth.users 119, profiles 119, profile_business 28, profile_services 35,
+-- studio_equipment 32; marketplace_listings with no seller profile: 6 (ampeg-svt-bass-head,
+-- focusrite-scarlett-2i2, hindustani-sufi-vocal-recording, pearl-export-drum-kit,
+-- trap-lofi-beat-license, yamaha-hs8-studio-monitors).
+--
+-- To undo: see the Rollback note at the top of the migration.
