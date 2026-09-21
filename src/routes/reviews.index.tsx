@@ -286,4 +286,3 @@ function ReceivedReview({ r }: { r: ReviewRow }) {
     />
   );
 }
-
