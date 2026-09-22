@@ -454,6 +454,40 @@ export function StepShell({
   const edges = useScrollEdges();
   const titleRef = useRef<HTMLHeadingElement>(null);
   const titleTucked = useTucked(titleRef);
+
+  // Mobile touch swipe gestures (left = next, right = back)
+  const touchStart = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && e.touches[0]) {
+      touchStart.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now(),
+      };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart.current || !e.changedTouches[0]) return;
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStart.current.x;
+    const deltaY = touch.clientY - touchStart.current.y;
+    const duration = Date.now() - touchStart.current.time;
+    touchStart.current = null;
+
+    // Fast horizontal flick (less than 450ms, at least 60px horizontal, dominant over vertical)
+    if (duration < 450 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+      if (deltaX < 0 && onSubmit) {
+        haptic("select");
+        onSubmit();
+      } else if (deltaX > 0 && onBack) {
+        haptic("select");
+        onBack();
+      }
+    }
+  };
+
   return (
     <form
       noValidate
@@ -474,7 +508,7 @@ export function StepShell({
             <IconBtn
               label="Back"
               variant="plain"
-              className="-ml-2 hover:bg-subtle"
+              className="-ml-2 hover:bg-subtle active:scale-90"
               onClick={onBack}
             >
               <ArrowLeft size={iconSize.md} aria-hidden />
@@ -548,7 +582,11 @@ export function StepShell({
         </div>
       </header>
 
-      <main className="flex-1 px-5 pb-40 pt-5">
+      <main
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="flex-1 px-5 pb-40 pt-5"
+      >
         {banner}
         <div className="flex items-start justify-between gap-3">
           <h1

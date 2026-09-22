@@ -1,14 +1,25 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
-import { Sparkles, Compass, ShieldCheck } from "lucide-react";
+import { useState, useRef, type ReactNode } from "react";
+import {
+  Sparkles,
+  Compass,
+  ShieldCheck,
+  Building2,
+  CalendarCheck,
+  Users,
+  Music2,
+  Eye,
+} from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
-import { Segmented } from "@/components/ml/kit";
 import { OnboardingProvider, useOnboarding, resumeTarget } from "@/components/ml/onboarding";
 import { visibleSteps } from "@/data/onboarding";
 import { AuthLink } from "@/components/ml/auth";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
+import { haptic } from "@/lib/haptics";
+import { TalentUserCard, BusinessUserCard } from "@/components/ml/cards";
+import { talents } from "@/data/discover";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
@@ -35,55 +46,63 @@ export const Route = createFileRoute("/onboarding/")({
   ),
 });
 
-/*
- * Which journey an account takes, picked once, right after auth (owner, 18 Sep 2026: no
- * switching between them once chosen — see person-type-journey-lock memory). This list is meant
- * to grow — a band or agency kind, say — so each one is a row in this map, not a branch in the
- * JSX below. Adding a kind means adding an entry here.
- */
 const kindOrder = ["Talent", "Business"] as const;
 type AccountKind = (typeof kindOrder)[number];
+
+const demoStudio = {
+  id: "soundhouse-mumbai",
+  name: "Soundhouse Studios Bandra",
+  type: "Recording Studio",
+  coverUrl:
+    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
+  location: "Bandra West, Mumbai",
+  rating: 4.9,
+  reviewCount: 38,
+  verified: true,
+  rate: { amount: "₹2,500", unit: "hour" },
+  amenities: ["Dolby Atmos", "Neumann U87", "SSL Duality", "Lounge"],
+};
 
 const kindInfo: Record<
   AccountKind,
   {
-    /** Shown under the toggle. */
     pitch: ReactNode;
-    /** The primary button's label and destination. */
     cta: string;
-    /** Only Business needs this today; Talent's primary action runs onboarding logic instead. */
+    estimate: string;
     goTo?: { to: "/business/new"; search: { step: "type" } };
-    /** Skip for Now only makes sense for the flow it actually skips (talent onboarding). */
     skippable: boolean;
   }
 > = {
   Talent: {
+    estimate: "~2 mins · 8 quick questions",
     pitch: (
-      <ul className="mt-8 space-y-5">
+      <ul className="space-y-4">
         {[
           {
             icon: <Compass size={iconSize.md} />,
-            title: "Get found for the right work",
-            body: "Role, genres, languages and city power discovery.",
+            title: "Get found for the right gigs",
+            body: "Your craft, genres, city and rates power smart artist discovery.",
           },
           {
             icon: <Sparkles size={iconSize.md} />,
-            title: "A feed that fits you",
-            body: "We shape recommendations around what you're here for.",
+            title: "Interactive audio portfolio",
+            body: "Showcase original audio tracks and video credits in one link.",
           },
           {
             icon: <ShieldCheck size={iconSize.md} />,
-            title: "Private by default",
-            body: "Contact details stay hidden until you share them.",
+            title: "Private contact details",
+            body: "Your phone number stays strictly protected until you share it.",
           },
         ].map((f) => (
           <li key={f.title} className="flex items-start gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-card text-foreground">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-subtle text-foreground">
               {f.icon}
             </span>
             <span>
-              <span className="block text-sm font-semibold">{f.title}</span>
-              <span className="mt-0.5 block text-1 text-muted-foreground">{f.body}</span>
+              <span className="block text-sm font-semibold text-foreground">{f.title}</span>
+              <span className="mt-0.5 block text-1 text-muted-foreground leading-snug">
+                {f.body}
+              </span>
             </span>
           </li>
         ))}
@@ -93,11 +112,39 @@ const kindInfo: Record<
     skippable: true,
   },
   Business: {
+    estimate: "~3 mins · Studio registration",
     pitch: (
-      <p className="mt-8 text-2 leading-relaxed text-muted-foreground">
-        A business profile is separate from you — its own team, spaces and bookings. Set up the
-        studio, label, venue or agency next.
-      </p>
+      <ul className="space-y-4">
+        {[
+          {
+            icon: <Building2 size={iconSize.md} />,
+            title: "Studio & gear showcase",
+            body: "Highlight your live recording rooms, acoustics, and microphone locker.",
+          },
+          {
+            icon: <CalendarCheck size={iconSize.md} />,
+            title: "Direct client bookings",
+            body: "Accept session enquiries, manage hourly slots, and set deposit terms.",
+          },
+          {
+            icon: <Users size={iconSize.md} />,
+            title: "Multi-engineer team page",
+            body: "Operate under your studio brand with its own verified URL and team.",
+          },
+        ].map((f) => (
+          <li key={f.title} className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-subtle text-foreground">
+              {f.icon}
+            </span>
+            <span>
+              <span className="block text-sm font-semibold text-foreground">{f.title}</span>
+              <span className="mt-0.5 block text-1 text-muted-foreground leading-snug">
+                {f.body}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
     ),
     cta: "Set Up Your Business",
     goTo: { to: "/business/new", search: { step: "type" } },
@@ -113,19 +160,42 @@ function Welcome() {
   const rise = useArrival("onboarding-intro") ? "animate-rise" : "";
 
   const [kind, setKind] = useState<AccountKind>("Talent");
+  const [showPreview, setShowPreview] = useState(false);
   const info = kindInfo[kind];
 
+  // Touch gesture support: swipe left/right to toggle between Talent and Business
+  const touchStart = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches[0]) touchStart.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart.current === null || !e.changedTouches[0]) return;
+    const deltaX = e.changedTouches[0].clientX - touchStart.current;
+    touchStart.current = null;
+    if (deltaX < -50 && kind === "Talent") {
+      haptic("select");
+      setKind("Business");
+    } else if (deltaX > 50 && kind === "Business") {
+      haptic("select");
+      setKind("Talent");
+    }
+  };
+
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-8">
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-8"
+    >
       <div>
         <div
           className={cn(
-            "inline-flex items-center gap-2 rounded-full bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground border border-border/60",
+            "inline-flex items-center gap-2 rounded-full border border-border/60 bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground",
             rise,
           )}
         >
           <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-          Quick setup · {total} short questions (~2 mins)
+          {kind === "Talent" ? `Quick setup · ${total} short questions (~2 mins)` : info.estimate}
         </div>
 
         <h1
@@ -143,15 +213,32 @@ function Welcome() {
 
         {/* Interactive Profile Kind Cards */}
         <div className={cn("mt-6 space-y-3", rise)} style={beat(2.5)}>
-          <p className="text-1 font-bold uppercase tracking-wider text-muted-foreground">
-            Choose account type
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-1 font-bold uppercase tracking-wider text-muted-foreground">
+              Choose account type
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                haptic("select");
+                setShowPreview(!showPreview);
+              }}
+              className="inline-flex items-center gap-1 text-1 font-semibold text-muted-foreground hover:text-foreground active:scale-95"
+            >
+              <Eye size={12} />
+              <span>{showPreview ? "Hide preview" : "Live card preview"}</span>
+            </button>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => setKind("Talent")}
+              onClick={() => {
+                haptic("select");
+                setKind("Talent");
+              }}
               className={cn(
-                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-98",
+                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-97",
                 kind === "Talent"
                   ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
                   : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
@@ -159,10 +246,10 @@ function Welcome() {
             >
               <span
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold mb-3 transition-colors",
+                  "mb-3 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors",
                   kind === "Talent"
                     ? "bg-foreground text-background"
-                    : "bg-card text-foreground border border-border",
+                    : "border border-border bg-card text-foreground",
                 )}
               >
                 <Compass size={18} />
@@ -175,9 +262,12 @@ function Welcome() {
 
             <button
               type="button"
-              onClick={() => setKind("Business")}
+              onClick={() => {
+                haptic("select");
+                setKind("Business");
+              }}
               className={cn(
-                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-98",
+                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-97",
                 kind === "Business"
                   ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
                   : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
@@ -185,10 +275,10 @@ function Welcome() {
             >
               <span
                 className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold mb-3 transition-colors",
+                  "mb-3 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors",
                   kind === "Business"
                     ? "bg-foreground text-background"
-                    : "bg-card text-foreground border border-border",
+                    : "border border-border bg-card text-foreground",
                 )}
               >
                 <Sparkles size={18} />
@@ -201,25 +291,47 @@ function Welcome() {
           </div>
         </div>
 
-        {/* Feature pitch card */}
-        <div
-          className={cn("mt-6 rounded-lg bg-card p-4 border border-border/80 shadow-xs", rise)}
-          style={beat(3)}
-        >
-          {info.pitch}
-        </div>
+        {/* Live Interactive Card Preview or Feature Pitch */}
+        {showPreview ? (
+          <div className={cn("mt-6", rise)} style={beat(3)}>
+            <p className="mb-2 text-0 font-bold uppercase tracking-wider text-muted-foreground">
+              What your {kind.toLowerCase()} card looks like:
+            </p>
+            {kind === "Talent" ? (
+              <TalentUserCard t={talents[0]!} />
+            ) : (
+              <BusinessUserCard business={demoStudio} />
+            )}
+          </div>
+        ) : (
+          <div
+            className={cn(
+              "mt-6 rounded-lg border border-border/80 bg-card p-4 shadow-xs",
+              rise,
+            )}
+            style={beat(3)}
+          >
+            {info.pitch}
+          </div>
+        )}
       </div>
 
       <div className={cn("mt-8 space-y-2.5", rise)} style={beat(6)}>
         {kind === "Talent" && hydrated && started ? (
-          <BtnLink to="/onboarding/resume" className="w-full h-12 text-sm font-semibold shadow-xs">
+          <BtnLink
+            to="/onboarding/resume"
+            className="h-12 w-full text-sm font-semibold shadow-xs active:scale-98"
+          >
             Continue Setup
           </BtnLink>
         ) : kind === "Talent" ? (
           <Btn
-            className="w-full h-12 text-sm font-semibold shadow-xs"
+            className="h-12 w-full text-sm font-semibold shadow-xs active:scale-98"
             onClick={() =>
-              navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft, bucket) } })
+              navigate({
+                to: "/onboarding/step/$id",
+                params: { id: resumeTarget(draft, bucket) },
+              })
             }
           >
             {info.cta}
@@ -228,7 +340,7 @@ function Welcome() {
           <BtnLink
             to={info.goTo.to}
             search={info.goTo.search}
-            className="w-full h-12 text-sm font-semibold shadow-xs"
+            className="h-12 w-full text-sm font-semibold shadow-xs active:scale-98"
           >
             {info.cta}
           </BtnLink>
@@ -237,7 +349,7 @@ function Welcome() {
           <p className="flex justify-center pt-2 text-sm">
             <AuthLink
               to="/onboarding/skip"
-              className="text-muted-foreground hover:text-foreground font-medium"
+              className="font-medium text-muted-foreground hover:text-foreground"
             >
               Skip for Now
             </AuthLink>
