@@ -1,4 +1,11 @@
 import type { BookingRequest } from "@/lib/bookings.functions";
+import {
+  WEEKDAYS,
+  hasWeeklyHours,
+  isBlackout,
+  type BlackoutRange,
+  type WeeklyHours,
+} from "@/lib/studio-slots";
 
 /*
  * Which booking requests ask for the same time. A request doesn't hold its slot (owner, 21 Sep
@@ -27,6 +34,54 @@ export function findConflicts(bookings: BookingRequest[]) {
     }
   }
   return pairs;
+}
+
+export type AvailabilityConflict = {
+  booking: BookingRequest;
+  kind: "Outside your hours" | "No availability";
+  detail: string;
+};
+
+const mins = (hhmm: string) => {
+  const [h = "0", m = "0"] = hhmm.split(":");
+  return Number(h) * 60 + Number(m);
+};
+
+/**
+ * Active requests from today on that the studio's own calendar doesn't allow: on a blackout day
+ * or a weekday it is closed ("No availability"), or at a time outside that day's opening hours
+ * ("Outside your hours"). The weekly hours only count once the studio has set some.
+ */
+export function availabilityConflicts(
+  bookings: BookingRequest[],
+  cal: { weeklyHours: WeeklyHours; blackouts: BlackoutRange[] },
+  today: string,
+): AvailabilityConflict[] {
+  const hasHours = hasWeeklyHours(cal.weeklyHours);
+  const out: AvailabilityConflict[] = [];
+  for (const b of bookings) {
+    if (!ACTIVE.includes(b.status) || b.session_date < today) continue;
+    if (isBlackout(b.session_date, cal.blackouts)) {
+      out.push({ booking: b, kind: "No availability", detail: "on a day you've blacked out" });
+      continue;
+    }
+    if (!hasHours) continue;
+    const day = WEEKDAYS[new Date(`${b.session_date}T00:00:00`).getDay()]!;
+    const spans = cal.weeklyHours[day] ?? [];
+    if (!spans.length) {
+      out.push({ booking: b, kind: "No availability", detail: "on a day you're closed" });
+      continue;
+    }
+    if (!b.start_time) continue;
+    const start = mins(b.start_time.slice(0, 5));
+    // An end at midnight ("00:00") is the end of the day.
+    const end = b.end_time ? mins(b.end_time.slice(0, 5)) || 24 * 60 : start + (b.hours ?? 1) * 60;
+    if (!spans.some((s) => start >= mins(s.open) && end <= mins(s.close))) {
+      const hours = spans.map((s) => `${s.open}–${s.close}`).join(", ");
+      out.push({ booking: b, kind: "Outside your hours", detail: `outside your hours (${hours})` });
+    }
+  }
+  return out;
 }
 
 /** The other requests still waiting for an answer that ask for the same time as this one. */

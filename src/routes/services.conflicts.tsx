@@ -9,8 +9,10 @@ import { Card, EmptyState, StatusPill, Loading } from "@/components/ml/kit";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { answerBooking, listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
-import { findConflicts } from "@/lib/booking-overlaps";
-import { formatDate, formatTime } from "@/data/booking";
+import { availabilityConflicts, findConflicts } from "@/lib/booking-overlaps";
+import { getMyStudio } from "@/lib/studio-owner.functions";
+import { getStudioCalendar } from "@/lib/studio-calendar.functions";
+import { formatDate, formatTime, isoDate } from "@/data/booking";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 
@@ -55,16 +57,28 @@ function ConflictsContent() {
   const conflicts = findConflicts(q.data ?? []).filter(
     (c) => !dismissed.includes(`${c.a.id}:${c.b.id}`),
   );
+  // The studio's weekly hours and blackout days, for requests its calendar doesn't allow.
+  const loadStudio = useServerFn(getMyStudio);
+  const studio = useQuery({
+    queryKey: ["business", "studio", "mine"],
+    queryFn: () => loadStudio(),
+  });
+  const slug = studio.data?.slug;
+  const loadCalendar = useServerFn(getStudioCalendar);
+  const calendar = useQuery({
+    queryKey: ["studio-calendar", slug, "rules"],
+    queryFn: () => loadCalendar({ data: { slug: slug! } }),
+    enabled: !!slug,
+  });
+  const outside = calendar.data
+    ? availabilityConflicts(q.data ?? [], calendar.data, isoDate(new Date())).filter(
+        (c) => !dismissed.includes(c.booking.id),
+      )
+    : [];
 
   const offerAnotherTime = useMutation({
-    mutationFn: (id: string) =>
-      answer({
-        data: {
-          id,
-          status: "reviewing",
-          reply: "This slot double-books with another session — could you offer another time?",
-        },
-      }),
+    mutationFn: ({ id, reply }: { id: string; reply: string }) =>
+      answer({ data: { id, status: "reviewing", reply } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["studio-bookings"] }),
     onError: () => toast.error("That didn't save. Try again."),
   });
@@ -92,7 +106,7 @@ function ConflictsContent() {
 
         {q.isLoading ? (
           <Loading rows={2} />
-        ) : conflicts.length ? (
+        ) : conflicts.length || outside.length ? (
           <div className="space-y-3">
             {conflicts.map((c) => {
               const pairId = `${c.a.id}:${c.b.id}`;
@@ -115,7 +129,13 @@ function ConflictsContent() {
                       variant="outline"
                       className="flex-1"
                       loading={offerAnotherTime.isPending}
-                      onClick={() => offerAnotherTime.mutate(c.b.id)}
+                      onClick={() =>
+                        offerAnotherTime.mutate({
+                          id: c.b.id,
+                          reply:
+                            "This slot double-books with another session — could you offer another time?",
+                        })
+                      }
                     >
                       Offer Another Time
                     </Btn>
@@ -130,6 +150,52 @@ function ConflictsContent() {
                 </Card>
               );
             })}
+            {outside.map(({ booking: b, kind, detail }) => (
+              <Card key={`${kind}:${b.id}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold">{formatDate(b.session_date)}</p>
+                    <p className="mt-1 text-1 text-muted-foreground">
+                      {requesterName(b)}{" "}
+                      {joinParts(
+                        b.start_time ? formatTime(b.start_time.slice(0, 5)) : "",
+                        b.room?.name ?? "",
+                      )}{" "}
+                      {detail}
+                    </p>
+                  </div>
+                  <StatusPill
+                    label={kind}
+                    tone={kind === "Outside your hours" ? "warn" : "neutral"}
+                  />
+                </div>
+                <div className="mt-3 flex gap-2">
+                  <Btn
+                    variant="outline"
+                    className="flex-1"
+                    loading={offerAnotherTime.isPending}
+                    onClick={() =>
+                      offerAnotherTime.mutate({
+                        id: b.id,
+                        reply:
+                          kind === "Outside your hours"
+                            ? "This time is outside our opening hours — could you pick another time?"
+                            : "We're closed that day — could you pick another day?",
+                      })
+                    }
+                  >
+                    Offer Another Time
+                  </Btn>
+                  <Btn
+                    variant="ghost"
+                    className="flex-1"
+                    onClick={() => setDismissed((p) => [...p, b.id])}
+                  >
+                    Keep It
+                  </Btn>
+                </div>
+              </Card>
+            ))}
           </div>
         ) : (
           <EmptyState title="No conflicts" body="Your calendar is clean." />
