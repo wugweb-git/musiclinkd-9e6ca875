@@ -161,6 +161,9 @@ export function bookableFromStudio(
     facilities: row.amenities.map((a) => taxonomyLabel(labels, "studio_amenities", a)),
     resources: priced,
     equipment: row.equipment.map((e) => e.name),
+    facilitySlugs: Object.fromEntries(
+      row.amenities.map((a) => [taxonomyLabel(labels, "studio_amenities", a), a]),
+    ),
     facilityPhotos: proof(
       row.amenities.map((a) => [
         taxonomyLabel(labels, "studio_amenities", a),

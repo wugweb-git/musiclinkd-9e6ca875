@@ -126,6 +126,8 @@ export type Bookable = {
   gallery: string[];
   about: string;
   facilities: string[];
+  /** Database studios: each facility label's amenity slug, for its icon. */
+  facilitySlugs?: Record<string, string>;
   resources: Resource[];
   addOns: AddOn[];
   /** Database studios: the written reviews, newest first. */

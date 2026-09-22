@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   Info,
   RefreshCw,
+  type LucideIcon,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
@@ -930,22 +931,38 @@ export function ProofPill({
   photos,
   onOpen,
   className,
+  icon: Icon,
 }: {
   label: string;
   photos: string[] | undefined;
   onOpen: () => void;
   className: string;
+  /** An amenity's line icon: it leads the label, and the photo thumbnail follows it. */
+  icon?: LucideIcon;
 }) {
-  if (!photos?.length) return <span className={`px-3 py-1.5 ${className}`}>{label}</span>;
+  if (!photos?.length) {
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 ${className}`}>
+        {Icon ? <Icon size={iconSize.sm} className="text-foreground" aria-hidden /> : null}
+        {label}
+      </span>
+    );
+  }
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-label={`${label}, ${photos.length} ${photos.length === 1 ? "photo" : "photos"}`}
-      className={`state-layer flex items-center gap-1.5 py-1 pl-1 pr-3 ${className}`}
+      className={`state-layer flex items-center gap-1.5 py-1 pr-3 ${Icon ? "pl-3" : "pl-1"} ${className}`}
     >
-      <img src={photos[0]} alt="" className="h-6 w-6 rounded-full object-cover" loading="lazy" />
+      {Icon ? <Icon size={iconSize.sm} className="text-foreground" aria-hidden /> : null}
+      {Icon ? null : (
+        <img src={photos[0]} alt="" className="h-6 w-6 rounded-full object-cover" loading="lazy" />
+      )}
       {label}
+      {Icon ? (
+        <img src={photos[0]} alt="" className="h-6 w-6 rounded-full object-cover" loading="lazy" />
+      ) : null}
       <span className="tabular-nums text-foreground">{photos.length}</span>
     </button>
   );

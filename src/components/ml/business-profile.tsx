@@ -45,6 +45,7 @@ import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
+import { amenityIcon } from "@/lib/amenity-icons";
 import { shownPlace } from "@/lib/place";
 
 // Team is off for now: one business profile belongs to one account (owner, 21 Sep 2026).
@@ -196,8 +197,9 @@ export function BusinessProfileExperience({
                 <div className="flex flex-wrap gap-2">
                   {b.amenities.map((a) => (
                     <ProofPill
-                      key={a.label}
+                      key={a.slug}
                       label={a.label}
+                      icon={amenityIcon(a.slug)}
                       photos={a.photos}
                       onOpen={() => setViewing({ title: a.label, photos: a.photos })}
                       className="rounded-full bg-background text-1"

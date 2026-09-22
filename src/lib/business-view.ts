@@ -48,7 +48,7 @@ export type BusinessView = {
   /** Its studio's slug when it has one: Book opens /booking/<slug>. */
   studioSlug: string | null;
   /** What the place has, each with its proof photos. */
-  amenities: { label: string; photos: string[] }[];
+  amenities: { slug: string; label: string; photos: string[] }[];
   /** Its gear: make and model, type, quantity, included or extra, and photos. */
   equipment: {
     id: string;
@@ -188,6 +188,7 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     policies: (business.policies ?? []).filter((p) => p.trim()),
     studioSlug: studio?.slug ?? null,
     amenities: (studio?.amenities ?? []).map((slug) => ({
+      slug,
       label: taxonomyLabel(labels, "studio_amenities", slug),
       photos: photosOf(studio?.photos, "facility", slug),
     })),

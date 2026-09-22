@@ -18,6 +18,7 @@ import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { TextLink } from "@/components/ml/links";
 import { shareLink } from "@/lib/booking-actions";
 import { iconSize } from "@/lib/tokens";
+import { amenityIcon } from "@/lib/amenity-icons";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useMessagePerson } from "@/hooks/use-message-person";
 
@@ -127,6 +128,7 @@ function BookingEntry() {
                 <ProofPill
                   key={f}
                   label={f}
+                  {...(b.facilitySlugs?.[f] ? { icon: amenityIcon(b.facilitySlugs[f]!) } : {})}
                   photos={b.facilityPhotos?.[f]}
                   onOpen={() => setViewing({ title: f, photos: b.facilityPhotos?.[f] ?? [] })}
                   className="rounded-full bg-background text-1 text-muted-foreground"

@@ -27,6 +27,7 @@ import {
 import { uploadStudioPhoto } from "@/lib/studio-photos";
 import { useGearTaxonomy } from "@/lib/listing-category";
 import { choicesFor, useTaxonomy } from "@/lib/taxonomy";
+import { amenityIcon } from "@/lib/amenity-icons";
 import { iconSize } from "@/lib/tokens";
 
 /*
@@ -84,7 +85,10 @@ export function AmenitiesEditor() {
         <SheetMultiSelect
           title="Amenities"
           value={update.isPending && update.variables ? update.variables : picked}
-          options={choicesFor(tx?.studio_amenities)}
+          options={choicesFor(tx?.studio_amenities).map((o) => ({
+            ...o,
+            icon: amenityIcon(o.value),
+          }))}
           max={tx?.studio_amenities.length ?? 40}
           placeholder="Choose"
           onChange={(v) => update.mutate(v)}
