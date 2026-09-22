@@ -1,0 +1,35 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922280000_booking_rules.sql.
+--
+-- Scope: the migration adds two columns to public.studios, studios.notice_hours (integer, default 0)
+-- and studios.blackout_dates (jsonb, default '[]'). Neither existed at snapshot time
+-- (information_schema.columns had only add_ons and weekly_hours of the columns checked), so no
+-- existing value is replaced and no existing row is rewritten beyond taking the defaults.
+--
+-- Row counts: studios 20, studio_rooms 25, booking_requests 4.
+-- Policies on studios: "Owners write their own" (ALL), "Readable by everyone" (SELECT).
+--
+-- The 20 studios (id, slug, updated_at) at snapshot time:
+--   aa311ff1-9420-50a8-9b05-2aaaeded5ec3  analog-ensemble-studios        2026-09-21 23:42:36+00
+--   9ac144a3-afdd-573b-b823-224ef271d4c5  basement-jam                   2026-09-18 14:18:25+00
+--   87106f76-8943-40a0-9d52-61b192a30389  beatcraft-studios              2026-09-21 23:42:36+00
+--   11a2d1ff-e30b-546b-95b3-fc6aa2c0a0fd  beatroute-spaces               2026-09-21 23:42:36+00
+--   5537bf03-c28b-5d46-ab63-090c788446ba  blue-room-mixing-suite         2026-09-21 23:42:36+00
+--   29159501-1987-5152-8b0e-954b5cf11bdf  headroom-mastering             2026-09-18 14:18:25+00
+--   f87044d2-fe01-5d9b-936b-1f3755fa3f26  ironwood-live-hall-and-venue   2026-09-14 08:37:05+00
+--   b84bbaa9-f4e2-40c8-8f27-959b220c7410  jam-room-bandra                2026-09-21 23:42:36+00
+--   7503f38d-50c4-5223-b11e-3d5f592794e8  krimson-avenue                 2026-09-21 23:42:36+00
+--   62102fef-efc3-4cb4-b8b2-36b1fadd660e  octave-sound-labs              2026-09-18 14:05:43+00
+--   a19d59a5-b5f7-567d-a3da-aeab60b4893e  paper-parade-studios           2026-09-21 23:42:36+00
+--   313eabc5-53ac-5e7c-b50c-afa8c87cf654  resonance-acoustic-suites      2026-09-21 23:42:36+00
+--   76f7d7c8-274e-5109-89e6-63ed65658c05  soundhouse-bandra              2026-09-21 23:42:36+00
+--   eccf75f0-77f6-4330-9d09-06682c174cb3  soundhouse-studio              2026-09-21 23:42:36+00
+--   7f246205-2880-5c75-a772-cd587574a944  the-hive-recording-studio      2026-09-21 23:42:36+00
+--   3e7efe4e-7a5d-57fe-aeec-586a70366599  the-humming-tree-live-room     2026-09-21 23:42:36+00
+--   607abe67-f9c3-5992-b041-706833e05285  velvet-vocal-and-foley-studio  2026-09-21 23:42:36+00
+--   dfce6dfa-e21c-5000-bb2d-bb45457e0039  waveform-podcast               2026-09-18 14:18:25+00
+--   29833230-3ca8-58e3-b0c2-f87756c18008  wugweb                         2026-09-14 08:37:05+00
+--   3b0324b2-a7e7-5ba3-b3fc-a64a0b87b348  yash-raj-sound-studios         2026-09-14 08:37:05+00
+--
+-- Restore: ALTER TABLE public.studios DROP COLUMN IF EXISTS notice_hours,
+--   DROP COLUMN IF EXISTS blackout_dates;
