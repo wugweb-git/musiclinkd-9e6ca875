@@ -10,6 +10,7 @@ import {
   AuthScreen,
   AuthTextButton,
   CodeInput,
+  LegalNote,
   classifyAuthError,
   formatIndianMobile,
   useCountdown,

@@ -8,6 +8,7 @@ import {
   AuthLink,
   EMAIL_PATTERN,
   LabeledInput,
+  LegalNote,
   useFieldErrors,
   TrustNote,
   carriedEmail,
