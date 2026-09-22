@@ -77,6 +77,8 @@ export type ServiceItem = {
   categories?: string[] | undefined;
   /** What the client gets, as the owner listed it. */
   deliverables?: string[] | undefined;
+  /** A studio's service: the amenities and equipment it uses, by name. */
+  uses?: string[] | undefined;
 };
 
 export type ExperienceItem = {

@@ -1062,13 +1062,32 @@ export function ReviewInviteCard() {
  * to three deliverables — and its tear-off stub says what it costs and how long it takes, with the
  * one Book button. Book opens the service's booking request; the preview's does nothing.
  */
-export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () => void }) {
+/**
+ * One service, everywhere a service is shown: talent profiles, business pages, booking. A studio's
+ * service lists what it uses; `onBook` replaces the default Book (the service's enquiry) — a studio
+ * opens its booking flow with the service picked. `selected` marks the one picked in booking.
+ */
+export function ServiceCard({
+  s,
+  onEnquire,
+  onBook,
+  selected = false,
+}: {
+  s: ServiceItem;
+  onEnquire?: () => void;
+  onBook?: (() => void) | undefined;
+  selected?: boolean;
+}) {
   const real = /^[0-9a-f-]{36}$/i.test(s.id);
   const taxonomy = useTaxonomy().options;
   const category = s.categories?.[0] ? labelFor(taxonomy?.service_categories, s.categories[0]) : "";
   const meta = [category, s.mode].filter(Boolean).join(" · ");
   const gets = (s.deliverables ?? []).slice(0, 3);
-  const book = real ? (
+  const book = onBook ? (
+    <Btn className="min-h-control-sm shrink-0 px-5 text-sm" onClick={onBook}>
+      Book
+    </Btn>
+  ) : real ? (
     <BtnLink
       to="/services/$id/enquiry"
       params={{ id: s.id }}
@@ -1077,12 +1096,18 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
       Book
     </BtnLink>
   ) : (
-    <Btn className="min-h-control-sm shrink-0 px-5 text-sm" onClick={onEnquire}>
+    <Btn
+      className="min-h-control-sm shrink-0 px-5 text-sm"
+      {...(onEnquire ? { onClick: onEnquire } : {})}
+    >
       Book
     </Btn>
   );
   return (
-    <article className="overflow-hidden rounded-[20px] bg-card">
+    <article
+      aria-current={selected || undefined}
+      className={`overflow-hidden rounded-[20px] border-2 bg-card ${selected ? "border-foreground" : "border-transparent"}`}
+    >
       <div className="px-4 pb-4 pt-4">
         {meta ? <p className="truncate text-1 text-muted-foreground">{meta}</p> : null}
         {real ? (
@@ -1110,6 +1135,12 @@ export function ServiceCard({ s, onEnquire }: { s: ServiceItem; onEnquire: () =>
               </li>
             ))}
           </ul>
+        ) : null}
+        {s.uses?.length ? (
+          <div className="mt-3">
+            <p className="text-1 font-semibold text-foreground">Uses</p>
+            <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{s.uses.join(", ")}</p>
+          </div>
         ) : null}
       </div>
 

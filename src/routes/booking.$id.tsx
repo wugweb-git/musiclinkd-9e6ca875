@@ -8,6 +8,9 @@ import { bookableFromStudio } from "@/lib/studio-view";
 import { listPublicServices } from "@/lib/services.functions";
 
 export const Route = createFileRoute("/booking/$id")({
+  // ?service=<name> starts the booking with that service picked (Book on a service card).
+  validateSearch: (search: Record<string, unknown>) =>
+    typeof search["service"] === "string" ? { service: search["service"] } : {},
   // The id is a database studio slug; an unknown slug shows "unavailable".
   loader: async ({ params }) => {
     const [row, labels, calendar] = await Promise.all([
@@ -32,8 +35,9 @@ export const Route = createFileRoute("/booking/$id")({
 function BookingLayout() {
   const { id } = Route.useParams();
   const { studio } = Route.useLoaderData();
+  const { service } = Route.useSearch() as { service?: string };
   return (
-    <BookingDraftProvider id={id} studio={studio}>
+    <BookingDraftProvider id={id} studio={studio} service={service}>
       <Outlet />
     </BookingDraftProvider>
   );

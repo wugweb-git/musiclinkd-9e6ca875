@@ -359,6 +359,8 @@ export type BookableService = {
   name: string;
   price_paise: number | null;
   price_unit: string | null;
+  /** What it uses: amenity labels and equipment names, for the booking list. */
+  uses: string[];
 };
 
 /** A profile's live services, in page order: what a studio's Book lets people pick. */
@@ -368,11 +370,39 @@ export const listPublicServices = createServerFn({ method: "GET" })
     const client = (await anonClient()) as unknown as SupabaseClient;
     const { data: rows, error } = await client
       .from("profile_services")
-      .select("id, name, price_paise, price_unit")
+      .select("id, name, price_paise, price_unit, amenity_slugs, equipment_ids")
       .eq("profile_id", data.profileId)
       .eq("status", "active")
       .order("sort_order");
-    return error ? [] : ((rows ?? []) as BookableService[]);
+    if (error) return [];
+    type Row = Omit<BookableService, "uses"> & { amenity_slugs: string[]; equipment_ids: string[] };
+    const list = (rows ?? []) as Row[];
+    const slugs = [...new Set(list.flatMap((r) => r.amenity_slugs ?? []))];
+    const ids = [...new Set(list.flatMap((r) => r.equipment_ids ?? []))];
+    const [labels, items] = await Promise.all([
+      slugs.length
+        ? client
+            .from("taxonomy_options")
+            .select("slug, label")
+            .eq("category_key", "studio_amenities")
+            .in("slug", slugs)
+        : { data: [] },
+      ids.length ? client.from("studio_equipment").select("id, name").in("id", ids) : { data: [] },
+    ]);
+    const label = new Map(
+      ((labels.data ?? []) as { slug: string; label: string }[]).map((l) => [l.slug, l.label]),
+    );
+    const item = new Map(
+      ((items.data ?? []) as { id: string; name: string }[]).map((e) => [e.id, e.name]),
+    );
+    return list.map(({ amenity_slugs, equipment_ids, ...r }) => ({
+      ...r,
+      price_paise: r.price_paise == null ? null : Number(r.price_paise),
+      uses: [
+        ...(amenity_slugs ?? []).map((a) => label.get(a)).filter((x): x is string => !!x),
+        ...(equipment_ids ?? []).map((e) => item.get(e)).filter((x): x is string => !!x),
+      ],
+    }));
   });
 
 const slug = z.string().regex(/^[a-z0-9]+(_[a-z0-9]+)*$/);

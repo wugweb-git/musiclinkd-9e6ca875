@@ -14,7 +14,8 @@ import { useBookingDraft } from "@/components/ml/booking-context";
 import { inr, lowestRate } from "@/data/booking";
 import { rupeeParts } from "@/lib/price";
 import { Price } from "@/components/ml/kit";
-import { ReviewCard, ReviewRail } from "@/components/ml/profile";
+import { ReviewCard, ReviewRail, ServiceCard } from "@/components/ml/profile";
+import { serviceItem } from "@/lib/service-item";
 import { TextLink } from "@/components/ml/links";
 import { shareLink } from "@/lib/booking-actions";
 import { iconSize } from "@/lib/tokens";
@@ -44,7 +45,7 @@ export const Route = createFileRoute("/booking/$id/")({
 });
 
 function BookingEntry() {
-  const { bookable: b } = useBookingDraft();
+  const { bookable: b, set } = useBookingDraft();
   const navigate = useNavigate();
   const message = useMessagePerson();
   // The facility or equipment item whose photos are open.
@@ -100,23 +101,22 @@ function BookingEntry() {
             <p className="mt-1 text-1 text-muted-foreground">
               Pick one when you book, then a date and time.
             </p>
-            <ul className="mt-3 divide-y divide-border rounded-lg bg-subtle">
+            <div className="mt-3 space-y-3">
               {b.services.map((sv) => (
-                <li key={sv.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <span className="min-w-0 truncate text-sm font-semibold">{sv.name}</span>
-                  {sv.price_paise ? (
-                    <Price
-                      from
-                      inline
-                      price={rupeeParts(sv.price_paise / 100, sv.price_unit)}
-                      align="end"
-                      className="shrink-0"
-                      amountClassName="text-sm font-semibold"
-                    />
-                  ) : null}
-                </li>
+                <ServiceCard
+                  key={sv.id}
+                  s={serviceItem(sv)}
+                  onBook={() => {
+                    set({ purpose: sv.name });
+                    void navigate({
+                      to:
+                        b.hasCalendar === false ? "/booking/$id/service" : "/booking/$id/schedule",
+                      params: { id: b.id },
+                    });
+                  }}
+                />
               ))}
-            </ul>
+            </div>
           </section>
         ) : null}
 

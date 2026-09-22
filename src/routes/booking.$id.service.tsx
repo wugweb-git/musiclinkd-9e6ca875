@@ -5,10 +5,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Btn, Sheet, TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
-import { Check } from "lucide-react";
-import { Price } from "@/components/ml/kit";
-import { rupeeParts } from "@/lib/price";
-import { iconSize } from "@/lib/tokens";
+import { ServiceCard } from "@/components/ml/profile";
+import { serviceItem } from "@/lib/service-item";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { requestBooking } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -52,7 +50,7 @@ function SelectService() {
   // Without services of its own, a studio is booked as a general session.
   const serviceChoices = b.services?.length
     ? b.services
-    : [{ id: "session", name: "Studio session", price_paise: null, price_unit: null }];
+    : [{ id: "session", name: "Studio session", price_paise: null, price_unit: null, uses: [] }];
 
   const request = useMutation({
     mutationFn: () =>
@@ -84,33 +82,24 @@ function SelectService() {
           Pick a service. Next you choose a date and time.
         </p>
         {/* The studio's services; its rooms stay behind the scenes and set the calendar. */}
-        <ul className="mt-4 space-y-2" role="listbox" aria-label="Services">
-          {serviceChoices.map((sv) => {
-            const on = draft.purpose === sv.name;
-            return (
-              <li key={sv.id} role="option" aria-selected={on}>
-                <button
-                  type="button"
-                  onClick={() => set({ purpose: sv.name })}
-                  className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${on ? "border-foreground" : "border-transparent"}`}
-                >
-                  <span className="min-w-0 flex-1 text-sm font-semibold">{sv.name}</span>
-                  {sv.price_paise ? (
-                    <Price
-                      from
-                      inline
-                      price={rupeeParts(sv.price_paise / 100, sv.price_unit)}
-                      align="end"
-                      className="shrink-0"
-                      amountClassName="text-sm font-semibold"
-                    />
-                  ) : null}
-                  {on ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="mt-4 space-y-3">
+          {serviceChoices.map((sv) => (
+            <ServiceCard
+              key={sv.id}
+              s={serviceItem(sv)}
+              selected={draft.purpose === sv.name}
+              onBook={() => {
+                set({ purpose: sv.name });
+                if (noCalendar) {
+                  if (signedIn) setAsk(true);
+                  else void navigate({ to: "/welcome" });
+                } else {
+                  void navigate({ to: "/booking/$id/schedule", params: { id: b.id } });
+                }
+              }}
+            />
+          ))}
+        </div>
       </main>
 
       <StickyBar

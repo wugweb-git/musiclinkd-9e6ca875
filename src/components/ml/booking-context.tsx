@@ -45,9 +45,12 @@ export function CalendarGate({ children }: { children: ReactNode }) {
 
 export function BookingDraftProvider({
   studio,
+  service,
   children,
 }: {
   id: string;
+  /** A service picked before the flow opened (Book on a service card). */
+  service?: string | undefined;
   /** The database studio for this id, or null when there is none. */
   studio?: Bookable | null;
   children: ReactNode;
@@ -57,7 +60,7 @@ export function BookingDraftProvider({
     resourceId: bookable?.resources[0]?.id ?? "",
     hours: 2,
     people: 2,
-    purpose: "",
+    purpose: service ?? "",
     notes: "",
     requirements: "",
     addOnIds: [],
