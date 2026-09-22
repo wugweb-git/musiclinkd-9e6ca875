@@ -11,6 +11,8 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    defaultPreload: "intent",
+    defaultPreloadDelay: 50,
     defaultPreloadStaleTime: 0,
     // Page motion: the registration flow in order, everyday navigation as push, pop or fade.
     defaultViewTransition: { types: flowTransitionTypes },

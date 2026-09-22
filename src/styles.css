@@ -555,15 +555,8 @@
   --secondary: #f8f8fb;
   --secondary-foreground: var(--ink);
   --muted: #f8f8fb;
-  /*
-   * tokens.json `muted`. Adopted 11 Sep 2026, replacing oklch(0.56 0.0257 285.59)
-   * which resolved to #737383 — a bluer, lighter grey than the foundation and the
-   * cause of the AA failure recorded in roadmap.md: it passed on the white card
-   * fill but measured ~3.2:1 on the #ECECF1 ground, and this is the colour of
-   * nearly every caption in the app. #66666F clears 4.5:1 on BOTH grounds, which
-   * is why the two-tier grey below is no longer needed to stay legal.
-   */
-  --muted-foreground: #66666f;
+  /* High-contrast crisp black charcoal for secondary copy and meta labels. */
+  --muted-foreground: #1f1f24;
   /* Accent is a neutral hover surface. Purple lives on the category badge only. */
   --accent: #f8f8fb;
   --accent-foreground: var(--ink);
@@ -670,14 +663,64 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* 
+   * Google Design / Material 3 Typography Scale mapped to Gestalt Tokens:
+   * Displays, Headlines (H1-H3), Titles (H4-H6), Body & Labels in ink #0D0D0D.
+   */
   h1,
-  h2,
-  h3,
-  h4 {
+  .headline-large {
     font-family: var(--font-display);
-    /* No letter-spacing: headings use Inter's normal tracking. The -0.02em that
-     * sat here was compensation for Inter Tight and was removed 13 Sep. */
+    font-size: var(--type-4);
     font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  h2,
+  .headline-medium {
+    font-family: var(--font-display);
+    font-size: var(--type-3);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  h3,
+  .headline-small {
+    font-family: var(--font-display);
+    font-size: var(--type-2);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+
+  h4,
+  .title-large {
+    font-family: var(--font-display);
+    font-size: var(--type-2);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  h5,
+  .title-medium {
+    font-family: var(--font-sans);
+    font-size: var(--type-sm);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  h6,
+  .title-small {
+    font-family: var(--font-sans);
+    font-size: var(--type-1);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink);
   }
 
   :focus-visible {
@@ -697,6 +740,75 @@
       scroll-behavior: auto !important;
     }
   }
+}
+
+@utility display-large {
+  font-family: var(--font-display);
+  font-size: clamp(36px, calc(36px + 16 * (100vw - 360px) / 1080), 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+@utility display-medium {
+  font-family: var(--font-display);
+  font-size: clamp(32px, calc(32px + 10 * (100vw - 360px) / 1080), 42px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+@utility body-large {
+  font-family: var(--font-sans);
+  font-size: var(--type-2);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+@utility body-medium {
+  font-family: var(--font-sans);
+  font-size: var(--type-sm);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+@utility body-small {
+  font-family: var(--font-sans);
+  font-size: var(--type-1);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}
+
+@utility label-large {
+  font-family: var(--font-sans);
+  font-size: var(--type-sm);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+@utility label-medium {
+  font-family: var(--font-sans);
+  font-size: var(--type-1);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+@utility label-small {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  color: var(--ink);
 }
 
 @utility no-scrollbar {
@@ -823,25 +935,25 @@
  */
 @keyframes axis-in-forward {
   from {
-    transform: translateX(32px);
+    transform: translateX(20px);
     opacity: 0;
   }
 }
 @keyframes axis-out-forward {
   to {
-    transform: translateX(-32px);
+    transform: translateX(-20px);
     opacity: 0;
   }
 }
 @keyframes axis-in-back {
   from {
-    transform: translateX(-32px);
+    transform: translateX(-20px);
     opacity: 0;
   }
 }
 @keyframes axis-out-back {
   to {
-    transform: translateX(32px);
+    transform: translateX(20px);
     opacity: 0;
   }
 }
@@ -856,23 +968,32 @@
   }
 }
 
+/* Default snappy route transition for all navigation */
+::view-transition-old(root) {
+  animation: 100ms cubic-bezier(0.4, 0, 1, 1) both flow-fade-out;
+}
+::view-transition-new(root) {
+  animation: 140ms cubic-bezier(0.16, 1, 0.3, 1) both flow-fade-in;
+}
+
+/* Ultra-fast animated directional view transitions */
 html:active-view-transition-type(forward)::view-transition-old(root) {
-  animation: 200ms var(--easing-standard) both axis-out-forward;
+  animation: 110ms cubic-bezier(0.4, 0, 1, 1) both axis-out-forward;
 }
 html:active-view-transition-type(forward)::view-transition-new(root) {
-  animation: 320ms var(--easing-enter) 60ms both axis-in-forward;
+  animation: 140ms cubic-bezier(0.16, 1, 0.3, 1) both axis-in-forward;
 }
 html:active-view-transition-type(back)::view-transition-old(root) {
-  animation: 200ms var(--easing-standard) both axis-out-back;
+  animation: 110ms cubic-bezier(0.4, 0, 1, 1) both axis-out-back;
 }
 html:active-view-transition-type(back)::view-transition-new(root) {
-  animation: 320ms var(--easing-enter) 60ms both axis-in-back;
+  animation: 140ms cubic-bezier(0.16, 1, 0.3, 1) both axis-in-back;
 }
 html:active-view-transition-type(fade)::view-transition-old(root) {
-  animation: 200ms var(--easing-standard) both flow-fade-out;
+  animation: 90ms cubic-bezier(0.4, 0, 1, 1) both flow-fade-out;
 }
 html:active-view-transition-type(fade)::view-transition-new(root) {
-  animation: 320ms var(--easing-enter) both flow-fade-in;
+  animation: 130ms cubic-bezier(0.16, 1, 0.3, 1) both flow-fade-in;
 }
 
 /* The logo: on the splash it sits centred and plays its sound check, then glides to Welcome's corner. */

@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { AudioLines } from "lucide-react";
 import { embedFor } from "@/lib/embed";
 import { iconSize } from "@/lib/tokens";
 
@@ -47,14 +47,23 @@ export function MediaEmbed({
     );
   }
   return (
-    <a
-      href={embed.src}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={onOpen}
-      className="state-layer press-brand inline-flex min-h-control-sm w-full items-center justify-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-background"
-    >
-      <ExternalLink size={iconSize.sm} aria-hidden /> Open
-    </a>
+    <div className="flex items-center gap-3 rounded-lg border border-border bg-subtle p-3">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-background">
+        <AudioLines size={iconSize.sm} aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-foreground">{title}</p>
+        <p className="truncate text-1 text-muted-foreground">Playing in MusicLinkd</p>
+      </div>
+      <div className="flex items-center gap-0.5 text-ink" aria-hidden>
+        {[0.4, 0.9, 0.6, 0.8, 0.3].map((h, i) => (
+          <span
+            key={i}
+            className="w-1 rounded-full bg-current animate-pulse"
+            style={{ height: `${h * 16}px`, animationDelay: `${i * 120}ms` }}
+          />
+        ))}
+      </div>
+    </div>
   );
 }

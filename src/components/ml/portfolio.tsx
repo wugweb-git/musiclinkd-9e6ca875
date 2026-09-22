@@ -580,18 +580,13 @@ export function VideoPlayer({ src, title }: { src: string; title: string }) {
       />
     );
   }
-  if (embed?.mode === "external") {
+  if (embed?.mode === "in-app") {
     return (
-      <a
-        href={src}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block rounded-lg bg-subtle p-4"
-      >
-        <p className="pill bg-background text-muted-foreground">Video</p>
-        <p className="mt-1 truncate text-sm font-semibold">{title}</p>
-        <p className="mt-1 truncate text-1 text-foreground">{src}</p>
-      </a>
+      <div className="block rounded-lg border border-border bg-subtle p-4">
+        <p className="pill bg-background text-foreground font-semibold">Video preview</p>
+        <p className="mt-1 truncate text-sm font-semibold text-foreground">{title}</p>
+        <p className="mt-1 truncate text-1 text-muted-foreground">{src}</p>
+      </div>
     );
   }
   return (
