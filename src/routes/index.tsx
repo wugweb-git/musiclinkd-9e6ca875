@@ -55,6 +55,11 @@ function SessionCheck() {
     syncIdentity()
       .catch(() => null)
       .then(() => loadProfile())
+      // A row-less read routes to onboarding, so it has to be trusted — but a returning user's
+      // row always exists; a null here on the first try is as likely to be the auth session still
+      // settling as it is a genuinely new signup. One retry tells them apart without a real user
+      // ever seeing the onboarding chooser they'd already finished.
+      .then((profile) => (profile ? profile : loadProfile()))
       .then((profile) => go(postAuthTarget(profile)))
       // Offline or a failed read: Home still works from the local session.
       .catch(() => go("/home"));

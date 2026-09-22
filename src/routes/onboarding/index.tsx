@@ -179,6 +179,10 @@ function Welcome() {
   const rise = useArrival("onboarding-intro") ? "animate-rise" : "";
 
   const [kind, setKind] = useState<AccountKind>("Talent");
+  // Talent is the value used until a real choice is made (copy, preview, step count all read
+  // `kind`), but the two cards below shouldn't look like one is already picked — `touched` gates
+  // just the selected-card styling, so neither reads as the default (owner, 23 Sep).
+  const [touched, setTouched] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const info = kindInfo[kind];
 
@@ -194,9 +198,11 @@ function Welcome() {
     if (deltaX < -50 && kind === "Talent") {
       haptic("select");
       setKind("Business");
+      setTouched(true);
     } else if (deltaX > 50 && kind === "Business") {
       haptic("select");
       setKind("Talent");
+      setTouched(true);
     }
   };
 
@@ -255,10 +261,11 @@ function Welcome() {
               onClick={() => {
                 haptic("select");
                 setKind("Talent");
+                setTouched(true);
               }}
               className={cn(
                 "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-97",
-                kind === "Talent"
+                touched && kind === "Talent"
                   ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
                   : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
               )}
@@ -266,7 +273,7 @@ function Welcome() {
               <span
                 className={cn(
                   "mb-3 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors",
-                  kind === "Talent"
+                  touched && kind === "Talent"
                     ? "bg-foreground text-background"
                     : "border border-border bg-card text-foreground",
                 )}
@@ -284,10 +291,11 @@ function Welcome() {
               onClick={() => {
                 haptic("select");
                 setKind("Business");
+                setTouched(true);
               }}
               className={cn(
                 "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-97",
-                kind === "Business"
+                touched && kind === "Business"
                   ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
                   : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
               )}
@@ -295,7 +303,7 @@ function Welcome() {
               <span
                 className={cn(
                   "mb-3 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-colors",
-                  kind === "Business"
+                  touched && kind === "Business"
                     ? "bg-foreground text-background"
                     : "border border-border bg-card text-foreground",
                 )}
