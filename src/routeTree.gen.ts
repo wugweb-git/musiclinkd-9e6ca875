@@ -20,6 +20,7 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as RecentlyViewedRouteImport } from './routes/recently-viewed'
+import { Route as RecommendedRouteImport } from './routes/recommended'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SingersRouteImport } from './routes/singers'
@@ -91,6 +92,8 @@ import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
 import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
+import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
+import { Route as RecommendationsSwipeRouteImport } from './routes/recommendations.swipe'
 import { Route as ReviewsIndexRouteImport } from './routes/reviews.index'
 import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
 import { Route as SearchIndexRouteImport } from './routes/search.index'
@@ -238,6 +241,11 @@ const MessagesRoute = MessagesRouteImport.update({
 const RecentlyViewedRoute = RecentlyViewedRouteImport.update({
   id: '/recently-viewed',
   path: '/recently-viewed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendedRoute = RecommendedRouteImport.update({
+  id: '/recommended',
+  path: '/recommended',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -593,6 +601,16 @@ const ProfileEditRoute = ProfileEditRouteImport.update({
 const ProfileInsightsRoute = ProfileInsightsRouteImport.update({
   id: '/profile/insights',
   path: '/profile/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
+  id: '/recommendations/settings',
+  path: '/recommendations/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecommendationsSwipeRoute = RecommendationsSwipeRouteImport.update({
+  id: '/recommendations/swipe',
+  path: '/recommendations/swipe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewsIndexRoute = ReviewsIndexRouteImport.update({
@@ -1083,6 +1101,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recently-viewed': typeof RecentlyViewedRoute
+  '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/singers': typeof SingersRoute
@@ -1140,6 +1159,8 @@ export interface FileRoutesByFullPath {
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/services/availability': typeof ServicesAvailabilityRoute
@@ -1260,6 +1281,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recently-viewed': typeof RecentlyViewedRoute
+  '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/singers': typeof SingersRoute
@@ -1316,6 +1338,8 @@ export interface FileRoutesByTo {
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/services/availability': typeof ServicesAvailabilityRoute
@@ -1437,6 +1461,7 @@ export interface FileRoutesById {
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/recently-viewed': typeof RecentlyViewedRoute
+  '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/singers': typeof SingersRoute
@@ -1494,6 +1519,8 @@ export interface FileRoutesById {
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
   '/profile/insights': typeof ProfileInsightsRoute
+  '/recommendations/settings': typeof RecommendationsSettingsRoute
+  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
   '/search/history': typeof SearchHistoryRoute
   '/services/availability': typeof ServicesAvailabilityRoute
@@ -1616,6 +1643,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/recently-viewed'
+    | '/recommended'
     | '/reset-password'
     | '/saved'
     | '/singers'
@@ -1673,6 +1701,8 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
+    | '/recommendations/settings'
+    | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
     | '/services/availability'
@@ -1793,6 +1823,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/recently-viewed'
+    | '/recommended'
     | '/reset-password'
     | '/saved'
     | '/singers'
@@ -1849,6 +1880,8 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
+    | '/recommendations/settings'
+    | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
     | '/services/availability'
@@ -1969,6 +2002,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/messages'
     | '/recently-viewed'
+    | '/recommended'
     | '/reset-password'
     | '/saved'
     | '/singers'
@@ -2026,6 +2060,8 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/profile/edit'
     | '/profile/insights'
+    | '/recommendations/settings'
+    | '/recommendations/swipe'
     | '/reviews/request'
     | '/search/history'
     | '/services/availability'
@@ -2147,6 +2183,7 @@ export interface RootRouteChildren {
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   RecentlyViewedRoute: typeof RecentlyViewedRoute
+  RecommendedRoute: typeof RecommendedRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
   SingersRoute: typeof SingersRoute
@@ -2204,6 +2241,8 @@ export interface RootRouteChildren {
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
   ProfileInsightsRoute: typeof ProfileInsightsRoute
+  RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
+  RecommendationsSwipeRoute: typeof RecommendationsSwipeRoute
   ReviewsRequestRoute: typeof ReviewsRequestRoute
   SearchHistoryRoute: typeof SearchHistoryRoute
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
@@ -2383,6 +2422,13 @@ declare module '@tanstack/react-router' {
       path: '/recently-viewed'
       fullPath: '/recently-viewed'
       preLoaderRoute: typeof RecentlyViewedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommended': {
+      id: '/recommended'
+      path: '/recommended'
+      fullPath: '/recommended'
+      preLoaderRoute: typeof RecommendedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -2880,6 +2926,20 @@ declare module '@tanstack/react-router' {
       path: '/profile/insights'
       fullPath: '/profile/insights'
       preLoaderRoute: typeof ProfileInsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommendations/settings': {
+      id: '/recommendations/settings'
+      path: '/recommendations/settings'
+      fullPath: '/recommendations/settings'
+      preLoaderRoute: typeof RecommendationsSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recommendations/swipe': {
+      id: '/recommendations/swipe'
+      path: '/recommendations/swipe'
+      fullPath: '/recommendations/swipe'
+      preLoaderRoute: typeof RecommendationsSwipeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reviews/': {
@@ -3581,6 +3641,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   RecentlyViewedRoute: RecentlyViewedRoute,
+  RecommendedRoute: RecommendedRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
   SingersRoute: SingersRoute,
@@ -3638,6 +3699,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
   ProfileInsightsRoute: ProfileInsightsRoute,
+  RecommendationsSettingsRoute: RecommendationsSettingsRoute,
+  RecommendationsSwipeRoute: RecommendationsSwipeRoute,
   ReviewsRequestRoute: ReviewsRequestRoute,
   SearchHistoryRoute: SearchHistoryRoute,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,

@@ -63,6 +63,11 @@ const availabilityFromRow: Record<string, AvailabilityState> = {
   Touring: "Touring",
 };
 
+/** profiles.availability as the status the profile header shows (StatusBadge); undefined if none. */
+export function availabilityOfRow(value: string | null | undefined): AvailabilityState | undefined {
+  return value ? availabilityFromRow[value] : undefined;
+}
+
 const roleTypeFromKey: Record<string, ProfileRole> = {
   singer: "Vocal Artist",
   rapper: "Vocal Artist",

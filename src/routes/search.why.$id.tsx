@@ -211,7 +211,7 @@ function WhyThisResult() {
         <Row
           title="Recommendation settings"
           subtitle="Choose which signals we may use"
-          to="/settings"
+          to="/recommendations/settings"
         />
         <Row
           title="Privacy settings"
