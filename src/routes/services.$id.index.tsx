@@ -402,6 +402,9 @@ function ServiceDetail() {
           >
             {paused ? "Make bookable again" : "Pause bookings"}
           </Btn>
+          <BtnLink to="/services/$id/manage" params={{ id }} variant="outline" className="w-full">
+            More Options
+          </BtnLink>
           <Btn
             variant="ghost"
             className="w-full"

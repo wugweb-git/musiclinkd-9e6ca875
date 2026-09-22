@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   BarChart3,
@@ -34,6 +34,7 @@ import {
   ProjectCard,
   ReviewCard,
   ReviewRail,
+  ServiceCard,
   StackSection,
   VideoCard,
 } from "@/components/ml/profile";
@@ -68,6 +69,7 @@ export function BusinessProfileExperience({
   work?: PersonProfile | null;
 }) {
   const [tab, setTab] = useState<BusinessTab>("Overview");
+  const navigate = useNavigate();
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const { user, signedIn } = useAuth();
@@ -172,23 +174,27 @@ export function BusinessProfileExperience({
             ) : null}
 
             {activeServices.length ? (
-              <StackSection title="Services & rates" collapsible>
-                {activeServices.map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex items-start justify-between gap-3 border-b border-border py-2.5 last:border-0"
-                  >
-                    <span className="min-w-0 flex-1 truncate text-sm">{s.label}</span>
-                    <Price
-                      from
-                      inline
-                      price={s.price}
-                      align="end"
-                      className="shrink-0"
-                      amountClassName="text-sm font-semibold"
+              <StackSection title="Services">
+                <div className="space-y-3">
+                  {activeServices.map((sv) => (
+                    <ServiceCard
+                      key={sv.id}
+                      s={sv.card}
+                      // A studio's Book opens its booking with this service picked; any other
+                      // business's Book is the service's own enquiry.
+                      {...(b.studioSlug
+                        ? {
+                            onBook: () =>
+                              void navigate({
+                                to: "/booking/$id/service",
+                                params: { id: b.studioSlug! },
+                                search: { service: sv.card.name },
+                              }),
+                          }
+                        : {})}
                     />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </StackSection>
             ) : null}
 

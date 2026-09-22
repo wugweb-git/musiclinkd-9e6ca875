@@ -188,6 +188,7 @@ export const singers: Talent[] = [
 export const quickCategories: { label: string; to: QuickCategoryTo }[] = [
   { label: "Talent", to: "/categories" },
   { label: "Bands", to: "/bands" },
+  { label: "Music", to: "/discover/music" },
   { label: "Studios", to: "/discover/community" },
   { label: "Events", to: "/categories" },
   { label: "Marketplace", to: "/marketplace" },
@@ -198,7 +199,12 @@ export const quickCategories: { label: string; to: QuickCategoryTo }[] = [
 ];
 
 type QuickCategoryTo =
-  "/categories" | "/bands" | "/discover/community" | "/marketplace" | "/marketplace/rent";
+  | "/categories"
+  | "/bands"
+  | "/discover/music"
+  | "/discover/community"
+  | "/marketplace"
+  | "/marketplace/rent";
 
 /*
  * Browse categories. Each opens search for that kind of person; `role` is the taxonomy slug the

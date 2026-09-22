@@ -65,6 +65,13 @@ export type BusinessRecord = {
     price_note: string | null;
     /** service_categories slug. */
     category: string | null;
+    description?: string | null;
+    categories?: string[] | null;
+    deliverables?: string[] | null;
+    turnaround?: string | null;
+    /** A studio's service: what it uses (studio_amenities slugs, studio_equipment ids). */
+    amenity_slugs?: string[] | null;
+    equipment_ids?: string[] | null;
     status: "active" | "paused" | "draft";
   }[];
   team: {
@@ -157,7 +164,9 @@ async function businessRecord(
     ),
     client
       .from("profile_services")
-      .select("id, name, price_paise, price_unit, price_note, category, status")
+      .select(
+        "id, name, description, price_paise, price_unit, price_note, category, categories, deliverables, turnaround, amenity_slugs, equipment_ids, status",
+      )
       .eq("profile_id", profile.id)
       .order("sort_order"),
     client

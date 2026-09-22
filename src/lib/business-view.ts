@@ -4,6 +4,7 @@
 // analytics figure or verification document in the database.
 
 import { taxonomyLabel } from "@/lib/catalog.functions";
+import type { ServiceItem } from "@/data/profile";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { priceParts, type PriceParts } from "@/lib/price";
 import { asLinkMap } from "@/lib/profile-map";
@@ -41,6 +42,8 @@ export type BusinessView = {
     price: PriceParts | null;
     category: string;
     status: "active" | "paused" | "draft";
+    /** The shared ServiceCard's shape, with what a studio's service uses. */
+    card: ServiceItem;
   }[];
   hours: { day: string; hours: string }[];
   /** The business's rules, one per entry. */
@@ -177,13 +180,32 @@ export function businessViewFromRecord(r: BusinessRecord, labels: TaxonomyLabels
     reviewCount: reviews.count || (studio ? 0 : null),
     about: profile.bio ?? "",
     legalName: legalName && legalName !== profile.display_name ? legalName : "",
-    services: r.services.map((s) => ({
-      id: s.id,
-      label: s.name,
-      price: priceParts(s.price_paise, s.price_unit, s.price_note),
-      category: s.category ? taxonomyLabel(labels, "service_categories", s.category) : "",
-      status: s.status,
-    })),
+    services: r.services.map((s) => {
+      const price = priceParts(s.price_paise, s.price_unit, s.price_note);
+      const uses = [
+        ...(s.amenity_slugs ?? []).map((a) => taxonomyLabel(labels, "studio_amenities", a)),
+        ...(s.equipment_ids ?? [])
+          .map((id) => studio?.equipment.find((e) => e.id === id)?.name)
+          .filter((n): n is string => Boolean(n)),
+      ];
+      return {
+        id: s.id,
+        label: s.name,
+        price,
+        category: s.category ? taxonomyLabel(labels, "service_categories", s.category) : "",
+        status: s.status,
+        card: {
+          id: s.id,
+          name: s.name,
+          description: s.description ?? "",
+          ...(price ? { from: price } : {}),
+          ...(s.turnaround ? { turnaround: s.turnaround } : {}),
+          categories: s.categories?.length ? s.categories : s.category ? [s.category] : [],
+          deliverables: s.deliverables ?? [],
+          ...(uses.length ? { uses } : {}),
+        },
+      };
+    }),
     hours: hoursFrom(business.operating_hours),
     policies: (business.policies ?? []).filter((p) => p.trim()),
     studioSlug: studio?.slug ?? null,

@@ -79,6 +79,13 @@ function ServicesHome() {
           </div>
         ) : null}
 
+        {items.length ? (
+          // Where two bookings overlap or fall outside the hours you set.
+          <BtnLink to="/services/conflicts" variant="outline" className="w-full">
+            Booking Conflicts
+          </BtnLink>
+        ) : null}
+
         <div className="">
           <Segmented value={filter} options={filters} onChange={setFilter} />
         </div>
