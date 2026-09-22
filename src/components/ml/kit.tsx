@@ -58,7 +58,7 @@ export function Price({
   className = "",
   amountClassName = "",
   unitClassName = "text-1",
-  inline = false,
+  inline = true,
   from = false,
 }: {
   price: PriceParts | null | undefined;
@@ -69,7 +69,7 @@ export function Price({
   amountClassName?: string | undefined;
   /** Size of the unit and note lines; never larger than the amount. */
   unitClassName?: string | undefined;
-  /** The unit on the amount's line as "/day" (Market's rates), not on a line of its own. */
+  /** The unit on the amount's line as "/day" — the rule for every rate (owner, 22 Sep 2026). */
   inline?: boolean | undefined;
   /** A starting price: a small grey "From" before the amount (services). */
   from?: boolean | undefined;
@@ -105,6 +105,20 @@ export function Price({
           {price.note}
         </span>
       ) : null}
+    </span>
+  );
+}
+
+/**
+ * A label as a square tag, never a pill (owner, 22 Sep 2026): review tags, conflict kinds, any
+ * short fact that sits beside a title.
+ */
+export function Tag({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center rounded-md bg-subtle px-2 py-1 text-1 font-medium text-foreground ${className}`}
+    >
+      {children}
     </span>
   );
 }

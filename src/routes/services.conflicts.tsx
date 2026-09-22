@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { AlertTriangle, CalendarClock } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState, StatusPill, Loading } from "@/components/ml/kit";
+import { Card, EmptyState, Loading, Tag } from "@/components/ml/kit";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { answerBooking, listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
@@ -122,7 +122,7 @@ function ConflictsContent() {
                         {joinParts(formatTime(c.b.start_time!.slice(0, 5)), c.b.room?.name ?? "")}
                       </p>
                     </div>
-                    <StatusPill label="Double booking" tone="bad" />
+                    <Tag>Double booking</Tag>
                   </div>
                   <div className="mt-3 flex gap-2">
                     <Btn
@@ -164,10 +164,7 @@ function ConflictsContent() {
                       {detail}
                     </p>
                   </div>
-                  <StatusPill
-                    label={kind}
-                    tone={kind === "Outside your hours" ? "warn" : "neutral"}
-                  />
+                  <Tag>{kind}</Tag>
                 </div>
                 <div className="mt-3 flex gap-2">
                   <Btn

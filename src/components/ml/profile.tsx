@@ -45,7 +45,7 @@ import type {
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "./ui";
-import { Price, Stars } from "./kit";
+import { Price, Stars, Tag } from "./kit";
 import { PersonAvatar } from "./person-avatar";
 import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
@@ -1199,8 +1199,8 @@ export function ReviewCard({ r, footer }: { r: ReviewItem; footer?: ReactNode })
       {r.tags?.length ? (
         <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Tags">
           {r.tags.map((tag) => (
-            <li key={tag} className="rounded-md bg-subtle px-2 py-1 text-1 text-foreground">
-              {tag}
+            <li key={tag}>
+              <Tag>{tag}</Tag>
             </li>
           ))}
         </ul>
