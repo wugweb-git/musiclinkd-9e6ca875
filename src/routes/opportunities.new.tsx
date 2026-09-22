@@ -10,6 +10,8 @@ import { opportunityCategories } from "@/data/opportunities";
 import { createOpportunity } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { categoryIcon } from "@/components/ml/opportunity";
+import { SheetSelect } from "@/components/ml/listing-form";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
 type Step =
@@ -78,6 +80,15 @@ function CreateOpportunity() {
   const [mode, setMode] = useState<string>("On-site");
   const [dates, setDates] = useState("");
   const [payType, setPayType] = useState<string>("Paid");
+  // The kind of work, from the taxonomy (collaboration_types): Work for Hire, Royalties Split,
+  // Co-Write, Session Payment. Stored as its slug.
+  const [workType, setWorkType] = useState<string | null>(null);
+  const { options: taxonomy } = useTaxonomy();
+  const workTypes = (taxonomy?.collaboration_types ?? []).map((t) => ({
+    value: t.slug,
+    label: t.label,
+  }));
+  const workTypeLabel = workTypes.find((t) => t.value === workType)?.label;
   const [budget, setBudget] = useState("");
   const [reqs, setReqs] = useState<string[]>([]);
   const [req, setReq] = useState("");
@@ -99,7 +110,8 @@ function CreateOpportunity() {
       : {}),
     ...(budgetPaise === undefined ? {} : { budgetPaise }),
     ...(payType === "Paid" ? {} : { budgetNote: payType }),
-    ...(mode ? { collaborationType: mode } : {}),
+    // The type column holds the kind of work; the work mode has no column of its own.
+    ...(workType ? { collaborationType: workType } : {}),
     ...(city.trim() ? { location: city.trim() } : {}),
   });
 
@@ -255,6 +267,15 @@ function CreateOpportunity() {
 
         {step === "compensation" ? (
           <>
+            <Field label="Type" hint="How the work is paid or shared.">
+              <SheetSelect
+                title="Type"
+                value={workType}
+                options={workTypes}
+                onChange={setWorkType}
+                placeholder="Pick a type"
+              />
+            </Field>
             <Field label="Compensation type">
               <div className="flex flex-wrap gap-2">
                 {payTypes.map((p) => (
@@ -345,6 +366,9 @@ function CreateOpportunity() {
                 />
                 <StatusPill label={mode} />
               </div>
+              {workTypeLabel ? (
+                <p className="text-1 text-muted-foreground">{workTypeLabel}</p>
+              ) : null}
               <h3 className="text-2 leading-snug">{title || "Untitled opportunity"}</h3>
               <p className="text-1 text-muted-foreground">{summary || "No summary yet."}</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-1 text-muted-foreground">

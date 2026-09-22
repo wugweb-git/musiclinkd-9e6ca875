@@ -11,10 +11,16 @@ import {
   listAttachedWork,
   setApplicationStatus,
 } from "@/lib/applications.functions";
+import { ApplicantFit } from "@/components/ml/opportunity";
+import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { personFit, fitTarget } from "@/lib/fit";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/$aid")({
+  // The opportunity the fit is measured against; the id is its slug.
+  loader: async ({ params }) => ({ db: await loadDbOpportunity(params.id) }),
   head: () => ({
     meta: [
       { title: "Applicant · application | MusicLinkd" },
@@ -31,12 +37,13 @@ export const Route = createFileRoute("/opportunities/$id/applicants/$aid")({
 });
 
 /*
- * One application, from the database. Fit scores, match reasons and a rating are not stored
- * anywhere, so this shows what an application actually carries: who applied, what they wrote,
- * and the published work they attached.
+ * One application, from the database: who applied, how well their profile fits the opportunity
+ * (src/lib/fit.ts) and their review average, what they wrote, and the published work they attached.
  */
 function ApplicantDetail() {
   const { id, aid } = Route.useParams();
+  const { db: opportunity } = Route.useLoaderData();
+  const { options: taxonomy } = useTaxonomy();
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
   const load = useServerFn(listApplicants);
@@ -104,6 +111,10 @@ function ApplicantDetail() {
 
   const name = a.person?.display_name ?? a.person?.username ?? "Applicant";
   const where = [a.person?.headline, a.person?.city].filter(Boolean).join(" · ");
+  const fit =
+    opportunity && taxonomy
+      ? personFit(a.person ?? {}, fitTarget(opportunity), taxonomy, { withRating: true })
+      : null;
 
   return (
     <Screen>
@@ -132,6 +143,7 @@ function ApplicantDetail() {
               {where ? <p className="truncate text-1 text-muted-foreground">{where}</p> : null}
             </div>
           </div>
+          <ApplicantFit fit={fit} rating={a.person?.rating} reviews={a.person?.review_count} />
           <StatusPill label={a.status} tone={a.status === "shortlisted" ? "brand" : "neutral"} />
           {a.person?.username ? (
             <BtnLink

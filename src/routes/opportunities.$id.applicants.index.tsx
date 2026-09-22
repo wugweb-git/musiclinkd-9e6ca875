@@ -18,6 +18,9 @@ import {
   type ApplicantSummary,
 } from "@/lib/applications.functions";
 import { loadDbOpportunity } from "@/lib/opportunity-view";
+import { ApplicantFit } from "@/components/ml/opportunity";
+import { personFit, fitTarget } from "@/lib/fit";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
 
@@ -90,6 +93,12 @@ function Applicants() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["applicants", id] }),
     onError: () => toast.error("That didn't save. Try again."),
   });
+
+  // Each applicant's fit to this opportunity, from their profile (src/lib/fit.ts).
+  const { options: taxonomy } = useTaxonomy();
+  const target = o ? fitTarget(o) : null;
+  const fitOf = (a: ApplicantSummary) =>
+    target && taxonomy ? personFit(a.person ?? {}, target, taxonomy, { withRating: true }) : null;
 
   const all = q.data ?? [];
   const list = all.filter((a) =>
@@ -167,6 +176,13 @@ function Applicants() {
                       <span className="pill shrink-0 bg-background text-muted-foreground">
                         {columns.find((c) => c.id === a.status)?.name ?? a.status}
                       </span>
+                    </div>
+                    <div className="mt-2">
+                      <ApplicantFit
+                        fit={fitOf(a)}
+                        rating={a.person?.rating}
+                        reviews={a.person?.review_count}
+                      />
                     </div>
                     {a.message ? (
                       <p className="mt-2 line-clamp-3 text-1 text-muted-foreground">{a.message}</p>

@@ -73,7 +73,7 @@ export type Opportunity = {
   /** opportunity_compensation */
   compensation: {
     /** Unset when a stored collaboration type has no unambiguous match. */
-    type?: "Paid" | "Revenue share" | "Unpaid";
+    type?: "Paid" | "Revenue share" | "Co-write" | "Unpaid";
     min?: number;
     max?: number;
     /** A bare unit ("song"), empty when the pay is not per unit. */
@@ -87,6 +87,10 @@ export type Opportunity = {
   /** opportunity_requirement[] */
   requirements: { label: string; must: boolean }[];
   genres: string[];
+  /** Stored genre slugs, for matching against a profile. Absent on the static opportunities. */
+  genreKeys?: string[];
+  /** Stored collaboration type slug (taxonomy collaboration_types: co_write, work_for_hire…). */
+  collaborationType?: string | null;
   languages: string[];
   dates: string;
   applicants: number;

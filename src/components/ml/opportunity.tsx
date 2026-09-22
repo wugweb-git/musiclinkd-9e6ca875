@@ -28,7 +28,7 @@ import {
   Ticket,
   type LucideIcon,
 } from "lucide-react";
-import { Card, Price, StatusPill, ReasonChip, type Tone } from "@/components/ml/kit";
+import { Card, Price, StatusPill, ReasonChip, Stars, type Tone } from "@/components/ml/kit";
 import { IconBtn, VerifiedBadge } from "@/components/ml/ui";
 import {
   categoryLabel,
@@ -42,6 +42,7 @@ import {
 import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
 import { setOpportunitySaved } from "@/lib/applications.functions";
+import { fitLine, type Fit } from "@/lib/fit";
 
 /** One icon per requirement type, in place of the emoji the categories carried. */
 const categoryIcons: Record<string, LucideIcon> = {
@@ -134,6 +135,44 @@ export function MatchBar({ score, reasons }: { score: number; reasons: string[] 
   );
 }
 
+/**
+ * An applicant's fit to the opportunity (src/lib/fit.ts) and their review average, as two quiet
+ * lines: "82% fit · Matches: Guitarist · Acoustic" and the stars with the count.
+ */
+export function ApplicantFit({
+  fit,
+  rating,
+  reviews,
+}: {
+  /** Null while the opportunity or the taxonomy has not loaded. */
+  fit: Fit | null;
+  rating: number | string | null | undefined;
+  reviews: number | null | undefined;
+}) {
+  const average = Number(rating ?? 0);
+  const count = reviews ?? 0;
+  return (
+    <div className="space-y-0.5">
+      {fit ? (
+        <p className="text-1 text-muted-foreground">
+          <span className="font-semibold text-foreground">{fit.score}% fit</span>
+          {fit.reasons.length ? ` · ${fitLine(fit)}` : null}
+        </p>
+      ) : null}
+      {count > 0 && average > 0 ? (
+        <p className="flex items-center gap-1.5 text-1 text-muted-foreground">
+          <Stars value={average} size={12} />
+          <span>
+            {average.toFixed(1)} · {count} {count === 1 ? "review" : "reviews"}
+          </span>
+        </p>
+      ) : (
+        <p className="text-1 text-muted-foreground">No reviews yet</p>
+      )}
+    </div>
+  );
+}
+
 export function PosterRow({ o }: { o: Opportunity }) {
   // Stored opportunities have no poster kind, rating or hires; only what exists is shown.
   const meta: ReactNode[] = [];
@@ -210,6 +249,12 @@ export function OpportunityCard({
 
         <h3 className="mt-3 line-clamp-2 text-2 font-semibold leading-snug">{o.title}</h3>
         {terms ? <p className="mt-1 truncate text-1 text-muted-foreground">{terms}</p> : null}
+        {/* Why it is here, on the For you tab: what matched the viewer's profile. */}
+        {o.matchReasons.length ? (
+          <p className="mt-1 truncate text-1 text-muted-foreground">
+            {fitLine({ reasons: o.matchReasons })}
+          </p>
+        ) : null}
 
         <div className="mt-4 flex items-end justify-between gap-3">
           {pay ? (

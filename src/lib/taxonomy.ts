@@ -31,6 +31,8 @@ const CATEGORIES = [
   "business_policies",
   // Service cards name their category.
   "service_categories",
+  // Opportunity types: Work for Hire, Royalties Split, Co-Write, Session Payment.
+  "collaboration_types",
 ] as const;
 
 export type TaxonomyCategory = (typeof CATEGORIES)[number];

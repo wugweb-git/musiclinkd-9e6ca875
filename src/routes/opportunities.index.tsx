@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Search, Bookmark, Briefcase, Users } from "lucide-react";
@@ -10,6 +10,8 @@ import { opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { listMyApplications } from "@/lib/applications.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
+import { personFit, fitTarget, type FitPerson } from "@/lib/fit";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
@@ -36,11 +38,11 @@ export const Route = createFileRoute("/opportunities/")({
   component: OpportunitiesHome,
 });
 
-// "For you" would need something that ranks, and nothing does; these two are what the data says.
-const tabs = ["Recent", "Near you"] as const;
+// For you ranks what is open against the viewer's own roles, instruments, genres and city.
+const tabs = ["For you", "Recent", "Near you"] as const;
 
 function OpportunitiesHome() {
-  const [tab, setTab] = useState<(typeof tabs)[number]>("Recent");
+  const [tab, setTab] = useState<(typeof tabs)[number]>("For you");
   const [sheet, setSheet] = useState(false);
   const { has, toggle } = useSavedOpportunities();
   const { dbOpportunities: all } = Route.useLoaderData();
@@ -53,13 +55,31 @@ function OpportunitiesHome() {
     queryFn: () => readProfile(),
     enabled: signedIn,
   });
-  const myCity = (profile.data as { city?: string | null } | null)?.city ?? "";
+  const me = (profile.data ?? null) as FitPerson | null;
+  const myCity = me?.city ?? "";
+  const { options: taxonomy } = useTaxonomy();
+
+  // Open opportunities that match at least one thing on the profile, most matches first; each
+  // carries its score and what matched, which the card shows.
+  const forYou = useMemo(() => {
+    if (!me) return [];
+    return all
+      .filter((o) => o.status === "open")
+      .map((o) => ({ o, fit: personFit(me, fitTarget(o), taxonomy) }))
+      .filter((x) => x.fit.matches > 0)
+      .sort((a, b) => b.fit.matches - a.fit.matches || b.fit.score - a.fit.score)
+      .map(({ o, fit }) => ({ ...o, matchScore: fit.score, matchReasons: fit.reasons }));
+  }, [all, me, taxonomy]);
+  const profileEmpty =
+    !!me && !me.roles?.length && !me.instruments?.length && !me.genres?.length && !myCity;
 
   const list =
-    tab === "Recent"
-      ? all
-      : // Stored locations carry a state ("Mumbai, MH").
-        all.filter((o) => myCity && o.city.split(",")[0]?.trim() === myCity.trim());
+    tab === "For you"
+      ? forYou
+      : tab === "Recent"
+        ? all
+        : // Stored locations carry a state ("Mumbai, MH").
+          all.filter((o) => myCity && o.city.split(",")[0]?.trim() === myCity.trim());
 
   const openCount = (key: string) =>
     all.filter((o) => o.status === "open" && o.categoryKey === key).length;
@@ -145,8 +165,31 @@ function OpportunitiesHome() {
 
         <Segmented value={tab} options={tabs} onChange={setTab} />
 
-        {tab === "Near you" && signedIn && profile.isLoading ? (
+        {tab !== "Recent" && signedIn && profile.isLoading ? (
           <Loading rows={3} />
+        ) : list.length === 0 && tab === "For you" ? (
+          <EmptyState
+            title={
+              !signedIn
+                ? "Sign in to see what fits you"
+                : profileEmpty
+                  ? "We don't know what you do yet"
+                  : "Nothing matches you yet"
+            }
+            body={
+              !signedIn
+                ? "This tab ranks open opportunities against your roles, genres, instruments and city."
+                : profileEmpty
+                  ? "Add your roles, genres, instruments and city to your profile and this tab will rank what fits."
+                  : "No open opportunity asks for your roles, genres or city right now. Recent has everything."
+            }
+          >
+            {signedIn && profileEmpty ? (
+              <BtnLink to="/profile/edit" variant="outline" className="w-full">
+                Edit profile
+              </BtnLink>
+            ) : null}
+          </EmptyState>
         ) : list.length === 0 ? (
           <EmptyState
             title={tab === "Near you" && !myCity ? "We don't know your city" : "Nothing here yet"}

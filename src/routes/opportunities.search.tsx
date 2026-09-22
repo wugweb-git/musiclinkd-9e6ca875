@@ -6,6 +6,7 @@ import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
 type Search = { q?: string };
@@ -47,6 +48,10 @@ function OpportunitySearch() {
   const [mode, setMode] = useState<string | null>(null);
   const [pay, setPay] = useState<string>("Any");
   const [cats, setCats] = useState<string[]>([]);
+  // Kinds of work (taxonomy collaboration_types: Work for Hire, Royalties Split, Co-Write…).
+  const [types, setTypes] = useState<string[]>([]);
+  const { options: taxonomy } = useTaxonomy();
+  const workTypes = taxonomy?.collaboration_types ?? [];
   const { has, toggle } = useSavedOpportunities();
   const { dbOpportunities } = Route.useLoaderData();
 
@@ -56,6 +61,7 @@ function OpportunitySearch() {
       return false;
     if (mode && o.workMode !== mode) return false;
     if (cats.length && !cats.includes(o.categoryKey)) return false;
+    if (types.length && !types.includes(o.collaborationType ?? "")) return false;
     if (pay !== "Any") {
       const min = Number(pay.replace(/[^\d]/g, "")) * 1000;
       if ((o.compensation.min ?? 0) < min) return false;
@@ -66,7 +72,7 @@ function OpportunitySearch() {
     list = [...list].sort((a, b) => (b.compensation.min ?? 0) - (a.compensation.min ?? 0));
   if (sort === "Best fit") list = [...list].sort((a, b) => b.matchScore - a.matchScore);
 
-  const activeCount = (mode ? 1 : 0) + (pay !== "Any" ? 1 : 0) + cats.length;
+  const activeCount = (mode ? 1 : 0) + (pay !== "Any" ? 1 : 0) + cats.length + types.length;
 
   return (
     <Screen>
@@ -97,6 +103,7 @@ function OpportunitySearch() {
                 setMode(null);
                 setPay("Any");
                 setCats([]);
+                setTypes([]);
               }}
             >
               Clear Filters
@@ -165,6 +172,26 @@ function OpportunitySearch() {
               ))}
             </div>
           </div>
+          {workTypes.length ? (
+            <div>
+              <p className="mb-2 text-1 font-semibold">Type</p>
+              <div className="flex flex-wrap gap-2">
+                {workTypes.map((t) => (
+                  <Chip
+                    key={t.slug}
+                    active={types.includes(t.slug)}
+                    onClick={() =>
+                      setTypes((p) =>
+                        p.includes(t.slug) ? p.filter((x) => x !== t.slug) : [...p, t.slug],
+                      )
+                    }
+                  >
+                    {t.label}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+          ) : null}
           <div className="flex gap-2">
             <Btn
               variant="outline"
@@ -173,6 +200,7 @@ function OpportunitySearch() {
                 setMode(null);
                 setPay("Any");
                 setCats([]);
+                setTypes([]);
               }}
             >
               Reset

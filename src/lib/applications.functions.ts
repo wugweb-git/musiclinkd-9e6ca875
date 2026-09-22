@@ -31,6 +31,12 @@ export type ApplicantSummary = {
     headline: string | null;
     city: string | null;
     is_verified: boolean;
+    /** What the fit score reads (src/lib/fit.ts): taxonomy slugs, and the review average. */
+    roles: string[] | null;
+    instruments: string[] | null;
+    genres: string[] | null;
+    rating: number | string | null;
+    review_count: number | null;
   } | null;
 };
 
@@ -50,7 +56,8 @@ export type MyApplication = {
   } | null;
 };
 
-const PERSON = "id, username, display_name, avatar_url, headline, city, is_verified";
+const PERSON =
+  "id, username, display_name, avatar_url, headline, city, is_verified, roles, instruments, genres, rating, review_count";
 
 /**
  * Screens address an opportunity by its slug (a seed opportunity has no row at all), so every call
