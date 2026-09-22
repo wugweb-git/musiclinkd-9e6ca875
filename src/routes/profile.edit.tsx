@@ -5,7 +5,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, RefreshCw, Save } from "lucide-react";
 import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { SegmentedField } from "@/components/ml/kit";
-import { QrBlock } from "@/components/ml/profile";
 import {
   getMyProfile,
   getMyProfileSections,
@@ -758,22 +757,6 @@ function EditProfile() {
             <p className="mt-1 text-1 leading-relaxed text-foreground">
               Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
             </p>
-          </div>
-        ) : null}
-
-        {form.username ? (
-          <div className="mb-4 flex items-center gap-4 rounded-lg border border-border/80 bg-card p-4 shadow-xs">
-            <div className="w-20 shrink-0">
-              <QrBlock seed={form.username} />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">
-                musiclinkd.com/profile/{form.username}
-              </p>
-              <p className="mt-1 text-1 text-muted-foreground">
-                Scan to open this profile in MusicLinkd.
-              </p>
-            </div>
           </div>
         ) : null}
 
