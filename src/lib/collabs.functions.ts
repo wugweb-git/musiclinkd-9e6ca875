@@ -43,13 +43,17 @@ export type Collab = {
   visibility: "public" | "private";
   status: CollabStatus;
   ends_on: string | null;
+  /** When the work starts; a project's plan. */
+  starts_on: string | null;
+  /** work_modes slug: how the people in it work together. */
+  work_mode: string | null;
   created_at: string;
   members: CollabMember[];
   /** Where this account stands with it, on the list screen. */
   my_status?: "invited" | "active";
 };
 
-const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, project_type, visibility, status, ends_on, created_at,
+const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, project_type, visibility, status, ends_on, starts_on, work_mode, created_at,
   members:collab_members(profile_id, role, status, instrument, profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url))`;
 
 /** What kind of project it is, from the taxonomy the database already carries. */
@@ -71,6 +75,45 @@ export const listProjectTypes = createServerFn({ method: "GET" }).handler(
   },
 );
 
+/** Someone asked in: by username, as an admin or a member, with the part they play. */
+const invitee = z.object({
+  username: z.string().trim().min(1).max(60),
+  role: z.enum(["admin", "member"]).default("member"),
+  instrument: z.string().max(80).optional(),
+});
+
+/** Asks one person in: an 'invited' row the database tells them about; they join on yes. */
+async function inviteByUsername(
+  client: SupabaseClient,
+  me: string,
+  collabId: string,
+  person: z.infer<typeof invitee>,
+) {
+  const username = person.username.replace(/^@/, "");
+  const { data: found, error: personError } = await client
+    .from("profiles")
+    .select("id")
+    .eq("username", username)
+    .maybeSingle();
+  if (personError) throw new Error(personError.message);
+  const profileId = (found as { id: string } | null)?.id;
+  if (!profileId) throw new Error(`No account with the username ${username}.`);
+  const { error } = await client.from("collab_members").insert({
+    collab_id: collabId,
+    profile_id: profileId,
+    role: person.role,
+    instrument: person.instrument || null,
+    status: "invited",
+    invited_by: me,
+  } as never);
+  if (error) {
+    if (error.code === "23505") throw new Error("They are already in this project, or asked.");
+    throw new Error(
+      error.code === "42501" ? "Only an owner or admin can ask people in." : error.message,
+    );
+  }
+}
+
 /** Start a project room. You are its owner; private unless you say otherwise. */
 export const createCollab = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -88,36 +131,93 @@ export const createCollab = createServerFn({ method: "POST" })
           .regex(/^\d{4}-\d{2}-\d{2}$/)
           .optional(),
         genres: z.array(z.string().trim().max(40)).max(12).optional(),
+        startsOn: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/)
+          .optional(),
+        workMode: z
+          .string()
+          .regex(/^[a-z_]{2,40}$/)
+          .optional(),
+        /** Your own part in it ("Producer", "Lead vocals"), kept on your member row. */
+        myRole: z.string().trim().max(80).optional(),
+        /** For the people in it only (collab_private). */
+        budgetPaise: z.number().int().min(0).max(1_000_000_000_00).optional(),
+        /** People asked in as it is created, each with their standing and part. */
+        invites: z.array(invitee).max(20).optional(),
       })
       .parse(d),
   )
-  .handler(async ({ context, data }): Promise<{ id: string }> => {
-    // One call: a private collab is readable only by its members, so there is no moment when a
-    // half-built one is readable — creating it and joining it happens in the database.
-    const { data: id, error } = await db(context.supabase).rpc("start_collab", {
-      p_name: data.name,
-      p_bio: data.bio ?? null,
-      p_city: data.city ?? null,
-      p_visibility: data.visibility,
-      p_type: data.type,
-      p_ends_on: data.endsOn ?? null,
-    });
-    if (error) throw new Error(error.message);
-    // What kind of project it is, and its genres, are plain columns — set right after it exists.
-    if (data.projectType) {
-      await db(context.supabase)
-        .from("collabs")
-        .update({ project_type: data.projectType } as never)
-        .eq("id", id as string);
-    }
-    if (data.genres?.length) {
-      await db(context.supabase)
-        .from("collabs")
-        .update({ genres: data.genres } as never)
-        .eq("id", id as string);
-    }
-    return { id: id as string };
-  });
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<{
+      id: string;
+      invited: number;
+      failed: { username: string; reason: string }[];
+    }> => {
+      // One call: a private collab is readable only by its members, so there is no moment when a
+      // half-built one is readable — creating it and joining it happens in the database.
+      const { data: id, error } = await db(context.supabase).rpc("start_collab", {
+        p_name: data.name,
+        p_bio: data.bio ?? null,
+        p_city: data.city ?? null,
+        p_visibility: data.visibility,
+        p_type: data.type,
+        p_ends_on: data.endsOn ?? null,
+      });
+      if (error) throw new Error(error.message);
+      // What kind of project it is, and its genres, are plain columns — set right after it exists.
+      if (data.projectType) {
+        await db(context.supabase)
+          .from("collabs")
+          .update({ project_type: data.projectType } as never)
+          .eq("id", id as string);
+      }
+      if (data.genres?.length) {
+        await db(context.supabase)
+          .from("collabs")
+          .update({ genres: data.genres } as never)
+          .eq("id", id as string);
+      }
+      if (data.startsOn || data.workMode) {
+        await db(context.supabase)
+          .from("collabs")
+          .update({
+            ...(data.startsOn ? { starts_on: data.startsOn } : {}),
+            ...(data.workMode ? { work_mode: data.workMode } : {}),
+          } as never)
+          .eq("id", id as string);
+      }
+      if (data.myRole) {
+        await db(context.supabase)
+          .from("collab_members")
+          .update({ instrument: data.myRole } as never)
+          .eq("collab_id", id as string)
+          .eq("profile_id", context.userId);
+      }
+      if (data.budgetPaise !== undefined) {
+        await db(context.supabase)
+          .from("collab_private")
+          .insert({ collab_id: id as string, budget_paise: data.budgetPaise } as never);
+      }
+      let invited = 0;
+      const failed: { username: string; reason: string }[] = [];
+      for (const person of data.invites ?? []) {
+        try {
+          await inviteByUsername(db(context.supabase), context.userId, id as string, person);
+          invited++;
+        } catch (e) {
+          failed.push({
+            username: person.username,
+            reason: e instanceof Error ? e.message : "Couldn't ask them.",
+          });
+        }
+      }
+      return { id: id as string, invited, failed };
+    },
+  );
 
 /** The collabs this account is in — both kinds, since a band is a collab too. */
 export const listMyCollabs = createServerFn({ method: "GET" })
@@ -178,30 +278,7 @@ export const addCollabMember = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ context, data }) => {
-    const client = db(context.supabase);
-    const { data: person, error: personError } = await client
-      .from("profiles")
-      .select("id")
-      .eq("username", data.username)
-      .maybeSingle();
-    if (personError) throw new Error(personError.message);
-    const profileId = (person as { id: string } | null)?.id;
-    if (!profileId) throw new Error(`No account with the username ${data.username}.`);
-
-    const { error } = await client.from("collab_members").insert({
-      collab_id: data.id,
-      profile_id: profileId,
-      role: data.role,
-      instrument: data.instrument ?? null,
-      status: "invited",
-      invited_by: context.userId,
-    } as never);
-    if (error) {
-      if (error.code === "23505") throw new Error("They are already in this project, or asked.");
-      throw new Error(
-        error.code === "42501" ? "Only an owner or admin can ask people in." : error.message,
-      );
-    }
+    await inviteByUsername(db(context.supabase), context.userId, data.id, data);
     return { invited: true };
   });
 
@@ -362,6 +439,8 @@ export const updateCollab = createServerFn({ method: "POST" })
         city: z.string().max(80),
         projectType: z.string().trim().max(60),
         endsOn: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]),
+        startsOn: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]).optional(),
+        workMode: z.union([z.string().regex(/^[a-z_]{2,40}$/), z.literal("")]).optional(),
       })
       .parse(d),
   )
@@ -374,6 +453,8 @@ export const updateCollab = createServerFn({ method: "POST" })
         city: data.city.trim() || null,
         project_type: data.projectType || null,
         ends_on: data.endsOn || null,
+        ...(data.startsOn !== undefined ? { starts_on: data.startsOn || null } : {}),
+        ...(data.workMode !== undefined ? { work_mode: data.workMode || null } : {}),
       } as never)
       .eq("id", data.id);
     if (error) throw new Error(error.message);
@@ -480,4 +561,44 @@ export const sendCollabMessage = createServerFn({ method: "POST" })
       );
     }
     return { sent: true };
+  });
+
+/** The project's budget, for the people in it; null for anyone else or when none was set. */
+export const getCollabBudget = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<{ budgetPaise: number | null }> => {
+    const { data: row } = await db(context.supabase)
+      .from("collab_private")
+      .select("budget_paise")
+      .eq("collab_id", data.id)
+      .maybeSingle();
+    const paise = (row as { budget_paise: number | null } | null)?.budget_paise;
+    return { budgetPaise: paise ?? null };
+  });
+
+/** Set or change the budget; owners and admins only (the database checks). */
+export const setCollabBudget = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        budgetPaise: z.number().int().min(0).max(1_000_000_000_00).nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("collab_private")
+      .upsert(
+        {
+          collab_id: data.id,
+          budget_paise: data.budgetPaise,
+          updated_at: new Date().toISOString(),
+        } as never,
+        { onConflict: "collab_id" },
+      );
+    if (error) throw new Error(error.message);
+    return { saved: true };
   });

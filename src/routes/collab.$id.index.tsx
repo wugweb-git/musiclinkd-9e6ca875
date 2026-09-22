@@ -24,6 +24,8 @@ import {
   answerCollabInvite,
   deleteCollab,
   setCollabImage,
+  setCollabBudget,
+  getCollabBudget,
   getCollab,
   listCollabMessages,
   listProjectTypes,
@@ -41,7 +43,8 @@ import {
 import { searchPeople } from "@/lib/profile-groups.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { SheetSelect } from "@/components/ml/listing-form";
+import { Field, SheetSelect, inputClass } from "@/components/ml/listing-form";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { CoverHero, ImagePickButton } from "@/components/ml/profile";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
 import { iconSize } from "@/lib/tokens";
@@ -126,6 +129,14 @@ function CollabRoom() {
   const c = q.data ?? null;
   const myId = (profile.data as { id?: string } | null)?.id;
   const myMembership = c?.members.find((m) => m.profile_id === myId);
+  const taxonomy = useTaxonomy().options;
+  // The budget is for the people in it; the database answers null for anyone else.
+  const readBudget = useServerFn(getCollabBudget);
+  const budgetQ = useQuery({
+    queryKey: ["collab-budget", id],
+    queryFn: () => readBudget({ data: { id } }),
+    enabled: myMembership?.status === "active" && c?.type === "project",
+  });
   const invited = myMembership?.status === "invited";
   const canManage =
     myMembership && myMembership.status === "active"
@@ -354,6 +365,42 @@ function CollabRoom() {
 
         {c.bio ? <p className="text-sm leading-relaxed">{c.bio}</p> : null}
 
+        {c.type === "project" &&
+        (c.starts_on || c.ends_on || c.work_mode || budgetQ.data?.budgetPaise != null) ? (
+          <section className="space-y-2">
+            <h2 className="text-sm">Plan</h2>
+            <dl className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-lg bg-subtle p-4 text-1">
+              {c.starts_on ? (
+                <>
+                  <dt className="text-muted-foreground">Starts</dt>
+                  <dd>{formatDay(c.starts_on)}</dd>
+                </>
+              ) : null}
+              {c.ends_on ? (
+                <>
+                  <dt className="text-muted-foreground">Target</dt>
+                  <dd>{formatDay(c.ends_on)}</dd>
+                </>
+              ) : null}
+              {c.work_mode ? (
+                <>
+                  <dt className="text-muted-foreground">How you'll work</dt>
+                  <dd>{labelFor(taxonomy?.work_modes, c.work_mode)}</dd>
+                </>
+              ) : null}
+              {budgetQ.data?.budgetPaise != null ? (
+                <>
+                  <dt className="text-muted-foreground">Budget</dt>
+                  <dd>
+                    ₹{(budgetQ.data.budgetPaise / 100).toLocaleString("en-IN")}
+                    <span className="block text-muted-foreground">People in it only</span>
+                  </dd>
+                </>
+              ) : null}
+            </dl>
+          </section>
+        ) : null}
+
         <section className="space-y-2">
           <h2 className="text-sm">
             {inRoom.length} {inRoom.length === 1 ? "person" : "people"}
@@ -577,6 +624,7 @@ function CollabRoom() {
           open={editing}
           collab={c}
           types={types.data ?? []}
+          budgetPaise={budgetQ.data?.budgetPaise ?? null}
           onClose={() => setEditing(false)}
         />
       ) : null}
@@ -613,20 +661,28 @@ function EditCollabSheet({
   open,
   collab,
   types,
+  budgetPaise,
   onClose,
 }: {
   open: boolean;
   collab: Collab;
   types: { slug: string; label: string }[];
+  /** What the budget is now, for the people in it; null when none was set. */
+  budgetPaise: number | null;
   onClose: () => void;
 }) {
   const queryClient = useQueryClient();
   const save = useServerFn(updateCollab);
+  const saveBudget = useServerFn(setCollabBudget);
+  const taxonomy = useTaxonomy().options;
   const [name, setName] = useState(collab.name);
   const [about, setAbout] = useState(collab.bio ?? "");
   const [city, setCity] = useState(collab.city ?? "");
   const [kind, setKind] = useState(collab.project_type ?? "");
+  const [startsOn, setStartsOn] = useState(collab.starts_on ?? "");
   const [endsOn, setEndsOn] = useState(collab.ends_on ?? "");
+  const [workMode, setWorkMode] = useState(collab.work_mode ?? "");
+  const [budget, setBudget] = useState(budgetPaise ? String(budgetPaise / 100) : "");
 
   // Opening it again starts from what is saved, not from an earlier unsaved draft.
   useEffect(() => {
@@ -635,12 +691,20 @@ function EditCollabSheet({
     setAbout(collab.bio ?? "");
     setCity(collab.city ?? "");
     setKind(collab.project_type ?? "");
+    setStartsOn(collab.starts_on ?? "");
     setEndsOn(collab.ends_on ?? "");
-  }, [open, collab]);
+    setWorkMode(collab.work_mode ?? "");
+    setBudget(budgetPaise ? String(budgetPaise / 100) : "");
+  }, [open, collab, budgetPaise]);
+
+  const isProject = collab.type === "project";
+  const datesProblem =
+    startsOn && endsOn && endsOn < startsOn ? "The target date comes after the start." : null;
+  const nameProblem = name.trim().length < 2 ? "Give it a name of at least 2 letters." : null;
 
   const commit = useMutation({
-    mutationFn: () =>
-      save({
+    mutationFn: async () => {
+      await save({
         data: {
           id: collab.id,
           name: name.trim(),
@@ -648,105 +712,139 @@ function EditCollabSheet({
           city,
           projectType: kind,
           endsOn,
+          ...(isProject ? { startsOn, workMode } : {}),
         },
-      }),
+      });
+      const next = budget ? Number(budget) * 100 : null;
+      if (isProject && next !== budgetPaise) {
+        await saveBudget({ data: { id: collab.id, budgetPaise: next } });
+      }
+    },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["collab", collab.id] });
+      void queryClient.invalidateQueries({ queryKey: ["collab-budget", collab.id] });
       void queryClient.invalidateQueries({ queryKey: ["collabs", "mine"] });
       onClose();
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
 
-  const field =
-    "mt-1.5 min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm outline-none";
   return (
     <Sheet open={open} onClose={onClose} title="Edit">
       <form
         className="space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
-          if (name.trim().length >= 2 && !commit.isPending) commit.mutate();
+          if (!nameProblem && !datesProblem && !commit.isPending) commit.mutate();
         }}
       >
-        <div>
-          <label htmlFor="edit-collab-name" className="block text-1 font-semibold">
-            Name
-          </label>
+        <Field label="Name" id="edit-collab-name" error={nameProblem}>
           <input
-            id="edit-collab-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={80}
-            className={field}
+            aria-labelledby="edit-collab-name"
+            className={inputClass}
           />
-        </div>
+        </Field>
 
-        {collab.type === "project" ? (
-          <div>
-            <p className="text-1 font-semibold">
-              What kind <span className="font-normal text-muted-foreground">· optional</span>
-            </p>
-            <div className="mt-1.5 flex flex-wrap gap-2">
-              {types.map((t) => (
-                <Chip
-                  key={t.slug}
-                  active={kind === t.slug}
-                  onClick={() => setKind(kind === t.slug ? "" : t.slug)}
-                >
-                  {t.label}
-                </Chip>
-              ))}
-            </div>
-          </div>
+        {isProject ? (
+          <Field label="What kind (optional)" id="edit-collab-kind">
+            <SheetSelect
+              title="What kind"
+              value={kind || null}
+              options={types.map((t) => ({ value: t.slug, label: t.label }))}
+              onChange={setKind}
+              placeholder="Song, EP, film score…"
+            />
+          </Field>
         ) : null}
 
-        <div>
-          <label htmlFor="edit-collab-about" className="block text-1 font-semibold">
-            What it is
-          </label>
+        <Field label="What it is" id="edit-collab-about">
           <textarea
-            id="edit-collab-about"
             rows={3}
             value={about}
             onChange={(e) => setAbout(e.target.value)}
             maxLength={2000}
-            className="mt-1.5 w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none"
+            aria-labelledby="edit-collab-about"
+            className="w-full resize-none rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
           />
-        </div>
+        </Field>
 
-        <div>
-          <label htmlFor="edit-collab-city" className="block text-1 font-semibold">
-            Where <span className="font-normal text-muted-foreground">· optional</span>
-          </label>
+        <Field label="Where (optional)" id="edit-collab-city">
           <input
-            id="edit-collab-city"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             maxLength={80}
-            className={field}
+            aria-labelledby="edit-collab-city"
+            className={inputClass}
           />
-        </div>
+        </Field>
 
-        {collab.type === "project" ? (
-          <div>
-            <label htmlFor="edit-collab-ends" className="block text-1 font-semibold">
-              Wraps up <span className="font-normal text-muted-foreground">· optional</span>
-            </label>
-            <input
-              id="edit-collab-ends"
-              type="date"
-              value={endsOn}
-              onChange={(e) => setEndsOn(e.target.value)}
-              className={field}
-            />
-          </div>
+        {isProject ? (
+          <>
+            <Field label="How you'll work (optional)" id="edit-collab-mode">
+              <SheetSelect
+                title="How you'll work"
+                value={workMode || null}
+                options={(taxonomy?.work_modes ?? []).map((w) => ({
+                  value: w.slug,
+                  label: w.label,
+                }))}
+                onChange={setWorkMode}
+                placeholder="Remote, in person…"
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Starts (optional)" id="edit-collab-starts">
+                <input
+                  type="date"
+                  value={startsOn}
+                  onChange={(e) => setStartsOn(e.target.value)}
+                  aria-labelledby="edit-collab-starts"
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="Target (optional)" id="edit-collab-ends" error={datesProblem}>
+                <input
+                  type="date"
+                  value={endsOn}
+                  min={startsOn || undefined}
+                  onChange={(e) => setEndsOn(e.target.value)}
+                  aria-labelledby="edit-collab-ends"
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+            <Field
+              label="Budget (optional)"
+              id="edit-collab-budget"
+              hint="Only the people in the project see this."
+            >
+              <div className="relative">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"
+                >
+                  ₹
+                </span>
+                <input
+                  value={budget ? Number(budget).toLocaleString("en-IN") : ""}
+                  onChange={(e) => setBudget(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  inputMode="numeric"
+                  placeholder="1,80,000"
+                  aria-labelledby="edit-collab-budget"
+                  className={`${inputClass} pl-9`}
+                />
+              </div>
+            </Field>
+          </>
         ) : null}
 
         <Btn
           type="submit"
           className="w-full"
-          disabled={name.trim().length < 2}
+          disabled={Boolean(nameProblem || datesProblem)}
           loading={commit.isPending}
         >
           Save
