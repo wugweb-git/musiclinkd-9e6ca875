@@ -91,7 +91,7 @@ function RoleTicker({ className, style }: { className?: string | undefined; styl
     <div
       aria-hidden
       className={cn(
-        "h-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]",
+        "h-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [@media(max-height:639px)]:hidden",
         className,
       )}
       style={style}
@@ -267,7 +267,7 @@ function WelcomeScreen() {
             </div>
           </div>
 
-          <div className="pt-1 pb-1">
+          <div className="pt-0.5 pb-0.5">
             <h1 className="sr-only">
               MusicLinkd — India&apos;s professional network for musicians, producers and studios
             </h1>
@@ -297,17 +297,17 @@ function WelcomeScreen() {
               ))}
             </ul>
 
-            <RoleTicker className={cn("-mx-4 sm:-mx-5 mt-1.5", rise)} style={beat(5)} />
+            <RoleTicker className={cn("-mx-4 sm:-mx-5 mt-1", rise)} style={beat(5)} />
           </div>
         </div>
 
         {/* Interactive mode switcher + Form */}
-        <div className={cn("my-auto py-0.5", rise)} style={beat(6)}>
+        <div className={cn("my-auto", rise)} style={beat(6)}>
           {saved.length ? (
-            <section className="mb-2">
-              <p className="mb-1 text-0 font-semibold text-muted-foreground">Continue as</p>
+            <section className="mb-1.5">
+              <p className="mb-0.5 text-0 font-semibold text-muted-foreground">Continue as</p>
               <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card border border-border shadow-xs">
-                {saved.slice(0, 2).map((a) => (
+                {saved.slice(0, 1).map((a) => (
                   <AccountRow
                     key={a.userId}
                     account={a}
@@ -322,7 +322,7 @@ function WelcomeScreen() {
           ) : null}
 
           {/* Segmented Auth Mode Switcher */}
-          <div className="mb-2 flex rounded-full bg-subtle p-0.5 border border-border/60">
+          <div className="mb-1.5 flex rounded-full bg-subtle p-0.5 border border-border/60">
             <button
               type="button"
               onClick={() => switchMode("signin")}
@@ -355,9 +355,9 @@ function WelcomeScreen() {
               e.preventDefault();
               if (!busy) void submit();
             }}
-            className="rounded-lg bg-card p-3 sm:p-3.5 border border-border/80 shadow-xs"
+            className="rounded-lg bg-card p-2.5 sm:p-3.5 border border-border/80 shadow-xs"
           >
-            <div className="mb-2">
+            <div className="mb-1.5">
               <h2 className="text-1 sm:text-2 font-bold text-foreground">
                 {signup ? "Create your account" : "Welcome back"}
               </h2>
@@ -373,7 +373,7 @@ function WelcomeScreen() {
             <TextField
               label="Email"
               value={email}
-              className="mb-2"
+              className="mb-1.5"
               onChange={(v) => {
                 setEmail(v);
                 carryEmail(v);
@@ -387,7 +387,7 @@ function WelcomeScreen() {
               placeholder="name@example.com"
             />
             <PasswordInput
-              className="mb-1.5"
+              className="mb-1"
               value={password}
               onChange={setPassword}
               onBlur={() => fields.touch("password")}
@@ -398,7 +398,7 @@ function WelcomeScreen() {
             />
 
             {signup ? null : (
-              <div className="mb-2 flex items-center justify-end">
+              <div className="mb-1 flex items-center justify-end">
                 <AuthLink
                   to="/auth/forgot"
                   className="text-muted-foreground hover:text-foreground font-medium text-0"
@@ -417,12 +417,12 @@ function WelcomeScreen() {
             </Btn>
           </form>
 
-          <Divider label="or continue with" className="my-1.5" />
+          <Divider label="or continue with" className="my-1" />
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-1.5">
             <Btn
               variant="outline"
-              className="w-full h-9 sm:h-10 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-2"
+              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-2"
               icon={<GoogleIcon />}
               loading={busy === "google"}
               onClick={() => void google()}
@@ -431,7 +431,7 @@ function WelcomeScreen() {
             </Btn>
             <Btn
               variant="outline"
-              className="w-full h-9 sm:h-10 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-2"
+              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-2"
               icon={<Linkedin size={iconSize.sm} aria-hidden />}
               loading={busy === "linkedin"}
               onClick={() => void linkedin()}
@@ -440,7 +440,7 @@ function WelcomeScreen() {
             </Btn>
           </div>
 
-          <p className="mt-2 text-center text-xs sm:text-sm">
+          <p className="mt-1.5 text-center text-xs sm:text-sm">
             <AuthLink
               to="/auth/phone"
               className="font-semibold text-foreground underline underline-offset-4"
