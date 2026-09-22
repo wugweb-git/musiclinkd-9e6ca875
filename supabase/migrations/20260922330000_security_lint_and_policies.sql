@@ -4,6 +4,20 @@
 -- 2. profiles UPDATE policy column security: prevent client edits to is_verified, trust_badges, persona_badges
 -- 3. studios UPDATE column security: prevent client edits to verified_gold
 -- 4. Supabase linter 0028 & 0029: revoke EXECUTE on triggers/admin functions; switch RLS helpers to SECURITY INVOKER
+--
+-- Fixed 22 Sep 2026 (audit): this file was committed but had never been run — it would have failed
+-- immediately. profile_service_is_readable referenced profile_services.is_active, a column that
+-- doesn't exist (the table uses status); rewritten to match the function's live definition
+-- (status <> 'draft', or the owner). And it revoked EXECUTE on band_can_write/band_can_manage/
+-- band_is_owner, which don't exist — a band is a collab (collab_model), so those three lines are
+-- removed; the equivalent collab_can_write/collab_can_manage/collab_is_owner revokes are unchanged.
+--
+-- Snapshot: supabase/dumps/2026-09-22-before-security-lint-and-policies.sql
+-- Rollback: restore profiles_guard_admin_fields(), profile_service_is_readable() and the other RLS
+-- helper functions (opportunity_is_mine, studio_is_mine, rental_listing_is_mine, can_review_profile,
+-- can_review_studio, is_talent) from the snapshot; DROP TRIGGER studios_guard_admin_fields ON
+-- public.studios; DROP FUNCTION public.studios_guard_admin_fields(); re-GRANT EXECUTE on the
+-- revoked functions to PUBLIC, anon, authenticated.
 
 -- 1. Enforce visibility in profiles SELECT policy
 DROP POLICY IF EXISTS "Profiles are viewable by everyone" ON public.profiles;
@@ -121,9 +135,6 @@ REVOKE EXECUTE ON FUNCTION public.refresh_follower_count() FROM PUBLIC, anon, au
 GRANT EXECUTE ON FUNCTION public.refresh_follower_count() TO service_role;
 
 -- Revoke anon execute on functions that require authentication
-REVOKE EXECUTE ON FUNCTION public.band_can_write(uuid) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.band_can_manage(uuid) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.band_is_owner(uuid) FROM anon;
 REVOKE EXECUTE ON FUNCTION public.collab_can_write(uuid) FROM anon;
 REVOKE EXECUTE ON FUNCTION public.collab_can_manage(uuid) FROM anon;
 REVOKE EXECUTE ON FUNCTION public.collab_is_owner(uuid) FROM anon;
@@ -147,10 +158,9 @@ RETURNS boolean LANGUAGE sql STABLE SECURITY INVOKER SET search_path = public
 AS $fn$
   SELECT EXISTS (
     SELECT 1 FROM public.profile_services s
-    JOIN public.profiles p ON p.id = s.profile_id
     WHERE s.id = p_service_id
-      AND s.is_active
-      AND (p.visibility = 'public' OR auth.uid() = p.id)
+      AND public.profile_is_readable(s.profile_id)
+      AND (s.status <> 'draft' OR s.profile_id = auth.uid())
   );
 $fn$;
 
