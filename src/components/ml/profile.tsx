@@ -691,6 +691,17 @@ export function ProfileHero({
                 carries only the name and, next to it, availability. */}
             {p.name ? <h1 className="text-3 leading-tight">{p.name}</h1> : null}
             {p.availability ? <StatusBadge status={p.availability} /> : null}
+            {owner ? (
+              <IconBtnLink
+                to="/profile/edit"
+                search={{ section: "identity" }}
+                label="Edit profile details"
+                variant="ghost"
+                className="ml-auto h-9 w-9"
+              >
+                <Pencil size={iconSize.sm} aria-hidden />
+              </IconBtnLink>
+            ) : null}
           </div>
         ) : (
           <></>
