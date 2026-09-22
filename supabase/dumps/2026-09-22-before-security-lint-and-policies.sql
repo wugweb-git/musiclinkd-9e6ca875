@@ -1,0 +1,47 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before applying
+-- 20260922330000_security_lint_and_policies.sql, which was committed to the repo earlier the same
+-- day but never run against the live database (found during an audit; fixed now).
+--
+-- profiles SELECT policy (already matches what the migration sets, from an earlier fix):
+--   "Public profiles are viewable by everyone": (visibility = 'public' OR auth.uid() = id)
+--
+-- public.profiles_guard_admin_fields() before this migration (guards trust_badges, is_verified,
+-- owner_id; does NOT yet guard persona_badges):
+-- CREATE OR REPLACE FUNCTION public.profiles_guard_admin_fields()
+--  RETURNS trigger LANGUAGE plpgsql SET search_path TO 'public'
+-- AS $function$
+-- BEGIN
+--   IF coalesce(auth.jwt() ->> 'role', '') IN ('authenticated', 'anon') THEN
+--     IF TG_OP = 'INSERT' AND (NEW.trust_badges <> '{}' OR NEW.is_verified) THEN
+--       RAISE EXCEPTION 'trust_badges and is_verified are set by MusicLinkd, not by the profile owner';
+--     END IF;
+--     IF TG_OP = 'UPDATE' AND (NEW.trust_badges IS DISTINCT FROM OLD.trust_badges
+--                              OR NEW.is_verified IS DISTINCT FROM OLD.is_verified) THEN
+--       RAISE EXCEPTION 'trust_badges and is_verified are set by MusicLinkd, not by the profile owner';
+--     END IF;
+--     IF (TG_OP = 'INSERT' AND NEW.owner_id IS NOT NULL)
+--        OR (TG_OP = 'UPDATE' AND NEW.owner_id IS DISTINCT FROM OLD.owner_id) THEN
+--       RAISE EXCEPTION 'owner_id is set by MusicLinkd, not by the profile';
+--     END IF;
+--   END IF;
+--   RETURN NEW;
+-- END
+-- $function$;
+--
+-- public.studios had no admin-field guard trigger at all: verified_gold was plainly client-writable
+-- through the "Owners write their own" ALL policy (auth.uid() = owner_profile_id, no column check).
+--
+-- RLS helper functions were all SECURITY DEFINER (profile_is_readable, profile_service_is_readable,
+-- opportunity_is_mine, studio_is_mine, rental_listing_is_mine, can_review_profile, can_review_studio,
+-- is_talent) — the migration switches them to SECURITY INVOKER.
+--
+-- EXECUTE grants: anon and authenticated could directly call internal trigger/notify/admin
+-- functions (handle_new_user was already revoked by an earlier fix; notify, booking_requests_guard,
+-- reviews_guard, verification_decide, verification_expire_due, verification_sync_trust,
+-- recompute_review_stats, refresh_review_stats, refresh_follower_count, and others were not).
+--
+-- To undo: restore profiles_guard_admin_fields() from the definition above; DROP TRIGGER
+-- studios_guard_admin_fields ON public.studios; DROP FUNCTION public.studios_guard_admin_fields();
+-- re-mark the RLS helper functions SECURITY DEFINER; re-GRANT EXECUTE on the revoked functions to
+-- PUBLIC, anon, authenticated.
