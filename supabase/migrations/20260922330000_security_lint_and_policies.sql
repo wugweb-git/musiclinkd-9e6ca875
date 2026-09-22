@@ -12,6 +12,9 @@
 -- band_is_owner, which don't exist — a band is a collab (collab_model), so those three lines are
 -- removed; the equivalent collab_can_write/collab_can_manage/collab_is_owner revokes are unchanged.
 --
+-- It also revoked EXECUTE on public.update_profiles_updated_at(), which doesn't exist — that's the
+-- trigger's name; the function it runs is update_updated_at_column(). Fixed to the real name.
+--
 -- Snapshot: supabase/dumps/2026-09-22-before-security-lint-and-policies.sql
 -- Rollback: restore profiles_guard_admin_fields(), profile_service_is_readable() and the other RLS
 -- helper functions (opportunity_is_mine, studio_is_mine, rental_listing_is_mine, can_review_profile,
@@ -98,7 +101,7 @@ REVOKE EXECUTE ON FUNCTION public.rental_booking_counts() FROM PUBLIC, anon, aut
 REVOKE EXECUTE ON FUNCTION public.booking_requests_names() FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.booking_requests_guard() FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.reviews_guard() FROM PUBLIC, anon, authenticated;
-REVOKE EXECUTE ON FUNCTION public.update_profiles_updated_at() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.update_updated_at_column() FROM PUBLIC, anon, authenticated;
 
 -- Revoke execute on notification triggers
 REVOKE EXECUTE ON FUNCTION public.notify_connection() FROM PUBLIC, anon, authenticated;
