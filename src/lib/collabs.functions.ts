@@ -512,56 +512,6 @@ export type CollabMessage = {
 };
 
 /** The table does not exist until 20260921180000_collab_complete.sql is applied. */
-const missingTable = (e: { code?: string; message?: string }) =>
-  e.code === "42P01" || e.code === "PGRST205" || /collab_messages/.test(e.message ?? "");
-
-/**
- * The room's own thread, oldest first. `ready` is false while the table is not in the database
- * yet, so the room can say so instead of failing.
- */
-export const listCollabMessages = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
-  .handler(async ({ context, data }): Promise<{ ready: boolean; messages: CollabMessage[] }> => {
-    const { data: rows, error } = await db(context.supabase)
-      .from("collab_messages")
-      .select(
-        "id, body, created_at, sender_id, sender:profiles(username, display_name, avatar_url)",
-      )
-      .eq("collab_id", data.id)
-      .order("created_at", { ascending: true })
-      .limit(200);
-    if (error) {
-      if (missingTable(error)) return { ready: false, messages: [] };
-      throw new Error(error.message);
-    }
-    return {
-      ready: true,
-      messages: ((rows ?? []) as unknown as Omit<CollabMessage, "mine">[]).map((m) => ({
-        ...m,
-        mine: m.sender_id === context.userId,
-      })),
-    };
-  });
-
-/** Say something in the room. The database tells everyone else in it. */
-export const sendCollabMessage = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
-    z.object({ id: z.string().uuid(), body: z.string().trim().min(1).max(4000) }).parse(d),
-  )
-  .handler(async ({ context, data }) => {
-    const { error } = await db(context.supabase)
-      .from("collab_messages")
-      .insert({ collab_id: data.id, sender_id: context.userId, body: data.body } as never);
-    if (error) {
-      if (missingTable(error)) throw new Error("This thread is not open yet. Try again later.");
-      throw new Error(
-        error.code === "42501" ? "Only the people in this project can write here." : error.message,
-      );
-    }
-    return { sent: true };
-  });
 
 /** The project's budget, for the people in it; null for anyone else or when none was set. */
 export const getCollabBudget = createServerFn({ method: "GET" })

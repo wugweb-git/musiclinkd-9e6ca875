@@ -11,7 +11,6 @@ import {
   CirclePlay,
   MoreHorizontal,
   Pencil,
-  SendHorizontal,
   UserRoundPlus,
   UsersRound,
   type LucideIcon,
@@ -27,11 +26,9 @@ import {
   setCollabBudget,
   getCollabBudget,
   getCollab,
-  listCollabMessages,
   listProjectTypes,
   leaveCollab,
   removeMember,
-  sendCollabMessage,
   setCollabStatus,
   setCollabVisibility,
   setMemberRole,
@@ -51,7 +48,8 @@ import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
 /*
- * One collab: what it is, who is in it, and where to talk (its own thread, collab_messages). A band shows the same room; only its
+ * One collab: what it is and who is in it; talking happens in Messages (owner, 22 Sep 2026). A band
+ * shows the same room; only its
  * kind and its members differ. Everything a tracker would hold — milestones, files, agreements —
  * the people in it keep between themselves.
  */
@@ -551,13 +549,6 @@ function CollabRoom() {
           ) : null}
         </section>
 
-        {myMembership?.status === "active" ? (
-          <section className="space-y-2">
-            <h2 className="text-sm">Talk</h2>
-            <CollabThread id={id} />
-          </section>
-        ) : null}
-
         {canManage ? (
           <section className="space-y-2">
             <h2 className="text-sm">Who can see it</h2>
@@ -851,107 +842,6 @@ function EditCollabSheet({
         </Btn>
       </form>
     </Sheet>
-  );
-}
-
-/** The room's own thread: what the people in it said, and a line to add to it. */
-function CollabThread({ id }: { id: string }) {
-  const queryClient = useQueryClient();
-  const read = useServerFn(listCollabMessages);
-  const send = useServerFn(sendCollabMessage);
-  const [draft, setDraft] = useState("");
-  const end = useRef<HTMLDivElement>(null);
-
-  const thread = useQuery({
-    queryKey: ["collab-messages", id],
-    queryFn: () => read({ data: { id } }),
-    refetchInterval: 15_000,
-  });
-  const messages = thread.data?.messages ?? [];
-
-  useEffect(() => {
-    end.current?.scrollIntoView({ block: "nearest" });
-  }, [messages.length]);
-
-  const post = useMutation({
-    mutationFn: (body: string) => send({ data: { id, body } }),
-    onSuccess: () => {
-      setDraft("");
-      void queryClient.invalidateQueries({ queryKey: ["collab-messages", id] });
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't send. Try again."),
-  });
-
-  if (thread.isLoading) return <Loading rows={2} />;
-  if (thread.data && !thread.data.ready) {
-    return (
-      <p className="rounded-lg bg-subtle p-4 text-1 text-muted-foreground">
-        This thread is not open yet.
-      </p>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {messages.length === 0 ? (
-        <p className="rounded-lg bg-subtle p-4 text-1 text-muted-foreground">
-          Nothing said here yet. Everyone in the project sees what you write.
-        </p>
-      ) : (
-        <div className="max-h-96 space-y-3 overflow-y-auto rounded-lg bg-subtle p-4 no-scrollbar">
-          {messages.map((m) => (
-            <div key={m.id} className={m.mine ? "flex justify-end" : "flex justify-start"}>
-              <div className="max-w-[80%]">
-                {m.mine ? null : (
-                  <p className="mb-1 px-1 text-1 text-muted-foreground">
-                    {m.sender?.display_name ?? m.sender?.username ?? "Someone"}
-                  </p>
-                )}
-                <p
-                  className={`whitespace-pre-wrap rounded-3xl px-4 py-2.5 text-sm ${
-                    m.mine ? "bg-ink text-background" : "bg-background text-foreground"
-                  }`}
-                >
-                  {m.body}
-                </p>
-              </div>
-            </div>
-          ))}
-          <div ref={end} />
-        </div>
-      )}
-
-      <form
-        className="flex items-end gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const body = draft.trim();
-          if (body && !post.isPending) post.mutate(body);
-        }}
-      >
-        <label htmlFor="collab-message" className="sr-only">
-          Message
-        </label>
-        <textarea
-          id="collab-message"
-          rows={1}
-          value={draft}
-          maxLength={4000}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="Write to everyone in it"
-          className="min-h-control w-full resize-none rounded-3xl border border-border bg-card px-4 py-3 text-sm outline-none"
-        />
-        {/* A plain button, because this one submits the form. */}
-        <button
-          type="submit"
-          aria-label="Send"
-          disabled={post.isPending || !draft.trim()}
-          className="state-layer flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink text-background transition-transform duration-200 ease-standard active:scale-97 disabled:opacity-50"
-        >
-          <SendHorizontal size={iconSize.md} aria-hidden />
-        </button>
-      </form>
-    </div>
   );
 }
 
