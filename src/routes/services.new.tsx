@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Guitar,
   FolderKanban,
+  Headphones,
   Hourglass,
   Laptop,
   MapPin,
@@ -44,6 +45,8 @@ import { haptic } from "@/lib/haptics";
 import { getMyProfile, listMyPortfolio } from "@/lib/portfolio.functions";
 import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
+import { getMyStudioEquipment } from "@/lib/studio-owner.functions";
+import { useMyStudioPhotos } from "@/components/ml/studio-setup";
 
 /*
  * Add or edit a service in two steps, on the listing flow's pieces (plain labels with a hint line,
@@ -150,6 +153,19 @@ function NewService() {
   const [deliverables, setDeliverables] = useState<string[]>([]);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [exampleIds, setExampleIds] = useState<string[]>([]);
+  // A studio's service shows what it uses (amenities, equipment) where a talent's shows portfolio
+  // examples (owner, 22 Sep 2026). The studio's own lists, with their photos.
+  const [amenitySlugs, setAmenitySlugs] = useState<string[]>([]);
+  const [equipmentIds, setEquipmentIds] = useState<string[]>([]);
+  const loadEquipment = useServerFn(getMyStudioEquipment);
+  const studioEquipment = useQuery({
+    queryKey: ["studio-equipment", "mine"],
+    queryFn: () => loadEquipment(),
+    enabled: signedIn,
+    retry: false,
+  });
+  const studioPhotos = useMyStudioPhotos();
+  const isStudio = studioEquipment.isSuccess;
   const [price, setPrice] = useState("");
   const [turnaround, setTurnaround] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
@@ -168,6 +184,8 @@ function NewService() {
     setDeliverables(source.deliverables);
     setRequirements(source.requirements);
     setExampleIds(source.example_ids);
+    setAmenitySlugs(source.amenity_slugs);
+    setEquipmentIds(source.equipment_ids);
     setPrice(source.price_paise == null ? "" : String(source.price_paise / 100));
     setTurnaround(source.turnaround);
     setMode(source.work_modes[0] ?? null);
@@ -237,6 +255,22 @@ function NewService() {
     ),
   }));
 
+  // A studio's amenities and equipment, each row showing its first photo when it has one.
+  const photoOf = (type: "facility" | "equipment", id: string) =>
+    studioPhotos.data?.photos.find((p) => p.subject_type === type && p.subject_id === id)?.url;
+  const thumb = (url: string | undefined, fallback: ReactNode) =>
+    url ? <img src={url} alt="" className="h-full w-full object-cover" /> : fallback;
+  const amenityOptions = (studioPhotos.data?.facilities ?? []).map((f) => ({
+    value: f.slug,
+    label: f.label,
+    iconNode: thumb(photoOf("facility", f.slug), <Sparkles size={iconSize.md} aria-hidden />),
+  }));
+  const equipmentOptions = (studioEquipment.data?.items ?? []).map((e) => ({
+    value: e.id,
+    label: e.name,
+    iconNode: thumb(photoOf("equipment", e.id), <Headphones size={iconSize.md} aria-hidden />),
+  }));
+
   const rupees = price.replace(/[₹,\s]/g, "");
   const pricePaise =
     rupees && Number.isFinite(Number(rupees)) ? Math.round(Number(rupees) * 100) : null;
@@ -250,7 +284,7 @@ function NewService() {
           title.trim() &&
           description.trim() &&
           deliverables.length &&
-          exampleIds.length,
+          (isStudio ? amenitySlugs.length || equipmentIds.length : exampleIds.length),
         )
       : Boolean((pricePaise ?? 0) > 0 && turnaround && mode);
 
@@ -269,6 +303,7 @@ function NewService() {
           category: categories[0] ?? null,
           categories,
           example_ids: exampleIds,
+          ...(isStudio ? { amenity_slugs: amenitySlugs, equipment_ids: equipmentIds } : {}),
           // One universal price: a starting price, with no unit or pricing model.
           pricing_model: null,
           price_paise: pricePaise,
@@ -379,31 +414,69 @@ function NewService() {
                 value={deliverables}
                 onChange={setDeliverables}
               />
-              <Field
-                label="Examples from your portfolio"
-                id="service-examples"
-                hint="Shown on the service, so clients hear or see the work"
-              >
-                {works.length ? (
-                  <SheetMultiSelect
-                    title="Examples"
-                    value={exampleIds}
-                    options={exampleOptions}
-                    onChange={setExampleIds}
-                    placeholder="Pick from your portfolio"
-                    max={6}
-                  />
-                ) : (
-                  <div className="rounded-lg bg-card p-4">
-                    <p className="text-1 text-foreground">
-                      Nothing in your portfolio yet. Add a piece of work first, then pick it here.
-                    </p>
-                    <BtnLink to="/portfolio/new" variant="outline" className="mt-3 w-full">
-                      Add to portfolio
-                    </BtnLink>
-                  </div>
-                )}
-              </Field>
+              {isStudio ? (
+                <>
+                  <Field
+                    label="Amenities it uses"
+                    id="service-amenities"
+                    hint="Shown on the service with their photos. Pick amenities, equipment or both."
+                  >
+                    {amenityOptions.length ? (
+                      <SheetMultiSelect
+                        title="Amenities it uses"
+                        value={amenitySlugs}
+                        options={amenityOptions}
+                        onChange={setAmenitySlugs}
+                        placeholder="Pick from your amenities"
+                        max={amenityOptions.length}
+                      />
+                    ) : (
+                      <StudioSetupNote what="amenities" />
+                    )}
+                  </Field>
+                  <Field label="Equipment it uses" id="service-equipment">
+                    {equipmentOptions.length ? (
+                      <SheetMultiSelect
+                        title="Equipment it uses"
+                        value={equipmentIds}
+                        options={equipmentOptions}
+                        onChange={setEquipmentIds}
+                        placeholder="Pick from your equipment"
+                        max={equipmentOptions.length}
+                      />
+                    ) : (
+                      <StudioSetupNote what="equipment" />
+                    )}
+                  </Field>
+                </>
+              ) : null}
+              {isStudio ? null : (
+                <Field
+                  label="Examples from your portfolio"
+                  id="service-examples"
+                  hint="Shown on the service, so clients hear or see the work"
+                >
+                  {works.length ? (
+                    <SheetMultiSelect
+                      title="Examples"
+                      value={exampleIds}
+                      options={exampleOptions}
+                      onChange={setExampleIds}
+                      placeholder="Pick from your portfolio"
+                      max={6}
+                    />
+                  ) : (
+                    <div className="rounded-lg bg-card p-4">
+                      <p className="text-1 text-foreground">
+                        Nothing in your portfolio yet. Add a piece of work first, then pick it here.
+                      </p>
+                      <BtnLink to="/portfolio/new" variant="outline" className="mt-3 w-full">
+                        Add to portfolio
+                      </BtnLink>
+                    </div>
+                  )}
+                </Field>
+              )}
               <TagListField
                 label="What you need (optional)"
                 id="service-requirements"
@@ -486,5 +559,24 @@ function NewService() {
         </BtnLink>
       </Dialog>
     </Screen>
+  );
+}
+
+/** A studio with no amenities or equipment yet: add them first, then pick them here. */
+function StudioSetupNote({ what }: { what: "amenities" | "equipment" }) {
+  return (
+    <div className="rounded-lg bg-card p-4">
+      <p className="text-1 text-foreground">
+        No {what} on your studio yet. Add them with photos, then pick them here.
+      </p>
+      <BtnLink
+        to="/business/availability"
+        hash={what === "amenities" ? "facilities" : "equipment"}
+        variant="outline"
+        className="mt-3 w-full"
+      >
+        Add {what === "amenities" ? "Amenities" : "Equipment"}
+      </BtnLink>
+    </div>
   );
 }

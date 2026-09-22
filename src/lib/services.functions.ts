@@ -35,6 +35,9 @@ export type ServiceRow = {
   requirements: string[];
   /** portfolio_items ids shown as examples, in order. */
   example_ids: string[];
+  /** A studio's service: the amenities (studio_amenities slugs) and equipment ids it uses. */
+  amenity_slugs: string[];
+  equipment_ids: string[];
   status: ServiceStatus;
   sort_order: number;
 };
@@ -68,6 +71,11 @@ export type ServiceDetail = ServiceRow & {
   examples: ServiceExample[];
   /** Who offers it: name and their music identity (taxonomy slugs), for the service page. */
   provider: ServiceProvider | null;
+  /** A studio's service: what it uses, each with its photos — the business's "examples". */
+  uses: {
+    amenities: { slug: string; label: string; photos: string[] }[];
+    equipment: { id: string; name: string; photos: string[] }[];
+  };
 };
 
 export type ServiceProvider = {
@@ -115,7 +123,7 @@ export type ServiceOptions = {
 };
 
 const SERVICE =
-  "id, profile_id, name, description, category, categories, example_ids, pricing_model, price_paise, price_unit, price_note, min_hours, turnaround, notice, mode, work_modes, deliverables, requirements, status, sort_order";
+  "id, profile_id, name, description, category, categories, example_ids, amenity_slugs, equipment_ids, pricing_model, price_paise, price_unit, price_note, min_hours, turnaround, notice, mode, work_modes, deliverables, requirements, status, sort_order";
 const PACKAGE =
   "id, name, price_paise, price_unit, includes, turnaround, revisions, is_popular, sort_order";
 const ADDON = "id, label, price_paise, price_unit, sort_order";
@@ -133,6 +141,69 @@ function serviceFrom(row: Record<string, unknown>): ServiceRow {
     requirements: r.requirements ?? [],
     categories: r.categories?.length ? r.categories : r.category ? [r.category] : [],
     example_ids: r.example_ids ?? [],
+    amenity_slugs: r.amenity_slugs ?? [],
+    equipment_ids: r.equipment_ids ?? [],
+  };
+}
+
+/** What a studio's service uses: its amenities and equipment, with their photos. */
+async function serviceUses(
+  client: SupabaseClient,
+  ownerId: string,
+  amenitySlugs: string[],
+  equipmentIds: string[],
+): Promise<ServiceDetail["uses"]> {
+  const none = { amenities: [], equipment: [] };
+  if (!amenitySlugs.length && !equipmentIds.length) return none;
+  const { data: studio } = await client
+    .from("studios")
+    .select("id")
+    .eq("owner_profile_id", ownerId)
+    .limit(1)
+    .maybeSingle();
+  const studioId = (studio as { id: string } | null)?.id;
+  if (!studioId) return none;
+  const [labels, equipment, photos] = await Promise.all([
+    amenitySlugs.length
+      ? client
+          .from("taxonomy_options")
+          .select("slug, label")
+          .eq("category_key", "studio_amenities")
+          .in("slug", amenitySlugs)
+      : { data: [] },
+    equipmentIds.length
+      ? client
+          .from("studio_equipment")
+          .select("id, name")
+          .eq("studio_id", studioId)
+          .in("id", equipmentIds)
+      : { data: [] },
+    client
+      .from("studio_photos")
+      .select("subject_type, subject_id, url")
+      .eq("studio_id", studioId)
+      .order("sort_order"),
+  ]);
+  const photoRows = (photos.data ?? []) as {
+    subject_type: string;
+    subject_id: string;
+    url: string;
+  }[];
+  const photosOf = (type: string, id: string) =>
+    photoRows.filter((p) => p.subject_type === type && p.subject_id === id).map((p) => p.url);
+  const label = new Map(
+    ((labels.data ?? []) as { slug: string; label: string }[]).map((l) => [l.slug, l.label]),
+  );
+  const items = new Map(
+    ((equipment.data ?? []) as { id: string; name: string }[]).map((e) => [e.id, e.name]),
+  );
+  return {
+    amenities: amenitySlugs
+      .filter((a) => label.has(a))
+      .map((a) => ({ slug: a, label: label.get(a)!, photos: photosOf("facility", a) })),
+    equipment: equipmentIds
+      .filter((e) => items.has(e))
+      .map((e) => ({ id: e, name: items.get(e)!, photos: photosOf("equipment", e) })),
   };
 }
 
@@ -178,9 +249,17 @@ async function serviceDetail(
   if (packages.error) throw new Error(packages.error.message);
   if (addons.error) throw new Error(addons.error.message);
   if (owner.error) throw new Error(owner.error.message);
+  const service = serviceFrom(serviceRow);
+  const uses = await serviceUses(
+    client,
+    serviceRow.profile_id,
+    service.amenity_slugs,
+    service.equipment_ids,
+  );
 
   return {
-    ...serviceFrom(serviceRow),
+    uses,
+    ...service,
     packages: ((packages.data ?? []) as ServicePackageRow[]).map((p) => ({
       ...p,
       price_paise: Number(p.price_paise),
@@ -323,6 +402,11 @@ const saveSchema = z.object({
   category: slug.nullable(),
   categories: z.array(slug).max(3).optional(),
   example_ids: z.array(z.string().uuid()).max(6).optional(),
+  amenity_slugs: z
+    .array(z.string().regex(/^[a-z0-9_]{2,40}$/))
+    .max(40)
+    .optional(),
+  equipment_ids: z.array(z.string().uuid()).max(40).optional(),
   pricing_model: slug.nullable(),
   price_paise: z.number().int().min(0).nullable(),
   price_unit: text(24).nullable(),

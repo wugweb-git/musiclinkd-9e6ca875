@@ -1,5 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, FolderKanban, Guitar, Languages, Music, UserRound } from "lucide-react";
+import {
+  ChevronRight,
+  FolderKanban,
+  Guitar,
+  Headphones,
+  Languages,
+  Music,
+  UserRound,
+} from "lucide-react";
+import { PhotoSheet, ProofPill } from "@/components/ml/booking";
 import { ChipGroup, ChipGroupList } from "@/components/ml/profile";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { useState } from "react";
@@ -50,6 +59,7 @@ function ServiceDetail() {
   const updateStatus = useServerFn(setServiceStatus);
   const remove = useServerFn(deleteService);
   const [manage, setManage] = useState(false);
+  const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [removed, setRemoved] = useState(false);
@@ -173,6 +183,55 @@ function ServiceDetail() {
                   </li>
                 ))}
               </ul>
+            </Card>
+          ) : null}
+
+          {/* A studio's service: what it uses, each opening its photos. */}
+          {s.uses.amenities.length || s.uses.equipment.length ? (
+            <Card className="space-y-3">
+              <h2 className="text-sm">What it uses</h2>
+              {s.uses.amenities.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {s.uses.amenities.map((a) => (
+                    <ProofPill
+                      key={a.slug}
+                      label={a.label}
+                      photos={a.photos}
+                      onOpen={() => setViewing({ title: a.label, photos: a.photos })}
+                      className="rounded-full bg-background text-1"
+                    />
+                  ))}
+                </div>
+              ) : null}
+              {s.uses.equipment.length ? (
+                <ul className="divide-y divide-border">
+                  {s.uses.equipment.map((e) => (
+                    <li key={e.id}>
+                      <button
+                        type="button"
+                        disabled={!e.photos.length}
+                        onClick={() => setViewing({ title: e.name, photos: e.photos })}
+                        className="state-layer flex w-full items-center gap-3 py-2.5 text-left disabled:cursor-default"
+                      >
+                        {e.photos[0] ? (
+                          <img
+                            src={e.photos[0]}
+                            alt=""
+                            className="h-12 w-12 shrink-0 rounded-sm object-cover"
+                          />
+                        ) : (
+                          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip">
+                            <Headphones size={18} strokeWidth={1.75} aria-hidden />
+                          </span>
+                        )}
+                        <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+                          {e.name}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </Card>
           ) : null}
 
@@ -389,6 +448,11 @@ function ServiceDetail() {
           Back to Services
         </BtnLink>
       </Dialog>
+      <PhotoSheet
+        title={viewing?.title ?? ""}
+        photos={viewing?.photos ?? []}
+        onClose={() => setViewing(null)}
+      />
     </Screen>
   );
 }
