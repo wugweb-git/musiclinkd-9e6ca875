@@ -1,0 +1,10 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922190000_service_amenities_equipment.sql.
+-- The migration adds two columns with empty defaults and changes no rows.
+--
+-- public.profile_services columns: id, profile_id, name, description, price_paise, price_unit, price_note,
+-- turnaround, mode, availability, sort_order, created_at, updated_at, category_taxonomy, category,
+-- pricing_model_taxonomy, pricing_model, min_hours, status, deliverables, requirements, work_modes,
+-- notice, categories, example_ids. No amenity_slugs or equipment_ids.
+--
+-- To undo: see the Rollback note at the top of the migration.
