@@ -119,6 +119,8 @@ export type Bookable = {
   username?: string;
   /** The owning business's profile id, for Message and Save. */
   ownerProfileId?: string;
+  /** The business's live services: what a session can be for. */
+  services?: { id: string; name: string; price_paise: number | null; price_unit: string | null }[];
   /** The business's real follower count. */
   followers?: number;
   gallery: string[];

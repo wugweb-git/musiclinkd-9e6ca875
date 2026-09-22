@@ -275,6 +275,27 @@ export const getPublicService = createServerFn({ method: "GET" })
     serviceDetail((await anonClient()) as unknown as SupabaseClient, data.id),
   );
 
+export type BookableService = {
+  id: string;
+  name: string;
+  price_paise: number | null;
+  price_unit: string | null;
+};
+
+/** A profile's live services, in page order: what a studio's Book lets people pick. */
+export const listPublicServices = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ profileId: z.string().uuid() }).parse(d))
+  .handler(async ({ data }): Promise<BookableService[]> => {
+    const client = (await anonClient()) as unknown as SupabaseClient;
+    const { data: rows, error } = await client
+      .from("profile_services")
+      .select("id, name, price_paise, price_unit")
+      .eq("profile_id", data.profileId)
+      .eq("status", "active")
+      .order("sort_order");
+    return error ? [] : ((rows ?? []) as BookableService[]);
+  });
+
 const slug = z.string().regex(/^[a-z0-9]+(_[a-z0-9]+)*$/);
 const text = (max: number) => z.string().trim().max(max);
 const lines = z.array(text(200).min(1)).max(30);

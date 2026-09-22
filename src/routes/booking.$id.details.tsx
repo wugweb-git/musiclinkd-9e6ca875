@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { SheetSelect } from "@/components/ml/listing-form";
 import { TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
@@ -49,20 +50,23 @@ function Details() {
 
         <div className="mt-5 space-y-4">
           <Field label="What's the session for?">
-            <select
-              value={draft.purpose}
-              onChange={(e) => set({ purpose: e.target.value })}
-              className="min-h-control w-full rounded-lg border border-border bg-card px-4 text-sm"
-            >
-              <option value="">Select a purpose</option>
-              <option>Tracking — band</option>
-              <option>Tracking — vocals</option>
-              <option>Mixing session</option>
-              <option>Mastering</option>
-              <option>Rehearsal</option>
-              <option>Podcast episode</option>
-              <option>Other</option>
-            </select>
+            {/* The studio's own services, from the database; "Other" when none fits. */}
+            <SheetSelect
+              title="What's the session for?"
+              value={draft.purpose || null}
+              options={[
+                ...(b.services ?? []).map((sv) => ({
+                  value: sv.name,
+                  label: sv.name,
+                  hint: sv.price_paise
+                    ? `From ₹${(sv.price_paise / 100).toLocaleString("en-IN")}${sv.price_unit ? ` / ${sv.price_unit}` : ""}`
+                    : undefined,
+                })),
+                { value: "Other", label: "Other", hint: "Say what you need in the notes" },
+              ]}
+              placeholder="Choose a service"
+              onChange={(v) => set({ purpose: v })}
+            />
           </Field>
 
           <Field label="Project name" hint="Optional — helps the engineer label files">

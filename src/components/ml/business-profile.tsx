@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   BarChart3,
-  House,
   Pencil,
   Share2,
   Globe,
@@ -26,7 +25,7 @@ import { enterLinkedProfile, listLinkedProfiles } from "@/lib/pages.functions";
 import { switchToLinked } from "@/lib/saved-accounts";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
+import { StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import type { BusinessView } from "@/lib/business-view";
 import {
   AudioTrackCard,
@@ -49,13 +48,12 @@ import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 
 // Team is off for now: one business profile belongs to one account (owner, 21 Sep 2026).
-type BusinessTab = "Overview" | "Portfolio" | "Spaces" | "Reviews";
+type BusinessTab = "Overview" | "Portfolio" | "Reviews";
 
 /** Same row as the person profile: icon alone until selected, then solid with its move. */
 const tabs: { key: BusinessTab; icon: LucideIcon; solid: SolidIcon; move: Move }[] = [
   { key: "Overview", icon: Sparkles, solid: "sparkle", move: "spin" },
   { key: "Portfolio", icon: Music, solid: "music", move: "dance" },
-  { key: "Spaces", icon: House, solid: "home", move: "hop" },
   { key: "Reviews", icon: Star, solid: "star", move: "stamp" },
 ];
 
@@ -403,49 +401,6 @@ export function BusinessProfileExperience({
             )}
           </div>
         ) : null}
-
-        {tab === "Spaces" ? (
-          <div className="space-y-3 px-2 pt-4">
-            {b.spaces.length ? (
-              b.spaces.map((sp) => (
-                <Card key={sp.id} className="space-y-2 overflow-hidden p-0">
-                  {sp.photo ? (
-                    <img
-                      src={sp.photo}
-                      alt=""
-                      className="h-32 w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : null}
-                  <div className="space-y-2 p-4 pt-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-semibold">{sp.name}</p>
-                      <Price
-                        price={sp.rate}
-                        align="end"
-                        className="shrink-0"
-                        amountClassName="text-1 font-bold"
-                      />
-                    </div>
-                    {sp.detail ? <p className="text-1 text-muted-foreground">{sp.detail}</p> : null}
-                    <div className="flex flex-wrap gap-1.5">
-                      {sp.gear.map((g) => (
-                        <span key={g} className="rounded-full bg-background px-2.5 py-1 text-1">
-                          {g}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </Card>
-              ))
-            ) : (
-              <EmptyState
-                title="No spaces yet"
-                body="This business hasn't listed bookable spaces."
-              />
-            )}
-          </div>
-        ) : null}
       </div>
 
       <PhotoSheet
@@ -597,14 +552,26 @@ function BusinessActions({
   const followOn = act.isPending ? act.variables : (q.data?.following ?? false);
 
   // A studio is booked through its rooms and calendar; any other business takes an enquiry.
-  const book = studioSlug ? (
-    <BtnLink to="/booking/$id" params={{ id: studioSlug }} className="min-w-0 flex-1 px-3">
-      Book
-    </BtnLink>
-  ) : (
-    <BtnLink to="/business/$id/enquiry" params={{ id }} className="min-w-0 flex-1 px-3">
+  // A studio can be booked (rooms, dates, slots) and asked; any other business is asked.
+  const enquire = (
+    <BtnLink
+      to="/business/$id/enquiry"
+      params={{ id }}
+      variant={studioSlug ? "outline" : "primary"}
+      className="min-w-0 flex-1 px-3"
+    >
       Enquire
     </BtnLink>
+  );
+  const book = studioSlug ? (
+    <>
+      <BtnLink to="/booking/$id" params={{ id: studioSlug }} className="min-w-0 flex-1 px-3">
+        Book
+      </BtnLink>
+      {enquire}
+    </>
+  ) : (
+    enquire
   );
   // The owner sees what the person profile's owner sees: edit, share, stats — not Book or Follow.
   if (owner) {
@@ -661,15 +628,27 @@ function BusinessActions({
 
   return (
     <div className="flex items-center gap-2">
-      <Btn
-        variant="outline"
-        className="min-w-0 flex-1 px-3"
-        icon={<Send size={iconSize.sm} aria-hidden />}
-        loading={message.pending}
-        onClick={() => void message.open(profileId)}
-      >
-        Message
-      </Btn>
+      {/* With Book and Enquire beside it, Message is the icon; otherwise it keeps its label. */}
+      {studioSlug ? (
+        <IconBtn
+          label="Message"
+          variant="outline"
+          className="h-12 w-12"
+          onClick={() => void message.open(profileId)}
+        >
+          <Send size={iconSize.md} aria-hidden />
+        </IconBtn>
+      ) : (
+        <Btn
+          variant="outline"
+          className="min-w-0 flex-1 px-3"
+          icon={<Send size={iconSize.sm} aria-hidden />}
+          loading={message.pending}
+          onClick={() => void message.open(profileId)}
+        >
+          Message
+        </Btn>
+      )}
       {book}
       <CallBtn profileId={profileId} />
       <IconBtn

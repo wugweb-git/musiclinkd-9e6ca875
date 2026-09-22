@@ -139,6 +139,32 @@ function BookingEntry() {
           </div>
         </section>
 
+        {b.services?.length ? (
+          <section className="mt-6">
+            <h3 className="text-2">Services</h3>
+            <p className="mt-1 text-1 text-muted-foreground">
+              Pick one when you book; the studio prepares the room for it.
+            </p>
+            <ul className="mt-3 divide-y divide-border rounded-lg bg-subtle">
+              {b.services.map((sv) => (
+                <li key={sv.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <span className="min-w-0 truncate text-sm font-semibold">{sv.name}</span>
+                  {sv.price_paise ? (
+                    <Price
+                      from
+                      inline
+                      price={rupeeParts(sv.price_paise / 100, sv.price_unit)}
+                      align="end"
+                      className="shrink-0"
+                      amountClassName="text-sm font-semibold"
+                    />
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         {b.facilities.length ? (
           <section className="mt-6">
             <h3 className="text-2">Facilities</h3>

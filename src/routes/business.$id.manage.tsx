@@ -141,8 +141,8 @@ function ManageBusiness() {
           />
           <Row
             icon={<Image size={iconSize.sm} />}
-            title="Photos & spaces"
-            subtitle={`${b.spaces.length} bookable spaces`}
+            title="Amenities"
+            subtitle="What the place has, with photos"
             to="/business/availability"
             hash="facilities"
           />
@@ -155,7 +155,7 @@ function ManageBusiness() {
           <Row
             icon={<Headphones size={iconSize.sm} />}
             title="Equipment"
-            subtitle="Gear on your studio page"
+            subtitle="Gear with photos, included or extra"
             to="/business/availability"
             hash="equipment"
           />
