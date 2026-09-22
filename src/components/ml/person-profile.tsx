@@ -63,8 +63,6 @@ import {
   ShareSheet,
   SocialLinks,
   VideoCard,
-  ChipGroup,
-  ChipGroupList,
   InfoRow,
   isOpenForWork,
 } from "./profile";
@@ -616,14 +614,7 @@ function Overview({
       p.instruments.length ||
       p.languages.length ? (
         <ProfileSection title="Music identity">
-          <ChipGroupList>
-            <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
-            <ChipGroup label="Genres" icon={Music} items={p.genres} />
-            <ChipGroup label="Specialisations" icon={Sparkles} items={p.specialisations} />
-            <ChipGroup label="Influences" icon={Heart} items={p.influences} />
-            <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
-            <ChipGroup label="Languages" icon={Languages} items={p.languages} />
-          </ChipGroupList>
+          <MusicIdentityBento p={p} />
         </ProfileSection>
       ) : null}
 
@@ -729,14 +720,7 @@ function OwnerStack({
       p.specialisations.length ||
       p.influences.length ? (
         <StackSection title="Music identity" editTo={edit} editSection="music" collapsible>
-          <ChipGroupList>
-            <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
-            <ChipGroup label="Genres" icon={Music} items={p.genres} />
-            <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
-            <ChipGroup label="Languages" icon={Languages} items={p.languages} />
-            <ChipGroup label="Specialisations" icon={Sparkles} items={p.specialisations} />
-            <ChipGroup label="Influences" icon={Heart} items={p.influences} />
-          </ChipGroupList>
+          <MusicIdentityBento p={p} />
         </StackSection>
       ) : null}
 
@@ -1040,14 +1024,7 @@ function About({ p }: { p: PersonProfile }) {
         p.influences.length ||
         p.instruments.length ||
         p.languages.length ? (
-          <ChipGroupList>
-            <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
-            <ChipGroup label="Genres" icon={Music} items={p.genres} />
-            <ChipGroup label="Specialisations" icon={Sparkles} items={p.specialisations} />
-            <ChipGroup label="Influences" icon={Heart} items={p.influences} />
-            <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
-            <ChipGroup label="Languages" icon={Languages} items={p.languages} />
-          </ChipGroupList>
+          <MusicIdentityBento p={p} />
         ) : (
           <ProfileEmpty
             title="No music identity yet"
@@ -1204,4 +1181,134 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
 /** The person's types (Violinist, Producer…): shown in Music identity, not under the name. */
 function typesOf(p: PersonProfile) {
   return [p.primaryRole, ...p.secondaryRoles].filter(Boolean);
+}
+
+/** One card in the Music identity bento: an icon, a label, and its chips. */
+function BentoCard({
+  icon: Icon,
+  label,
+  count,
+  wide,
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  count?: number | undefined;
+  wide?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-lg border border-border/80 bg-card p-3.5",
+        wide ? "col-span-2" : undefined,
+      )}
+    >
+      <div className="flex items-center justify-between gap-2 text-1 font-semibold text-foreground">
+        <span className="flex items-center gap-1.5">
+          <Icon size={15} className="text-foreground" aria-hidden />
+          <span>{label}</span>
+        </span>
+        {count ? (
+          <span className="text-0 font-medium text-muted-foreground">{count} genres</span>
+        ) : null}
+      </div>
+      <div className="mt-2.5 flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+function BentoChip({ children }: { children: ReactNode }) {
+  return (
+    <span className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold text-foreground border border-border/60">
+      {children}
+    </span>
+  );
+}
+
+/**
+ * Music identity, recycled everywhere it appears (Overview, About, the owner's own stack): a bento
+ * grid, one card per group, Genres spanning both columns. Content-rich sections like this read
+ * better as cards than as one long chip list.
+ */
+function MusicIdentityBento({ p }: { p: PersonProfile }) {
+  const types = typesOf(p);
+  const hasCredentials = Boolean(p.rating || p.stats?.credits || p.verification);
+  return (
+    <div className="grid grid-cols-2 gap-2.5">
+      {types.length ? (
+        <BentoCard icon={UserRound} label="Type">
+          {types.map((t) => (
+            <BentoChip key={t}>{t}</BentoChip>
+          ))}
+        </BentoCard>
+      ) : null}
+
+      {hasCredentials ? (
+        <BentoCard icon={Sparkles} label="Credentials">
+          <div className="space-y-1">
+            {p.rating ? (
+              <div className="flex items-center gap-1 text-1 font-bold text-foreground">
+                <Star size={13} className="fill-foreground text-foreground" aria-hidden />
+                <span>{p.rating}</span>
+                <span className="text-0 font-normal text-muted-foreground">
+                  ({p.reviewCount ?? 0} reviews)
+                </span>
+              </div>
+            ) : null}
+            {p.stats?.credits ? (
+              <p className="text-0 font-medium text-foreground">
+                {p.stats.credits} released credits
+              </p>
+            ) : null}
+            {p.verification ? (
+              <span className="inline-flex rounded-full bg-foreground px-2 py-0.5 text-0 font-bold text-background">
+                Verified Pro
+              </span>
+            ) : null}
+          </div>
+        </BentoCard>
+      ) : null}
+
+      {p.genres.length ? (
+        <BentoCard icon={Music} label="Genres" count={p.genres.length} wide>
+          {p.genres.map((g) => (
+            <BentoChip key={g}>{g}</BentoChip>
+          ))}
+        </BentoCard>
+      ) : null}
+
+      {p.specialisations.length ? (
+        <BentoCard icon={Sparkles} label="Specialisations">
+          {p.specialisations.map((s) => (
+            <BentoChip key={s}>{s}</BentoChip>
+          ))}
+        </BentoCard>
+      ) : null}
+
+      {p.influences.length ? (
+        <BentoCard icon={Heart} label="Influences">
+          {p.influences.map((i) => (
+            <BentoChip key={i}>{i}</BentoChip>
+          ))}
+        </BentoCard>
+      ) : null}
+
+      {p.instruments.length ? (
+        <BentoCard icon={Guitar} label="Instruments">
+          {p.instruments.map((inst) => (
+            <BentoChip key={inst}>{inst}</BentoChip>
+          ))}
+        </BentoCard>
+      ) : null}
+
+      {p.languages.length ? (
+        <BentoCard icon={Languages} label="Languages">
+          {p.languages.map((lang) => (
+            <BentoChip key={lang}>{lang}</BentoChip>
+          ))}
+        </BentoCard>
+      ) : null}
+    </div>
+  );
 }
