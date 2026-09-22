@@ -77,7 +77,9 @@ function Schedule() {
   });
   const cal = calendar.data;
   const dayOf = useCallback(
-    (date: string) => studioDay(cal?.weeklyHours ?? {}, cal?.busy ?? [], r.id, date, fromPrice),
+    // The studio's notice and blackout days (cal) close slots and days on top of its hours.
+    (date: string) =>
+      studioDay(cal?.weeklyHours ?? {}, cal?.busy ?? [], r.id, date, fromPrice, cal),
     [cal, r.id, fromPrice],
   );
   const day = useMemo(
