@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ImagePlus, Trash2 } from "lucide-react";
+import { ChevronDown, ImagePlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Btn, IconBtn, Sheet } from "@/components/ml/ui";
 import { Card } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
@@ -179,20 +180,41 @@ export function BandLiveVideoSheet({
   );
 }
 
-/** The rider as label and value rows, like the first band page had it. */
+/** The rider as label and value rows, with expandable state and dark high-contrast copy. */
 export function BandRiderCard({ lines }: { lines: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const shownLines = expanded ? lines : lines.slice(0, 4);
+  const hasMore = lines.length > 4;
+
   return (
     <Card>
-      <h2 className="text-sm">Technical rider</h2>
-      <div className="mt-2 divide-y divide-border">
-        {lines.map((line) => {
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-bold text-foreground">Technical rider</h2>
+        {hasMore ? (
+          <button
+            type="button"
+            onClick={() => setExpanded((e) => !e)}
+            aria-expanded={expanded}
+            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-0 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
+          >
+            <span>{expanded ? "Show less" : `View all (${lines.length})`}</span>
+            <ChevronDown
+              size={12}
+              className={cn("transition-transform duration-200", expanded && "rotate-180")}
+              aria-hidden
+            />
+          </button>
+        ) : null}
+      </div>
+      <div className="mt-2.5 divide-y divide-border/70">
+        {shownLines.map((line) => {
           const { label, value } = riderLine(line);
           return (
-            <div key={line} className="flex justify-between gap-3 py-2.5">
+            <div key={line} className="flex justify-between gap-3 py-2 text-1">
               {label ? (
-                <span className="shrink-0 text-1 text-muted-foreground">{label}</span>
+                <span className="shrink-0 font-semibold text-foreground">{label}</span>
               ) : null}
-              <span className={`text-1 font-semibold ${label ? "text-right" : ""}`}>{value}</span>
+              <span className={`font-medium text-foreground ${label ? "text-right" : ""}`}>{value}</span>
             </div>
           );
         })}

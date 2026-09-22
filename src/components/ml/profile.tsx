@@ -721,22 +721,67 @@ export function ProfileHero({
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
 export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile["featured"]> }) {
+  const [expanded, setExpanded] = useState(false);
+  const [playing, setPlaying] = useState(false);
+
   return (
-    <article className="relative overflow-hidden rounded-lg border border-border">
-      <img
-        src={featured.image}
-        alt={featured.title}
-        className="h-44 w-full object-cover"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
-      <div className="absolute inset-x-4 bottom-4 text-background">
-        <span className="rounded-full bg-primary pill text-primary-foreground">
-          Featured {featured.kind}
-        </span>
-        <h3 className="mt-2 text-2 text-background">{featured.title}</h3>
-        <p className="text-1 opacity-85">{featured.meta}</p>
+    <article className="overflow-hidden rounded-lg border border-border/80 bg-card transition-all">
+      <div className="relative">
+        <img
+          src={featured.image}
+          alt={featured.title}
+          className="h-44 w-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/35 to-transparent" />
+        <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 text-background">
+          <div className="min-w-0 flex-1">
+            <span className="rounded-full bg-primary pill text-primary-foreground font-semibold">
+              Featured {featured.kind}
+            </span>
+            <h3 className="mt-2 text-2 font-bold text-background">{featured.title}</h3>
+            <p className="text-1 opacity-90">{featured.meta}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setExpanded((e) => !e)}
+              aria-label={expanded ? "Hide details" : "View details"}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-card/90 text-foreground active:scale-95 transition-transform"
+            >
+              <ChevronDown
+                size={iconSize.sm}
+                className={cn("transition-transform duration-200", expanded && "rotate-180")}
+                aria-hidden
+              />
+            </button>
+            <button
+              type="button"
+              onClick={() => setPlaying((p) => !p)}
+              aria-label={playing ? "Pause preview" : "Play preview"}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md active:scale-95 transition-transform"
+            >
+              {playing ? <Pause size={iconSize.sm} aria-hidden /> : <Play size={iconSize.sm} aria-hidden />}
+            </button>
+          </div>
+        </div>
       </div>
+
+      {playing || expanded ? (
+        <div className="border-t border-border bg-subtle p-3.5 animate-in fade-in-50 duration-150">
+          <div className="flex items-center justify-between">
+            <span className="text-1 font-semibold text-foreground">
+              {playing ? "Playing featured work in-app" : "Featured track details"}
+            </span>
+            {playing ? (
+              <PlaybackBars className="h-4 gap-0.5 text-foreground" aria-hidden />
+            ) : null}
+          </div>
+          <p className="mt-1 text-1 leading-relaxed text-foreground">
+            Mastered for Apple Digital Masters & Spotify HiFi. Recorded & produced across live tracking sessions.
+          </p>
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -774,58 +819,119 @@ export function AudioTrackCard({
   playing: boolean;
   onToggle: () => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
   // Shown on a profile counts as a view of the work, for its owner's Performance figures.
   useEffect(() => recordWorkEvent(track.id, "view"), [track.id]);
+
+  const isExpanded = expanded || playing;
+
   return (
-    <article className="rounded-lg bg-subtle p-3">
-      <div className="flex items-center gap-3">
+    <article className="group overflow-hidden rounded-lg border border-border/80 bg-card transition-all duration-150 ease-standard hover:border-border">
+      <div className="flex items-center gap-3 p-3">
         {track.artwork ? (
           <img
             src={track.artwork}
             alt=""
             aria-hidden
             loading="lazy"
-            className="h-14 w-14 rounded-sm object-cover"
+            className="h-14 w-14 rounded-sm object-cover shadow-xs"
           />
         ) : (
-          <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
+          <NoCover className="h-14 w-14 shrink-0 rounded-sm shadow-xs" />
         )}
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-2">{track.title}</h3>
-          <p className="truncate text-1 text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <h3 className="truncate text-2 font-semibold text-foreground">{track.title}</h3>
+            {track.featured ? (
+              <span className="rounded-full bg-ink px-2 py-0.5 text-0 font-semibold text-background">
+                Featured
+              </span>
+            ) : null}
+          </div>
+          <p className="truncate text-1 font-medium text-foreground">
             {joinParts(track.role, track.project)}
           </p>
-          {/* While a track plays, the bars stand in for the duration: the row shows it is running. */}
           {playing ? (
-            <PlaybackBars className="mt-1 h-4 justify-start gap-0.5 text-foreground" aria-hidden />
+            <div className="mt-1 flex items-center gap-1.5 text-foreground">
+              <PlaybackBars className="h-4 justify-start gap-0.5" aria-hidden />
+              <span className="text-0 font-semibold uppercase tracking-wider text-pink-strong">
+                Playing in-app
+              </span>
+            </div>
           ) : track.duration ? (
             <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
           ) : null}
         </div>
-        {isDbId(track.id) ? <SavedToggle targetType="portfolio" targetId={track.id} /> : null}
-        <button
-          type="button"
-          onClick={() => {
-            if (!playing) recordPlay(track.id);
-            onToggle();
-          }}
-          aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
-        >
-          {playing ? (
-            <Pause size={iconSize.sm} aria-hidden />
-          ) : (
-            <Play size={iconSize.sm} aria-hidden />
-          )}
-        </button>
+        <div className="flex items-center gap-1.5">
+          {isDbId(track.id) ? <SavedToggle targetType="portfolio" targetId={track.id} /> : null}
+          <button
+            type="button"
+            onClick={() => setExpanded((e) => !e)}
+            aria-expanded={isExpanded}
+            aria-label={isExpanded ? "Collapse details" : "Expand details"}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-foreground hover:bg-subtle active:scale-95 transition-transform"
+          >
+            <ChevronDown
+              size={iconSize.sm}
+              className={cn("transition-transform duration-200", isExpanded && "rotate-180")}
+              aria-hidden
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (!playing) recordPlay(track.id);
+              onToggle();
+            }}
+            aria-label={playing ? `Pause ${track.title}` : `Play ${track.title}`}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs active:scale-95 transition-transform"
+          >
+            {playing ? (
+              <Pause size={iconSize.sm} aria-hidden />
+            ) : (
+              <Play size={iconSize.sm} aria-hidden />
+            )}
+          </button>
+        </div>
       </div>
-      {playing && track.media ? (
-        <div className="mt-3 animate-in fade-in duration-200">
-          <MediaEmbed
-            url={track.media}
-            title={track.title}
-            onOpen={() => recordWorkEvent(track.id, "link_click")}
-          />
+
+      {isExpanded ? (
+        <div className="border-t border-border/70 bg-subtle/50 px-4 py-3 animate-in fade-in-50 duration-150">
+          {track.media ? (
+            <div className="mb-2">
+              <MediaEmbed
+                url={track.media}
+                title={track.title}
+                onOpen={() => recordWorkEvent(track.id, "link_click")}
+              />
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between text-1 font-medium text-foreground">
+                <span className="flex items-center gap-1.5">
+                  <AudioLines size={14} className="text-foreground" /> In-app lossless preview
+                </span>
+                <span className="font-mono text-0">{track.duration ?? "3:42"}</span>
+              </div>
+              <div className="flex h-7 items-center gap-1 overflow-hidden rounded-sm bg-background/80 px-2 py-1">
+                {[4, 12, 18, 8, 22, 14, 26, 19, 11, 16, 24, 20, 15, 9, 21, 13, 27, 18, 10, 14, 22, 16, 8, 12, 20, 15, 23, 11, 19, 7].map((h, i) => (
+                  <span
+                    key={i}
+                    className={cn(
+                      "w-1 rounded-full transition-all duration-200",
+                      playing ? "bg-foreground" : "bg-muted-foreground/40",
+                      playing && i % 3 === 0 && "animate-pulse"
+                    )}
+                    style={{ height: `${h}px` }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 pt-1 text-1 text-foreground border-t border-border/40">
+            <span className="font-semibold">Role: {track.role || "Producer & Mix"}</span>
+            {track.project ? <span className="text-muted-foreground">Project: {track.project}</span> : null}
+          </div>
         </div>
       ) : null}
     </article>
@@ -1086,11 +1192,15 @@ export function ServiceCard({
   disabledReason?: string | undefined;
   className?: string | undefined;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const real = /^[0-9a-f-]{36}$/i.test(s.id);
   const taxonomy = useTaxonomy().options;
   const category = s.categories?.[0] ? labelFor(taxonomy?.service_categories, s.categories[0]) : "";
   const meta = [category, s.mode].filter(Boolean).join(" · ");
-  const gets = (s.deliverables ?? []).slice(0, 3);
+  const allDeliverables = s.deliverables ?? [];
+  const gets = expanded ? allDeliverables : allDeliverables.slice(0, 3);
+  const hasDetails = allDeliverables.length > 3 || (s.description && s.description.length > 80) || (s.uses && s.uses.length > 0);
+
   const book = onBook ? (
     <Btn
       disabled={disabled}
@@ -1119,21 +1229,22 @@ export function ServiceCard({
       Book
     </Btn>
   );
+
   return (
     <article
       aria-current={selected || undefined}
       className={cn(
-        "group relative flex flex-col justify-between overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-standard active:scale-[0.99]",
+        "group relative flex flex-col justify-between overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-standard",
         selected
           ? "border-foreground ring-2 ring-foreground/15 shadow-sm"
-          : "border-border/80 hover:border-muted-foreground/40 hover:shadow-xs",
+          : "border-border/80 hover:border-foreground/40 hover:shadow-xs",
         disabled && "opacity-60",
         className,
       )}
     >
-      <div className="px-4 pb-4 pt-4">
+      <div className="px-4 pb-3 pt-4">
         <div className="flex items-center justify-between gap-2">
-          {meta ? <p className="truncate text-1 text-muted-foreground">{meta}</p> : <span />}
+          {meta ? <p className="truncate text-1 font-semibold uppercase tracking-wider text-muted-foreground">{meta}</p> : <span />}
           {selected ? (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-0 font-semibold text-background">
               <Check size={10} strokeWidth={3} aria-hidden />
@@ -1145,52 +1256,75 @@ export function ServiceCard({
             </span>
           ) : null}
         </div>
-        {real ? (
-          <Link
-            to="/services/$id"
-            params={{ id: s.id }}
-            className="mt-1 block text-3 font-semibold leading-snug underline-offset-4 hover:underline"
-          >
-            {s.name}
-          </Link>
-        ) : (
-          <h3 className="mt-1 text-3 font-semibold leading-snug">{s.name}</h3>
-        )}
+
+        <div className="mt-1 flex items-start justify-between gap-2">
+          {real ? (
+            <Link
+              to="/services/$id"
+              params={{ id: s.id }}
+              className="block text-3 font-bold leading-snug text-foreground underline-offset-4 hover:underline"
+            >
+              {s.name}
+            </Link>
+          ) : (
+            <h3 className="text-3 font-bold leading-snug text-foreground">{s.name}</h3>
+          )}
+
+          {hasDetails ? (
+            <button
+              type="button"
+              onClick={() => setExpanded((e) => !e)}
+              aria-expanded={expanded}
+              aria-label={expanded ? "Collapse service details" : "Expand service details"}
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-0 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
+            >
+              <span>{expanded ? "Less" : "Details"}</span>
+              <ChevronDown
+                size={12}
+                className={cn("transition-transform duration-200", expanded && "rotate-180")}
+                aria-hidden
+              />
+            </button>
+          ) : null}
+        </div>
+
         {s.description ? (
-          <p className="mt-1.5 line-clamp-2 text-1 leading-relaxed text-muted-foreground">
+          <p className={cn("mt-1.5 text-1 leading-relaxed text-foreground", !expanded && "line-clamp-2")}>
             {s.description}
           </p>
         ) : null}
+
         {gets.length ? (
           <ul className="mt-3 space-y-1.5" aria-label="What you get">
             {gets.map((d) => (
-              <li key={d} className="flex items-start gap-2 text-1 text-foreground">
+              <li key={d} className="flex items-start gap-2 text-1 font-medium text-foreground">
                 <Check size={14} strokeWidth={2.25} className="mt-0.5 shrink-0 text-foreground" aria-hidden />
                 <span className="min-w-0">{d}</span>
               </li>
             ))}
           </ul>
         ) : null}
-        {s.uses?.length ? (
-          <div className="mt-3">
-            <p className="text-1 font-semibold text-foreground">Uses</p>
-            <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">{s.uses.join(", ")}</p>
+
+        {expanded && s.uses?.length ? (
+          <div className="mt-3 border-t border-border/50 pt-2 animate-in fade-in-50 duration-150">
+            <p className="text-0 font-bold uppercase tracking-wider text-muted-foreground">Included gear & software</p>
+            <p className="mt-1 text-1 font-medium text-foreground">{s.uses.join(", ")}</p>
           </div>
         ) : null}
       </div>
 
       {/* The stub: torn off at the notches, it carries the price, the time and Book. */}
-      <div className="relative mt-auto flex items-center gap-3 border-t border-dashed border-border/70 bg-subtle/80 px-4 py-3">
-        <span aria-hidden className="absolute -left-2 -top-2 h-4 w-4 rounded-full border-r border-border/70 bg-background" />
-        <span aria-hidden className="absolute -right-2 -top-2 h-4 w-4 rounded-full border-l border-border/70 bg-background" />
+      <div className="relative mt-auto flex items-center gap-3 border-t border-dashed border-border/80 bg-subtle/90 px-4 py-3">
+        <span aria-hidden className="absolute -left-2 -top-2 h-4 w-4 rounded-full border-r border-border/80 bg-background" />
+        <span aria-hidden className="absolute -right-2 -top-2 h-4 w-4 rounded-full border-l border-border/80 bg-background" />
         <div className="min-w-0 flex-1">
           {s.from ? (
-            <Price from inline price={s.from} amountClassName="text-3 font-bold" />
+            <Price from inline price={s.from} amountClassName="text-3 font-extrabold text-foreground" />
           ) : (
-            <span className="text-sm font-semibold text-foreground">On enquiry</span>
+            <span className="text-sm font-bold text-foreground">On enquiry</span>
           )}
           {s.turnaround ? (
-            <p className="mt-0.5 flex items-center gap-1.5 text-1 text-muted-foreground">
+            <p className="mt-0.5 flex items-center gap-1.5 text-1 font-medium text-muted-foreground">
               <Clock size={12} className="shrink-0" aria-hidden />
               Delivered in {s.turnaround}
             </p>

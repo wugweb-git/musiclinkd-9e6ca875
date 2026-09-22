@@ -593,19 +593,34 @@ function Overview({
   owner: boolean;
   onTab: (tab: ProfileTab) => void;
 }) {
+  const [bioExpanded, setBioExpanded] = useState(false);
+  const fullBio = p.longBio || p.shortBio;
+
   return (
     <>
       <ProfileSection title="Professional summary">
         {p.shortBio ? (
-          <div className="rounded-lg bg-subtle p-4">
-            <p className="text-sm leading-relaxed text-muted-foreground">{p.shortBio}</p>
-            <button
-              type="button"
-              className="state-layer hit-area mt-3 inline-flex items-center gap-1 rounded-full text-1 font-semibold text-foreground transition-transform duration-125 ease-standard active:scale-97"
-              onClick={() => onTab("About")}
-            >
-              Read full profile <ChevronRight size={iconSize.sm} aria-hidden />
-            </button>
+          <div className="rounded-lg border border-border/80 bg-card p-4 transition-all">
+            <p className={cn("text-sm leading-relaxed text-foreground", !bioExpanded && "line-clamp-3")}>
+              {bioExpanded ? fullBio : p.shortBio}
+            </p>
+            <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5">
+              <button
+                type="button"
+                className="state-layer hit-area inline-flex items-center gap-1 rounded-full text-1 font-semibold text-foreground active:scale-95 transition-transform"
+                onClick={() => setBioExpanded((b) => !b)}
+              >
+                {bioExpanded ? "Show concise summary" : "Read full background"}{" "}
+                <ChevronRight
+                  size={iconSize.sm}
+                  className={cn("transition-transform duration-200", bioExpanded && "rotate-90")}
+                  aria-hidden
+                />
+              </button>
+              {p.yearsActive ? (
+                <span className="text-0 font-medium text-muted-foreground">{p.yearsActive}</span>
+              ) : null}
+            </div>
           </div>
         ) : (
           <ProfileEmpty
@@ -615,28 +630,135 @@ function Overview({
           />
         )}
       </ProfileSection>
+
       {p.featured ? (
         <ProfileSection title="Featured work">
           <FeaturedCard featured={p.featured} />
         </ProfileSection>
       ) : null}
+
       {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
         <ProfileSection title="Music identity">
-          <ChipGroupList>
-            <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
-            <ChipGroup label="Genres" icon={Music} items={p.genres} />
-            <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
-            <ChipGroup label="Languages" icon={Languages} items={p.languages} />
-          </ChipGroupList>
+          {/* Bento Grid Presentation */}
+          <div className="grid grid-cols-2 gap-2.5">
+            {/* Bento Card 1: Discipline & Type */}
+            {typesOf(p).length ? (
+              <div className="rounded-lg border border-border/80 bg-card p-3.5">
+                <div className="flex items-center gap-1.5 text-1 font-semibold text-foreground">
+                  <UserRound size={15} className="text-foreground" aria-hidden />
+                  <span>Discipline</span>
+                </div>
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {typesOf(p).map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold text-foreground border border-border/60"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Bento Card 2: Credentials & Rating */}
+            <div className="rounded-lg border border-border/80 bg-card p-3.5">
+              <div className="flex items-center gap-1.5 text-1 font-semibold text-foreground">
+                <Sparkles size={15} className="text-foreground" aria-hidden />
+                <span>Credentials</span>
+              </div>
+              <div className="mt-2.5 space-y-1">
+                {p.rating ? (
+                  <div className="flex items-center gap-1 text-1 font-bold text-foreground">
+                    <Star size={13} className="fill-foreground text-foreground" aria-hidden />
+                    <span>{p.rating}</span>
+                    <span className="text-0 font-normal text-muted-foreground">({p.reviewCount ?? 0} reviews)</span>
+                  </div>
+                ) : null}
+                {p.stats?.credits ? (
+                  <p className="text-0 font-medium text-foreground">{p.stats.credits} released credits</p>
+                ) : null}
+                {p.verification ? (
+                  <span className="inline-flex rounded-full bg-foreground px-2 py-0.5 text-0 font-bold text-background">
+                    Verified Pro
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Bento Card 3: Genres & Sonic Palette (Span 2) */}
+            {p.genres.length ? (
+              <div className="col-span-2 rounded-lg border border-border/80 bg-card p-3.5">
+                <div className="flex items-center justify-between text-1 font-semibold text-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Music size={15} className="text-foreground" aria-hidden />
+                    <span>Sonic Palette & Genres</span>
+                  </span>
+                  <span className="text-0 font-medium text-muted-foreground">{p.genres.length} genres</span>
+                </div>
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
+                  {p.genres.map((genre) => (
+                    <span
+                      key={genre}
+                      className="rounded-full bg-subtle px-3 py-1 text-1 font-semibold text-foreground border border-border/60"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Bento Card 4: Instruments */}
+            {p.instruments.length ? (
+              <div className="rounded-lg border border-border/80 bg-card p-3.5">
+                <div className="flex items-center gap-1.5 text-1 font-semibold text-foreground">
+                  <Guitar size={15} className="text-foreground" aria-hidden />
+                  <span>Instruments</span>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {p.instruments.map((inst) => (
+                    <span
+                      key={inst}
+                      className="rounded-full bg-subtle px-2 py-0.5 text-0 font-medium text-foreground"
+                    >
+                      {inst}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Bento Card 5: Languages */}
+            {p.languages.length ? (
+              <div className="rounded-lg border border-border/80 bg-card p-3.5">
+                <div className="flex items-center gap-1.5 text-1 font-semibold text-foreground">
+                  <Languages size={15} className="text-foreground" aria-hidden />
+                  <span>Languages</span>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {p.languages.map((lang) => (
+                    <span
+                      key={lang}
+                      className="rounded-full bg-subtle px-2 py-0.5 text-0 font-medium text-foreground"
+                    >
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
         </ProfileSection>
       ) : null}
+
       {p.audio.length ? (
         <ProfileSection
           title="Audio portfolio"
           action="View All"
           onAction={() => onTab("Portfolio")}
         >
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {p.audio.slice(0, 2).map((track) => (
               <AudioTrackCard
                 key={track.id}
@@ -656,6 +778,7 @@ function Overview({
           />
         </ProfileSection>
       )}
+
       {p.projects.length ? (
         <ProfileSection
           title="Selected projects"
@@ -669,6 +792,7 @@ function Overview({
           </div>
         </ProfileSection>
       ) : null}
+
       {p.services.length ? (
         <ProfileSection
           title="Available to work"
@@ -678,6 +802,7 @@ function Overview({
           <ServiceCard s={p.services[0]!} onEnquire={onHire} />
         </ProfileSection>
       ) : null}
+
       <RelationshipSections p={p} />
     </>
   );

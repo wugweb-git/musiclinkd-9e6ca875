@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   CalendarDays,
   Camera,
+  ChevronRight,
   ClipboardList,
   ImagePlus,
   LayoutGrid,
@@ -306,21 +307,103 @@ function BandProfile() {
                   </div>
                 </Card>
               ) : null}
-              <Row
-                icon={<CalendarDays size={iconSize.sm} />}
-                title="Next show"
-                subtitle={band.nextShow}
-                onClick={() => setTab("Shows")}
-              />
-              <Row
-                title="Band portfolio"
-                subtitle={
-                  band.portfolioCount
-                    ? `${band.portfolioCount} shared work items`
-                    : "No shared work yet"
-                }
-                onClick={() => setTab("Music")}
-              />
+              {/* Band Pulse Bento Grid */}
+              <div className="grid grid-cols-2 gap-2.5">
+                {/* Cell 1: Next Show */}
+                <button
+                  type="button"
+                  onClick={() => setTab("Shows")}
+                  className="rounded-lg border border-border/80 bg-card p-3.5 text-left transition-all hover:border-foreground/30 active:scale-98"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-1 font-semibold text-foreground">
+                      <CalendarDays size={15} className="text-foreground" aria-hidden />
+                      Next show
+                    </span>
+                    <ChevronRight size={14} className="text-muted-foreground" aria-hidden />
+                  </div>
+                  <p className="mt-2 text-sm font-bold text-foreground truncate">
+                    {band.nextShow || "Touring soon"}
+                  </p>
+                  <p className="mt-0.5 text-0 text-muted-foreground">View dates & tickets</p>
+                </button>
+
+                {/* Cell 2: Lineup */}
+                <button
+                  type="button"
+                  onClick={() => setTab("Members")}
+                  className="rounded-lg border border-border/80 bg-card p-3.5 text-left transition-all hover:border-foreground/30 active:scale-98"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-1 font-semibold text-foreground">
+                      <UsersRound size={15} className="text-foreground" aria-hidden />
+                      Lineup
+                    </span>
+                    <ChevronRight size={14} className="text-muted-foreground" aria-hidden />
+                  </div>
+                  <p className="mt-2 text-sm font-bold text-foreground">
+                    {band.members.length} members
+                  </p>
+                  <div className="mt-1 flex -space-x-1.5 overflow-hidden">
+                    {band.members.slice(0, 4).map((m) =>
+                      m.photo ? (
+                        <img
+                          key={m.key}
+                          src={m.photo}
+                          alt=""
+                          className="inline-block h-5 w-5 rounded-full ring-1 ring-card object-cover"
+                        />
+                      ) : (
+                        <span
+                          key={m.key}
+                          className="inline-block h-5 w-5 rounded-full bg-subtle ring-1 ring-card"
+                        />
+                      ),
+                    )}
+                  </div>
+                </button>
+
+                {/* Cell 3: Booking & Rate */}
+                <div className="rounded-lg border border-border/80 bg-card p-3.5">
+                  <span className="text-1 font-semibold text-foreground">Booking rate</span>
+                  <div className="mt-2">
+                    {band.rate ? (
+                      <Price price={band.rate} amountClassName="text-2 font-bold text-foreground" />
+                    ) : (
+                      <span className="text-sm font-bold text-foreground">On enquiry</span>
+                    )}
+                  </div>
+                  {band.availability ? (
+                    <div className="mt-1.5">
+                      <StatusPill
+                        label={band.availability}
+                        tone={band.availability === "Available" ? "good" : "warn"}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+
+                {/* Cell 4: Music & Portfolio */}
+                <button
+                  type="button"
+                  onClick={() => setTab("Music")}
+                  className="rounded-lg border border-border/80 bg-card p-3.5 text-left transition-all hover:border-foreground/30 active:scale-98"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-1 font-semibold text-foreground">
+                      <Music size={15} className="text-foreground" aria-hidden />
+                      Discography
+                    </span>
+                    <ChevronRight size={14} className="text-muted-foreground" aria-hidden />
+                  </div>
+                  <p className="mt-2 text-sm font-bold text-foreground">
+                    {band.releases.length} releases
+                  </p>
+                  <p className="mt-0.5 text-0 text-muted-foreground">
+                    {band.portfolioCount ? `${band.portfolioCount} shared works` : "Stream in-app"}
+                  </p>
+                </button>
+              </div>
               {/* Live videos, rider and stage plot: hidden while empty, an Add row for managers. */}
               {band.liveVideos.length ? (
                 <section>
@@ -481,18 +564,18 @@ function BandProfile() {
                             <img
                               src={r.cover}
                               alt=""
-                              className="h-14 w-14 rounded-[12px] object-cover"
+                              className="h-14 w-14 rounded-sm object-cover"
                               loading="lazy"
                             />
                           ) : (
                             <div
                               aria-hidden
-                              className="h-14 w-14 shrink-0 rounded-[12px] bg-background"
+                              className="h-14 w-14 shrink-0 rounded-sm bg-background"
                             />
                           )}
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold">{r.title}</p>
-                            <p className="truncate text-1 text-muted-foreground">
+                            <p className="truncate text-sm font-semibold text-foreground">{r.title}</p>
+                            <p className="truncate text-1 font-medium text-muted-foreground">
                               {joinParts(r.kind, r.year ? String(r.year) : "")}
                             </p>
                           </div>

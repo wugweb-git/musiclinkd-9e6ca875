@@ -752,30 +752,33 @@ function EditProfile() {
       <TopBar title="Edit profile" subtitle={`${gaps.percent}% complete`} back="/profile" />
       <main className="px-5 pb-40 pt-5">
         {gaps.missing.length ? (
-          <div className="mb-4 rounded-lg bg-subtle p-4">
-            <p className="text-1 font-semibold">Finish your profile</p>
-            <p className="mt-1 text-1 leading-relaxed text-muted-foreground">
+          <div className="mb-4 rounded-lg border border-border/80 bg-card p-4 shadow-xs">
+            <p className="text-1 font-bold text-foreground">Finish your profile</p>
+            <p className="mt-1 text-1 leading-relaxed text-foreground">
               Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
             </p>
           </div>
         ) : null}
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {sections.map((section) => {
             const isOpen = open === section.id;
             return (
-              <section key={section.id} className="overflow-hidden rounded-lg bg-subtle">
+              <section
+                key={section.id}
+                className="overflow-hidden rounded-lg border border-border/80 bg-card transition-all duration-150"
+              >
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : section.id)}
                   aria-expanded={isOpen}
-                  className="flex min-h-[72px] w-full items-center gap-3 px-4 text-left"
+                  className="flex min-h-[72px] w-full items-center gap-3 px-4 text-left active:bg-subtle/50 transition-colors"
                 >
                   <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-success-container text-success" : "bg-background text-foreground"}`}
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${section.done ? "bg-foreground text-background" : "bg-subtle text-foreground border border-border"}`}
                   >
                     {section.done ? (
-                      <Check size={iconSize.sm} aria-hidden />
+                      <Check size={iconSize.sm} strokeWidth={2.5} aria-hidden />
                     ) : (
                       <span aria-hidden className="text-1 font-bold">
                         •
@@ -783,27 +786,27 @@ function EditProfile() {
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold">{section.label}</span>
-                    <span className="mt-0.5 block truncate text-1 text-muted-foreground">
+                    <span className="block text-sm font-bold text-foreground">{section.label}</span>
+                    <span className="mt-0.5 block truncate text-1 font-medium text-muted-foreground">
                       {section.detail}
                     </span>
                   </span>
                   {isOpen ? (
                     <ChevronDown
                       size={iconSize.sm}
-                      className="shrink-0 text-muted-foreground"
+                      className="shrink-0 text-foreground"
                       aria-hidden
                     />
                   ) : (
                     <ChevronRight
                       size={iconSize.sm}
-                      className="shrink-0 text-muted-foreground"
+                      className="shrink-0 text-foreground"
                       aria-hidden
                     />
                   )}
                 </button>
                 {isOpen ? (
-                  <div className="border-t border-border bg-subtle/50 px-4 pb-4 pt-3">
+                  <div className="border-t border-border/70 bg-subtle/30 px-4 pb-4 pt-3.5 animate-in fade-in-50 duration-150">
                     {section.body}
                   </div>
                 ) : null}
