@@ -20,7 +20,36 @@ export type MyStudio = {
   hourly_rate_paise: number | null;
   operating_hours: string | null;
   cancellation_policy: string | null;
-  rooms: { id: string; name: string; hourly_rate_paise: number | null }[];
+  /** studios.add_ons — extras a session can have, shown on /booking/$id. */
+  add_ons: StudioAddOnRow[];
+  rooms: {
+    id: string;
+    name: string;
+    hourly_rate_paise: number | null;
+    /** studio_rooms.tiers — package rates beside the hourly one ("Half day", 4 hours). */
+    tiers: RoomTierRow[];
+  }[];
+};
+
+/**
+ * One stored package rate. `unit` is the booking screens' duration unit (hour, halfDay, fullDay,
+ * session); rows written before it existed may lack it. Any other stored keys ride along on save.
+ */
+export type RoomTierRow = {
+  label: string;
+  hours: number | null;
+  price_paise: number | null;
+  unit?: string | null;
+};
+
+/** One stored add-on. `unit` "hour" is charged per hour, anything else per that unit. */
+export type StudioAddOnRow = {
+  name: string;
+  price_paise: number | null;
+  unit: string | null;
+  description?: string | null;
+  available?: boolean;
+  quantity?: boolean;
 };
 
 export const getMyStudio = createServerFn({ method: "GET" })
@@ -29,12 +58,90 @@ export const getMyStudio = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("studios" as never)
       .select(
-        "id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, rooms:studio_rooms(id, name, hourly_rate_paise)",
+        "id, slug, name, hourly_rate_paise, operating_hours, cancellation_policy, add_ons, rooms:studio_rooms(id, name, hourly_rate_paise, tiers, sort_order)",
       )
       .eq("owner_profile_id", context.userId)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    return (data ?? null) as unknown as MyStudio | null;
+    if (!data) return null;
+    const row = data as unknown as MyStudio & {
+      rooms: (MyStudio["rooms"][number] & { sort_order?: number | null })[];
+    };
+    return {
+      ...row,
+      add_ons: Array.isArray(row.add_ons) ? row.add_ons : [],
+      rooms: [...row.rooms]
+        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+        .map(({ sort_order: _order, ...room }) => ({
+          ...room,
+          tiers: Array.isArray(room.tiers) ? room.tiers : [],
+        })),
+    };
+  });
+
+const PAISE = z.number().int().min(0).max(100_000_000).nullable();
+
+/** A room's package rates, replacing the stored list. Scoped to the owner's own studio. */
+export const updateStudioRoomTiers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        roomId: z.string().uuid(),
+        tiers: z
+          .array(
+            z
+              .object({
+                label: z.string().trim().min(1).max(60),
+                hours: z.number().int().min(1).max(24).nullable(),
+                price_paise: PAISE,
+                unit: z.enum(["hour", "halfDay", "fullDay", "session"]).nullable().optional(),
+              })
+              .passthrough(),
+          )
+          .max(12),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const client = db(context.supabase);
+    const studioId = await myStudioId(client, context.userId);
+    const { error } = await client
+      .from("studio_rooms")
+      .update({ tiers: data.tiers } as never)
+      .eq("id", data.roomId)
+      .eq("studio_id", studioId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** The studio's add-ons, replacing the stored list. */
+export const updateMyStudioAddOns = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        addOns: z
+          .array(
+            z
+              .object({
+                name: z.string().trim().min(1).max(120),
+                price_paise: PAISE,
+                unit: z.string().trim().max(30).nullable(),
+              })
+              .passthrough(),
+          )
+          .max(40),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const { error } = await db(context.supabase)
+      .from("studios")
+      .update({ add_ons: data.addOns } as never)
+      .eq("owner_profile_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 export const updateMyStudio = createServerFn({ method: "POST" })
