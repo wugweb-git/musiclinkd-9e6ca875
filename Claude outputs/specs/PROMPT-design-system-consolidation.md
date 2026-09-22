@@ -33,7 +33,7 @@ not six separate tasks.
    style instances already flagged in the Phase 8 estimate. This list is what steps 3-5 execute
    against.
 
-3. ui-ux-pro-max (if installed) — for any component step 2 says needs rebuilding, not
+3. /ui-ux-pro-max (if installed) — for any component step 2 says needs rebuilding, not
    patching, pull proportion/spacing-rhythm/icon-font-pairing reference from it. It never
    overrides step 1's tokens; if it suggests a color or type value that conflicts with step 1,
    keep step 1's and note the conflict.
