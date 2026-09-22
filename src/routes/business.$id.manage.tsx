@@ -11,7 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, Row, EmptyState, Dialog, StatusPill } from "@/components/ml/kit";
+import { Card, Row, EmptyState, Dialog, StatusPill, SoonBadge } from "@/components/ml/kit";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -162,9 +162,8 @@ function ManageBusiness() {
           <Row
             icon={<ShieldCheck size={iconSize.sm} />}
             title="Business verification"
-            subtitle={b.verified ? "Verified — renews yearly" : "Get the verified badge"}
-            to="/business/$id/verification"
-            params={{ id }}
+            subtitle="Get the verified badge"
+            right={<SoonBadge />}
           />
         </div>
 

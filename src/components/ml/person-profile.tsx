@@ -12,7 +12,6 @@ import {
   Clock3,
   CreditCard,
   ExternalLink,
-  FolderKanban,
   Globe2,
   Guitar,
   Heart,
@@ -38,17 +37,15 @@ import {
 } from "lucide-react";
 import { profileIdByUsername, type PersonProfile, type profileInsights } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
-import { cn, joinParts } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
 import { Price } from "./kit";
 import {
   AudioTrackCard,
-  CollaboratorCard,
   CompletionCard,
   ExperienceCard,
   FeaturedCard,
-  NoCover,
   MarketEntryCard,
   MoreSheet,
   OpportunityCard,
@@ -58,7 +55,6 @@ import {
   ProfileSection,
   StackSection,
   ClampedText,
-  ProjectCard,
   ReviewCard,
   ReviewRail,
   ServiceCard,
@@ -92,14 +88,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
 
-type ProfileTab = "Overview" | "Portfolio" | "Projects" | "Services" | "About" | "Reviews";
+type ProfileTab = "Overview" | "Portfolio" | "Services" | "About" | "Reviews";
 
 /** Each section carries an icon, so an unselected tab can be the icon alone. */
 const tabs: { key: ProfileTab; icon: LucideIcon; solid: SolidIcon; move: Move }[] = [
   { key: "Overview", icon: Sparkles, solid: "sparkle", move: "spin" },
   { key: "About", icon: Info, solid: "info", move: "hop" },
   { key: "Portfolio", icon: Music, solid: "music", move: "dance" },
-  { key: "Projects", icon: FolderKanban, solid: "folder", move: "swing" },
   { key: "Services", icon: BriefcaseBusiness, solid: "briefcase", move: "swing" },
   { key: "Reviews", icon: Star, solid: "star", move: "stamp" },
 ];
@@ -208,7 +203,6 @@ export function PersonProfileExperience({
         {!owner && tab === "Portfolio" ? (
           <Portfolio p={p} playingId={playingId} onToggleTrack={toggleTrack} owner={owner} />
         ) : null}
-        {!owner && tab === "Projects" ? <Projects p={p} owner={owner} /> : null}
         {!owner && tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
         {!owner && tab === "About" ? <About p={p} /> : null}
         {!owner && tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
@@ -763,20 +757,6 @@ function Overview({
         </ProfileSection>
       )}
 
-      {p.projects.length ? (
-        <ProfileSection
-          title="Selected projects"
-          action="View All"
-          onAction={() => onTab("Projects")}
-        >
-          <div className="space-y-2">
-            {p.projects.slice(0, 2).map((project) => (
-              <ProjectCard key={project.id} p={project} />
-            ))}
-          </div>
-        </ProfileSection>
-      ) : null}
-
       {p.services.length ? (
         <ProfileSection
           title="Available to work"
@@ -898,16 +878,6 @@ function OwnerStack({
         )}
       </StackSection>
 
-      {p.projects.length ? (
-        <StackSection title="Projects" editTo="/portfolio" collapsible>
-          <div className="space-y-2">
-            {p.projects.slice(0, 3).map((project) => (
-              <ProjectCard key={project.id} p={project} />
-            ))}
-          </div>
-        </StackSection>
-      ) : null}
-
       {p.experience.length ? (
         <StackSection title="Experience" editTo={edit} editSection="experience" collapsible>
           <div className="space-y-2">
@@ -991,16 +961,6 @@ function OwnerStack({
           <ReviewInviteCard />
         </div>
       </StackSection>
-
-      {p.collaborators.length ? (
-        <StackSection title="Works with" collapsible>
-          <div className="rail flex gap-4 overflow-x-auto pb-1 no-scrollbar">
-            {p.collaborators.map((collaborator) => (
-              <CollaboratorCard key={collaborator.id} c={collaborator} />
-            ))}
-          </div>
-        </StackSection>
-      ) : null}
 
       {p.opportunities.length ? (
         <StackSection title="Opportunities" collapsible>
@@ -1126,75 +1086,6 @@ function Portfolio({
           )}
         </ProfileSection>
       ) : null}
-    </>
-  );
-}
-
-function Projects({ p, owner }: { p: PersonProfile; owner: boolean }) {
-  return (
-    <>
-      <ProfileSection title="Projects">
-        {p.projects.length ? (
-          <div className="space-y-2">
-            {p.projects.map((project) => (
-              <ProjectCard key={project.id} p={project} />
-            ))}
-          </div>
-        ) : (
-          <ProfileEmpty
-            title="No projects yet"
-            body="Released work, film scores and collaborations will appear here."
-            cta={owner ? addWork("Add project", "project") : undefined}
-          />
-        )}
-      </ProfileSection>
-      <ProfileSection title="Discography">
-        {p.discography.length ? (
-          <div className="grid grid-cols-2 gap-3">
-            {p.discography.map((release) => (
-              <article key={release.id} className="overflow-hidden rounded-lg bg-subtle">
-                {release.cover ? (
-                  <img
-                    src={release.cover}
-                    alt={release.title}
-                    loading="lazy"
-                    className="aspect-square w-full object-cover"
-                  />
-                ) : (
-                  <NoCover className="aspect-square w-full" />
-                )}
-                <div className="p-3">
-                  <h3 className="truncate text-1">{release.title}</h3>
-                  <p className="mt-1 truncate text-1 text-muted-foreground">
-                    {joinParts(release.kind, release.year)}
-                  </p>
-                  <p className="mt-1 truncate text-1 font-semibold text-foreground">
-                    {release.label}
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <ProfileEmpty
-            title="No releases yet"
-            body="Discography and credited releases will appear here."
-            cta={owner ? addWork("Add release", "album") : undefined}
-          />
-        )}
-      </ProfileSection>
-      <ProfileSection title="Experience & credits">
-        {p.experience.length ? (
-          <div className="divide-y divide-border rounded-lg bg-subtle">
-            {p.experience.map((item) => (
-              <ExperienceCard key={item.id} e={item} />
-            ))}
-          </div>
-        ) : (
-          // No owner button: nothing in the app adds experience yet.
-          <ProfileEmpty title="No credits yet" body="Professional experience will appear here." />
-        )}
-      </ProfileSection>
     </>
   );
 }
@@ -1364,15 +1255,6 @@ function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; 
 function RelationshipSections({ p }: { p: PersonProfile }) {
   return (
     <>
-      {p.collaborators.length ? (
-        <ProfileSection title="Works with">
-          <div className="rail flex gap-4 overflow-x-auto pb-1 no-scrollbar">
-            {p.collaborators.map((collaborator) => (
-              <CollaboratorCard key={collaborator.id} c={collaborator} />
-            ))}
-          </div>
-        </ProfileSection>
-      ) : null}
       {p.opportunities.length ? (
         <ProfileSection title="Opportunities">
           <div className="space-y-2">

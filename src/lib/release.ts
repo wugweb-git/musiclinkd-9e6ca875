@@ -14,6 +14,7 @@ export const release: Record<string, Stage> = {
   "/messages": "beta",
   "/notifications": "beta",
   "/collab": "soon",
+  "/verification": "soon",
   "/bands": "beta",
   "/reviews": "beta",
   "/bookings": "beta",
