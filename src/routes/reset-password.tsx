@@ -5,6 +5,7 @@ import {
   AuthHeading,
   AuthNotice,
   AuthScreen,
+  LegalNote,
   PasswordInput,
   PasswordRequirements,
   classifyAuthError,
@@ -14,6 +15,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { TextLink } from "@/components/ml/links";
+import { MadeByWugweb } from "@/components/ml/kit";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
@@ -92,11 +94,19 @@ function ResetPassword() {
   if (done) {
     return (
       <AuthScreen>
-        <AuthHeading title="Password updated" sub="You can now sign in with your new password." />
-        {/* The splash sends a finished profile to Home and an unfinished one to onboarding. */}
-        <Btn className="w-full" onClick={() => void navigate({ to: "/", replace: true })}>
-          Continue to MusicLinkd
-        </Btn>
+        <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+          <div className="my-auto py-1">
+            <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+              <AuthHeading title="Password updated" sub="You can now sign in with your new password." />
+              <Btn className="w-full h-11 sm:h-12" onClick={() => void navigate({ to: "/", replace: true })}>
+                Continue to MusicLinkd
+              </Btn>
+            </div>
+          </div>
+          <div className="shrink-0 pt-1 text-center">
+            <MadeByWugweb />
+          </div>
+        </div>
       </AuthScreen>
     );
   }
@@ -104,57 +114,84 @@ function ResetPassword() {
   if (!valid) {
     return (
       <AuthScreen>
-        <AuthHeading
-          title="This reset link has expired"
-          sub="Reset links work once and expire after 60 minutes."
-        />
-        <Btn className="w-full" onClick={() => void navigate({ to: "/auth/forgot" })}>
-          Send a New Link
-        </Btn>
-        <p className="mt-6 text-center text-1 text-muted-foreground">
-          <TextLink to="/auth/phone">Back to Sign In</TextLink>
-        </p>
+        <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+          <div className="my-auto py-1">
+            <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+              <AuthHeading
+                title="This reset link has expired"
+                sub="Reset links work once and expire after 60 minutes."
+              />
+              <Btn className="w-full h-11 sm:h-12" onClick={() => void navigate({ to: "/auth/forgot" })}>
+                Send a New Link
+              </Btn>
+              <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground">
+                <TextLink to="/auth/phone">Back to Sign In</TextLink>
+              </p>
+            </div>
+          </div>
+          <div className="shrink-0 pt-1 text-center">
+            <MadeByWugweb />
+          </div>
+        </div>
       </AuthScreen>
     );
   }
 
   return (
     <AuthScreen>
-      <AuthHeading
-        title="Set a new password"
-        sub="Choose something you have not used on MusicLinkd before."
-      />
-      {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-      <form
-        noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!busy) void save();
-        }}
-      >
-        <PasswordInput
-          label="New password"
-          value={password}
-          onChange={setPassword}
-          onBlur={() => fields.touch("password")}
-          error={fields.errorFor("password", passwordProblem)}
-          placeholder="At least 8 characters"
-          autoComplete="new-password"
-          below={<PasswordRequirements value={password} />}
-        />
-        <PasswordInput
-          label="Confirm password"
-          value={confirm}
-          onChange={setConfirm}
-          onBlur={() => fields.touch("confirm")}
-          error={fields.errorFor("confirm", confirmProblem)}
-          placeholder="Same password again"
-          autoComplete="new-password"
-        />
-        <Btn type="submit" className="mt-2 w-full" loading={busy}>
-          Save New Password
-        </Btn>
-      </form>
+      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+        <div className="my-auto py-1">
+          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+            <AuthHeading
+              title="Set a new password"
+              sub="Choose something you have not used on MusicLinkd before."
+            />
+            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+            <form
+              noValidate
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!busy) void save();
+              }}
+            >
+              <PasswordInput
+                label="New password"
+                value={password}
+                onChange={setPassword}
+                onBlur={() => fields.touch("password")}
+                error={fields.errorFor("password", passwordProblem)}
+                placeholder="At least 8 characters"
+                autoComplete="new-password"
+                className="mb-2"
+                below={<PasswordRequirements value={password} />}
+              />
+              <PasswordInput
+                label="Confirm password"
+                value={confirm}
+                onChange={setConfirm}
+                onBlur={() => fields.touch("confirm")}
+                error={fields.errorFor("confirm", confirmProblem)}
+                placeholder="Same password again"
+                autoComplete="new-password"
+                className="mb-2.5"
+              />
+              <Btn type="submit" className="mt-1 w-full h-11 sm:h-12 text-sm font-semibold shadow-xs" loading={busy}>
+                Save New Password
+              </Btn>
+            </form>
+          </div>
+          <p className="mt-3.5 text-center text-xs sm:text-sm text-muted-foreground">
+            <TextLink to="/auth/phone">Back to Sign In</TextLink>
+          </p>
+        </div>
+
+        <div className="shrink-0 pt-1 text-center">
+          <LegalNote className="mt-0" />
+          <div className="mt-0.5">
+            <MadeByWugweb />
+          </div>
+        </div>
+      </div>
     </AuthScreen>
   );
 }

@@ -40,19 +40,19 @@ export function AuthScreen({
   return (
     <div
       className={cn(
-        "mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-app flex-col bg-background overflow-hidden",
+        "mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-app flex-col bg-background overflow-hidden select-none",
         className,
       )}
     >
-      <div className="flex flex-1 flex-col justify-between px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] overflow-y-auto [@media(min-height:640px)]:overflow-hidden">
+      <div className="flex flex-1 min-h-0 flex-col justify-between px-4 sm:px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] overflow-hidden">
         {back ? (
-          <div className="-ml-2 mb-2 flex h-10 shrink-0 items-center">
+          <div className="-ml-2 mb-1.5 flex h-9 shrink-0 items-center">
             <AuthBackButton back={back} />
           </div>
         ) : brand ? (
-          <Brand compact className="mb-2 shrink-0" />
+          <Brand compact className="mb-1.5 shrink-0" />
         ) : null}
-        <div className="flex flex-1 flex-col justify-between">
+        <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
           {children}
         </div>
       </div>
@@ -126,11 +126,19 @@ export function Brand({
   );
 }
 
-export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
+export function AuthHeading({
+  title,
+  sub,
+  className,
+}: {
+  title: string;
+  sub?: string | undefined;
+  className?: string | undefined;
+}) {
   return (
-    <div className="mb-6">
-      <h1 className="text-3 font-bold tracking-tight text-foreground leading-tight">{title}</h1>
-      {sub ? <p className="mt-1.5 text-1 leading-relaxed text-muted-foreground">{sub}</p> : null}
+    <div className={cn("mb-3.5 sm:mb-4", className)}>
+      <h1 className="text-2.5 sm:text-3 font-bold tracking-tight text-foreground leading-tight">{title}</h1>
+      {sub ? <p className="mt-1 text-1 leading-snug text-muted-foreground">{sub}</p> : null}
     </div>
   );
 }
@@ -251,11 +259,11 @@ export function TextField({
   const messageId = `${id}-message`;
   const invalid = Boolean(error);
   return (
-    <div className={cn("group mb-4", className)}>
+    <div className={cn("group mb-3", className)}>
       <label
         htmlFor={id}
         className={cn(
-          "mb-1.5 block text-sm font-medium transition-colors duration-125 ease-standard",
+          "mb-1 block text-sm font-medium transition-colors duration-125 ease-standard",
           invalid ? "text-destructive" : "text-muted-foreground group-focus-within:text-foreground",
         )}
       >
@@ -263,7 +271,7 @@ export function TextField({
       </label>
       <div
         className={cn(
-          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
+          "press-brand flex h-11 sm:h-12 items-center gap-2 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
           invalid
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
             : "border-border focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
@@ -537,7 +545,7 @@ export function CodeInput({
         type="button"
         key={shakeKey}
         onClick={() => ref.current?.focus()}
-        className={cn("mb-6 flex w-full justify-between gap-2.5", shakeKey ? "animate-shake" : "")}
+        className={cn("mb-4 sm:mb-5 flex w-full justify-between gap-2 sm:gap-2.5", shakeKey ? "animate-shake" : "")}
         aria-label={label}
       >
         {Array.from({ length }, (_, i) => {
@@ -549,7 +557,7 @@ export function CodeInput({
               style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
                 complete && "animate-meter",
-                "flex h-14 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-bold transition-all duration-150 ease-standard shadow-xs",
+                "flex h-12 sm:h-13 flex-1 items-center justify-center rounded-sm border bg-card text-2.5 sm:text-3 font-bold transition-all duration-150 ease-standard shadow-xs",
                 invalid
                   ? "border-destructive bg-danger-container/20 text-destructive"
                   : active
@@ -653,7 +661,7 @@ export function useFieldErrors<N extends string>() {
 
 export function LegalNote({ className }: { className?: string | undefined } = {}) {
   return (
-    <p className={cn("mt-4 text-center text-1 leading-relaxed text-muted-foreground", className)}>
+    <p className={cn("mt-2 text-center text-0 sm:text-1 leading-snug text-muted-foreground", className)}>
       By continuing you agree to our{" "}
       <TextLink to="/legal/terms" className="underline underline-offset-2">
         Terms
@@ -706,30 +714,47 @@ export function AuthStatus({
   const t = statusTone[tone];
   return (
     <AuthScreen back={back}>
-      <div className={cn("mb-6 flex h-14 w-14 items-center justify-center rounded-sm", t.tile)}>
-        <Icon size={24} className={t.icon} aria-hidden />
-      </div>
-      <AuthHeading title={title} sub={body} />
-      {list?.length ? (
-        <div className="mb-6 rounded-lg bg-subtle p-4">
-          {listTitle ? <p className="text-sm font-semibold">{listTitle}</p> : null}
-          <ul className="mt-2 list-disc space-y-1.5 pl-4 text-1 leading-relaxed text-muted-foreground">
-            {list.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
+      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+        <div className="my-auto py-1">
+          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+            <div className={cn("mb-4 flex h-12 w-12 items-center justify-center rounded-sm", t.tile)}>
+              <Icon size={22} className={t.icon} aria-hidden />
+            </div>
+            <AuthHeading title={title} sub={body} />
+            {list?.length ? (
+              <div className="mb-4 rounded-lg bg-subtle p-3.5">
+                {listTitle ? <p className="text-xs sm:text-sm font-semibold">{listTitle}</p> : null}
+                <ul className="mt-1.5 list-disc space-y-1 pl-4 text-0 sm:text-1 leading-snug text-muted-foreground">
+                  {list.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            <div className="space-y-2.5">{actions}</div>
+            <TrustNote>{note}</TrustNote>
+          </div>
+          {footer ? <p className="mt-3.5 text-center text-xs sm:text-sm text-muted-foreground">{footer}</p> : null}
         </div>
-      ) : null}
-      <div className="space-y-3">{actions}</div>
-      <TrustNote>{note}</TrustNote>
-      {footer ? <p className="mt-6 text-center text-1 text-muted-foreground">{footer}</p> : null}
+      </div>
     </AuthScreen>
   );
 }
 
-export function TrustNote({ children }: { children: ReactNode }) {
+export function TrustNote({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string | undefined;
+}) {
   return (
-    <p className="mt-5 flex items-start gap-2 text-1 leading-relaxed text-muted-foreground">
+    <p
+      className={cn(
+        "mt-3 flex items-start gap-1.5 text-0 sm:text-1 leading-normal text-muted-foreground",
+        className,
+      )}
+    >
       <ShieldCheck size={iconSize.sm} className="mt-0.5 shrink-0 text-primary" />
       <span>{children}</span>
     </p>

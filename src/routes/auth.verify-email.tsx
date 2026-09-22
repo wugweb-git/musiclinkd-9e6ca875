@@ -10,6 +10,7 @@ import {
   AuthScreen,
   AuthTextButton,
   CodeInput,
+  LegalNote,
   TrustNote,
   classifyAuthError,
   useCountdown,
@@ -17,6 +18,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { iconSize } from "@/lib/tokens";
+import { MadeByWugweb } from "@/components/ml/kit";
 
 type Search = { email: string };
 
@@ -95,57 +97,78 @@ function VerifyEmail() {
 
   return (
     <AuthScreen back={{ to: "/auth" }}>
-      <AuthHeading
-        title="Check your email"
-        sub={
-          email
-            ? `Enter the 6-digit code we sent to ${email}.`
-            : "Enter the 6-digit code we emailed you."
-        }
-      />
+      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+        <div className="my-auto py-1">
+          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+            <AuthHeading
+              title="Check your email"
+              sub={
+                email
+                  ? `Enter the 6-digit code we sent to ${email}.`
+                  : "Enter the 6-digit code we emailed you."
+              }
+            />
 
-      {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-      <CodeInput
-        value={code}
-        onChange={(v) => {
-          setError(null);
-          setCode(v);
-        }}
-        onComplete={(v) => void verify(v)}
-        invalid={Boolean(error)}
-        shakeKey={misses}
-        label="Email code"
-      />
+            <CodeInput
+              value={code}
+              onChange={(v) => {
+                setError(null);
+                setCode(v);
+              }}
+              onComplete={(v) => void verify(v)}
+              invalid={Boolean(error)}
+              shakeKey={misses}
+              label="Email code"
+            />
 
-      <Btn
-        className="w-full"
-        loading={busy}
-        disabled={code.length !== 6 || !email}
-        onClick={() => void verify(code)}
-      >
-        Verify and Continue
-      </Btn>
+            <Btn
+              className="w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
+              loading={busy}
+              disabled={code.length !== 6 || !email}
+              onClick={() => void verify(code)}
+            >
+              Verify & Continue
+            </Btn>
 
-      <p className="mt-5 flex justify-center text-1 text-muted-foreground">
-        {countdown.seconds > 0 ? (
-          <span aria-live="polite">
-            Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
-          </span>
-        ) : (
-          <AuthTextButton icon={<RotateCw size={iconSize.sm} />} onClick={() => void resend()}>
-            Resend Code
-          </AuthTextButton>
-        )}
-      </p>
+            <p className="mt-3.5 flex justify-center text-0 sm:text-1 text-muted-foreground">
+              {countdown.seconds > 0 ? (
+                <span aria-live="polite" className="rounded-full bg-subtle px-3 py-1 font-medium">
+                  Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
+                </span>
+              ) : (
+                <AuthTextButton
+                  icon={<RotateCw size={iconSize.sm} />}
+                  onClick={() => void resend()}
+                  className="rounded-full bg-subtle px-3 py-1 font-medium hover:text-foreground"
+                >
+                  Resend Code
+                </AuthTextButton>
+              )}
+            </p>
 
-      <TrustNote>Not there? Check spam and promotions.</TrustNote>
+            <TrustNote>Not there? Check spam and promotions.</TrustNote>
+          </div>
 
-      <p className="mt-6 flex justify-center text-1">
-        <AuthLink to="/auth" icon={<Pencil size={iconSize.sm} />}>
-          Use a Different Email
-        </AuthLink>
-      </p>
+          <p className="mt-3.5 flex justify-center text-xs sm:text-sm">
+            <AuthLink
+              to="/auth"
+              icon={<Pencil size={iconSize.sm} />}
+              className="font-medium text-muted-foreground hover:text-foreground"
+            >
+              Use a Different Email
+            </AuthLink>
+          </p>
+        </div>
+
+        <div className="shrink-0 pt-1 text-center">
+          <LegalNote className="mt-0" />
+          <div className="mt-0.5">
+            <MadeByWugweb />
+          </div>
+        </div>
+      </div>
     </AuthScreen>
   );
 }
