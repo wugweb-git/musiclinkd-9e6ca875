@@ -268,6 +268,9 @@ function WelcomeScreen() {
           </div>
 
           <div className="pt-1 pb-1">
+            <h1 className="sr-only">
+              MusicLinkd — India&apos;s professional network for musicians, producers and studios
+            </h1>
             <div className="flex items-center justify-between gap-2">
               <div
                 className={cn(
@@ -277,10 +280,10 @@ function WelcomeScreen() {
                 style={beat(1)}
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-pink-strong animate-pulse" />
-                India's music network
+                India&apos;s music network
               </div>
 
-              <div className="text-0 font-bold tracking-tight text-foreground">
+              <div className="text-0 font-bold tracking-tight text-foreground" aria-label="Tagline: Connect, collaborate, create">
                 <span className={cn("inline-block", rise)} style={beat(2)}>Connect. </span>
                 <span className={cn("inline-block", rise)} style={beat(3)}>Collab. </span>
                 <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>Create.</span>

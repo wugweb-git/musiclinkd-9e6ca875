@@ -44,7 +44,7 @@ import {
 import { Card, StatusPill, EmptyState, Price, Row } from "@/components/ml/kit";
 import { CoverHero, ImagePickButton, StackSection } from "@/components/ml/profile";
 import { GalleryView } from "@/components/ml/gallery";
-import { SectionTabs, type Move, type SolidIcon } from "@/components/ml/tab-icon";
+import { SectionTabs, StateIcon, type Move, type SolidIcon } from "@/components/ml/tab-icon";
 import { bandRoleCopy } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
@@ -98,6 +98,7 @@ function BandProfile() {
   const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [tab, setTab] = useState<BandTab>(search.tab ?? "Overview");
   const [sheet, setSheet] = useState<Sheet>(null);
+  const [following, setFollowing] = useState(false);
   const navigate = useNavigate();
   const router = useRouter();
   const saveImage = useServerFn(setCollabImage);
@@ -124,6 +125,43 @@ function BandProfile() {
   const share = () =>
     void shareLink({ title: band.name, url: `${window.location.origin}/bands/${band.id}` });
 
+  function onToggleFollow() {
+    if (!band) return;
+    if (!user) {
+      toast.info("Please sign in to follow this band.");
+      return;
+    }
+    const next = !following;
+    setFollowing(next);
+    toast.success(next ? `Now following ${band.name}` : `Unfollowed ${band.name}`);
+  }
+
+  const bandStructuredData = band
+    ? {
+        "@context": "https://schema.org",
+        "@type": "MusicGroup",
+        name: band.name,
+        description: band.bio || band.tagline,
+        image: band.avatar || band.cover,
+        genre: band.genres,
+        location: band.city
+          ? {
+              "@type": "Place",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: band.city,
+                addressCountry: "IN",
+              },
+            }
+          : undefined,
+        member: band.members.map((m) => ({
+          "@type": "Person",
+          name: m.name,
+          roleName: m.instrument || m.role,
+        })),
+      }
+    : null;
+
   // Banner and picture: uploaded to the signed-in manager's folder, then saved on the band.
   async function pickImage(which: ProfileImageKind, file: File) {
     if (!band) return;
@@ -138,6 +176,12 @@ function BandProfile() {
 
   return (
     <Screen>
+      {bandStructuredData ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(bandStructuredData) }}
+        />
+      ) : null}
       {/* The profiles' header: cover at the top, the band's square picture over it, the name once. */}
       <CoverHero
         cover={band.cover || undefined}
@@ -255,8 +299,13 @@ function BandProfile() {
             <IconBtn label="Share" variant="outline" className="h-12 w-12" onClick={share}>
               <Share2 size={iconSize.md} aria-hidden />
             </IconBtn>
-            <IconBtn label="Follow" variant="outline" className="h-12 w-12">
-              <Plus size={iconSize.md} aria-hidden />
+            <IconBtn
+              label={following ? "Following" : "Follow"}
+              variant={following ? "ghost" : "outline"}
+              className="h-12 w-12"
+              onClick={onToggleFollow}
+            >
+              <StateIcon outline={Plus} solid="check" active={following} size={iconSize.md} move="stamp" />
             </IconBtn>
           </div>
         )}

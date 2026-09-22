@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { reviewItemFrom } from "@/lib/review-item";
 import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, VerifiedBadge } from "@/components/ml/ui";
@@ -30,6 +31,7 @@ function ProviderProfile() {
   const { id } = Route.useParams();
   const [tab, setTab] = useState(tabs[0]!);
   const [report, setReport] = useState(false);
+  const [following, setFollowing] = useState(false);
 
   const loadProvider = useServerFn(getRentalProvider);
   const loadListings = useServerFn(getSellerListings);
@@ -123,8 +125,16 @@ function ProviderProfile() {
           <BtnLink to="/messages" className="w-full">
             Message
           </BtnLink>
-          <Btn variant="outline" className="w-full">
-            Follow
+          <Btn
+            variant={following ? "ghost" : "outline"}
+            className="w-full"
+            onClick={() => {
+              const next = !following;
+              setFollowing(next);
+              toast.success(next ? `Now following ${p.name}` : `Unfollowed ${p.name}`);
+            }}
+          >
+            {following ? "Following" : "Follow"}
           </Btn>
         </div>
       </div>

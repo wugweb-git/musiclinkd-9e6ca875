@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { reviewItemFrom } from "@/lib/review-item";
 import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useQuery } from "@tanstack/react-query";
@@ -42,6 +44,7 @@ function SellerProfile() {
     queryFn: () => loadReviews({ data: { profileId: id } }),
   });
   const labels = useQuery({ queryKey: ["taxonomy", "labels"], queryFn: () => loadLabels() });
+  const [following, setFollowing] = useState(false);
 
   if (seller.isLoading) {
     return (
@@ -94,8 +97,16 @@ function SellerProfile() {
             <BtnLink to="/messages" className="flex-1 w-full">
               Message
             </BtnLink>
-            <Btn variant="outline" className="flex-1">
-              Follow
+            <Btn
+              variant={following ? "ghost" : "outline"}
+              className="flex-1"
+              onClick={() => {
+                const next = !following;
+                setFollowing(next);
+                toast.success(next ? `Now following ${s.name}` : `Unfollowed ${s.name}`);
+              }}
+            >
+              {following ? "Following" : "Follow"}
             </Btn>
           </div>
         </div>
