@@ -10,7 +10,6 @@ import {
   type Ref,
 } from "react";
 import {
-  Check,
   LoaderCircle,
   Home,
   Compass,
@@ -414,13 +413,14 @@ export function Chip({
 
 export function VerifiedBadge({ size = 16 }: { size?: number }) {
   return (
-    <span
-      className="inline-flex items-center justify-center rounded-full bg-primary text-1 font-bold text-primary-foreground"
-      style={{ width: size, height: size }}
-      title="Verified"
+    <BadgeCheck
+      size={size}
+      className="shrink-0 fill-pink-strong text-background"
+      role="img"
+      aria-label="Verified"
     >
-      <Check size={Math.round(size * 0.65)} strokeWidth={3} aria-hidden />
-    </span>
+      <title>Verified</title>
+    </BadgeCheck>
   );
 }
 
