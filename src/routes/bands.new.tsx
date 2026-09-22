@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Meter, Row, Dialog } from "@/components/ml/kit";
 import { bandCreationSteps } from "@/data/band";
+import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { createCollab, getCollab, addCollabMember } from "@/lib/collabs.functions";
 
 export const Route = createFileRoute("/bands/new")({
@@ -25,18 +26,10 @@ export const Route = createFileRoute("/bands/new")({
   component: CreateBand,
 });
 
-const genreOptions = [
-  "Indie Folk",
-  "Alt Pop",
-  "Electronic",
-  "Hip Hop",
-  "Jazz",
-  "Metal",
-  "Carnatic Fusion",
-];
-
 function CreateBand() {
   const navigate = useNavigate();
+  // Genres are the taxonomy's (taxonomy_options, category genres); the band stores their slugs.
+  const genreOptions = useTaxonomy().options?.genres ?? [];
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
@@ -130,13 +123,15 @@ function CreateBand() {
               <div className="mt-2 flex flex-wrap gap-2">
                 {genreOptions.map((g) => (
                   <Chip
-                    key={g}
-                    active={genres.includes(g)}
+                    key={g.slug}
+                    active={genres.includes(g.slug)}
                     onClick={() =>
-                      setGenres((p) => (p.includes(g) ? p.filter((x) => x !== g) : [...p, g]))
+                      setGenres((p) =>
+                        p.includes(g.slug) ? p.filter((x) => x !== g.slug) : [...p, g.slug],
+                      )
                     }
                   >
-                    {g}
+                    {g.label}
                   </Chip>
                 ))}
               </div>
@@ -189,7 +184,9 @@ function CreateBand() {
             <h2 className="text-3 leading-tight">{name || "Untitled band"}</h2>
             <p className="text-1 text-muted-foreground">{tagline || "No description yet"}</p>
             <p className="text-1 text-muted-foreground">
-              {[genres.join(" · "), city].filter(Boolean).join(" · ") || "No genre or city set"}
+              {[genres.map((g) => labelFor(genreOptions, g)).join(" · "), city]
+                .filter(Boolean)
+                .join(" · ") || "No genre or city set"}
             </p>
             <p className="text-1 text-muted-foreground">
               {invites.length} invitation{invites.length === 1 ? "" : "s"} will be sent
