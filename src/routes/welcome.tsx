@@ -283,18 +283,32 @@ function WelcomeScreen() {
   }
 
   return (
-    <AuthScreen brand={false} className="bg-card">
+    <AuthScreen brand={false} className="bg-background">
       <div className="flex min-h-[calc(100dvh-72px)] flex-col">
         {/* The splash mark glides here (view transition "brand"), so it does not play again. */}
-        <Brand compact className="vt-brand pt-2" />
+        <div className="flex items-center justify-between pt-1">
+          <Brand compact className="vt-brand mb-0" />
+          <div aria-hidden className="flex items-center gap-1 text-pink-strong">
+            <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-1" />
+            <span className="h-3.5 w-0.5 rounded-full bg-pink-strong animate-eq-2" />
+            <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-3" />
+          </div>
+        </div>
 
-        <div className="py-6">
-          <p className={cn("text-sm font-semibold text-pink-strong", rise)} style={beat(1)}>
-            Professional network for music
-          </p>
+        <div className="py-5">
+          <div
+            className={cn(
+              "inline-flex items-center gap-2 rounded-full bg-pink-container px-3 py-1 text-1 font-semibold text-pink-strong",
+              rise,
+            )}
+            style={beat(1)}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-pink-strong animate-pulse" />
+            India's music industry network
+          </div>
 
           {/* The headline lands a word per beat. */}
-          <h1 className="mt-3 text-4 font-bold">
+          <h1 className="mt-3 text-4 font-bold tracking-tight text-foreground">
             {["Connect.", "Collaborate.", "Create."].map((word, i) => (
               <span key={word} className={cn("block", rise)} style={beat(2 + i)}>
                 {word}
@@ -309,19 +323,17 @@ function WelcomeScreen() {
             ))}
           </ul>
 
-          <RoleTicker className={cn("-mx-5 mt-7", rise)} style={beat(5)} />
+          <RoleTicker className={cn("-mx-5 mt-6", rise)} style={beat(5)} />
         </div>
 
         {/*
-         * Accounts saved on this device first, then email and password (Sign In; new people switch
-         * to Create Account), then Google and LinkedIn. Every route ends on the splash, which sends
-         * a new account to onboarding and a returning one home.
+         * Interactive mode switcher + Form
          */}
-        <div className={cn(rise)} style={beat(6.5)}>
+        <div className={cn("mt-2", rise)} style={beat(6)}>
           {saved.length ? (
             <section className="mb-6">
-              <h2 className="mb-3 text-3 font-semibold">Continue as</h2>
-              <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+              <h2 className="mb-3 text-2 font-bold text-foreground">Continue as</h2>
+              <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card border border-border shadow-xs">
                 {saved.map((a) => (
                   <AccountRow
                     key={a.userId}
@@ -335,16 +347,53 @@ function WelcomeScreen() {
               </ul>
             </section>
           ) : null}
+
+          {/* Segmented Auth Mode Switcher */}
+          <div className="mb-5 flex rounded-full bg-subtle p-1 border border-border/60">
+            <button
+              type="button"
+              onClick={() => switchMode("signin")}
+              className={cn(
+                "flex-1 rounded-full py-2 text-sm font-semibold transition-all duration-150 ease-standard",
+                !signup
+                  ? "bg-card text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => switchMode("signup")}
+              className={cn(
+                "flex-1 rounded-full py-2 text-sm font-semibold transition-all duration-150 ease-standard",
+                signup
+                  ? "bg-card text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Create Account
+            </button>
+          </div>
+
           <form
             noValidate
             onSubmit={(e) => {
               e.preventDefault();
               if (!busy) void submit();
             }}
+            className="rounded-lg bg-card p-5 border border-border/80 shadow-xs"
           >
-            <h2 className="mb-4 text-3 font-semibold">
-              {signup ? "Create your account" : "Sign in"}
-            </h2>
+            <div className="mb-4">
+              <h2 className="text-2 font-bold text-foreground">
+                {signup ? "Create your account" : "Welcome back"}
+              </h2>
+              <p className="mt-1 text-1 text-muted-foreground">
+                {signup
+                  ? "Join musicians, producers and studios across India."
+                  : "Sign in with your email and password."}
+              </p>
+            </div>
 
             {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
@@ -368,39 +417,37 @@ function WelcomeScreen() {
               onChange={setPassword}
               onBlur={() => fields.touch("password")}
               error={fields.errorFor("password", passwordProblem)}
-              placeholder={signup ? "Create a password" : "Your password"}
+              placeholder={signup ? "Create a strong password" : "Your password"}
               autoComplete={signup ? "new-password" : "current-password"}
               below={signup ? <PasswordRequirements value={password} /> : null}
             />
 
             {signup ? null : (
-              <p className="-mt-2 mb-4 text-right text-sm">
-                <AuthLink to="/auth/forgot">Forgot Password</AuthLink>
+              <p className="-mt-1 mb-4 text-right text-sm">
+                <AuthLink
+                  to="/auth/forgot"
+                  className="text-muted-foreground hover:text-foreground font-medium"
+                >
+                  Forgot Password?
+                </AuthLink>
               </p>
             )}
 
-            <Btn type="submit" className="w-full" loading={busy === "email"}>
+            <Btn
+              type="submit"
+              className="w-full h-12 text-sm font-semibold shadow-xs"
+              loading={busy === "email"}
+            >
               {signup ? "Create Account" : "Sign In"}
             </Btn>
           </form>
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            {signup ? "Already have an account? " : "New to MusicLinkd? "}
-            <button
-              type="button"
-              className="link-action font-semibold text-foreground"
-              onClick={() => switchMode(signup ? "signin" : "signup")}
-            >
-              {signup ? "Sign In" : "Create Account"}
-            </button>
-          </p>
+          <Divider label="or connect with" />
 
-          <Divider label="or" />
-
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <Btn
               variant="outline"
-              className="w-full"
+              className="w-full h-12 bg-card border-border/90 hover:bg-subtle text-sm font-medium shadow-xs"
               icon={<GoogleIcon />}
               loading={busy === "google"}
               onClick={() => void google()}
@@ -409,7 +456,7 @@ function WelcomeScreen() {
             </Btn>
             <Btn
               variant="outline"
-              className="w-full"
+              className="w-full h-12 bg-card border-border/90 hover:bg-subtle text-sm font-medium shadow-xs"
               icon={<Linkedin size={iconSize.md} aria-hidden />}
               loading={busy === "linkedin"}
               onClick={() => void linkedin()}
@@ -418,11 +465,20 @@ function WelcomeScreen() {
             </Btn>
           </div>
 
+          <p className="mt-5 text-center text-sm">
+            <AuthLink
+              to="/auth/phone"
+              className="font-semibold text-foreground underline underline-offset-4"
+            >
+              Sign in with Mobile Number
+            </AuthLink>
+          </p>
+
           <LegalNote />
           <MadeByWugweb />
 
           {showDemoControls ? (
-            <p className="text-center text-1">
+            <p className="mt-3 text-center text-1">
               <AuthLink to="/dev/new-user" className="text-muted-foreground">
                 Dev: Test as a new user
               </AuthLink>

@@ -59,60 +59,88 @@ function Done() {
       <TopBar title="Welcome to MusicLinkd" back="/onboarding/complete" />
 
       <main className="px-5 pt-4">
-        <section className={cn("rounded-lg bg-subtle p-6 text-center", rise)}>
-          <Sparkles
-            size={iconSize.xl}
-            className="mx-auto animate-pop text-primary"
-            style={beat(2)}
-          />
-          <h1 className="mt-3 text-3 leading-tight">
-            {first ? `Welcome aboard, ${first}` : "Welcome aboard"}
+        <section
+          className={cn(
+            "rounded-lg bg-card p-6 text-center border border-border/80 shadow-xs relative overflow-hidden",
+            rise,
+          )}
+        >
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs">
+            <Sparkles size={26} className="animate-pop" style={beat(2)} />
+          </div>
+          <h1 className="mt-4 text-3 font-bold tracking-tight text-foreground leading-tight">
+            {first ? `Welcome aboard, ${first}!` : "Welcome aboard!"}
           </h1>
-          <p className="mx-auto mt-2 max-w-[300px] text-sm text-muted-foreground">
-            Your profile is live and people can find you.
-            {summary.length ? " Here's what it says right now." : null}
+          <p className="mx-auto mt-2 max-w-[320px] text-sm text-muted-foreground leading-relaxed">
+            Your profile is published and visible to talent scouts, venues, and producers across the
+            network.
           </p>
+
+          {summary.length ? (
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {summary.map((line, i) => (
+                <span
+                  key={line}
+                  className={cn(
+                    "inline-flex items-center rounded-full bg-subtle px-3 py-1.5 text-1 font-semibold text-foreground border border-border/60 shadow-2xs",
+                    rise,
+                  )}
+                  style={beat(2 + i)}
+                >
+                  {line}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </section>
 
-        {summary.length ? (
-          <ul className="mt-4 space-y-2">
-            {summary.map((line, i) => (
-              <li
-                key={line}
-                className={cn("rounded-lg bg-subtle px-4 py-3 text-sm", rise)}
-                style={beat(2 + i)}
-              >
-                {line}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-
-        <h2 className={cn("mt-7 text-2", rise)} style={beat(2 + summary.length)}>
-          What next
+        <h2
+          className={cn("mt-7 text-2 font-bold text-foreground", rise)}
+          style={beat(2 + summary.length)}
+        >
+          Explore MusicLinkd
         </h2>
         <div className="mt-3 space-y-3">
-          <Link to="/discover" className={cn(nextCard, rise)} style={beat(3 + summary.length)}>
-            <p className="text-sm font-semibold">Discover talent</p>
+          <Link
+            to="/discover"
+            className={cn(
+              nextCard,
+              "bg-card border border-border/80 shadow-xs hover:border-foreground/40",
+              rise,
+            )}
+            style={beat(3 + summary.length)}
+          >
+            <p className="text-sm font-bold text-foreground">Discover Creators & Studios</p>
             <p className="mt-1 text-1 text-muted-foreground">
-              Singers, producers, studios and bands near you.
+              Connect with singers, session musicians, recording spaces, and gear rental in your
+              area.
             </p>
           </Link>
-          <Link to="/profile" className={cn(nextCard, rise)} style={beat(4 + summary.length)}>
-            <p className="text-sm font-semibold">View my profile</p>
-            <p className="mt-1 text-1 text-muted-foreground">See exactly what others see.</p>
+          <Link
+            to="/profile"
+            className={cn(
+              nextCard,
+              "bg-card border border-border/80 shadow-xs hover:border-foreground/40",
+              rise,
+            )}
+            style={beat(4 + summary.length)}
+          >
+            <p className="text-sm font-bold text-foreground">Preview Public Profile</p>
+            <p className="mt-1 text-1 text-muted-foreground">
+              See how your published profile appears to the community.
+            </p>
           </Link>
         </div>
       </main>
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
-          edges.bottom ? "border-border" : "border-transparent",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
+          edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >
-        <BtnLink to="/home" className="w-full">
-          Go to My Home
+        <BtnLink to="/home" className="w-full h-12 text-sm font-semibold shadow-xs">
+          Go to Home Feed
         </BtnLink>
       </div>
     </Screen>

@@ -31,6 +31,8 @@ import {
   Package,
   CalendarCheck,
   Building2,
+  CalendarClock,
+  Inbox,
   Star,
   BadgeCheck,
   Sparkles,
@@ -141,6 +143,8 @@ const menuGroups: {
       { to: "/bookings", label: "Bookings", icon: CalendarCheck },
       { to: "/studio", label: "Studios", icon: Mic2 },
       { to: "/business", label: "Business", icon: Building2 },
+      { to: "/business/bookings", label: "Booking requests", icon: CalendarClock },
+      { to: "/business/leads", label: "Leads", icon: Inbox },
       { to: "/categories", label: "Categories", icon: LayoutGrid },
     ],
   },
@@ -241,7 +245,8 @@ export function BottomNav() {
               <h2 className="mb-1 text-1 font-semibold text-muted-foreground">{group.title}</h2>
               <ul className="divide-y divide-border">
                 {group.items
-                  .filter((item) => item.to !== "/business" || isBusiness)
+                  // The business entries are for a business page's own account.
+                  .filter((item) => !item.to.startsWith("/business") || isBusiness)
                   .map((item) => {
                     const Icon = item.icon;
                     return (

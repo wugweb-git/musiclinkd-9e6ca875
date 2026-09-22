@@ -50,13 +50,19 @@ function DetailRow({
     <button
       type="button"
       onClick={onEdit}
-      className="state-layer flex min-h-control-lg w-full items-center gap-3 px-4 py-3 text-left"
+      className="state-layer flex min-h-control-lg w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-subtle/50 active:bg-subtle"
     >
-      <span className="w-28 shrink-0 text-sm font-medium">{label}</span>
+      <span className="w-28 shrink-0 text-sm font-semibold text-foreground">{label}</span>
       <span
-        className={`min-w-0 flex-1 text-sm ${values.length ? "text-foreground" : "text-muted-foreground"}`}
+        className={`min-w-0 flex-1 text-sm ${values.length ? "text-foreground font-medium" : "text-muted-foreground"}`}
       >
-        {values.length ? values.join(", ") : "Add"}
+        {values.length ? (
+          values.join(", ")
+        ) : (
+          <span className="inline-block rounded-full bg-subtle px-2 py-0.5 text-1 text-muted-foreground">
+            Add
+          </span>
+        )}
       </span>
       <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
     </button>
@@ -88,15 +94,15 @@ function Preview() {
     <Screen bottomNav={false} className="pb-36">
       <TopBar
         title="Review profile"
-        subtitle="This is what others see"
+        subtitle="This is how other music professionals see you"
         back={`/onboarding/step/${list[list.length - 1]?.id ?? "contact"}`}
       />
 
       <ProfileHero p={view} />
 
       <main className="px-5 pt-6">
-        <h2 className="text-2">Your details</h2>
-        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+        <h2 className="text-2 font-bold text-foreground">Your details</h2>
+        <div className="mt-3 divide-y divide-border overflow-hidden rounded-lg bg-card border border-border/80 shadow-xs">
           <DetailRow
             label="Roles"
             values={names(
@@ -136,16 +142,19 @@ function Preview() {
           />
         </div>
         <p className="mt-3 text-1 text-muted-foreground">
-          Anything left empty doesn't show on your profile.
+          Anything left empty won't show on your public profile.
         </p>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t border-border bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <BtnLink to="/onboarding/complete" className="w-full">
+      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t border-border/80 bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md shadow-xs">
+        <BtnLink to="/onboarding/complete" className="w-full h-12 text-sm font-semibold shadow-xs">
           Publish My Profile
         </BtnLink>
         <p className="flex justify-center text-1">
-          <AuthLink to="/onboarding/skip" className="text-muted-foreground">
+          <AuthLink
+            to="/onboarding/skip"
+            className="text-muted-foreground hover:text-foreground font-medium"
+          >
             Finish Later
           </AuthLink>
         </p>

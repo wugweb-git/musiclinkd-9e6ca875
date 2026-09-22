@@ -4,12 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, Price } from "@/components/ml/kit";
+import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { Card, EmptyState, Loading, Price, Segmented } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import { useService } from "@/hooks/use-services";
 import { useAuth } from "@/hooks/use-auth";
-import { conversationWith, sendMessage } from "@/lib/messages.functions";
+import { sendEnquiry } from "@/lib/enquiries.functions";
+import { Field, inputClass } from "@/components/ml/listing-form";
 import { priceParts } from "@/lib/price";
 
 export const Route = createFileRoute("/services/$id/enquiry")({
@@ -42,13 +43,22 @@ function ServiceEnquiry() {
   const [scope, setScope] = useState("");
   const [sent, setSent] = useState(false);
 
-  const startConversation = useServerFn(conversationWith);
-  const send = useServerFn(sendMessage);
+  // Saved as a lead for the service's owner (their Leads and a notice) and posted into your chat
+  // with them, the same as an enquiry from a business page.
+  const send = useServerFn(sendEnquiry);
   const enquire = useMutation({
     mutationFn: async (body: string) => {
       if (!s) throw new Error("Service not found");
-      const { id: conversationId } = await startConversation({ data: { profileId: s.profile_id } });
-      await send({ data: { conversationId, body } });
+      await send({
+        data: {
+          businessProfileId: s.profile_id,
+          intent: `${mode === "Custom quote" ? "Custom quote" : "Question"}: ${s.name}`.slice(
+            0,
+            60,
+          ),
+          message: body,
+        },
+      });
     },
     onSuccess: () => setSent(true),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't send. Try again."),
@@ -93,7 +103,7 @@ function ServiceEnquiry() {
             <p className="mt-2 text-1 text-muted-foreground">
               {mode === "Custom quote"
                 ? "You will get a priced answer, usually within a day. Nothing is committed until you accept it."
-                : "Replies land in Connections and as a notification."}
+                : "Replies land in Messages and as a notification."}
             </p>
           </Card>
           <BtnLink to="/messages" className="w-full">
@@ -128,59 +138,45 @@ function ServiceEnquiry() {
           ) : null}
         </Card>
 
-        <div className="flex gap-2">
-          {modes.map((m) => (
-            <Chip key={m} active={mode === m} onClick={() => setMode(m)}>
-              {m}
-            </Chip>
-          ))}
-        </div>
+        <Segmented value={mode} options={modes} onChange={setMode} />
 
         {mode === "Quick question" ? (
-          <Card>
-            <label htmlFor="q" className="text-sm font-semibold">
-              Your question
-            </label>
+          <Field label="Your question" id="q">
             <textarea
-              id="q"
               rows={5}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Turnaround, revisions, whether stems are included…"
-              className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
+              aria-labelledby="q"
+              className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
             />
-          </Card>
+          </Field>
         ) : (
-          <Card className="space-y-3">
-            <div>
-              <label htmlFor="scope" className="text-sm font-semibold">
-                What is the work?
-              </label>
+          <div className="space-y-4">
+            <Field label="What is the work?" id="scope">
               <textarea
-                id="scope"
                 rows={4}
                 value={scope}
                 onChange={(e) => setScope(e.target.value)}
                 placeholder="Number of songs, current state of the material, deadline."
-                className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
+                aria-labelledby="scope"
+                className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
               />
-            </div>
-            <div>
-              <label htmlFor="budget" className="text-sm font-semibold">
-                Budget range
-              </label>
+            </Field>
+            <Field
+              label="Budget range"
+              id="budget"
+              hint={'A range gets a real number back. "Best price" usually gets ignored.'}
+            >
               <input
-                id="budget"
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
                 placeholder="e.g. ₹20,000 – ₹30,000"
-                className="mt-2 w-full rounded-lg border border-border bg-background p-3 text-sm outline-none"
+                aria-labelledby="budget"
+                className={inputClass}
               />
-            </div>
-            <p className="text-1 text-muted-foreground">
-              A range gets a real number back. "Best price" usually gets ignored.
-            </p>
-          </Card>
+            </Field>
+          </div>
         )}
 
         <Btn
@@ -193,8 +189,8 @@ function ServiceEnquiry() {
             }
             const body =
               mode === "Quick question"
-                ? `About "${s.name}": ${message.trim()}`
-                : `Custom quote for "${s.name}"\n\n${scope.trim()}\n\nBudget: ${budget.trim()}`;
+                ? message.trim()
+                : `${scope.trim()}\n\nBudget: ${budget.trim()}`;
             enquire.mutate(body);
           }}
         >

@@ -111,14 +111,15 @@ export function Brand({
   return (
     <div
       className={cn(
-        compact ? "mb-5 flex items-center gap-2" : "mb-7 flex items-center gap-2",
+        compact ? "mb-5 flex items-center gap-2.5" : "mb-7 flex items-center gap-3",
         className,
       )}
     >
-      <span className="flex h-9 w-9 items-center justify-center rounded-sm bg-pink-container">
+      <span className="relative flex h-10 w-10 items-center justify-center rounded-sm bg-pink-container shadow-sm">
         <LogoMark className={`w-6 text-brand ${animated ? "animate-sound-check" : ""}`} />
+        <span className="pointer-events-none absolute -inset-0.5 rounded-sm border border-brand/20" />
       </span>
-      <span className="text-2 font-semibold">MusicLinkd</span>
+      <span className="text-3 font-bold tracking-tight text-foreground">MusicLinkd</span>
     </div>
   );
 }
@@ -126,8 +127,8 @@ export function Brand({
 export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-3 font-semibold leading-tight">{title}</h1>
-      {sub ? <p className="mt-2 text-1 leading-relaxed text-muted-foreground">{sub}</p> : null}
+      <h1 className="text-3 font-bold tracking-tight text-foreground leading-tight">{title}</h1>
+      {sub ? <p className="mt-1.5 text-1 leading-relaxed text-muted-foreground">{sub}</p> : null}
     </div>
   );
 }
@@ -135,9 +136,9 @@ export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
 export function Divider({ label }: { label: string }) {
   return (
     <div className="my-6 flex items-center gap-3 text-1 text-muted-foreground">
-      <span className="h-px flex-1 bg-border" />
-      {label}
-      <span className="h-px flex-1 bg-border" />
+      <span className="h-px flex-1 bg-border/80" />
+      <span className="rounded-full bg-subtle px-2.5 py-0.5 text-1 font-medium">{label}</span>
+      <span className="h-px flex-1 bg-border/80" />
     </div>
   );
 }
@@ -254,10 +255,10 @@ export function TextField({
       </label>
       <div
         className={cn(
-          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
+          "press-brand flex h-12 items-center gap-2 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
           invalid
-            ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
-            : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
+            ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
+            : "border-border focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
           disabled && "bg-background opacity-60",
         )}
       >
@@ -471,9 +472,9 @@ export function PhoneField({
       enterKeyHint="go"
       placeholder="98765 43210"
       leading={
-        <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border pr-3 text-2 font-medium">
-          <IndiaFlag />
-          +91
+        <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border/80 pr-3 text-2 font-semibold text-foreground">
+          <IndiaFlag className="shadow-xs" />
+          <span>+91</span>
         </span>
       }
     />
@@ -526,7 +527,7 @@ export function CodeInput({
         type="button"
         key={shakeKey}
         onClick={() => ref.current?.focus()}
-        className={cn("mb-6 flex w-full justify-between gap-2", shakeKey ? "animate-shake" : "")}
+        className={cn("mb-6 flex w-full justify-between gap-2.5", shakeKey ? "animate-shake" : "")}
         aria-label={label}
       >
         {Array.from({ length }, (_, i) => {
@@ -538,14 +539,16 @@ export function CodeInput({
               style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
                 complete && "animate-meter",
-                "flex h-14 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-semibold transition-[border-color,box-shadow] duration-125 ease-standard in-active:shadow-[0_0_0_2px_var(--brand)]",
+                "flex h-14 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-bold transition-all duration-150 ease-standard shadow-xs",
                 invalid
-                  ? "border-destructive"
-                  : active || value.length === length
-                    ? "border-foreground ring-1 ring-foreground"
-                    : value[i]
-                      ? "border-muted-foreground"
-                      : "border-border",
+                  ? "border-destructive bg-danger-container/20 text-destructive"
+                  : active
+                    ? "border-foreground ring-2 ring-foreground/15 shadow-sm scale-[1.03]"
+                    : value.length === length
+                      ? "border-foreground/80 bg-subtle"
+                      : value[i]
+                        ? "border-foreground/40 text-foreground"
+                        : "border-border text-muted-foreground",
               )}
             >
               {value[i] ? (
@@ -553,7 +556,7 @@ export function CodeInput({
                   {value[i]}
                 </span>
               ) : active ? (
-                <span aria-hidden className="h-6 w-px animate-caret bg-foreground" />
+                <span aria-hidden className="h-6 w-0.5 animate-caret bg-foreground rounded-full" />
               ) : null}
             </span>
           );

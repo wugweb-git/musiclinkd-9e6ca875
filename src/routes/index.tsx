@@ -63,11 +63,40 @@ function SessionCheck() {
   return (
     // Full-bleed brand ground with the mark in white: the one screen where pink carries everything.
     <div
-      className="flex min-h-[100dvh] w-full items-center justify-center brand-ground px-10"
+      className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden brand-ground px-10"
       role="status"
       aria-label="Checking your session"
     >
-      <LogoMark className="vt-brand w-3/5 max-w-[320px] animate-splash-mark text-background [filter:drop-shadow(0_18px_40px_rgba(0,0,0,0.28))]" />
+      {/* Sonic pulse aura rings (Shazam / Apple Music audio resonance) */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      >
+        <span className="absolute h-64 w-64 rounded-full border border-white/20 animate-sonar" />
+        <span
+          className="absolute h-64 w-64 rounded-full border border-white/15 animate-sonar"
+          style={{ animationDelay: "800ms" }}
+        />
+        <span
+          className="absolute h-64 w-64 rounded-full border border-white/10 animate-sonar"
+          style={{ animationDelay: "1600ms" }}
+        />
+        <span className="absolute h-80 w-80 rounded-full bg-white/5 blur-2xl animate-pulse-glow" />
+      </div>
+
+      {/* Main Logo Mark */}
+      <div className="relative z-10 flex flex-col items-center">
+        <LogoMark className="vt-brand w-3/5 max-w-[280px] animate-splash-mark text-background [filter:drop-shadow(0_18px_40px_rgba(0,0,0,0.28))]" />
+
+        {/* Subtle sound equalizer status indicator */}
+        <div aria-hidden className="mt-8 flex items-center gap-1.5 opacity-80">
+          <span className="w-1 rounded-full bg-white/90 animate-eq-1" />
+          <span className="w-1 rounded-full bg-white/90 animate-eq-2" />
+          <span className="w-1 rounded-full bg-white/90 animate-eq-3" />
+          <span className="w-1 rounded-full bg-white/90 animate-eq-2" />
+          <span className="w-1 rounded-full bg-white/90 animate-eq-1" />
+        </div>
+      </div>
     </div>
   );
 }

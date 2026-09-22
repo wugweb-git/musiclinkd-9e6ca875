@@ -86,46 +86,56 @@ function EmailSignIn() {
 
   return (
     <AuthScreen back={{ to: "/auth/phone" }}>
-      <form
-        noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!busy) void send();
-        }}
-      >
-        <AuthHeading
-          title="Sign in with email"
-          sub="We'll email you a 6-digit code. No password to remember."
-        />
-
-        {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-
-        <TextField
-          label="Email"
-          value={email}
-          onChange={(v) => {
-            setEmail(v);
-            carryEmail(v);
+      <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+        <form
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!busy) void send();
           }}
-          onBlur={() => fields.touch("email")}
-          error={fields.errorFor("email", emailProblem)}
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          enterKeyHint="go"
-          placeholder="name@example.com"
-        />
+        >
+          <AuthHeading
+            title="Sign in with Email"
+            sub="We'll email you a 6-digit one-time code. No password required."
+          />
 
-        <Btn type="submit" className="mt-2 w-full" loading={busy}>
-          Send Code
-        </Btn>
-      </form>
+          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-      <TrustNote>Your email is never shown on your public profile.</TrustNote>
+          <TextField
+            label="Email address"
+            value={email}
+            onChange={(v) => {
+              setEmail(v);
+              carryEmail(v);
+            }}
+            onBlur={() => fields.touch("email")}
+            error={fields.errorFor("email", emailProblem)}
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            enterKeyHint="go"
+            placeholder="name@example.com"
+          />
+
+          <Btn
+            type="submit"
+            className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+            loading={busy}
+          >
+            Send 6-Digit Code
+          </Btn>
+        </form>
+
+        <TrustNote>Your email is never shown on your public profile.</TrustNote>
+      </div>
 
       <p className="mt-6 flex justify-center text-sm">
-        <AuthLink to="/auth/phone" icon={<Smartphone size={iconSize.sm} />}>
-          Sign in with Mobile
+        <AuthLink
+          to="/auth/phone"
+          icon={<Smartphone size={iconSize.sm} />}
+          className="font-semibold text-foreground"
+        >
+          Sign in with Mobile Number instead
         </AuthLink>
       </p>
 

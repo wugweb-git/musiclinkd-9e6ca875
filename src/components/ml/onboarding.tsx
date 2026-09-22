@@ -463,22 +463,27 @@ export function StepShell({
       }}
       className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background"
     >
-      {/* Material top app bar: flat at rest, the divider appears once content scrolls under it. */}
+      {/* Modern top app bar: frosted glass with segmented story-style progress track */}
       <header
-        className={`vt-flow-header sticky top-0 z-bar border-b bg-background/95 px-5 pb-3 pt-4 backdrop-blur transition-colors duration-200 ease-standard ${
-          edges.top ? "border-border" : "border-transparent"
+        className={`vt-flow-header sticky top-0 z-bar border-b bg-background/90 px-5 pb-3.5 pt-4 backdrop-blur-md transition-colors duration-200 ease-standard ${
+          edges.top ? "border-border shadow-2xs" : "border-transparent"
         }`}
       >
         <div className="flex items-center gap-3">
           {onBack ? (
-            <IconBtn label="Back" variant="plain" className="-ml-2" onClick={onBack}>
+            <IconBtn
+              label="Back"
+              variant="plain"
+              className="-ml-2 hover:bg-subtle"
+              onClick={onBack}
+            >
               <ArrowLeft size={iconSize.md} aria-hidden />
             </IconBtn>
           ) : (
             <span className="h-10 w-8" />
           )}
           <div className="min-w-0 flex-1">
-            {/* Large title (Apple): once the question scrolls under the bar, it takes the bar's line. */}
+            {/* Step & Group header label */}
             <div className="flex h-5 items-center justify-between gap-2 text-1 text-muted-foreground">
               <div className="relative h-5 min-w-0 flex-1 overflow-hidden">
                 <p
@@ -486,11 +491,15 @@ export function StepShell({
                     titleTucked ? "-translate-y-full opacity-0" : ""
                   }`}
                 >
-                  {group} · {step} of {total}
+                  <span className="font-semibold text-foreground">{group}</span>
+                  <span className="mx-1.5 opacity-50">·</span>
+                  <span>
+                    Step {step} of {total}
+                  </span>
                 </p>
                 <p
                   aria-hidden
-                  className={`absolute inset-0 flex items-center truncate text-sm font-semibold text-foreground transition-[transform,opacity] duration-200 ease-standard ${
+                  className={`absolute inset-0 flex items-center truncate text-sm font-bold text-foreground transition-[transform,opacity] duration-200 ease-standard ${
                     titleTucked ? "" : "translate-y-full opacity-0"
                   }`}
                 >
@@ -499,24 +508,39 @@ export function StepShell({
               </div>
               {status}
             </div>
+
+            {/* Segmented story-style progress track (Tinder / Snapchat / Instagram story UX) */}
             <div
-              className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-background"
+              className="mt-2 flex w-full gap-1"
               role="progressbar"
               aria-valuenow={pct}
               aria-valuemin={0}
               aria-valuemax={100}
               aria-label="Onboarding progress"
             >
-              <div
-                className="vt-flow-progress h-full rounded-full bg-primary"
-                style={{ width: `${pct}%` }}
-              />
+              {Array.from({ length: total }, (_, i) => {
+                const filled = i < step;
+                const current = i === step - 1;
+                return (
+                  <span
+                    key={i}
+                    className={cn(
+                      "h-1 flex-1 rounded-full transition-all duration-300 ease-standard",
+                      filled ? "bg-foreground" : "bg-border/60",
+                      current && "ring-1 ring-foreground/20",
+                    )}
+                  />
+                );
+              })}
             </div>
           </div>
           {/* Same width with or without Skip, so the progress bar never changes length between steps. */}
           <span className="flex w-10 shrink-0 justify-end">
             {onSkip ? (
-              <AuthTextButton onClick={onSkip} className="text-1">
+              <AuthTextButton
+                onClick={onSkip}
+                className="text-1 font-semibold text-muted-foreground hover:text-foreground"
+              >
                 Skip
               </AuthTextButton>
             ) : null}
@@ -527,27 +551,34 @@ export function StepShell({
       <main className="flex-1 px-5 pb-40 pt-5">
         {banner}
         <div className="flex items-start justify-between gap-3">
-          <h1 ref={titleRef} className="text-3 leading-tight">
+          <h1
+            ref={titleRef}
+            className="text-3 font-bold tracking-tight text-foreground leading-tight"
+          >
             {title}
           </h1>
           {optional ? (
-            <span className="mt-1.5 shrink-0 rounded-full bg-card px-2.5 py-1 text-1 font-semibold text-muted-foreground">
+            <span className="mt-1 shrink-0 rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-muted-foreground border border-border/60">
               Optional
             </span>
           ) : null}
         </div>
         <p className="mt-1.5 text-sm text-muted-foreground">{subtitle}</p>
-        <p className="mt-2 flex items-start gap-1.5 text-1 leading-relaxed text-muted-foreground">
-          <Info size={iconSize.sm} className="mt-0.5 shrink-0" aria-hidden />
-          {why}
-        </p>
+
+        {why ? (
+          <div className="mt-2.5 inline-flex items-start gap-1.5 rounded-full bg-subtle/80 px-3 py-1 text-1 text-muted-foreground border border-border/50">
+            <Info size={14} className="mt-0.5 shrink-0 text-foreground/60" aria-hidden />
+            <span>{why}</span>
+          </div>
+        ) : null}
+
         <div className="mt-6">{children}</div>
       </main>
 
-      {/* Bottom bar on the page ground like the top bar; its divider shows only while content continues under it. */}
+      {/* Frosted floating bottom footer bar */}
       <div
-        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard ${
-          edges.bottom ? "border-border" : "border-transparent"
+        className={`vt-flow-footer fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard ${
+          edges.bottom ? "border-border shadow-xs" : "border-transparent"
         }`}
       >
         {footer}
@@ -750,12 +781,12 @@ export function InlineField({
       </label>
       <div
         className={cn(
-          "flex items-center gap-1 rounded-sm border bg-card px-3.5 transition-[border-color,box-shadow] duration-125 ease-standard",
+          "flex items-center gap-1 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
           multiline ? "py-3" : "h-12",
           readOnly && "bg-background",
           error
-            ? "border-destructive focus-within:ring-1 focus-within:ring-destructive"
-            : "border-border focus-within:border-foreground focus-within:ring-1 focus-within:ring-foreground [@media(hover:hover)]:hover:border-muted-foreground",
+            ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
+            : "border-border focus-within:border-foreground focus-within:ring-2 focus-within:ring-foreground/10 [@media(hover:hover)]:hover:border-muted-foreground/80",
         )}
       >
         {leading ? (

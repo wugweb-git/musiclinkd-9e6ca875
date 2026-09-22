@@ -78,37 +78,62 @@ function Complete() {
       <TopBar title="Profile published" back="/onboarding/preview" />
 
       <main className="px-5 pt-4">
-        <section className={cn("rounded-lg bg-subtle p-5", rise)}>
-          <PartyPopper size={iconSize.lg} className="animate-pop text-primary" style={beat(2)} />
-          <h1 className="mt-3 text-3 leading-tight">
-            {first ? `You're on MusicLinkd, ${first}` : "You're on MusicLinkd"}
-          </h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            Your profile is live and discoverable. Everything below makes it work harder for you.
-          </p>
-          <div className="mt-4">
-            <div className="flex items-baseline justify-between text-1">
-              <span className="font-semibold">Profile strength</span>
-              <span className="tabular-nums text-muted-foreground">{pct}%</span>
+        <section
+          className={cn(
+            "rounded-lg bg-card p-6 border border-border/80 shadow-xs relative overflow-hidden",
+            rise,
+          )}
+        >
+          {/* Subtle sonic celebration glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-pink-container/40 blur-xl"
+          />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-container text-pink-strong shadow-xs">
+                <PartyPopper size={24} className="animate-pop" style={beat(2)} />
+              </span>
+              <span className="rounded-full bg-subtle px-3 py-1 text-1 font-bold text-foreground">
+                Profile Live
+              </span>
             </div>
-            <div
-              className="mt-2 h-2 overflow-hidden rounded-full bg-background"
-              role="progressbar"
-              aria-valuenow={pct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label="Profile strength"
-            >
+
+            <h1 className="mt-4 text-3 font-bold tracking-tight text-foreground leading-tight">
+              {first
+                ? `You're officially on MusicLinkd, ${first}!`
+                : "You're officially on MusicLinkd!"}
+            </h1>
+            <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+              Your profile is live and searchable across India. Complete the steps below to maximize
+              your visibility.
+            </p>
+
+            <div className="mt-5 rounded-md bg-subtle p-3.5 border border-border/60">
+              <div className="flex items-baseline justify-between text-1">
+                <span className="font-semibold text-foreground">Profile Strength</span>
+                <span className="tabular-nums font-bold text-foreground">{pct}%</span>
+              </div>
               <div
-                className="h-full origin-left animate-fill rounded-full bg-primary"
-                style={{ width: `${pct}%`, ...beat(3) }}
-              />
+                className="mt-2 h-2 overflow-hidden rounded-full bg-background"
+                role="progressbar"
+                aria-valuenow={pct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Profile strength"
+              >
+                <div
+                  className="h-full origin-left animate-fill rounded-full bg-foreground transition-all duration-500"
+                  style={{ width: `${pct}%`, ...beat(3) }}
+                />
+              </div>
             </div>
           </div>
         </section>
 
-        <h2 className={cn("mt-6 text-2", rise)} style={beat(3)}>
-          What's ready
+        <h2 className={cn("mt-7 text-2 font-bold text-foreground", rise)} style={beat(3)}>
+          What's ready on your profile
         </h2>
         <div className="mt-3 space-y-2">
           {items.map((r, i) => (
@@ -122,7 +147,7 @@ function Complete() {
               {...(r.cta && r.to
                 ? {
                     action: (
-                      <BtnLink to={r.to} variant="outline">
+                      <BtnLink to={r.to} variant="outline" className="text-xs h-8 px-3">
                         {r.cta}
                       </BtnLink>
                     ),
@@ -132,25 +157,29 @@ function Complete() {
           ))}
         </div>
 
-        <h2 className="mt-6 text-2">Next steps</h2>
+        <h2 className="mt-7 text-2 font-bold text-foreground">Next recommended steps</h2>
         <div className="mt-3 space-y-3">
           {d.businessIntent ? (
             <HandoffCard
               title={`Set up your ${labelFor(tx?.person_types, d.businessIntent).toLowerCase()} profile`}
-              body="Your business gets its own page, so clients can book the business, not just you. Switch between the two from the menu."
+              body="Your business gets its own page, team roster, and bookings. Switch seamlessly between personal and business from the top menu."
               action={
-                <BtnLink to="/business/new" search={{ step: "type" }} className="w-full">
+                <BtnLink
+                  to="/business/new"
+                  search={{ step: "type" }}
+                  className="w-full h-11 text-sm font-semibold"
+                >
                   Start Business Setup
                 </BtnLink>
               }
             />
           ) : null}
           <HandoffCard
-            title="Verify your identity"
-            body="Verified profiles rank higher in discovery and get more replies."
+            title="Verify your music identity"
+            body="Verified creators get the verified checkmark, priority search ranking, and higher response rates."
             action={
-              <BtnLink to="/verification" className="w-full">
-                Start Verification
+              <BtnLink to="/verification" className="w-full h-11 text-sm font-semibold">
+                Start Identity Verification
               </BtnLink>
             }
           />
@@ -159,12 +188,12 @@ function Complete() {
 
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-colors duration-200 ease-standard",
-          edges.bottom ? "border-border" : "border-transparent",
+          "fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md transition-colors duration-200 ease-standard",
+          edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >
-        <BtnLink to="/onboarding/done" className="w-full">
-          Finish
+        <BtnLink to="/onboarding/done" className="w-full h-12 text-sm font-semibold shadow-xs">
+          Finish & View Dashboard
         </BtnLink>
       </div>
     </Screen>

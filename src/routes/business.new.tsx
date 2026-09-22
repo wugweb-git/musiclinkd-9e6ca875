@@ -311,20 +311,32 @@ function NewBusiness() {
           <StepSkeleton />
         ) : step === "type" ? (
           <div className="space-y-6">
-            <PersonTypePicker
-              groups={BUSINESS_GROUPS}
-              options={types.map((o) => ({
-                ...o,
-                metadata: { ...o.metadata, group: "business" },
-              }))}
-              selected={type ? [type] : []}
-              icon={typeIcon}
-              onToggle={(slug) => setType(slug)}
-            />
-            <div>
+            <div className="rounded-lg bg-card p-4 border border-border/80 shadow-xs">
+              <p className="mb-3 text-1 font-bold uppercase tracking-wider text-muted-foreground">
+                Select business type
+              </p>
+              <PersonTypePicker
+                groups={BUSINESS_GROUPS}
+                options={types.map((o) => ({
+                  ...o,
+                  metadata: { ...o.metadata, group: "business" },
+                }))}
+                selected={type ? [type] : []}
+                icon={typeIcon}
+                onToggle={(slug) => setType(slug)}
+              />
+            </div>
+
+            <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+              <p className="mb-1 text-sm font-bold text-foreground">
+                Google Maps Profile (Optional)
+              </p>
+              <p className="mb-3 text-1 text-muted-foreground">
+                Paste your business Maps link to auto-fill location, address, and name.
+              </p>
               <InlineField
                 inputId="mapsUrl"
-                label="Google Maps link"
+                label="Google Maps share link"
                 value={mapsUrl}
                 onChange={setMapsUrl}
                 placeholder="https://maps.app.goo.gl/…"
@@ -332,28 +344,33 @@ function NewBusiness() {
                 {...(mapsError
                   ? { error: mapsError }
                   : reading
-                    ? { hint: "Reading the link…" }
-                    : { hint: "In Google Maps, tap Share and copy the link. Optional." })}
+                    ? { hint: "Reading place details from Google Maps…" }
+                    : { hint: "In Google Maps, tap Share and copy the link." })}
               />
               {place && !reading && (place.name || place.city) ? (
-                <p className="mt-2 flex items-start gap-1.5 text-1 text-foreground">
-                  <CircleCheck size={iconSize.sm} className="mt-0.5 shrink-0" aria-hidden />
-                  Found {[place.name, place.city, place.state].filter(Boolean).join(" · ")}. We've
-                  filled these in; you can change them.
-                </p>
+                <div className="mt-3 flex items-start gap-2 rounded-md bg-subtle p-3 border border-border/80 text-foreground text-1">
+                  <CircleCheck size={18} className="mt-0.5 shrink-0 text-success" aria-hidden />
+                  <div>
+                    <span className="font-bold text-foreground">Found: </span>
+                    {[place.name, place.city, place.state].filter(Boolean).join(" · ")}
+                    <span className="block mt-0.5 text-muted-foreground text-1">
+                      Auto-populated into your business profile. You can modify anytime.
+                    </span>
+                  </div>
+                </div>
               ) : null}
             </div>
           </div>
         ) : step === "basics" ? (
-          <div className="space-y-5">
+          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
             <InlineField
               inputId="businessName"
               label="Business name"
               value={name}
               onChange={setName}
-              placeholder="Soundhouse Bandra"
+              placeholder="Soundhouse Studios Bandra"
               maxLength={80}
-              hint="Use the name on your signboard."
+              hint="Use the official registered or brand name."
             />
             <UsernameField
               inputId="businessUsername"
@@ -369,13 +386,13 @@ function NewBusiness() {
               label="Tagline (optional)"
               value={tagline}
               onChange={setTagline}
-              placeholder="Two rooms, one tape machine."
+              placeholder="Two live rooms, analog tape, Dolby Atmos."
               maxLength={160}
-              hint="This is a separate profile. Your personal profile stays as it is."
+              hint="Highlight what sets your facility or agency apart."
             />
           </div>
         ) : step === "location" ? (
-          <div className="space-y-5">
+          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
             <div className="grid grid-cols-2 gap-3">
               <DrawerField label="State">
                 <SheetSelect
@@ -420,28 +437,28 @@ function NewBusiness() {
               inputMode="numeric"
               {...(pinCode.length === 6 && pinError
                 ? { error: pinError }
-                : { hint: "Never shown. It finds people near you." })}
+                : { hint: "Never publicly shared. Used for proximity discovery." })}
             />
           </div>
         ) : step === "offer" ? (
-          <div className="space-y-5">
-            <DrawerField label="Genres" hint="Optional. The music you work with most.">
+          <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+            <DrawerField label="Genres" hint="Optional. The styles of music you specialize in.">
               <SheetMultiSelect
                 title="Genres"
                 value={genres}
                 options={(tx.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
                 max={10}
-                placeholder="Choose"
+                placeholder="Choose genres"
                 onChange={setGenres}
               />
             </DrawerField>
-            <DrawerField label="Supported languages">
+            <DrawerField label="Languages supported">
               <SheetMultiSelect
-                title="Supported languages"
+                title="Languages"
                 value={languages}
                 options={(tx.languages ?? []).map((o) => ({ value: o.slug, label: o.label }))}
                 max={tx.languages.length}
-                placeholder="Choose"
+                placeholder="Choose languages"
                 onChange={setLanguages}
               />
             </DrawerField>
@@ -453,37 +470,51 @@ function NewBusiness() {
         ) : step === "equipment" ? (
           <EquipmentEditor />
         ) : (
-          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card">
-            {(
-              [
-                ["Type", typeLabel, "type"],
-                ["Maps link", link ? "Added" : "Not added", "type"],
-                ["Name", name, "basics"],
-                ["Username", `@${username}`, "basics"],
-                ["Tagline", tagline.trim() || "Not added", "basics"],
-                ["City", [city, state].filter(Boolean).join(", "), "location"],
-                ["Genres", labelsOf(tx.genres, genres), "offer"],
-                ["Languages", labelsOf(tx.languages, languages), "offer"],
+          <div className="rounded-lg bg-card border border-border/80 shadow-xs overflow-hidden">
+            <div className="p-4 border-b border-border/60 bg-subtle/40">
+              <h2 className="text-sm font-bold text-foreground">Summary Overview</h2>
+              <p className="text-1 text-muted-foreground">
+                Tap any item to modify before creating.
+              </p>
+            </div>
+            <ul className="divide-y divide-border/60">
+              {(
                 [
-                  "Policies",
-                  `${policies.filter((p) => p.trim()).length} added`,
-                  "policies",
-                ] as const,
-              ] as const
-            ).map(([k, v, to]) => (
-              <li key={k}>
-                <button
-                  type="button"
-                  onClick={() => go(to)}
-                  className="state-layer flex min-h-14 w-full items-center gap-3 px-4 text-left"
-                >
-                  <span className="w-24 shrink-0 text-sm font-medium">{k}</span>
-                  <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">{v}</span>
-                  <ChevronRight size={iconSize.sm} className="shrink-0" aria-hidden />
-                </button>
-              </li>
-            ))}
-          </ul>
+                  ["Business Type", typeLabel, "type"],
+                  ["Google Maps", link ? "Linked" : "Not linked", "type"],
+                  ["Name", name, "basics"],
+                  ["Handle", `@${username}`, "basics"],
+                  ["Tagline", tagline.trim() || "None", "basics"],
+                  ["Location", [city, state].filter(Boolean).join(", "), "location"],
+                  ["Genres", labelsOf(tx.genres, genres), "offer"],
+                  ["Languages", labelsOf(tx.languages, languages), "offer"],
+                  [
+                    "Policies",
+                    `${policies.filter((p) => p.trim()).length} defined`,
+                    "policies",
+                  ] as const,
+                ] as const
+              ).map(([k, v, to]) => (
+                <li key={k}>
+                  <button
+                    type="button"
+                    onClick={() => go(to)}
+                    className="state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-subtle/50 active:bg-subtle"
+                  >
+                    <span className="w-28 shrink-0 text-sm font-semibold text-foreground">{k}</span>
+                    <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+                      {v}
+                    </span>
+                    <ChevronRight
+                      size={iconSize.sm}
+                      className="shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </StepShell>
 

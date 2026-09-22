@@ -116,40 +116,108 @@ function Welcome() {
   const info = kindInfo[kind];
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-10">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-8">
       <div>
-        <p className={cn("text-1 text-muted-foreground", rise)}>
-          About two minutes · {total} short questions
-        </p>
-        <h1 className={cn("mt-2 text-4", rise)} style={beat(1)}>
-          Let's build your MusicLinkd profile.
-        </h1>
-        <p
-          className={cn("mt-3 text-2 leading-relaxed text-muted-foreground", rise)}
-          style={beat(2)}
+        <div
+          className={cn(
+            "inline-flex items-center gap-2 rounded-full bg-subtle px-3 py-1 text-1 font-semibold text-muted-foreground border border-border/60",
+            rise,
+          )}
         >
-          Tell us a little about what you do in music. It takes about two minutes, and you can skip
-          anything that doesn't apply.
-        </p>
-
-        <div className={cn("mt-6", rise)} style={beat(2.5)}>
-          <p className="mb-1.5 text-1 font-semibold">What are you setting up?</p>
-          <Segmented value={kind} options={kindOrder} onChange={setKind} />
+          <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+          Quick setup · {total} short questions (~2 mins)
         </div>
 
-        <div className={rise} style={beat(3)}>
+        <h1
+          className={cn("mt-4 text-4 font-bold tracking-tight text-foreground", rise)}
+          style={beat(1)}
+        >
+          Build your industry presence
+        </h1>
+        <p
+          className={cn("mt-2 text-2 leading-relaxed text-muted-foreground", rise)}
+          style={beat(2)}
+        >
+          Tell us about your craft so clients, collaborators, and gigs find you first.
+        </p>
+
+        {/* Interactive Profile Kind Cards */}
+        <div className={cn("mt-6 space-y-3", rise)} style={beat(2.5)}>
+          <p className="text-1 font-bold uppercase tracking-wider text-muted-foreground">
+            Choose account type
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setKind("Talent")}
+              className={cn(
+                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-98",
+                kind === "Talent"
+                  ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
+                  : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
+              )}
+            >
+              <span
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold mb-3 transition-colors",
+                  kind === "Talent"
+                    ? "bg-foreground text-background"
+                    : "bg-card text-foreground border border-border",
+                )}
+              >
+                <Compass size={18} />
+              </span>
+              <span className="text-sm font-bold text-foreground">Music Talent</span>
+              <span className="mt-0.5 text-1 text-muted-foreground leading-snug">
+                Musician, singer, producer, writer
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setKind("Business")}
+              className={cn(
+                "flex flex-col items-start rounded-lg p-4 text-left border transition-all duration-150 ease-standard active:scale-98",
+                kind === "Business"
+                  ? "border-foreground bg-card shadow-sm ring-2 ring-foreground/10"
+                  : "border-border/80 bg-subtle/50 hover:bg-card hover:border-muted-foreground/40",
+              )}
+            >
+              <span
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold mb-3 transition-colors",
+                  kind === "Business"
+                    ? "bg-foreground text-background"
+                    : "bg-card text-foreground border border-border",
+                )}
+              >
+                <Sparkles size={18} />
+              </span>
+              <span className="text-sm font-bold text-foreground">Business / Studio</span>
+              <span className="mt-0.5 text-1 text-muted-foreground leading-snug">
+                Studio, label, agency, venue
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Feature pitch card */}
+        <div
+          className={cn("mt-6 rounded-lg bg-card p-4 border border-border/80 shadow-xs", rise)}
+          style={beat(3)}
+        >
           {info.pitch}
         </div>
       </div>
 
-      <div className={cn("mt-8 space-y-2", rise)} style={beat(6)}>
+      <div className={cn("mt-8 space-y-2.5", rise)} style={beat(6)}>
         {kind === "Talent" && hydrated && started ? (
-          <BtnLink to="/onboarding/resume" className="w-full">
+          <BtnLink to="/onboarding/resume" className="w-full h-12 text-sm font-semibold shadow-xs">
             Continue Setup
           </BtnLink>
         ) : kind === "Talent" ? (
           <Btn
-            className="w-full"
+            className="w-full h-12 text-sm font-semibold shadow-xs"
             onClick={() =>
               navigate({ to: "/onboarding/step/$id", params: { id: resumeTarget(draft, bucket) } })
             }
@@ -157,13 +225,20 @@ function Welcome() {
             {info.cta}
           </Btn>
         ) : info.goTo ? (
-          <BtnLink to={info.goTo.to} search={info.goTo.search} className="w-full">
+          <BtnLink
+            to={info.goTo.to}
+            search={info.goTo.search}
+            className="w-full h-12 text-sm font-semibold shadow-xs"
+          >
             {info.cta}
           </BtnLink>
         ) : null}
         {info.skippable ? (
           <p className="flex justify-center pt-2 text-sm">
-            <AuthLink to="/onboarding/skip" className="text-muted-foreground">
+            <AuthLink
+              to="/onboarding/skip"
+              className="text-muted-foreground hover:text-foreground font-medium"
+            >
               Skip for Now
             </AuthLink>
           </p>

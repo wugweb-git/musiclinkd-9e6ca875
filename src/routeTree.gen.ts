@@ -42,6 +42,7 @@ import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as BusinessAvailabilityRouteImport } from './routes/business.availability'
+import { Route as BusinessLeadsRouteImport } from './routes/business.leads'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as BusinessPoliciesRouteImport } from './routes/business.policies'
 import { Route as BusinessPricingRouteImport } from './routes/business.pricing'
@@ -352,6 +353,11 @@ const BusinessIndexRoute = BusinessIndexRouteImport.update({
 const BusinessAvailabilityRoute = BusinessAvailabilityRouteImport.update({
   id: '/business/availability',
   path: '/business/availability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessLeadsRoute = BusinessLeadsRouteImport.update({
+  id: '/business/leads',
+  path: '/business/leads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessNewRoute = BusinessNewRouteImport.update({
@@ -1125,6 +1131,7 @@ export interface FileRoutesByFullPath {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/availability': typeof BusinessAvailabilityRoute
+  '/business/leads': typeof BusinessLeadsRoute
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
@@ -1305,6 +1312,7 @@ export interface FileRoutesByTo {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/new': typeof BandsNewRoute
   '/business/availability': typeof BusinessAvailabilityRoute
+  '/business/leads': typeof BusinessLeadsRoute
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
@@ -1487,6 +1495,7 @@ export interface FileRoutesById {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/availability': typeof BusinessAvailabilityRoute
+  '/business/leads': typeof BusinessLeadsRoute
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
@@ -1670,6 +1679,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/availability'
+    | '/business/leads'
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
@@ -1850,6 +1860,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/bands/new'
     | '/business/availability'
+    | '/business/leads'
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
@@ -2031,6 +2042,7 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/availability'
+    | '/business/leads'
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
@@ -2213,6 +2225,7 @@ export interface RootRouteChildren {
   BandsNewRoute: typeof BandsNewRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   BusinessAvailabilityRoute: typeof BusinessAvailabilityRoute
+  BusinessLeadsRoute: typeof BusinessLeadsRoute
   BusinessNewRoute: typeof BusinessNewRoute
   BusinessPoliciesRoute: typeof BusinessPoliciesRoute
   BusinessPricingRoute: typeof BusinessPricingRoute
@@ -2589,6 +2602,13 @@ declare module '@tanstack/react-router' {
       path: '/business/availability'
       fullPath: '/business/availability'
       preLoaderRoute: typeof BusinessAvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business/leads': {
+      id: '/business/leads'
+      path: '/business/leads'
+      fullPath: '/business/leads'
+      preLoaderRoute: typeof BusinessLeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/business/new': {
@@ -3679,6 +3699,7 @@ const rootRouteChildren: RootRouteChildren = {
   BandsNewRoute: BandsNewRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   BusinessAvailabilityRoute: BusinessAvailabilityRoute,
+  BusinessLeadsRoute: BusinessLeadsRoute,
   BusinessNewRoute: BusinessNewRoute,
   BusinessPoliciesRoute: BusinessPoliciesRoute,
   BusinessPricingRoute: BusinessPricingRoute,

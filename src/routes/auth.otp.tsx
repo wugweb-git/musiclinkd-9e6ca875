@@ -97,52 +97,68 @@ function OtpScreen() {
 
   return (
     <AuthScreen back={{ to: "/auth/phone" }}>
-      <AuthHeading
-        title="Enter your code"
-        sub={
-          phone ? `Sent to +91 ${formatIndianMobile(phone)}` : "Enter the 6-digit code we sent you."
-        }
-      />
+      <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+        <AuthHeading
+          title="Verify your number"
+          sub={
+            phone
+              ? `We sent a 6-digit one-time code to +91 ${formatIndianMobile(phone)}`
+              : "Enter the 6-digit code we sent you."
+          }
+        />
 
-      {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+        {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-      <CodeInput
-        value={code}
-        onChange={(v) => {
-          setError(null);
-          setCode(v);
-        }}
-        onComplete={(v) => void verify(v)}
-        invalid={Boolean(error)}
-        shakeKey={misses}
-      />
+        <CodeInput
+          value={code}
+          onChange={(v) => {
+            setError(null);
+            setCode(v);
+          }}
+          onComplete={(v) => void verify(v)}
+          invalid={Boolean(error)}
+          shakeKey={misses}
+        />
 
-      <Btn
-        className="w-full"
-        loading={busy}
-        disabled={code.length !== 6 || !phone}
-        onClick={() => void verify(code)}
-      >
-        Verify and Continue
-      </Btn>
+        <Btn
+          className="w-full h-12 text-sm font-semibold shadow-xs"
+          loading={busy}
+          disabled={code.length !== 6 || !phone}
+          onClick={() => void verify(code)}
+        >
+          Verify & Continue
+        </Btn>
 
-      <p className="mt-5 flex justify-center text-1 text-muted-foreground">
-        {countdown.seconds > 0 ? (
-          <span aria-live="polite">
-            Resend Code in 0:{String(countdown.seconds).padStart(2, "0")}
-          </span>
-        ) : (
-          <AuthTextButton icon={<RotateCw size={iconSize.sm} />} onClick={() => void resend()}>
-            Resend Code
-          </AuthTextButton>
-        )}
-      </p>
+        <p className="mt-5 flex justify-center text-1 text-muted-foreground">
+          {countdown.seconds > 0 ? (
+            <span aria-live="polite" className="rounded-full bg-subtle px-3 py-1 font-medium">
+              Resend code in 0:{String(countdown.seconds).padStart(2, "0")}
+            </span>
+          ) : (
+            <AuthTextButton
+              icon={<RotateCw size={iconSize.sm} />}
+              onClick={() => void resend()}
+              className="rounded-full bg-subtle px-3 py-1 font-medium hover:text-foreground"
+            >
+              Resend Code Now
+            </AuthTextButton>
+          )}
+        </p>
+      </div>
 
-      <p className="mt-4 flex items-center justify-center gap-6 text-1">
-        <AuthLink to="/auth/phone" icon={<Pencil size={iconSize.sm} />}>
+      <p className="mt-5 flex items-center justify-center gap-6 text-sm">
+        <AuthLink
+          to="/auth/phone"
+          icon={<Pencil size={iconSize.sm} />}
+          className="text-muted-foreground hover:text-foreground font-medium"
+        >
           Change Number
         </AuthLink>
-        <AuthLink to="/auth" icon={<Mail size={iconSize.sm} />}>
+        <AuthLink
+          to="/auth"
+          icon={<Mail size={iconSize.sm} />}
+          className="text-muted-foreground hover:text-foreground font-medium"
+        >
           Use Email
         </AuthLink>
       </p>

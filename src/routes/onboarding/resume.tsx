@@ -42,54 +42,71 @@ function Resume() {
   const done = draft.completedSteps.length;
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-16">
+    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-12">
       <div>
         <SyncBanner state={hydrated ? sync : "loading"} onRetry={retry} />
-        <Clock size={40} className="text-primary" />
-        <h1 className="mt-4 text-3 leading-tight">Welcome back</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          You finished {done} of {list.length} questions. Nothing was lost — carry on from{" "}
-          <span className="font-semibold text-foreground">{def?.title ?? "the next step"}</span>.
+
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-subtle text-foreground border border-border/80 shadow-xs">
+          <Clock size={24} />
+        </div>
+
+        <h1 className="mt-4 text-3 font-bold tracking-tight text-foreground leading-tight">
+          Welcome back
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+          You have completed {done} of {list.length} questions. Your progress is saved.
         </p>
 
-        <div className="mt-6 rounded-lg bg-subtle p-5">
-          <p className="text-1 text-muted-foreground">Next up</p>
-          <p className="mt-1 text-2">{def?.title ?? "Review your profile"}</p>
+        <div className="mt-6 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+          <span className="inline-block rounded-full bg-subtle px-2.5 py-0.5 text-1 font-bold text-foreground">
+            Next question
+          </span>
+          <p className="mt-2 text-2 font-bold text-foreground">
+            {def?.title ?? "Review your profile"}
+          </p>
           <p className="mt-1 text-sm text-muted-foreground">
             {def?.subtitle ?? "One last look before publishing."}
           </p>
-          <div
-            className="mt-4 h-1 overflow-hidden rounded-full bg-background"
-            role="progressbar"
-            aria-valuenow={done}
-            aria-valuemin={0}
-            aria-valuemax={list.length}
-            aria-label="Setup progress"
-          >
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-1 font-semibold text-muted-foreground mb-1.5">
+              <span>Setup progress</span>
+              <span className="text-foreground font-bold">
+                {Math.round((done / Math.max(1, list.length)) * 100)}%
+              </span>
+            </div>
             <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${Math.round((done / Math.max(1, list.length)) * 100)}%` }}
-            />
+              className="h-2 overflow-hidden rounded-full bg-background"
+              role="progressbar"
+              aria-valuenow={done}
+              aria-valuemin={0}
+              aria-valuemax={list.length}
+              aria-label="Setup progress"
+            >
+              <div
+                className="h-full rounded-full bg-foreground transition-all duration-300"
+                style={{ width: `${Math.round((done / Math.max(1, list.length)) * 100)}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 space-y-2">
+      <div className="mt-8 space-y-2.5">
         <Btn
-          className="w-full"
+          className="w-full h-12 text-sm font-semibold shadow-xs"
           onClick={() => navigate({ to: "/onboarding/step/$id", params: { id: target } })}
         >
-          Continue setup
+          Continue Setup
         </Btn>
-        <p className="flex justify-center pt-2 text-sm">
+        <p className="flex justify-center pt-1 text-sm">
           <AuthTextButton
-            className="text-muted-foreground"
+            className="text-muted-foreground hover:text-foreground font-medium"
             onClick={() => {
               reset();
               navigate({ to: "/onboarding" });
             }}
           >
-            Start Over
+            Start Over from Scratch
           </AuthTextButton>
         </p>
       </div>

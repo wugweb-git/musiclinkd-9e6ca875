@@ -27,7 +27,8 @@ export type NotificationKind =
   | "collab_invite"
   | "collab_joined"
   | "rental_requested"
-  | "rental_answered";
+  | "rental_answered"
+  | "enquiry_received";
 
 export type Notification = {
   id: string;
