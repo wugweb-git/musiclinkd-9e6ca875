@@ -80,6 +80,8 @@ export type BandView = {
   /** The stage plot image and its note; null when the band has not added one. */
   stagePlot: { url: string; note: string } | null;
   liveVideos: BandLiveVideoView[];
+  /** The showcase photos, in order. */
+  gallery: string[];
   /** The viewer created the band, or is its owner or an admin. */
   owner: boolean;
 };
@@ -208,6 +210,7 @@ export function bandViewFromRow(
       ? { url: row.stage_plot_url, note: row.stage_plot_note ?? "" }
       : null,
     liveVideos: row.live_videos.map((v) => ({ id: v.id, title: v.title, url: v.url })),
+    gallery: row.gallery.map((g) => g.image_url),
     owner,
   };
 }

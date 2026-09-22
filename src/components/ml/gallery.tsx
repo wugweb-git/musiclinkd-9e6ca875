@@ -29,6 +29,7 @@ import {
   removeMyGalleryPhoto,
   reorderMyGallery,
   type GalleryPhoto,
+  type MyGallery,
 } from "@/lib/gallery.functions";
 import { uploadGalleryPhoto } from "@/lib/gallery";
 import { iconSize } from "@/lib/tokens";
@@ -38,7 +39,8 @@ import { iconSize } from "@/lib/tokens";
  * the grid, each photo opening them all full size in PhotoSheet. The signed-in owner sees
  * GalleryEditor instead: add several photos in one pick, remove one, and drag (or, from the
  * keyboard, space and the arrow keys) to reorder; the first photo leads. Uploads go through
- * src/lib/gallery.ts and the rows through src/lib/gallery.functions.ts.
+ * src/lib/gallery.ts. The rows come from a GallerySource: by default the signed-in account's own
+ * gallery (src/lib/gallery.functions.ts); a band's showcase passes its own (band-sections.tsx).
  */
 
 /** A gallery for anyone looking at it: tap a photo to see them full size. */
@@ -52,19 +54,59 @@ export function GalleryView({ images, title }: { images: string[]; title: string
   );
 }
 
-const GALLERY_KEY = ["gallery", "mine"];
+/** Where an editable gallery's photos are read from and saved to. */
+export type GallerySource = {
+  /** The react-query key its photos are cached under. */
+  queryKey: readonly unknown[];
+  list: () => Promise<MyGallery>;
+  add: (url: string) => Promise<unknown>;
+  remove: (id: string) => Promise<unknown>;
+  reorder: (ids: string[]) => Promise<unknown>;
+};
 
-/**
- * The signed-in owner's gallery, editable. `onChange` runs after every saved change, so the page
- * around it can refresh what it shows elsewhere.
- */
-export function GalleryEditor({ title, onChange }: { title: string; onChange?: () => void }) {
-  const queryClient = useQueryClient();
+/** The signed-in account's own gallery (profile_gallery). */
+function useMyGallerySource(): GallerySource {
   const load = useServerFn(listMyGallery);
   const add = useServerFn(addMyGalleryPhoto);
   const remove = useServerFn(removeMyGalleryPhoto);
   const reorder = useServerFn(reorderMyGallery);
-  const q = useQuery({ queryKey: GALLERY_KEY, queryFn: () => load() });
+  return {
+    queryKey: ["gallery", "mine"],
+    list: () => load(),
+    add: (url) => add({ data: { url } }),
+    remove: (id) => remove({ data: { id } }),
+    reorder: (ids) => reorder({ data: { ids } }),
+  };
+}
+
+type GalleryEditorProps = {
+  title: string;
+  onChange?: (() => void) | undefined;
+  /** Where the photos live; the signed-in account's own gallery when left out. */
+  source?: GallerySource | undefined;
+};
+
+/**
+ * An editable gallery: the signed-in owner's own, or the one `source` names. `onChange` runs after
+ * every saved change, so the page around it can refresh what it shows elsewhere.
+ */
+export function GalleryEditor({ source, ...rest }: GalleryEditorProps) {
+  return source ? <EditableGallery source={source} {...rest} /> : <MyGalleryEditor {...rest} />;
+}
+
+function MyGalleryEditor(props: Omit<GalleryEditorProps, "source">) {
+  const source = useMyGallerySource();
+  return <EditableGallery source={source} {...props} />;
+}
+
+function EditableGallery({
+  title,
+  onChange,
+  source,
+}: Omit<GalleryEditorProps, "source"> & { source: GallerySource }) {
+  const queryClient = useQueryClient();
+  const queryKey = source.queryKey;
+  const q = useQuery({ queryKey, queryFn: () => source.list() });
   const [viewing, setViewing] = useState(false);
   // The pointer lifting at the end of a drag can land as a click; that one doesn't open the photos.
   const dragged = useRef(false);
@@ -82,19 +124,19 @@ export function GalleryEditor({ title, onChange }: { title: string; onChange?: (
   );
 
   const refresh = async () => {
-    await queryClient.invalidateQueries({ queryKey: GALLERY_KEY });
+    await queryClient.invalidateQueries({ queryKey });
     onChange?.();
   };
 
   async function onPick(_kind: "gallery", file: File) {
-    const current = queryClient.getQueryData<{ photos: GalleryPhoto[] }>(GALLERY_KEY);
+    const current = queryClient.getQueryData<{ photos: GalleryPhoto[] }>(queryKey);
     if ((current?.photos.length ?? 0) >= MAX_GALLERY_PHOTOS) {
       toast.error(`Up to ${MAX_GALLERY_PHOTOS} photos in a gallery.`, { id: "gallery-add" });
       return;
     }
     try {
       const url = await uploadGalleryPhoto(file);
-      await add({ data: { url } });
+      await source.add(url);
       await refresh();
       toast.success("Photo added", { id: "gallery-add" });
     } catch (e) {
@@ -106,7 +148,7 @@ export function GalleryEditor({ title, onChange }: { title: string; onChange?: (
     const before = photos;
     setPhotos((list) => list.filter((p) => p.id !== id));
     try {
-      await remove({ data: { id } });
+      await source.remove(id);
       await refresh();
       toast.success("Photo removed");
     } catch {
@@ -125,7 +167,7 @@ export function GalleryEditor({ title, onChange }: { title: string; onChange?: (
     const next = arrayMove(photos, from, to);
     setPhotos(next);
     try {
-      await reorder({ data: { ids: next.map((p) => p.id) } });
+      await source.reorder(next.map((p) => p.id));
       await refresh();
     } catch {
       setPhotos(before);

@@ -3,6 +3,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { anonClient } from "@/lib/portfolio.functions";
+import {
+  GALLERY_BUCKET,
+  MAX_GALLERY_PHOTOS,
+  galleryPath,
+  type GalleryPhoto,
+  type MyGallery,
+} from "@/lib/gallery.functions";
 
 /*
  * Bands read the collabs tables: a band is a collab of type 'band' (owner, 17 Sep 2026), the
@@ -75,6 +82,12 @@ export type BandRow = {
     url: string;
     sort_order: number;
   }[];
+  /** The showcase: band photos, the first one leading. */
+  gallery: {
+    id: string;
+    image_url: string;
+    sort_order: number;
+  }[];
 };
 
 const BAND = `id, slug, name, tagline, bio, genres, city, formed_year, avatar_url, cover_url, looking_for,
@@ -84,7 +97,8 @@ const BAND = `id, slug, name, tagline, bio, genres, city, formed_year, avatar_ur
     profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url, is_verified)),
   events:collab_events(id, title, venue, city, event_date, event_time, date_precision, status, ticket_note, sort_order),
   releases:collab_releases(id, title, kind, release_year, cover_url, sort_order),
-  live_videos:collab_live_videos(id, title, url, sort_order)`;
+  live_videos:collab_live_videos(id, title, url, sort_order),
+  gallery:collab_gallery(id, image_url, sort_order)`;
 
 type Sorted = { sort_order: number };
 const bySort = (a: Sorted, b: Sorted) => a.sort_order - b.sort_order;
@@ -99,6 +113,7 @@ function shape(raw: BandRow): BandRow {
     releases: [...(raw.releases ?? [])].sort(bySort),
     rider: raw.rider ?? [],
     live_videos: [...(raw.live_videos ?? [])].sort(bySort),
+    gallery: [...(raw.gallery ?? [])].sort(bySort),
   };
 }
 
@@ -274,4 +289,121 @@ export const removeBandRelease = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!rows?.length) throw new Error(NOT_ALLOWED);
     return { removed: true };
+  });
+
+/*
+ * A band's showcase (collab_gallery): photos on the band page's Overview. Owners and admins add,
+ * remove and reorder them (collab_can_manage, checked by the database). The file is uploaded from
+ * the browser into the uploader's own gallery folder (src/lib/gallery.ts), as a person's gallery
+ * is. Schema: supabase/migrations/20260922300000_band_showcase.sql
+ */
+
+const GALLERY_COLUMNS = "id, image_url";
+
+/** The band's showcase in order, for its editor, and whether uploads are open. */
+export const listBandGallery = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<MyGallery> => {
+    const client = db(context.supabase);
+    const [rows, bucket] = await Promise.all([
+      client
+        .from("collab_gallery")
+        .select(GALLERY_COLUMNS)
+        .eq("collab_id", data.id)
+        .order("sort_order")
+        .order("created_at"),
+      // Listing one's own folder fails only while the bucket doesn't exist.
+      client.storage.from(GALLERY_BUCKET).list(context.userId, { limit: 1 }),
+    ]);
+    if (rows.error) throw new Error(rows.error.message);
+    return { photos: (rows.data ?? []) as GalleryPhoto[], ready: !bucket.error };
+  });
+
+/** Records a photo a manager has just uploaded to their gallery folder, at the end. */
+export const addBandGalleryPhoto = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({ id: z.string().uuid(), url: z.string().url().max(1000) }).parse(d),
+  )
+  .handler(async ({ context, data }): Promise<GalleryPhoto> => {
+    const client = db(context.supabase);
+    if (!data.url.startsWith("https://") || !galleryPath(data.url, context.userId)) {
+      throw new Error("That photo isn't in your gallery folder.");
+    }
+    const { data: existing, error: countError } = await client
+      .from("collab_gallery")
+      .select("sort_order")
+      .eq("collab_id", data.id)
+      .order("sort_order", { ascending: false });
+    if (countError) throw new Error(countError.message);
+    const rows = (existing ?? []) as { sort_order: number }[];
+    if (rows.length >= MAX_GALLERY_PHOTOS) {
+      throw new Error(`Up to ${MAX_GALLERY_PHOTOS} photos in a gallery.`);
+    }
+    const { data: row, error } = await client
+      .from("collab_gallery")
+      .insert({
+        collab_id: data.id,
+        image_url: data.url,
+        sort_order: (rows[0]?.sort_order ?? -1) + 1,
+      })
+      .select(GALLERY_COLUMNS)
+      .single();
+    if (error) throw new Error(error.code === "42501" ? NOT_ALLOWED : error.message);
+    return row as GalleryPhoto;
+  });
+
+/**
+ * Removes one photo and, when the remover uploaded it, its file. A file another manager uploaded
+ * stays in their folder.
+ */
+export const removeBandGalleryPhoto = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ photoId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const client = db(context.supabase);
+    const { data: rows, error } = await client
+      .from("collab_gallery")
+      .delete()
+      .eq("id", data.photoId)
+      .select("image_url");
+    if (error) throw new Error(error.message);
+    if (!rows?.length) throw new Error(NOT_ALLOWED);
+    const paths = (rows as { image_url: string }[])
+      .map((r) => galleryPath(r.image_url, context.userId))
+      .filter((p): p is string => !!p);
+    // A file that is already gone is not an error.
+    if (paths.length) await client.storage.from(GALLERY_BUCKET).remove(paths);
+    return { removed: true };
+  });
+
+/** Saves the showcase's order: each photo's position in `ids`. The first one leads. */
+export const reorderBandGallery = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        ids: z.array(z.string().uuid()).max(MAX_GALLERY_PHOTOS * 2),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const client = db(context.supabase);
+    // One update per photo, only within this band; RLS keeps it to the band's managers.
+    const results = await Promise.all(
+      data.ids.map((photoId, index) =>
+        client
+          .from("collab_gallery")
+          .update({ sort_order: index })
+          .eq("id", photoId)
+          .eq("collab_id", data.id)
+          .select("id"),
+      ),
+    );
+    const failed = results.find((r) => r.error);
+    if (failed?.error) throw new Error(failed.error.message);
+    if (data.ids.length && !results.some((r) => r.data?.length)) throw new Error(NOT_ALLOWED);
+    return { ordered: data.ids.length };
   });

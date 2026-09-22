@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { BandRiderSheet, BandStagePlotSheet } from "@/components/ml/band-sections";
+import {
+  BandRiderSheet,
+  BandShowcaseEditor,
+  BandStagePlotSheet,
+} from "@/components/ml/band-sections";
 import { Card, Row, StatusPill, Dialog, EmptyState, Segmented } from "@/components/ml/kit";
 import { bandRoleCopy, type BandRole } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
@@ -147,6 +151,14 @@ function ManageBand() {
               subtitle={band.stagePlot ? "Image added" : "An image of your stage layout"}
               onClick={() => setEditing("stage-plot")}
             />
+            {band.owner ? (
+              <Card>
+                <h2 className="text-sm">Showcase</h2>
+                <div className="mt-3">
+                  <BandShowcaseEditor bandId={band.dbId} title={`${band.name} showcase`} />
+                </div>
+              </Card>
+            ) : null}
             <Row
               title="Band QR & share card"
               subtitle="Share the band anywhere"

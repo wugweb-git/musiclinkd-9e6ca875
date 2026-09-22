@@ -28,7 +28,7 @@ const db = (client: unknown) => client as unknown as SupabaseClient;
 const COLUMNS = "id, image_url";
 
 /** The storage path of a gallery URL inside `userId`'s folder, or null for any other URL. */
-function galleryPath(url: string, userId: string) {
+export function galleryPath(url: string, userId: string) {
   const marker = `/storage/v1/object/public/${GALLERY_BUCKET}/`;
   const at = url.indexOf(marker);
   if (at < 0) return null;

@@ -1,8 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented } from "@/components/ml/kit";
-import { BandLiveVideoList, BandLiveVideoSheet } from "@/components/ml/band-sections";
+import {
+  BandLiveVideoList,
+  BandLiveVideoSheet,
+  BandReleaseSheet,
+} from "@/components/ml/band-sections";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { joinParts } from "@/lib/utils";
@@ -11,6 +15,15 @@ export const Route = createFileRoute("/bands/$id/portfolio")({
   // ?tab=Live opens the Live tab, from the band page's live videos row.
   validateSearch: (s: Record<string, unknown>): { tab?: "Live" } =>
     s["tab"] === "Live" ? { tab: "Live" } : {},
+  // The portfolio now lives on the band page itself, in its Music tab.
+  beforeLoad: ({ params }) => {
+    throw redirect({
+      to: "/bands/$id",
+      params: { id: params.id },
+      search: { tab: "Music" },
+      replace: true,
+    });
+  },
   loader: ({ params }) => loadBand(params.id),
   head: () => ({
     meta: [
@@ -38,6 +51,7 @@ function BandPortfolio() {
   const search = Route.useSearch();
   const [tab, setTab] = useState<(typeof tabs)[number]>(search.tab ?? "Discography");
   const [adding, setAdding] = useState(false);
+  const [addingRelease, setAddingRelease] = useState(false);
 
   if (!band) {
     return (
@@ -88,16 +102,18 @@ function BandPortfolio() {
                   </div>
                 </Card>
               ))}
-              <Btn variant="outline" className="w-full">
-                Add a release
-              </Btn>
+              {band.owner ? (
+                <Btn variant="outline" className="w-full" onClick={() => setAddingRelease(true)}>
+                  Add a release
+                </Btn>
+              ) : null}
             </div>
           ) : (
             <EmptyState
               title="No releases yet"
               body="Add the band's EPs, singles and albums so bookers can hear you."
             >
-              <Btn>Add a release</Btn>
+              {band.owner ? <Btn onClick={() => setAddingRelease(true)}>Add a release</Btn> : null}
             </EmptyState>
           )
         ) : (
@@ -128,6 +144,9 @@ function BandPortfolio() {
       </div>
       {adding ? (
         <BandLiveVideoSheet bandId={band.dbId} open onClose={() => setAdding(false)} />
+      ) : null}
+      {addingRelease ? (
+        <BandReleaseSheet bandId={band.dbId} open onClose={() => setAddingRelease(false)} />
       ) : null}
     </Screen>
   );

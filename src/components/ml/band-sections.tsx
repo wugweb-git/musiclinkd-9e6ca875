@@ -16,11 +16,16 @@ import {
   videoProblem,
 } from "@/components/ml/listing-form";
 import { riderLine, type BandLiveVideoView } from "@/lib/band-view";
+import { GalleryEditor, type GallerySource } from "@/components/ml/gallery";
 import {
+  addBandGalleryPhoto,
   addBandLiveVideo,
   addBandRelease,
+  listBandGallery,
+  removeBandGalleryPhoto,
   removeBandLiveVideo,
   removeBandRelease,
+  reorderBandGallery,
   saveBandRider,
   saveBandStagePlot,
 } from "@/lib/bands.functions";
@@ -529,4 +534,24 @@ export function RemoveReleaseButton({ releaseId, title }: { releaseId: string; t
       <Trash2 size={iconSize.md} aria-hidden />
     </IconBtn>
   );
+}
+
+/**
+ * The band's showcase, editable: the shared gallery editor, reading and saving the band's photos
+ * (collab_gallery) instead of the signed-in account's own. Owners and admins only.
+ */
+export function BandShowcaseEditor({ bandId, title }: { bandId: string; title: string }) {
+  const router = useRouter();
+  const list = useServerFn(listBandGallery);
+  const add = useServerFn(addBandGalleryPhoto);
+  const remove = useServerFn(removeBandGalleryPhoto);
+  const reorder = useServerFn(reorderBandGallery);
+  const source: GallerySource = {
+    queryKey: ["gallery", "band", bandId],
+    list: () => list({ data: { id: bandId } }),
+    add: (url) => add({ data: { id: bandId, url } }),
+    remove: (photoId) => remove({ data: { photoId } }),
+    reorder: (ids) => reorder({ data: { id: bandId, ids } }),
+  };
+  return <GalleryEditor title={title} source={source} onChange={() => void router.invalidate()} />;
 }
