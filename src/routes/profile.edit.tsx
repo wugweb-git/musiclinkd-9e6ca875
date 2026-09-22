@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, RefreshCw, Save } from "lucide-react";
 import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { SegmentedField } from "@/components/ml/kit";
+import { QrBlock } from "@/components/ml/profile";
 import {
   getMyProfile,
   getMyProfileSections,
@@ -478,48 +479,6 @@ function EditProfile() {
       ),
     },
     {
-      id: "professional",
-      label: "Professional",
-      detail: "Work modes, experience level, rate",
-      done: Boolean(form.experience_level || form.work_modes.length),
-      body: (
-        <div className="space-y-4">
-          <Chips
-            label="Work modes"
-            options={workModeOptions as unknown as string[]}
-            selected={form.work_modes}
-            onToggle={(v) => toggle("work_modes", v)}
-          />
-          <Field
-            label="Experience"
-            value={form.experience_level}
-            onChange={(v) => update({ experience_level: v })}
-          />
-          <Field
-            label="Rate (₹)"
-            value={form.rate}
-            onChange={(v) => update({ rate: v })}
-            inputMode="decimal"
-          />
-          <div>
-            <span className="block text-1 font-medium text-muted-foreground">Per</span>
-            {/* Eight units don't fit one row at phone width: two rows of four, one choice. */}
-            <div className="mt-1.5 space-y-1.5">
-              {[UNIT_ORDER.slice(0, 4), UNIT_ORDER.slice(4)].map((row) => (
-                <SegmentedField
-                  key={row[0]}
-                  label="Rate unit"
-                  value={UNIT_LABELS[form.rate_unit]}
-                  options={row.map((u) => UNIT_LABELS[u])}
-                  onChange={(label) => update({ rate_unit: unitFromLabel(label) })}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
       id: "music",
       label: "Music identity",
       detail: "Type, genres, instruments, languages, influences",
@@ -575,6 +534,48 @@ function EditProfile() {
       detail: "Roles, bands and places you've worked",
       done: experience.some((e) => e.title.trim()),
       body: <ExperienceEditor items={experience} onChange={setExperience} />,
+    },
+    {
+      id: "professional",
+      label: "Professional",
+      detail: "Work modes, experience level, rate",
+      done: Boolean(form.experience_level || form.work_modes.length),
+      body: (
+        <div className="space-y-4">
+          <Chips
+            label="Work modes"
+            options={workModeOptions as unknown as string[]}
+            selected={form.work_modes}
+            onToggle={(v) => toggle("work_modes", v)}
+          />
+          <Field
+            label="Experience"
+            value={form.experience_level}
+            onChange={(v) => update({ experience_level: v })}
+          />
+          <Field
+            label="Rate (₹)"
+            value={form.rate}
+            onChange={(v) => update({ rate: v })}
+            inputMode="decimal"
+          />
+          <div>
+            <span className="block text-1 font-medium text-muted-foreground">Per</span>
+            {/* Eight units don't fit one row at phone width: two rows of four, one choice. */}
+            <div className="mt-1.5 space-y-1.5">
+              {[UNIT_ORDER.slice(0, 4), UNIT_ORDER.slice(4)].map((row) => (
+                <SegmentedField
+                  key={row[0]}
+                  label="Rate unit"
+                  value={UNIT_LABELS[form.rate_unit]}
+                  options={row.map((u) => UNIT_LABELS[u])}
+                  onChange={(label) => update({ rate_unit: unitFromLabel(label) })}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      ),
     },
     ...(roleDetails.length
       ? [
@@ -695,31 +696,6 @@ function EditProfile() {
       ),
     },
     {
-      id: "links",
-      label: "Links",
-      detail: "Streaming and social profiles",
-      done: Object.values(form.links).some(Boolean),
-      body: (
-        <div className="space-y-3">
-          {linkPlatforms.map((p) => {
-            const key =
-              typeof p === "string"
-                ? p
-                : ((p as { key?: string; label?: string }).key ?? (p as { label: string }).label);
-            const label = typeof p === "string" ? p : ((p as { label?: string }).label ?? key);
-            return (
-              <Field
-                key={key}
-                label={label}
-                value={form.links[key] ?? ""}
-                onChange={(v) => update({ links: { ...form.links, [key]: v } })}
-              />
-            );
-          })}
-        </div>
-      ),
-    },
-    {
       id: "privacy",
       label: "Privacy",
       detail: "Who can see your profile",
@@ -745,6 +721,31 @@ function EditProfile() {
         </div>
       ),
     },
+    {
+      id: "links",
+      label: "Links",
+      detail: "Streaming and social profiles",
+      done: Object.values(form.links).some(Boolean),
+      body: (
+        <div className="space-y-3">
+          {linkPlatforms.map((p) => {
+            const key =
+              typeof p === "string"
+                ? p
+                : ((p as { key?: string; label?: string }).key ?? (p as { label: string }).label);
+            const label = typeof p === "string" ? p : ((p as { label?: string }).label ?? key);
+            return (
+              <Field
+                key={key}
+                label={label}
+                value={form.links[key] ?? ""}
+                onChange={(v) => update({ links: { ...form.links, [key]: v } })}
+              />
+            );
+          })}
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -757,6 +758,22 @@ function EditProfile() {
             <p className="mt-1 text-1 leading-relaxed text-foreground">
               Still missing: {gaps.missing.map((m) => m.label).join(", ")}.
             </p>
+          </div>
+        ) : null}
+
+        {form.username ? (
+          <div className="mb-4 flex items-center gap-4 rounded-lg border border-border/80 bg-card p-4 shadow-xs">
+            <div className="w-20 shrink-0">
+              <QrBlock seed={form.username} />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">
+                musiclinkd.com/profile/{form.username}
+              </p>
+              <p className="mt-1 text-1 text-muted-foreground">
+                Scan to open this profile in MusicLinkd.
+              </p>
+            </div>
           </div>
         ) : null}
 

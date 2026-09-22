@@ -56,6 +56,7 @@ import {
   type ProfileEmptyCta,
   ProfileHero,
   ProfileSection,
+  QrBlock,
   StackSection,
   ClampedText,
   ProjectCard,
@@ -820,6 +821,24 @@ function OwnerStack({
   const bio = p.longBio || p.shortBio;
   return (
     <>
+      {p.username ? (
+        <StackSection title="Profile QR">
+          <div className="flex items-center gap-4 rounded-lg bg-subtle p-4">
+            <div className="w-20 shrink-0">
+              <QrBlock seed={p.username} />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">
+                musiclinkd.com/profile/{p.username}
+              </p>
+              <p className="mt-1 text-1 text-muted-foreground">
+                Scan to open this profile in MusicLinkd.
+              </p>
+            </div>
+          </div>
+        </StackSection>
+      ) : null}
+
       <StackSection title="About" editTo={edit} editSection="identity">
         {bio ? (
           <ClampedText text={bio} />

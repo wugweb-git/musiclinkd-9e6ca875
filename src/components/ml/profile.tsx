@@ -1695,7 +1695,7 @@ export function SocialLinks({ links }: { links: { label: string; handle: string 
 
 /* ── Share / QR ────────────────────────────────────────────── */
 
-function QrBlock({ seed }: { seed: string }) {
+export function QrBlock({ seed }: { seed: string }) {
   const cells = Array.from({ length: 169 }).map((_, i) => {
     const code = seed.charCodeAt(i % seed.length) + i * 7;
     return code % 3 !== 0;
