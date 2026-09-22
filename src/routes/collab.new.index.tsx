@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
@@ -19,16 +19,20 @@ import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
 /*
- * Start a collab — one flow for both kinds, since a band is a collab type (owner, 17 Sep 2026).
- * Pick the kind, then the details; a project also sets its plan (your role, how you'll work,
- * start and target dates, a budget only its people see); then ask people in with a role; then
- * check and publish. ?type=band or ?type=project opens it with the kind picked.
+ * Start a collab. A band is a collab type (owner, 17 Sep 2026) with its own screens, so picking
+ * Band opens Create a band (/bands/new). A project goes on here: the details, its plan (your
+ * role, how you'll work, start and target dates, a budget only its people see), asking people
+ * in with a role, then check and publish.
  */
 type Kind = "band" | "project";
 
 export const Route = createFileRoute("/collab/new/")({
   validateSearch: (s: Record<string, unknown>): { type?: Kind } =>
     s["type"] === "band" || s["type"] === "project" ? { type: s["type"] } : {},
+  // A band has its own screens (2–9 Sep): creating one happens in Create a band.
+  beforeLoad: ({ search }) => {
+    if (search.type === "band") throw redirect({ to: "/bands/new", replace: true });
+  },
   head: () => ({
     meta: [
       { title: "Start a collab | MusicLinkd" },
@@ -255,7 +259,7 @@ function NewCollab() {
                 icon: Music2,
               }}
               selected={kind === "band"}
-              onClick={() => setKind("band")}
+              onClick={() => void navigate({ to: "/bands/new" })}
             />
           </DrawerList>
         ) : null}
