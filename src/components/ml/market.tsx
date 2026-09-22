@@ -1100,7 +1100,8 @@ export function FilterButton({ count, onClick }: { count: number; onClick: () =>
   );
 }
 
-function SwitchRow({
+/** A label with an on/off switch; the filter sheet and a collab's join link use it. */
+export function SwitchRow({
   label,
   value,
   onChange,

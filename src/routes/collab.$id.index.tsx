@@ -9,8 +9,12 @@ import {
   CircleCheck,
   CirclePause,
   CirclePlay,
+  Copy,
+  Link2,
   MoreHorizontal,
   Pencil,
+  Share2,
+  UserRoundCheck,
   UserRoundPlus,
   UsersRound,
   type LucideIcon,
@@ -26,8 +30,11 @@ import {
   setCollabBudget,
   getCollabBudget,
   getCollab,
+  getCollabInviteLink,
+  letInCollabMember,
   listProjectTypes,
   leaveCollab,
+  setCollabInviteLink,
   removeMember,
   setCollabStatus,
   setCollabVisibility,
@@ -44,6 +51,9 @@ import { Field, SheetSelect, inputClass } from "@/components/ml/listing-form";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { CoverHero, ImagePickButton } from "@/components/ml/profile";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
+import { SwitchRow } from "@/components/ml/market";
+import { shareLink } from "@/lib/booking-actions";
+import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
 
@@ -136,6 +146,11 @@ function CollabRoom() {
     enabled: myMembership?.status === "active" && c?.type === "project",
   });
   const invited = myMembership?.status === "invited";
+  // Asked to join by link, waiting for an owner or admin: they asked themselves in.
+  const requested = invited && myMembership?.invited_by === myMembership?.profile_id;
+  const inviterName =
+    myMembership?.inviter?.display_name ?? myMembership?.inviter?.username ?? null;
+  const messagePerson = useMessagePerson();
   const canManage =
     myMembership && myMembership.status === "active"
       ? ["owner", "admin"].includes(myMembership.role)
@@ -162,8 +177,14 @@ function CollabRoom() {
   const decide = useMutation({
     mutationFn: (a: "join" | "no") => answer({ data: { id, answer: a } }),
     onSuccess: (_r, a) => {
+      void queryClient.invalidateQueries({ queryKey: ["collabs", "mine"] });
       if (a === "no") {
         void navigate({ to: "/collab" });
+        return;
+      }
+      // A band has its own page (owner, 22 Sep 2026); once in, that is where they go.
+      if (c?.type === "band") {
+        void navigate({ to: "/bands/$id", params: { id: c.slug }, replace: true });
         return;
       }
       void queryClient.invalidateQueries({ queryKey: ["collab", id] });
@@ -178,6 +199,23 @@ function CollabRoom() {
       setUsername("");
       void queryClient.invalidateQueries({ queryKey: ["collab", id] });
     },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+
+  // A band is shown on its own page (owner, 22 Sep 2026). Someone invited stays here to answer,
+  // so wait until we know where this account stands before sending anyone on.
+  const standingKnown = !signedIn || profile.isSuccess;
+  useEffect(() => {
+    if (c?.type === "band" && standingKnown && !invited) {
+      void navigate({ to: "/bands/$id", params: { id: c.slug }, replace: true });
+    }
+  }, [c?.type, c?.slug, standingKnown, invited, navigate]);
+
+  // Someone who asked to join by link comes in when an owner or admin lets them.
+  const letIn = useServerFn(letInCollabMember);
+  const admit = useMutation({
+    mutationFn: (profileId: string) => letIn({ data: { id, profileId } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["collab", id] }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
 
@@ -286,26 +324,38 @@ function CollabRoom() {
         square
         back="/collab"
         actions={
-          canManage ? (
-            <>
-              <ImagePickButton
-                kind="cover"
-                label="Change banner"
-                className="h-10 w-10 bg-card/90 text-foreground"
-                onPick={pickImage}
-              >
-                <ImagePlus size={iconSize.sm} aria-hidden />
-              </ImagePickButton>
-              <IconBtn
-                label="Edit"
-                variant="plain"
-                onClick={() => setEditing(true)}
-                className="bg-card/90"
-              >
-                <Pencil size={iconSize.sm} aria-hidden />
-              </IconBtn>
-            </>
-          ) : undefined
+          <>
+            <IconBtn
+              label="Share"
+              variant="plain"
+              onClick={() =>
+                void shareLink({ title: c.name, url: `${window.location.origin}/collab/${c.id}` })
+              }
+              className="bg-card/90"
+            >
+              <Share2 size={iconSize.sm} aria-hidden />
+            </IconBtn>
+            {canManage ? (
+              <>
+                <ImagePickButton
+                  kind="cover"
+                  label="Change banner"
+                  className="h-10 w-10 bg-card/90 text-foreground"
+                  onPick={pickImage}
+                >
+                  <ImagePlus size={iconSize.sm} aria-hidden />
+                </ImagePickButton>
+                <IconBtn
+                  label="Edit"
+                  variant="plain"
+                  onClick={() => setEditing(true)}
+                  className="bg-card/90"
+                >
+                  <Pencil size={iconSize.sm} aria-hidden />
+                </IconBtn>
+              </>
+            ) : null}
+          </>
         }
         photoPick={
           canManage ? (
@@ -331,7 +381,19 @@ function CollabRoom() {
       </CoverHero>
 
       <div className="space-y-6 px-5 pt-4 pb-8">
-        {invited ? (
+        {requested ? (
+          <section className="space-y-3 rounded-lg bg-subtle p-4">
+            <p className="text-sm">You asked to join. An owner or admin lets you in.</p>
+            <Btn
+              variant="outline"
+              className="w-full"
+              loading={decide.isPending}
+              onClick={() => decide.mutate("no")}
+            >
+              Withdraw
+            </Btn>
+          </section>
+        ) : invited ? (
           <section className="space-y-3 rounded-lg bg-subtle p-4">
             <p className="text-sm">
               {joinParts(
@@ -341,6 +403,9 @@ function CollabRoom() {
                 c.name,
               )}
             </p>
+            {inviterName ? (
+              <p className="text-1 text-muted-foreground">Invited by {inviterName}</p>
+            ) : null}
             <div className="flex gap-2">
               <Btn
                 className="flex-1"
@@ -358,6 +423,18 @@ function CollabRoom() {
                 No thanks
               </Btn>
             </div>
+            {myMembership?.invited_by ? (
+              <Btn
+                variant="ghost"
+                className="w-full"
+                loading={messagePerson.pending}
+                onClick={() => {
+                  if (myMembership.invited_by) void messagePerson.open(myMembership.invited_by);
+                }}
+              >
+                Ask a question first
+              </Btn>
+            ) : null}
           </section>
         ) : null}
 
@@ -462,14 +539,29 @@ function CollabRoom() {
                   <span className="min-w-0 flex-1 truncate text-sm">
                     {m.profile?.display_name ?? m.profile?.username ?? "Someone"}
                   </span>
-                  <span className="pill shrink-0 bg-background text-muted-foreground">Asked</span>
+                  {m.invited_by === m.profile_id ? (
+                    // They asked to join by link; an owner or admin lets them in.
+                    <span className="shrink-0 text-1 text-muted-foreground">Asked to join</span>
+                  ) : (
+                    <span className="pill shrink-0 bg-background text-muted-foreground">Asked</span>
+                  )}
+                  {canManage && m.invited_by === m.profile_id ? (
+                    <IconBtn
+                      label="Let in"
+                      variant="plain"
+                      loading={admit.isPending && admit.variables === m.profile_id}
+                      onClick={() => admit.mutate(m.profile_id)}
+                    >
+                      <UserRoundCheck size={iconSize.sm} aria-hidden />
+                    </IconBtn>
+                  ) : null}
                   {canManage ? (
                     <button
                       type="button"
                       className="state-layer shrink-0 rounded-lg px-2 py-1 text-1 font-semibold text-destructive"
                       onClick={() => person.mutate({ profileId: m.profile_id, what: "remove" })}
                     >
-                      Undo
+                      {m.invited_by === m.profile_id ? "Say no" : "Undo"}
                     </button>
                   ) : null}
                 </li>
@@ -547,6 +639,7 @@ function CollabRoom() {
               They get asked, and are in once they say yes.
             </p>
           ) : null}
+          {canManage ? <InviteLinkRow collabId={c.id} name={c.name} /> : null}
         </section>
 
         {canManage ? (
@@ -634,6 +727,87 @@ function CollabRoom() {
         </Btn>
       </Dialog>
     </Screen>
+  );
+}
+
+/**
+ * The project's join link, for owners and admins: make it, copy or share it, turn it off, and say
+ * whether the owner approves each join (the old invite-link screen, now a row in the project).
+ */
+function InviteLinkRow({ collabId, name }: { collabId: string; name: string }) {
+  const queryClient = useQueryClient();
+  const read = useServerFn(getCollabInviteLink);
+  const write = useServerFn(setCollabInviteLink);
+  const link = useQuery({
+    queryKey: ["collab-invite-link", collabId],
+    queryFn: () => read({ data: { id: collabId } }),
+  });
+  const change = useMutation({
+    mutationFn: (patch: { active?: boolean; needsApproval?: boolean }) =>
+      write({ data: { id: collabId, ...patch } }),
+    onSuccess: (row) => queryClient.setQueryData(["collab-invite-link", collabId], row),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
+  });
+
+  if (link.isLoading) return null;
+  const row = link.data;
+  if (!row) {
+    return (
+      <Btn
+        variant="outline"
+        className="w-full"
+        icon={<Link2 size={iconSize.sm} aria-hidden />}
+        loading={change.isPending}
+        onClick={() => change.mutate({})}
+      >
+        Create a link
+      </Btn>
+    );
+  }
+
+  const url = `${window.location.origin}/collab/join/${row.token}`;
+  return (
+    <div className="overflow-hidden rounded-lg bg-subtle">
+      <div className="flex items-center gap-3 px-4 py-3">
+        <Link2 size={iconSize.sm} aria-hidden className="shrink-0" />
+        <span
+          className={`min-w-0 flex-1 truncate text-1 text-muted-foreground ${row.active ? "" : "line-through"}`}
+        >
+          {url}
+        </span>
+        <IconBtn
+          label="Copy link"
+          variant="plain"
+          disabled={!row.active}
+          onClick={() => {
+            navigator.clipboard.writeText(url).then(
+              () => toast.success("Link copied"),
+              () => toast.error("Couldn't copy the link"),
+            );
+          }}
+        >
+          <Copy size={iconSize.sm} aria-hidden />
+        </IconBtn>
+        <IconBtn
+          label="Share link"
+          variant="plain"
+          disabled={!row.active}
+          onClick={() => void shareLink({ title: `Join ${name}`, url })}
+        >
+          <Share2 size={iconSize.sm} aria-hidden />
+        </IconBtn>
+      </div>
+      <SwitchRow
+        label="Link is active"
+        value={row.active}
+        onChange={(v) => change.mutate({ active: v })}
+      />
+      <SwitchRow
+        label="Owner approves each join"
+        value={row.needs_approval}
+        onChange={(v) => change.mutate({ needsApproval: v })}
+      />
+    </div>
   );
 }
 

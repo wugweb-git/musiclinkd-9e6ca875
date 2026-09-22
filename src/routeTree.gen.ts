@@ -143,6 +143,7 @@ import { Route as BusinessBookingsIndexRouteImport } from './routes/business.boo
 import { Route as BusinessBookingsRefRouteImport } from './routes/business.bookings.$ref'
 import { Route as BusinessBookingsCalendarRouteImport } from './routes/business.bookings.calendar'
 import { Route as CollabIdIndexRouteImport } from './routes/collab.$id.index'
+import { Route as CollabJoinTokenRouteImport } from './routes/collab.join.$token'
 import { Route as CollabNewIndexRouteImport } from './routes/collab.new.index'
 import { Route as HelpCategoryKeyRouteImport } from './routes/help.category.$key'
 import { Route as IdentityContactIndexRouteImport } from './routes/identity.contact.index'
@@ -859,6 +860,11 @@ const CollabIdIndexRoute = CollabIdIndexRouteImport.update({
   path: '/collab/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollabJoinTokenRoute = CollabJoinTokenRouteImport.update({
+  id: '/collab/join/$token',
+  path: '/collab/join/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollabNewIndexRoute = CollabNewIndexRouteImport.update({
   id: '/collab/new/',
   path: '/collab/new/',
@@ -1219,6 +1225,7 @@ export interface FileRoutesByFullPath {
   '/business/$id/verification': typeof BusinessIdVerificationRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
+  '/collab/join/$token': typeof CollabJoinTokenRoute
   '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
@@ -1398,6 +1405,7 @@ export interface FileRoutesByTo {
   '/business/$id/verification': typeof BusinessIdVerificationRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
+  '/collab/join/$token': typeof CollabJoinTokenRoute
   '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
@@ -1579,6 +1587,7 @@ export interface FileRoutesById {
   '/business/$id/verification': typeof BusinessIdVerificationRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
+  '/collab/join/$token': typeof CollabJoinTokenRoute
   '/help/category/$key': typeof HelpCategoryKeyRoute
   '/identity/contact/save': typeof IdentityContactSaveRoute
   '/identity/q/$code': typeof IdentityQCodeRoute
@@ -1761,6 +1770,7 @@ export interface FileRouteTypes {
     | '/business/$id/verification'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
+    | '/collab/join/$token'
     | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
@@ -1940,6 +1950,7 @@ export interface FileRouteTypes {
     | '/business/$id/verification'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
+    | '/collab/join/$token'
     | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
@@ -2120,6 +2131,7 @@ export interface FileRouteTypes {
     | '/business/$id/verification'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
+    | '/collab/join/$token'
     | '/help/category/$key'
     | '/identity/contact/save'
     | '/identity/q/$code'
@@ -2296,6 +2308,7 @@ export interface RootRouteChildren {
   BusinessIdVerificationRoute: typeof BusinessIdVerificationRoute
   BusinessBookingsRefRoute: typeof BusinessBookingsRefRoute
   BusinessBookingsCalendarRoute: typeof BusinessBookingsCalendarRoute
+  CollabJoinTokenRoute: typeof CollabJoinTokenRoute
   HelpCategoryKeyRoute: typeof HelpCategoryKeyRoute
   IdentityContactSaveRoute: typeof IdentityContactSaveRoute
   IdentityQCodeRoute: typeof IdentityQCodeRoute
@@ -3285,6 +3298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollabIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collab/join/$token': {
+      id: '/collab/join/$token'
+      path: '/collab/join/$token'
+      fullPath: '/collab/join/$token'
+      preLoaderRoute: typeof CollabJoinTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collab/new/': {
       id: '/collab/new/'
       path: '/collab/new'
@@ -3754,6 +3774,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessIdVerificationRoute: BusinessIdVerificationRoute,
   BusinessBookingsRefRoute: BusinessBookingsRefRoute,
   BusinessBookingsCalendarRoute: BusinessBookingsCalendarRoute,
+  CollabJoinTokenRoute: CollabJoinTokenRoute,
   HelpCategoryKeyRoute: HelpCategoryKeyRoute,
   IdentityContactSaveRoute: IdentityContactSaveRoute,
   IdentityQCodeRoute: IdentityQCodeRoute,

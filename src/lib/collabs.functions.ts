@@ -21,6 +21,12 @@ export type CollabMember = {
   /** Invited people are not in the collab yet; they decide first. */
   status: "invited" | "active";
   instrument: string | null;
+  /** Who asked them in. The person themselves when they asked to join by link (a request). */
+  invited_by: string | null;
+  inviter: {
+    username: string | null;
+    display_name: string | null;
+  } | null;
   profile: {
     username: string | null;
     display_name: string | null;
@@ -42,6 +48,8 @@ export type Collab = {
   project_type: string | null;
   visibility: "public" | "private";
   status: CollabStatus;
+  /** Last change to the collab itself, for "Recently updated" on the list. */
+  updated_at: string;
   ends_on: string | null;
   /** When the work starts; a project's plan. */
   starts_on: string | null;
@@ -53,8 +61,8 @@ export type Collab = {
   my_status?: "invited" | "active";
 };
 
-const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, project_type, visibility, status, ends_on, starts_on, work_mode, created_at,
-  members:collab_members(profile_id, role, status, instrument, profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url))`;
+const SELECT = `id, slug, name, bio, city, genres, cover_url, avatar_url, type, project_type, visibility, status, ends_on, starts_on, work_mode, created_at, updated_at,
+  members:collab_members(profile_id, role, status, instrument, invited_by, inviter:profiles!collab_members_invited_by_fkey(username, display_name), profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url))`;
 
 /** What kind of project it is, from the taxonomy the database already carries. */
 export const listProjectTypes = createServerFn({ method: "GET" }).handler(
@@ -551,4 +559,90 @@ export const setCollabBudget = createServerFn({ method: "POST" })
       );
     if (error) throw new Error(error.message);
     return { saved: true };
+  });
+
+/*
+ * The project's join link (20260922251000_collab_invite_links.sql). Only owners and admins can read
+ * or set it; anyone signed in who opens /collab/join/<token> joins through the database function.
+ */
+export type CollabInviteLink = { token: string; active: boolean; needs_approval: boolean };
+
+export const getCollabInviteLink = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }): Promise<CollabInviteLink | null> => {
+    const { data: row, error } = await db(context.supabase)
+      .from("collab_invite_links")
+      .select("token, active, needs_approval")
+      .eq("collab_id", data.id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return (row ?? null) as CollabInviteLink | null;
+  });
+
+/** Make the link, turn it on or off, or change whether the owner approves each join. */
+export const setCollabInviteLink = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        active: z.boolean().optional(),
+        needsApproval: z.boolean().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }): Promise<CollabInviteLink> => {
+    const { data: row, error } = await db(context.supabase)
+      .from("collab_invite_links")
+      .upsert(
+        {
+          collab_id: data.id,
+          ...(data.active !== undefined ? { active: data.active } : {}),
+          ...(data.needsApproval !== undefined ? { needs_approval: data.needsApproval } : {}),
+        } as never,
+        { onConflict: "collab_id" },
+      )
+      .select("token, active, needs_approval")
+      .single();
+    if (error) {
+      throw new Error(
+        error.code === "42501" ? "Only an owner or admin can change the link." : error.message,
+      );
+    }
+    return row as CollabInviteLink;
+  });
+
+/** Join by link: 'invited' while the owner approves each join, otherwise straight in. */
+export const joinCollabByLink = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    // Any text: a wrong token gets the database's plain answer, not a validation error.
+    z.object({ token: z.string().trim().max(80) }).parse(d),
+  )
+  .handler(
+    async ({ context, data }): Promise<{ collab_id: string; status: "invited" | "active" }> => {
+      const { data: joined, error } = await db(context.supabase).rpc("join_collab_by_link", {
+        p_token: data.token,
+      });
+      if (error) throw new Error(error.message);
+      return joined as { collab_id: string; status: "invited" | "active" };
+    },
+  );
+
+/** Let in someone who asked to join by link. Owners and admins can (the database checks). */
+export const letInCollabMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ id: z.string().uuid(), profileId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const { error } = await db(context.supabase)
+      .from("collab_members")
+      .update({ status: "active" } as never)
+      .eq("collab_id", data.id)
+      .eq("profile_id", data.profileId)
+      // Only a request: someone the room asked in says yes themselves.
+      .eq("invited_by", data.profileId)
+      .eq("status", "invited");
+    if (error) throw new Error(error.message);
+    return { active: true };
   });
