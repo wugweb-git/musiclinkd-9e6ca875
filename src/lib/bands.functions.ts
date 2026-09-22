@@ -81,7 +81,7 @@ const BAND = `id, slug, name, tagline, bio, genres, city, formed_year, avatar_ur
   availability, rate_paise, rate_unit, is_verified, created_by, type, visibility, status,
   rider, stage_plot_url, stage_plot_note,
   members:collab_members(profile_id, role, instrument, since_year, sort_order,
-    profile:profiles(username, display_name, avatar_url, is_verified)),
+    profile:profiles!band_members_profile_id_fkey(username, display_name, avatar_url, is_verified)),
   events:collab_events(id, title, venue, city, event_date, event_time, date_precision, status, ticket_note, sort_order),
   releases:collab_releases(id, title, kind, release_year, cover_url, sort_order),
   live_videos:collab_live_videos(id, title, url, sort_order)`;
