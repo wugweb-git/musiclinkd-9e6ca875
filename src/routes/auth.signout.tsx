@@ -37,27 +37,32 @@ function SignOutScreen() {
 
   return (
     <AuthScreen back={{ to: "/profile" }}>
-      <div
-        className="mb-6 flex h-14 w-14 items-center justify-center rounded-sm"
-        style={{ background: "var(--surface-subtle)" }}
-      >
-        <LogOut size={iconSize.lg} className="text-primary" />
+      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+        <div className="my-auto py-1">
+          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
+            <div
+              className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-subtle"
+            >
+              <LogOut size={iconSize.md} className="text-primary" />
+            </div>
+            <AuthHeading
+              title="Sign out of MusicLinkd?"
+              sub="Your profile, portfolio and bookings stay exactly as they are. You'll just need to sign in again on this device."
+            />
+            <div className="space-y-2.5">
+              <Btn className="w-full h-11 sm:h-12" onClick={() => void signOut()} disabled={busy}>
+                {busy ? "Signing out…" : "Yes, sign out"}
+              </Btn>
+              <Btn variant="outline" className="w-full h-11 sm:h-12" onClick={() => void navigate({ to: "/profile" })}>
+                Stay signed in
+              </Btn>
+            </div>
+            <TrustNote>
+              Using a shared device? Signing out also clears saved drafts on this browser.
+            </TrustNote>
+          </div>
+        </div>
       </div>
-      <AuthHeading
-        title="Sign out of MusicLinkd?"
-        sub="Your profile, portfolio and bookings stay exactly as they are. You'll just need to sign in again on this device."
-      />
-      <div className="space-y-3">
-        <Btn className="w-full" onClick={() => void signOut()} disabled={busy}>
-          {busy ? "Signing out…" : "Yes, sign out"}
-        </Btn>
-        <Btn variant="outline" className="w-full" onClick={() => void navigate({ to: "/profile" })}>
-          Stay signed in
-        </Btn>
-      </div>
-      <TrustNote>
-        Using a shared device? Signing out also clears saved drafts on this browser.
-      </TrustNote>
     </AuthScreen>
   );
 }

@@ -17,6 +17,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 
+import { MadeByWugweb } from "@/components/ml/kit";
+
 export const Route = createFileRoute("/auth/forgot")({
   head: () => ({
     meta: [
@@ -74,9 +76,9 @@ function ForgotPassword() {
 
   return (
     <AuthScreen back={{ to: "/auth/phone" }}>
-      <div className="flex flex-1 flex-col justify-between py-1">
-        <div className="my-auto">
-          <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+        <div className="my-auto py-1">
+          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
             <AuthHeading
               title={sent ? "Check your email" : "Reset your password"}
               sub={
@@ -89,21 +91,21 @@ function ForgotPassword() {
             {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
             {sent ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <AuthNotice tone="success" title="Reset link dispatched">
                   The link expires in 60 minutes and can be used once. Check your spam folder if you
                   don't see it.
                 </AuthNotice>
-                <div className="space-y-2.5 pt-2">
+                <div className="space-y-2 pt-1">
                   <Btn
-                    className="w-full h-12 text-sm font-semibold shadow-xs"
+                    className="w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
                     onClick={() => void navigate({ to: "/welcome" })}
                   >
                     Back to Sign In
                   </Btn>
                   <Btn
                     variant="outline"
-                    className="w-full h-12 text-sm font-medium"
+                    className="w-full h-11 sm:h-12 text-sm font-medium"
                     onClick={() => setSent(false)}
                   >
                     Send to a Different Email
@@ -132,7 +134,7 @@ function ForgotPassword() {
                 />
                 <Btn
                   type="submit"
-                  className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+                  className="mt-2 w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
                   loading={busy}
                 >
                   Send Reset Link
@@ -144,7 +146,7 @@ function ForgotPassword() {
             )}
           </div>
 
-          <p className="mt-5 text-center text-sm text-muted-foreground">
+          <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground">
             Remember your password?{" "}
             <AuthLink
               to="/welcome"
@@ -155,8 +157,11 @@ function ForgotPassword() {
           </p>
         </div>
 
-        <div className="shrink-0 pt-2 text-center">
+        <div className="shrink-0 pt-1 text-center">
           <LegalNote className="mt-0" />
+          <div className="mt-0.5">
+            <MadeByWugweb />
+          </div>
         </div>
       </div>
     </AuthScreen>

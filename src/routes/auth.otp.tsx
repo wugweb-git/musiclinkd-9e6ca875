@@ -19,6 +19,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { iconSize } from "@/lib/tokens";
 
+import { MadeByWugweb } from "@/components/ml/kit";
+
 type Search = { phone: string };
 
 export const Route = createFileRoute("/auth/otp")({
@@ -98,9 +100,9 @@ function OtpScreen() {
 
   return (
     <AuthScreen back={{ to: "/auth/phone" }}>
-      <div className="flex flex-1 flex-col justify-between py-1">
-        <div className="my-auto">
-          <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
+        <div className="my-auto py-1">
+          <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
             <AuthHeading
               title="Verify your number"
               sub={
@@ -124,7 +126,7 @@ function OtpScreen() {
             />
 
             <Btn
-              className="w-full h-12 text-sm font-semibold shadow-xs"
+              className="w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
               loading={busy}
               disabled={code.length !== 6 || !phone}
               onClick={() => void verify(code)}
@@ -132,7 +134,7 @@ function OtpScreen() {
               Verify & Continue
             </Btn>
 
-            <p className="mt-5 flex justify-center text-1 text-muted-foreground">
+            <p className="mt-3.5 flex justify-center text-0 sm:text-1 text-muted-foreground">
               {countdown.seconds > 0 ? (
                 <span aria-live="polite" className="rounded-full bg-subtle px-3 py-1 font-medium">
                   Resend code in 0:{String(countdown.seconds).padStart(2, "0")}
@@ -149,7 +151,7 @@ function OtpScreen() {
             </p>
           </div>
 
-          <p className="mt-5 flex items-center justify-center gap-6 text-sm">
+          <p className="mt-3.5 flex items-center justify-center gap-6 text-xs sm:text-sm">
             <AuthLink
               to="/auth/phone"
               icon={<Pencil size={iconSize.sm} />}
@@ -167,8 +169,11 @@ function OtpScreen() {
           </p>
         </div>
 
-        <div className="shrink-0 pt-2 text-center">
+        <div className="shrink-0 pt-1 text-center">
           <LegalNote className="mt-0" />
+          <div className="mt-0.5">
+            <MadeByWugweb />
+          </div>
         </div>
       </div>
     </AuthScreen>
