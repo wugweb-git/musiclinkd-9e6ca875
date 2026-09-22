@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type CSSProperties } from "react";
 import { toast } from "sonner";
 
-import { Linkedin } from "lucide-react";
+import { Linkedin, Smartphone } from "lucide-react";
 import {
   AuthLink,
   AuthNotice,
@@ -321,34 +321,6 @@ function WelcomeScreen() {
             </section>
           ) : null}
 
-          {/* Segmented Auth Mode Switcher */}
-          <div className="mb-1.5 flex rounded-full bg-subtle p-0.5 border border-border/60">
-            <button
-              type="button"
-              onClick={() => switchMode("signin")}
-              className={cn(
-                "flex-1 rounded-full py-1 text-xs sm:text-sm font-semibold transition-all duration-150 ease-standard",
-                !signup
-                  ? "bg-card text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => switchMode("signup")}
-              className={cn(
-                "flex-1 rounded-full py-1 text-xs sm:text-sm font-semibold transition-all duration-150 ease-standard",
-                signup
-                  ? "bg-card text-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Create Account
-            </button>
-          </div>
-
           <form
             noValidate
             onSubmit={(e) => {
@@ -417,12 +389,12 @@ function WelcomeScreen() {
             </Btn>
           </form>
 
-          <Divider label="or continue with" className="my-1" />
+          <Divider label="or" className="my-1" />
 
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-3 gap-1.5">
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-2"
+              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
               icon={<GoogleIcon />}
               loading={busy === "google"}
               onClick={() => void google()}
@@ -431,22 +403,47 @@ function WelcomeScreen() {
             </Btn>
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-2"
+              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
               icon={<Linkedin size={iconSize.sm} aria-hidden />}
               loading={busy === "linkedin"}
               onClick={() => void linkedin()}
             >
               LinkedIn
             </Btn>
+            <Btn
+              variant="outline"
+              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+              icon={<Smartphone size={iconSize.sm} aria-hidden />}
+              onClick={() => void navigate({ to: "/auth/phone" })}
+            >
+              Phone
+            </Btn>
           </div>
 
-          <p className="mt-1.5 text-center text-xs sm:text-sm">
-            <AuthLink
-              to="/auth/phone"
-              className="font-semibold text-foreground underline underline-offset-4"
-            >
-              Sign in with Mobile Number
-            </AuthLink>
+          <p className="mt-1.5 text-center text-xs sm:text-sm text-muted-foreground">
+            {signup ? (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => switchMode("signin")}
+                  className="font-semibold text-foreground underline underline-offset-4"
+                >
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                New to MusicLinkd?{" "}
+                <button
+                  type="button"
+                  onClick={() => switchMode("signup")}
+                  className="font-semibold text-foreground underline underline-offset-4"
+                >
+                  Create an account
+                </button>
+              </>
+            )}
           </p>
         </div>
 
