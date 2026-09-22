@@ -43,12 +43,40 @@ type Phase = "denied" | "ready" | "scanning" | "error" | "unsupported";
 const cameraAvailable = () =>
   typeof navigator !== "undefined" && Boolean(navigator.mediaDevices?.getUserMedia);
 
-/** A MusicLinkd QR only ever encodes a profile URL — pull the username off the end of it. */
-function usernameFromScan(text: string): string | null {
+/** A MusicLinkd QR encodes a profile URL (short link /@username or legacy /profile/username) — extract the username. */
+export function usernameFromScan(text: string): string | null {
   const trimmed = text.trim();
-  const match = trimmed.match(/\/profile\/([a-z0-9._]{3,30})\/?$/i);
-  if (match?.[1]) return match[1];
-  if (/^[a-z0-9._]{3,30}$/i.test(trimmed)) return trimmed;
+  if (!trimmed) return null;
+
+  // 1. Short link format: /@username or trailing /@username
+  const atMatch = trimmed.match(/(?:^|\/)@([a-z0-9._]{3,30})\/?$/i);
+  if (atMatch?.[1]) return atMatch[1];
+
+  // 2. Legacy profile URL: /profile/username
+  const legacyMatch = trimmed.match(/\/profile\/([a-z0-9._]{3,30})\/?$/i);
+  if (legacyMatch?.[1]) return legacyMatch[1];
+
+  // 3. Parse as URL in case of full address with query params or hash
+  try {
+    const url = new URL(trimmed.startsWith("http://") || trimmed.startsWith("https://") ? trimmed : `https://${trimmed}`);
+    const atPathMatch = url.pathname.match(/^\/@([a-z0-9._]{3,30})\/?$/i);
+    if (atPathMatch?.[1]) return atPathMatch[1];
+    const legacyPathMatch = url.pathname.match(/^\/profile\/([a-z0-9._]{3,30})\/?$/i);
+    if (legacyPathMatch?.[1]) return legacyPathMatch[1];
+  } catch {
+    // Not a URL, continue checking handle patterns
+  }
+
+  // 4. Raw handle with @ (e.g. @rahul.iyer)
+  if (/^@([a-z0-9._]{3,30})$/i.test(trimmed)) {
+    return trimmed.slice(1);
+  }
+
+  // 5. Bare username without slash or @ (e.g. rahul.iyer)
+  if (/^[a-z0-9._]{3,30}$/i.test(trimmed)) {
+    return trimmed;
+  }
+
   return null;
 }
 

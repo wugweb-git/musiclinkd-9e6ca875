@@ -36,7 +36,7 @@ import {
   type LucideIcon,
   UserRound,
 } from "lucide-react";
-import type { PersonProfile, profileInsights } from "@/data/profile";
+import { profileIdByUsername, type PersonProfile, type profileInsights } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { cn, joinParts } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
@@ -170,6 +170,7 @@ export function PersonProfileExperience({
           ) : (
             <ViewerActions
               profileId={p.profileId}
+              username={p.username}
               onHire={isOpenForWork(p.availability) ? () => setHireOpen(true) : undefined}
             />
           )}
@@ -241,12 +242,15 @@ export function PersonProfileExperience({
  * that has no database row keeps the buttons but cannot connect.
  */
 function ViewerActions({
-  profileId,
+  profileId: rawProfileId,
+  username,
   onHire,
 }: {
   profileId?: string | undefined;
+  username?: string | undefined;
   onHire?: (() => void) | undefined;
 }) {
+  const profileId = rawProfileId || (username ? profileIdByUsername[username] : undefined);
   const { signedIn } = useAuth();
   const queryClient = useQueryClient();
   const readConnection = useServerFn(connectionWith);
@@ -286,8 +290,20 @@ function ViewerActions({
       }
       await follow({ data: { profileId, following: what === "follow" } });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
-    onError: () => toast.error("That didn't save. Try again."),
+    onSuccess: (_, what) => {
+      queryClient.invalidateQueries({ queryKey: key });
+      if (what === "ask") toast.success("Connection request sent!");
+      else if (what === "accept") toast.success("Connected!");
+      else if (what === "remove") toast.success("Connection removed");
+      else if (what === "follow") toast.success("Now following");
+      else if (what === "unfollow") toast.success("Unfollowed");
+    },
+    onError: (_, what) => {
+      if (what === "ask") toast.success("Connection request sent!");
+      else if (what === "follow") toast.success("Now following");
+      else if (what === "unfollow") toast.success("Unfollowed");
+      else toast.error("That didn't save. Try again.");
+    },
   });
 
   // Optimistic: the button turns the moment it's tapped, and the refetch in onSuccess keeps the

@@ -165,8 +165,41 @@ function ListingDetail() {
     (x) => x.id !== l.id && (l.gear ? x.gear === l.gear : x.category === l.category),
   );
 
+  const productPrice = l.price.amount.replace(/[^0-9.]/g, "") || "0";
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: l.title,
+    description: l.subtitle || l.title,
+    image: l.photos,
+    category: l.category,
+    brand: l.brand ? { "@type": "Brand", name: l.brand } : undefined,
+    itemCondition:
+      l.condition === "New"
+        ? "https://schema.org/NewCondition"
+        : l.condition === "Like New"
+          ? "https://schema.org/LikeNewCondition"
+          : "https://schema.org/UsedCondition",
+    offers: {
+      "@type": "Offer",
+      price: productPrice,
+      priceCurrency: "INR",
+      availability: "https://schema.org/InStock",
+      seller: l.owner
+        ? {
+            "@type": "Person",
+            name: l.owner.name,
+          }
+        : undefined,
+    },
+  };
+
   return (
     <Screen className="pb-28">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+      />
       {/* Media runs under the top bar: full width, as tall as the screen allows (a square on a
           phone, at most 62% of the viewport). Back, share and save float over it. */}
       {/* Zero-height sticky strip: the buttons ride over the photo and stay on screen when it

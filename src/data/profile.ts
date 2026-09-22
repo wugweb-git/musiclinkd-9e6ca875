@@ -240,7 +240,22 @@ export function emptySections(): Omit<
   };
 }
 
+export const profileIdByUsername: Record<string, string> = {
+  "rahul.iyer": "5a7466b9-2422-5d5d-9460-ee61b2002f13",
+  "ananya.sharma": "1783effb-4fcb-59dc-a6e4-76131013c3d4",
+  "meher.kaur": "0662ace1-0642-5590-832f-f55fa23438f1",
+  "dj.noor": "61d15aab-b011-54ef-8644-b185711b608f",
+  "arjun.menon": "dbb4397e-9c0c-53d8-8624-2825c93d349f",
+  "tanvi.rao": "3fc0b746-3c09-5140-9270-549088a046db",
+  "zaid.qureshi": "e441dda1-4f3e-562a-812d-1a5525b9a90e",
+  "lisa.dsouza": "0f820a59-9f0a-56a6-b1c4-99360bcc0d2c",
+  "harpreet.singh": "53147d82-58ac-5f17-97d3-f8125042e764",
+  "nithya.balan": "689e3ab6-0309-58d2-9e9e-b7983d7dc132",
+  "ravi.deshmukh": "565f053c-eacc-50cb-854d-d5d2bc06b64e",
+};
+
 const rahul: PersonProfile = {
+  profileId: "5a7466b9-2422-5d5d-9460-ee61b2002f13",
   username: "rahul.iyer",
   name: "Rahul Iyer",
   photo: u("photo-1507003211169-0a1dd7228f2d", 400),
@@ -553,6 +568,7 @@ const rahul: PersonProfile = {
 
 const ananya: PersonProfile = {
   ...emptySections(),
+  profileId: "1783effb-4fcb-59dc-a6e4-76131013c3d4",
   username: "ananya.sharma",
   name: "Ananya Sharma",
   photo: u("photo-1534528741775-53994a69daeb", 400),
@@ -632,6 +648,7 @@ const byUsername: Record<string, PersonProfile> = {
 function fromTalent(t: Talent): PersonProfile {
   return {
     ...emptySections(),
+    ...(profileIdByUsername[t.id] ? { profileId: profileIdByUsername[t.id] } : {}),
     username: t.id,
     name: t.name,
     photo: t.photo,

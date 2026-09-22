@@ -115,6 +115,57 @@ export function PublicProfileScreen({
     });
   }, [username, name, detail, avatar, isBusiness]);
 
-  if (view) return <BusinessProfileExperience b={view} work={person} />;
-  return <PersonProfileExperience p={person!} />;
+  const structuredData = view
+    ? {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: view.name,
+        description: view.tagline || view.about,
+        image: view.cover || view.logo,
+        url: `https://musiclinkd.com/@${username}`,
+        telephone: undefined,
+        sameAs: view.website ? [view.website] : undefined,
+        address: view.city
+          ? {
+              "@type": "PostalAddress",
+              addressLocality: view.city,
+              addressCountry: "IN",
+            }
+          : undefined,
+      }
+    : person
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: person.name,
+          jobTitle: person.primaryRole,
+          description: person.shortBio || person.longBio || person.headline,
+          image: person.photo,
+          url: `https://musiclinkd.com/@${username}`,
+          knowsAbout: [
+            ...(person.genres || []),
+            ...(person.instruments || []),
+            ...(person.specialisations || []),
+          ],
+          address: person.location
+            ? {
+                "@type": "PostalAddress",
+                addressLocality: person.location,
+                addressCountry: "IN",
+              }
+            : undefined,
+        }
+      : null;
+
+  return (
+    <>
+      {structuredData ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      ) : null}
+      {view ? <BusinessProfileExperience b={view} work={person} /> : <PersonProfileExperience p={person!} />}
+    </>
+  );
 }
