@@ -82,66 +82,37 @@ const audience = [
  * database, so the ticker is never a claim the product can't back. Until they load, the two rows
  * hold their height; if they fail to load, the rows stay empty and the headline carries the screen.
  */
-function RoleTicker({ className, style }: { className?: string; style?: CSSProperties }) {
+function RoleTicker({ className, style }: { className?: string | undefined; style?: CSSProperties | undefined }) {
   const { options } = useTaxonomy();
   const roles = (options?.person_types ?? []).filter((o) => o.slug !== "other");
-  const inGroups = (groups: string[]) =>
-    roles.filter((o) => groups.includes(o.metadata?.group ?? ""));
-  // Three rows at slightly different speeds and alternating directions, so they never move in step.
-  const rows = [
-    { key: "performers", items: inGroups(["vocal", "instrumentalist"]), reverse: false, secs: 64 },
-    {
-      key: "makers",
-      items: inGroups(["creator", "technical", "media", "education"]),
-      reverse: true,
-      secs: 76,
-    },
-    { key: "business", items: inGroups(["business"]), reverse: false, secs: 58 },
-  ];
+  if (!roles.length) return null;
+
   return (
     <div
       aria-hidden
       className={cn(
-        "space-y-2.5 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]",
+        "h-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]",
         className,
       )}
       style={style}
     >
-      {rows.map((row) => (
-        // On short phones the middle row steps out, so the buttons stay above the fold.
-        <div
-          key={row.key}
-          className={cn(
-            "h-10 overflow-hidden",
-            row.key === "makers" && "[@media(max-height:780px)]:hidden",
-          )}
-        >
-          {row.items.length ? (
-            <div
-              className={cn(
-                "flex w-max animate-marquee gap-2",
-                row.reverse && "[animation-direction:reverse]",
-              )}
-              // computed: each row's own loop length
-              style={{ animationDuration: `${row.secs}s` }}
+      <div
+        className="flex w-max animate-marquee gap-2"
+        style={{ animationDuration: "50s" }}
+      >
+        {[...roles, ...roles].map((o, i) => {
+          const Icon = roleIcon(o);
+          return (
+            <span
+              key={`${o.slug}-${i}`}
+              className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-subtle pl-2.5 pr-3 text-1 font-medium text-foreground border border-border/40"
             >
-              {/* Two copies, so the loop joins without a seam. */}
-              {[...row.items, ...row.items].map((o, i) => {
-                const Icon = roleIcon(o);
-                return (
-                  <span
-                    key={`${o.slug}-${i}`}
-                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-subtle pl-3 pr-4 text-sm font-medium text-foreground"
-                  >
-                    <Icon size={16} strokeWidth={1.75} className="text-muted-foreground" />
-                    {o.label}
-                  </span>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
-      ))}
+              <Icon size={14} strokeWidth={1.75} className="text-muted-foreground" />
+              {o.label}
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -284,57 +255,54 @@ function WelcomeScreen() {
 
   return (
     <AuthScreen brand={false} className="bg-background">
-      <div className="flex min-h-[calc(100dvh-72px)] flex-col">
-        {/* The splash mark glides here (view transition "brand"), so it does not play again. */}
-        <div className="flex items-center justify-between pt-1">
-          <Brand compact className="vt-brand mb-0" />
-          <div aria-hidden className="flex items-center gap-1 text-pink-strong">
-            <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-1" />
-            <span className="h-3.5 w-0.5 rounded-full bg-pink-strong animate-eq-2" />
-            <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-3" />
+      <div className="flex h-full flex-col justify-between">
+        {/* Top Header */}
+        <div>
+          <div className="flex items-center justify-between pt-0.5">
+            <Brand compact className="vt-brand mb-0" />
+            <div aria-hidden className="flex items-center gap-1 text-pink-strong">
+              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-1" />
+              <span className="h-3.5 w-0.5 rounded-full bg-pink-strong animate-eq-2" />
+              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-3" />
+            </div>
+          </div>
+
+          <div className="pt-2 pb-1.5">
+            <div
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full bg-pink-container px-2.5 py-0.5 text-1 font-semibold text-pink-strong",
+                rise,
+              )}
+              style={beat(1)}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-pink-strong animate-pulse" />
+              India's music industry network
+            </div>
+
+            <h1 className="mt-1.5 text-3 font-bold tracking-tight text-foreground leading-snug">
+              <span className={cn("inline-block", rise)} style={beat(2)}>Connect. </span>
+              <span className={cn("inline-block", rise)} style={beat(3)}>Collaborate. </span>
+              <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>Create.</span>
+            </h1>
+
+            {/* Screen readers get the three lines */}
+            <ul className="sr-only">
+              {audience.map((a) => (
+                <li key={a}>{a}</li>
+              ))}
+            </ul>
+
+            <RoleTicker className={cn("-mx-5 mt-2", rise)} style={beat(5)} />
           </div>
         </div>
 
-        <div className="py-5">
-          <div
-            className={cn(
-              "inline-flex items-center gap-2 rounded-full bg-pink-container px-3 py-1 text-1 font-semibold text-pink-strong",
-              rise,
-            )}
-            style={beat(1)}
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-pink-strong animate-pulse" />
-            India's music industry network
-          </div>
-
-          {/* The headline lands a word per beat. */}
-          <h1 className="mt-3 text-4 font-bold tracking-tight text-foreground">
-            {["Connect.", "Collaborate.", "Create."].map((word, i) => (
-              <span key={word} className={cn("block", rise)} style={beat(2 + i)}>
-                {word}
-              </span>
-            ))}
-          </h1>
-
-          {/* Screen readers get the three lines; the ticker below is the visual version. */}
-          <ul className="sr-only">
-            {audience.map((a) => (
-              <li key={a}>{a}</li>
-            ))}
-          </ul>
-
-          <RoleTicker className={cn("-mx-5 mt-6", rise)} style={beat(5)} />
-        </div>
-
-        {/*
-         * Interactive mode switcher + Form
-         */}
-        <div className={cn("mt-2", rise)} style={beat(6)}>
+        {/* Interactive mode switcher + Form */}
+        <div className={cn("my-auto py-1", rise)} style={beat(6)}>
           {saved.length ? (
-            <section className="mb-6">
-              <h2 className="mb-3 text-2 font-bold text-foreground">Continue as</h2>
+            <section className="mb-2.5">
+              <p className="mb-1 text-1 font-semibold text-muted-foreground">Continue as</p>
               <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card border border-border shadow-xs">
-                {saved.map((a) => (
+                {saved.slice(0, 2).map((a) => (
                   <AccountRow
                     key={a.userId}
                     account={a}
@@ -349,12 +317,12 @@ function WelcomeScreen() {
           ) : null}
 
           {/* Segmented Auth Mode Switcher */}
-          <div className="mb-5 flex rounded-full bg-subtle p-1 border border-border/60">
+          <div className="mb-2.5 flex rounded-full bg-subtle p-0.5 border border-border/60">
             <button
               type="button"
               onClick={() => switchMode("signin")}
               className={cn(
-                "flex-1 rounded-full py-2 text-sm font-semibold transition-all duration-150 ease-standard",
+                "flex-1 rounded-full py-1.5 text-sm font-semibold transition-all duration-150 ease-standard",
                 !signup
                   ? "bg-card text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground",
@@ -366,7 +334,7 @@ function WelcomeScreen() {
               type="button"
               onClick={() => switchMode("signup")}
               className={cn(
-                "flex-1 rounded-full py-2 text-sm font-semibold transition-all duration-150 ease-standard",
+                "flex-1 rounded-full py-1.5 text-sm font-semibold transition-all duration-150 ease-standard",
                 signup
                   ? "bg-card text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground",
@@ -382,13 +350,13 @@ function WelcomeScreen() {
               e.preventDefault();
               if (!busy) void submit();
             }}
-            className="rounded-lg bg-card p-5 border border-border/80 shadow-xs"
+            className="rounded-lg bg-card p-3.5 border border-border/80 shadow-xs"
           >
-            <div className="mb-4">
+            <div className="mb-2.5">
               <h2 className="text-2 font-bold text-foreground">
                 {signup ? "Create your account" : "Welcome back"}
               </h2>
-              <p className="mt-1 text-1 text-muted-foreground">
+              <p className="mt-0.5 text-1 text-muted-foreground">
                 {signup
                   ? "Join musicians, producers and studios across India."
                   : "Sign in with your email and password."}
@@ -400,6 +368,7 @@ function WelcomeScreen() {
             <TextField
               label="Email"
               value={email}
+              className="mb-2.5"
               onChange={(v) => {
                 setEmail(v);
                 carryEmail(v);
@@ -413,6 +382,7 @@ function WelcomeScreen() {
               placeholder="name@example.com"
             />
             <PasswordInput
+              className="mb-2.5"
               value={password}
               onChange={setPassword}
               onBlur={() => fields.touch("password")}
@@ -423,7 +393,7 @@ function WelcomeScreen() {
             />
 
             {signup ? null : (
-              <p className="-mt-1 mb-4 text-right text-sm">
+              <p className="-mt-1 mb-2 text-right text-sm">
                 <AuthLink
                   to="/auth/forgot"
                   className="text-muted-foreground hover:text-foreground font-medium"
@@ -435,37 +405,37 @@ function WelcomeScreen() {
 
             <Btn
               type="submit"
-              className="w-full h-12 text-sm font-semibold shadow-xs"
+              className="w-full h-11 text-sm font-semibold shadow-xs"
               loading={busy === "email"}
             >
               {signup ? "Create Account" : "Sign In"}
             </Btn>
           </form>
 
-          <Divider label="or connect with" />
+          <Divider label="or continue with" className="my-2" />
 
-          <div className="space-y-2.5">
+          <div className="grid grid-cols-2 gap-2">
             <Btn
               variant="outline"
-              className="w-full h-12 bg-card border-border/90 hover:bg-subtle text-sm font-medium shadow-xs"
+              className="w-full h-11 bg-card border-border/90 hover:bg-subtle text-sm font-medium shadow-xs px-2"
               icon={<GoogleIcon />}
               loading={busy === "google"}
               onClick={() => void google()}
             >
-              Continue with Google
+              Google
             </Btn>
             <Btn
               variant="outline"
-              className="w-full h-12 bg-card border-border/90 hover:bg-subtle text-sm font-medium shadow-xs"
-              icon={<Linkedin size={iconSize.md} aria-hidden />}
+              className="w-full h-11 bg-card border-border/90 hover:bg-subtle text-sm font-medium shadow-xs px-2"
+              icon={<Linkedin size={iconSize.sm} aria-hidden />}
               loading={busy === "linkedin"}
               onClick={() => void linkedin()}
             >
-              Continue with LinkedIn
+              LinkedIn
             </Btn>
           </div>
 
-          <p className="mt-5 text-center text-sm">
+          <p className="mt-2.5 text-center text-sm">
             <AuthLink
               to="/auth/phone"
               className="font-semibold text-foreground underline underline-offset-4"
@@ -473,12 +443,15 @@ function WelcomeScreen() {
               Sign in with Mobile Number
             </AuthLink>
           </p>
+        </div>
 
-          <LegalNote />
+        {/* Footer */}
+        <div className="shrink-0 pt-1 text-center">
+          <LegalNote className="mt-0" />
           <MadeByWugweb />
 
           {showDemoControls ? (
-            <p className="mt-3 text-center text-1">
+            <p className="mt-1 text-center text-1">
               <AuthLink to="/dev/new-user" className="text-muted-foreground">
                 Dev: Test as a new user
               </AuthLink>

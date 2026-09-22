@@ -40,19 +40,21 @@ export function AuthScreen({
   return (
     <div
       className={cn(
-        "mx-auto flex min-h-[100dvh] w-full max-w-app flex-col bg-background",
+        "mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-app flex-col bg-background overflow-hidden",
         className,
       )}
     >
-      <div className="flex-1 px-5 pb-10 pt-[max(1.5rem,env(safe-area-inset-top))]">
+      <div className="flex flex-1 flex-col justify-between px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] overflow-y-auto [@media(min-height:640px)]:overflow-hidden">
         {back ? (
-          <div className="-ml-2 mb-3 flex h-12 items-center">
+          <div className="-ml-2 mb-2 flex h-10 shrink-0 items-center">
             <AuthBackButton back={back} />
           </div>
         ) : brand ? (
-          <Brand />
+          <Brand compact className="mb-2 shrink-0" />
         ) : null}
-        {children}
+        <div className="flex flex-1 flex-col justify-between">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -133,9 +135,15 @@ export function AuthHeading({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-export function Divider({ label }: { label: string }) {
+export function Divider({
+  label,
+  className,
+}: {
+  label: string;
+  className?: string | undefined;
+}) {
   return (
-    <div className="my-6 flex items-center gap-3 text-1 text-muted-foreground">
+    <div className={cn("my-4 flex items-center gap-3 text-1 text-muted-foreground", className)}>
       <span className="h-px flex-1 bg-border/80" />
       <span className="rounded-full bg-subtle px-2.5 py-0.5 text-1 font-medium">{label}</span>
       <span className="h-px flex-1 bg-border/80" />
@@ -328,20 +336,22 @@ export function PasswordInput({
   placeholder = "Your password",
   autoComplete = "current-password",
   below,
+  className,
 }: {
-  label?: string;
+  label?: string | undefined;
   value: string;
   onChange: (v: string) => void;
-  onBlur?: () => void;
-  error?: string | null;
-  placeholder?: string;
-  autoComplete?: string;
+  onBlur?: (() => void) | undefined;
+  error?: (string | null) | undefined;
+  placeholder?: string | undefined;
+  autoComplete?: string | undefined;
   /** Rendered between the field and its error, e.g. the strength meter. */
-  below?: ReactNode;
+  below?: ReactNode | undefined;
+  className?: string | undefined;
 }) {
   const [show, setShow] = useState(false);
   return (
-    <div className="mb-4">
+    <div className={cn("mb-3", className)}>
       <TextField
         className="mb-0"
         label={label}
@@ -641,9 +651,9 @@ export function useFieldErrors<N extends string>() {
 
 /* ------------------------------------------------------------- legal */
 
-export function LegalNote() {
+export function LegalNote({ className }: { className?: string | undefined } = {}) {
   return (
-    <p className="mt-6 text-center text-1 leading-relaxed text-muted-foreground">
+    <p className={cn("mt-4 text-center text-1 leading-relaxed text-muted-foreground", className)}>
       By continuing you agree to our{" "}
       <TextLink to="/legal/terms" className="underline underline-offset-2">
         Terms
