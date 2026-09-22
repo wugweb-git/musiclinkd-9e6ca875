@@ -22,6 +22,9 @@ export type DiscoverStudio = {
   name: string;
   location: string;
   rating: number | null;
+  reviewCount: number;
+  /** The verified badge, next to the name — set by MusicLinkd, not the owner. */
+  verified: boolean;
   rate: PriceParts | null;
   photo: string;
   gear: string[];
@@ -35,6 +38,8 @@ export function discoverStudioFromRow(row: StudioRow, labels: TaxonomyLabels): D
     name: row.name,
     location: shownPlace(row.location),
     rating: row.rating == null || !row.review_count ? null : Number(row.rating),
+    reviewCount: row.review_count,
+    verified: row.verified_gold,
     rate: priceParts(row.hourly_rate_paise, "hr"),
     photo: row.image_url ?? "",
     gear: row.equipment.length

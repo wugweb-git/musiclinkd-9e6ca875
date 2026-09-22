@@ -1,95 +1,152 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { talents } from "@/data/discover";
 import {
-  TalentGridCard,
-  TalentRow,
-  TalentUserCard,
-  TalentCardSkeleton,
-  BusinessUserCard,
-  BusinessCardSkeleton,
+  PersonCard,
+  PersonCardSkeleton,
+  PersonRow,
+  PersonRowSkeleton,
+  StudioCard,
+  StudioCardSkeleton,
+  StudioRow,
   ServiceCard,
   ServiceCardSkeleton,
   ReviewCard,
   ReviewCardSkeleton,
 } from "./cards";
+import type { DirectoryPerson } from "@/lib/profile-groups.functions";
+import type { DiscoverStudio } from "@/lib/studio-view";
+
+const demoPerson: DirectoryPerson = {
+  id: "demo-person-1",
+  username: "ananya-sharma",
+  name: "Ananya Sharma",
+  headline: "Playback vocalist in Mumbai, working in Hindi Film and Sufi.",
+  city: "Mumbai",
+  roles: ["singer"],
+  genres: ["Hindi Film", "Sufi"],
+  avatarUrl: null,
+  verified: true,
+  pin_code: "400053",
+  rating: 4.9,
+  reviewCount: 42,
+};
 
 const meta = {
   title: "Cards/Recycled Blocks",
-  component: TalentUserCard,
-  args: { t: talents[0]! },
+  component: PersonCard,
+  args: { person: demoPerson },
   parameters: { layout: "padded" },
-} satisfies Meta<typeof TalentUserCard>;
+} satisfies Meta<typeof PersonCard>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const FlagshipTalentCard: Story = {
-  name: "TalentUserCard (Default)",
+/* ------------------------------------------------------------------ */
+/* Talent card                                                         */
+/* ------------------------------------------------------------------ */
+
+export const PersonCardStory: Story = {
+  name: "PersonCard (Default)",
   render: () => (
     <div className="max-w-md">
-      <TalentUserCard t={talents[0]!} />
+      <PersonCard person={demoPerson} />
     </div>
   ),
 };
 
-export const FlagshipTalentCardSelected: Story = {
-  name: "TalentUserCard (Selected)",
+export const PersonCardDisabledStory: Story = {
+  name: "PersonCard (Preview / disabled)",
   render: () => (
     <div className="max-w-md">
-      <TalentUserCard t={talents[0]!} selected />
+      <PersonCard person={demoPerson} disabled />
     </div>
   ),
 };
 
-export const FlagshipTalentSkeleton: Story = {
-  name: "TalentCardSkeleton",
+export const PersonCardSkeletonStory: Story = {
+  name: "PersonCardSkeleton",
   render: () => (
     <div className="max-w-md">
-      <TalentCardSkeleton />
+      <PersonCardSkeleton />
     </div>
   ),
 };
 
-const demoBusiness = {
+export const PersonRowStory: Story = {
+  name: "PersonRow (Default)",
+  render: () => (
+    <ul className="max-w-md divide-y divide-border">
+      <PersonRow person={demoPerson} />
+    </ul>
+  ),
+};
+
+export const PersonRowSkeletonStory: Story = {
+  name: "PersonRowSkeleton",
+  render: () => (
+    <ul className="max-w-md divide-y divide-border">
+      <PersonRowSkeleton />
+    </ul>
+  ),
+};
+
+/* ------------------------------------------------------------------ */
+/* Business / studio card                                              */
+/* ------------------------------------------------------------------ */
+
+const demoStudio: DiscoverStudio = {
   id: "soundhouse-bandra",
+  slug: "soundhouse-bandra",
+  username: "soundhouse.bandra",
   name: "Soundhouse Studios Bandra",
-  type: "Recording Studio",
-  coverUrl:
-    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
-  location: "Bandra West, Mumbai",
+  location: "Mumbai",
   rating: 4.9,
   reviewCount: 38,
   verified: true,
   rate: { amount: "₹2,500", unit: "hour" },
-  amenities: ["Dolby Atmos", "Neumann U87", "SSL Duality"],
+  photo:
+    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
+  gear: ["Dolby Atmos", "Neumann U87", "SSL Duality"],
 };
 
-export const FlagshipBusinessCard: Story = {
-  name: "BusinessUserCard (Default)",
+export const StudioCardStory: Story = {
+  name: "StudioCard (Default)",
   render: () => (
     <div className="max-w-md">
-      <BusinessUserCard business={demoBusiness} />
+      <StudioCard studio={demoStudio} />
     </div>
   ),
 };
 
-export const FlagshipBusinessCardSelected: Story = {
-  name: "BusinessUserCard (Selected)",
+export const StudioCardDisabledStory: Story = {
+  name: "StudioCard (Preview / disabled)",
   render: () => (
     <div className="max-w-md">
-      <BusinessUserCard business={demoBusiness} selected />
+      <StudioCard studio={demoStudio} disabled />
     </div>
   ),
 };
 
-export const FlagshipBusinessSkeleton: Story = {
-  name: "BusinessCardSkeleton",
+export const StudioCardSkeletonStory: Story = {
+  name: "StudioCardSkeleton",
   render: () => (
     <div className="max-w-md">
-      <BusinessCardSkeleton />
+      <StudioCardSkeleton />
     </div>
   ),
 };
+
+export const StudioRowStory: Story = {
+  name: "StudioRow (Default)",
+  render: () => (
+    <ul className="max-w-md divide-y divide-border">
+      <StudioRow studio={demoStudio} />
+    </ul>
+  ),
+};
+
+/* ------------------------------------------------------------------ */
+/* Service card                                                        */
+/* ------------------------------------------------------------------ */
 
 const demoService = {
   id: "demo-service-1",
@@ -130,6 +187,10 @@ export const ServiceCardSkeletonStory: Story = {
   ),
 };
 
+/* ------------------------------------------------------------------ */
+/* Review card                                                         */
+/* ------------------------------------------------------------------ */
+
 const demoReview = {
   id: "demo-review-1",
   by: "Aarav Mehta",
@@ -154,39 +215,6 @@ export const ReviewCardSkeletonStory: Story = {
   render: () => (
     <div className="max-w-xs">
       <ReviewCardSkeleton />
-    </div>
-  ),
-};
-
-export const Row: Story = {
-  render: () => (
-    <div className="max-w-md">
-      <TalentRow t={talents[0]!} />
-    </div>
-  ),
-};
-
-export const RowWithActions: Story = {
-  name: "Row: handlers wired",
-  render: () => (
-    <div className="max-w-md">
-      <TalentRow
-        t={talents[0]!}
-        onMessage={() => {}}
-        onSave={() => {}}
-        onPreview={() => {}}
-      />
-    </div>
-  ),
-};
-
-export const Grid: Story = {
-  name: "TalentGridCard (rate)",
-  render: () => (
-    <div className="grid grid-cols-2 gap-3 max-w-sm">
-      {talents.slice(0, 4).map((t) => (
-        <TalentGridCard key={t.id} t={t} />
-      ))}
     </div>
   ),
 };

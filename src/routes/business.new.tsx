@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { ChevronRight, CircleCheck, Check } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { Dialog } from "@/components/ml/kit";
-import { BusinessUserCard } from "@/components/ml/cards";
+import { StudioCard } from "@/components/ml/cards";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import {
@@ -370,9 +370,7 @@ function NewBusiness() {
 
             <div className="rounded-lg border border-border/80 bg-card p-5 shadow-xs">
               <div className="mb-1 flex items-center justify-between">
-                <p className="text-sm font-bold text-foreground">
-                  Google Maps Profile (Optional)
-                </p>
+                <p className="text-sm font-bold text-foreground">Google Maps Profile (Optional)</p>
                 {reading ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-0.5 text-0 font-semibold text-muted-foreground animate-pulse">
                     <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
@@ -401,13 +399,17 @@ function NewBusiness() {
                   <CircleCheck size={18} className="mt-0.5 shrink-0 text-success" aria-hidden />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-foreground">{place.name || "Business Found"}</span>
+                      <span className="font-bold text-foreground">
+                        {place.name || "Business Found"}
+                      </span>
                       <span className="rounded-full bg-success/15 px-2 py-0.5 text-0 font-bold text-success">
                         Verified Place
                       </span>
                     </div>
                     <p className="mt-0.5 truncate text-1 text-muted-foreground">
-                      {[place.address, place.city, place.state, place.pinCode].filter(Boolean).join(", ")}
+                      {[place.address, place.city, place.state, place.pinCode]
+                        .filter(Boolean)
+                        .join(", ")}
                     </p>
                     <p className="mt-1 text-0 text-muted-foreground">
                       Auto-populated into your business profile. You can modify anytime.
@@ -531,15 +533,20 @@ function NewBusiness() {
               <p className="mb-2 text-0 font-bold uppercase tracking-wider text-muted-foreground">
                 Live Studio Card Preview
               </p>
-              <BusinessUserCard
-                business={{
+              <StudioCard
+                disabled
+                studio={{
                   id: "preview-business",
+                  slug: "",
+                  username: "",
                   name: name || "Your Business Name",
-                  type: typeLabel || "Music Business",
-                  location: [city, state].filter(Boolean).join(", ") || "City, State",
+                  location: city || "City",
+                  rating: null,
+                  reviewCount: 0,
                   verified: true,
                   rate: null,
-                  amenities: genres.slice(0, 3),
+                  photo: "",
+                  gear: genres.slice(0, 3),
                 }}
               />
             </div>
@@ -551,47 +558,49 @@ function NewBusiness() {
                   Tap any item to modify before creating.
                 </p>
               </div>
-            <ul className="divide-y divide-border/60">
-              {(
-                [
-                  ["Business Type", typeLabel, "type"],
-                  ["Google Maps", link ? "Linked" : "Not linked", "type"],
-                  ["Name", name, "basics"],
-                  ["Handle", `@${username}`, "basics"],
-                  ["Tagline", tagline.trim() || "None", "basics"],
-                  ["Location", [city, state].filter(Boolean).join(", "), "location"],
-                  ["Genres", labelsOf(tx.genres, genres), "offer"],
-                  ["Languages", labelsOf(tx.languages, languages), "offer"],
+              <ul className="divide-y divide-border/60">
+                {(
                   [
-                    "Policies",
-                    `${policies.filter((p) => p.trim()).length} defined`,
-                    "policies",
-                  ] as const,
-                ] as const
-              ).map(([k, v, to]) => (
-                <li key={k}>
-                  <button
-                    type="button"
-                    onClick={() => go(to)}
-                    className="state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-subtle/50 active:bg-subtle"
-                  >
-                    <span className="w-28 shrink-0 text-sm font-semibold text-foreground">{k}</span>
-                    <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
-                      {v}
-                    </span>
-                    <ChevronRight
-                      size={iconSize.sm}
-                      className="shrink-0 text-muted-foreground"
-                      aria-hidden
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    ["Business Type", typeLabel, "type"],
+                    ["Google Maps", link ? "Linked" : "Not linked", "type"],
+                    ["Name", name, "basics"],
+                    ["Handle", `@${username}`, "basics"],
+                    ["Tagline", tagline.trim() || "None", "basics"],
+                    ["Location", [city, state].filter(Boolean).join(", "), "location"],
+                    ["Genres", labelsOf(tx.genres, genres), "offer"],
+                    ["Languages", labelsOf(tx.languages, languages), "offer"],
+                    [
+                      "Policies",
+                      `${policies.filter((p) => p.trim()).length} defined`,
+                      "policies",
+                    ] as const,
+                  ] as const
+                ).map(([k, v, to]) => (
+                  <li key={k}>
+                    <button
+                      type="button"
+                      onClick={() => go(to)}
+                      className="state-layer flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-subtle/50 active:bg-subtle"
+                    >
+                      <span className="w-28 shrink-0 text-sm font-semibold text-foreground">
+                        {k}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+                        {v}
+                      </span>
+                      <ChevronRight
+                        size={iconSize.sm}
+                        className="shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-      )}
-    </StepShell>
+        )}
+      </StepShell>
 
       <Dialog
         open={create.isSuccess && !isStudio}

@@ -18,8 +18,9 @@ import { beat, useArrival } from "@/lib/flow-motion";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 import { haptic } from "@/lib/haptics";
-import { TalentUserCard, BusinessUserCard } from "@/components/ml/cards";
-import { talents } from "@/data/discover";
+import { PersonCard, StudioCard } from "@/components/ml/cards";
+import type { DirectoryPerson } from "@/lib/profile-groups.functions";
+import type { DiscoverStudio } from "@/lib/studio-view";
 
 export const Route = createFileRoute("/onboarding/")({
   head: () => ({
@@ -49,18 +50,36 @@ export const Route = createFileRoute("/onboarding/")({
 const kindOrder = ["Talent", "Business"] as const;
 type AccountKind = (typeof kindOrder)[number];
 
-const demoStudio = {
-  id: "soundhouse-mumbai",
-  name: "Soundhouse Studios Bandra",
-  type: "Recording Studio",
-  coverUrl:
-    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
-  location: "Bandra West, Mumbai",
+// The wizard's "what your card will look like" preview, in the exact shapes the real
+// PersonCard/StudioCard take — so the preview and the live card are always the same component.
+const demoTalent: DirectoryPerson = {
+  id: "preview-talent",
+  username: "you",
+  name: "Your Name",
+  headline: "Say what you do and where — this is your headline.",
+  city: "Mumbai",
+  roles: [],
+  genres: [],
+  avatarUrl: null,
+  verified: true,
+  pin_code: null,
+  rating: null,
+  reviewCount: 0,
+};
+
+const demoStudio: DiscoverStudio = {
+  id: "preview-business",
+  slug: "preview-business",
+  username: "",
+  name: "Your Business Name",
+  location: "Mumbai",
   rating: 4.9,
   reviewCount: 38,
   verified: true,
   rate: { amount: "₹2,500", unit: "hour" },
-  amenities: ["Dolby Atmos", "Neumann U87", "SSL Duality", "Lounge"],
+  photo:
+    "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=600&q=80",
+  gear: ["Dolby Atmos", "Neumann U87", "SSL Duality"],
 };
 
 const kindInfo: Record<
@@ -298,17 +317,14 @@ function Welcome() {
               What your {kind.toLowerCase()} card looks like:
             </p>
             {kind === "Talent" ? (
-              <TalentUserCard t={talents[0]!} />
+              <PersonCard person={demoTalent} disabled />
             ) : (
-              <BusinessUserCard business={demoStudio} />
+              <StudioCard studio={demoStudio} disabled />
             )}
           </div>
         ) : (
           <div
-            className={cn(
-              "mt-6 rounded-lg border border-border/80 bg-card p-4 shadow-xs",
-              rise,
-            )}
+            className={cn("mt-6 rounded-lg border border-border/80 bg-card p-4 shadow-xs", rise)}
             style={beat(3)}
           >
             {info.pitch}
