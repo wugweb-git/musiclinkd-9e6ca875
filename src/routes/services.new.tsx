@@ -36,6 +36,7 @@ import {
   TagListField,
 } from "@/components/ml/listing-form";
 import { iconSize } from "@/lib/tokens";
+import { amenityIcon } from "@/lib/amenity-icons";
 import type { PortfolioItem } from "@/data/portfolio";
 import { ServiceCard } from "@/components/ml/profile";
 import type { ServiceItem } from "@/data/profile";
@@ -260,11 +261,14 @@ function NewService() {
     studioPhotos.data?.photos.find((p) => p.subject_type === type && p.subject_id === id)?.url;
   const thumb = (url: string | undefined, fallback: ReactNode) =>
     url ? <img src={url} alt="" className="h-full w-full object-cover" /> : fallback;
-  const amenityOptions = (studioPhotos.data?.facilities ?? []).map((f) => ({
-    value: f.slug,
-    label: f.label,
-    iconNode: thumb(photoOf("facility", f.slug), <Sparkles size={iconSize.md} aria-hidden />),
-  }));
+  const amenityOptions = (studioPhotos.data?.facilities ?? []).map((f) => {
+    const FacilityIcon = amenityIcon(f.slug);
+    return {
+      value: f.slug,
+      label: f.label,
+      iconNode: thumb(photoOf("facility", f.slug), <FacilityIcon size={iconSize.md} aria-hidden />),
+    };
+  });
   const equipmentOptions = (studioEquipment.data?.items ?? []).map((e) => ({
     value: e.id,
     label: e.name,
