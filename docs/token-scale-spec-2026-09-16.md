@@ -117,11 +117,16 @@ range of darker candidates was measured — even a fairly dark gray like `#c8cad
 1.64:1 on white; a gray needs to reach roughly `#919191` to cross 3:1 at all. The owner's call
 (23 Sep): go further than the contrast floor, to **ash black, `#1c1c1c`** — **17.04:1 on white**.
 
-**Follow-up the owner is handling separately**: most `bg-icon-chip` call sites draw a dark
-icon/text on top of it, which was fine against the old light gray but is now low-contrast (or
-invisible) against near-black — those ~11 sites need their icon/text color reviewed and likely
-flipped to a light color. Not done as part of this token change; `--icon-chip` itself is fixed,
-the call sites are not yet updated to match.
+**Call-site follow-up — done (2026-09-23).** All 11 real `bg-icon-chip` usages (`drawer-list.tsx`,
+`rental.tsx`, `business-profile.tsx`, `portfolio.tsx`, `profile.tsx`'s `ReviewInviteCard`,
+`market.tsx`, `services.$id.index.tsx` ×2, `categories.index.tsx`, `marketplace/mine.tsx` ×2)
+switched their icon/text color to `text-primary-foreground` (white, 17.04:1 on the chip) or, for
+`rental.tsx`'s active/inactive icon toggle, `text-primary-foreground`/`text-primary-foreground/60`
+(17.04:1 / 6.85:1, both pass AA). `MarketCategoryIcon` (`market.tsx`) gained a `className` prop
+so its 3 icon-chip callers can override the color without breaking its other, light-background
+uses. `profile.tsx:571` (the cover-photo placeholder fill) has no content on it — nothing to
+recolor there. Verified: `tsc --noEmit` clean, `eslint` clean, `test-storybook` 20/20·146/146,
+`bun run build` succeeds.
 
 ## Disabled-button contrast — triaged and fixed (2026-09-23)
 
@@ -148,17 +153,58 @@ instead of `text-foreground/40`; `Chip`'s `atLimit` drops its `opacity-50` on th
 same reason. Verified: all 34 original failures gone (`bun run test-storybook` with the gate at
 `"error"` — zero `color-contrast` failures matching this pattern).
 
-**Gate left at `"todo"`, not flipped live — a bigger, separate finding.** With the disabled-button
-pattern fixed, flipping the gate still surfaced **26 more failures across 8 different axe rules**
-that were always there, just hidden by `"todo"`: `color-contrast` (13, unrelated to disabled
-buttons — `--destructive` red text on light backgrounds at 4.1:1, `Stars`' amber at 1.82–2.14:1,
-a pink-on-brand pill at 3.02:1), `aria-prohibited-attr` (13), `image-redundant-alt` (6),
-`aria-progressbar-name` (4), `aria-allowed-attr` (4), `button-name` (3), `aria-input-field-name`
-(2), `nested-interactive` (1), `landmark-unique` (1), `heading-order` (1). None of this is a
-disabled-state issue — it's a separate, much larger a11y triage that wasn't part of the "disabled-
-button contrast" ask. Flagged here rather than fixed silently or the gate left broken; a full
-per-rule triage (the same "is this element genuinely exempt or not" question, repeated 8 ways)
-is real follow-up work, not a token change.
+**The 26-failure follow-up — triaged and fixed, gate now live at `"error"` (2026-09-23).** With
+the disabled-button pattern fixed, flipping the gate surfaced 26 more failures across 8 axe rules
+that were always there, hidden by `"todo"`. Resolved:
+
+- **`color-contrast` (13)** — three distinct root causes, not one:
+  - `--destructive` (`#dc2626`, 4.1:1 on the page, 3.44:1 on its own container tint) darkened to
+    `oklch(0.44 0.2152 27.33)` (≈`#aa0000`): ≥4.5:1 against every surface it appears on (page,
+    white, its own container on either). `--danger` was a second literal at the same old value
+    (used by `bg-danger-container`, paired with `text-destructive` in `StatusPill`'s "bad" tone)
+    — aliased to `var(--destructive)` so the two can't drift apart again.
+  - `text-warn`/`text-success` (raw container tones, `#f59e0b`/`#22c55e`, 2.14:1/1.93:1 as text)
+    were being used as body text in 8 real places (`rental.tsx`, `cards.tsx`'s `Stars`,
+    `profile.tsx`, `market.tsx`, `profile.edit.tsx` ×2, `business.new.tsx`) instead of the
+    `-strong` variants the codebase already has for exactly this (`--warn-strong`/
+    `--success-strong`, already used correctly elsewhere, e.g. `StatusPill`). Swapped to the
+    `-strong` tokens (10.66:1/11.00:1 on white) — decorative icons using the raw tone kept as-is,
+    only real text nodes changed.
+  - **One left unfixed, flagged**: `bg-brand text-background` (the "Join MusicLinkd" CTA) — even
+    pure white on `--brand` (`#ea4c89`) only reaches 3.56:1. Unlike `--destructive`/`--warn`/
+    `--success` (internal semantic tokens with a legitimate `-strong` escape hatch),
+    `--brand` **is** the brand color; darkening it is a real brand decision, not a token bug to
+    quietly patch. The 4 stories that hit this (`marketing.stories.tsx`'s `Bottom`/`Bottom CTA`,
+    `person-profile.stories.tsx`'s `Visitor`/`WithoutUsername`) are individually exempted
+    (`parameters.a11y.test: "off"`, with a comment pointing here) so the gate can still go live
+    everywhere else. **Open**: darken `--brand` for buttons (breaks brand consistency elsewhere it
+    appears), use bold/larger CTA text to qualify for WCAG's 3:1 large-text exception (3.56:1
+    would then pass, but breaks the button system's uniform `font-semibold` weight across every
+    variant), or use a different button treatment for this specific CTA. Owner's call.
+- **`aria-prohibited-attr` (13)** — `Stars` (`kit.tsx`) had `aria-label` on a `<span>` with no
+  `role`; added `role="img"`. Two loading skeletons (`portfolio.tsx`'s `PortfolioSkeleton`,
+  `profile.tsx`'s `ProfileSkeleton`) had `aria-busy`+`aria-label` on a `<div>` with no `role`;
+  added `role="status"`.
+- **`landmark-unique` (1)** — `SearchField`'s `<form role="search">` (`tab-header.tsx`) had no
+  accessible name; gained an optional `label` prop (default `"Search"`). Only surfaced because one
+  story (`tab-header.stories.tsx`'s `LongPlaceholder`) deliberately renders two side by side to
+  demo long placeholders — real screens only ever show one. Gave the two demo instances distinct
+  labels.
+- **`heading-order` (1)** — `CompletionCard`'s heading (`profile.tsx`) was an `h3` directly under
+  the profile's `h1` name, skipping `h2`. Bumped to `h2`, matching this file's other top-level
+  section headings.
+- **`image-redundant-alt` (6), `aria-progressbar-name` (4), `aria-allowed-attr` (4),
+  `button-name` (3), `aria-input-field-name` (2), `nested-interactive` (1)** — all 20 of these
+  were in vendor reference components (`src/lab/*.stories.tsx`, `src/registry/kept.stories.tsx`)
+  that the app deliberately doesn't ship (each one duplicates something we already ship, per that
+  file's own comment). Not our code to fix, and the gate can't stay permanently blocked by
+  reference material we don't maintain — exempted those specific story files
+  (`parameters.a11y.test: "off"`, each with a comment explaining why), not the whole gate.
+
+Net result: `.storybook/preview.tsx` is now `a11y: { test: "error" }` for real. `test-storybook`
+passes 20/20 files, 146/146 tests, with the gate live — the only violations left unfixed are the
+one flagged brand-pink decision and the vendor code nobody maintains, both individually exempted
+and documented, not silently skipped.
 
 ## Audit status
 

@@ -57,7 +57,7 @@ export function matching<T extends { label: string }>(options: readonly T[], que
 function OptionIcon({ option: o }: { option: DrawerOption }) {
   if (!o.iconNode && !o.icon) return null;
   return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip">
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-icon-chip text-primary-foreground">
       {o.iconNode ?? (o.icon ? <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden /> : null)}
     </span>
   );

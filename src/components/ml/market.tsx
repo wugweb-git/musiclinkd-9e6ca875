@@ -103,7 +103,7 @@ export function Rating({
 }) {
   if (!value) return null;
   return (
-    <span className="inline-flex items-center gap-1 text-1 font-semibold text-warn">
+    <span className="inline-flex items-center gap-1 text-1 font-semibold text-warn-strong">
       <Star size={iconSize.xs} fill="currentColor" strokeWidth={0} />
       {value.toFixed(1)}
       {count ? <span className="text-muted-foreground">({count})</span> : null}
@@ -197,10 +197,19 @@ const categoryIcons: Record<string, LucideIcon> = {
   other: Package,
 };
 
-/** A market or rental category's line icon, in ink. */
-export function MarketCategoryIcon({ slug, size = iconSize.lg }: { slug: string; size?: number }) {
+/** A market or rental category's line icon, in ink by default — pass className to override on a
+ * dark surface (e.g. inside bg-icon-chip, which is near-black). */
+export function MarketCategoryIcon({
+  slug,
+  size = iconSize.lg,
+  className = "text-foreground",
+}: {
+  slug: string;
+  size?: number;
+  className?: string;
+}) {
   const Icon = categoryIcons[slug] ?? Package;
-  return <Icon size={size} strokeWidth={1.75} className="text-foreground" aria-hidden />;
+  return <Icon size={size} strokeWidth={1.75} className={className} aria-hidden />;
 }
 
 /** A category tile: opens the full category drawer. */
@@ -626,7 +635,7 @@ export function SellerCard({
       {seller.photo ? (
         <img src={seller.photo} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" />
       ) : (
-        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-icon-chip text-2 font-semibold">
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-icon-chip text-2 font-semibold text-primary-foreground">
           {seller.name.slice(0, 1).toUpperCase()}
         </span>
       )}
@@ -865,7 +874,7 @@ export function CategorySheet({
     categories.map((c) => ({
       value: c.slug,
       label: c.label,
-      iconNode: <MarketCategoryIcon slug={c.slug} size={iconSize.md} />,
+      iconNode: <MarketCategoryIcon slug={c.slug} size={iconSize.md} className="text-primary-foreground" />,
     })),
     query,
   );

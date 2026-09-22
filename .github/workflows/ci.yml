@@ -43,10 +43,11 @@ jobs:
         run: bun run lint
 
       # Blocking: Storybook's own test runner (`test-storybook` -> `vitest --project=storybook`),
-      # covering every story's render. The addon-a11y axe pass stays `test: "todo"` (advisory, not
-      # blocking) — see docs/token-scale-spec-2026-09-16.md for why flipping it to "error" isn't
-      # safe yet (34 pre-existing disabled-state contrast findings need triage first). Needs a
-      # real Chromium, not just the npm package.
+      # covering every story's render, now including the addon-a11y axe pass (`test: "error"` as
+      # of 23 Sep — see docs/token-scale-spec-2026-09-16.md for the triage that got it there).
+      # Vendor-only stories (Lab/*, Registry/Kept) and the brand-pink CTA stories are individually
+      # exempted (parameters.a11y.test: "off"), not the whole gate — see those story files'
+      # comments for why. Needs a real Chromium, not just the npm package.
       - name: Install Playwright Chromium
         run: bunx playwright install --with-deps chromium
 

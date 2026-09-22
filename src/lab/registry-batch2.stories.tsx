@@ -19,7 +19,12 @@ import { InlineField } from "@/components/ml/onboarding";
  * date strip for booking. Ours sits next to theirs where we have an equivalent.
  */
 
-const meta = { title: "Lab/Registry batch 2" } satisfies Meta;
+// Vendor components, rendered as the vendor wrote them — not shipped, not gated on our a11y bar
+// (audit, 23 Sep; see src/registry/kept.stories.tsx for the same pattern).
+const meta = {
+  title: "Lab/Registry batch 2",
+  parameters: { a11y: { test: "off" } },
+} satisfies Meta;
 export default meta;
 type S = StoryObj<typeof meta>;
 

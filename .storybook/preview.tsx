@@ -62,7 +62,7 @@ const preview: Preview = {
   parameters: {
     layout: "padded",
     controls: { expanded: true },
-    a11y: { test: "todo" },
+    a11y: { test: "error" },
   },
   tags: ["autodocs"],
 };

@@ -402,7 +402,7 @@ function NewBusiness() {
                       <span className="font-bold text-foreground">
                         {place.name || "Business Found"}
                       </span>
-                      <span className="rounded-full bg-success/15 px-2 py-0.5 text-0 font-bold text-success">
+                      <span className="rounded-full bg-success/15 px-2 py-0.5 text-0 font-bold text-success-strong">
                         Verified Place
                       </span>
                     </div>

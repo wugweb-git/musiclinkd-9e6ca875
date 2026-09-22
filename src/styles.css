@@ -570,7 +570,11 @@
   /* Accent is a neutral hover surface. Purple lives on the category badge only. */
   --accent: #f8f8fb;
   --accent-foreground: var(--ink);
-  --destructive: oklch(0.5771 0.2152 27.33);
+  /* Darkened from oklch(0.5771 ...) on 23 Sep: the original was 4.1:1 on the page background
+   * and 3.44:1 on its own --danger-container tint, both below AA text contrast. This lightness
+   * clears 4.5:1 against every surface it's used on (page, white, and its own container tint on
+   * either), same hue/chroma so it still reads as the same red. */
+  --destructive: oklch(0.44 0.2152 27.33);
   --destructive-foreground: oklch(1 0 89.88);
   /*
    * #D5D5DE — tokens.json `line`. Was oklch(0.9445 …) ≈ 1.147:1 against the card
@@ -598,7 +602,10 @@
   --purple-container: color-mix(in oklab, var(--purple) 10%, transparent);
   --success-container: color-mix(in oklab, var(--success) 12%, transparent);
   --warn-container: color-mix(in oklab, var(--warn) 14%, transparent);
-  --danger: oklch(0.5771 0.2152 27.33);
+  /* Was its own literal, duplicating --destructive's old value — aliased 23 Sep so the contrast
+   * fix above (StatusPill's "bad" tone pairs bg-danger-container with text-destructive) can't
+   * drift out of sync again. */
+  --danger: var(--destructive);
   --danger-container: color-mix(in oklab, var(--danger) 12%, transparent);
   --success-strong: color-mix(in oklab, var(--success) 52%, black);
   --warn-strong: color-mix(in oklab, var(--warn) 48%, black);

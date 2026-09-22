@@ -47,7 +47,7 @@ function Categories() {
                   <Icon
                     size={20}
                     strokeWidth={1.75}
-                    className="text-muted-foreground"
+                    className="text-primary-foreground"
                     aria-hidden
                   />
                 </span>

@@ -76,11 +76,13 @@ export const LongPlaceholder: Story = {
     <div className="space-y-3">
       <SearchField
         to="/search"
+        label="Search (Hindi placeholder demo)"
         placeholder="गायक, स्टूडियो, बैंड और लेबल खोजें"
         onClose={() => {}}
       />
       <SearchField
         to="/search"
+        label="Search (Tamil placeholder demo)"
         placeholder="பாடகர்கள், ஸ்டுடியோக்கள், இசைக்குழுக்கள் தேடுங்கள்"
         onClose={() => {}}
       />

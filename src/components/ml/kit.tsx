@@ -455,7 +455,7 @@ export function OfflineBanner({
 }) {
   if (variant === "warn") {
     return (
-      <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn">
+      <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn-strong">
         <WifiOff size={iconSize.sm} className="shrink-0" />
         <p className="flex-1 text-1 font-semibold">{body}</p>
         {onRetry ? (
@@ -583,7 +583,7 @@ export function BusinessOnlyGate({
 
 export function Stars({ value, size = 14 }: { value: number; size?: number }) {
   return (
-    <span className="inline-flex items-center gap-0.5" aria-label={`${value} out of 5`}>
+    <span className="inline-flex items-center gap-0.5" role="img" aria-label={`${value} out of 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}

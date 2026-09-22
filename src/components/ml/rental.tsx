@@ -293,7 +293,7 @@ export function PriceBreakdown({
       </div>
       <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
         <div className="min-w-0">
-          <p className="text-1 font-bold text-warn">Refundable security deposit</p>
+          <p className="text-1 font-bold text-warn-strong">Refundable security deposit</p>
           <p className="text-1 text-muted-foreground">
             Held by the provider, returned after the equipment is checked.
           </p>
@@ -361,7 +361,10 @@ export function FulfilmentPicker({
             className="flex w-full items-center gap-3 px-4 py-4 text-left"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
-              <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
+              <Icon
+                size={16}
+                className={active ? "text-primary-foreground" : "text-primary-foreground/60"}
+              />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-1 font-semibold">{o.id}</span>

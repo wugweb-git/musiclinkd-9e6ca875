@@ -266,7 +266,7 @@ export function ProfileEmpty({
 /** Same frame as the loaded profile (full-bleed cover, overlapping photo, actions), so nothing jumps. */
 export function ProfileSkeleton() {
   return (
-    <div className="animate-pulse" aria-busy="true" aria-label="Loading profile">
+    <div className="animate-pulse" role="status" aria-busy="true" aria-label="Loading profile">
       <div className="h-44 w-full bg-subtle" />
       <div className="-mt-10 px-5">
         <div className="h-20 w-20 rounded-lg border-2 border-background bg-subtle" />
@@ -728,7 +728,7 @@ export function ProfileHero({
         </p>
       ) : null}
       {owner && p.privacy !== "Public" ? (
-        <p className="mt-2 text-1 font-semibold text-warn">Visibility: {p.privacy}</p>
+        <p className="mt-2 text-1 font-semibold text-warn-strong">Visibility: {p.privacy}</p>
       ) : null}
     </CoverHero>
   );
@@ -1170,7 +1170,7 @@ export function ServicesProvided({ services }: { services: ServiceItem[] }) {
 export function ReviewInviteCard() {
   return (
     <div className="flex items-center gap-3 rounded-lg border border-border p-4">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-primary-foreground">
         <MessageSquareQuote size={iconSize.md} strokeWidth={1.75} aria-hidden />
       </span>
       <span className="min-w-0 flex-1">
@@ -1858,7 +1858,7 @@ export function CompletionCard({
   return (
     <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-baseline justify-between">
-        <h3 className="text-2">Your profile is {percent}% complete</h3>
+        <h2 className="text-2">Your profile is {percent}% complete</h2>
         <span className="text-1 font-semibold text-foreground">{missing.length} left</span>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-card">

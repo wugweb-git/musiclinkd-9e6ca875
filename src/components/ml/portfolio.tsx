@@ -95,7 +95,7 @@ export function WorkTypeSheet({ open, onClose }: { open: boolean; onClose: () =>
               >
                 <span
                   aria-hidden
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-foreground"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-primary-foreground"
                 >
                   <Icon size={24} strokeWidth={1.75} />
                 </span>
@@ -298,7 +298,7 @@ export function StatusPill({ published }: { published: boolean }) {
 
 export function PortfolioSkeleton() {
   return (
-    <div className="space-y-3" aria-busy="true" aria-label="Loading portfolio">
+    <div className="space-y-3" role="status" aria-busy="true" aria-label="Loading portfolio">
       {[0, 1, 2].map((i) => (
         <div key={i} className="h-28 animate-pulse rounded-lg border border-border bg-subtle" />
       ))}

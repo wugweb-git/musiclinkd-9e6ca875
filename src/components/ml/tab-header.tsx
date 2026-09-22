@@ -69,10 +69,13 @@ export function SearchField({
   to,
   placeholder,
   onClose,
+  label = "Search",
 }: {
   to: "/search" | "/marketplace/search";
   placeholder: string;
   onClose: () => void;
+  /** Names the search landmark; only matters when a screen (or a story) shows more than one. */
+  label?: string;
 }) {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
@@ -82,6 +85,7 @@ export function SearchField({
   return (
     <form
       role="search"
+      aria-label={label}
       className="animate-in fade-in slide-in-from-top-2 duration-200"
       onSubmit={(e) => {
         e.preventDefault();

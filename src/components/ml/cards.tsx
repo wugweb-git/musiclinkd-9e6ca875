@@ -33,7 +33,7 @@ function RatingLine({ rating, reviewCount }: { rating: number | null; reviewCoun
   if (rating == null) return null;
   return (
     <span
-      className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-warn"
+      className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-warn-strong"
       aria-label={`${rating.toFixed(1)} out of 5 from ${reviewCount} reviews`}
     >
       <Star size={iconSize.xs} fill="currentColor" aria-hidden />
