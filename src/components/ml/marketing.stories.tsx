@@ -17,14 +17,7 @@ type Story = StoryObj<typeof meta>;
 
 const u = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=80`;
 
-// Both Bottom stories render the brand-pink CTA button (bg-brand text-background): even pure
-// white on --brand only reaches 3.56:1, short of 4.5:1 — darkening --brand is a real brand-color
-// decision flagged to the owner, not something to guess at here (audit, 23 Sep; see
-// docs/token-scale-spec-2026-09-16.md). Exempted from the blocking a11y gate until that's decided.
-const brandButtonA11yNote = { a11y: { test: "off" as const } };
-
 export const Bottom: Story = {
-  parameters: brandButtonA11yNote,
   render: () => (
     <div className="bg-background p-5">
       <BottomCta
@@ -40,7 +33,6 @@ export const Bottom: Story = {
 
 export const BottomWithoutFigures: Story = {
   name: "Bottom CTA — no figures",
-  parameters: brandButtonA11yNote,
   render: () => (
     <div className="bg-background p-5">
       <BottomCta

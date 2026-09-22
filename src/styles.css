@@ -135,6 +135,7 @@
 
   --color-ink: var(--ink);
   --color-brand: var(--brand);
+  --color-brand-button: var(--brand-button);
   --color-purple: var(--purple);
   --color-success: var(--success);
   --color-warn: var(--warn);
@@ -592,6 +593,12 @@
    * is down, a selected pill (pink-on-tint text over a 20% fill), prices, and the `brand` button
    * inside branded blocks only. Never a resting border, background or body text. */
   --brand: #ea4c89;
+  /* White text on --brand only reaches 3.56:1 — short of 4.5:1 no matter the weight, and the
+   * off-white --background (used as CTA text on dark hero blocks) is worse still, 3.02:1.
+   * --brand itself (the logo, the underline, the pill-selected fill) stays untouched; this
+   * darkened mix is for CTA/button fills only (owner, 23 Sep). 5.09:1 against --background,
+   * 5.99:1 against pure white — the two text colors this actually pairs with. */
+  --brand-button: color-mix(in oklab, var(--brand) 80%, black);
   --purple: oklch(0.6056 0.2189 292.72);
   --success: oklch(0.7227 0.192 149.58);
   --warn: oklch(0.7686 0.1647 70.08);

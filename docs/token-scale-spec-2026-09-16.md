@@ -170,17 +170,21 @@ that were always there, hidden by `"todo"`. Resolved:
     `--success-strong`, already used correctly elsewhere, e.g. `StatusPill`). Swapped to the
     `-strong` tokens (10.66:1/11.00:1 on white) — decorative icons using the raw tone kept as-is,
     only real text nodes changed.
-  - **One left unfixed, flagged**: `bg-brand text-background` (the "Join MusicLinkd" CTA) — even
-    pure white on `--brand` (`#ea4c89`) only reaches 3.56:1. Unlike `--destructive`/`--warn`/
-    `--success` (internal semantic tokens with a legitimate `-strong` escape hatch),
-    `--brand` **is** the brand color; darkening it is a real brand decision, not a token bug to
-    quietly patch. The 4 stories that hit this (`marketing.stories.tsx`'s `Bottom`/`Bottom CTA`,
-    `person-profile.stories.tsx`'s `Visitor`/`WithoutUsername`) are individually exempted
-    (`parameters.a11y.test: "off"`, with a comment pointing here) so the gate can still go live
-    everywhere else. **Open**: darken `--brand` for buttons (breaks brand consistency elsewhere it
-    appears), use bold/larger CTA text to qualify for WCAG's 3:1 large-text exception (3.56:1
-    would then pass, but breaks the button system's uniform `font-semibold` weight across every
-    variant), or use a different button treatment for this specific CTA. Owner's call.
+  - **Brand-pink CTA — resolved (2026-09-23).** Owner's call: darken `--brand` for buttons only,
+    leave the brand mark itself alone. New token `--brand-button: color-mix(in oklab, var(--brand)
+    80%, black)` (`#ae3664`) — **5.99:1** against pure white, **5.09:1** against `--background`
+    (the off-white used as CTA text on dark hero blocks, which is worse than pure white: `--brand`
+    alone only cleared 3.02:1 there). Applied to the three real CTA/button surfaces: `Btn`'s
+    `brand` variant (`ui.tsx`), `BottomCta`'s primary button (`marketing.tsx`), and the gear-sell
+    CTA (`gear-cta.tsx`). `--brand` itself is untouched everywhere else (logo, active-tab
+    underline, pill-selected fill, unread dots) — those never carry text, so the original contrast
+    problem doesn't apply to them. The 4 stories that were individually exempted for this
+    (`marketing.stories.tsx`'s `Bottom`/`Bottom CTA`, `person-profile.stories.tsx`'s `Visitor`/
+    `WithoutUsername`) had their exemptions removed and now pass for real. **Not touched**: two
+    small notification-count badges (`market.tsx:1104`, `tab-header.tsx:40`) still use raw
+    `bg-brand` with white/background text at 10–11px — same underlying issue, but out of scope
+    ("buttons only") and never flagged by axe in any tested story. Worth a look if this ever
+    surfaces.
 - **`aria-prohibited-attr` (13)** — `Stars` (`kit.tsx`) had `aria-label` on a `<span>` with no
   `role`; added `role="img"`. Two loading skeletons (`portfolio.tsx`'s `PortfolioSkeleton`,
   `profile.tsx`'s `ProfileSkeleton`) had `aria-busy`+`aria-label` on a `<div>` with no `role`;
@@ -202,9 +206,10 @@ that were always there, hidden by `"todo"`. Resolved:
   (`parameters.a11y.test: "off"`, each with a comment explaining why), not the whole gate.
 
 Net result: `.storybook/preview.tsx` is now `a11y: { test: "error" }` for real. `test-storybook`
-passes 20/20 files, 146/146 tests, with the gate live — the only violations left unfixed are the
-one flagged brand-pink decision and the vendor code nobody maintains, both individually exempted
-and documented, not silently skipped.
+passes 20/20 files, 146/146 tests, with the gate live and zero owner-decision exemptions left —
+the brand-pink CTA fix above (2026-09-23) resolved the last one. The only remaining exemptions are
+the vendor reference stories (`src/lab/*`, `src/registry/kept.stories.tsx`) nobody maintains, each
+documented in place.
 
 ## Audit status
 

@@ -472,7 +472,8 @@ const btnVariants: Record<BtnVariant, string> = {
   ink: `bg-ink text-background ${filledDisabled}`,
   outline: `border border-border bg-card text-foreground ${dimDisabled}`,
   ghost: `bg-subtle text-muted-foreground ${dimDisabled}`,
-  brand: `bg-brand text-white ${filledDisabled}`,
+  // bg-brand-button, not bg-brand: white text on --brand itself only reaches 3.56:1 (owner, 23 Sep).
+  brand: `bg-brand-button text-white ${filledDisabled}`,
 };
 
 const btnBase =

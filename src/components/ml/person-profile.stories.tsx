@@ -20,14 +20,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// The visitor view's brand-pink CTA (bg-brand text-background): even pure white on --brand only
-// reaches 3.56:1, short of 4.5:1 — darkening --brand is a real brand-color decision flagged to
-// the owner, not something to guess at here (audit, 23 Sep; see
-// docs/token-scale-spec-2026-09-16.md). Exempted from the blocking a11y gate until that's decided.
-const brandButtonA11yNote = { a11y: { test: "off" as const } };
-
 /** What someone else sees: no owner actions, no completion, no insights. */
-export const Visitor: Story = { parameters: brandButtonA11yNote };
+export const Visitor: Story = {};
 
 /** The owner's own profile, complete — so the completion panel stays hidden. */
 export const Owner: Story = { args: { owner: true } };
@@ -47,5 +41,4 @@ export const OwnerWithInsights: Story = {
  */
 export const WithoutUsername: Story = {
   args: { p: { ...ownerProfile, username: "" } },
-  parameters: brandButtonA11yNote,
 };

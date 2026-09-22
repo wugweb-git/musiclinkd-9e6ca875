@@ -144,7 +144,7 @@ export function GearCta() {
         <div className="mt-3 flex gap-2">
           <Link
             to="/marketplace/sell"
-            className="group/cta state-layer inline-flex min-h-touch flex-1 items-center justify-center gap-2 rounded-full bg-brand text-sm font-semibold text-white outline-none transition-[scale,box-shadow] duration-300 ease-spring hover:shadow-[0_6px_18px_-6px_rgb(234_76_137/0.7)] focus-visible:ring-2 focus-visible:ring-white/80 active:scale-95"
+            className="group/cta state-layer inline-flex min-h-touch flex-1 items-center justify-center gap-2 rounded-full bg-brand-button text-sm font-semibold text-white outline-none transition-[scale,box-shadow] duration-300 ease-spring hover:shadow-[0_6px_18px_-6px_rgb(234_76_137/0.7)] focus-visible:ring-2 focus-visible:ring-white/80 active:scale-95"
           >
             <Plus
               size={iconSize.sm}
