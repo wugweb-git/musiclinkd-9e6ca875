@@ -82,7 +82,13 @@ const audience = [
  * database, so the ticker is never a claim the product can't back. Until they load, the two rows
  * hold their height; if they fail to load, the rows stay empty and the headline carries the screen.
  */
-function RoleTicker({ className, style }: { className?: string | undefined; style?: CSSProperties | undefined }) {
+function RoleTicker({
+  className,
+  style,
+}: {
+  className?: string | undefined;
+  style?: CSSProperties | undefined;
+}) {
   const { options } = useTaxonomy();
   const roles = (options?.person_types ?? []).filter((o) => o.slug !== "other");
   if (!roles.length) return null;
@@ -96,10 +102,7 @@ function RoleTicker({ className, style }: { className?: string | undefined; styl
       )}
       style={style}
     >
-      <div
-        className="flex w-max animate-marquee gap-1.5"
-        style={{ animationDuration: "50s" }}
-      >
+      <div className="flex w-max animate-marquee gap-1.5" style={{ animationDuration: "50s" }}>
         {[...roles, ...roles].map((o, i) => {
           const Icon = roleIcon(o);
           return (
@@ -261,9 +264,9 @@ function WelcomeScreen() {
           <div className="flex items-center justify-between pt-0.5">
             <Brand compact className="vt-brand mb-0" />
             <div aria-hidden className="flex items-center gap-1 text-pink-strong">
-              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-1" />
-              <span className="h-3.5 w-0.5 rounded-full bg-pink-strong animate-eq-2" />
-              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-3" />
+              <span className="h-[18px] w-0.5 origin-bottom rounded-full bg-pink-strong animate-eq-1" />
+              <span className="h-4 w-0.5 origin-bottom rounded-full bg-pink-strong animate-eq-2" />
+              <span className="h-[22px] w-0.5 origin-bottom rounded-full bg-pink-strong animate-eq-3" />
             </div>
           </div>
 
@@ -283,10 +286,19 @@ function WelcomeScreen() {
                 India&apos;s music network
               </div>
 
-              <div className="text-0 font-bold tracking-tight text-foreground" aria-label="Tagline: Connect, collaborate, create">
-                <span className={cn("inline-block", rise)} style={beat(2)}>Connect. </span>
-                <span className={cn("inline-block", rise)} style={beat(3)}>Collab. </span>
-                <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>Create.</span>
+              <div
+                className="text-0 font-bold tracking-tight text-foreground"
+                aria-label="Tagline: Connect, collaborate, create"
+              >
+                <span className={cn("inline-block", rise)} style={beat(2)}>
+                  Connect.{" "}
+                </span>
+                <span className={cn("inline-block", rise)} style={beat(3)}>
+                  Collab.{" "}
+                </span>
+                <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>
+                  Create.
+                </span>
               </div>
             </div>
 
@@ -382,19 +394,22 @@ function WelcomeScreen() {
 
             <Btn
               type="submit"
-              className="w-full h-10 sm:h-11 text-xs sm:text-sm font-semibold shadow-xs"
+              className="w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
               loading={busy === "email"}
             >
               {signup ? "Create Account" : "Sign In"}
             </Btn>
           </form>
 
-          <Divider label="or" className="my-1" />
+          <Divider label="or" className="my-2" />
 
-          <div className="grid grid-cols-3 gap-1.5">
+          {/* Every tap target here is at least 44px tall (the app's touch floor) with 8px+
+              between them, even though the row above was compressed to fit 100dvh — a small
+              screen doesn't excuse a target that's hard to hit. */}
+          <div className="grid grid-cols-3 gap-2">
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+              className="w-full h-11 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
               icon={<GoogleIcon />}
               loading={busy === "google"}
               onClick={() => void google()}
@@ -403,7 +418,7 @@ function WelcomeScreen() {
             </Btn>
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+              className="w-full h-11 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
               icon={<Linkedin size={iconSize.sm} aria-hidden />}
               loading={busy === "linkedin"}
               onClick={() => void linkedin()}
@@ -412,7 +427,7 @@ function WelcomeScreen() {
             </Btn>
             <Btn
               variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+              className="w-full h-11 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
               icon={<Smartphone size={iconSize.sm} aria-hidden />}
               onClick={() => void navigate({ to: "/auth/phone" })}
             >

@@ -118,11 +118,11 @@ function SessionCheck() {
           className="mt-8 flex items-center gap-1.5 opacity-90 animate-rise"
           style={{ animationDelay: "240ms" }}
         >
-          <span className="w-1 rounded-full bg-white/75 animate-eq-1" />
-          <span className="w-1 rounded-full bg-white/90 animate-eq-2" />
-          <span className="w-1 rounded-full bg-white animate-eq-3" />
-          <span className="w-1 rounded-full bg-white/90 animate-eq-2" />
-          <span className="w-1 rounded-full bg-white/75 animate-eq-1" />
+          <span className="h-[18px] w-1 origin-bottom rounded-full bg-white/75 animate-eq-1" />
+          <span className="h-4 w-1 origin-bottom rounded-full bg-white/90 animate-eq-2" />
+          <span className="h-[22px] w-1 origin-bottom rounded-full bg-white animate-eq-3" />
+          <span className="h-4 w-1 origin-bottom rounded-full bg-white/90 animate-eq-2" />
+          <span className="h-[18px] w-1 origin-bottom rounded-full bg-white/75 animate-eq-1" />
         </div>
       </div>
     </div>
