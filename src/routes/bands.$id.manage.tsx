@@ -1,12 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
+import { BandRiderSheet, BandStagePlotSheet } from "@/components/ml/band-sections";
 import { Card, Row, StatusPill, Dialog, EmptyState, Segmented } from "@/components/ml/kit";
 import { bandRoleCopy, type BandRole } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 
+type Edit = "rider" | "stage-plot";
+
 export const Route = createFileRoute("/bands/$id/manage")({
+  // ?edit=rider or ?edit=stage-plot opens that editor, from the band page's Add rows.
+  validateSearch: (s: Record<string, unknown>): { edit?: Edit } =>
+    s["edit"] === "rider" || s["edit"] === "stage-plot" ? { edit: s["edit"] } : {},
   loader: ({ params }) => loadBand(params.id),
   head: () => ({
     meta: [
@@ -30,7 +36,9 @@ function ManageBand() {
   const { band: row, labels } = Route.useLoaderData();
   const { user } = useAuth();
   const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
-  const [tab, setTab] = useState<(typeof tabs)[number]>("Members");
+  const { edit } = Route.useSearch();
+  const [tab, setTab] = useState<(typeof tabs)[number]>(edit ? "Settings" : "Members");
+  const [editing, setEditing] = useState<Edit | null>(edit ?? null);
   const [removing, setRemoving] = useState<string | null>(null);
   const [transfer, setTransfer] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -126,6 +134,20 @@ function ManageBand() {
               params={{ id: band.id }}
             />
             <Row
+              title="Technical rider"
+              subtitle={
+                band.rider.length
+                  ? `${band.rider.length} ${band.rider.length === 1 ? "line" : "lines"}`
+                  : "Backline, inputs, monitors, power"
+              }
+              onClick={() => setEditing("rider")}
+            />
+            <Row
+              title="Stage plot"
+              subtitle={band.stagePlot ? "Image added" : "An image of your stage layout"}
+              onClick={() => setEditing("stage-plot")}
+            />
+            <Row
               title="Band QR & share card"
               subtitle="Share the band anywhere"
               to="/identity/qr"
@@ -156,6 +178,23 @@ function ManageBand() {
         ) : null}
       </div>
 
+      {/* Mounted only while open, so each opening starts from what is saved. */}
+      {editing === "rider" ? (
+        <BandRiderSheet
+          bandId={band.dbId}
+          lines={band.rider}
+          open
+          onClose={() => setEditing(null)}
+        />
+      ) : null}
+      {editing === "stage-plot" ? (
+        <BandStagePlotSheet
+          bandId={band.dbId}
+          plot={band.stagePlot}
+          open
+          onClose={() => setEditing(null)}
+        />
+      ) : null}
       <Dialog
         open={!!removing}
         title="Remove this member?"

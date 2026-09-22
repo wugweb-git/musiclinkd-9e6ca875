@@ -2,11 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { Card, EmptyState, Segmented } from "@/components/ml/kit";
+import { BandLiveVideoList, BandLiveVideoSheet } from "@/components/ml/band-sections";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { joinParts } from "@/lib/utils";
 
 export const Route = createFileRoute("/bands/$id/portfolio")({
+  // ?tab=Live opens the Live tab, from the band page's live videos row.
+  validateSearch: (s: Record<string, unknown>): { tab?: "Live" } =>
+    s["tab"] === "Live" ? { tab: "Live" } : {},
   loader: ({ params }) => loadBand(params.id),
   head: () => ({
     meta: [
@@ -31,7 +35,9 @@ function BandPortfolio() {
   const { band: row, labels } = Route.useLoaderData();
   const { user } = useAuth();
   const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
-  const [tab, setTab] = useState<(typeof tabs)[number]>("Discography");
+  const search = Route.useSearch();
+  const [tab, setTab] = useState<(typeof tabs)[number]>(search.tab ?? "Discography");
+  const [adding, setAdding] = useState(false);
 
   if (!band) {
     return (
@@ -96,23 +102,33 @@ function BandPortfolio() {
           )
         ) : (
           <div className="space-y-3">
-            <Card>
-              <p className="text-sm font-semibold">Live recordings and sets</p>
-              <p className="mt-1 text-1 text-muted-foreground">
-                A single well-shot live video does more for a booking than five studio demos. Add
-                one set video and a photo from the room.
-              </p>
-              <Btn variant="outline" className="mt-3 w-full">
-                Add live work
-              </Btn>
-            </Card>
-            <EmptyState
-              title="Nothing live yet"
-              body="Upload a set video or link one from YouTube."
-            />
+            {/* Adding live work is for the band's owner and admins. */}
+            {band.owner ? (
+              <Card>
+                <p className="text-sm font-semibold">Live recordings and sets</p>
+                <p className="mt-1 text-1 text-muted-foreground">
+                  A single well-shot live video does more for a booking than five studio demos. Add
+                  one set video and a photo from the room.
+                </p>
+                <Btn variant="outline" className="mt-3 w-full" onClick={() => setAdding(true)}>
+                  Add live work
+                </Btn>
+              </Card>
+            ) : null}
+            {band.liveVideos.length ? (
+              <BandLiveVideoList videos={band.liveVideos} canManage={band.owner} />
+            ) : (
+              <EmptyState
+                title="Nothing live yet"
+                body="Upload a set video or link one from YouTube."
+              />
+            )}
           </div>
         )}
       </div>
+      {adding ? (
+        <BandLiveVideoSheet bandId={band.dbId} open onClose={() => setAdding(false)} />
+      ) : null}
     </Screen>
   );
 }

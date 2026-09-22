@@ -1,6 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { CalendarDays, MessageSquare, QrCode, Settings2, Share2, UserPlus } from "lucide-react";
+import {
+  CalendarDays,
+  ClipboardList,
+  LayoutGrid,
+  MessageSquare,
+  QrCode,
+  Settings2,
+  Share2,
+  UserPlus,
+  Video,
+} from "lucide-react";
+import { BandLiveVideoRail, BandRiderCard, BandStagePlotCard } from "@/components/ml/band-sections";
 import { Screen, TopBar, Btn, BtnLink, VerifiedBadge } from "@/components/ml/ui";
 import { Card, Segmented, StatusPill, EmptyState, Price, Row } from "@/components/ml/kit";
 import { bandRoleCopy } from "@/data/band";
@@ -36,6 +47,7 @@ function BandProfile() {
   const { user } = useAuth();
   const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
   const [tab, setTab] = useState<(typeof tabs)[number]>("Overview");
+  const navigate = useNavigate();
 
   if (!band) {
     return (
@@ -206,6 +218,58 @@ function BandProfile() {
                 to="/bands/$id/portfolio"
                 params={{ id: band.id }}
               />
+              {/* Live videos, rider and stage plot: hidden while empty, an Add row for managers. */}
+              {band.liveVideos.length ? (
+                <section>
+                  <h2 className="mb-2 mt-2 text-sm">Live performance videos</h2>
+                  <BandLiveVideoRail videos={band.liveVideos} />
+                </section>
+              ) : owner ? (
+                <Row
+                  icon={<Video size={iconSize.sm} />}
+                  title="Live performance videos"
+                  subtitle="Add a link to a live set"
+                  onClick={() =>
+                    void navigate({
+                      to: "/bands/$id/portfolio",
+                      params: { id: band.id },
+                      search: { tab: "Live" },
+                    })
+                  }
+                />
+              ) : null}
+              {band.rider.length ? (
+                <BandRiderCard lines={band.rider} />
+              ) : owner ? (
+                <Row
+                  icon={<ClipboardList size={iconSize.sm} />}
+                  title="Technical rider"
+                  subtitle="Add backline, inputs, monitors and power"
+                  onClick={() =>
+                    void navigate({
+                      to: "/bands/$id/manage",
+                      params: { id: band.id },
+                      search: { edit: "rider" },
+                    })
+                  }
+                />
+              ) : null}
+              {band.stagePlot ? (
+                <BandStagePlotCard plot={band.stagePlot} bandName={band.name} />
+              ) : owner ? (
+                <Row
+                  icon={<LayoutGrid size={iconSize.sm} />}
+                  title="Stage plot"
+                  subtitle="Add an image of your stage layout"
+                  onClick={() =>
+                    void navigate({
+                      to: "/bands/$id/manage",
+                      params: { id: band.id },
+                      search: { edit: "stage-plot" },
+                    })
+                  }
+                />
+              ) : null}
             </>
           ) : null}
 

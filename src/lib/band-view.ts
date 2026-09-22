@@ -26,6 +26,22 @@ export type BandReleaseView = {
   cover: string;
 };
 
+export type BandLiveVideoView = {
+  id: string;
+  title: string;
+  url: string;
+};
+
+/**
+ * A rider line split at its first colon, so "Monitors: 5 wedges" reads as a label and a value.
+ * A line without one is all value.
+ */
+export function riderLine(line: string): { label: string; value: string } {
+  const at = line.indexOf(":");
+  if (at <= 0) return { label: "", value: line };
+  return { label: line.slice(0, at).trim(), value: line.slice(at + 1).trim() };
+}
+
 export type BandMemberView = {
   key: string;
   profileId: string;
@@ -59,6 +75,11 @@ export type BandView = {
   members: BandMemberView[];
   events: BandEventView[];
   releases: BandReleaseView[];
+  /** Technical rider lines as stored, in order. */
+  rider: string[];
+  /** The stage plot image and its note; null when the band has not added one. */
+  stagePlot: { url: string; note: string } | null;
+  liveVideos: BandLiveVideoView[];
   /** The viewer created the band, or is its owner or an admin. */
   owner: boolean;
 };
@@ -182,6 +203,11 @@ export function bandViewFromRow(
       year: r.release_year,
       cover: r.cover_url ?? "",
     })),
+    rider: row.rider,
+    stagePlot: row.stage_plot_url
+      ? { url: row.stage_plot_url, note: row.stage_plot_note ?? "" }
+      : null,
+    liveVideos: row.live_videos.map((v) => ({ id: v.id, title: v.title, url: v.url })),
     owner,
   };
 }
