@@ -30,6 +30,7 @@ import {
   MessageSquareQuote,
   Clock,
   Check,
+  ThumbsUp,
 } from "lucide-react";
 import type {
   AudioTrack,
@@ -57,6 +58,7 @@ import { MediaEmbed } from "./media-embed";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
 import { SavedToggle } from "./saved-toggle";
+import { haptic } from "@/lib/haptics";
 
 /** Works stored in the database can be saved; demo works (non-uuid ids) can't. */
 const isDbId = (id: string) =>
@@ -1072,11 +1074,17 @@ export function ServiceCard({
   onEnquire,
   onBook,
   selected = false,
+  disabled = false,
+  disabledReason,
+  className,
 }: {
   s: ServiceItem;
-  onEnquire?: () => void;
+  onEnquire?: (() => void) | undefined;
   onBook?: (() => void) | undefined;
-  selected?: boolean;
+  selected?: boolean | undefined;
+  disabled?: boolean | undefined;
+  disabledReason?: string | undefined;
+  className?: string | undefined;
 }) {
   const real = /^[0-9a-f-]{36}$/i.test(s.id);
   const taxonomy = useTaxonomy().options;
@@ -1084,20 +1092,28 @@ export function ServiceCard({
   const meta = [category, s.mode].filter(Boolean).join(" · ");
   const gets = (s.deliverables ?? []).slice(0, 3);
   const book = onBook ? (
-    <Btn className="min-h-control-sm shrink-0 px-5 text-sm" onClick={onBook}>
+    <Btn
+      disabled={disabled}
+      className="min-h-control-sm shrink-0 px-5 text-sm active:scale-95"
+      onClick={onBook}
+    >
       Book
     </Btn>
   ) : real ? (
     <BtnLink
       to="/services/$id/enquiry"
       params={{ id: s.id }}
-      className="min-h-control-sm shrink-0 px-5 text-sm"
+      className={cn(
+        "min-h-control-sm shrink-0 px-5 text-sm active:scale-95",
+        disabled && "pointer-events-none opacity-50",
+      )}
     >
       Book
     </BtnLink>
   ) : (
     <Btn
-      className="min-h-control-sm shrink-0 px-5 text-sm"
+      disabled={disabled}
+      className="min-h-control-sm shrink-0 px-5 text-sm active:scale-95"
       {...(onEnquire ? { onClick: onEnquire } : {})}
     >
       Book
@@ -1106,20 +1122,39 @@ export function ServiceCard({
   return (
     <article
       aria-current={selected || undefined}
-      className={`overflow-hidden rounded-[20px] border-2 bg-card ${selected ? "border-foreground" : "border-transparent"}`}
+      className={cn(
+        "group relative flex flex-col justify-between overflow-hidden rounded-lg border bg-card transition-all duration-150 ease-standard active:scale-[0.99]",
+        selected
+          ? "border-foreground ring-2 ring-foreground/15 shadow-sm"
+          : "border-border/80 hover:border-muted-foreground/40 hover:shadow-xs",
+        disabled && "opacity-60",
+        className,
+      )}
     >
       <div className="px-4 pb-4 pt-4">
-        {meta ? <p className="truncate text-1 text-muted-foreground">{meta}</p> : null}
+        <div className="flex items-center justify-between gap-2">
+          {meta ? <p className="truncate text-1 text-muted-foreground">{meta}</p> : <span />}
+          {selected ? (
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-0 font-semibold text-background">
+              <Check size={10} strokeWidth={3} aria-hidden />
+              Selected
+            </span>
+          ) : disabled && disabledReason ? (
+            <span className="inline-flex shrink-0 items-center rounded-full bg-subtle px-2 py-0.5 text-0 font-medium text-muted-foreground">
+              {disabledReason}
+            </span>
+          ) : null}
+        </div>
         {real ? (
           <Link
             to="/services/$id"
             params={{ id: s.id }}
-            className="mt-0.5 block text-3 font-semibold leading-snug underline-offset-4 hover:underline"
+            className="mt-1 block text-3 font-semibold leading-snug underline-offset-4 hover:underline"
           >
             {s.name}
           </Link>
         ) : (
-          <h3 className="mt-0.5 text-3 font-semibold leading-snug">{s.name}</h3>
+          <h3 className="mt-1 text-3 font-semibold leading-snug">{s.name}</h3>
         )}
         {s.description ? (
           <p className="mt-1.5 line-clamp-2 text-1 leading-relaxed text-muted-foreground">
@@ -1130,7 +1165,7 @@ export function ServiceCard({
           <ul className="mt-3 space-y-1.5" aria-label="What you get">
             {gets.map((d) => (
               <li key={d} className="flex items-start gap-2 text-1 text-foreground">
-                <Check size={14} strokeWidth={2.25} className="mt-0.5 shrink-0" aria-hidden />
+                <Check size={14} strokeWidth={2.25} className="mt-0.5 shrink-0 text-foreground" aria-hidden />
                 <span className="min-w-0">{d}</span>
               </li>
             ))}
@@ -1145,9 +1180,9 @@ export function ServiceCard({
       </div>
 
       {/* The stub: torn off at the notches, it carries the price, the time and Book. */}
-      <div className="relative flex items-center gap-3 bg-subtle px-4 py-3">
-        <span aria-hidden className="absolute -left-2 -top-2 h-4 w-4 rounded-full bg-background" />
-        <span aria-hidden className="absolute -right-2 -top-2 h-4 w-4 rounded-full bg-background" />
+      <div className="relative mt-auto flex items-center gap-3 border-t border-dashed border-border/70 bg-subtle/80 px-4 py-3">
+        <span aria-hidden className="absolute -left-2 -top-2 h-4 w-4 rounded-full border-r border-border/70 bg-background" />
+        <span aria-hidden className="absolute -right-2 -top-2 h-4 w-4 rounded-full border-l border-border/70 bg-background" />
         <div className="min-w-0 flex-1">
           {s.from ? (
             <Price from inline price={s.from} amountClassName="text-3 font-bold" />
@@ -1162,6 +1197,31 @@ export function ServiceCard({
           ) : null}
         </div>
         {book}
+      </div>
+    </article>
+  );
+}
+
+export function ServiceCardSkeleton({ className }: { className?: string | undefined }) {
+  return (
+    <article
+      className={cn(
+        "flex flex-col justify-between overflow-hidden rounded-lg border border-border/60 bg-card p-4",
+        className,
+      )}
+    >
+      <div>
+        <div className="h-3.5 w-24 rounded bg-subtle animate-pulse" />
+        <div className="mt-2.5 h-6 w-3/4 rounded bg-subtle animate-pulse" />
+        <div className="mt-2 h-4 w-full rounded bg-subtle animate-pulse" />
+        <div className="mt-4 space-y-2">
+          <div className="h-3.5 w-4/5 rounded bg-subtle animate-pulse" />
+          <div className="h-3.5 w-2/3 rounded bg-subtle animate-pulse" />
+        </div>
+      </div>
+      <div className="mt-5 flex items-center justify-between border-t border-dashed border-border/60 pt-3">
+        <div className="h-6 w-24 rounded bg-subtle animate-pulse" />
+        <div className="h-9 w-20 rounded-full bg-subtle animate-pulse" />
       </div>
     </article>
   );
@@ -1212,41 +1272,139 @@ export function CollaboratorCard({ c }: { c: Collaborator }) {
  * (owner, 22 Sep 2026). Reviews take no replies (owner, 22 Sep 2026). `footer` holds a
  * screen's own controls, such as Report.
  */
-export function ReviewCard({ r, footer }: { r: ReviewItem; footer?: ReactNode }) {
+export function ReviewCard({
+  r,
+  footer,
+  className,
+}: {
+  r: ReviewItem;
+  footer?: ReactNode;
+  className?: string | undefined;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [helpfulCount, setHelpfulCount] = useState(0);
+  const [hasVoted, setHasVoted] = useState(false);
+
+  const toggleHelpful = () => {
+    haptic("select");
+    setHasVoted((v) => !v);
+    setHelpfulCount((c) => (hasVoted ? Math.max(0, c - 1) : c + 1));
+  };
+
   return (
-    <article className="flex h-full w-[min(300px,82vw)] flex-col rounded-[20px] bg-card p-4">
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-1.5">
-          <Stars value={r.stars} size={14} />
-          <span className="text-1 font-semibold">{r.stars.toFixed(1)}</span>
-        </span>
-        {r.context ? (
-          <span className="min-w-0 truncate text-1 text-muted-foreground">{r.context}</span>
+    <article
+      className={cn(
+        "group flex h-full w-[min(300px,82vw)] flex-col justify-between rounded-lg border border-border/80 bg-card p-4 shadow-2xs transition-all duration-150 hover:shadow-xs",
+        className,
+      )}
+    >
+      <div>
+        <div className="flex items-center justify-between gap-3">
+          <span className="flex items-center gap-1.5">
+            <Stars value={r.stars} size={14} />
+            <span className="text-1 font-semibold">{r.stars.toFixed(1)}</span>
+          </span>
+          {r.context ? (
+            <span className="min-w-0 max-w-[140px] truncate rounded-full bg-subtle px-2 py-0.5 text-0 font-medium text-muted-foreground">
+              {r.context}
+            </span>
+          ) : null}
+        </div>
+
+        <p
+          className={cn(
+            "mt-3 text-sm leading-relaxed text-foreground transition-[max-height] duration-200",
+            expanded ? "" : "line-clamp-4",
+          )}
+        >
+          {r.text}
+        </p>
+        {r.text.length > 140 ? (
+          <button
+            type="button"
+            onClick={() => {
+              haptic("select");
+              setExpanded(!expanded);
+            }}
+            className="mt-1 inline-block text-1 font-semibold text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+          >
+            {expanded ? "Show less" : "Read more"}
+          </button>
+        ) : null}
+
+        {r.tags?.length ? (
+          <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Tags">
+            {r.tags.map((tag) => (
+              <li key={tag}>
+                <Tag>{tag}</Tag>
+              </li>
+            ))}
+          </ul>
         ) : null}
       </div>
 
-      <p className="mt-3 line-clamp-6 text-sm leading-relaxed text-foreground">{r.text}</p>
+      <div className="mt-4 border-t border-border/50 pt-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <PersonAvatar name={r.by} photo={null} className="h-8 w-8 shrink-0 text-1" />
+            <span className="min-w-0">
+              <span className="block truncate text-1 font-semibold text-foreground">{r.by}</span>
+              {r.org ? (
+                <span className="block truncate text-0 text-muted-foreground">{r.org}</span>
+              ) : null}
+            </span>
+          </div>
 
-      {r.tags?.length ? (
-        <ul className="mt-3 flex flex-wrap gap-1.5" aria-label="Tags">
-          {r.tags.map((tag) => (
-            <li key={tag}>
-              <Tag>{tag}</Tag>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      <div className="mt-auto flex items-center gap-2.5 pt-4">
-        <PersonAvatar name={r.by} photo={null} className="h-9 w-9 shrink-0 text-1" />
-        <span className="min-w-0">
-          <span className="block truncate text-1 font-semibold">{r.by}</span>
-          {r.org ? (
-            <span className="block truncate text-1 text-muted-foreground">{r.org}</span>
-          ) : null}
-        </span>
+          <button
+            type="button"
+            onClick={toggleHelpful}
+            className={cn(
+              "hit-area inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-0 font-medium transition-colors active:scale-95",
+              hasVoted
+                ? "border-foreground bg-foreground text-background font-semibold"
+                : "border-border/70 bg-subtle/40 text-muted-foreground hover:text-foreground hover:bg-card",
+            )}
+            aria-label={hasVoted ? "Marked as helpful" : "Helpful review"}
+          >
+            <ThumbsUp size={11} className={hasVoted ? "fill-background" : ""} aria-hidden />
+            <span>Helpful{helpfulCount > 0 ? ` · ${helpfulCount}` : ""}</span>
+          </button>
+        </div>
+        {footer ? <div className="pt-2.5">{footer}</div> : null}
       </div>
-      {footer ? <div className="pt-3">{footer}</div> : null}
+    </article>
+  );
+}
+
+export function ReviewCardSkeleton({ className }: { className?: string | undefined }) {
+  return (
+    <article
+      className={cn(
+        "flex h-52 w-[min(300px,82vw)] flex-col justify-between rounded-lg border border-border/60 bg-card p-4",
+        className,
+      )}
+    >
+      <div>
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-20 rounded bg-subtle animate-pulse" />
+          <div className="h-4 w-16 rounded-full bg-subtle animate-pulse" />
+        </div>
+        <div className="mt-3 space-y-2">
+          <div className="h-3.5 w-full rounded bg-subtle animate-pulse" />
+          <div className="h-3.5 w-5/6 rounded bg-subtle animate-pulse" />
+          <div className="h-3.5 w-2/3 rounded bg-subtle animate-pulse" />
+        </div>
+      </div>
+      <div className="flex items-center justify-between border-t border-border/50 pt-3">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-full bg-subtle animate-pulse" />
+          <div className="space-y-1">
+            <div className="h-3 w-20 rounded bg-subtle animate-pulse" />
+            <div className="h-2.5 w-12 rounded bg-subtle animate-pulse" />
+          </div>
+        </div>
+        <div className="h-6 w-14 rounded-full bg-subtle animate-pulse" />
+      </div>
     </article>
   );
 }

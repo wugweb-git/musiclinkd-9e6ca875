@@ -3,9 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ChevronRight, CircleCheck } from "lucide-react";
+import { ChevronRight, CircleCheck, Check } from "lucide-react";
 import { Btn, BtnLink } from "@/components/ml/ui";
 import { Dialog } from "@/components/ml/kit";
+import { BusinessUserCard } from "@/components/ml/cards";
+import { haptic } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 import {
   DrawerField,
   InlineField,
@@ -311,26 +314,72 @@ function NewBusiness() {
           <StepSkeleton />
         ) : step === "type" ? (
           <div className="space-y-6">
-            <div className="rounded-lg bg-card p-4 border border-border/80 shadow-xs">
+            <div className="rounded-lg border border-border/80 bg-card p-4 shadow-xs">
               <p className="mb-3 text-1 font-bold uppercase tracking-wider text-muted-foreground">
                 Select business type
               </p>
-              <PersonTypePicker
-                groups={BUSINESS_GROUPS}
-                options={types.map((o) => ({
-                  ...o,
-                  metadata: { ...o.metadata, group: "business" },
-                }))}
-                selected={type ? [type] : []}
-                icon={typeIcon}
-                onToggle={(slug) => setType(slug)}
-              />
+              <div className="grid grid-cols-2 gap-3">
+                {types.map((t) => {
+                  const Icon = roleIcon(t);
+                  const isSelected = type === t.slug;
+                  return (
+                    <button
+                      key={t.slug}
+                      type="button"
+                      onClick={() => {
+                        haptic("select");
+                        setType(t.slug);
+                      }}
+                      className={cn(
+                        "group flex flex-col items-start rounded-lg border p-3.5 text-left transition-all duration-150 ease-standard active:scale-97",
+                        isSelected
+                          ? "border-foreground bg-card ring-2 ring-foreground/15 shadow-xs"
+                          : "border-border/80 bg-subtle/50 hover:border-muted-foreground/40 hover:bg-card",
+                      )}
+                    >
+                      <div className="mb-2.5 flex w-full items-center justify-between">
+                        <span
+                          className={cn(
+                            "flex h-9 w-9 items-center justify-center rounded-full transition-colors",
+                            isSelected
+                              ? "bg-foreground text-background"
+                              : "border border-border bg-card text-foreground",
+                          )}
+                        >
+                          <Icon size={18} aria-hidden />
+                        </span>
+                        {isSelected ? (
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-background">
+                            <Check size={12} strokeWidth={3} />
+                          </span>
+                        ) : null}
+                      </div>
+                      <span className="text-sm font-bold text-foreground transition-colors group-hover:text-primary">
+                        {t.label}
+                      </span>
+                      {t.metadata?.description ? (
+                        <span className="mt-0.5 line-clamp-2 text-1 leading-snug text-muted-foreground">
+                          {t.metadata.description}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
-              <p className="mb-1 text-sm font-bold text-foreground">
-                Google Maps Profile (Optional)
-              </p>
+            <div className="rounded-lg border border-border/80 bg-card p-5 shadow-xs">
+              <div className="mb-1 flex items-center justify-between">
+                <p className="text-sm font-bold text-foreground">
+                  Google Maps Profile (Optional)
+                </p>
+                {reading ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-0.5 text-0 font-semibold text-muted-foreground animate-pulse">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+                    Locating...
+                  </span>
+                ) : null}
+              </div>
               <p className="mb-3 text-1 text-muted-foreground">
                 Paste your business Maps link to auto-fill location, address, and name.
               </p>
@@ -348,14 +397,21 @@ function NewBusiness() {
                     : { hint: "In Google Maps, tap Share and copy the link." })}
               />
               {place && !reading && (place.name || place.city) ? (
-                <div className="mt-3 flex items-start gap-2 rounded-md bg-subtle p-3 border border-border/80 text-foreground text-1">
+                <div className="mt-3 flex items-start gap-3 rounded-lg border border-success/30 bg-success/5 p-3.5 text-foreground text-1">
                   <CircleCheck size={18} className="mt-0.5 shrink-0 text-success" aria-hidden />
-                  <div>
-                    <span className="font-bold text-foreground">Found: </span>
-                    {[place.name, place.city, place.state].filter(Boolean).join(" · ")}
-                    <span className="block mt-0.5 text-muted-foreground text-1">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-foreground">{place.name || "Business Found"}</span>
+                      <span className="rounded-full bg-success/15 px-2 py-0.5 text-0 font-bold text-success">
+                        Verified Place
+                      </span>
+                    </div>
+                    <p className="mt-0.5 truncate text-1 text-muted-foreground">
+                      {[place.address, place.city, place.state, place.pinCode].filter(Boolean).join(", ")}
+                    </p>
+                    <p className="mt-1 text-0 text-muted-foreground">
                       Auto-populated into your business profile. You can modify anytime.
-                    </span>
+                    </p>
                   </div>
                 </div>
               ) : null}
@@ -470,13 +526,31 @@ function NewBusiness() {
         ) : step === "equipment" ? (
           <EquipmentEditor />
         ) : (
-          <div className="rounded-lg bg-card border border-border/80 shadow-xs overflow-hidden">
-            <div className="p-4 border-b border-border/60 bg-subtle/40">
-              <h2 className="text-sm font-bold text-foreground">Summary Overview</h2>
-              <p className="text-1 text-muted-foreground">
-                Tap any item to modify before creating.
+          <div className="space-y-4">
+            <div>
+              <p className="mb-2 text-0 font-bold uppercase tracking-wider text-muted-foreground">
+                Live Studio Card Preview
               </p>
+              <BusinessUserCard
+                business={{
+                  id: "preview-business",
+                  name: name || "Your Business Name",
+                  type: typeLabel || "Music Business",
+                  location: [city, state].filter(Boolean).join(", ") || "City, State",
+                  verified: true,
+                  rate: null,
+                  amenities: genres.slice(0, 3),
+                }}
+              />
             </div>
+
+            <div className="rounded-lg bg-card border border-border/80 shadow-xs overflow-hidden">
+              <div className="p-4 border-b border-border/60 bg-subtle/40">
+                <h2 className="text-sm font-bold text-foreground">Summary Overview</h2>
+                <p className="text-1 text-muted-foreground">
+                  Tap any item to modify before creating.
+                </p>
+              </div>
             <ul className="divide-y divide-border/60">
               {(
                 [
@@ -515,8 +589,9 @@ function NewBusiness() {
               ))}
             </ul>
           </div>
-        )}
-      </StepShell>
+        </div>
+      )}
+    </StepShell>
 
       <Dialog
         open={create.isSuccess && !isStudio}
