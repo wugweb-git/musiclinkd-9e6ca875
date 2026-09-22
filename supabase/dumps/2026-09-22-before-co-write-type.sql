@@ -1,0 +1,25 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922261500_opportunities_co_write_type.sql.
+--
+-- Scope: the two opportunities whose co_write collaboration type was cleared on 14 Sep
+-- (20260914190000_opportunities_drop_co_write.sql), and the co_write taxonomy option.
+-- The migration only sets collaboration_type on the two opportunity rows; the option is unchanged.
+--
+-- opportunities, as they stand:
+--   id 179c699b-6348-5f32-82b2-dd9d7ba87584  slug acoustic-guitarist-ep  collaboration_type NULL
+--     budget_note 'Under Discussion'  budget_paise NULL  budget_unit NULL  role_required 'Guitarist'
+--     genres {acoustic}  location 'Mumbai, MH'  status open  applicant_count 2
+--     created_at 2026-07-25 09:00:00+00  updated_at 2026-09-16 03:13:28.389726+00
+--   id 81d99259-50f1-5f47-bbb2-7742a30e6a20  slug neon-nocturne-vol-3  collaboration_type NULL
+--     budget_note 'Co-Write'  budget_paise NULL  budget_unit NULL
+--     role_required 'Electric Guitar Soloist, Lyricist'  genres {edm}  location 'Mumbai, Maharashtra'
+--     status open  applicant_count 7
+--     created_at 2026-07-25 09:00:00+00  updated_at 2026-09-16 03:13:28.389726+00
+--
+-- taxonomy_options, unchanged by the migration:
+--   category_key collaboration_types  slug co_write  label 'Co-Write'  sort_order 3  is_published true
+--
+-- To undo:
+--   UPDATE public.opportunities
+--   SET collaboration_type = NULL, updated_at = '2026-09-16 03:13:28.389726+00'
+--   WHERE id IN ('179c699b-6348-5f32-82b2-dd9d7ba87584', '81d99259-50f1-5f47-bbb2-7742a30e6a20');
