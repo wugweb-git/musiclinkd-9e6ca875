@@ -21,6 +21,8 @@ import {
   ChevronDown,
   ArrowUp,
   ArrowDown,
+  Play,
+  Pause,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
@@ -28,6 +30,7 @@ import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml
 import { StateCard as BaseStateCard, StatusPill as BaseStatusPill } from "@/components/ml/kit";
 import { embedFor } from "@/lib/embed";
 import { MediaEmbed } from "./media-embed";
+import { cn } from "@/lib/utils";
 import {
   analyticsFor,
   contributorDirectory,
@@ -704,5 +707,114 @@ export function WorkAnalytics({ figures }: { figures: WorkAnalyticsFigures }) {
         </div>
       ))}
     </div>
+  );
+}
+
+/* ---------------- Bento media grid (public profile) ---------------------- */
+
+/**
+ * A public profile's portfolio as tappable media tiles rather than the owner's editable list
+ * (WorkCard, above). Featured work runs wide; audio tiles expand into a waveform in place,
+ * video tiles play inline muted — nothing here opens a separate player.
+ */
+export function PortfolioMediaGrid({ items }: { items: PortfolioItem[] }) {
+  if (!items.length) return null;
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {items.map((item) => (
+        <PortfolioMediaTile key={item.id} item={item} wide={item.featured === true} />
+      ))}
+    </div>
+  );
+}
+
+export function PortfolioMediaTile({
+  item,
+  wide = false,
+}: {
+  item: PortfolioItem;
+  wide?: boolean;
+}) {
+  const t = workType(item.kind);
+  const [playing, setPlaying] = useState(false);
+  const isAudio = t.media === "audio";
+  const isVideo = t.media === "video";
+  const canPlay = (isAudio || isVideo) && !!item.media_url;
+
+  return (
+    <article className={cn("overflow-hidden rounded-lg bg-subtle", wide && "col-span-2")}>
+      <div className="relative aspect-square">
+        {isVideo && playing && item.media_url ? (
+          <>
+            <video
+              src={item.media_url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1 bg-ink/20">
+              <div className="h-full w-1/3 bg-background" />
+            </div>
+          </>
+        ) : item.cover_url ? (
+          <img
+            src={item.cover_url}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className={cn("h-full w-full object-cover", isAudio && playing && "opacity-70")}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-background text-muted-foreground">
+            <WorkTypeIcon kind={item.kind} size="lg" />
+          </div>
+        )}
+
+        {isAudio && playing && item.media_url ? (
+          <>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption -- inline preview of the artist's own track; no separate caption track exists */}
+            <audio src={item.media_url} autoPlay onEnded={() => setPlaying(false)} />
+            <div
+              aria-hidden
+              className="absolute inset-x-3 bottom-3 flex h-5 items-end justify-center gap-1 rounded-full bg-ink/70 px-3 py-2 backdrop-blur-sm"
+            >
+              <span className="h-[10px] w-0.5 origin-bottom rounded-full bg-background animate-eq-1" />
+              <span className="h-3 w-0.5 origin-bottom rounded-full bg-background animate-eq-2" />
+              <span className="h-[13px] w-0.5 origin-bottom rounded-full bg-background animate-eq-3" />
+              <span className="h-3 w-0.5 origin-bottom rounded-full bg-background animate-eq-2" />
+              <span className="h-[10px] w-0.5 origin-bottom rounded-full bg-background animate-eq-1" />
+            </div>
+          </>
+        ) : null}
+
+        {canPlay ? (
+          <button
+            type="button"
+            onClick={() => setPlaying((v) => !v)}
+            aria-label={playing ? `Pause ${item.title}` : `Play ${item.title}`}
+            className="hit-area absolute inset-0 flex items-center justify-center"
+          >
+            {!(isVideo && playing) ? (
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-background shadow-md">
+                {isAudio && playing ? (
+                  <Pause size={iconSize.md} />
+                ) : (
+                  <Play size={iconSize.md} className="ml-0.5" />
+                )}
+              </span>
+            ) : null}
+          </button>
+        ) : null}
+      </div>
+      <div className="p-2.5">
+        <p className="truncate text-1 font-semibold">{item.title}</p>
+        <p className="truncate text-0 text-muted-foreground">
+          {t.label}
+          {item.release_year ? ` · ${item.release_year}` : ""}
+        </p>
+      </div>
+    </article>
   );
 }

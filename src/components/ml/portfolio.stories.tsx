@@ -6,6 +6,7 @@ import {
   CreditRow,
   MediaStatePill,
   PortfolioHeader,
+  PortfolioMediaGrid,
   PortfolioSkeleton,
   StateCard,
   StatusPill,
@@ -141,6 +142,48 @@ export const TypeIcons: Story = {
         </div>
       ))}
     </div>
+  ),
+};
+
+/** The public-profile bento grid: featured work runs wide, tap a tile to play in place. */
+export const MediaGrid: Story = {
+  render: () => (
+    <PortfolioMediaGrid
+      items={[
+        {
+          ...published,
+          id: "media-1",
+          title: "Neon Monsoon",
+          kind: "track",
+          featured: true,
+          cover_url:
+            "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=800&q=80",
+          media_url:
+            "https://commondatastorage.googleapis.com/codeskulptor-assets/Epoq-Lepidoptera.ogg",
+        },
+        {
+          ...published,
+          id: "media-2",
+          title: "NH7 Festival — Live Mix",
+          kind: "video",
+          featured: false,
+          cover_url:
+            "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=800&q=80",
+          media_url:
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        },
+        {
+          ...published,
+          id: "media-3",
+          title: "Sessions at Bandra East",
+          kind: "performance",
+          featured: false,
+          cover_url:
+            "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=800&q=80",
+          media_url: null,
+        },
+      ]}
+    />
   ),
 };
 

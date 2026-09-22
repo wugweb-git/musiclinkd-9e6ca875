@@ -533,6 +533,7 @@ export function CoverHero({
   back,
   actions,
   photoPick,
+  badge,
   square = false,
   children,
 }: {
@@ -548,6 +549,8 @@ export function CoverHero({
   actions?: ReactNode;
   /** Owner only: a control laid over the picture to change it. */
   photoPick?: ReactNode;
+  /** A mark overlapping the picture's corner, e.g. a verified badge. */
+  badge?: ReactNode;
   children?: ReactNode;
 }) {
   // LinkedIn-height cover (132px), giving way to a 72px band as the page scrolls.
@@ -603,6 +606,7 @@ export function CoverHero({
             </span>
           )}
           {photoPick}
+          {badge}
         </div>
         {title ?? (name ? <h1 className="mt-3 text-3 leading-tight">{name}</h1> : null)}
         {children}
@@ -634,6 +638,14 @@ export function ProfileHero({
       photo={p.photo}
       name={p.name}
       back={back}
+      square
+      badge={
+        isVerifiedTier(p.verification) ? (
+          <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-card">
+            <VerifiedMark tier={p.verification} size={18} />
+          </span>
+        ) : undefined
+      }
       actions={
         <>
           {/* The owner edits the cover from the cover itself, the way people expect. */}
@@ -673,16 +685,11 @@ export function ProfileHero({
         ) : null
       }
       title={
-        p.name || isVerifiedTier(p.verification) || p.availability ? (
+        p.name || p.availability ? (
           <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
-            {/* LinkedIn's pattern: verification is a mark on the name, not a second label. The one
-                label beside the name is availability. */}
-            {p.name ? (
-              <h1 className="flex items-center gap-1.5 text-3 leading-tight">
-                {p.name}
-                {isVerifiedTier(p.verification) ? <VerifiedMark tier={p.verification} /> : null}
-              </h1>
-            ) : null}
+            {/* The verified mark now sits on the avatar's corner (see `badge` above), so the name
+                carries only the name and, next to it, availability. */}
+            {p.name ? <h1 className="text-3 leading-tight">{p.name}</h1> : null}
             {p.availability ? <StatusBadge status={p.availability} /> : null}
           </div>
         ) : (
@@ -761,7 +768,11 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
               aria-label={playing ? "Pause preview" : "Play preview"}
               className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md active:scale-95 transition-transform"
             >
-              {playing ? <Pause size={iconSize.sm} aria-hidden /> : <Play size={iconSize.sm} aria-hidden />}
+              {playing ? (
+                <Pause size={iconSize.sm} aria-hidden />
+              ) : (
+                <Play size={iconSize.sm} aria-hidden />
+              )}
             </button>
           </div>
         </div>
@@ -773,12 +784,11 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
             <span className="text-1 font-semibold text-foreground">
               {playing ? "Playing featured work in-app" : "Featured track details"}
             </span>
-            {playing ? (
-              <PlaybackBars className="h-4 gap-0.5 text-foreground" aria-hidden />
-            ) : null}
+            {playing ? <PlaybackBars className="h-4 gap-0.5 text-foreground" aria-hidden /> : null}
           </div>
           <p className="mt-1 text-1 leading-relaxed text-foreground">
-            Mastered for Apple Digital Masters & Spotify HiFi. Recorded & produced across live tracking sessions.
+            Mastered for Apple Digital Masters & Spotify HiFi. Recorded & produced across live
+            tracking sessions.
           </p>
         </div>
       ) : null}
@@ -914,13 +924,16 @@ export function AudioTrackCard({
                 <span className="font-mono text-0">{track.duration ?? "3:42"}</span>
               </div>
               <div className="flex h-7 items-center gap-1 overflow-hidden rounded-sm bg-background/80 px-2 py-1">
-                {[4, 12, 18, 8, 22, 14, 26, 19, 11, 16, 24, 20, 15, 9, 21, 13, 27, 18, 10, 14, 22, 16, 8, 12, 20, 15, 23, 11, 19, 7].map((h, i) => (
+                {[
+                  4, 12, 18, 8, 22, 14, 26, 19, 11, 16, 24, 20, 15, 9, 21, 13, 27, 18, 10, 14, 22,
+                  16, 8, 12, 20, 15, 23, 11, 19, 7,
+                ].map((h, i) => (
                   <span
                     key={i}
                     className={cn(
                       "w-1 rounded-full transition-all duration-200",
                       playing ? "bg-foreground" : "bg-muted-foreground/40",
-                      playing && i % 3 === 0 && "animate-pulse"
+                      playing && i % 3 === 0 && "animate-pulse",
                     )}
                     style={{ height: `${h}px` }}
                   />
@@ -930,7 +943,9 @@ export function AudioTrackCard({
           )}
           <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 pt-1 text-1 text-foreground border-t border-border/40">
             <span className="font-semibold">Role: {track.role || "Producer & Mix"}</span>
-            {track.project ? <span className="text-muted-foreground">Project: {track.project}</span> : null}
+            {track.project ? (
+              <span className="text-muted-foreground">Project: {track.project}</span>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -1199,7 +1214,10 @@ export function ServiceCard({
   const meta = [category, s.mode].filter(Boolean).join(" · ");
   const allDeliverables = s.deliverables ?? [];
   const gets = expanded ? allDeliverables : allDeliverables.slice(0, 3);
-  const hasDetails = allDeliverables.length > 3 || (s.description && s.description.length > 80) || (s.uses && s.uses.length > 0);
+  const hasDetails =
+    allDeliverables.length > 3 ||
+    (s.description && s.description.length > 80) ||
+    (s.uses && s.uses.length > 0);
 
   const book = onBook ? (
     <Btn
@@ -1244,7 +1262,13 @@ export function ServiceCard({
     >
       <div className="px-4 pb-3 pt-4">
         <div className="flex items-center justify-between gap-2">
-          {meta ? <p className="truncate text-1 font-semibold uppercase tracking-wider text-muted-foreground">{meta}</p> : <span />}
+          {meta ? (
+            <p className="truncate text-1 font-semibold uppercase tracking-wider text-muted-foreground">
+              {meta}
+            </p>
+          ) : (
+            <span />
+          )}
           {selected ? (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-0 font-semibold text-background">
               <Check size={10} strokeWidth={3} aria-hidden />
@@ -1289,7 +1313,12 @@ export function ServiceCard({
         </div>
 
         {s.description ? (
-          <p className={cn("mt-1.5 text-1 leading-relaxed text-foreground", !expanded && "line-clamp-2")}>
+          <p
+            className={cn(
+              "mt-1.5 text-1 leading-relaxed text-foreground",
+              !expanded && "line-clamp-2",
+            )}
+          >
             {s.description}
           </p>
         ) : null}
@@ -1298,7 +1327,12 @@ export function ServiceCard({
           <ul className="mt-3 space-y-1.5" aria-label="What you get">
             {gets.map((d) => (
               <li key={d} className="flex items-start gap-2 text-1 font-medium text-foreground">
-                <Check size={14} strokeWidth={2.25} className="mt-0.5 shrink-0 text-foreground" aria-hidden />
+                <Check
+                  size={14}
+                  strokeWidth={2.25}
+                  className="mt-0.5 shrink-0 text-foreground"
+                  aria-hidden
+                />
                 <span className="min-w-0">{d}</span>
               </li>
             ))}
@@ -1307,7 +1341,9 @@ export function ServiceCard({
 
         {expanded && s.uses?.length ? (
           <div className="mt-3 border-t border-border/50 pt-2 animate-in fade-in-50 duration-150">
-            <p className="text-0 font-bold uppercase tracking-wider text-muted-foreground">Included gear & software</p>
+            <p className="text-0 font-bold uppercase tracking-wider text-muted-foreground">
+              Included gear & software
+            </p>
             <p className="mt-1 text-1 font-medium text-foreground">{s.uses.join(", ")}</p>
           </div>
         ) : null}
@@ -1315,11 +1351,22 @@ export function ServiceCard({
 
       {/* The stub: torn off at the notches, it carries the price, the time and Book. */}
       <div className="relative mt-auto flex items-center gap-3 border-t border-dashed border-border/80 bg-subtle/90 px-4 py-3">
-        <span aria-hidden className="absolute -left-2 -top-2 h-4 w-4 rounded-full border-r border-border/80 bg-background" />
-        <span aria-hidden className="absolute -right-2 -top-2 h-4 w-4 rounded-full border-l border-border/80 bg-background" />
+        <span
+          aria-hidden
+          className="absolute -left-2 -top-2 h-4 w-4 rounded-full border-r border-border/80 bg-background"
+        />
+        <span
+          aria-hidden
+          className="absolute -right-2 -top-2 h-4 w-4 rounded-full border-l border-border/80 bg-background"
+        />
         <div className="min-w-0 flex-1">
           {s.from ? (
-            <Price from inline price={s.from} amountClassName="text-3 font-extrabold text-foreground" />
+            <Price
+              from
+              inline
+              price={s.from}
+              amountClassName="text-3 font-extrabold text-foreground"
+            />
           ) : (
             <span className="text-sm font-bold text-foreground">On enquiry</span>
           )}

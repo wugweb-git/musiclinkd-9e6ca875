@@ -521,20 +521,6 @@ function OwnerPanel({
       {completion?.missing.length ? (
         <CompletionCard percent={completion.percent} missing={completion.missing} />
       ) : null}
-      <div className="grid grid-cols-2 gap-2">
-        <OwnerLink
-          to="/portfolio"
-          icon={<FolderKanban size={iconSize.sm} />}
-          label="Manage portfolio"
-        />
-        <OwnerLink
-          to="/services"
-          icon={<BriefcaseBusiness size={iconSize.sm} />}
-          label="Manage services"
-        />
-        <OwnerLink to="/reviews" icon={<Star size={iconSize.sm} />} label="Reviews" />
-        <OwnerLink to="/settings" icon={<Settings size={iconSize.sm} />} label="Settings" />
-      </div>
 
       {insightsOpen ? (
         <div className="rounded-lg bg-subtle p-4">
@@ -565,35 +551,6 @@ function OwnerPanel({
   );
 }
 
-type OwnerDestination =
-  | "/profile/edit"
-  | "/portfolio"
-  | "/services"
-  | "/services/availability"
-  | "/settings"
-  | "/identity/qr"
-  | "/verification"
-  | "/reviews"
-  | "/bands"
-  | "/help";
-
-function OwnerLink({ to, icon, label }: { to: OwnerDestination; icon: ReactNode; label: string }) {
-  return (
-    <Link
-      to={to}
-      className="state-layer flex min-w-0 items-center gap-2 rounded-lg bg-subtle px-3 py-3 text-1 font-semibold transition-transform duration-125 ease-standard active:scale-97"
-    >
-      <span className="shrink-0 text-muted-foreground">{icon}</span>
-      <span className="truncate">{label}</span>
-      <ChevronRight
-        size={iconSize.sm}
-        className="ml-auto shrink-0 text-muted-foreground"
-        aria-hidden
-      />
-    </Link>
-  );
-}
-
 function Overview({
   p,
   playingId,
@@ -617,7 +574,12 @@ function Overview({
       <ProfileSection title="Professional summary">
         {p.shortBio ? (
           <div className="rounded-lg border border-border/80 bg-card p-4 transition-all">
-            <p className={cn("text-sm leading-relaxed text-foreground", !bioExpanded && "line-clamp-3")}>
+            <p
+              className={cn(
+                "text-sm leading-relaxed text-foreground",
+                !bioExpanded && "line-clamp-3",
+              )}
+            >
               {bioExpanded ? fullBio : p.shortBio}
             </p>
             <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5">
@@ -688,11 +650,15 @@ function Overview({
                   <div className="flex items-center gap-1 text-1 font-bold text-foreground">
                     <Star size={13} className="fill-foreground text-foreground" aria-hidden />
                     <span>{p.rating}</span>
-                    <span className="text-0 font-normal text-muted-foreground">({p.reviewCount ?? 0} reviews)</span>
+                    <span className="text-0 font-normal text-muted-foreground">
+                      ({p.reviewCount ?? 0} reviews)
+                    </span>
                   </div>
                 ) : null}
                 {p.stats?.credits ? (
-                  <p className="text-0 font-medium text-foreground">{p.stats.credits} released credits</p>
+                  <p className="text-0 font-medium text-foreground">
+                    {p.stats.credits} released credits
+                  </p>
                 ) : null}
                 {p.verification ? (
                   <span className="inline-flex rounded-full bg-foreground px-2 py-0.5 text-0 font-bold text-background">
@@ -710,7 +676,9 @@ function Overview({
                     <Music size={15} className="text-foreground" aria-hidden />
                     <span>Sonic Palette & Genres</span>
                   </span>
-                  <span className="text-0 font-medium text-muted-foreground">{p.genres.length} genres</span>
+                  <span className="text-0 font-medium text-muted-foreground">
+                    {p.genres.length} genres
+                  </span>
                 </div>
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                   {p.genres.map((genre) => (
@@ -969,6 +937,34 @@ function OwnerStack({
             body="Setup, tools and working details will appear here."
           />
         )}
+      </StackSection>
+
+      <StackSection
+        title="Location & availability"
+        editTo={edit}
+        editSection="availability"
+        collapsible
+        defaultOpen={false}
+      >
+        <div className="rounded-lg bg-subtle p-4">
+          <p className="text-sm font-semibold text-foreground">{p.location || "No city set"}</p>
+          <p className="mt-1 text-1 text-muted-foreground">
+            {p.availability || "No availability status set"}
+          </p>
+        </div>
+      </StackSection>
+
+      <StackSection
+        title="Privacy"
+        editTo={edit}
+        editSection="privacy"
+        collapsible
+        defaultOpen={false}
+      >
+        <div className="rounded-lg bg-subtle p-4">
+          <p className="text-sm font-semibold text-foreground">{p.privacy}</p>
+          <p className="mt-1 text-1 text-muted-foreground">Who can see your profile.</p>
+        </div>
       </StackSection>
 
       <StackSection title="Links" editTo={edit} editSection="links" collapsible defaultOpen={false}>
@@ -1251,12 +1247,14 @@ function About({ p }: { p: PersonProfile }) {
       </ProfileSection>
       <ProfileSection title="Music identity">
         {typesOf(p).length ||
+        p.genres.length ||
         p.specialisations.length ||
         p.influences.length ||
         p.instruments.length ||
         p.languages.length ? (
           <ChipGroupList>
             <ChipGroup label="Type" icon={UserRound} items={typesOf(p)} />
+            <ChipGroup label="Genres" icon={Music} items={p.genres} />
             <ChipGroup label="Specialisations" icon={Sparkles} items={p.specialisations} />
             <ChipGroup label="Influences" icon={Heart} items={p.influences} />
             <ChipGroup label="Instruments" icon={Guitar} items={p.instruments} />
