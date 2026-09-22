@@ -46,7 +46,7 @@ import type {
 } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "./ui";
-import { Price, Stars, Tag } from "./kit";
+import { Price, Stars, StatusPill, Tag } from "./kit";
 import { PersonAvatar } from "./person-avatar";
 import type { PriceParts } from "@/lib/price";
 import { cn, joinParts } from "@/lib/utils";
@@ -343,15 +343,13 @@ export function StatusBadge({ status }: { status: string }) {
   const open = isOpenForWork(status);
   const Icon = open ? CircleCheck : CircleSlash;
   return (
-    <span
-      className={`pill shrink-0 gap-1 ${
-        open ? "bg-success-container text-success-strong" : "bg-subtle text-muted-foreground"
-      }`}
+    <StatusPill
+      label={availabilityWord[status] ?? status}
+      tone={open ? "good" : "neutral"}
+      icon={<Icon size={12} aria-hidden />}
+      className="shrink-0"
       title={status}
-    >
-      <Icon size={12} aria-hidden />
-      {availabilityWord[status] ?? status}
-    </span>
+    />
   );
 }
 

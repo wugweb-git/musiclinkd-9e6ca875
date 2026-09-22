@@ -5,6 +5,7 @@ import { LogoMark } from "@/components/ml/logo";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, syncIdentityFromProvider } from "@/lib/portfolio.functions";
 import { postAuthTarget } from "@/lib/post-auth";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 // App start. The session lives in the browser, so the server renders the splash and the client
 // routes: a saved sign-in goes to Home, or to onboarding until the profile is complete; everyone
@@ -29,14 +30,16 @@ function SessionCheck() {
   const loadProfile = useServerFn(getMyProfile);
   const syncIdentity = useServerFn(syncIdentityFromProvider);
   const mountedAt = useRef(Date.now());
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (loading) return;
     let active = true;
     // Hold for the mark's entrance, never past 2 seconds (owner, 16 Sep); a slow session read is
     // not held further.
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hold = reduced ? 0 : Math.min(2000, Math.max(0, 900 - (Date.now() - mountedAt.current)));
+    const hold = reducedMotion
+      ? 0
+      : Math.min(2000, Math.max(0, 900 - (Date.now() - mountedAt.current)));
     const go = (to: "/welcome" | "/home" | ReturnType<typeof postAuthTarget>) =>
       window.setTimeout(() => {
         if (active) void navigate({ to, replace: true });
@@ -58,7 +61,7 @@ function SessionCheck() {
     return () => {
       active = false;
     };
-  }, [loading, signedIn, navigate, loadProfile, syncIdentity]);
+  }, [loading, signedIn, navigate, loadProfile, syncIdentity, reducedMotion]);
 
   return (
     // Full-bleed brand ground with the mark in white: the one screen where pink carries everything.
@@ -106,7 +109,7 @@ function SessionCheck() {
 
         {/* Product Line / Tagline */}
         <p
-          className="mt-2 max-w-[280px] text-sm font-medium leading-relaxed tracking-wide text-white/90 animate-rise"
+          className="mt-2 max-w-prose-sm text-sm font-medium leading-relaxed tracking-wide text-white/90 animate-rise"
           style={{ animationDelay: "120ms" }}
         >
           India's professional network for the music industry

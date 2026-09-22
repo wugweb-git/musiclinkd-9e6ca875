@@ -1,8 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { CalendarDays, Music2 } from "lucide-react";
+import { CalendarDays, Grid2x2, List, Music2 } from "lucide-react";
+import { useState } from "react";
 
 import { Btn } from "./ui";
-import { Card, EmptyState, Loading, Meter, Price, Row, Segmented, StatusPill, Stars } from "./kit";
+import {
+  Card,
+  Dialog,
+  EmptyState,
+  Loading,
+  Meter,
+  Price,
+  Row,
+  Segmented,
+  StatusPill,
+  Stars,
+} from "./kit";
 
 /*
  * The kit primitives. Screens reach for these instead of rebuilding a card, an empty state or a
@@ -55,6 +67,26 @@ export const StatusPills: Story = {
       <StatusPill label="Booked" tone="bad" />
       <StatusPill label="Not taking work" tone="neutral" />
       <StatusPill label="Verified" tone="brand" />
+      <StatusPill label="Offer sent" tone="category" />
+    </div>
+  ),
+};
+
+/**
+ * `RentalAvailabilityBadge`, `RentalStatusPill`, `BookingStatusPill`, `StatusBadge` and
+ * `MediaStatePill` are all thin `StatusPill` wrappers now (each maps its own domain status to one
+ * of the tones above) — the tone swatches shown here are what every one of them renders through.
+ */
+export const StatusPillConsolidation: Story = {
+  name: "StatusPill: consolidated family",
+  render: () => (
+    <div className="space-y-2 text-1 text-muted-foreground">
+      <p>
+        <code>RentalAvailabilityBadge</code>, <code>RentalStatusPill</code>,{" "}
+        <code>BookingStatusPill</code>, <code>StatusBadge</code> and <code>MediaStatePill</code>{" "}
+        each render through this component now — see &quot;StatusPill: every tone&quot; above for
+        every tone they can produce.
+      </p>
     </div>
   ),
 };
@@ -117,4 +149,55 @@ export const Cards: Story = {
       <Segmented options={["Talent", "Studios"]} value="Talent" onChange={() => {}} />
     </Card>
   ),
+};
+
+/**
+ * SPEC-issue17's "icon animates on state change" rule: `Segmented` accepts an optional `icons`
+ * map and pops the selected tab's icon in with GSAP (`kit.tsx`'s `SegmentedIcon`) on every
+ * selection change. Click a tab to see it — under `prefers-reduced-motion` the swap is instant.
+ */
+export const SegmentedWithIcons: Story = {
+  name: "Segmented: icon on select",
+  render: function SegmentedIconStory() {
+    const [value, setValue] = useState<"Grid" | "List">("Grid");
+    return (
+      <Card>
+        <Segmented
+          options={["Grid", "List"] as const}
+          value={value}
+          onChange={setValue}
+          icons={{ Grid: Grid2x2, List: List }}
+        />
+      </Card>
+    );
+  },
+};
+
+/**
+ * Rebuilt on Radix's `Dialog` primitive for focus-trap/escape/scroll-lock parity with `Sheet` —
+ * same visual output and call-site API as before (`{ open, title, body, onClose, children }`).
+ * Escape closes it, focus is trapped inside while open, and returns to the trigger on close.
+ */
+export const DialogStates: Story = {
+  name: "Dialog",
+  render: function DialogStory() {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Btn variant="outline" onClick={() => setOpen(true)}>
+          Open dialog
+        </Btn>
+        <Dialog
+          open={open}
+          title="Leave without saving?"
+          body="Your changes haven't been saved yet."
+          onClose={() => setOpen(false)}
+        >
+          <Btn className="w-full" onClick={() => setOpen(false)}>
+            Keep editing
+          </Btn>
+        </Dialog>
+      </>
+    );
+  },
 };

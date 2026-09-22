@@ -103,6 +103,16 @@
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
   --container-app: 640px;
 
+  /* Horizontal-scroll rail cards (w-rail-*): person/studio cards, live-video cards. Found repeated
+   * as bare w-[168px]/w-[200px]/w-[260px] across cards.tsx and band-sections.tsx (22 Sep audit). */
+  --spacing-rail-sm: 168px;
+  --spacing-rail-md: 200px;
+  --spacing-rail-lg: 260px;
+
+  /* Centered body copy in an empty/error state (max-w-prose-sm): found repeated as bare
+   * max-w-[280px] across kit.tsx's EmptyState/StateCard variants (22 Sep audit). */
+  --spacing-prose-sm: 280px;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -595,8 +605,10 @@
   --pink-strong: #c7295f; /* system: --color-pink-pressed. The only pink permitted for text, and rarely. */
   /* Pink text on a 20% brand tint: pink-strong alone is 4.2:1 there, below AA. */
   --pink-on-tint: color-mix(in oklab, var(--pink-strong) 78%, black);
-  /* A chip that reads as a shape against the page (Facebook reference, #e2e5e9 on white). */
-  --icon-chip: #e2e5e9;
+  /* Ash black (owner, 23 Sep): #e2e5e9 measured 1.26:1 on white, nowhere near reading as a shape.
+   * 17.04:1 on white. NOTE: icons/text drawn on bg-icon-chip were dark-on-light before this
+   * change — the owner is handling the follow-up recolor of those call sites themselves. */
+  --icon-chip: #1c1c1c;
   --gradient-brand: linear-gradient(135deg, var(--brand), var(--purple));
   --gradient-ink: linear-gradient(150deg, #0d0d0d, #2b2b2b); /* ink -> inkPressed */
 

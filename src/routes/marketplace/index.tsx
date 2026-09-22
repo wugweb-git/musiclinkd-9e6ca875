@@ -1,7 +1,16 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { useEffect, useState } from "react";
-import { ArrowRight, MapPin, SlidersHorizontal, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  Bookmark,
+  Compass,
+  MapPin,
+  Repeat,
+  ShoppingBag,
+  SlidersHorizontal,
+  Plus,
+} from "lucide-react";
 import { Screen, IconBtn } from "@/components/ml/ui";
 import { Segmented } from "@/components/ml/kit";
 import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
@@ -73,6 +82,16 @@ const views = [
   { label: "Nearby", to: null },
   { label: "Saved", to: "/marketplace/saved" },
 ] as const;
+
+// SPEC-issue17's own reference case (Facebook's "Explore" pill) — the first real call site for
+// Segmented's icon-on-select animation.
+const viewIcons = {
+  Explore: Compass,
+  Buy: ShoppingBag,
+  Rent: Repeat,
+  Nearby: MapPin,
+  Saved: Bookmark,
+} as const;
 
 function MarketHome() {
   const [filters, setFilters] = useState(false);
@@ -152,6 +171,7 @@ function MarketHome() {
               className=""
               value={view}
               options={views.map((v) => v.label)}
+              icons={viewIcons}
               onChange={(label) => {
                 setView(label);
                 const to = views.find((v) => v.label === label)?.to;

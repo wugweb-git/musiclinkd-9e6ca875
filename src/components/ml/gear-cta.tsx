@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useId, useRef } from "react";
 import { LayoutGrid, Plus } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 /*
  * Six strings under tension, low E to high e: thick to thin, spread on the left and pulled toward
@@ -32,9 +33,10 @@ export function GearCta() {
   const paths = useRef<(SVGPathElement | null)[]>([]);
   const frame = useRef(0);
   const smoke = `smoke-${useId().replace(/:/g, "")}`;
+  const reducedMotion = usePrefersReducedMotion();
 
   function strum() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion) return;
     cancelAnimationFrame(frame.current);
     const start = performance.now();
     const tick = (now: number) => {

@@ -49,6 +49,7 @@ import { iconSize } from "@/lib/tokens";
 import { BetaBadge, SoonBadge } from "./kit";
 import { stageOf } from "@/lib/release";
 import { useRequireBusiness } from "@/hooks/use-require-business";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { TabIcon, type SolidIcon } from "./tab-icon";
 
 /*
@@ -359,7 +360,11 @@ export function Chip({
   /** A leading circle: an icon element, an image URL, or nothing. */
   media?: ReactNode;
   disabled?: boolean;
-  /** A picker is full: looks disabled, and a tap shakes the chip and vibrates instead of selecting. */
+  /**
+   * A picker is full: a tap shakes the chip and vibrates instead of selecting. Border dims and the
+   * label drops to `text-muted-foreground` — legible, not the old opacity-50 (3.64:1, failed the
+   * a11y gate) — because it's aria-disabled, not disabled: still reachable and tappable on purpose.
+   */
   atLimit?: boolean;
 }) {
   const [refused, setRefused] = useState(false);
@@ -385,11 +390,11 @@ export function Chip({
       aria-disabled={atLimit || undefined}
       aria-pressed={active === undefined ? undefined : active}
       className={`state-layer hit-area inline-flex min-h-control-sm shrink-0 items-center gap-2 rounded-full border text-sm font-medium transition-[transform,background-color,border-color,color,opacity] duration-200 ease-standard active:scale-97 disabled:pointer-events-none disabled:opacity-50 ${
-        atLimit ? "opacity-50" : ""
+        atLimit ? "border-border/50" : ""
       } ${refused ? "animate-shake" : picked && active ? "animate-select" : ""} ${media ? "py-1 pl-1 pr-4" : "px-4"} ${
         active
           ? "border-transparent bg-selected-bg text-selected-text"
-          : "border-border bg-card text-foreground"
+          : `border-border bg-card ${atLimit ? "text-muted-foreground" : "text-foreground"}`
       }`}
     >
       {media ? (
@@ -444,13 +449,23 @@ export function VerifiedBadge({ size = 16 }: { size?: number }) {
 type BtnVariant = "primary" | "ink" | "ghost" | "outline" | "brand";
 
 /*
- * Filled buttons go disabled the Material way: a faint ink container with faint ink text, so a
- * Continue that is not ready yet does not read as a grey button you can press. When it becomes
- * ready, the container fills to ink over --duration-2.
+ * Filled buttons go disabled the Material way: a faint ink container with faint ink text
+ * (disabled:text-foreground/40 on disabled:bg-foreground/10 — close to Material 3's own 38%
+ * content / 12% container spec). That treatment is correct only for a real `disabled` button:
+ * WCAG 1.4.3 exempts inactive UI components from contrast requirements, and a native `disabled`
+ * button leaves the tab order entirely, so nobody is meant to read it.
+ *
+ * `aria-disabled` and `data-pending` are not that — both stay genuinely tappable/focusable by
+ * design (see `pending`'s doc comment below: "looks disabled but still takes the tap, so the form
+ * can say what is missing"; `atLimit`'s aria-disabled chip "shakes and vibrates instead of
+ * selecting"). A control a user can still reach and act on has to stay legible, so those two use
+ * `text-muted-foreground` — the app's existing de-emphasized-but-readable text token (13.25:1 on
+ * this container, comfortably past AA) — instead of the near-invisible `/40` used for true
+ * `disabled` (found via Storybook's a11y gate — see docs/token-scale-spec-2026-09-16.md).
  */
 const filledDisabled =
-  "disabled:bg-foreground/10 disabled:text-foreground/40 aria-disabled:bg-foreground/10 aria-disabled:text-foreground/40 data-pending:bg-foreground/10 data-pending:text-foreground/40";
-const dimDisabled = "disabled:opacity-50 aria-disabled:opacity-50 data-pending:opacity-50";
+  "disabled:bg-foreground/10 disabled:text-foreground/40 aria-disabled:bg-foreground/10 aria-disabled:text-muted-foreground data-pending:bg-foreground/10 data-pending:text-muted-foreground";
+const dimDisabled = "disabled:opacity-50 aria-disabled:text-muted-foreground data-pending:text-muted-foreground";
 
 const btnVariants: Record<BtnVariant, string> = {
   primary: `bg-primary text-primary-foreground ${filledDisabled}`,
@@ -472,9 +487,10 @@ type Ripple = { id: number; x: number; y: number; size: number };
 /** Touch ripple: a circle of the content colour grows from where the finger landed. */
 function useRipple() {
   const [ripples, setRipples] = useState<Ripple[]>([]);
+  const reducedMotion = usePrefersReducedMotion();
   const onPointerDown = (e: PointerEvent<HTMLElement>) => {
     if (e.button !== 0) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion) return;
     const r = e.currentTarget.getBoundingClientRect();
     const size = Math.hypot(r.width, r.height) * 2;
     const ripple = { id: e.timeStamp, x: e.clientX - r.left, y: e.clientY - r.top, size };

@@ -408,20 +408,9 @@ const fieldBox =
 
 export function MediaStatePill({ state }: { state: MediaState }) {
   const c = mediaStateCopy[state];
-  const tone =
-    c.tone === "good"
-      ? "bg-success-container text-success-strong"
-      : c.tone === "warn"
-        ? "bg-warn-container text-warn-strong"
-        : c.tone === "bad"
-          ? "bg-danger-container text-destructive"
-          : "bg-background text-muted-foreground";
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-full pill ${tone}`}>
-      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
-      {c.label}
-    </span>
-  );
+  // mediaStateCopy's tone names ("good"/"warn"/"bad", else neutral) are StatusPill's Tone names.
+  const tone = c.tone === "good" || c.tone === "warn" || c.tone === "bad" ? c.tone : "neutral";
+  return <BaseStatusPill label={c.label} tone={tone} />;
 }
 
 /**

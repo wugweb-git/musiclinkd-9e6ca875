@@ -42,5 +42,22 @@ jobs:
         continue-on-error: true
         run: bun run lint
 
+      # Blocking: Storybook's own test runner (`test-storybook` -> `vitest --project=storybook`),
+      # covering every story's render. The addon-a11y axe pass stays `test: "todo"` (advisory, not
+      # blocking) — see docs/token-scale-spec-2026-09-16.md for why flipping it to "error" isn't
+      # safe yet (34 pre-existing disabled-state contrast findings need triage first). Needs a
+      # real Chromium, not just the npm package.
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Storybook tests
+        run: bun run test-storybook
+
+      # Non-blocking: reports arbitrary text-[Npx]/style={{}} drift in app screens (chart/vendor
+      # code excluded). See scripts/check-token-drift.ts and docs/token-scale-spec-2026-09-16.md.
+      - name: Token drift report (non-blocking)
+        continue-on-error: true
+        run: bun run check-token-drift
+
       - name: Build
         run: bun run build
