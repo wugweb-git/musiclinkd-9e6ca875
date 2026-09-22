@@ -229,3 +229,49 @@ export const removeBandLiveVideo = createServerFn({ method: "POST" })
     if (!rows?.length) throw new Error(NOT_ALLOWED);
     return { removed: true };
   });
+
+/** A release on the band's discography; owners and admins only (the database checks). */
+export const addBandRelease = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        title: z.string().trim().min(1).max(120),
+        kind: z.enum(["single", "ep", "album", "live"]),
+        releaseYear: z.number().int().min(1900).max(2100).nullable(),
+        coverUrl: httpsUrl.nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }) => {
+    const client = db(context.supabase);
+    const { count } = await client
+      .from("collab_releases")
+      .select("id", { count: "exact", head: true })
+      .eq("collab_id", data.id);
+    const { error } = await client.from("collab_releases").insert({
+      collab_id: data.id,
+      title: data.title,
+      kind: data.kind,
+      release_year: data.releaseYear,
+      cover_url: data.coverUrl,
+      sort_order: count ?? 0,
+    });
+    if (error) throw new Error(error.code === "42501" ? NOT_ALLOWED : error.message);
+    return { saved: true };
+  });
+
+export const removeBandRelease = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ releaseId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    const { data: rows, error } = await db(context.supabase)
+      .from("collab_releases")
+      .delete()
+      .eq("id", data.releaseId)
+      .select("id");
+    if (error) throw new Error(error.message);
+    if (!rows?.length) throw new Error(NOT_ALLOWED);
+    return { removed: true };
+  });

@@ -8,11 +8,19 @@ import { Card } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { MediaEmbed } from "@/components/ml/media-embed";
 import { ImagePickButton } from "@/components/ml/profile";
-import { Field, TagListField, inputClass, videoProblem } from "@/components/ml/listing-form";
+import {
+  Field,
+  SheetSelect,
+  TagListField,
+  inputClass,
+  videoProblem,
+} from "@/components/ml/listing-form";
 import { riderLine, type BandLiveVideoView } from "@/lib/band-view";
 import {
   addBandLiveVideo,
+  addBandRelease,
   removeBandLiveVideo,
+  removeBandRelease,
   saveBandRider,
   saveBandStagePlot,
 } from "@/lib/bands.functions";
@@ -366,5 +374,159 @@ export function BandStagePlotSheet({
         ) : null}
       </div>
     </Sheet>
+  );
+}
+
+const releaseKinds = [
+  { value: "single", label: "Single" },
+  { value: "ep", label: "EP" },
+  { value: "album", label: "Album" },
+  { value: "live", label: "Live" },
+] as const;
+
+/** Add a release to the discography: title, kind, year and a cover. */
+export function BandReleaseSheet({
+  bandId,
+  open,
+  onClose,
+}: {
+  bandId: string;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const add = useServerFn(addBandRelease);
+  const [title, setTitle] = useState("");
+  const [kind, setKind] = useState<string | null>(null);
+  const [year, setYear] = useState("");
+  const [cover, setCover] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [tried, setTried] = useState(false);
+  const thisYear = new Date().getFullYear();
+  const titleProblem = title.trim() ? null : "Give the release a title";
+  const kindProblem = kind ? null : "Pick single, EP, album or live";
+  const yearNumber = Number(year);
+  const yearProblem =
+    year && (yearNumber < 1900 || yearNumber > thisYear + 1)
+      ? `Enter a year up to ${thisYear + 1}`
+      : null;
+
+  const save = async () => {
+    setTried(true);
+    if (titleProblem || kindProblem || yearProblem) return;
+    setSaving(true);
+    try {
+      await add({
+        data: {
+          id: bandId,
+          title: title.trim(),
+          kind: kind as "single" | "ep" | "album" | "live",
+          releaseYear: year ? yearNumber : null,
+          coverUrl: cover,
+        },
+      });
+      await router.invalidate();
+      setTitle("");
+      setKind(null);
+      setYear("");
+      setCover(null);
+      setTried(false);
+      onClose();
+    } catch (e) {
+      failed(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Sheet open={open} onClose={onClose} title="Add a release">
+      <div className="space-y-4">
+        <Field label="Title" id="release-title" error={tried ? titleProblem : null}>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={120}
+            placeholder="Monsoon Letters"
+            aria-labelledby="release-title"
+            className={inputClass}
+          />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Kind" id="release-kind" error={tried ? kindProblem : null}>
+            <SheetSelect
+              title="Kind"
+              value={kind}
+              options={releaseKinds}
+              onChange={setKind}
+              placeholder="Pick one"
+            />
+          </Field>
+          <Field label="Year (optional)" id="release-year" error={yearProblem}>
+            <input
+              value={year}
+              onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              inputMode="numeric"
+              placeholder={String(thisYear)}
+              aria-labelledby="release-year"
+              className={inputClass}
+            />
+          </Field>
+        </div>
+        <Field label="Cover (optional)" id="release-cover">
+          <div className="flex items-center gap-3">
+            {cover ? (
+              <img src={cover} alt="" className="h-16 w-16 rounded-md object-cover" />
+            ) : (
+              <span aria-hidden className="h-16 w-16 shrink-0 rounded-md bg-subtle" />
+            )}
+            <ImagePickButton
+              kind="cover"
+              label="Choose a cover"
+              className="h-10 w-10 border border-border bg-card"
+              onPick={async (k, file) => {
+                try {
+                  setCover(await uploadProfileImage(k, file));
+                } catch (e) {
+                  failed(e);
+                }
+              }}
+            >
+              <ImagePlus size={iconSize.sm} aria-hidden />
+            </ImagePickButton>
+          </div>
+        </Field>
+        <Btn className="w-full" loading={saving} onClick={() => void save()}>
+          Add release
+        </Btn>
+      </div>
+    </Sheet>
+  );
+}
+
+/** Take a release off the discography; owners and admins only. */
+export function RemoveReleaseButton({ releaseId, title }: { releaseId: string; title: string }) {
+  const router = useRouter();
+  const remove = useServerFn(removeBandRelease);
+  const [busy, setBusy] = useState(false);
+  return (
+    <IconBtn
+      label={`Remove ${title}`}
+      variant="plain"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try {
+          await remove({ data: { releaseId } });
+          await router.invalidate();
+        } catch (e) {
+          failed(e);
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      <Trash2 size={iconSize.md} aria-hidden />
+    </IconBtn>
   );
 }
