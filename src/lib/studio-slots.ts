@@ -2,7 +2,8 @@ import { isoDate, type DayAvailability, type Slot } from "@/data/booking";
 
 /*
  * A database studio's real availability: its weekly opening hours, minus the times taken by
- * confirmed bookings and closed by the owner, minus the hours already past. Hour slots, the way
+ * confirmed bookings and closed by the owner, minus the hours already past or inside the studio's
+ * notice, with its blackout days closed. Hour slots, the way
  * the booking calendar has always shown them. Times are the studio's own wall clock.
  * Schema: supabase/migrations/20260921110000_studio_calendar.sql
  */
@@ -12,6 +13,50 @@ export type Weekday = (typeof WEEKDAYS)[number];
 export type OpenSpan = { open: string; close: string };
 /** studios.weekly_hours — a missing or empty day is closed. */
 export type WeeklyHours = Partial<Record<Weekday, OpenSpan[]>>;
+
+/** studios.blackout_dates — whole days the studio is closed, both ends included ("yyyy-mm-dd"). */
+export type BlackoutRange = { from: string; to: string };
+
+/**
+ * The owner's rules on top of the weekly hours: the notice needed before a session, and blackout
+ * days. Schema: supabase/migrations/20260922280000_booking_rules.sql
+ */
+export type BookingRules = { noticeHours?: number; blackouts?: BlackoutRange[] };
+
+const YMD = /^\d{4}-\d{2}-\d{2}$/;
+
+/** The stored blackout ranges, keeping only well-formed ones, earliest first. */
+export function parseBlackouts(raw: unknown): BlackoutRange[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(
+      (r): r is BlackoutRange =>
+        !!r &&
+        typeof r === "object" &&
+        YMD.test(String((r as BlackoutRange).from)) &&
+        YMD.test(String((r as BlackoutRange).to)) &&
+        (r as BlackoutRange).from <= (r as BlackoutRange).to,
+    )
+    .map(({ from, to }) => ({ from, to }))
+    .sort((a, b) => a.from.localeCompare(b.from));
+}
+
+/** Whether a day falls inside one of the blackout ranges. */
+export const isBlackout = (date: string, blackouts: BlackoutRange[] = []) =>
+  blackouts.some((r) => date >= r.from && date <= r.to);
+
+/** Whether a session on `date` at `time` ("hh:mm", studio clock) starts inside the notice window. */
+export function insideNotice(
+  date: string,
+  time: string | null | undefined,
+  noticeHours = 0,
+  now = new Date(),
+) {
+  if (!noticeHours) return false;
+  // Studios keep India's wall clock (all are in India today); the server's own clock is UTC.
+  const start = new Date(`${date}T${(time ?? "00:00").slice(0, 5)}:00+05:30`).getTime();
+  return start < now.getTime() + noticeHours * 3_600_000;
+}
 
 /** A taken or closed interval, "yyyy-mm-ddThh:mm:ss" local. No room means every room. */
 export type BusyInterval = { roomId: string | null; start: string; end: string };
@@ -111,6 +156,7 @@ export function studioDay(
   roomId: string,
   date: string,
   fromPrice: number,
+  rules: BookingRules = {},
   now = new Date(),
 ): DayAvailability {
   const d = new Date(`${date}T00:00:00`);
@@ -119,7 +165,10 @@ export function studioDay(
     return { date, state: "unavailable", slots: [] };
 
   const spans = weekly[WEEKDAYS[d.getDay()]!] ?? [];
-  if (!spans.length) return { date, state: "closed", slots: [] };
+  if (!spans.length || isBlackout(date, rules.blackouts))
+    return { date, state: "closed", slots: [] };
+  // No slot starts inside the notice the studio needs.
+  const earliest = now.getTime() + (rules.noticeHours ?? 0) * 3_600_000;
 
   const taken = busy
     .filter((b) => b.roomId === null || b.roomId === roomId)
@@ -137,7 +186,7 @@ export function studioDay(
       slots.push({
         start: `${pad(h)}:00`,
         end: `${pad(h + 1)}:00`,
-        state: booked ? "booked" : start <= now.getTime() ? "blocked" : "open",
+        state: booked ? "booked" : start < earliest ? "blocked" : "open",
       });
     }
   }

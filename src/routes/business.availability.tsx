@@ -14,11 +14,18 @@ import {
   getStudioCalendar,
   listMyStudioBlocks,
   removeMyStudioBlock,
+  updateMyBookingRules,
   updateMyWeeklyHours,
 } from "@/lib/studio-calendar.functions";
 import { type MyStudio, getMyStudio } from "@/lib/studio-owner.functions";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
-import { type Weekday, type WeeklyHours } from "@/lib/studio-slots";
+import {
+  earliestBookingDate,
+  type BlackoutRange,
+  type Weekday,
+  type WeeklyHours,
+} from "@/lib/studio-slots";
+import { Field, inputClass } from "@/components/ml/listing-form";
 import { AmenitiesEditor, EquipmentEditor } from "@/components/ml/studio-setup";
 
 export const Route = createFileRoute("/business/availability")({
@@ -112,6 +119,7 @@ function AvailabilityContent() {
       <TopBar title="Availability" subtitle={q.data.name} back="/business/bookings" />
       <main className="px-5 pt-4">
         <WeeklyHoursEditor studio={q.data} />
+        <NoticeAndBlackouts studio={q.data} />
         <ClosedTimes studio={q.data} />
         <div className="mt-8 space-y-8">
           <AmenitiesEditor />
@@ -229,6 +237,160 @@ function WeeklyHoursEditor({ studio }: { studio: MyStudio }) {
           </Btn>
         </div>
       )}
+    </section>
+  );
+}
+
+const NOTICE = [
+  { label: "None", hours: 0 },
+  { label: "24 hours", hours: 24 },
+  { label: "3 days", hours: 72 },
+  { label: "1 week", hours: 168 },
+] as const;
+type NoticeLabel = (typeof NOTICE)[number]["label"];
+
+/** The closest option to a stored notice, so any stored value still reads as one of them. */
+const noticeOption = (hours: number): NoticeLabel =>
+  NOTICE.reduce((best, o) => (Math.abs(o.hours - hours) < Math.abs(best.hours - hours) ? o : best))
+    .label;
+
+/** How much notice a session needs, and whole days the studio is closed. Both save at once. */
+function NoticeAndBlackouts({ studio }: { studio: MyStudio }) {
+  const queryClient = useQueryClient();
+  const load = useServerFn(getStudioCalendar);
+  const save = useServerFn(updateMyBookingRules);
+  const q = useQuery({
+    queryKey: ["studio-calendar", studio.slug, "rules"],
+    queryFn: () => load({ data: { slug: studio.slug } }),
+  });
+  const notice = noticeOption(q.data?.noticeHours ?? 0);
+  const blackouts = q.data?.blackouts ?? [];
+  const [open, setOpen] = useState(false);
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function write(patch: { noticeHours?: number; blackouts?: BlackoutRange[] }, done: string) {
+    setBusy(true);
+    try {
+      await save({ data: patch });
+      await queryClient.invalidateQueries({ queryKey: ["studio-calendar", studio.slug, "rules"] });
+      toast.success(done);
+      return true;
+    } catch {
+      toast.error("Couldn't save that. Try again.");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onAdd() {
+    const ok = await write(
+      { blackouts: [...blackouts, { from, to: to || from }] },
+      "Blackout dates added",
+    );
+    if (!ok) return;
+    setOpen(false);
+    setFrom("");
+    setTo("");
+  }
+
+  const range = (r: BlackoutRange) =>
+    r.from === r.to ? formatDate(r.from) : `${formatDate(r.from)} – ${formatDate(r.to)}`;
+
+  return (
+    <section className="mt-8">
+      <h2 className="text-2">Notice period</h2>
+      <p className="mt-1 text-1 text-muted-foreground">
+        How far ahead customers have to book. Slots inside it aren't offered.
+      </p>
+      {q.isLoading ? (
+        <div className="mt-3">
+          <Loading rows={1} />
+        </div>
+      ) : (
+        <div className="mt-3">
+          <SegmentedField
+            label="Notice period"
+            value={notice}
+            options={NOTICE.map((o) => o.label)}
+            onChange={(v) =>
+              void write(
+                { noticeHours: NOTICE.find((o) => o.label === v)?.hours ?? 0 },
+                "Notice period saved",
+              )
+            }
+          />
+        </div>
+      )}
+
+      <h2 className="mt-8 text-2">Blackout dates</h2>
+      <p className="mt-1 text-1 text-muted-foreground">
+        Whole days the studio is closed, whatever the weekly hours say.
+      </p>
+      <div className="mt-3 space-y-2">
+        {blackouts.map((r) => (
+          <Card key={`${r.from}-${r.to}`} className="flex items-center gap-3">
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold">{range(r)}</span>
+            <IconBtn
+              label="Remove these dates"
+              variant="ghost"
+              onClick={() =>
+                void write(
+                  { blackouts: blackouts.filter((b) => b !== r) },
+                  "Blackout dates removed",
+                )
+              }
+            >
+              <Trash2 size={iconSize.sm} aria-hidden />
+            </IconBtn>
+          </Card>
+        ))}
+        <Btn variant="outline" className="w-full" onClick={() => setOpen(true)}>
+          Add Blackout Dates
+        </Btn>
+      </div>
+
+      <Sheet open={open} onClose={() => setOpen(false)} title="Add blackout dates">
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (from && !busy) void onAdd();
+          }}
+        >
+          <Field label="From" id="blackout-from">
+            <input
+              type="date"
+              aria-labelledby="blackout-from"
+              required
+              min={earliestBookingDate()}
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Until" id="blackout-to" hint="Leave empty for a single day.">
+            <input
+              type="date"
+              aria-labelledby="blackout-to"
+              min={from || earliestBookingDate()}
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              className={inputClass}
+            />
+          </Field>
+          <Btn
+            type="submit"
+            className="w-full"
+            disabled={!from || (!!to && to < from)}
+            loading={busy}
+          >
+            Close These Days
+          </Btn>
+        </form>
+      </Sheet>
     </section>
   );
 }

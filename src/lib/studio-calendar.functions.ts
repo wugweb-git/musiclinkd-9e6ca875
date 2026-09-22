@@ -6,7 +6,11 @@ import { anonClient } from "@/lib/portfolio.functions";
 import {
   WEEKDAYS,
   hoursLine,
+  insideNotice,
+  isBlackout,
+  parseBlackouts,
   parseWeeklyHours,
+  type BlackoutRange,
   type BusyInterval,
   type WeeklyHours,
 } from "@/lib/studio-slots";
@@ -21,7 +25,52 @@ import {
 const db = (client: unknown) => client as unknown as SupabaseClient;
 const DATE = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
-export type StudioCalendar = { weeklyHours: WeeklyHours; busy: BusyInterval[] };
+export type StudioCalendar = {
+  weeklyHours: WeeklyHours;
+  busy: BusyInterval[];
+  /** Hours of notice the studio needs before a session; 0 for none. */
+  noticeHours: number;
+  /** Whole days the studio is closed. */
+  blackouts: BlackoutRange[];
+};
+
+/** The notice and blackout days, or none before 20260922280000_booking_rules.sql is applied. */
+async function readRules(client: SupabaseClient, studioId: string) {
+  const { data, error } = await client
+    .from("studios")
+    .select("notice_hours, blackout_dates")
+    .eq("id", studioId)
+    .maybeSingle();
+  const row = (error ? null : data) as { notice_hours: number; blackout_dates: unknown } | null;
+  return {
+    noticeHours: row?.notice_hours ?? 0,
+    blackouts: parseBlackouts(row?.blackout_dates),
+  };
+}
+
+/**
+ * Refuses a session the studio doesn't take: on a blackout day, or starting inside its notice.
+ * Shared by the request and reschedule functions, so the rule holds whatever screen sent it.
+ */
+export async function assertStudioTakes(
+  client: SupabaseClient,
+  studioId: string,
+  date: string,
+  startTime: string | null | undefined,
+) {
+  const rules = await readRules(client, studioId);
+  if (isBlackout(date, rules.blackouts)) throw new Error("The studio is closed that day.");
+  if (insideNotice(date, startTime, rules.noticeHours))
+    throw new Error(
+      `The studio needs ${noticeLabel(rules.noticeHours)} notice. Pick a later time.`,
+    );
+}
+
+/** 24 → "24 hours", 72 → "3 days". */
+export function noticeLabel(hours: number) {
+  if (hours % 24 === 0 && hours >= 48) return `${hours / 24} days`;
+  return `${hours} hours`;
+}
 
 /** Postgres "2026-09-25 18:00:00" as "2026-09-25T18:00:00", which every browser parses as local. */
 const local = (ts: string) => ts.replace(" ", "T").slice(0, 19);
@@ -41,10 +90,11 @@ export const getStudioCalendar = createServerFn({ method: "GET" })
       .eq("slug", data.slug)
       .maybeSingle();
     // No column yet (migration not applied) or no studio: no calendar.
-    if (error || !row) return { weeklyHours: {}, busy: [] };
+    if (error || !row) return { weeklyHours: {}, busy: [], noticeHours: 0, blackouts: [] };
     const { id, weekly_hours } = row as { id: string; weekly_hours: unknown };
     const weeklyHours = parseWeeklyHours(weekly_hours);
-    if (!data.from || !data.to) return { weeklyHours, busy: [] };
+    const rules = await readRules(client, id);
+    if (!data.from || !data.to) return { weeklyHours, busy: [], ...rules };
 
     const { data: busy, error: busyError } = await client.rpc("studio_busy", {
       p_studio: id,
@@ -55,6 +105,7 @@ export const getStudioCalendar = createServerFn({ method: "GET" })
     if (busyError) throw new Error(busyError.message);
     return {
       weeklyHours,
+      ...rules,
       busy: ((busy ?? []) as { room_id: string | null; starts_at: string; ends_at: string }[]).map(
         (b) => ({ roomId: b.room_id, start: local(b.starts_at), end: local(b.ends_at) }),
       ),
@@ -93,6 +144,33 @@ export const updateMyWeeklyHours = createServerFn({ method: "POST" })
       .update({ operating_hours: line } as never)
       .eq("profile_id", context.userId);
     if (businessError) throw new Error(businessError.message);
+    return { ok: true };
+  });
+
+/** The owner's notice and blackout days. Either may be sent alone; the other is left as it is. */
+export const updateMyBookingRules = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        noticeHours: z.number().int().min(0).max(720).optional(),
+        blackouts: z
+          .array(z.object({ from: DATE, to: DATE }).refine((r) => r.from <= r.to))
+          .max(100)
+          .optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ context, data }): Promise<{ ok: true }> => {
+    const patch = {
+      ...(data.noticeHours === undefined ? {} : { notice_hours: data.noticeHours }),
+      ...(data.blackouts === undefined ? {} : { blackout_dates: parseBlackouts(data.blackouts) }),
+    };
+    const { error } = await db(context.supabase)
+      .from("studios")
+      .update(patch as never)
+      .eq("owner_profile_id", context.userId);
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
 
