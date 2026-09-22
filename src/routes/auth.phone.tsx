@@ -70,57 +70,63 @@ function PhoneAuth() {
 
   return (
     <AuthScreen back={{ to: "/welcome" }}>
-      <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
-        <form
-          noValidate
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!busy && provider !== "off") void send();
-          }}
-        >
-          <AuthHeading
-            title="Sign in with Mobile"
-            sub="Enter your 10-digit mobile number and we'll text you a 6-digit code."
-          />
+      <div className="flex flex-1 flex-col justify-between py-1">
+        <div className="my-auto">
+          <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+            <form
+              noValidate
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!busy && provider !== "off") void send();
+              }}
+            >
+              <AuthHeading
+                title="Sign in with Mobile"
+                sub="Enter your 10-digit mobile number and we'll text you a 6-digit code."
+              />
 
-          {provider === "off" ? (
-            <AuthNotice tone="info" title="Mobile sign-in isn't switched on yet">
-              Sign in with email or Google for now.
-            </AuthNotice>
-          ) : null}
-          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+              {provider === "off" ? (
+                <AuthNotice tone="info" title="Mobile sign-in isn't switched on yet">
+                  Sign in with email or Google for now.
+                </AuthNotice>
+              ) : null}
+              {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-          <PhoneField
-            value={digits}
-            onChange={setDigits}
-            onBlur={() => fields.touch("phone")}
-            error={fields.errorFor("phone", phoneProblem)}
-          />
+              <PhoneField
+                value={digits}
+                onChange={setDigits}
+                onBlur={() => fields.touch("phone")}
+                error={fields.errorFor("phone", phoneProblem)}
+              />
 
-          <Btn
-            type="submit"
-            className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
-            loading={busy}
-            disabled={provider === "off"}
-          >
-            Send Verification Code
-          </Btn>
-        </form>
+              <Btn
+                type="submit"
+                className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+                loading={busy}
+                disabled={provider === "off"}
+              >
+                Send Verification Code
+              </Btn>
+            </form>
 
-        <TrustNote>Your number is never shown on your public profile.</TrustNote>
+            <TrustNote>Your number is never shown on your public profile.</TrustNote>
+          </div>
+
+          <p className="mt-5 flex justify-center text-sm">
+            <AuthLink
+              to="/auth"
+              icon={<Mail size={iconSize.sm} />}
+              className="font-semibold text-foreground"
+            >
+              Sign in with Email instead
+            </AuthLink>
+          </p>
+        </div>
+
+        <div className="shrink-0 pt-2 text-center">
+          <LegalNote className="mt-0" />
+        </div>
       </div>
-
-      <p className="mt-6 flex justify-center text-sm">
-        <AuthLink
-          to="/auth"
-          icon={<Mail size={iconSize.sm} />}
-          className="font-semibold text-foreground"
-        >
-          Sign in with Email instead
-        </AuthLink>
-      </p>
-
-      <LegalNote />
     </AuthScreen>
   );
 }

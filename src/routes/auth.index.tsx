@@ -86,61 +86,67 @@ function EmailSignIn() {
 
   return (
     <AuthScreen back={{ to: "/auth/phone" }}>
-      <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
-        <form
-          noValidate
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!busy) void send();
-          }}
-        >
-          <AuthHeading
-            title="Sign in with Email"
-            sub="We'll email you a 6-digit one-time code. No password required."
-          />
+      <div className="flex flex-1 flex-col justify-between py-1">
+        <div className="my-auto">
+          <div className="rounded-lg bg-card p-5 border border-border/80 shadow-xs">
+            <form
+              noValidate
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!busy) void send();
+              }}
+            >
+              <AuthHeading
+                title="Sign in with Email"
+                sub="We'll email you a 6-digit one-time code. No password required."
+              />
 
-          {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+              {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
 
-          <TextField
-            label="Email address"
-            value={email}
-            onChange={(v) => {
-              setEmail(v);
-              carryEmail(v);
-            }}
-            onBlur={() => fields.touch("email")}
-            error={fields.errorFor("email", emailProblem)}
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            enterKeyHint="go"
-            placeholder="name@example.com"
-          />
+              <TextField
+                label="Email address"
+                value={email}
+                onChange={(v) => {
+                  setEmail(v);
+                  carryEmail(v);
+                }}
+                onBlur={() => fields.touch("email")}
+                error={fields.errorFor("email", emailProblem)}
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                enterKeyHint="go"
+                placeholder="name@example.com"
+              />
 
-          <Btn
-            type="submit"
-            className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
-            loading={busy}
-          >
-            Send 6-Digit Code
-          </Btn>
-        </form>
+              <Btn
+                type="submit"
+                className="mt-2 w-full h-12 text-sm font-semibold shadow-xs"
+                loading={busy}
+              >
+                Send 6-Digit Code
+              </Btn>
+            </form>
 
-        <TrustNote>Your email is never shown on your public profile.</TrustNote>
+            <TrustNote>Your email is never shown on your public profile.</TrustNote>
+          </div>
+
+          <p className="mt-5 flex justify-center text-sm">
+            <AuthLink
+              to="/auth/phone"
+              icon={<Smartphone size={iconSize.sm} />}
+              className="font-semibold text-foreground"
+            >
+              Sign in with Mobile Number instead
+            </AuthLink>
+          </p>
+        </div>
+
+        <div className="shrink-0 pt-2 text-center">
+          <LegalNote className="mt-0" />
+          <MadeByWugweb />
+        </div>
       </div>
-
-      <p className="mt-6 flex justify-center text-sm">
-        <AuthLink
-          to="/auth/phone"
-          icon={<Smartphone size={iconSize.sm} />}
-          className="font-semibold text-foreground"
-        >
-          Sign in with Mobile Number instead
-        </AuthLink>
-      </p>
-
-      <LegalNote />
-      <MadeByWugweb />
     </AuthScreen>
   );
 }
