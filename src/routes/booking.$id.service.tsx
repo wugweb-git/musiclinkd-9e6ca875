@@ -4,7 +4,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Btn, Sheet, TopBar } from "@/components/ml/ui";
-import { ResourceCard, StepDots, StickyBar } from "@/components/ml/booking";
+import { StepDots, StickyBar } from "@/components/ml/booking";
+import { Check } from "lucide-react";
+import { Price } from "@/components/ml/kit";
+import { rupeeParts } from "@/lib/price";
+import { iconSize } from "@/lib/tokens";
 import { useBookingDraft } from "@/components/ml/booking-context";
 import { requestBooking } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -45,6 +49,10 @@ function SelectService() {
 
   // A studio with no availability calendar is asked directly: the date you want, and what for.
   const noCalendar = b.hasCalendar === false;
+  // Without services of its own, a studio is booked as a general session.
+  const serviceChoices = b.services?.length
+    ? b.services
+    : [{ id: "session", name: "Studio session", price_paise: null, price_unit: null }];
 
   const request = useMutation({
     mutationFn: () =>
@@ -57,6 +65,7 @@ function SelectService() {
           ...(Number(hours) ? { hours: Number(hours) } : {}),
           ...(Number(people) ? { people: Number(people) } : {}),
           ...(notes.trim() ? { notes: notes.trim() } : {}),
+          ...(draft.purpose ? { purpose: draft.purpose } : {}),
         },
       }),
     onSuccess: ({ id }) => {
@@ -68,30 +77,53 @@ function SelectService() {
 
   return (
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
-      <TopBar title="Select a space" subtitle={b.name} back={`/booking/${b.id}`} />
+      <TopBar title="What do you want to book?" subtitle={b.name} back={`/booking/${b.id}`} />
       <main className="px-5 pt-4">
         <StepDots step={1} total={5} />
         <p className="mt-3 text-sm text-muted-foreground">
-          Each room has its own availability, rates and duration options.
+          Pick a service. Next you choose a date and time.
         </p>
-        <div className="mt-4 space-y-3">
-          {b.resources.map((r) => (
-            <ResourceCard
-              key={r.id}
-              r={r}
-              selected={draft.resourceId === r.id}
-              onSelect={() => set({ resourceId: r.id, date: undefined, start: undefined })}
-            />
-          ))}
-        </div>
+        {/* The studio's services; its rooms stay behind the scenes and set the calendar. */}
+        <ul className="mt-4 space-y-2" role="listbox" aria-label="Services">
+          {serviceChoices.map((sv) => {
+            const on = draft.purpose === sv.name;
+            return (
+              <li key={sv.id} role="option" aria-selected={on}>
+                <button
+                  type="button"
+                  onClick={() => set({ purpose: sv.name })}
+                  className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${on ? "border-foreground" : "border-transparent"}`}
+                >
+                  <span className="min-w-0 flex-1 text-sm font-semibold">{sv.name}</span>
+                  {sv.price_paise ? (
+                    <Price
+                      from
+                      inline
+                      price={rupeeParts(sv.price_paise / 100, sv.price_unit)}
+                      align="end"
+                      className="shrink-0"
+                      amountClassName="text-sm font-semibold"
+                    />
+                  ) : null}
+                  {on ? <Check size={iconSize.md} className="shrink-0" aria-hidden /> : null}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </main>
 
       <StickyBar
         // A studio with a calendar is checked date by date; one without is asked directly.
         hint={
-          noCalendar ? "The studio replies with what it can do" : "Availability is checked per room"
+          !draft.purpose
+            ? "Pick a service to continue"
+            : noCalendar
+              ? "The studio replies with what it can do"
+              : "Next: date and time"
         }
-        primaryLabel={noCalendar ? "Request a session" : "Check dates"}
+        primaryLabel={noCalendar ? "Request a session" : "Choose Date & Time"}
+        disabled={!draft.purpose}
         onPrimary={() =>
           noCalendar
             ? signedIn

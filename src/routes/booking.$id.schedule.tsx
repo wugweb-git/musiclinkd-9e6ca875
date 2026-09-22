@@ -118,7 +118,7 @@ function Schedule() {
     <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-36">
       <TopBar
         title="Availability"
-        subtitle={`${r.name} · ${b.name}`}
+        subtitle={[draft.purpose, b.name].filter(Boolean).join(" · ")}
         back={`/booking/${b.id}/service`}
         right={
           showDemoControls ? (

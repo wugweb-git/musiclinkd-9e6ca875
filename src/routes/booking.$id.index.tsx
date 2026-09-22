@@ -48,7 +48,13 @@ function BookingEntry() {
   const message = useMessagePerson();
   // The facility or equipment item whose photos are open.
   const [viewing, setViewing] = useState<{ title: string; photos: string[] } | null>(null);
-  const from = Math.min(...b.resources.flatMap((r) => r.tiers.map((t) => t.price)));
+  // "From" is the lowest service price; a studio without priced services falls back to its rates.
+  const servicePrices = (b.services ?? [])
+    .map((sv) => (sv.price_paise ? sv.price_paise / 100 : 0))
+    .filter((p) => p > 0);
+  const from = servicePrices.length
+    ? Math.min(...servicePrices)
+    : Math.min(...b.resources.flatMap((r) => r.tiers.map((t) => t.price)));
   const equipment = [
     ...new Set([...(b.equipment ?? []), ...b.resources.flatMap((r) => r.equipment)]),
   ];
@@ -87,63 +93,11 @@ function BookingEntry() {
           </IconBtn>
         </div>
 
-        <section className="mt-6">
-          <h3 className="text-2">Rooms &amp; services</h3>
-          <div className="mt-3 space-y-2">
-            {b.resources.map((r) => (
-              <div key={r.id} className="flex items-center gap-3 rounded-lg bg-subtle p-3">
-                {r.photo ? (
-                  <img
-                    src={r.photo}
-                    alt=""
-                    className="h-14 w-14 shrink-0 rounded-sm object-cover"
-                    loading="lazy"
-                  />
-                ) : null}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{r.name}</p>
-                  <p className="truncate text-1 text-muted-foreground">
-                    {[r.capacity ? `Up to ${r.capacity}` : "", r.availabilityNote]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                  {r.description ? (
-                    <p className="mt-0.5 line-clamp-2 text-1 text-muted-foreground">
-                      {r.description}
-                    </p>
-                  ) : null}
-                  {/* Package rates beside the hourly one ("Half day", "Full day"). */}
-                  {r.tiers.some((t) => t.unit !== "hour") ? (
-                    <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1">
-                      {r.tiers
-                        .filter((t) => t.unit !== "hour")
-                        .map((t) => (
-                          <Price
-                            key={t.label}
-                            price={rupeeParts(t.price, t.label)}
-                            amountClassName="text-1 font-semibold"
-                            unitClassName="text-1"
-                          />
-                        ))}
-                    </div>
-                  ) : null}
-                </div>
-                <Price
-                  price={lowestRate(r.tiers)}
-                  align="end"
-                  className="shrink-0"
-                  amountClassName="text-sm font-semibold"
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-
         {b.services?.length ? (
           <section className="mt-6">
             <h3 className="text-2">Services</h3>
             <p className="mt-1 text-1 text-muted-foreground">
-              Pick one when you book; the studio prepares the room for it.
+              Pick one when you book, then a date and time.
             </p>
             <ul className="mt-3 divide-y divide-border rounded-lg bg-subtle">
               {b.services.map((sv) => (
@@ -167,7 +121,7 @@ function BookingEntry() {
 
         {b.facilities.length ? (
           <section className="mt-6">
-            <h3 className="text-2">Facilities</h3>
+            <h3 className="text-2">Amenities</h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {b.facilities.map((f) => (
                 <ProofPill
@@ -184,7 +138,7 @@ function BookingEntry() {
 
         {equipment.length ? (
           <section className="mt-6">
-            <h3 className="text-2">Equipment highlights</h3>
+            <h3 className="text-2">Equipment</h3>
             <div className="mt-3 flex flex-wrap gap-2">
               {equipment.map((e) => (
                 <ProofPill
@@ -294,7 +248,7 @@ function BookingEntry() {
       <StickyBar
         price={`From ${inr(from)}`}
         hint={[b.timezone, b.responseTime].filter(Boolean).join(" · ") || undefined}
-        primaryLabel="Check availability"
+        primaryLabel="Book"
         onPrimary={() => navigate({ to: "/booking/$id/service", params: { id: b.id } })}
       />
     </div>
