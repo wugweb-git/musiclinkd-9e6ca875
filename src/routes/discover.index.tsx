@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
-import { BetaBadge, Price, SoonBadge } from "@/components/ml/kit";
+import { BetaBadge, Price, Row, SoonBadge } from "@/components/ml/kit";
 import { stageOf } from "@/lib/release";
 import { ViewerAvatar } from "@/components/ml/viewer";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
@@ -25,7 +25,13 @@ import { SectionActionLink } from "@/components/ml/links";
 import { useEffect, useState } from "react";
 import { quickCategories } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
-import { listTrendingWork, type TrendingItem } from "@/lib/trending.functions";
+import {
+  listTrendingPages,
+  listTrendingWork,
+  type TrendingItem,
+  type TrendingPage,
+} from "@/lib/trending.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { PersonCard, PersonRow, StudioCard } from "@/components/ml/cards";
 import { useTaxonomy } from "@/lib/taxonomy";
@@ -58,18 +64,20 @@ export const Route = createFileRoute("/discover/")({
   }),
   // The people and studios here are the stored ones; an unreachable database leaves them empty.
   loader: async () => {
-    const [rows, labels, trendingWork, people] = await Promise.all([
+    const [rows, labels, trendingWork, people, trendingPages] = await Promise.all([
       listStudios().catch(() => []),
       getTaxonomyLabels().catch((): TaxonomyLabels => ({})),
       listTrendingWork().catch((): TrendingItem[] => []),
       searchPeople({ data: { limit: 12 } })
         .then((r) => r.people)
         .catch((): DirectoryPerson[] => []),
+      listTrendingPages().catch((): TrendingPage[] => []),
     ]);
     return {
       dbStudios: rows.map((row) => discoverStudioFromRow(row, labels)),
       trendingWork,
       people,
+      trendingPages,
     };
   },
   component: Discover,
@@ -93,8 +101,19 @@ function categoryIcon(label: string) {
 }
 
 function Discover() {
-  const { dbStudios, trendingWork, people } = Route.useLoaderData();
+  const { dbStudios, trendingWork, people, trendingPages } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
+  const { signedIn } = useAuth();
+  // Trending this week: people and studios by the last 7 days' views, follows, saves, enquiries,
+  // bookings and reviews (listTrendingPages). A studio shows with the same card as Studios below.
+  const studioById = new Map(dbStudios.map((s) => [s.id, s]));
+  type TrendingCard =
+    { key: string; person: DirectoryPerson } | { key: string; studio: (typeof dbStudios)[number] };
+  const trendingNow = trendingPages.flatMap((t): TrendingCard[] => {
+    if (t.kind === "person") return [{ key: `p-${t.person.id}`, person: t.person }];
+    const studio = studioById.get(t.studioId);
+    return studio ? [{ key: `s-${studio.id}`, studio }] : [];
+  });
   const { options } = useTaxonomy();
   // Recommendations used to be three screens of invented reasons (owner, 18 Sep). They are a
   // section here instead: signed in, the people ranked from the viewer's own roles, genres,
@@ -174,6 +193,16 @@ function Discover() {
               <PersonCard key={p.id} person={p} roleLabels={options?.person_types} />
             ))}
           </div>
+          {signedIn ? (
+            <div className="px-5 pt-3">
+              <Row
+                icon={<Sparkles size={iconSize.md} aria-hidden />}
+                title="Swipe through matches"
+                subtitle="Save or skip people recommended for you"
+                to="/recommendations/swipe"
+              />
+            </div>
+          ) : null}
         </section>
       ) : null}
 
@@ -184,6 +213,21 @@ function Discover() {
             {trendingWork.map((item) => (
               <TrendingWorkRow key={item.id} item={item} />
             ))}
+          </div>
+        </section>
+      ) : null}
+
+      {trendingNow.length ? (
+        <section className="pb-6">
+          <SectionHeader title="Trending this week" />
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+            {trendingNow.map((t) =>
+              "person" in t ? (
+                <PersonCard key={t.key} person={t.person} roleLabels={options?.person_types} />
+              ) : (
+                <StudioCard key={t.key} studio={t.studio} />
+              ),
+            )}
           </div>
         </section>
       ) : null}
