@@ -1,0 +1,12 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-22 via Lovable query_database, before migration 20260922200000_service_links_and_policies.sql.
+--
+-- profile_services: all 45 active services of businesses with a studio have amenity_slugs = '{}' and
+-- equipment_ids = '{}' (the columns were added empty by 20260922190000_service_amenities_equipment.sql).
+--
+-- profile_business.policies = '{}' for exactly three businesses:
+--   2c29531c-68cf-4b7d-84e1-08ae729a6c69 octave.sound.labs (studio)
+--   2baecd1b-d9b3-5f47-9578-5c724efb3c28 wugweb (studio)
+--   fb84584c-7f03-435c-b7f0-526bded3e3b6 cd.page (venue)
+--
+-- To undo: see the Rollback note at the top of the migration.
