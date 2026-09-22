@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Building2, Plus } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Loading } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
@@ -143,6 +143,19 @@ function BusinessHome() {
             </BtnLink>
           </EmptyState>
         )}
+
+        {/* Teams are off (21 Sep), so staff can't be added; the studio is reached by message. */}
+        <Card className="space-y-1">
+          <p className="flex items-center gap-2 text-1 font-semibold">
+            <Building2 size={iconSize.sm} aria-hidden /> Work at a studio you do not own?
+          </p>
+          <p className="text-1 text-muted-foreground">
+            Studios can't add staff yet. Find the studio and message the owner from its page.
+          </p>
+          <BtnLink to="/studio" variant="outline" className="mt-2 w-full">
+            Find the Studio
+          </BtnLink>
+        </Card>
       </div>
     </Screen>
   );
