@@ -60,7 +60,7 @@ export function BottomCta({
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <CtaAction
           action={primary}
-          className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-brand px-7 text-sm font-semibold text-background transition-transform duration-200 ease-standard active:scale-97"
+          className="state-layer inline-flex min-h-control items-center justify-center rounded-full bg-brand-button px-7 text-sm font-semibold text-background transition-transform duration-200 ease-standard active:scale-97"
         />
         {secondary ? (
           <CtaAction

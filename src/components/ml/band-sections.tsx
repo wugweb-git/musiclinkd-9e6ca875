@@ -47,7 +47,7 @@ export function BandLiveVideoRail({ videos }: { videos: BandLiveVideoView[] }) {
   return (
     <div className="rail -mx-5 flex gap-3 overflow-x-auto px-5 no-scrollbar">
       {videos.map((v) => (
-        <article key={v.id} className="w-[260px] shrink-0 rounded-lg bg-subtle p-3">
+        <article key={v.id} className="w-rail-lg shrink-0 rounded-lg bg-subtle p-3">
           <MediaEmbed url={v.url} title={v.title} />
           <h3 className="mt-2 truncate text-1">{v.title}</h3>
         </article>

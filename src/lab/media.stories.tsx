@@ -7,7 +7,12 @@ import { toneUrl } from "./tone";
 
 /* Lab: audio. Ours (AudioTrackCard) next to @waves-cn's waveform player. */
 
-const meta = { title: "Lab/Audio: ours vs waves-cn" } satisfies Meta;
+// Vendor components, rendered as the vendor wrote them — not shipped, not gated on our a11y bar
+// (audit, 23 Sep; see src/registry/kept.stories.tsx for the same pattern).
+const meta = {
+  title: "Lab/Audio: ours vs waves-cn",
+  parameters: { a11y: { test: "off" } },
+} satisfies Meta;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

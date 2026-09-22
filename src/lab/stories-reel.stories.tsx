@@ -12,7 +12,12 @@ import { talents } from "@/data/discover";
 
 /* Lab: @kibo-ui stories and reel, using the app's own demo talent photos. We have no equivalent. */
 
-const meta = { title: "Lab/Stories and reel: kibo-ui" } satisfies Meta;
+// Vendor components, rendered as the vendor wrote them — not shipped, not gated on our a11y bar
+// (audit, 23 Sep; see src/registry/kept.stories.tsx for the same pattern).
+const meta = {
+  title: "Lab/Stories and reel: kibo-ui",
+  parameters: { a11y: { test: "off" } },
+} satisfies Meta;
 export default meta;
 type S = StoryObj<typeof meta>;
 

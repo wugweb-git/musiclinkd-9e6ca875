@@ -458,7 +458,11 @@ function productTypeOptions(taxonomy: GearTaxonomy) {
     label: t.label,
     ...(t.kind === "instrument"
       ? { icon: instrumentIcon(t.slug) }
-      : { iconNode: <MarketCategoryIcon slug={t.slug} size={iconSize.md} /> }),
+      : {
+          iconNode: (
+            <MarketCategoryIcon slug={t.slug} size={iconSize.md} className="text-primary-foreground" />
+          ),
+        }),
   }));
 }
 

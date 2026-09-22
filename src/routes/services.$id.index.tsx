@@ -170,7 +170,7 @@ function ServiceDetail() {
                           className="h-12 w-12 shrink-0 rounded-sm object-cover"
                         />
                       ) : (
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip">
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip text-primary-foreground">
                           <FolderKanban size={18} strokeWidth={1.75} aria-hidden />
                         </span>
                       )}
@@ -220,7 +220,7 @@ function ServiceDetail() {
                             className="h-12 w-12 shrink-0 rounded-sm object-cover"
                           />
                         ) : (
-                          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip">
+                          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sm bg-icon-chip text-primary-foreground">
                             <Headphones size={18} strokeWidth={1.75} aria-hidden />
                           </span>
                         )}

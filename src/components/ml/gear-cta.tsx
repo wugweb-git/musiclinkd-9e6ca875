@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useId, useRef } from "react";
 import { LayoutGrid, Plus } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 /*
  * Six strings under tension, low E to high e: thick to thin, spread on the left and pulled toward
@@ -32,9 +33,10 @@ export function GearCta() {
   const paths = useRef<(SVGPathElement | null)[]>([]);
   const frame = useRef(0);
   const smoke = `smoke-${useId().replace(/:/g, "")}`;
+  const reducedMotion = usePrefersReducedMotion();
 
   function strum() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reducedMotion) return;
     cancelAnimationFrame(frame.current);
     const start = performance.now();
     const tick = (now: number) => {
@@ -142,7 +144,7 @@ export function GearCta() {
         <div className="mt-3 flex gap-2">
           <Link
             to="/marketplace/sell"
-            className="group/cta state-layer inline-flex min-h-touch flex-1 items-center justify-center gap-2 rounded-full bg-brand text-sm font-semibold text-white outline-none transition-[scale,box-shadow] duration-300 ease-spring hover:shadow-[0_6px_18px_-6px_rgb(234_76_137/0.7)] focus-visible:ring-2 focus-visible:ring-white/80 active:scale-95"
+            className="group/cta state-layer inline-flex min-h-touch flex-1 items-center justify-center gap-2 rounded-full bg-brand-button text-sm font-semibold text-white outline-none transition-[scale,box-shadow] duration-300 ease-spring hover:shadow-[0_6px_18px_-6px_rgb(234_76_137/0.7)] focus-visible:ring-2 focus-visible:ring-white/80 active:scale-95"
           >
             <Plus
               size={iconSize.sm}

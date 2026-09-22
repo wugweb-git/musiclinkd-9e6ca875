@@ -33,7 +33,7 @@ function RatingLine({ rating, reviewCount }: { rating: number | null; reviewCoun
   if (rating == null) return null;
   return (
     <span
-      className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-warn"
+      className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-warn-strong"
       aria-label={`${rating.toFixed(1)} out of 5 from ${reviewCount} reviews`}
     >
       <Star size={iconSize.xs} fill="currentColor" aria-hidden />
@@ -149,7 +149,7 @@ export function PersonCard({
       aria-disabled={disabled || undefined}
       onClick={disabled ? (e) => e.preventDefault() : undefined}
       className={cn(
-        "block w-[168px] shrink-0 rounded-lg border border-border/80 bg-card p-4 shadow-xs",
+        "block w-rail-sm shrink-0 rounded-lg border border-border/80 bg-card p-4 shadow-xs",
         disabled
           ? "cursor-default"
           : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
@@ -193,7 +193,7 @@ export function PersonCard({
 
 export function PersonCardSkeleton() {
   return (
-    <div className="w-[168px] shrink-0 rounded-lg border border-border/60 bg-card p-4">
+    <div className="w-rail-sm shrink-0 rounded-lg border border-border/60 bg-card p-4">
       <div className="h-14 w-14 animate-pulse rounded-full bg-subtle" />
       <div className="mt-3 h-3.5 w-24 animate-pulse rounded bg-subtle" />
       <div className="mt-1.5 h-3 w-full animate-pulse rounded bg-subtle" />
@@ -229,7 +229,7 @@ export function StudioCard({
       aria-disabled={disabled || undefined}
       onClick={disabled || !bookable ? (e) => e.preventDefault() : undefined}
       className={cn(
-        "block w-[200px] shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs",
+        "block w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/80 bg-card shadow-xs",
         disabled
           ? "cursor-default"
           : "state-layer group transition-all duration-150 ease-standard hover:border-muted-foreground/40 hover:shadow-sm active:scale-[0.985]",
@@ -284,7 +284,7 @@ export function StudioCard({
 
 export function StudioCardSkeleton() {
   return (
-    <div className="w-[200px] shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card shadow-xs">
+    <div className="w-rail-md shrink-0 overflow-hidden rounded-lg border border-border/60 bg-card shadow-xs">
       <div className="h-28 w-full animate-pulse bg-subtle" />
       <div className="space-y-1.5 p-3">
         <div className="h-3.5 w-28 animate-pulse rounded bg-subtle" />

@@ -313,7 +313,7 @@ function RequestFlow() {
               ✓
             </div>
             <h2 className="text-3">Request sent</h2>
-            <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">
+            <p className="mx-auto mt-2 max-w-prose-sm text-sm text-muted-foreground">
               {p?.name ?? "The provider"} will confirm availability. You'll get a notification when
               they accept, decline or counter.
             </p>

@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, Package, Truck } from "lucide-react";
 import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
 import { Followers, Rating, useFileReport } from "./market";
-import { Price } from "./kit";
+import { Price, StatusPill, type Tone } from "./kit";
 import { rupeeParts } from "@/lib/price";
 import { inr, priceFor, type Equipment, type RentalItem, type RentalStatus } from "@/data/rentals";
 import type { RealProvider } from "@/lib/rentals.functions";
@@ -17,6 +17,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 
+const rentalAvailabilityTone: Record<"ok" | "warn" | "off", Tone> = {
+  ok: "good",
+  warn: "warn",
+  off: "neutral",
+};
+
+/** Thin `StatusPill` wrapper: rental listing cards call this by name, `StatusPill` renders it. */
 export function RentalAvailabilityBadge({
   text,
   tone = "ok",
@@ -24,18 +31,7 @@ export function RentalAvailabilityBadge({
   text: string;
   tone?: "ok" | "warn" | "off";
 }) {
-  const map = {
-    ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
-    warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
-    off: { pill: "bg-background text-muted-foreground", dot: "bg-muted-foreground" },
-  } as const;
-  const c = map[tone];
-  return (
-    <span className={`inline-flex max-w-full items-center gap-1 rounded-full pill ${c.pill}`}>
-      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${c.dot}`} />
-      <span className="truncate">{text}</span>
-    </span>
-  );
+  return <StatusPill label={text} tone={rentalAvailabilityTone[tone]} className="max-w-full truncate" />;
 }
 
 export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md" | "lg" }) {
@@ -64,17 +60,25 @@ export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md
   );
 }
 
+const rentalStatusTone: Record<RentalStatus, Tone> = {
+  Requested: "warn",
+  "Offer sent": "category",
+  Confirmed: "neutral",
+  Active: "good",
+  Completed: "neutral",
+  Cancelled: "neutral",
+  Declined: "neutral",
+};
+
 export function RentalStatusPill({ status }: { status: RentalStatus }) {
-  const tone: Record<RentalStatus, string> = {
-    Requested: "bg-warn-container text-warn-strong",
-    "Offer sent": "bg-status-category-bg text-status-category-text",
-    Confirmed: "bg-background text-foreground",
-    Active: "bg-success-container text-success-strong",
-    Completed: "bg-background text-muted-foreground",
-    Cancelled: "bg-background text-muted-foreground",
-    Declined: "bg-background text-muted-foreground",
-  };
-  return <span className={`shrink-0 rounded-full pill ${tone[status]}`}>{status}</span>;
+  return (
+    <StatusPill
+      label={status}
+      tone={rentalStatusTone[status]}
+      icon={<></>}
+      className="shrink-0"
+    />
+  );
 }
 
 /**
@@ -289,7 +293,7 @@ export function PriceBreakdown({
       </div>
       <div className="mt-3 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-3">
         <div className="min-w-0">
-          <p className="text-1 font-bold text-warn">Refundable security deposit</p>
+          <p className="text-1 font-bold text-warn-strong">Refundable security deposit</p>
           <p className="text-1 text-muted-foreground">
             Held by the provider, returned after the equipment is checked.
           </p>
@@ -357,7 +361,10 @@ export function FulfilmentPicker({
             className="flex w-full items-center gap-3 px-4 py-4 text-left"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
-              <Icon size={16} className={active ? "text-primary" : "text-muted-foreground"} />
+              <Icon
+                size={16}
+                className={active ? "text-primary-foreground" : "text-primary-foreground/60"}
+              />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-1 font-semibold">{o.id}</span>

@@ -22,7 +22,11 @@ import { FloatingDock } from "@/components/ui/floating-dock";
 
 const meta = {
   title: "Registry/Kept",
-  parameters: { layout: "padded" },
+  // Vendor components, rendered as the vendor wrote them (see the file comment above) — not
+  // wired into a route, not maintained here, so not gated on our a11y bar. Exempt from the
+  // blocking a11y gate rather than leaving it permanently unable to go blocking over code we
+  // don't ship (audit, 23 Sep).
+  parameters: { layout: "padded", a11y: { test: "off" } },
 } satisfies Meta;
 export default meta;
 type Story = StoryObj<typeof meta>;

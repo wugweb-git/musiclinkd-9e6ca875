@@ -410,7 +410,7 @@ function Mine() {
               }}
               className="state-layer flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-left"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip text-primary-foreground">
                 <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden />
               </span>
               <span className="min-w-0 flex-1 text-sm font-semibold">{o.label}</span>
@@ -474,6 +474,7 @@ function ManagedListing({
             <MarketCategoryIcon
               slug={gearCategoryOf(l.item_category, taxonomy) ?? "other"}
               size={iconSize.lg}
+              className="text-primary-foreground"
             />
           </span>
         )}

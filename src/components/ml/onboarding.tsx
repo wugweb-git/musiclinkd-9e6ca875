@@ -902,7 +902,7 @@ export function InlineField({
           <p
             key="ok"
             id={messageId}
-            className="flex animate-message items-start gap-1.5 text-1 text-success"
+            className="flex animate-message items-start gap-1.5 text-1 text-success-strong"
           >
             <CircleCheck size={iconSize.sm} className="mt-px shrink-0" aria-hidden />
             {ok}

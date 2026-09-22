@@ -830,11 +830,11 @@ function EditProfile() {
             Couldn't save. Your edits are still here — try again.
           </p>
         ) : status === "offline" ? (
-          <p role="status" className="text-1 text-warn">
+          <p role="status" className="text-1 text-warn-strong">
             You're offline. Reconnect to save these changes.
           </p>
         ) : status === "saved" ? (
-          <p role="status" className="text-1 text-success">
+          <p role="status" className="text-1 text-success-strong">
             Saved to your account.
           </p>
         ) : null}
@@ -916,7 +916,7 @@ function TaxonomyChips({
       {state === "loading" ? (
         <p className="mt-2 text-1 text-muted-foreground">Loading options…</p>
       ) : state === "error" ? (
-        <p className="mt-2 text-1 text-warn">
+        <p className="mt-2 text-1 text-warn-strong">
           Options could not be loaded. Reopen this screen to try again.
         </p>
       ) : (

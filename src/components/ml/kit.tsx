@@ -4,12 +4,16 @@
  * not a second design language.
  */
 import { Link, type LinkProps } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ChevronRight, Star, WifiOff, type LucideIcon } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
-export type Tone = "neutral" | "good" | "warn" | "bad" | "brand";
+export type Tone = "neutral" | "good" | "warn" | "bad" | "brand" | "category";
 
 const toneStyle: Record<Tone, { pill: string; dot: string }> = {
   neutral: { pill: "bg-subtle text-muted-foreground", dot: "bg-muted-foreground" },
@@ -17,6 +21,9 @@ const toneStyle: Record<Tone, { pill: string; dot: string }> = {
   warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
   bad: { pill: "bg-danger-container text-destructive", dot: "bg-destructive" },
   brand: { pill: "bg-ink text-primary-foreground", dot: "bg-primary-foreground" },
+  // The purple "Offer sent"/category tag (rental.tsx, profile.tsx) — one more tone rather than a
+  // fourth hand-typed color map.
+  category: { pill: "bg-status-category-bg text-status-category-text", dot: "bg-purple" },
 };
 
 /** One status system across every flow. */
@@ -26,6 +33,7 @@ export function StatusPill({
   icon,
   onMedia = false,
   className = "",
+  title,
 }: {
   label: string;
   tone?: Tone;
@@ -33,11 +41,13 @@ export function StatusPill({
   /** Over a photo or video: the blurred light material, the tone kept in the dot. */
   onMedia?: boolean;
   className?: string;
+  title?: string;
 }) {
   const c = toneStyle[tone];
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-full pill ${onMedia ? "pill-glass" : c.pill} ${className}`}
+      title={title}
     >
       {icon ?? <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} />}
       {label}
@@ -226,15 +236,41 @@ export function SegmentedField<T extends string>({
  * it. Every screen that switches views uses this, so the pattern reads the same everywhere. Pills
  * stay for filters that narrow a list; `SegmentedField` stays for settings answers.
  */
+/**
+ * A tab's icon, only rendered when `icons` gives one for it. Animates in/out on selection change
+ * (SPEC-issue17's "icon animates on state change" rule) with GSAP, skipped under
+ * `prefers-reduced-motion` — the swap is instant then, same as every other reduced-motion path in
+ * this app.
+ */
+function SegmentedIcon({ Icon, active }: { Icon: LucideIcon; active: boolean }) {
+  const ref = useRef<SVGSVGElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
+  useGSAP(
+    () => {
+      if (!ref.current || reducedMotion) return;
+      gsap.fromTo(
+        ref.current,
+        { scale: 0.7, opacity: 0.4 },
+        { scale: 1, opacity: 1, duration: 0.2, ease: "back.out(2)" },
+      );
+    },
+    { dependencies: [active, reducedMotion], scope: ref },
+  );
+  return <Icon ref={ref} size={iconSize.xs} aria-hidden className={active ? "text-brand" : ""} />;
+}
+
 export function Segmented<T extends string>({
   value,
   options,
   onChange,
+  icons,
   className = "-mx-5 border-b border-border px-5",
 }: {
   value: T;
   options: readonly T[];
   onChange: (v: T) => void;
+  /** Per-option icon, animated in on selection (SPEC-issue17). Options without an entry render no icon. */
+  icons?: Partial<Record<T, LucideIcon>>;
   /** Edge to edge with its underline by default; pass "" inside a row that draws its own line. */
   className?: string;
 }) {
@@ -242,6 +278,7 @@ export function Segmented<T extends string>({
     <div className={`rail no-scrollbar flex overflow-x-auto ${className}`} role="tablist">
       {options.map((o) => {
         const active = value === o;
+        const Icon = icons?.[o];
         return (
           <button
             key={o}
@@ -249,10 +286,11 @@ export function Segmented<T extends string>({
             role="tab"
             aria-selected={active}
             onClick={() => onChange(o)}
-            className={`state-layer relative shrink-0 px-3 py-3 text-sm font-semibold transition-colors duration-200 ease-standard first:pl-0 ${
+            className={`state-layer relative flex shrink-0 items-center gap-1.5 px-3 py-3 text-sm font-semibold transition-colors duration-200 ease-standard first:pl-0 ${
               active ? "text-foreground" : "text-muted-foreground"
             }`}
           >
+            {Icon ? <SegmentedIcon Icon={Icon} active={active} /> : null}
             {o}
             {active ? (
               <span className="absolute inset-x-3 bottom-0 h-0.5 animate-underline rounded-full bg-brand [button:first-child>&]:left-0" />
@@ -367,7 +405,7 @@ export function EmptyState({
           </span>
         ) : null}
         <h3 className="text-2">{title}</h3>
-        <p className="mt-1 mb-5 max-w-[260px] text-1 text-muted-foreground">{body}</p>
+        <p className="mt-1 mb-5 max-w-rail-lg text-1 text-muted-foreground">{body}</p>
         {extra}
       </div>
     );
@@ -382,7 +420,7 @@ export function EmptyState({
           </div>
         ) : null}
         <h3 className="text-2">{title}</h3>
-        <p className="mx-auto mt-1 max-w-[260px] text-1 text-muted-foreground">{body}</p>
+        <p className="mx-auto mt-1 max-w-rail-lg text-1 text-muted-foreground">{body}</p>
         {extra ? <div className="mt-5">{extra}</div> : null}
       </div>
     );
@@ -396,7 +434,7 @@ export function EmptyState({
         </span>
       ) : null}
       <h3 className="text-2 leading-tight">{title}</h3>
-      <p className="mx-auto mt-2 max-w-[280px] text-1 text-muted-foreground">{body}</p>
+      <p className="mx-auto mt-2 max-w-prose-sm text-1 text-muted-foreground">{body}</p>
       {extra ? (
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2">{extra}</div>
       ) : null}
@@ -417,7 +455,7 @@ export function OfflineBanner({
 }) {
   if (variant === "warn") {
     return (
-      <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn">
+      <div className="mb-3 flex items-center gap-3 rounded-lg bg-warn-container px-4 py-3 text-warn-strong">
         <WifiOff size={iconSize.sm} className="shrink-0" />
         <p className="flex-1 text-1 font-semibold">{body}</p>
         {onRetry ? (
@@ -470,7 +508,7 @@ export function StateCard({
     return (
       <section className="rounded-lg bg-subtle p-6 text-center">
         <h2 className="text-2 leading-tight">{title}</h2>
-        <p className="mx-auto mt-2 max-w-[280px] text-sm text-muted-foreground">{body}</p>
+        <p className="mx-auto mt-2 max-w-prose-sm text-sm text-muted-foreground">{body}</p>
         {extra ? <div className="mt-5 flex flex-col gap-2">{extra}</div> : null}
       </section>
     );
@@ -482,7 +520,7 @@ export function StateCard({
       role={tone === "error" ? "alert" : undefined}
     >
       <h3 className="text-2">{title}</h3>
-      <p className="mx-auto mt-1.5 max-w-[280px] text-sm text-muted-foreground">{body}</p>
+      <p className="mx-auto mt-1.5 max-w-prose-sm text-sm text-muted-foreground">{body}</p>
       {extra ? <div className="mt-4 flex justify-center">{extra}</div> : null}
     </div>
   );
@@ -545,7 +583,7 @@ export function BusinessOnlyGate({
 
 export function Stars({ value, size = 14 }: { value: number; size?: number }) {
   return (
-    <span className="inline-flex items-center gap-0.5" aria-label={`${value} out of 5`}>
+    <span className="inline-flex items-center gap-0.5" role="img" aria-label={`${value} out of 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
@@ -593,6 +631,12 @@ export function ReasonChip({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Centered modal, built on Radix's `Dialog` primitive (`@/components/ui/dialog.tsx`'s
+ * `DialogPrimitive`, not that file's own preset styling — this keeps the existing visual output
+ * exactly, the primitive is only here for focus-trap, escape-to-close and scroll-lock, which the
+ * hand-rolled version this replaced never had (unlike `Sheet` in `ml/ui.tsx`, which did).
+ */
 export function Dialog({
   open,
   title,
@@ -606,23 +650,30 @@ export function Dialog({
   onClose: () => void;
   children?: ReactNode;
 }) {
-  if (!open) return null;
   return (
-    <div
-      className="fixed inset-0 z-sheet mx-auto flex w-full max-w-app items-center justify-center px-6"
-      role="dialog"
-      aria-modal
-    >
-      <button
-        aria-label="Close"
-        onClick={onClose}
-        className="absolute inset-0 bg-ink/50 backdrop-blur-[2px]"
-      />
-      <div className="relative w-full rounded-3xl bg-subtle p-5">
-        <h2 className="text-2 leading-tight">{title}</h2>
-        {body ? <p className="mt-2 text-1 text-muted-foreground">{body}</p> : null}
-        {children ? <div className="mt-4 flex flex-col gap-2">{children}</div> : null}
-      </div>
-    </div>
+    <DialogPrimitive.Root open={open} onOpenChange={(next: boolean) => !next && onClose()}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay
+          className="fixed inset-0 z-sheet bg-ink/50 backdrop-blur-[2px] data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          onClick={onClose}
+        />
+        <div className="pointer-events-none fixed inset-0 z-sheet mx-auto flex w-full max-w-app items-center justify-center px-6">
+          <DialogPrimitive.Content
+            onEscapeKeyDown={onClose}
+            className="pointer-events-auto relative w-full rounded-3xl bg-subtle p-5 outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+          >
+            <DialogPrimitive.Title className="text-2 leading-tight">{title}</DialogPrimitive.Title>
+            {body ? (
+              <DialogPrimitive.Description className="mt-2 text-1 text-muted-foreground">
+                {body}
+              </DialogPrimitive.Description>
+            ) : (
+              <DialogPrimitive.Description className="sr-only">{title}</DialogPrimitive.Description>
+            )}
+            {children ? <div className="mt-4 flex flex-col gap-2">{children}</div> : null}
+          </DialogPrimitive.Content>
+        </div>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }

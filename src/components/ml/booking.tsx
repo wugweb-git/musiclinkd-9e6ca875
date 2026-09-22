@@ -20,6 +20,8 @@ import {
   EmptyState as BaseEmptyState,
   OfflineBanner as BaseOfflineBanner,
   Price,
+  StatusPill,
+  type Tone,
 } from "@/components/ml/kit";
 import {
   availabilityFor,
@@ -49,22 +51,16 @@ import { earliestBookingDate } from "@/lib/studio-slots";
 /* Status                                                            */
 /* ------------------------------------------------------------------ */
 
-const toneStyle: Record<string, { pill: string; dot: string }> = {
-  ok: { pill: "bg-success-container text-success-strong", dot: "bg-success" },
-  warn: { pill: "bg-warn-container text-warn-strong", dot: "bg-warn" },
-  info: { pill: "bg-background text-foreground", dot: "bg-foreground" },
-  off: { pill: "bg-background text-muted-foreground", dot: "bg-muted-foreground" },
+const bookingMetaTone: Record<"ok" | "warn" | "off" | "info", Tone> = {
+  ok: "good",
+  warn: "warn",
+  off: "neutral",
+  info: "neutral",
 };
 
 export function BookingStatusPill({ status }: { status: BookingStatus }) {
   const meta = statusMeta[status];
-  const c = toneStyle[meta.tone]!;
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full pill ${c.pill}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${c.dot}`} aria-hidden />
-      {meta.label}
-    </span>
-  );
+  return <StatusPill label={meta.label} tone={bookingMetaTone[meta.tone]} />;
 }
 
 export function BookingTimeline({ status }: { status: BookingStatus }) {

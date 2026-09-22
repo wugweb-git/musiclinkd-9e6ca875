@@ -312,7 +312,7 @@ function Body({ home }: { home: Home }) {
                   key={o.id}
                   to="/opportunities/$id"
                   params={{ id: o.slug }}
-                  className="state-layer flex w-[260px] shrink-0 flex-col rounded-lg bg-subtle p-4"
+                  className="state-layer flex w-rail-lg shrink-0 flex-col rounded-lg bg-subtle p-4"
                 >
                   <span className="line-clamp-2 text-2 font-semibold leading-snug">{o.title}</span>
                   {o.role_required ? (

@@ -103,6 +103,16 @@
   /* The mobile shell width, previously repeated as max-w-app in 55 places. */
   --container-app: 640px;
 
+  /* Horizontal-scroll rail cards (w-rail-*): person/studio cards, live-video cards. Found repeated
+   * as bare w-[168px]/w-[200px]/w-[260px] across cards.tsx and band-sections.tsx (22 Sep audit). */
+  --spacing-rail-sm: 168px;
+  --spacing-rail-md: 200px;
+  --spacing-rail-lg: 260px;
+
+  /* Centered body copy in an empty/error state (max-w-prose-sm): found repeated as bare
+   * max-w-[280px] across kit.tsx's EmptyState/StateCard variants (22 Sep audit). */
+  --spacing-prose-sm: 280px;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -125,6 +135,7 @@
 
   --color-ink: var(--ink);
   --color-brand: var(--brand);
+  --color-brand-button: var(--brand-button);
   --color-purple: var(--purple);
   --color-success: var(--success);
   --color-warn: var(--warn);
@@ -560,7 +571,11 @@
   /* Accent is a neutral hover surface. Purple lives on the category badge only. */
   --accent: #f8f8fb;
   --accent-foreground: var(--ink);
-  --destructive: oklch(0.5771 0.2152 27.33);
+  /* Darkened from oklch(0.5771 ...) on 23 Sep: the original was 4.1:1 on the page background
+   * and 3.44:1 on its own --danger-container tint, both below AA text contrast. This lightness
+   * clears 4.5:1 against every surface it's used on (page, white, and its own container tint on
+   * either), same hue/chroma so it still reads as the same red. */
+  --destructive: oklch(0.44 0.2152 27.33);
   --destructive-foreground: oklch(1 0 89.88);
   /*
    * #D5D5DE — tokens.json `line`. Was oklch(0.9445 …) ≈ 1.147:1 against the card
@@ -578,6 +593,12 @@
    * is down, a selected pill (pink-on-tint text over a 20% fill), prices, and the `brand` button
    * inside branded blocks only. Never a resting border, background or body text. */
   --brand: #ea4c89;
+  /* White text on --brand only reaches 3.56:1 — short of 4.5:1 no matter the weight, and the
+   * off-white --background (used as CTA text on dark hero blocks) is worse still, 3.02:1.
+   * --brand itself (the logo, the underline, the pill-selected fill) stays untouched; this
+   * darkened mix is for CTA/button fills only (owner, 23 Sep). 5.09:1 against --background,
+   * 5.99:1 against pure white — the two text colors this actually pairs with. */
+  --brand-button: color-mix(in oklab, var(--brand) 80%, black);
   --purple: oklch(0.6056 0.2189 292.72);
   --success: oklch(0.7227 0.192 149.58);
   --warn: oklch(0.7686 0.1647 70.08);
@@ -588,15 +609,20 @@
   --purple-container: color-mix(in oklab, var(--purple) 10%, transparent);
   --success-container: color-mix(in oklab, var(--success) 12%, transparent);
   --warn-container: color-mix(in oklab, var(--warn) 14%, transparent);
-  --danger: oklch(0.5771 0.2152 27.33);
+  /* Was its own literal, duplicating --destructive's old value — aliased 23 Sep so the contrast
+   * fix above (StatusPill's "bad" tone pairs bg-danger-container with text-destructive) can't
+   * drift out of sync again. */
+  --danger: var(--destructive);
   --danger-container: color-mix(in oklab, var(--danger) 12%, transparent);
   --success-strong: color-mix(in oklab, var(--success) 52%, black);
   --warn-strong: color-mix(in oklab, var(--warn) 48%, black);
   --pink-strong: #c7295f; /* system: --color-pink-pressed. The only pink permitted for text, and rarely. */
   /* Pink text on a 20% brand tint: pink-strong alone is 4.2:1 there, below AA. */
   --pink-on-tint: color-mix(in oklab, var(--pink-strong) 78%, black);
-  /* A chip that reads as a shape against the page (Facebook reference, #e2e5e9 on white). */
-  --icon-chip: #e2e5e9;
+  /* Ash black (owner, 23 Sep): #e2e5e9 measured 1.26:1 on white, nowhere near reading as a shape.
+   * 17.04:1 on white. NOTE: icons/text drawn on bg-icon-chip were dark-on-light before this
+   * change — the owner is handling the follow-up recolor of those call sites themselves. */
+  --icon-chip: #1c1c1c;
   --gradient-brand: linear-gradient(135deg, var(--brand), var(--purple));
   --gradient-ink: linear-gradient(150deg, #0d0d0d, #2b2b2b); /* ink -> inkPressed */
 
