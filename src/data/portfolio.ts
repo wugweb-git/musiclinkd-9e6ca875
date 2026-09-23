@@ -7,6 +7,7 @@ export type WorkKind =
   | "track"
   | "album"
   | "video"
+  | "reel"
   | "performance"
   | "project"
   | "client"
@@ -60,8 +61,15 @@ export const workTypes: {
   {
     kind: "video",
     label: "Video",
-    blurb: "Music video, session or reel",
+    blurb: "Music video or session",
     emoji: "🎬",
+    media: "video",
+  },
+  {
+    kind: "reel",
+    label: "Reel",
+    blurb: "A short, vertical clip",
+    emoji: "📱",
     media: "video",
   },
   {

@@ -100,10 +100,9 @@ function Discover() {
   const { dbStudios, trendingWork, people, trendingPages } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
   const { signedIn } = useAuth();
-  // Reels have no field of their own yet — the taxonomy folds them into "video" (data/portfolio.ts)
-  // — so this can only split by what's real: audio vs. everything else with a video.
   const audioWork = trendingWork.filter((w) => workType(w.kind).media === "audio");
-  const videoWork = trendingWork.filter((w) => workType(w.kind).media === "video");
+  const videoWork = trendingWork.filter((w) => w.kind === "video");
+  const reelWork = trendingWork.filter((w) => w.kind === "reel");
   // Trending this week: people and studios by the last 7 days' views, follows, saves, enquiries,
   // bookings and reviews (listTrendingPages). A studio shows with the same card as Studios below.
   const studioById = new Map(dbStudios.map((s) => [s.id, s]));
@@ -240,6 +239,31 @@ function Discover() {
                   ),
                   duration: "",
                   thumb: item.cover_url ?? "",
+                  ...(item.media_url ? { media: item.media_url } : {}),
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {reelWork.length ? (
+        <section className="pb-6">
+          <SectionHeader title="Trending reels" />
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+            {reelWork.map((item) => (
+              <VideoCard
+                key={item.id}
+                v={{
+                  id: item.id,
+                  title: item.title,
+                  context: joinParts(
+                    item.display_name ?? "",
+                    `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
+                  ),
+                  duration: "",
+                  thumb: item.cover_url ?? "",
+                  format: "reel",
                   ...(item.media_url ? { media: item.media_url } : {}),
                 }}
               />

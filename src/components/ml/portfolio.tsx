@@ -23,6 +23,7 @@ import {
   ArrowDown,
   Play,
   Pause,
+  Smartphone,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
@@ -54,6 +55,7 @@ const workIcons: Record<string, LucideIcon> = {
   track: Music2,
   album: Disc3,
   video: Clapperboard,
+  reel: Smartphone,
   performance: Mic,
   project: FolderOpen,
   client: BriefcaseBusiness,
