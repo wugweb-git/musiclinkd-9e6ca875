@@ -19,7 +19,6 @@ import {
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { BetaBadge, Price, Row, SoonBadge } from "@/components/ml/kit";
 import { stageOf } from "@/lib/release";
-import { ViewerAvatar } from "@/components/ml/viewer";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { SectionActionLink } from "@/components/ml/links";
 import { useEffect, useState } from "react";
@@ -134,16 +133,10 @@ function Discover() {
     <Screen>
       <header className="px-5 pb-4 pt-6">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-1 font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              MusicLinkd
-            </p>
-            <h1 className="text-4 leading-tight">Discover</h1>
-          </div>
+          <h1 className="text-4 leading-tight">Discover</h1>
           <div className="flex items-center gap-2">
             <NotificationsBell />
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
-            <ViewerAvatar />
           </div>
         </div>
         {searchOpen ? (

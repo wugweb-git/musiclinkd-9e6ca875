@@ -3,7 +3,7 @@ import type { ParsedLocation } from "@tanstack/react-router";
 import { steps } from "@/data/onboarding";
 
 /**
- * Page motion. The registration flow (splash → auth → onboarding → Home) follows the order below;
+ * Page motion. The registration flow (splash → auth → onboarding → Discover) follows the order below;
  * everything else follows `appTransition`. In the flow, the order below is the
  * order a new user travels, so a navigation to a later screen slides forward and to an earlier one
  * slides back, whether it came from a button, a link or the Android back gesture. The keyframes
@@ -44,7 +44,7 @@ export function useArrival(key: string) {
 }
 
 /** Flow screens that sit outside the linear order: they cross-fade rather than slide. */
-const SIDE = new Set(["/", "/onboarding/skip", "/onboarding/resume", "/auth/forgot", "/home"]);
+const SIDE = new Set(["/", "/onboarding/skip", "/onboarding/resume", "/auth/forgot", "/discover"]);
 
 const clean = (p: string) => (p.length > 1 ? p.replace(/\/$/, "") : p);
 
@@ -86,11 +86,11 @@ export function flowTransitionTypes({
   if (!pathChanged) return a >= 0 && b >= 0 && a !== b ? [b > a ? "forward" : "back"] : false;
   if (a >= 0 && b >= 0) return [b > a ? "forward" : "back"];
   const inFlow = (p: string) => ORDER.includes(p) || SIDE.has(p);
-  if (inFlow(from) && inFlow(to) && !(from === "/home" && !ORDER.includes(to))) return ["fade"];
+  if (inFlow(from) && inFlow(to) && !(from === "/discover" && !ORDER.includes(to))) return ["fade"];
   return appTransition(from, to);
 }
 
-const TAB_ROOTS = new Set(["/home", "/discover", "/messages", "/marketplace", "/profile"]);
+const TAB_ROOTS = new Set(["/discover", "/messages", "/marketplace", "/profile"]);
 
 /**
  * Everyday navigation, Android style: between tabs cross-fades; into a screen pushes forward;

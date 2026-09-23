@@ -65,7 +65,7 @@ function SkipLater() {
           Continue Setup
         </BtnLink>
         <p className="flex justify-center pt-2 text-sm">
-          <AuthLink to="/home" className="text-muted-foreground">
+          <AuthLink to="/discover" className="text-muted-foreground">
             Explore MusicLinkd First
           </AuthLink>
         </p>

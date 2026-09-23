@@ -100,7 +100,7 @@ function OpportunitiesHome() {
       <TopBar
         title="Opportunities"
         subtitle="Who needs what, right now"
-        back="/home"
+        back="/discover"
         right={
           <button
             type="button"

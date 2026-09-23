@@ -167,7 +167,7 @@ function Collabs() {
       <TopBar
         title="Collaborations"
         subtitle="Bands and projects you are in"
-        back="/home"
+        back="/discover"
         right={
           <div className="flex items-center gap-2">
             {all.length ? (

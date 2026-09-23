@@ -40,7 +40,7 @@ function SessionCheck() {
     const hold = reducedMotion
       ? 0
       : Math.min(2000, Math.max(0, 900 - (Date.now() - mountedAt.current)));
-    const go = (to: "/welcome" | "/home" | ReturnType<typeof postAuthTarget>) =>
+    const go = (to: "/welcome" | "/discover" | ReturnType<typeof postAuthTarget>) =>
       window.setTimeout(() => {
         if (active) void navigate({ to, replace: true });
       }, hold);
@@ -61,8 +61,8 @@ function SessionCheck() {
       // ever seeing the onboarding chooser they'd already finished.
       .then((profile) => (profile ? profile : loadProfile()))
       .then((profile) => go(postAuthTarget(profile)))
-      // Offline or a failed read: Home still works from the local session.
-      .catch(() => go("/home"));
+      // Offline or a failed read: Discover still works from the local session.
+      .catch(() => go("/discover"));
     return () => {
       active = false;
     };

@@ -6,7 +6,7 @@ import { Check, MessageCircle, Send, SquarePen, UserRoundPlus, X } from "lucide-
 import { toast } from "sonner";
 import { IconBtn, Screen, Sheet, TopBar } from "@/components/ml/ui";
 import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
-import { TextLink } from "@/components/ml/links";
+import { NotificationsBell } from "@/components/ml/tab-header";
 import { DrawerList, DrawerOptionRow, DrawerSearch } from "@/components/ml/drawer-list";
 import { PersonAvatar } from "@/components/ml/person-avatar";
 import { useMessagePerson } from "@/hooks/use-message-person";
@@ -130,26 +130,11 @@ function Connections() {
   const received = matchingPeople(q.data?.received ?? [], query, (c) => c.person);
   const connected = matchingPeople(q.data?.connected ?? [], query, (c) => c.person);
   const sent = matchingPeople(q.data?.sent ?? [], query, (c) => c.person);
-  const unread = (threads.data ?? []).reduce((n, t) => n + (t.unread ? 1 : 0), 0);
   const busy = signedIn && (q.isLoading || threads.isLoading);
 
   return (
     <Screen>
-      <TopBar
-        title="Messages"
-        subtitle={
-          unread
-            ? `${unread} unread`
-            : q.data?.connected.length
-              ? `${q.data.connected.length} connected`
-              : "People you work with"
-        }
-        right={
-          <TextLink to="/collab" className="text-sm font-semibold">
-            Collabs
-          </TextLink>
-        }
-      />
+      <TopBar title="Messages" right={<NotificationsBell />} />
 
       {!signedIn && !loading ? (
         <div className="px-5 pt-4">

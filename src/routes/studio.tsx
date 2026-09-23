@@ -89,7 +89,7 @@ function Studios() {
   const { studios } = Route.useLoaderData();
   return (
     <Screen>
-      <TopBar title="Studios" subtitle="Recording and rehearsal spaces" back="/home" />
+      <TopBar title="Studios" subtitle="Recording and rehearsal spaces" back="/discover" />
       <div className="px-5 pt-4">
         {studios.length ? (
           <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">

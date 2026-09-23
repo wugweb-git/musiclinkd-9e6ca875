@@ -139,8 +139,8 @@ function Done() {
           edges.bottom ? "border-border shadow-xs" : "border-transparent",
         )}
       >
-        <BtnLink to="/home" className="w-full h-12 text-sm font-semibold shadow-xs">
-          Go to Home Feed
+        <BtnLink to="/profile" className="w-full h-12 text-sm font-semibold shadow-xs">
+          View your profile
         </BtnLink>
       </div>
     </Screen>

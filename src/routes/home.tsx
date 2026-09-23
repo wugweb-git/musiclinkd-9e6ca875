@@ -4,20 +4,13 @@ import type { ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, WifiOff, RefreshCw, Star, Settings, Sparkles } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
-import { Switch } from "@/components/ui/switch";
 import { EmptyState, Loading } from "@/components/ml/kit";
-import { toast } from "sonner";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  getMyProfile,
-  listMyPortfolio,
-  getTaxonomyLabels,
-  saveMyProfile,
-} from "@/lib/portfolio.functions";
+import { getMyProfile, listMyPortfolio, getTaxonomyLabels } from "@/lib/portfolio.functions";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import { listOpportunities, listStudios } from "@/lib/catalog.functions";
 import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
@@ -253,8 +246,6 @@ function Body({ home }: { home: Home }) {
         </h1>
         {user.role ? <p className="mt-1 truncate text-sm text-background/70">{user.role}</p> : null}
 
-        <AvailabilitySwitch available={user.available} />
-
         {cont.length ? (
           <ul className="mt-5 space-y-2">
             {cont.map((c) => (
@@ -324,47 +315,6 @@ function Body({ home }: { home: Home }) {
           </div>
         </section>
       ) : null}
-    </div>
-  );
-}
-
-/*
- * Home is the person's own screen, so availability is a control here, not a badge: flip it and the
- * profile is updated. The public profile is where other people read the result.
- */
-function AvailabilitySwitch({ available }: { available: boolean }) {
-  const save = useServerFn(saveMyProfile);
-  const [on, setOn] = useState(available);
-  const [saving, setSaving] = useState(false);
-
-  const toggle = async (next: boolean) => {
-    setOn(next);
-    setSaving(true);
-    try {
-      // "Collaborations" is one of the stored values profile-view maps to a status people see.
-      await save({ data: { availability: next ? "Collaborations" : null } });
-    } catch {
-      setOn(!next);
-      toast.error("Could not update. Try again.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div className="mt-5 flex items-center gap-3 rounded-lg bg-background/10 px-4 py-3">
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-semibold">Taking work</span>
-        <span className="block text-1 text-background/70">
-          {on ? "People can see you are open" : "Hidden from people looking to hire"}
-        </span>
-      </span>
-      <Switch
-        checked={on}
-        disabled={saving}
-        onCheckedChange={(next) => void toggle(next)}
-        aria-label="Taking work"
-      />
     </div>
   );
 }

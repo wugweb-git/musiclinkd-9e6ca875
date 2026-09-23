@@ -11,7 +11,6 @@ import {
 } from "react";
 import {
   LoaderCircle,
-  Home,
   Compass,
   Store,
   ShoppingBag,
@@ -99,7 +98,6 @@ export const navItems: {
   icon: LucideIcon;
   solid: SolidIcon;
 }[] = [
-  { to: "/home", label: "Home", icon: Home, solid: "home" },
   { to: "/discover", label: "Discover", icon: Compass, solid: "compass" },
   { to: "/messages", label: "Connections", icon: MessageCircle, solid: "speech" },
   { to: "/marketplace", label: "Market", icon: ShoppingBag, solid: "bag" },
@@ -114,7 +112,6 @@ const menuGroups: {
   {
     title: "Main",
     items: [
-      { to: "/home", label: "Home", icon: Home },
       { to: "/discover", label: "Discover", icon: Compass },
       { to: "/search", label: "Search", icon: Search },
       { to: "/messages", label: "Connections", icon: MessageCircle },
@@ -167,7 +164,7 @@ const menuGroups: {
 ];
 
 /**
- * Five tabs and a menu. A tab shows only its icon until it is the one you are on; then its label
+ * Four tabs and a menu. A tab shows only its icon until it is the one you are on; then its label
  * opens beside the icon. The menu holds every module, so nothing depends on finding a shortcut.
  */
 export function BottomNav() {
@@ -465,7 +462,8 @@ type BtnVariant = "primary" | "ink" | "ghost" | "outline" | "brand";
  */
 const filledDisabled =
   "disabled:bg-foreground/10 disabled:text-foreground/40 aria-disabled:bg-foreground/10 aria-disabled:text-muted-foreground data-pending:bg-foreground/10 data-pending:text-muted-foreground";
-const dimDisabled = "disabled:opacity-50 aria-disabled:text-muted-foreground data-pending:text-muted-foreground";
+const dimDisabled =
+  "disabled:opacity-50 aria-disabled:text-muted-foreground data-pending:text-muted-foreground";
 
 const btnVariants: Record<BtnVariant, string> = {
   primary: `bg-primary text-primary-foreground ${filledDisabled}`,

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Screen, IconBtn } from "@/components/ml/ui";
 import { Segmented } from "@/components/ml/kit";
-import { SearchField, SearchIconButton } from "@/components/ml/tab-header";
+import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import {
   ActiveFilters,
   FilterButton,
@@ -145,14 +145,16 @@ function MarketHome() {
         <div className="mb-3 flex items-center justify-between px-5">
           <h1 className="text-4 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
+            <NotificationsBell />
+            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
+            <FilterButton count={active} onClick={() => setFilters(true)} />
             <Link
               to="/marketplace/mine"
-              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
+              aria-label="List an item"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-background"
             >
-              <Plus size={iconSize.sm} /> List
+              <Plus size={iconSize.sm} aria-hidden />
             </Link>
-            <FilterButton count={active} onClick={() => setFilters(true)} />
-            <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
           </div>
         </div>
         {searchOpen ? (

@@ -28,6 +28,7 @@ import {
   Settings,
   QrCode,
   Rows3,
+  Search,
   Share2,
   Sparkles,
   Star,
@@ -40,6 +41,7 @@ import type { WorkKind } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
 import { SectionTabs, StateIcon, type Move, type SolidIcon } from "./tab-icon";
+import { NotificationsBell } from "./tab-header";
 import { Price } from "./kit";
 import {
   AudioTrackCard,
@@ -54,6 +56,7 @@ import {
   ProfileHero,
   ProfileSection,
   StackSection,
+  AvailabilityToggle,
   ClampedText,
   ReviewCard,
   ReviewRail,
@@ -142,6 +145,22 @@ export function PersonProfileExperience({
 
   return (
     <Screen>
+      {/* Owner only: the same one-line top bar every other main tab carries. The public profile
+          (profile/$username) is a different screen and keeps its own back-arrow header. */}
+      {owner ? (
+        <header className="flex items-center justify-between px-5 pb-4 pt-6">
+          <h1 className="text-4 leading-tight">Profile</h1>
+          <div className="flex items-center gap-2">
+            <NotificationsBell />
+            <IconBtnLink to="/search" label="Search" variant="plain" className="h-10 w-10">
+              <Search size={iconSize.md} aria-hidden />
+            </IconBtnLink>
+            <IconBtnLink to="/settings" label="Settings" variant="plain" className="h-10 w-10">
+              <Settings size={iconSize.md} aria-hidden />
+            </IconBtnLink>
+          </div>
+        </header>
+      ) : null}
       {/* One grey ground; everything that holds content sits on it in white cards. */}
       <div className="pb-4">
         <ProfileHero
@@ -797,11 +816,11 @@ function OwnerStack({
         collapsible
         defaultOpen={false}
       >
-        <div className="rounded-lg bg-subtle p-4">
-          <p className="text-sm font-semibold text-foreground">{p.location || "No city set"}</p>
-          <p className="mt-1 text-1 text-muted-foreground">
-            {p.availability || "No availability status set"}
-          </p>
+        <div className="space-y-2">
+          <div className="rounded-lg bg-subtle p-4">
+            <p className="text-sm font-semibold text-foreground">{p.location || "No city set"}</p>
+          </div>
+          <AvailabilityToggle available={isOpenForWork(p.availability)} />
         </div>
       </StackSection>
 
