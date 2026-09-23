@@ -894,6 +894,18 @@
 }
 
 /*
+ * The one scrim for text laid over artwork — never a hand-rolled gradient per card. Fully clear
+ * for the top 40% (the photo reads clean there) then ramps to 75% black, so bottom-anchored title
+ * text stays legible on any image without darkening the whole frame.
+ */
+@utility media-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+/*
  * A pill over a photo or video: a light blurred material (as in Apple's thin material) so it
  * reads on any image, with the label in ink. Arrives with a short fade and settle.
  */

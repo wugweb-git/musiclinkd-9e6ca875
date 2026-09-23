@@ -808,7 +808,7 @@ export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile
           className="h-44 w-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/35 to-transparent" />
+        <div className="media-scrim" />
         <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 text-background">
           <div className="min-w-0 flex-1">
             <span className="rounded-full bg-primary pill text-primary-foreground font-semibold">

@@ -203,6 +203,68 @@ export function PersonCardSkeleton() {
   );
 }
 
+/**
+ * Talent as a full-bleed card — the Profile Hero idiom (guide/system) brought to a rail tile: the
+ * photo carries the card, name and meta sit on the scrim. An alternate to PersonCard's white-card
+ * shape for a photo-led rail like Discover's.
+ */
+export function PersonHeroCard({
+  person,
+  roleLabels,
+  disabled = false,
+}: {
+  person: DirectoryPerson;
+  roleLabels?: TaxonomyOption[] | undefined;
+  disabled?: boolean;
+}) {
+  const detail = personDetail(person, roleLabels);
+  return (
+    <Link
+      to="/profile/$username"
+      params={{ username: person.username }}
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled || undefined}
+      onClick={disabled ? (e) => e.preventDefault() : undefined}
+      className={cn(
+        "relative block h-56 w-rail-sm shrink-0 overflow-hidden rounded-lg text-left",
+        disabled
+          ? "cursor-default"
+          : "state-layer transition-transform duration-150 ease-standard active:scale-[0.985]",
+      )}
+    >
+      {person.avatarUrl ? (
+        <img src={person.avatarUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+      ) : (
+        <span className="flex h-full w-full items-center justify-center bg-subtle text-muted-foreground">
+          <Building2 size={28} strokeWidth={1.5} aria-hidden />
+        </span>
+      )}
+      <div className="media-scrim" />
+      <span className="absolute inset-x-3 bottom-3 text-background">
+        <span className="flex min-w-0 items-center gap-1">
+          <span className="truncate text-2 font-bold">{person.name}</span>
+          {person.verified ? <VerifiedBadge size={14} /> : null}
+        </span>
+        {detail ? (
+          <span className="mt-0.5 block truncate text-1 text-background/80">{detail}</span>
+        ) : null}
+        {person.city || person.rating != null ? (
+          <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-background/80">
+            {person.city ? <span className="truncate">{person.city}</span> : null}
+            {person.city && person.rating != null ? <span aria-hidden>·</span> : null}
+            {person.rating != null ? (
+              <span className="flex shrink-0 items-center gap-0.5">
+                <Star size={iconSize.xs} fill="currentColor" aria-hidden />
+                {person.rating.toFixed(1)}
+              </span>
+            ) : null}
+          </span>
+        ) : null}
+      </span>
+    </Link>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Business / studio card — a business account, real bookable spaces   */
 /* ------------------------------------------------------------------ */
@@ -292,6 +354,53 @@ export function StudioCardSkeleton() {
         <div className="mt-1.5 h-3.5 w-16 animate-pulse rounded bg-subtle" />
       </div>
     </div>
+  );
+}
+
+/**
+ * A business/studio as a full-bleed card — the Media Card idiom (guide/system): the photo carries
+ * the card, name/place/rate sit on the scrim. An alternate to StudioCard's white-card shape for a
+ * photo-led rail like Discover's.
+ */
+export function StudioMediaCard({ studio }: { studio: DiscoverStudio }) {
+  const bookable = Boolean(studio.username || studio.slug);
+  return (
+    <Link
+      to={studio.username ? "/profile/$username" : "/booking/$id"}
+      params={studio.username ? { username: studio.username } : { id: studio.slug }}
+      onClick={!bookable ? (e) => e.preventDefault() : undefined}
+      className="state-layer relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
+    >
+      {studio.photo ? (
+        <img src={studio.photo} alt="" loading="lazy" className="h-full w-full object-cover" />
+      ) : (
+        <span className="flex h-full w-full items-center justify-center bg-subtle text-muted-foreground">
+          <Building2 size={28} strokeWidth={1.5} aria-hidden />
+        </span>
+      )}
+      <div className="media-scrim" />
+      <span className="absolute inset-x-3 bottom-3 text-background">
+        <span className="flex min-w-0 items-center gap-1">
+          <span className="truncate text-2 font-bold">{studio.name}</span>
+          {studio.verified ? <VerifiedBadge size={14} /> : null}
+        </span>
+        <span className="mt-0.5 flex min-w-0 items-center gap-1 text-1 text-background/80">
+          <span className="truncate">{shownPlace(studio.location)}</span>
+          {studio.rating != null ? (
+            <>
+              <span aria-hidden>·</span>
+              <span className="flex shrink-0 items-center gap-0.5">
+                <Star size={iconSize.xs} fill="currentColor" aria-hidden />
+                {studio.rating.toFixed(1)}
+              </span>
+            </>
+          ) : null}
+        </span>
+        {studio.rate ? (
+          <Price price={studio.rate} className="mt-1" amountClassName="text-1 font-semibold" />
+        ) : null}
+      </span>
+    </Link>
   );
 }
 
