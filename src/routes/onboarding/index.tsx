@@ -239,9 +239,7 @@ function Welcome() {
         {/* Interactive Profile Kind Cards */}
         <div className={cn("mt-6 space-y-3", rise)} style={beat(2.5)}>
           <div className="flex items-center justify-between">
-            <p className="text-1 font-bold uppercase tracking-wider text-muted-foreground">
-              Choose account type
-            </p>
+            <p className="eyebrow text-muted-foreground">Choose account type</p>
             <button
               type="button"
               onClick={() => {
@@ -321,7 +319,7 @@ function Welcome() {
         {/* Live Interactive Card Preview or Feature Pitch */}
         {showPreview ? (
           <div className={cn("mt-6", rise)} style={beat(3)}>
-            <p className="mb-2 text-0 font-bold uppercase tracking-wider text-muted-foreground">
+            <p className="eyebrow mb-2 text-muted-foreground">
               What your {kind.toLowerCase()} card looks like:
             </p>
             {kind === "Talent" ? (

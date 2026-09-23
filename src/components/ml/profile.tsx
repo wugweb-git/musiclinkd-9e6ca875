@@ -932,9 +932,7 @@ export function AudioTrackCard({
           {playing ? (
             <div className="mt-1 flex items-center gap-1.5 text-foreground">
               <PlaybackBars className="h-4 justify-start gap-0.5" aria-hidden />
-              <span className="text-0 font-semibold uppercase tracking-wider text-pink-strong">
-                Playing in-app
-              </span>
+              <span className="eyebrow text-pink-strong">Playing in-app</span>
             </div>
           ) : track.duration ? (
             <p className="mt-0.5 text-1 text-muted-foreground">{track.duration}</p>
@@ -1330,13 +1328,7 @@ export function ServiceCard({
     >
       <div className="px-4 pb-3 pt-4">
         <div className="flex items-center justify-between gap-2">
-          {meta ? (
-            <p className="truncate text-1 font-semibold uppercase tracking-wider text-muted-foreground">
-              {meta}
-            </p>
-          ) : (
-            <span />
-          )}
+          {meta ? <p className="eyebrow truncate text-muted-foreground">{meta}</p> : <span />}
           {selected ? (
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-0 font-semibold text-background">
               <Check size={10} strokeWidth={3} aria-hidden />
@@ -1409,9 +1401,7 @@ export function ServiceCard({
 
         {expanded && s.uses?.length ? (
           <div className="mt-3 border-t border-border/50 pt-2 animate-in fade-in-50 duration-150">
-            <p className="text-0 font-bold uppercase tracking-wider text-muted-foreground">
-              Included gear & software
-            </p>
+            <p className="eyebrow text-muted-foreground">Included gear & software</p>
             <p className="mt-1 text-1 font-medium text-foreground">{s.uses.join(", ")}</p>
           </div>
         ) : null}

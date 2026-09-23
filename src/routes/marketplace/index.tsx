@@ -145,16 +145,15 @@ function MarketHome() {
         <div className="mb-3 flex items-center justify-between px-5">
           <h1 className="text-4 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
+            <Link
+              to="/marketplace/mine"
+              className="inline-flex h-10 items-center gap-1 rounded-full bg-ink px-4 text-1 font-semibold text-background"
+            >
+              <Plus size={iconSize.sm} aria-hidden /> List
+            </Link>
             <NotificationsBell />
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />
             <FilterButton count={active} onClick={() => setFilters(true)} />
-            <Link
-              to="/marketplace/mine"
-              aria-label="List an item"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-ink text-background"
-            >
-              <Plus size={iconSize.sm} aria-hidden />
-            </Link>
           </div>
         </div>
         {searchOpen ? (

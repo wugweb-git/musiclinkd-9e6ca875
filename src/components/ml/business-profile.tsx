@@ -176,15 +176,17 @@ export function BusinessProfileExperience({
             {/* Studio Facility Bento Highlights */}
             <div className="my-3 grid grid-cols-2 gap-2.5">
               <div className="rounded-lg border border-border/80 bg-card p-3.5">
-                <p className="text-0 font-bold uppercase tracking-wider text-muted-foreground">Spaces</p>
+                <p className="eyebrow text-muted-foreground">Spaces</p>
                 <p className="mt-1 text-sm font-bold text-foreground">
                   {b.studioSlug ? "Vocal Booth & Foley" : "Production Suites"}
                 </p>
-                <p className="mt-0.5 text-1 font-medium text-muted-foreground">Acoustically isolated</p>
+                <p className="mt-0.5 text-1 font-medium text-muted-foreground">
+                  Acoustically isolated
+                </p>
               </div>
 
               <div className="rounded-lg border border-border/80 bg-card p-3.5">
-                <p className="text-0 font-bold uppercase tracking-wider text-muted-foreground">Console & Signal</p>
+                <p className="eyebrow text-muted-foreground">Console & Signal</p>
                 <p className="mt-1 text-sm font-bold text-foreground">Analog & Hybrid</p>
                 <p className="mt-0.5 text-1 font-medium text-muted-foreground">Neve & UA Chains</p>
               </div>

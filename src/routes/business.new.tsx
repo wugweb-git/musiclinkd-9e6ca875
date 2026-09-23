@@ -315,9 +315,7 @@ function NewBusiness() {
         ) : step === "type" ? (
           <div className="space-y-6">
             <div className="rounded-lg border border-border/80 bg-card p-4 shadow-xs">
-              <p className="mb-3 text-1 font-bold uppercase tracking-wider text-muted-foreground">
-                Select business type
-              </p>
+              <p className="eyebrow mb-3 text-muted-foreground">Select business type</p>
               <div className="grid grid-cols-2 gap-3">
                 {types.map((t) => {
                   const Icon = roleIcon(t);
@@ -530,9 +528,7 @@ function NewBusiness() {
         ) : (
           <div className="space-y-4">
             <div>
-              <p className="mb-2 text-0 font-bold uppercase tracking-wider text-muted-foreground">
-                Live Studio Card Preview
-              </p>
+              <p className="eyebrow mb-2 text-muted-foreground">Live Studio Card Preview</p>
               <StudioCard
                 disabled
                 studio={{

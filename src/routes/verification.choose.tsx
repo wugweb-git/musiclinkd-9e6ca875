@@ -73,17 +73,15 @@ function ChooseType() {
 
               <dl className="space-y-2 text-1">
                 <div>
-                  <dt className="text-1 uppercase tracking-wide text-muted-foreground">Verifies</dt>
+                  <dt className="eyebrow text-muted-foreground">Verifies</dt>
                   <dd className="text-muted-foreground">{t.verifies}</dd>
                 </div>
                 <div>
-                  <dt className="text-1 uppercase tracking-wide text-muted-foreground">
-                    People see
-                  </dt>
+                  <dt className="eyebrow text-muted-foreground">People see</dt>
                   <dd className="text-muted-foreground">{t.whatOthersSee}</dd>
                 </div>
                 <div>
-                  <dt className="text-1 uppercase tracking-wide text-muted-foreground">You need</dt>
+                  <dt className="eyebrow text-muted-foreground">You need</dt>
                   <dd className="text-muted-foreground">
                     {t.requirements.map((r) => r.label).join(" · ")}
                   </dd>

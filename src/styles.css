@@ -883,6 +883,17 @@
 }
 
 /*
+ * A label above a block, field or drawer row (an eyebrow, a form Field's label, a section header
+ * inside a card): sentence case at the --type-1 step, semibold. Matches `pill`'s own rule —
+ * tracked capitals are a template tell, not this system's voice. Color comes from the caller.
+ */
+@utility eyebrow {
+  font-size: var(--type-1);
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+/*
  * A pill over a photo or video: a light blurred material (as in Apple's thin material) so it
  * reads on any image, with the label in ink. Arrives with a short fade and settle.
  */

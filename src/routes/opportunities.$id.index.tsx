@@ -175,7 +175,7 @@ function OpportunityDetail() {
                 )}
                 <p className="text-1">
                   {r.label}
-                  <span className="ml-1 text-1 uppercase tracking-wide text-muted-foreground">
+                  <span className="eyebrow ml-1 text-muted-foreground">
                     {r.must ? "must have" : "nice to have"}
                   </span>
                 </p>
