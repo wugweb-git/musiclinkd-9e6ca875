@@ -71,9 +71,6 @@ type Form = {
   /** Whole rupees as typed; empty for no rate. */
   rate: string;
   rate_unit: RateUnit;
-  /** Influences, comma-separated as typed. */
-  influence_text: string;
-  specialisation_text: string;
   visibility: string;
   experience_level: string;
   roles: string[];
@@ -96,8 +93,6 @@ const empty: Form = {
   availability: "",
   rate: "",
   rate_unit: "hour",
-  influence_text: "",
-  specialisation_text: "",
   visibility: "public",
   experience_level: "",
   roles: [],
@@ -156,11 +151,6 @@ function fromRow(row: ProfileRow | null): Form {
     availability: row.availability ?? "",
     // Before a rate has a unit, the hourly rate is the rate.
     ...rateFromRow(row),
-    influence_text: (row.influences ?? []).join(", "),
-    // Stored as "role:specialisation" or plain; the profile shows the part after the colon.
-    specialisation_text: (row.specialisations ?? [])
-      .map((v) => (v.includes(":") ? v.slice(v.indexOf(":") + 1) : v))
-      .join(", "),
     visibility: row.visibility ?? "public",
     experience_level: row.experience_level ?? "",
     roles: row.roles ?? [],
@@ -352,14 +342,6 @@ function EditProfile() {
           ...(form.rate_unit === "hour" || ratePaise == null
             ? { hourly_rate_paise: ratePaise }
             : {}),
-          influences: form.influence_text
-            .split(",")
-            .map((v) => v.trim())
-            .filter(Boolean),
-          specialisations: form.specialisation_text
-            .split(",")
-            .map((v) => v.trim())
-            .filter(Boolean),
           visibility: form.visibility || "public",
           experience_level: form.experience_level || null,
           roles: form.roles,
@@ -480,7 +462,7 @@ function EditProfile() {
     {
       id: "music",
       label: "Music identity",
-      detail: "Type, genres, instruments, languages, influences",
+      detail: "Type, genres, instruments, languages",
       done: form.roles.length > 0 && form.genres.length > 0 && form.languages.length > 0,
       body: (
         <div className="space-y-4">
@@ -511,18 +493,6 @@ function EditProfile() {
             state={taxonomyState}
             selected={form.languages}
             onToggle={(v) => toggle("languages", v)}
-          />
-          <Field
-            label="Influences"
-            value={form.influence_text}
-            onChange={(v) => update({ influence_text: v })}
-            hint="Separate names with commas"
-          />
-          <Field
-            label="Specialisations"
-            value={form.specialisation_text}
-            onChange={(v) => update({ specialisation_text: v })}
-            hint="Separate them with commas"
           />
         </div>
       ),

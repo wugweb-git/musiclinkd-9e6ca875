@@ -953,7 +953,7 @@ export const editSections = [
     detail: "Roles, experience, professional details",
     done: true,
   },
-  { id: "music", label: "Music", detail: "Genres, instruments, languages, influences", done: true },
+  { id: "music", label: "Music", detail: "Genres, instruments, languages", done: true },
   {
     id: "portfolio",
     label: "Portfolio",

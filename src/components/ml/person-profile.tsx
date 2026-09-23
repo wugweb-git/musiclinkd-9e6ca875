@@ -14,7 +14,6 @@ import {
   ExternalLink,
   Globe2,
   Guitar,
-  Heart,
   Info,
   Languages,
   LayoutGrid,
@@ -626,12 +625,7 @@ function Overview({
         </ProfileSection>
       ) : null}
 
-      {typesOf(p).length ||
-      p.genres.length ||
-      p.specialisations.length ||
-      p.influences.length ||
-      p.instruments.length ||
-      p.languages.length ? (
+      {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
         <ProfileSection title="Music identity">
           <MusicIdentityBento p={p} />
         </ProfileSection>
@@ -732,12 +726,7 @@ function OwnerStack({
         )}
       </StackSection>
 
-      {typesOf(p).length ||
-      p.genres.length ||
-      p.instruments.length ||
-      p.languages.length ||
-      p.specialisations.length ||
-      p.influences.length ? (
+      {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
         <StackSection title="Music identity" editTo={edit} editSection="music" collapsible>
           <MusicIdentityBento p={p} />
         </StackSection>
@@ -1037,17 +1026,12 @@ function About({ p }: { p: PersonProfile }) {
         )}
       </ProfileSection>
       <ProfileSection title="Music identity">
-        {typesOf(p).length ||
-        p.genres.length ||
-        p.specialisations.length ||
-        p.influences.length ||
-        p.instruments.length ||
-        p.languages.length ? (
+        {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
           <MusicIdentityBento p={p} />
         ) : (
           <ProfileEmpty
             title="No music identity yet"
-            body="Specialisations, instruments and languages will appear here."
+            body="Instruments and languages will appear here."
           />
         )}
       </ProfileSection>
@@ -1252,7 +1236,6 @@ function BentoChip({ children }: { children: ReactNode }) {
  */
 function MusicIdentityBento({ p }: { p: PersonProfile }) {
   const types = typesOf(p);
-  const hasCredentials = Boolean(p.rating || p.stats?.credits || p.verification);
   return (
     <div className="grid grid-cols-2 gap-2.5">
       {types.length ? (
@@ -1263,52 +1246,10 @@ function MusicIdentityBento({ p }: { p: PersonProfile }) {
         </BentoCard>
       ) : null}
 
-      {hasCredentials ? (
-        <BentoCard icon={Sparkles} label="Credentials">
-          <div className="space-y-1">
-            {p.rating ? (
-              <div className="flex items-center gap-1 text-1 font-bold text-foreground">
-                <Star size={13} className="fill-foreground text-foreground" aria-hidden />
-                <span>{p.rating}</span>
-                <span className="text-0 font-normal text-muted-foreground">
-                  ({p.reviewCount ?? 0} reviews)
-                </span>
-              </div>
-            ) : null}
-            {p.stats?.credits ? (
-              <p className="text-0 font-medium text-foreground">
-                {p.stats.credits} released credits
-              </p>
-            ) : null}
-            {p.verification ? (
-              <span className="inline-flex rounded-full bg-foreground px-2 py-0.5 text-0 font-bold text-background">
-                Verified Pro
-              </span>
-            ) : null}
-          </div>
-        </BentoCard>
-      ) : null}
-
       {p.genres.length ? (
         <BentoCard icon={Music} label="Genres" count={p.genres.length} wide>
           {p.genres.map((g) => (
             <BentoChip key={g}>{g}</BentoChip>
-          ))}
-        </BentoCard>
-      ) : null}
-
-      {p.specialisations.length ? (
-        <BentoCard icon={Sparkles} label="Specialisations">
-          {p.specialisations.map((s) => (
-            <BentoChip key={s}>{s}</BentoChip>
-          ))}
-        </BentoCard>
-      ) : null}
-
-      {p.influences.length ? (
-        <BentoCard icon={Heart} label="Influences">
-          {p.influences.map((i) => (
-            <BentoChip key={i}>{i}</BentoChip>
           ))}
         </BentoCard>
       ) : null}
