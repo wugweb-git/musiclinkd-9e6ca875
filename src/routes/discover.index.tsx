@@ -3,7 +3,6 @@ import {
   ArrowRight,
   Boxes,
   CalendarDays,
-  ChevronDown,
   Disc3,
   Drum,
   MapPin,
@@ -21,7 +20,7 @@ import { BetaBadge, Price, Row, SoonBadge } from "@/components/ml/kit";
 import { stageOf } from "@/lib/release";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { SectionActionLink } from "@/components/ml/links";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { quickCategories } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import {
@@ -34,10 +33,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { searchPeople, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { PersonCard, PersonRow, StudioCard } from "@/components/ml/cards";
 import { useTaxonomy } from "@/lib/taxonomy";
-import { recordPlay } from "@/lib/plays";
-import { recordWorkEvent } from "@/lib/work-events";
-import { MediaEmbed } from "@/components/ml/media-embed";
-import { WorkTypeIcon } from "@/components/ml/portfolio";
+import { VideoCard } from "@/components/ml/profile";
 import { workType } from "@/data/portfolio";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
@@ -104,6 +100,10 @@ function Discover() {
   const { dbStudios, trendingWork, people, trendingPages } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
   const { signedIn } = useAuth();
+  // Reels have no field of their own yet — the taxonomy folds them into "video" (data/portfolio.ts)
+  // — so this can only split by what's real: audio vs. everything else with a video.
+  const audioWork = trendingWork.filter((w) => workType(w.kind).media === "audio");
+  const videoWork = trendingWork.filter((w) => workType(w.kind).media === "video");
   // Trending this week: people and studios by the last 7 days' views, follows, saves, enquiries,
   // bookings and reviews (listTrendingPages). A studio shows with the same card as Studios below.
   const studioById = new Map(dbStudios.map((s) => [s.id, s]));
@@ -200,12 +200,49 @@ function Discover() {
         </section>
       ) : null}
 
-      {trendingWork.length ? (
+      {audioWork.length ? (
         <section className="pb-6">
-          <SectionHeader title="Trending work" />
-          <div className="space-y-2 px-5">
-            {trendingWork.map((item) => (
-              <TrendingWorkRow key={item.id} item={item} />
+          <SectionHeader title="Trending audio" />
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+            {audioWork.map((item) => (
+              <VideoCard
+                key={item.id}
+                v={{
+                  id: item.id,
+                  title: item.title,
+                  context: joinParts(
+                    item.display_name ?? "",
+                    `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
+                  ),
+                  duration: "",
+                  thumb: item.cover_url ?? "",
+                  ...(item.media_url ? { media: item.media_url } : {}),
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {videoWork.length ? (
+        <section className="pb-6">
+          <SectionHeader title="Trending video" />
+          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+            {videoWork.map((item) => (
+              <VideoCard
+                key={item.id}
+                v={{
+                  id: item.id,
+                  title: item.title,
+                  context: joinParts(
+                    item.display_name ?? "",
+                    `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
+                  ),
+                  duration: "",
+                  thumb: item.cover_url ?? "",
+                  ...(item.media_url ? { media: item.media_url } : {}),
+                }}
+              />
             ))}
           </div>
         </section>
@@ -258,76 +295,5 @@ function Discover() {
         </section>
       ) : null}
     </Screen>
-  );
-}
-
-/** A trending work: tap to play it in place, which also counts toward Trending. */
-/**
- * Full-bleed, the title on the scrim: the card carries no colour of its own, the artwork does.
- * Same idiom as FeaturedCard, applied to a list rather than a single hero tile.
- */
-function TrendingWorkRow({ item }: { item: TrendingItem }) {
-  const [open, setOpen] = useState(false);
-  // Shown in Trending counts as a view of the work, for its owner's Performance figures.
-  useEffect(() => recordWorkEvent(item.id, "view"), [item.id]);
-  return (
-    <article className="overflow-hidden rounded-lg bg-subtle">
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => {
-          if (!open) recordPlay(item.id);
-          setOpen((o) => !o);
-        }}
-        className="state-layer relative block h-40 w-full text-left"
-      >
-        {item.cover_url ? (
-          <img src={item.cover_url} alt="" loading="lazy" className="h-full w-full object-cover" />
-        ) : (
-          <span className="flex h-full w-full items-center justify-center bg-ink">
-            <WorkTypeIcon kind={item.kind} size="lg" tone="dark" />
-          </span>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/35 to-transparent" />
-        <span className="pill absolute left-3 top-3 bg-ink/70 text-background">
-          {workType(item.kind).label}
-        </span>
-        <ChevronDown
-          size={iconSize.md}
-          aria-hidden
-          className={`absolute right-3 top-3 shrink-0 text-background transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
-        />
-        <span className="absolute inset-x-3 bottom-3 text-background">
-          <span className="block truncate text-2 font-bold">{item.title}</span>
-          <span className="block truncate text-1 text-background/80">
-            {joinParts(
-              item.display_name ?? "",
-              `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
-            )}
-          </span>
-        </span>
-      </button>
-      {open ? (
-        <div className="space-y-2 p-3 animate-in fade-in duration-200">
-          {item.media_url ? (
-            <MediaEmbed
-              url={item.media_url}
-              title={item.title}
-              onOpen={() => recordWorkEvent(item.id, "link_click")}
-            />
-          ) : null}
-          {item.username ? (
-            <Link
-              to="/profile/$username"
-              params={{ username: item.username }}
-              onClick={() => recordWorkEvent(item.id, "profile_click")}
-              className="link-action block text-center text-1 font-semibold"
-            >
-              View Profile
-            </Link>
-          ) : null}
-        </div>
-      ) : null}
-    </article>
   );
 }
