@@ -2,24 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import type { ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import {
-  ChevronRight,
-  WifiOff,
-  RefreshCw,
-  Compass,
-  Megaphone,
-  Rss,
-  Star,
-  MapPin,
-  Settings,
-  Sparkles,
-} from "lucide-react";
+import { ChevronRight, WifiOff, RefreshCw, Star, Settings, Sparkles } from "lucide-react";
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { Switch } from "@/components/ui/switch";
-import { EmptyState, Loading, Price } from "@/components/ml/kit";
+import { EmptyState, Loading } from "@/components/ml/kit";
 import { toast } from "sonner";
 import { SavedToggle } from "@/components/ml/saved-toggle";
-import { StudioCard } from "@/components/ml/cards";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
@@ -34,7 +22,6 @@ import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import { listOpportunities, listStudios } from "@/lib/catalog.functions";
 import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
-import { priceParts } from "@/lib/price";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
@@ -248,9 +235,6 @@ function Body({ home }: { home: Home }) {
   const [qrOpen, setQrOpen] = useState(false);
   // Ranked by the viewer's own signals (recommendations.functions.ts); newest first until then.
   const recs = useRecommendations();
-  const opportunities = rankBy(loaded.opportunities, recs?.opportunities, (o) => o.id).slice(0, 6);
-  const studios = rankBy(loaded.studios, recs?.studios, (s) => s.id).slice(0, 6);
-  const reasonOf = new Map((recs?.opportunities ?? []).map((p) => [p.id, p.reason]));
   const rolePeers = usePeers(home.roleSlug);
   const peers: (DirectoryPerson & { reason?: string })[] = recs?.people.length
     ? recs.people.slice(0, 8)
@@ -297,72 +281,6 @@ function Body({ home }: { home: Home }) {
         ) : null}
       </section>
 
-      {/* Roles being cast: the live opportunities table, newest first. */}
-      <section className="pt-7">
-        <SectionHeader
-          title="Roles being cast"
-          action={<SectionActionLink to="/opportunities">See All</SectionActionLink>}
-        />
-        {opportunities.length ? (
-          <div className="rail no-scrollbar flex gap-3 overflow-x-auto px-5 pb-1">
-            {opportunities.map((o) => {
-              const budget = priceParts(o.budget_paise, o.budget_unit, o.budget_note);
-              return (
-                <Link
-                  key={o.id}
-                  to="/opportunities/$id"
-                  params={{ id: o.slug }}
-                  className="state-layer flex w-rail-lg shrink-0 flex-col rounded-lg bg-subtle p-4"
-                >
-                  <span className="line-clamp-2 text-2 font-semibold leading-snug">{o.title}</span>
-                  {o.role_required ? (
-                    <span className="mt-1 block truncate text-1 text-muted-foreground">
-                      {o.role_required}
-                    </span>
-                  ) : null}
-                  {o.location ? (
-                    <span className="mt-0.5 flex items-center gap-1 truncate text-1 text-muted-foreground">
-                      <MapPin size={iconSize.xs} className="shrink-0" aria-hidden />
-                      {o.location}
-                    </span>
-                  ) : null}
-                  {reasonOf.get(o.id) ? (
-                    <span className="mt-0.5 block truncate text-1 text-muted-foreground">
-                      {reasonOf.get(o.id)}
-                    </span>
-                  ) : null}
-                  <span className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3 mt-3">
-                    {/* A budget with no figure is a note, not a price, so it stays a quiet label. */}
-                    {o.budget_paise == null ? (
-                      <span className="pill shrink-0 bg-background text-muted-foreground">
-                        {o.budget_note ?? "Budget on request"}
-                      </span>
-                    ) : (
-                      <Price
-                        price={budget}
-                        amountClassName="text-sm font-semibold"
-                        unitClassName="text-1"
-                      />
-                    )}
-                    <span className="pill shrink-0 bg-background text-muted-foreground">
-                      {o.applicant_count} applied
-                    </span>
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mx-5">
-            <EmptyState
-              icon={<Megaphone size={iconSize.md} className="text-muted-foreground" />}
-              title="No open roles"
-              body="New castings appear here as they are posted."
-            />
-          </div>
-        )}
-      </section>
-
       {/* People in the same line of work, from the live profiles table. */}
       {peers.length ? (
         <section className="pt-7">
@@ -406,59 +324,6 @@ function Body({ home }: { home: Home }) {
           </div>
         </section>
       ) : null}
-
-      {/* Studios, live from the studios table, with their real rate. */}
-      {studios.length ? (
-        <section className="pt-7">
-          <SectionHeader
-            title="Studios to book"
-            action={<SectionActionLink to="/studio">See All</SectionActionLink>}
-          />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {studios.map((st) => (
-              <StudioCard key={st.slug} studio={st} />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      <section className="pt-7">
-        <SectionHeader title="Activity" />
-        {data.activity.length ? (
-          <ul className="space-y-1 px-5">
-            {data.activity.map((a) => (
-              <li key={a.id} className="flex min-w-0 items-start gap-3 py-2.5">
-                <span
-                  aria-hidden
-                  className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${a.kind === "view" ? "bg-border" : "bg-brand"}`}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-1 font-semibold leading-snug">{a.title}</p>
-                  <p className="truncate text-1 text-muted-foreground">
-                    {a.meta} · {a.when}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="mx-5">
-            <EmptyState
-              icon={<Rss size={iconSize.md} className="text-muted-foreground" />}
-              title="No activity yet"
-              body="Follow artists and studios, and their updates land here."
-            >
-              <BtnLink
-                to="/discover"
-                variant="ink"
-                icon={<Compass size={iconSize.sm} aria-hidden />}
-              >
-                Discover talent
-              </BtnLink>
-            </EmptyState>
-          </div>
-        )}
-      </section>
     </div>
   );
 }
