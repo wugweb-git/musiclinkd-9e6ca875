@@ -8,9 +8,10 @@ import { postAuthTarget } from "@/lib/post-auth";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 // App start. The session lives in the browser, so the server renders the splash and the client
-// routes: a saved sign-in goes to Home, or to onboarding until the profile is complete; everyone
-// else goes to Welcome. Every sign-in path (password, Google, email link, phone) returns here. On
-// Android the native splash covers this screen.
+// routes: a saved sign-in with a profile row goes straight to Discover (an unfinished profile is
+// resumed from inside the app, not forced here); a brand-new sign-in with no row yet goes to
+// onboarding; everyone else goes to Welcome. Every sign-in path (password, Google, email link,
+// phone) returns here. On Android the native splash covers this screen.
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [

@@ -10,12 +10,15 @@ type OnboardingState = {
 } | null;
 
 export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
-  if (profile?.onboarding_complete) return "/discover";
-  const draft = profile?.onboarding_draft;
-  const started =
-    Boolean(profile?.onboarding_step) ||
-    (typeof draft === "object" && draft !== null && Object.keys(draft).length > 0);
-  return started ? "/onboarding/resume" : "/onboarding";
+  // No row at all = genuinely the first sign-in, before the signup trigger has (or ever will)
+  // create a profile — the only case that still forces onboarding.
+  if (!profile) return "/onboarding";
+  // Any existing profile row — complete or not — is a returning user: land on Discover,
+  // every time. Onboarding used to re-gate every sign-in until the profile was finished, which is
+  // what sent a real returning user back to a "Welcome back, 0 of 7 completed" resume screen
+  // instead of into the app (owner call, 23 Sep). Finishing a profile is now something a user
+  // opts into from inside the app (e.g. a CTA to /onboarding/resume), not a forced redirect.
+  return "/discover";
 }
 
 export type ProviderState = "checking" | "on" | "off";
