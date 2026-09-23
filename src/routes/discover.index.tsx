@@ -37,7 +37,7 @@ import { useTaxonomy } from "@/lib/taxonomy";
 import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
 import { MediaEmbed } from "@/components/ml/media-embed";
-import { NoCover } from "@/components/ml/profile";
+import { WorkTypeIcon } from "@/components/ml/portfolio";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
@@ -284,7 +284,9 @@ function TrendingWorkRow({ item }: { item: TrendingItem }) {
             className="h-14 w-14 shrink-0 rounded-sm object-cover"
           />
         ) : (
-          <NoCover className="h-14 w-14 shrink-0 rounded-sm" />
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center">
+            <WorkTypeIcon kind={item.kind} />
+          </span>
         )}
         <span className="min-w-0 flex-1">
           <span className="block truncate text-2 font-semibold">{item.title}</span>
