@@ -64,14 +64,25 @@ const workIcons: Record<string, LucideIcon> = {
 };
 
 /** A work type's line icon in a grey tile, in place of the emoji in `workTypes`. */
-export function WorkTypeIcon({ kind, size = "md" }: { kind: string; size?: "md" | "lg" }) {
+export function WorkTypeIcon({
+  kind,
+  size = "md",
+  tone = "light",
+}: {
+  kind: string;
+  size?: "md" | "lg";
+  /** "dark" sits full-bleed on a photo-style card ground; "light" is the boxed default. */
+  tone?: "light" | "dark";
+}) {
   const Icon = workIcons[kind] ?? Music2;
   return (
     <span
       aria-hidden
-      className={`flex shrink-0 items-center justify-center bg-background text-foreground ${
-        size === "lg" ? "h-16 w-16 rounded-lg" : "h-12 w-12 rounded-sm"
-      }`}
+      className={cn(
+        "flex shrink-0 items-center justify-center",
+        tone === "dark" ? "bg-ink text-background" : "bg-background text-foreground",
+        size === "lg" ? "h-16 w-16 rounded-lg" : "h-12 w-12 rounded-sm",
+      )}
     >
       <Icon size={size === "lg" ? 24 : 20} strokeWidth={1.75} />
     </span>

@@ -38,6 +38,7 @@ import { recordPlay } from "@/lib/plays";
 import { recordWorkEvent } from "@/lib/work-events";
 import { MediaEmbed } from "@/components/ml/media-embed";
 import { WorkTypeIcon } from "@/components/ml/portfolio";
+import { workType } from "@/data/portfolio";
 import { joinParts } from "@/lib/utils";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
 import { discoverStudioFromRow } from "@/lib/studio-view";
@@ -261,12 +262,16 @@ function Discover() {
 }
 
 /** A trending work: tap to play it in place, which also counts toward Trending. */
+/**
+ * Full-bleed, the title on the scrim: the card carries no colour of its own, the artwork does.
+ * Same idiom as FeaturedCard, applied to a list rather than a single hero tile.
+ */
 function TrendingWorkRow({ item }: { item: TrendingItem }) {
   const [open, setOpen] = useState(false);
   // Shown in Trending counts as a view of the work, for its owner's Performance figures.
   useEffect(() => recordWorkEvent(item.id, "view"), [item.id]);
   return (
-    <article className="rounded-lg bg-subtle p-3">
+    <article className="overflow-hidden rounded-lg bg-subtle">
       <button
         type="button"
         aria-expanded={open}
@@ -274,37 +279,36 @@ function TrendingWorkRow({ item }: { item: TrendingItem }) {
           if (!open) recordPlay(item.id);
           setOpen((o) => !o);
         }}
-        className="state-layer flex w-full items-center gap-3 rounded-lg text-left"
+        className="state-layer relative block h-40 w-full text-left"
       >
         {item.cover_url ? (
-          <img
-            src={item.cover_url}
-            alt=""
-            loading="lazy"
-            className="h-14 w-14 shrink-0 rounded-sm object-cover"
-          />
+          <img src={item.cover_url} alt="" loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center">
-            <WorkTypeIcon kind={item.kind} />
+          <span className="flex h-full w-full items-center justify-center bg-ink">
+            <WorkTypeIcon kind={item.kind} size="lg" tone="dark" />
           </span>
         )}
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-2 font-semibold">{item.title}</span>
-          <span className="block truncate text-1 text-muted-foreground">
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/35 to-transparent" />
+        <span className="pill absolute left-3 top-3 bg-ink/70 text-background">
+          {workType(item.kind).label}
+        </span>
+        <ChevronDown
+          size={iconSize.md}
+          aria-hidden
+          className={`absolute right-3 top-3 shrink-0 text-background transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
+        />
+        <span className="absolute inset-x-3 bottom-3 text-background">
+          <span className="block truncate text-2 font-bold">{item.title}</span>
+          <span className="block truncate text-1 text-background/80">
             {joinParts(
               item.display_name ?? "",
               `${item.plays} ${item.plays === 1 ? "play" : "plays"}`,
             )}
           </span>
         </span>
-        <ChevronDown
-          size={iconSize.md}
-          aria-hidden
-          className={`shrink-0 text-muted-foreground transition-transform duration-200 ease-standard ${open ? "rotate-180" : ""}`}
-        />
       </button>
       {open ? (
-        <div className="mt-3 space-y-2 animate-in fade-in duration-200">
+        <div className="space-y-2 p-3 animate-in fade-in duration-200">
           {item.media_url ? (
             <MediaEmbed
               url={item.media_url}
