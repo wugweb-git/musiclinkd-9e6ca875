@@ -19,7 +19,7 @@ import {
   ArrowLeft,
   Mic,
   Search,
-  Menu,
+  Grid2x2,
   ArrowLeftRight,
   Bell,
   FolderKanban,
@@ -224,7 +224,7 @@ export function BottomNav() {
               className="flex h-16 w-full items-center justify-center"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full">
-                <Menu
+                <Grid2x2
                   size={iconSize.md}
                   className="text-foreground"
                   strokeWidth={1.8}
