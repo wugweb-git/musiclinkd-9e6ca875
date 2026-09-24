@@ -28,6 +28,7 @@ import { Btn } from "@/components/ml/ui";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { showDemoControls } from "@/lib/dev";
+import { useAuthProvider } from "@/lib/post-auth";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
@@ -82,7 +83,13 @@ const audience = [
  * database, so the ticker is never a claim the product can't back. Until they load, the two rows
  * hold their height; if they fail to load, the rows stay empty and the headline carries the screen.
  */
-function RoleTicker({ className, style }: { className?: string | undefined; style?: CSSProperties | undefined }) {
+function RoleTicker({
+  className,
+  style,
+}: {
+  className?: string | undefined;
+  style?: CSSProperties | undefined;
+}) {
   const { options } = useTaxonomy();
   const roles = (options?.person_types ?? []).filter((o) => o.slug !== "other");
   if (!roles.length) return null;
@@ -96,10 +103,7 @@ function RoleTicker({ className, style }: { className?: string | undefined; styl
       )}
       style={style}
     >
-      <div
-        className="flex w-max animate-marquee gap-1.5"
-        style={{ animationDuration: "50s" }}
-      >
+      <div className="flex w-max animate-marquee gap-1.5" style={{ animationDuration: "50s" }}>
         {[...roles, ...roles].map((o, i) => {
           const Icon = roleIcon(o);
           return (
@@ -128,6 +132,11 @@ function WelcomeScreen() {
   const [email, setEmail] = useState(carriedEmail);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState<"email" | "google" | "linkedin" | null>(null);
+  // Only offer a way in that the server will actually accept. LinkedIn is offered the moment the
+  // provider is switched on for the project, and hidden until then, so the button never fails —
+  // it was on this screen while linkedin_oidc was off, and every tap ended in an error.
+  const linkedInState = useAuthProvider("linkedin_oidc");
+  const showLinkedIn = linkedInState !== "off";
   const [error, setError] = useState<{ title: string; body: string } | null>(null);
   const fields = useFieldErrors<"email" | "password">();
   const arrive = useArrival("welcome");
@@ -283,10 +292,19 @@ function WelcomeScreen() {
                 India&apos;s music network
               </div>
 
-              <div className="text-0 font-bold tracking-tight text-foreground" aria-label="Tagline: Connect, collaborate, create">
-                <span className={cn("inline-block", rise)} style={beat(2)}>Connect. </span>
-                <span className={cn("inline-block", rise)} style={beat(3)}>Collab. </span>
-                <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>Create.</span>
+              <div
+                className="text-0 font-bold tracking-tight text-foreground"
+                aria-label="Tagline: Connect, collaborate, create"
+              >
+                <span className={cn("inline-block", rise)} style={beat(2)}>
+                  Connect.{" "}
+                </span>
+                <span className={cn("inline-block", rise)} style={beat(3)}>
+                  Collab.{" "}
+                </span>
+                <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>
+                  Create.
+                </span>
               </div>
             </div>
 
@@ -391,7 +409,7 @@ function WelcomeScreen() {
 
           <Divider label="or" className="my-1" />
 
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className={`grid gap-1.5 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
             <Btn
               variant="outline"
               className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
@@ -401,15 +419,17 @@ function WelcomeScreen() {
             >
               Google
             </Btn>
-            <Btn
-              variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
-              icon={<Linkedin size={iconSize.sm} aria-hidden />}
-              loading={busy === "linkedin"}
-              onClick={() => void linkedin()}
-            >
-              LinkedIn
-            </Btn>
+            {showLinkedIn ? (
+              <Btn
+                variant="outline"
+                className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
+                icon={<Linkedin size={iconSize.sm} aria-hidden />}
+                loading={busy === "linkedin"}
+                onClick={() => void linkedin()}
+              >
+                LinkedIn
+              </Btn>
+            ) : null}
             <Btn
               variant="outline"
               className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"

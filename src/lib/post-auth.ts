@@ -24,11 +24,14 @@ export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
 export type ProviderState = "checking" | "on" | "off";
 
 /**
- * Whether phone (SMS) sign-in is switched on for this project. Read from the auth server's public
- * settings, so turning the provider on needs no code change. Unknown counts as available: the phone
- * screen reports the server's own error if a request fails.
+ * Whether a sign-in provider is switched on for this project, read from the auth server's own
+ * public settings. Turning one on or off is then a project setting and needs no code change, and
+ * the app never offers a way in that the server will refuse.
+ *
+ * Unknown counts as available: a failed request should not hide a working button, and the screen
+ * behind it reports the server's own error if it comes to that.
  */
-export function usePhoneSignIn(): ProviderState {
+export function useAuthProvider(provider: "phone" | "google" | "linkedin_oidc"): ProviderState {
   const [state, setState] = useState<ProviderState>("checking");
 
   useEffect(() => {
@@ -38,14 +41,19 @@ export function usePhoneSignIn(): ProviderState {
     let active = true;
     fetch(`${url}/auth/v1/settings`, { headers: { apikey: key } })
       .then((r) => (r.ok ? r.json() : null))
-      .then((s: { external?: { phone?: boolean } } | null) => {
-        if (active && s?.external) setState(s.external.phone ? "on" : "off");
+      .then((s: { external?: Record<string, boolean | undefined> } | null) => {
+        if (active && s?.external) setState(s.external[provider] ? "on" : "off");
       })
       .catch(() => {});
     return () => {
       active = false;
     };
-  }, []);
+  }, [provider]);
 
   return state;
+}
+
+/** Whether phone (SMS) sign-in is switched on. */
+export function usePhoneSignIn(): ProviderState {
+  return useAuthProvider("phone");
 }
