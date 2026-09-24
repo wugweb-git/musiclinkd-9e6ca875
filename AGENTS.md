@@ -14,7 +14,7 @@
 # Working in this repository
 
 MusicLinkd — India's professional network for the music industry. The only MusicLinkd frontend,
-live at `musiclinkd.lovable.app`. Nothing here is a prototype.
+live at `app.musiclinkd.com`. Nothing here is a prototype.
 
 ## Git and Lovable
 
@@ -45,10 +45,15 @@ file per export:
   action) to represent one entity — `ArtistCard`, `BookingCard`, `TrackCard`, `HireContactModal`,
   `AdvancedFiltersBottomSheet`. The `Card` suffix is a shape, not a demotion — cards are Blocks.
 
-Don't use "Widget" for this tier — retired, see Notion 🧩 Master Widgets for why. Canonical directory:
-same page, being rebuilt under this naming.
+Don't use "Widget" for this tier — retired 18 Sep 2026, along with the page that defined it. The
+canonical directories are now the Blocks and Components pages under Design System in Notion.
 
-- Fields: `TextField` (sentence-case label, not bold), `PhoneField`, `CodeInput`, `InlineField`.
+- Fields: `InlineField` is the text field — one shape for the app, a pill (`inputClass`), matching
+  the pickers beside it. A textarea keeps a rounded rectangle. `Field` (listing-form.tsx) wraps a
+  control that isn't an input; `CityField` is the only way to ask for a city. Auth has its own
+  `TextField`, `PhoneField`, `CodeInput`. Never add a second styled copy of any of these — four
+  screens had one, and they have been folded back in. Input text is `text-2` or larger: the
+  viewport sets no `maximum-scale`, so iOS zooms the page on anything under 16px.
   Errors under the field on blur or submit (`useFieldErrors`); `AuthNotice` only for whole-form problems.
 - Buttons: `Btn`, `Btn icon`, `IconBtn label` (and `BtnLink`, `IconBtnLink`). Use `loading`, not
   "Please wait…". Never ship a control that does nothing; disable it and say why.
@@ -56,7 +61,9 @@ same page, being rebuilt under this naming.
 - Never key styling off display copy; key off a union type.
 - Tailwind classes with tokens only. Inline `style` only for runtime values (computed sizes,
   safe-area, animation delays).
-- Icons from `lucide-react` (brands: `ml/brand-icons.tsx`). Never emoji.
+- Icons from `lucide-react` at a size from `iconSize` (brands: `ml/brand-icons.tsx`). Never emoji,
+  never an off-scale pixel value. There is a second set: ~400 Pinterest Gestalt SVGs in
+  `src/assets/icons/gestalt/`, used only by `ml/tab-icon.tsx` for a tab's filled active state.
 
 **Tokens.**
 
@@ -65,26 +72,43 @@ same page, being rebuilt under this naming.
 - Type: `text-0` (11px labels), `text-1`, `text-sm`, `text-2`, `text-2.5` (19px section
   headings), `text-3`, `text-4`, `text-5` (hero). No `text-xs/base/lg`, no `text-[Npx]`.
 - Spacing: Tailwind numeric scale. Secondary text: `text-muted-foreground`.
-- Colour: primary is ink `#0D0D0D`; palette is black, greys, white. Brand pink `#EA4C89` only on the
-  logo, unread dots and the Welcome tagline — never buttons, links, selection, icons or body text.
+- Colour: primary is ink `#0D0D0D`; palette is black, greys, white. Brand pink `#EA4C89` is rare
+  and always a signal: the logo, the active tab underline, press feedback while a finger is down, a
+  selected pill, prices, and the `brand` button inside branded blocks. Never a resting border,
+  background or body text. `src/styles.css` is the authority on this — read the comment on
+  `--brand` rather than restating the rule from memory.
 - `:focus-visible` ring on every control; 48dp touch targets.
 
-**Routing.** Flat dot-named files in `src/routes/`. `routeTree.gen.ts` is generated, never edit it.
+**Routing.** Mostly flat dot-named files in `src/routes/`; `marketplace/`, `marketplace/rent/` and
+`onboarding/` are real directories (28 of 181 route files). `routeTree.gen.ts` is generated, never edit it.
 Every route has `head()`. A route with children must render `<Outlet />` or be an `x.index.tsx`
 leaf — check whether `x.tsx` exists before adding `x.y.tsx`. Never move or rename route files to
 group screens.
 
-**Data.** Keep UI copy, seed content and runtime data in separate modules. Store timestamps, not
-"3 weeks ago". Never fabricate counts, availability, ratings, payments or bookings. Watch for seed
-defaults (names, photos, counts) leaking into real users.
+**Data.** Database rows are live data — never call them seed, sample or fake. Hardcoded content
+lives only in `src/data/`, and a screen reading it instead of the database is a bug to fix, not a
+pattern to copy. Keep UI copy and runtime data in separate modules. Store timestamps, not
+"3 weeks ago". Never fabricate counts, availability, ratings, payments or bookings. Watch for
+placeholder names, photos and counts leaking onto real profiles.
+
+Anything drawn from a list of options — roles, genres, instruments, languages, cities, categories,
+work modes, amenities — comes from `taxonomy_options`, never from an array in code. A profile stores
+`metadata.app_key` where a category sets one and the slug otherwise, so read values back with
+`labelFor`, and compare cities with `sameCity` (`src/lib/place.ts`) rather than `===`.
 
 **Database.** Every schema change is a file in `supabase/migrations/`. Ask before adding tables.
+**Commit a snapshot to `supabase/dumps/` before any write to the live database**, named
+`YYYY-MM-DD-before-<change>.sql`, and reference it from the migration's header — that file is the
+undo.
 Data access is server-side `createServerFn` in `*.functions.ts` with `requireSupabaseAuth`; no
 client-side Supabase writes. Private user details live in owner-only `profile_private`.
 
 ## Checks
 
-By default run `bunx tsc --noEmit`. Lint, build, 412px screenshots, `CHANGELOG.md` and `roadmap.md`
-updates happen only when asked or before a push. Say plainly what was not run.
+By default run `bunx tsc --noEmit`. Before a push, run what CI runs, because CI blocks the merge on
+all of it (`.github/workflows/ci.yml`): `bunx tsc --noEmit`, `bun run lint`, `bun run test-storybook`
+(the accessibility gate — there are no `*.test.*` files, the stories are the test suite),
+`bun run check-token-drift` and `bun run build`. 412px screenshots, `CHANGELOG.md` and `roadmap.md`
+updates happen only when asked. Say plainly what was not run.
 
 If a link, file or attachment can't be read, say so. If two sources disagree, surface it.

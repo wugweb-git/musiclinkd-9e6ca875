@@ -4,16 +4,16 @@ India's professional network and operating system for the music industry — dis
 bookings, and messaging for musicians, bands, studios, labels, and venues.
 
 - **Stack**: TanStack Start (React), Tailwind CSS, shadcn/ui (Radix), Supabase
-- **Live preview**: https://musiclinkd.lovable.app
+- **Live app**: https://app.musiclinkd.com
 - **Rules for working in this repo**: see [`AGENTS.md`](./AGENTS.md) — the GitHub↔Lovable sync
   protocol and code conventions. Read it before making changes.
-- **Brand palette**: ink `#0D0D0D` (primary), black/greys/white. Brand pink `#EA4C89` is a rare
-  accent only (logo, unread dots, Welcome tagline) — never buttons, links, selection, icons or body
-  text. Radius by role: `sm` 8, `md` 12, `lg` 16, `xl` 20, `2xl` 28, `3xl` hero, `full` pill.
+- **Brand palette**: ink `#0D0D0D` (primary), black/greys/white. Brand pink `#EA4C89` is rare and
+  always a signal — the logo, the active tab underline, press feedback, a selected pill, prices, and
+  the `brand` button inside branded blocks; never a resting border, background or body text.
+  `src/styles.css` is the authority. Radius by role: `sm` 8, `md` 12, `lg` 16, `xl` 20, `2xl` 28,
+  `3xl` hero, `full` pill.
 
 This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://musiclinkd.lovable.app
 
 ## Build with Lovable
 
@@ -25,11 +25,18 @@ Continue developing this project in the [Lovable editor](https://lovable.dev/pro
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Prefer working locally? This repo is Bun-only — `bun.lock` is the lockfile and CI pins Bun.
+[Install Bun](https://bun.sh/docs/installation).
 
 ```sh
 git clone <this-repository-url>
 cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
+```
+
+The dev server runs on port 8080. Before pushing, run what CI runs:
+
+```sh
+bunx tsc --noEmit && bun run lint && bun run build
 ```
