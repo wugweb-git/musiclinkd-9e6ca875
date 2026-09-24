@@ -1,0 +1,38 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-24 via Lovable query_database, before applying
+-- 20260924100000_push_tokens.sql, which adds public.push_tokens for Firebase Cloud Messaging
+-- registration tokens (owner, 24 Sep 2026, lifting the earlier "never Firebase" rule).
+--
+-- BEFORE STATE
+--
+-- public.push_tokens does not exist. Confirmed against the table census taken the same day:
+-- 71 tables in public, none named push_tokens, push_subscriptions or device_tokens.
+--
+-- Nothing stores a device token anywhere today. notification_preferences (0 rows) holds which
+-- categories a person wants and whether quiet hours apply, but no delivery address of any kind,
+-- so there is no existing data this migration can conflict with or overwrite.
+--
+-- The new table copies the ownership convention already used by notification_preferences, which
+-- is the closest existing per-person table:
+--
+--   notification_preferences columns:
+--     profile_id   uuid        not null  default auth.uid()
+--     channels     jsonb       not null  default '{}'::jsonb
+--     quiet_hours  boolean     not null  default true
+--     updated_at   timestamptz not null  default now()
+--
+--   notification_preferences policies (all owner-only, matched on profile_id = auth.uid()):
+--     SELECT "Read your own"    USING  (profile_id = auth.uid())
+--     INSERT "Write your own"   CHECK  (profile_id = auth.uid())
+--     UPDATE "Change your own"  USING  (profile_id = auth.uid())  CHECK (profile_id = auth.uid())
+--
+--   It has no DELETE policy. push_tokens adds one, because signing out of a device has to be able
+--   to remove that device's token — a token left behind would keep delivering somebody else's
+--   notifications to a handset they no longer own.
+--
+-- UNDO
+--
+--   DROP TABLE IF EXISTS public.push_tokens;
+--
+-- Dropping it loses only registration tokens, which every device re-registers on next launch.
+-- No other table references it.
