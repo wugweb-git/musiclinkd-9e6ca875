@@ -1,16 +1,18 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet,
+  HeadContent,
   Link,
+  Outlet,
+  Scripts,
   createRootRouteWithContext,
   useRouter,
-  HeadContent,
-  Scripts,
+  useRouterState,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { AppNav } from "@/components/ml/ui";
+import { startAnalytics, trackPageview } from "@/lib/analytics";
 import { useAuth } from "@/hooks/use-auth";
 import { syncRecentlyViewed } from "@/lib/device-history";
 import { useRememberAccounts } from "@/hooks/use-remember-accounts";
@@ -148,11 +150,19 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { user } = useAuth();
   const userId = user?.id;
+  const path = useRouterState({ select: (s) => s.location.pathname });
   // Recently viewed follows the account: merge this device's list once a session is known.
   useEffect(() => {
     if (userId) void syncRecentlyViewed();
   }, [userId]);
   useRememberAccounts(userId);
+
+  // Analytics only starts if this build has a measurement id and this device has said yes; both
+  // checks live in startAnalytics, so nothing here decides anything. Every client route change
+  // reports one page view, with the path stripped of anything naming a person.
+  useEffect(() => {
+    void startAnalytics().then(() => trackPageview(path));
+  }, [path]);
 
   return (
     <QueryClientProvider client={queryClient}>

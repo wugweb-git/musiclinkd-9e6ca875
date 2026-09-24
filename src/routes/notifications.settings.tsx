@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MoonStar } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { Card } from "@/components/ml/kit";
+import { Card, Switch } from "@/components/ml/kit";
 import { notificationIcon } from "@/components/ml/notification-icons";
 import {
   channels,
@@ -135,18 +135,7 @@ function NotificationSettings() {
             <p className="flex items-center gap-2 text-sm font-semibold">
               <MoonStar size={iconSize.sm} /> Quiet hours
             </p>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={quiet}
-              aria-label="Quiet hours"
-              onClick={() => commit(prefs, !quiet)}
-              className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${quiet ? "bg-primary" : "bg-background"}`}
-            >
-              <span
-                className={`block h-5 w-5 rounded-full bg-background transition-transform ${quiet ? "translate-x-5" : ""}`}
-              />
-            </button>
+            <Switch checked={quiet} onChange={(next) => commit(prefs, next)} label="Quiet hours" />
           </div>
           <p className="text-1 text-muted-foreground">
             {quiet

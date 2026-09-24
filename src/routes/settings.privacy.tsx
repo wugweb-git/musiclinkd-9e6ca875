@@ -20,13 +20,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { SoonBadge } from "@/components/ml/kit";
+import { SoonBadge, Switch } from "@/components/ml/kit";
 import { ChipPicker, OptionList } from "@/components/ml/onboarding";
 import { privacyControls } from "@/data/settings";
 import { availabilityFor, contactChannels, workModes } from "@/data/onboarding";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { exportMyData } from "@/lib/account.functions";
 import { iconSize } from "@/lib/tokens";
+import { analyticsConfigured, analyticsConsent, setAnalyticsConsent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/settings/privacy")({
   head: () => ({
@@ -115,6 +116,9 @@ function PrivacyScreen() {
   const [modes, setModes] = useState<string[]>([]);
   const [availableFor, setAvailableFor] = useState<string[]>([]);
   const [drawer, setDrawer] = useState<"reach" | "modes" | "available" | null>(null);
+  // Read after mount so the server render and the first client render agree; storage is per device.
+  const [analyticsOn, setAnalyticsOn] = useState(false);
+  useEffect(() => setAnalyticsOn(analyticsConsent()), []);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -263,6 +267,27 @@ function PrivacyScreen() {
             );
           })}
         </ul>
+
+        {/* Usage analytics. Only offered when the build actually has a measurement id, and off
+            until it is switched on here — nothing reports on first paint. */}
+        {analyticsConfigured() ? (
+          <section className="rounded-lg bg-subtle p-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-semibold">Usage analytics</p>
+              <Switch
+                checked={analyticsOn}
+                onChange={(next) => {
+                  setAnalyticsOn(next);
+                  setAnalyticsConsent(next);
+                }}
+                label="Usage analytics"
+              />
+            </div>
+            <p className="mt-1 text-1 text-muted-foreground">
+              Sends which screens are opened. Never your name, your handle or anything you type.
+            </p>
+          </section>
+        ) : null}
 
         {/* The other three of the four: each opens its own drawer, each saves on tap. */}
         <section>

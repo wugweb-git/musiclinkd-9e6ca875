@@ -371,6 +371,36 @@ export function Row({
 }
 
 /**
+ * An on/off switch. One implementation: notification settings and the filter sheet each drew their
+ * own, which is how two switches in the same app ended up different sizes.
+ */
+export function Switch({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (next: boolean) => void;
+  /** What it switches, for anyone who cannot see the row it sits on. */
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${checked ? "bg-primary" : "bg-background"}`}
+    >
+      <span
+        className={`block h-5 w-5 rounded-full bg-background transition-transform ${checked ? "translate-x-5" : ""}`}
+      />
+    </button>
+  );
+}
+
+/**
  * A titled card of Rows — one heading, then the rows in a single rounded surface with hairlines
  * between them. This is the shape the Settings page reads in (owner, 24 Sep 2026: "I like the
  * settings page UI"), shared so Settings and the menu are one thing rather than two styled copies.
