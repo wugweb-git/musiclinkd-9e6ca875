@@ -35,6 +35,7 @@ import { gearCategoryOf, useGearTaxonomy } from "@/lib/listing-category";
 import { inr, priceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
+import { DrawerList, DrawerOptionRow } from "@/components/ml/drawer-list";
 
 export const Route = createFileRoute("/marketplace/mine")({
   head: () => ({
@@ -396,11 +397,11 @@ function Mine() {
       </div>
 
       <Sheet open={adding} onClose={() => setAdding(false)} title="What are you listing?">
-        <div className="space-y-2">
+        <DrawerList label="Listing types">
           {addOptions.map((o) => (
-            <button
+            <DrawerOptionRow
               key={o.mode}
-              type="button"
+              option={{ value: o.mode, label: o.label, icon: o.icon }}
               onClick={() => {
                 setAdding(false);
                 void navigate({
@@ -408,16 +409,9 @@ function Mine() {
                   search: o.mode === "rent" ? { type: "rent" } : {},
                 });
               }}
-              className="state-layer flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3 text-left"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-icon-chip text-primary-foreground">
-                <o.icon size={iconSize.md} strokeWidth={1.75} aria-hidden />
-              </span>
-              <span className="min-w-0 flex-1 text-sm font-semibold">{o.label}</span>
-              <ChevronRight size={iconSize.md} className="shrink-0" aria-hidden />
-            </button>
+            />
           ))}
-        </div>
+        </DrawerList>
       </Sheet>
 
       <Dialog

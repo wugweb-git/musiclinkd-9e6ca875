@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BriefcaseBusiness,
   Clapperboard,
@@ -45,6 +45,7 @@ import {
 } from "@/data/portfolio";
 import { showDemoControls } from "@/lib/dev";
 import { iconSize } from "@/lib/tokens";
+import { DrawerList, DrawerOptionRow } from "./drawer-list";
 
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export { analyticsFor };
@@ -91,33 +92,23 @@ export function WorkTypeIcon({
   );
 }
 
-/** Add work: the type list in a bottom drawer, icon in a grey circle, one row per type. */
+/** Add work: the type list in a bottom drawer, one shared option row per type. */
 export function WorkTypeSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const navigate = useNavigate();
   return (
     <Sheet open={open} onClose={onClose} title="Add work">
-      <ul>
-        {workTypes.map((t) => {
-          const Icon = workIcons[t.kind] ?? Music2;
-          return (
-            <li key={t.kind}>
-              <Link
-                to="/portfolio/new/$kind"
-                params={{ kind: t.kind }}
-                onClick={onClose}
-                className="state-layer flex items-center gap-3 py-2.5"
-              >
-                <span
-                  aria-hidden
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-icon-chip text-primary-foreground"
-                >
-                  <Icon size={24} strokeWidth={1.75} />
-                </span>
-                <span className="text-sm font-semibold">{t.label}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <DrawerList label="Work types">
+        {workTypes.map((t) => (
+          <DrawerOptionRow
+            key={t.kind}
+            option={{ value: t.kind, label: t.label, icon: workIcons[t.kind] ?? Music2 }}
+            onClick={() => {
+              onClose();
+              void navigate({ to: "/portfolio/new/$kind", params: { kind: t.kind } });
+            }}
+          />
+        ))}
+      </DrawerList>
     </Sheet>
   );
 }
