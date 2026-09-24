@@ -5,10 +5,19 @@ import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import { AuthNotice } from "@/components/ml/auth";
 import { rememberOAuthReturn } from "@/lib/oauth-return";
 
+/** What the authorization endpoints return, to the extent this screen reads it. */
+type OAuthAuthorization = {
+  client?: { name?: string } | null;
+  redirect_url?: string | null;
+  redirect_to?: string | null;
+} | null;
+
+type OAuthResult = Promise<{ data: OAuthAuthorization; error: { message: string } | null }>;
+
 type OAuthApi = {
-  getAuthorizationDetails: (id: string) => Promise<{ data: any; error: { message: string } | null }>;
-  approveAuthorization: (id: string) => Promise<{ data: any; error: { message: string } | null }>;
-  denyAuthorization: (id: string) => Promise<{ data: any; error: { message: string } | null }>;
+  getAuthorizationDetails: (id: string) => OAuthResult;
+  approveAuthorization: (id: string) => OAuthResult;
+  denyAuthorization: (id: string) => OAuthResult;
 };
 const oauth = () => (supabase.auth as unknown as { oauth: OAuthApi }).oauth;
 
@@ -25,10 +34,11 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     ],
   }),
   validateSearch: (s: Record<string, unknown>) => ({
-    authorization_id: typeof s.authorization_id === "string" ? s.authorization_id : "",
+    authorization_id: typeof s["authorization_id"] === "string" ? s["authorization_id"] : "",
   }),
   beforeLoad: async ({ search, location }) => {
-    if (!search.authorization_id) throw new Error("This link is missing its authorization request.");
+    if (!search.authorization_id)
+      throw new Error("This link is missing its authorization request.");
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
       rememberOAuthReturn(location.pathname + location.searchStr);
@@ -88,10 +98,21 @@ function Consent() {
           signing out of the connection in that app.
         </p>
         {error ? <AuthNotice title="That didn't go through">{error}</AuthNotice> : null}
-        <Btn className="w-full" loading={busy === "approve"} disabled={busy !== null} onClick={() => void decide(true)}>
+        <Btn
+          className="w-full"
+          loading={busy === "approve"}
+          disabled={busy !== null}
+          onClick={() => void decide(true)}
+        >
           Approve
         </Btn>
-        <Btn className="w-full" variant="secondary" loading={busy === "deny"} disabled={busy !== null} onClick={() => void decide(false)}>
+        <Btn
+          className="w-full"
+          variant="outline"
+          loading={busy === "deny"}
+          disabled={busy !== null}
+          onClick={() => void decide(false)}
+        >
           Deny
         </Btn>
       </div>
