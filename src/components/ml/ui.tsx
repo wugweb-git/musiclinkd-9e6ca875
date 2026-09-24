@@ -55,15 +55,17 @@ import { TabIcon, type SolidIcon } from "./tab-icon";
  * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
  * `100vh` so the browser's own chrome doesn't push the page end off screen on a phone.
  *
- * The bottom nav is a route-type rule: shown on the five tab roots, hidden on every pushed screen
- * (detail, form, settings sub-page, flow). It is drawn once in the root layout (AppNav), not per
- * screen, so it stays mounted between tabs and its icons can animate from one state to the next.
- * Screen only reserves room for it; `className` carries a screen's own bottom clearance.
+ * The bottom nav is a route-type rule: shown on the four tabs and on every section root the menu
+ * offers, hidden on pushed screens (detail, form, settings sub-page, flow). Section roots are in
+ * because arriving at one from the menu used to leave you with no nav at all — only a back arrow
+ * to a screen you had not come from. It is drawn once in the root layout (AppNav), not per screen,
+ * so it stays mounted between tabs and its icons can animate from one state to the next. Screen
+ * only reserves room for it; `className` carries a screen's own bottom clearance.
  */
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
-export function isTabRoot(path: string) {
+export function isNavRoot(path: string) {
   const p = path.length > 1 ? path.replace(/\/+$/, "") : path;
-  return navItems.some((item) => item.to === p);
+  return navRoots.has(p);
 }
 
 export function Screen({
@@ -76,7 +78,7 @@ export function Screen({
   className?: string;
 }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  bottomNav ??= isTabRoot(path);
+  bottomNav ??= isNavRoot(path);
   const clearance = className || (bottomNav ? "pb-nav-clear" : "pb-8");
   return (
     <div className="mx-auto flex min-h-[100dvh] w-full min-w-[350px] max-w-app flex-col bg-background">
@@ -85,10 +87,10 @@ export function Screen({
   );
 }
 
-/** The one bottom nav, mounted in the root layout and shown on tab roots. */
+/** The one bottom nav, mounted in the root layout and shown on every nav root. */
 export function AppNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  return isTabRoot(path) ? <BottomNav /> : null;
+  return isNavRoot(path) ? <BottomNav /> : null;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
@@ -104,7 +106,7 @@ export const navItems: {
   { to: "/profile", label: "Profile", icon: User, solid: "person" },
 ];
 
-/** Every module, grouped, for the menu. The five tabs are here too, so the menu is complete. */
+/** Every module, grouped, for the menu. The four tabs are here too, so the menu is complete. */
 const menuGroups: {
   title: string;
   items: { to: string; label: string; icon: LucideIcon }[];
@@ -162,6 +164,15 @@ const menuGroups: {
     ],
   },
 ];
+
+/**
+ * Every route that carries the bottom nav: the four tabs, plus every section root the menu offers.
+ * Built from the two lists above so a new menu entry inherits the nav with no further wiring.
+ */
+const navRoots = new Set<string>([
+  ...navItems.map((i) => i.to),
+  ...menuGroups.flatMap((g) => g.items.map((i) => i.to)),
+]);
 
 /**
  * Four tabs and a menu. A tab shows only its icon until it is the one you are on; then its label
