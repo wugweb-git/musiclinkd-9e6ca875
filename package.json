@@ -98,7 +98,7 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.3.1",
     "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "2.13.1",
+    "@lovable.dev/vite-tanstack-config": "2.23.1",
     "@storybook/addon-a11y": "10.6.0",
     "@storybook/addon-docs": "10.6.0",
     "@storybook/addon-vitest": "10.6.0",
