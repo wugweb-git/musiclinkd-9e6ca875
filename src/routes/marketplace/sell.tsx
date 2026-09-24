@@ -20,6 +20,7 @@ import {
 import { useGearTaxonomy } from "@/lib/listing-category";
 import { createListing, listMyManagedListings, updateListing } from "@/lib/catalog.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { StepProgress } from "@/components/ml/kit";
 
 /*
  * The one listing flow: sell or rent out an instrument or a piece of equipment. My listings'
@@ -113,15 +114,7 @@ function Sell() {
         back={exit}
       />
       <div className="px-5 pt-4">
-        <div className="mb-5 flex gap-1.5">
-          {listingSteps.map((l, i) => (
-            <span
-              key={l}
-              className="h-1 flex-1 rounded-full"
-              style={{ background: i <= step ? "var(--primary)" : "var(--border)" }}
-            />
-          ))}
-        </div>
+        <StepProgress total={listingSteps.length} current={step} />
 
         {step === 0 ? <ListingWhatStep value={draft} onChange={patch} /> : null}
         {step === 1 ? <ListingMediaStep value={draft} onChange={patch} /> : null}

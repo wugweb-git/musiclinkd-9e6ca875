@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Disc3, Music2, Search, UserRoundPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, IconBtn } from "@/components/ml/ui";
-import { Card, SegmentedField } from "@/components/ml/kit";
+import { Card, SegmentedField, StepProgress } from "@/components/ml/kit";
 import { ListingStepFooter } from "@/components/ml/market";
 import { DrawerList, DrawerOptionRow } from "@/components/ml/drawer-list";
 import {
@@ -235,15 +235,7 @@ function NewCollab() {
         back="/collab"
       />
       <div className="px-5 pt-4">
-        <div className="mb-5 flex gap-1.5" aria-hidden>
-          {steps.map((l, i) => (
-            <span
-              key={l}
-              className="h-1 flex-1 rounded-full"
-              style={{ background: i <= step ? "var(--primary)" : "var(--border)" }}
-            />
-          ))}
-        </div>
+        <StepProgress total={steps.length} current={step} />
 
         {current === "Kind" ? (
           <DrawerList label="What you are starting">

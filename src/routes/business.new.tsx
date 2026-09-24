@@ -368,7 +368,7 @@ function NewBusiness() {
               <div className="mb-1 flex items-center justify-between">
                 <p className="text-sm font-bold text-foreground">Google Maps Profile (Optional)</p>
                 {reading ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-0.5 text-0 font-semibold text-muted-foreground animate-pulse">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-0.5 text-1 font-semibold text-muted-foreground animate-pulse">
                     <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
                     Locating...
                   </span>
@@ -398,7 +398,7 @@ function NewBusiness() {
                       <span className="font-bold text-foreground">
                         {place.name || "Business Found"}
                       </span>
-                      <span className="rounded-full bg-success/15 px-2 py-0.5 text-0 font-bold text-success-strong">
+                      <span className="rounded-full bg-success/15 px-2 py-0.5 text-1 font-bold text-success-strong">
                         Verified Place
                       </span>
                     </div>
@@ -407,7 +407,7 @@ function NewBusiness() {
                         .filter(Boolean)
                         .join(", ")}
                     </p>
-                    <p className="mt-1 text-0 text-muted-foreground">
+                    <p className="mt-1 text-1 text-muted-foreground">
                       Auto-populated into your business profile. You can modify anytime.
                     </p>
                   </div>

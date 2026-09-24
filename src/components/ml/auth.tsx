@@ -137,9 +137,7 @@ export function AuthHeading({
 }) {
   return (
     <div className={cn("mb-3.5 sm:mb-4", className)}>
-      <h1 className="text-2.5 sm:text-3 font-bold tracking-tight text-foreground leading-tight">
-        {title}
-      </h1>
+      <h1 className="text-3 font-bold tracking-tight text-foreground leading-tight">{title}</h1>
       {sub ? <p className="mt-1 text-1 leading-snug text-muted-foreground">{sub}</p> : null}
     </div>
   );
@@ -556,7 +554,7 @@ export function CodeInput({
               style={complete ? { animationDelay: `${i * 45}ms` } : undefined}
               className={cn(
                 complete && "animate-meter",
-                "flex h-12 sm:h-13 flex-1 items-center justify-center rounded-sm border bg-card text-2.5 sm:text-3 font-bold transition-all duration-150 ease-standard shadow-xs",
+                "flex h-12 sm:h-13 flex-1 items-center justify-center rounded-sm border bg-card text-3 font-bold transition-all duration-150 ease-standard shadow-xs",
                 invalid
                   ? "border-destructive bg-danger-container/20 text-destructive"
                   : active
@@ -660,12 +658,7 @@ export function useFieldErrors<N extends string>() {
 
 export function LegalNote({ className }: { className?: string | undefined } = {}) {
   return (
-    <p
-      className={cn(
-        "mt-2 text-center text-0 sm:text-1 leading-snug text-muted-foreground",
-        className,
-      )}
-    >
+    <p className={cn("mt-2 text-center text-1 leading-snug text-muted-foreground", className)}>
       By continuing you agree to our{" "}
       <TextLink to="/legal/terms" className="underline underline-offset-2">
         Terms
@@ -730,7 +723,7 @@ export function AuthStatus({
             {list?.length ? (
               <div className="mb-4 rounded-lg bg-subtle p-3.5">
                 {listTitle ? <p className="text-xs sm:text-sm font-semibold">{listTitle}</p> : null}
-                <ul className="mt-1.5 list-disc space-y-1 pl-4 text-0 sm:text-1 leading-snug text-muted-foreground">
+                <ul className="mt-1.5 list-disc space-y-1 pl-4 text-1 leading-snug text-muted-foreground">
                   {list.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
@@ -759,7 +752,7 @@ export function TrustNote({
   return (
     <p
       className={cn(
-        "mt-3 flex items-start gap-1.5 text-0 sm:text-1 leading-normal text-muted-foreground",
+        "mt-3 flex items-start gap-1.5 text-1 leading-normal text-muted-foreground",
         className,
       )}
     >

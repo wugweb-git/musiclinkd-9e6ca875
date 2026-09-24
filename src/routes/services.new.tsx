@@ -25,7 +25,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Dialog, EmptyState, Loading } from "@/components/ml/kit";
+import { Dialog, EmptyState, Loading, StepProgress } from "@/components/ml/kit";
 import { StateCard } from "@/components/ml/portfolio";
 import { ListingStepFooter } from "@/components/ml/market";
 import {
@@ -357,15 +357,7 @@ function NewService() {
       />
 
       <div className="px-5 pt-4">
-        <div className="mb-5 flex gap-1.5" aria-hidden>
-          {steps.map((s, i) => (
-            <span
-              key={s}
-              className="h-1 flex-1 rounded-full"
-              style={{ background: i <= idx ? "var(--primary)" : "var(--border)" }}
-            />
-          ))}
-        </div>
+        <StepProgress total={steps.length} current={idx} />
 
         {optionsError ? (
           <StateCard

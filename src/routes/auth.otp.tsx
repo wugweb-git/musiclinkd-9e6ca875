@@ -134,7 +134,7 @@ function OtpScreen() {
               Verify & Continue
             </Btn>
 
-            <p className="mt-3.5 flex justify-center text-0 sm:text-1 text-muted-foreground">
+            <p className="mt-3.5 flex justify-center text-1 text-muted-foreground">
               {countdown.seconds > 0 ? (
                 <span aria-live="polite" className="rounded-full bg-subtle px-3 py-1 font-medium">
                   Resend code in 0:{String(countdown.seconds).padStart(2, "0")}

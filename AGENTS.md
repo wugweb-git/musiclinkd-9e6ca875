@@ -69,8 +69,13 @@ canonical directories are now the Blocks and Components pages under Design Syste
 
 - Radius by role: `sm` 8 controls, `md` 12 inputs/thumbnails, `lg` 16 cards, `xl` 20, `2xl` 28
   sheets, `3xl` hero, `full` buttons/chips/pills. No arbitrary `rounded-[…]`.
-- Type: `text-0` (11px labels), `text-1`, `text-sm`, `text-2`, `text-2.5` (19px section
-  headings), `text-3`, `text-4`, `text-5` (hero). No `text-xs/base/lg`, no `text-[Npx]`.
+- Type: `text-1` (12–13px, the smallest step), `text-sm` (14–15, what the app leans on hardest),
+  `text-2` (16–18), `text-3` (22–28), `text-4` (32–44). No `text-xs/base/lg`, no `text-[Npx]`.
+  **`text-0`, `text-2.5` and `text-5` do not exist** — they were retired into their neighbours on
+  16 Sep 2026 (see the comment on the type scale in `src/styles.css`). This file advertised
+  `text-0` for another week, which is why 30 elements were still asking for it and rendering at
+  the inherited 16px — larger than body copy, when they were meant to be the smallest label on
+  the screen.
 - Spacing: Tailwind numeric scale. Secondary text: `text-muted-foreground`.
 - Colour: primary is ink `#0D0D0D`; palette is black, greys, white. Brand pink `#EA4C89` is rare
   and always a signal: the logo, the active tab underline, press feedback while a finger is down, a

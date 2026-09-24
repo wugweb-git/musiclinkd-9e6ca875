@@ -371,6 +371,36 @@ export function Row({
 }
 
 /**
+ * How far along a create flow is: one bar per step, filled up to the one you are on.
+ *
+ * Drawn inline in four flows before this — add a service, start a collab, list gear, request a
+ * rental — each with its own copy of the same markup and an inline background. Two of the four
+ * carried `aria-hidden` and two did not, so a screen reader read a row of decorative bars on half
+ * of them. The colours are utilities rather than an inline style, so they follow the theme.
+ */
+export function StepProgress({
+  total,
+  current,
+  className = "mb-5",
+}: {
+  total: number;
+  /** Zero-based index of the step you are on; every bar up to and including it is filled. */
+  current: number;
+  className?: string;
+}) {
+  return (
+    <div className={`flex gap-1.5 ${className}`} aria-hidden>
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={`h-1 flex-1 rounded-full ${i <= current ? "bg-primary" : "bg-border"}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+/**
  * An on/off switch. One implementation: notification settings and the filter sheet each drew their
  * own, which is how two switches in the same app ended up different sizes.
  */

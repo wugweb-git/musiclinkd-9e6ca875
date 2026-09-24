@@ -305,7 +305,13 @@ function BandProfile() {
               className="h-12 w-12"
               onClick={onToggleFollow}
             >
-              <StateIcon outline={Plus} solid="check" active={following} size={iconSize.md} move="stamp" />
+              <StateIcon
+                outline={Plus}
+                solid="check"
+                active={following}
+                size={iconSize.md}
+                move="stamp"
+              />
             </IconBtn>
           </div>
         )}
@@ -374,7 +380,7 @@ function BandProfile() {
                   <p className="mt-2 text-sm font-bold text-foreground truncate">
                     {band.nextShow || "Touring soon"}
                   </p>
-                  <p className="mt-0.5 text-0 text-muted-foreground">View dates & tickets</p>
+                  <p className="mt-0.5 text-1 text-muted-foreground">View dates & tickets</p>
                 </button>
 
                 {/* Cell 2: Lineup */}
@@ -394,21 +400,23 @@ function BandProfile() {
                     {band.members.length} members
                   </p>
                   <div className="mt-1 flex -space-x-1.5 overflow-hidden">
-                    {band.members.slice(0, 4).map((m) =>
-                      m.photo ? (
-                        <img
-                          key={m.key}
-                          src={m.photo}
-                          alt=""
-                          className="inline-block h-5 w-5 rounded-full ring-1 ring-card object-cover"
-                        />
-                      ) : (
-                        <span
-                          key={m.key}
-                          className="inline-block h-5 w-5 rounded-full bg-subtle ring-1 ring-card"
-                        />
-                      ),
-                    )}
+                    {band.members
+                      .slice(0, 4)
+                      .map((m) =>
+                        m.photo ? (
+                          <img
+                            key={m.key}
+                            src={m.photo}
+                            alt=""
+                            className="inline-block h-5 w-5 rounded-full ring-1 ring-card object-cover"
+                          />
+                        ) : (
+                          <span
+                            key={m.key}
+                            className="inline-block h-5 w-5 rounded-full bg-subtle ring-1 ring-card"
+                          />
+                        ),
+                      )}
                   </div>
                 </button>
 
@@ -448,7 +456,7 @@ function BandProfile() {
                   <p className="mt-2 text-sm font-bold text-foreground">
                     {band.releases.length} releases
                   </p>
-                  <p className="mt-0.5 text-0 text-muted-foreground">
+                  <p className="mt-0.5 text-1 text-muted-foreground">
                     {band.portfolioCount ? `${band.portfolioCount} shared works` : "Stream in-app"}
                   </p>
                 </button>
@@ -623,7 +631,9 @@ function BandProfile() {
                             />
                           )}
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-semibold text-foreground">{r.title}</p>
+                            <p className="truncate text-sm font-semibold text-foreground">
+                              {r.title}
+                            </p>
                             <p className="truncate text-1 font-medium text-muted-foreground">
                               {joinParts(r.kind, r.year ? String(r.year) : "")}
                             </p>

@@ -606,7 +606,7 @@ function Overview({
                 />
               </button>
               {p.yearsActive ? (
-                <span className="text-0 font-medium text-muted-foreground">{p.yearsActive}</span>
+                <span className="text-1 font-medium text-muted-foreground">{p.yearsActive}</span>
               ) : null}
             </div>
           </div>
@@ -1213,7 +1213,7 @@ function BentoCard({
           <span>{label}</span>
         </span>
         {count ? (
-          <span className="text-0 font-medium text-muted-foreground">{count} genres</span>
+          <span className="text-1 font-medium text-muted-foreground">{count} genres</span>
         ) : null}
       </div>
       <div className="mt-2.5 flex flex-wrap gap-1.5">{children}</div>
@@ -1223,7 +1223,7 @@ function BentoCard({
 
 function BentoChip({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-full bg-subtle px-2.5 py-1 text-0 font-semibold text-foreground border border-border/60">
+    <span className="rounded-full bg-subtle px-2.5 py-1 text-1 font-semibold text-foreground border border-border/60">
       {children}
     </span>
   );

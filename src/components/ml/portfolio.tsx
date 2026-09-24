@@ -820,7 +820,7 @@ export function PortfolioMediaTile({
       </div>
       <div className="p-2.5">
         <p className="truncate text-1 font-semibold">{item.title}</p>
-        <p className="truncate text-0 text-muted-foreground">
+        <p className="truncate text-1 text-muted-foreground">
           {t.label}
           {item.release_year ? ` · ${item.release_year}` : ""}
         </p>

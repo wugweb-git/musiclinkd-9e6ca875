@@ -40,9 +40,7 @@ function SignOutScreen() {
       <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
         <div className="my-auto py-1">
           <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
-            <div
-              className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-subtle"
-            >
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-subtle">
               <LogOut size={iconSize.md} className="text-primary" />
             </div>
             <AuthHeading
@@ -53,7 +51,11 @@ function SignOutScreen() {
               <Btn className="w-full h-11 sm:h-12" onClick={() => void signOut()} disabled={busy}>
                 {busy ? "Signing out…" : "Yes, sign out"}
               </Btn>
-              <Btn variant="outline" className="w-full h-11 sm:h-12" onClick={() => void navigate({ to: "/profile" })}>
+              <Btn
+                variant="outline"
+                className="w-full h-11 sm:h-12"
+                onClick={() => void navigate({ to: "/profile" })}
+              >
                 Stay signed in
               </Btn>
             </div>

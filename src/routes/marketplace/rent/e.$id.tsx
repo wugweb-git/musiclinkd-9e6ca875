@@ -202,14 +202,9 @@ function RentalDetail() {
         ) : null}
 
         {e.deposit != null ? (
-          <div
-            className="mt-4 flex items-start justify-between gap-3 rounded-lg p-4"
-            style={{ background: "var(--warn-container)" }}
-          >
+          <div className="mt-4 flex items-start justify-between gap-3 rounded-lg bg-warn-container p-4">
             <div className="min-w-0">
-              <p className="text-1 font-bold" style={{ color: "var(--warn)" }}>
-                Refundable security deposit
-              </p>
+              <p className="text-1 font-bold text-warn">Refundable security deposit</p>
               <p className="text-1 text-muted-foreground">
                 Held by the provider for the rental period.
               </p>

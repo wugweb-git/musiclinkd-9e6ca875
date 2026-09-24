@@ -110,7 +110,7 @@ function RoleTicker({
           return (
             <span
               key={`${o.slug}-${i}`}
-              className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-subtle pl-2 pr-2.5 text-0 font-medium text-foreground border border-border/40"
+              className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-subtle pl-2 pr-2.5 text-1 font-medium text-foreground border border-border/40"
             >
               <Icon size={12} strokeWidth={1.75} className="text-muted-foreground" />
               {o.label}
@@ -298,7 +298,7 @@ function WelcomeScreen() {
             <div className="flex items-center justify-between gap-2">
               <div
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full bg-pink-container px-2 py-0.5 text-0 font-semibold text-pink-strong",
+                  "inline-flex items-center gap-1.5 rounded-full bg-pink-container px-2 py-0.5 text-1 font-semibold text-pink-strong",
                   rise,
                 )}
                 style={beat(1)}
@@ -308,7 +308,7 @@ function WelcomeScreen() {
               </div>
 
               <div
-                className="text-0 font-bold tracking-tight text-foreground"
+                className="text-1 font-bold tracking-tight text-foreground"
                 aria-label="Tagline: Connect, collaborate, create"
               >
                 <span className={cn("inline-block", rise)} style={beat(2)}>
@@ -338,7 +338,7 @@ function WelcomeScreen() {
         <div className={cn("my-auto", rise)} style={beat(6)}>
           {saved.length ? (
             <section className="mb-1.5">
-              <p className="mb-0.5 text-0 font-semibold text-muted-foreground">Continue as</p>
+              <p className="mb-0.5 text-1 font-semibold text-muted-foreground">Continue as</p>
               <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card border border-border shadow-xs">
                 {saved.slice(0, 1).map((a) => (
                   <AccountRow
@@ -366,7 +366,7 @@ function WelcomeScreen() {
               <h2 className="text-1 sm:text-2 font-bold text-foreground">
                 {signup ? "Create your account" : "Welcome back"}
               </h2>
-              <p className="text-0 text-muted-foreground">
+              <p className="text-1 text-muted-foreground">
                 {signup
                   ? "Join musicians, producers and studios across India."
                   : "Sign in with your email and password."}
@@ -406,7 +406,7 @@ function WelcomeScreen() {
               <div className="mb-1 flex items-center justify-end">
                 <AuthLink
                   to="/auth/forgot"
-                  className="text-muted-foreground hover:text-foreground font-medium text-0"
+                  className="text-muted-foreground hover:text-foreground font-medium text-1"
                 >
                   Forgot Password?
                 </AuthLink>
@@ -490,7 +490,7 @@ function WelcomeScreen() {
           </div>
 
           {showDemoControls ? (
-            <p className="mt-0.5 text-center text-0">
+            <p className="mt-0.5 text-center text-1">
               <AuthLink to="/dev/new-user" className="text-muted-foreground">
                 Dev: Test as a new user
               </AuthLink>

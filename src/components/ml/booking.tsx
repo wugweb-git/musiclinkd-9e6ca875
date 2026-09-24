@@ -23,7 +23,22 @@ import {
   StatusPill,
   type Tone,
 } from "@/components/ml/kit";
-import { availabilityFor, lowestRate, monthGrid, statusMeta, bookingTimeline, type AddOn, type Bookable, type Booking, type BookingStatus, type DayAvailability, type DayState, type PriceLines, type Resource, type Slot } from "@/data/booking";
+import {
+  availabilityFor,
+  lowestRate,
+  monthGrid,
+  statusMeta,
+  bookingTimeline,
+  type AddOn,
+  type Bookable,
+  type Booking,
+  type BookingStatus,
+  type DayAvailability,
+  type DayState,
+  type PriceLines,
+  type Resource,
+  type Slot,
+} from "@/data/booking";
 import { formatDate, formatTime, isoDate } from "@/lib/when";
 import { inr } from "@/lib/price";
 import { TextLink } from "@/components/ml/links";

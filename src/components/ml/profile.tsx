@@ -921,7 +921,7 @@ export function AudioTrackCard({
           <div className="flex items-center gap-1.5">
             <h3 className="truncate text-2 font-semibold text-foreground">{track.title}</h3>
             {track.featured ? (
-              <span className="rounded-full bg-ink px-2 py-0.5 text-0 font-semibold text-background">
+              <span className="rounded-full bg-ink px-2 py-0.5 text-1 font-semibold text-background">
                 Featured
               </span>
             ) : null}
@@ -987,7 +987,7 @@ export function AudioTrackCard({
                 <span className="flex items-center gap-1.5">
                   <AudioLines size={14} className="text-foreground" /> In-app lossless preview
                 </span>
-                <span className="font-mono text-0">{track.duration ?? "3:42"}</span>
+                <span className="font-mono text-1">{track.duration ?? "3:42"}</span>
               </div>
               <div className="flex h-7 items-center gap-1 overflow-hidden rounded-sm bg-background/80 px-2 py-1">
                 {[
@@ -1330,12 +1330,12 @@ export function ServiceCard({
         <div className="flex items-center justify-between gap-2">
           {meta ? <p className="eyebrow truncate text-muted-foreground">{meta}</p> : <span />}
           {selected ? (
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-0 font-semibold text-background">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-foreground px-2 py-0.5 text-1 font-semibold text-background">
               <Check size={10} strokeWidth={3} aria-hidden />
               Selected
             </span>
           ) : disabled && disabledReason ? (
-            <span className="inline-flex shrink-0 items-center rounded-full bg-subtle px-2 py-0.5 text-0 font-medium text-muted-foreground">
+            <span className="inline-flex shrink-0 items-center rounded-full bg-subtle px-2 py-0.5 text-1 font-medium text-muted-foreground">
               {disabledReason}
             </span>
           ) : null}
@@ -1360,7 +1360,7 @@ export function ServiceCard({
               onClick={() => setExpanded((e) => !e)}
               aria-expanded={expanded}
               aria-label={expanded ? "Collapse service details" : "Expand service details"}
-              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-0 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-1 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
             >
               <span>{expanded ? "Less" : "Details"}</span>
               <ChevronDown
@@ -1544,7 +1544,7 @@ export function ReviewCard({
             <span className="text-1 font-semibold">{r.stars.toFixed(1)}</span>
           </span>
           {r.context ? (
-            <span className="min-w-0 max-w-[140px] truncate rounded-full bg-subtle px-2 py-0.5 text-0 font-medium text-muted-foreground">
+            <span className="min-w-0 max-w-[140px] truncate rounded-full bg-subtle px-2 py-0.5 text-1 font-medium text-muted-foreground">
               {r.context}
             </span>
           ) : null}
@@ -1589,7 +1589,7 @@ export function ReviewCard({
             <span className="min-w-0">
               <span className="block truncate text-1 font-semibold text-foreground">{r.by}</span>
               {r.org ? (
-                <span className="block truncate text-0 text-muted-foreground">{r.org}</span>
+                <span className="block truncate text-1 text-muted-foreground">{r.org}</span>
               ) : null}
             </span>
           </div>
@@ -1598,7 +1598,7 @@ export function ReviewCard({
             type="button"
             onClick={toggleHelpful}
             className={cn(
-              "hit-area inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-0 font-medium transition-colors active:scale-95",
+              "hit-area inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-1 font-medium transition-colors active:scale-95",
               hasVoted
                 ? "border-foreground bg-foreground text-background font-semibold"
                 : "border-border/70 bg-subtle/40 text-muted-foreground hover:text-foreground hover:bg-card",

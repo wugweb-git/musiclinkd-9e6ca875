@@ -97,8 +97,14 @@ function ResetPassword() {
         <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
           <div className="my-auto py-1">
             <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
-              <AuthHeading title="Password updated" sub="You can now sign in with your new password." />
-              <Btn className="w-full h-11 sm:h-12" onClick={() => void navigate({ to: "/", replace: true })}>
+              <AuthHeading
+                title="Password updated"
+                sub="You can now sign in with your new password."
+              />
+              <Btn
+                className="w-full h-11 sm:h-12"
+                onClick={() => void navigate({ to: "/", replace: true })}
+              >
                 Continue to MusicLinkd
               </Btn>
             </div>
@@ -121,7 +127,10 @@ function ResetPassword() {
                 title="This reset link has expired"
                 sub="Reset links work once and expire after 60 minutes."
               />
-              <Btn className="w-full h-11 sm:h-12" onClick={() => void navigate({ to: "/auth/forgot" })}>
+              <Btn
+                className="w-full h-11 sm:h-12"
+                onClick={() => void navigate({ to: "/auth/forgot" })}
+              >
                 Send a New Link
               </Btn>
               <p className="mt-4 text-center text-xs sm:text-sm text-muted-foreground">
@@ -175,7 +184,11 @@ function ResetPassword() {
                 autoComplete="new-password"
                 className="mb-2.5"
               />
-              <Btn type="submit" className="mt-1 w-full h-11 sm:h-12 text-sm font-semibold shadow-xs" loading={busy}>
+              <Btn
+                type="submit"
+                className="mt-1 w-full h-11 sm:h-12 text-sm font-semibold shadow-xs"
+                loading={busy}
+              >
                 Save New Password
               </Btn>
             </form>

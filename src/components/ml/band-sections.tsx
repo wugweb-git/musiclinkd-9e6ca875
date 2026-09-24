@@ -195,7 +195,7 @@ export function BandRiderCard({ lines }: { lines: string[] }) {
             type="button"
             onClick={() => setExpanded((e) => !e)}
             aria-expanded={expanded}
-            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-0 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
+            className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-1 font-semibold text-foreground hover:bg-subtle active:scale-95 transition-all"
           >
             <span>{expanded ? "Show less" : `View all (${lines.length})`}</span>
             <ChevronDown

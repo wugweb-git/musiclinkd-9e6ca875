@@ -12,7 +12,7 @@ import {
   RentalAvailabilityBadge,
   RentalCalendar,
 } from "@/components/ml/rental";
-import { Loading, Price } from "@/components/ml/kit";
+import { Loading, Price, StepProgress } from "@/components/ml/kit";
 import { inr } from "@/lib/price";
 import { rupeeParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
@@ -159,19 +159,11 @@ function RequestFlow() {
     <Screen>
       <TopBar title={titles[step]} subtitle={e.name} back="/marketplace/rent" />
       <div className="px-5 py-4">
-        <div className="mb-4 flex gap-1.5">
-          {(["dates", "summary", "request", "confirmed"] as Step[]).map((s, i) => {
-            const order = ["dates", "summary", "request", "confirmed"];
-            const active = order.indexOf(step) >= i;
-            return (
-              <span
-                key={s}
-                className="h-1 flex-1 rounded-full"
-                style={{ background: active ? "var(--primary)" : "var(--border)" }}
-              />
-            );
-          })}
-        </div>
+        <StepProgress
+          total={4}
+          current={["dates", "summary", "request", "confirmed"].indexOf(step)}
+          className="mb-4"
+        />
 
         <div className="mb-4 flex items-center gap-3 rounded-lg bg-subtle p-3">
           {e.photos[0] ? (
@@ -306,10 +298,7 @@ function RequestFlow() {
 
         {step === "confirmed" ? (
           <div className="py-6 text-center">
-            <div
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3"
-              style={{ background: "var(--success-container)" }}
-            >
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-3">
               ✓
             </div>
             <h2 className="text-3">Request sent</h2>
