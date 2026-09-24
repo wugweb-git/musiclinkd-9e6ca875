@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "846160129456",
+    "project_id": "musiclinkd-7ae30",
+    "storage_bucket": "musiclinkd-7ae30.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846160129456:android:66f7f99d6478da73f03a75",
+        "android_client_info": {
+          "package_name": "com.musiclinkd.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "846160129456-rt2bn539a1uhgha1r5dae5f6krqnirur.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADrMl6_YjQcwL3lVG4SD0w9wuu8Re2Gj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "846160129456-rt2bn539a1uhgha1r5dae5f6krqnirur.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
