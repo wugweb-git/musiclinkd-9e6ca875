@@ -1,0 +1,49 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-24 via Lovable query_database, before applying
+-- 20260924140000_profile_invariants.sql.
+--
+-- Two invariant violations, both factual to fix. Nothing here is a judgement about anybody's
+-- account, and nothing is invented.
+--
+-- 1. onboarding_complete = true WITH onboarding_step still set
+--
+--    The app's own writer sets them together — src/routes/onboarding/complete.tsx:66 does
+--    `{ onboarding_complete: true, onboarding_step: null }`, and
+--    profile-groups.functions.ts:808 does the same when a business page is created. So a row
+--    holding both is a state the app cannot produce today; these two predate that.
+--
+--    BEFORE:
+--      username   display_name   onboarding_complete   onboarding_step
+--      test       ghfvc          true                  contact
+--      vedanshu   vedanshu       true                  contact
+--
+--    Harmless to routing since postAuthTarget stopped reading these (fix 31018c6 earlier today),
+--    but it makes the column mean two different things depending on the row.
+--
+-- 2. A city with no state
+--
+--    BEFORE:
+--      username   display_name   city     state
+--      cd.page    cd             Delhi    NULL
+--
+--    A profile with a city but no state falls out of every state-scoped filter, and its city
+--    picker has no list to draw from, because cities are scoped by state. Same correction already
+--    applied to northlightfilms earlier today (20260924120000_business_rows.sql). Delhi the city
+--    sits in Delhi the territory.
+--
+-- DELIBERATELY NOT TOUCHED
+--
+--   * The three rows holding city = 'Delhi'. "Delhi" is not a city in taxonomy_options — Delhi
+--     state offers New Delhi, Dwarka, Gurugram and Noida — so these people typed a city the app
+--     has no way to offer them. Rewriting their stated location to cover a gap in our list is the
+--     wrong fix; the list or the validation is. Left for the owner to decide.
+--   * arjun.mehta, rahul.sharma and sunidhi.raga, marked complete with no roles, headline or city.
+--     Whether an account is "complete" is a product judgement, not a data error.
+--   * The five profiles still mid-onboarding, one created today. Those are people partway through,
+--     not broken rows.
+--
+-- UNDO
+--
+--   UPDATE public.profiles SET onboarding_step = 'contact'
+--    WHERE username IN ('test', 'vedanshu');
+--   UPDATE public.profiles SET state = NULL WHERE username = 'cd.page';
