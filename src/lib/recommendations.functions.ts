@@ -69,7 +69,7 @@ type Candidate = {
 };
 
 const lower = (s: string | null | undefined) => (s ?? "").trim().toLowerCase();
-const overlap =(a: string[] | null | undefined, b: string[] | null | undefined) => {
+const overlap = (a: string[] | null | undefined, b: string[] | null | undefined) => {
   const set = new Set(a ?? []);
   return (b ?? []).filter((v) => set.has(v));
 };

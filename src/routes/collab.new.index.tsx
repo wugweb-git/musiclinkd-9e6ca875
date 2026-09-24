@@ -8,7 +8,13 @@ import { Screen, TopBar, IconBtn } from "@/components/ml/ui";
 import { Card, SegmentedField } from "@/components/ml/kit";
 import { ListingStepFooter } from "@/components/ml/market";
 import { DrawerList, DrawerOptionRow } from "@/components/ml/drawer-list";
-import { Field, SheetMultiSelect, SheetSelect, inputClass } from "@/components/ml/listing-form";
+import {
+  CityField,
+  Field,
+  SheetMultiSelect,
+  SheetSelect,
+  inputClass,
+} from "@/components/ml/listing-form";
 import { PersonAvatar } from "@/components/ml/person-avatar";
 import { useFieldErrors } from "@/components/ml/auth";
 import { createCollab, getCollab, listProjectTypes } from "@/lib/collabs.functions";
@@ -332,22 +338,16 @@ function NewCollab() {
                 max={5}
               />
             </Field>
-            <Field
-              label={kind === "band" ? "Base city" : "Where (optional)"}
+            <CityField
               id="collab-city"
+              label={kind === "band" ? "Base city" : "Where (optional)"}
+              value={city}
+              onChange={(v) => {
+                setCity(v);
+                errors.touch("city");
+              }}
               error={err("city")}
-            >
-              <input
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                onBlur={() => errors.touch("city")}
-                placeholder="Mumbai"
-                maxLength={80}
-                aria-labelledby="collab-city"
-                aria-invalid={Boolean(err("city"))}
-                className={inputClass}
-              />
-            </Field>
+            />
             {kind === "project" ? (
               <Field label="Who can see it" id="collab-who">
                 <SegmentedField

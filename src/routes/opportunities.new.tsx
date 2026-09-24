@@ -10,7 +10,7 @@ import { opportunityCategories } from "@/data/opportunities";
 import { createOpportunity } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { categoryIcon } from "@/components/ml/opportunity";
-import { SheetSelect } from "@/components/ml/listing-form";
+import { CityField, SheetSelect } from "@/components/ml/listing-form";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 
@@ -222,14 +222,7 @@ function CreateOpportunity() {
 
         {step === "location" ? (
           <>
-            <Field label="City">
-              <input
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Mumbai"
-                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
-              />
-            </Field>
+            <CityField id="opportunity-city" value={city} onChange={setCity} />
             <Field label="Work mode">
               <div className="flex flex-wrap gap-2">
                 {modes.map((m) => (

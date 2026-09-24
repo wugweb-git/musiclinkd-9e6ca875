@@ -7,6 +7,7 @@ import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, Meter, Row, Dialog } from "@/components/ml/kit";
 import { bandCreationSteps } from "@/data/band";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
+import { CityField } from "@/components/ml/listing-form";
 import { createCollab, getCollab, addCollabMember } from "@/lib/collabs.functions";
 
 export const Route = createFileRoute("/bands/new")({
@@ -117,7 +118,7 @@ function CreateBand() {
 
         {current === "Genre & city" ? (
           <Card className="space-y-4">
-            <Field label="Base city" value={city} onChange={setCity} placeholder="Mumbai" />
+            <CityField id="band-city" label="Base city" value={city} onChange={setCity} />
             <div>
               <p className="text-1 font-semibold">Genres</p>
               <div className="mt-2 flex flex-wrap gap-2">

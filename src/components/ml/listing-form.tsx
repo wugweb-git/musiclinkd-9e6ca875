@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import type { ProfileRow } from "@/lib/profile-map";
 import type { MyListing } from "@/lib/catalog.functions";
+import { choicesFor, useTaxonomy } from "@/lib/taxonomy";
 import {
   Calendar,
   CalendarDays,
@@ -427,9 +428,7 @@ export function SheetSelect({
          * through to the placeholder made the field read "Choose" while it was set, and it still
          * submitted the old value.
          */}
-        <span className="truncate text-foreground">
-          {current?.label ?? (value || placeholder)}
-        </span>
+        <span className="truncate text-foreground">{current?.label ?? (value || placeholder)}</span>
         <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
       </button>
       <Sheet open={open} onClose={close} title={title}>
@@ -459,6 +458,48 @@ export function SheetSelect({
   );
 }
 
+/**
+ * The one city picker, for every screen that asks where something is.
+ *
+ * Cities come from the taxonomy (taxonomy_options.cities) — never from a list in code and never
+ * from a free-text box. Typed cities are what let the same place be stored as "Mumbai", "mumbai"
+ * and "Bandra" at once, which then matched nothing. Pass `state` to narrow to that state's
+ * cities; without one every city is offered and the drawer searches.
+ */
+export function CityField({
+  id,
+  label = "City",
+  value,
+  onChange,
+  state,
+  hint,
+  error,
+}: {
+  id: string;
+  label?: string;
+  value: string | null;
+  onChange: (value: string) => void;
+  /** Narrow to one state's cities, where the screen also collects a state. */
+  state?: string | null;
+  hint?: string;
+  error?: string | null | undefined;
+}) {
+  const all = useTaxonomy().options?.cities ?? [];
+  const options = choicesFor(state ? all.filter((c) => c.metadata?.state === state) : all);
+  return (
+    <Field label={label} id={id} {...(hint ? { hint } : {})} {...(error ? { error } : {})}>
+      <SheetSelect
+        title={label}
+        value={value}
+        options={options}
+        onChange={onChange}
+        placeholder="Choose a city"
+        searchable
+      />
+    </Field>
+  );
+}
+
 /** Product types from the taxonomy, each with its icon. */
 function productTypeOptions(taxonomy: GearTaxonomy) {
   return taxonomy.types.map((t) => ({
@@ -468,7 +509,11 @@ function productTypeOptions(taxonomy: GearTaxonomy) {
       ? { icon: instrumentIcon(t.slug) }
       : {
           iconNode: (
-            <MarketCategoryIcon slug={t.slug} size={iconSize.md} className="text-primary-foreground" />
+            <MarketCategoryIcon
+              slug={t.slug}
+              size={iconSize.md}
+              className="text-primary-foreground"
+            />
           ),
         }),
   }));
@@ -803,14 +848,7 @@ export function ListingWhereStep({ value, onChange }: StepProps) {
     <div className="space-y-4">
       <div className="grid grid-cols-5 gap-2">
         <div className="col-span-3">
-          <Field label="City" id="listing-city">
-            <input
-              value={value.city}
-              onChange={(e) => onChange({ city: e.target.value })}
-              placeholder="Mumbai"
-              className={inputClass}
-            />
-          </Field>
+          <CityField id="listing-city" value={value.city} onChange={(city) => onChange({ city })} />
         </div>
         <div className="col-span-2">
           <Field label="PIN code" id="listing-pin">

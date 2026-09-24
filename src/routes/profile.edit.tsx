@@ -30,6 +30,7 @@ import {
   stateProblem,
 } from "@/lib/validation";
 import { SelectField } from "@/components/ml/onboarding";
+import { CityField } from "@/components/ml/listing-form";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
@@ -618,10 +619,11 @@ function EditProfile() {
       done: Boolean(form.city && form.availability),
       body: (
         <div className="space-y-3">
-          <Field
-            label="City"
+          <CityField
+            id="edit-city"
             value={form.city}
             onChange={(v) => update({ city: v })}
+            state={form.state}
             error={problems.city}
           />
           <SelectField

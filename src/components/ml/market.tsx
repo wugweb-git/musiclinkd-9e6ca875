@@ -43,6 +43,7 @@ import {
 import type { Listing } from "@/data/market";
 import type { RentalItem } from "@/data/rentals";
 import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
+import { useTaxonomy } from "@/lib/taxonomy";
 import { DrawerList, DrawerOptionRow, DrawerSearch, matching } from "./drawer-list";
 import {
   applyMarketFilter,
@@ -700,8 +701,14 @@ export function ListingSkeleton() {
   );
 }
 
+/*
+ * The six places offered first, each with a centre so Locate me can pick the nearest. Every name
+ * here has to be a city the taxonomy knows, because that is what listings store: "Delhi NCR" and
+ * "Goa" were neither cities nor taxonomy rows, so choosing one filtered to nothing while looking
+ * like it had worked. Searching reaches every city, not just these six.
+ */
 // eslint-disable-next-line react-refresh/only-export-components -- constant intentionally co-located with its component
-export const marketCities = ["Mumbai", "Delhi NCR", "Bengaluru", "Chennai", "Pune", "Goa"];
+export const marketCities = ["Mumbai", "New Delhi", "Bengaluru", "Chennai", "Pune", "Panjim"];
 
 const CITY_KEY = "ml.market.city";
 
@@ -731,11 +738,11 @@ export function useMarketCity() {
 /** Where each Market city is, for Locate me (nearest city) and the map. */
 const cityCentres: Record<string, [number, number]> = {
   Mumbai: [19.076, 72.8777],
-  "Delhi NCR": [28.6139, 77.209],
+  "New Delhi": [28.6139, 77.209],
   Bengaluru: [12.9716, 77.5946],
   Chennai: [13.0827, 80.2707],
   Pune: [18.5204, 73.8567],
-  Goa: [15.2993, 74.124],
+  Panjim: [15.4909, 73.8278],
 };
 
 function nearestCity(lat: number, lng: number) {
@@ -773,6 +780,7 @@ export function LocationSheet({
   const [editing, setEditing] = useState(false);
   const [query, setQuery] = useState("");
   const [here, setHere] = useState<[number, number] | null>(null);
+  const allCities = useTaxonomy().options?.cities ?? [];
   const pick = (next: string) => {
     onChoose(next);
     setEditing(false);
@@ -802,7 +810,12 @@ export function LocationSheet({
   const mapSrc = centre
     ? `https://maps.google.com/maps?q=${centre[0]},${centre[1]}&z=${here ? 13 : 10}&output=embed`
     : `https://maps.google.com/maps?q=${encodeURIComponent(`${city}, India`)}&z=10&output=embed`;
-  const shown = marketCities.filter((c) => c.toLowerCase().includes(query.toLowerCase()));
+  // The six suggested places while idle; every city the taxonomy knows once you search, so a
+  // place outside the shortlist can still be chosen rather than being unreachable.
+  const term = query.trim().toLowerCase();
+  const shown = term
+    ? allCities.map((c) => c.label).filter((c) => c.toLowerCase().includes(term))
+    : marketCities;
   return (
     <Sheet open={open} onClose={onClose} title="Choose a location">
       <div className="mb-5 overflow-hidden rounded-lg bg-card">
@@ -874,7 +887,9 @@ export function CategorySheet({
     categories.map((c) => ({
       value: c.slug,
       label: c.label,
-      iconNode: <MarketCategoryIcon slug={c.slug} size={iconSize.md} className="text-primary-foreground" />,
+      iconNode: (
+        <MarketCategoryIcon slug={c.slug} size={iconSize.md} className="text-primary-foreground" />
+      ),
     })),
     query,
   );

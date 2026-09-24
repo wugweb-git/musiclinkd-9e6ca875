@@ -47,7 +47,7 @@ import {
 import { searchPeople } from "@/lib/profile-groups.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { Field, SheetSelect, inputClass } from "@/components/ml/listing-form";
+import { CityField, Field, SheetSelect, inputClass } from "@/components/ml/listing-form";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { CoverHero, ImagePickButton } from "@/components/ml/profile";
 import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
@@ -936,15 +936,7 @@ function EditCollabSheet({
           />
         </Field>
 
-        <Field label="Where (optional)" id="edit-collab-city">
-          <input
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            maxLength={80}
-            aria-labelledby="edit-collab-city"
-            className={inputClass}
-          />
-        </Field>
+        <CityField id="edit-collab-city" label="Where (optional)" value={city} onChange={setCity} />
 
         {isProject ? (
           <>
