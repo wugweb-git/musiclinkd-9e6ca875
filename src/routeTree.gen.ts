@@ -115,6 +115,7 @@ import { Route as VerificationTypeRouteImport } from './routes/verification.$typ
 import { Route as VerificationBadgeRouteImport } from './routes/verification.badge'
 import { Route as VerificationChooseRouteImport } from './routes/verification.choose'
 import { Route as VerificationPrivacyRouteImport } from './routes/verification.privacy'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as BandsIdIndexRouteImport } from './routes/bands.$id.index'
 import { Route as BandsIdContactRouteImport } from './routes/bands.$id.contact'
 import { Route as BandsIdEventsRouteImport } from './routes/bands.$id.events'
@@ -720,6 +721,11 @@ const VerificationPrivacyRoute = VerificationPrivacyRouteImport.update({
   path: '/verification/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BandsIdIndexRoute = BandsIdIndexRouteImport.update({
   id: '/bands/$id/',
   path: '/bands/$id/',
@@ -1208,6 +1214,7 @@ export interface FileRoutesByFullPath {
   '/services/': typeof ServicesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/bands/$id/contact': typeof BandsIdContactRoute
   '/bands/$id/events': typeof BandsIdEventsRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1389,6 +1396,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesIndexRoute
   '/settings': typeof SettingsIndexRoute
   '/verification': typeof VerificationIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/bands/$id/contact': typeof BandsIdContactRoute
   '/bands/$id/events': typeof BandsIdEventsRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1572,6 +1580,7 @@ export interface FileRoutesById {
   '/services/': typeof ServicesIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/verification/': typeof VerificationIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/bands/$id/contact': typeof BandsIdContactRoute
   '/bands/$id/events': typeof BandsIdEventsRoute
   '/bands/$id/invite': typeof BandsIdInviteRoute
@@ -1756,6 +1765,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/settings/'
     | '/verification/'
+    | '/.lovable/oauth/consent'
     | '/bands/$id/contact'
     | '/bands/$id/events'
     | '/bands/$id/invite'
@@ -1937,6 +1947,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/settings'
     | '/verification'
+    | '/.lovable/oauth/consent'
     | '/bands/$id/contact'
     | '/bands/$id/events'
     | '/bands/$id/invite'
@@ -2119,6 +2130,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/settings/'
     | '/verification/'
+    | '/.lovable/oauth/consent'
     | '/bands/$id/contact'
     | '/bands/$id/events'
     | '/bands/$id/invite'
@@ -2302,6 +2314,7 @@ export interface RootRouteChildren {
   ServicesIndexRoute: typeof ServicesIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
   VerificationIndexRoute: typeof VerificationIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   BandsIdContactRoute: typeof BandsIdContactRoute
   BandsIdEventsRoute: typeof BandsIdEventsRoute
   BandsIdInviteRoute: typeof BandsIdInviteRoute
@@ -3115,6 +3128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bands/$id/': {
       id: '/bands/$id/'
       path: '/bands/$id'
@@ -3776,6 +3796,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIndexRoute: ServicesIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
   VerificationIndexRoute: VerificationIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   BandsIdContactRoute: BandsIdContactRoute,
   BandsIdEventsRoute: BandsIdEventsRoute,
   BandsIdInviteRoute: BandsIdInviteRoute,

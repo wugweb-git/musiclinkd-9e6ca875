@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "sdk_version": "3.0.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://gsqeymhtyzepwcnorjun.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "musiclinkd",
+      "version": "0.1.0",
+      "title": "MusicLinkd"
+    },
+    "tools": [
+      {
+        "name": "get_my_profile",
+        "title": "Get my profile",
+        "description": "Read the signed-in member's MusicLinkd profile: name, username, headline, roles, genres and city.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_portfolio",
+        "title": "List my portfolio",
+        "description": "List the signed-in member's portfolio work (tracks, videos, credits) in their chosen order.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Maximum items to return (default 50)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
