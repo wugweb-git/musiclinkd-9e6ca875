@@ -306,21 +306,27 @@ export function Row({
   icon,
   title,
   subtitle,
+  badge,
   right,
   to,
   params,
   hash,
   onClick,
+  grouped = false,
 }: {
   icon?: ReactNode;
   title: string;
   subtitle?: string;
+  /** A Soon or Beta badge between the label and the chevron; keeps the chevron. */
+  badge?: ReactNode;
   right?: ReactNode;
   to?: LinkProps["to"];
   params?: LinkProps["params"];
   /** A section on the target screen, without the "#". */
   hash?: string;
   onClick?: () => void;
+  /** Inside a RowGroup, which draws the card and the dividers, so the row draws neither. */
+  grouped?: boolean;
 }) {
   const inner = (
     <>
@@ -335,15 +341,24 @@ export function Row({
           <span className="block truncate text-1 text-muted-foreground">{subtitle}</span>
         ) : null}
       </span>
+      {badge}
       {right ?? (
         <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
       )}
     </>
   );
-  const cls = "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3";
+  const cls = grouped
+    ? "state-layer flex w-full items-center gap-3 px-4 py-3"
+    : "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3";
   if (to) {
     return (
-      <Link to={to} {...(params ? { params } : {})} {...(hash ? { hash } : {})} className={cls}>
+      <Link
+        to={to}
+        {...(params ? { params } : {})}
+        {...(hash ? { hash } : {})}
+        {...(onClick ? { onClick } : {})}
+        className={cls}
+      >
         {inner}
       </Link>
     );
@@ -352,6 +367,21 @@ export function Row({
     <button type="button" onClick={onClick} className={cls}>
       {inner}
     </button>
+  );
+}
+
+/**
+ * A titled card of Rows — one heading, then the rows in a single rounded surface with hairlines
+ * between them. This is the shape the Settings page reads in (owner, 24 Sep 2026: "I like the
+ * settings page UI"), shared so Settings and the menu are one thing rather than two styled copies.
+ * Rows inside it take `grouped`.
+ */
+export function RowGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section>
+      <h2 className="mb-2 px-1 text-1 font-semibold text-muted-foreground">{title}</h2>
+      <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">{children}</ul>
+    </section>
   );
 }
 

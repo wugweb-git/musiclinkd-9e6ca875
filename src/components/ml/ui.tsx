@@ -1,4 +1,4 @@
-import { Link, createLink, useRouterState } from "@tanstack/react-router";
+import { Link, createLink, useRouterState, type LinkProps } from "@tanstack/react-router";
 import { haptic } from "@/lib/haptics";
 import {
   useEffect,
@@ -12,7 +12,6 @@ import {
 import {
   LoaderCircle,
   Compass,
-  Store,
   ShoppingBag,
   MessageCircle,
   User,
@@ -45,7 +44,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
-import { BetaBadge, SoonBadge } from "./kit";
+import { BetaBadge, Row, RowGroup, SoonBadge } from "./kit";
 import { stageOf } from "@/lib/release";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
@@ -106,23 +105,29 @@ export const navItems: {
   { to: "/profile", label: "Profile", icon: User, solid: "person" },
 ];
 
-/** Every module, grouped, for the menu. The four tabs are here too, so the menu is complete. */
+/*
+ * Every module, grouped, for the menu. Regrouped 24 Sep 2026: the old five mixed things you browse
+ * with things you own, and put Categories beside Leads. Nothing was dropped — the four tabs are
+ * still listed, so the menu remains the complete map of the app.
+ */
 const menuGroups: {
   title: string;
-  items: { to: string; label: string; icon: LucideIcon }[];
+  items: { to: NonNullable<LinkProps["to"]>; label: string; icon: LucideIcon }[];
 }[] = [
   {
-    title: "Main",
+    title: "Browse",
     items: [
       { to: "/discover", label: "Discover", icon: Compass },
       { to: "/search", label: "Search", icon: Search },
-      { to: "/messages", label: "Connections", icon: MessageCircle },
-      { to: "/notifications", label: "Notifications", icon: Bell },
-      { to: "/profile", label: "Profile", icon: User },
+      { to: "/categories", label: "Categories", icon: LayoutGrid },
+      { to: "/studio", label: "Studios", icon: Mic2 },
+      { to: "/recommendations/swipe", label: "Recommendations", icon: Sparkles },
+      { to: "/saved", label: "Saved", icon: Bookmark },
+      { to: "/recently-viewed", label: "Recently viewed", icon: History },
     ],
   },
   {
-    title: "Your work",
+    title: "My work",
     items: [
       { to: "/portfolio", label: "Portfolio", icon: FolderKanban },
       { to: "/services", label: "Services", icon: BriefcaseBusiness },
@@ -130,35 +135,38 @@ const menuGroups: {
       { to: "/collab", label: "Collaborations", icon: Handshake },
       { to: "/bands", label: "Bands", icon: UsersRound },
       { to: "/reviews", label: "Reviews", icon: Star },
-      { to: "/verification", label: "Verification", icon: BadgeCheck },
-      { to: "/identity/qr", label: "QR & Card", icon: QrCode },
     ],
   },
   {
     title: "Market & bookings",
     items: [
-      { to: "/marketplace", label: "Market", icon: Store },
+      { to: "/marketplace", label: "Market", icon: ShoppingBag },
       { to: "/marketplace/rent", label: "Rentals", icon: Package },
       { to: "/bookings", label: "Bookings", icon: CalendarCheck },
-      { to: "/studio", label: "Studios", icon: Mic2 },
+    ],
+  },
+  {
+    title: "Business",
+    items: [
       { to: "/business", label: "Business", icon: Building2 },
       { to: "/business/bookings", label: "Booking requests", icon: CalendarClock },
       { to: "/business/leads", label: "Leads", icon: Inbox },
-      { to: "/categories", label: "Categories", icon: LayoutGrid },
     ],
   },
   {
-    title: "For you",
+    title: "You",
     items: [
-      { to: "/recommendations/swipe", label: "Recommendations", icon: Sparkles },
-      { to: "/saved", label: "Saved", icon: Bookmark },
-      { to: "/recently-viewed", label: "Recently viewed", icon: History },
-    ],
-  },
-  {
-    title: "Account",
-    items: [
+      { to: "/profile", label: "Profile", icon: User },
+      { to: "/messages", label: "Connections", icon: MessageCircle },
+      { to: "/notifications", label: "Notifications", icon: Bell },
+      { to: "/identity/qr", label: "QR & Card", icon: QrCode },
+      { to: "/verification", label: "Verification", icon: BadgeCheck },
       { to: "/accounts", label: "Switch account", icon: ArrowLeftRight },
+    ],
+  },
+  {
+    title: "App",
+    items: [
       { to: "/settings", label: "Settings", icon: Settings },
       { to: "/help", label: "Help", icon: CircleHelp },
     ],
@@ -247,38 +255,35 @@ export function BottomNav() {
         </ul>
       </nav>
       <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} title="Menu">
-        <div className="space-y-5 pb-2">
-          {menuGroups.map((group) => (
-            <section key={group.title}>
-              <h2 className="mb-1 text-1 font-semibold text-muted-foreground">{group.title}</h2>
-              <ul className="divide-y divide-border">
-                {group.items
-                  // The business entries are for a business page's own account.
-                  .filter((item) => !item.to.startsWith("/business") || isBusiness)
-                  .map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <li key={item.to}>
-                        <Link
-                          to={item.to}
-                          onClick={() => setMenuOpen(false)}
-                          className="state-layer flex min-h-control items-center gap-3 py-2 text-sm font-semibold text-foreground"
-                        >
-                          <Icon size={iconSize.md} className="shrink-0" aria-hidden />
-                          <span className="min-w-0 flex-1">{item.label}</span>
-                          {stageOf(item.to) === "soon" ? (
-                            <SoonBadge />
-                          ) : stageOf(item.to) === "beta" ? (
-                            <BetaBadge />
-                          ) : null}
-                        </Link>
-                      </li>
-                    );
-                  })}
-              </ul>
-            </section>
-          ))}
-        </div>
+        {menuGroups.map((group) => {
+          // The business entries are for a business page's own account.
+          const items = group.items.filter((i) => !i.to.startsWith("/business") || isBusiness);
+          if (!items.length) return null;
+          return (
+            <RowGroup key={group.title} title={group.title}>
+              {items.map((item) => {
+                const Icon = item.icon;
+                const stage = stageOf(item.to);
+                return (
+                  <li key={item.to}>
+                    <Row
+                      grouped
+                      to={item.to}
+                      title={item.label}
+                      icon={<Icon size={iconSize.md} strokeWidth={1.75} aria-hidden />}
+                      onClick={() => setMenuOpen(false)}
+                      {...(stage === "soon"
+                        ? { badge: <SoonBadge /> }
+                        : stage === "beta"
+                          ? { badge: <BetaBadge /> }
+                          : {})}
+                    />
+                  </li>
+                );
+              })}
+            </RowGroup>
+          );
+        })}
       </Sheet>
     </>
   );
