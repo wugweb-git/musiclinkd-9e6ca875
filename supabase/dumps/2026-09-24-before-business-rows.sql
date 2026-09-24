@@ -1,0 +1,49 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-24 via Lovable query_database, before applying
+-- 20260924120000_business_rows.sql, which registers three business profiles that were never
+-- registered as businesses (owner, 24 Sep 2026: "business user").
+--
+-- WHAT THIS CORRECTS, AND A CORRECTION TO AN EARLIER CLAIM
+--
+-- An audit earlier the same day reported "~30 studios, labels and venues stored as talent rows".
+-- That was wrong. It used `owner_id IS NOT NULL` as the test for "is a business", and owner_id is
+-- not that: it records which human login administers a page, and exactly 1 of 135 profiles has one.
+-- What actually makes a profile a business is a row in profile_business, and 37 profiles have one.
+--
+-- Re-checked properly, 29 of the 32 business-shaped profiles were already correct. Three were not:
+--
+--   username         display_name       roles                                       profile_business
+--   northlightfilms  Northlight Films   {production_house}                          MISSING
+--   sunsetrecords    Sunset Records     {music_label, a_and_r, music_publisher}     MISSING
+--   thequarter       The Quarter        {venue}                                     MISSING
+--
+-- All three are real pages with headlines, avatars and cities. They carry business person_types,
+-- so they read as businesses everywhere the role is used, but any screen that checks for a
+-- profile_business row treats them as a person.
+--
+-- BEFORE STATE
+--
+--   SELECT count(*) FROM profiles                                      -> 135
+--   SELECT count(*) FROM profiles WHERE owner_id IS NOT NULL           -> 1
+--   SELECT count(*) FROM profile_business                              -> 37
+--   SELECT count(*) FROM profiles p
+--     WHERE EXISTS (SELECT 1 FROM profile_business b
+--                    WHERE b.profile_id = p.id)                        -> 37
+--
+--   profiles.state for northlightfilms -> NULL   (city is 'Delhi')
+--   profiles.state for sunsetrecords   -> 'Maharashtra'
+--   profiles.state for thequarter      -> 'Maharashtra'
+--
+-- Every profile_business column except profile_id is nullable or defaulted, so the inserted rows
+-- carry nothing invented — no address, no capacity, no roster. Those are the owner's to fill.
+--
+-- UNDO
+--
+--   DELETE FROM public.profile_business
+--    WHERE profile_id IN (
+--      '87b8fccc-dcc1-49c2-af85-766faf3b5619',  -- northlightfilms
+--      '846507b2-f5ff-4d77-9087-e0bf4ec4d99d',  -- sunsetrecords
+--      'b727b6fa-87b3-416f-aa49-0e7418b77ebc'   -- thequarter
+--    );
+--   UPDATE public.profiles SET state = NULL
+--    WHERE id = '87b8fccc-dcc1-49c2-af85-766faf3b5619';

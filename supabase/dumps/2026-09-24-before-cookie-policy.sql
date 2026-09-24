@@ -1,0 +1,40 @@
+-- MusicLinkd live database snapshot (Lovable Cloud, Supabase project ace967d9-a62e-48bb-b076-c3b63b11b185)
+-- Taken 2026-09-24 via Lovable query_database, before applying
+-- 20260924130000_cookie_policy.sql, which fills the Cookie Policy page (owner, 24 Sep 2026:
+-- "fill my cookie page").
+--
+-- BEFORE STATE
+--
+--   SELECT slug, title, body FROM public.cms_pages WHERE slug = 'legal-cookies';
+--     slug           | title         | body
+--     legal-cookies  | Cookie Policy | []
+--
+-- The row exists and its body is an empty array, so /legal/cookies renders a titled page with
+-- nothing under it. Nothing is being overwritten.
+--
+-- UNDO
+--
+--   UPDATE public.cms_pages SET body = '[]'::jsonb WHERE slug = 'legal-cookies';
+--
+-- WHAT THE NEW BODY SAYS, AND WHY IT IS ACCURATE
+--
+-- Written from the code rather than from a template. Checked at the time of writing:
+--
+--   * Session: Supabase auth, via the browser's own storage for the app's origin.
+--   * 17 keys under `ml.*` in localStorage, none of which leave the device:
+--       ml.analytics.consent, ml.auth.email, ml.business.draft, ml.listing-draft,
+--       ml.market.city, ml.notifications.prefs, ml.notifications.read, ml.onboarding.draft,
+--       ml.onboarding.preview, ml.onboarding.preview.draft, ml.opportunity.apply,
+--       ml.opportunity.saved, ml.recent-searches, ml.recently-viewed,
+--       ml.recently-viewed-listings, ml.saved-accounts, ml.service.draft
+--   * Analytics: GA4, and only when VITE_GA_MEASUREMENT_ID is set AND the person has switched it
+--     on in Settings → Privacy. Cookies `_ga` and `_ga_<id>`. Off by default; switching it off
+--     clears those cookies immediately (src/lib/analytics.ts).
+--   * Embeds, only once a player is opened: YouTube via www.youtube-nocookie.com
+--     (src/lib/embed.ts:29 — the no-cookie host, not youtube.com), open.spotify.com,
+--     w.soundcloud.com.
+--   * Fonts: fonts.googleapis.com and fonts.gstatic.com on every page.
+--   * No advertising or cross-site tracking code of any kind is present in the app.
+--
+-- NOT LEGAL ADVICE. This is an accurate description of what the software does. Whether it meets
+-- the DPDP Act, GDPR or anything else is for the owner's lawyer to confirm.
