@@ -16,10 +16,38 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    /*
+     * Release signing, read from the environment — never from a file in this repository.
+     *
+     * An upload key cannot be replaced: lose the keystore and com.musiclinkd.app can never be
+     * updated again, and leak its password and anyone holding the file can sign builds as us. So
+     * nothing here holds either. Gradle picks them up from:
+     *
+     *   MUSICLINKD_KEYSTORE       path to the .jks
+     *   MUSICLINKD_KEYSTORE_PASS  its password
+     *   MUSICLINKD_KEY_ALIAS      the key alias
+     *   MUSICLINKD_KEY_PASS       the key password (defaults to the keystore password)
+     *
+     * Absent, the block simply is not created and a release build stays unsigned rather than
+     * failing with something cryptic — a debug build never needed any of this.
+     */
+    signingConfigs {
+        if (System.getenv("MUSICLINKD_KEYSTORE")) {
+            release {
+                storeFile file(System.getenv("MUSICLINKD_KEYSTORE"))
+                storePassword System.getenv("MUSICLINKD_KEYSTORE_PASS")
+                keyAlias System.getenv("MUSICLINKD_KEY_ALIAS")
+                keyPassword System.getenv("MUSICLINKD_KEY_PASS") ?: System.getenv("MUSICLINKD_KEYSTORE_PASS")
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (System.getenv("MUSICLINKD_KEYSTORE")) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }
