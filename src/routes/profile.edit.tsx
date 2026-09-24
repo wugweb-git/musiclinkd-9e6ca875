@@ -20,7 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
 import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
-import { GOOGLE_MAPS, PIN_CODE } from "@/lib/place";
+import { GOOGLE_MAPS, PIN_CODE, cityFromDistrict } from "@/lib/place";
 import {
   DEFAULT_COUNTRY,
   INDIAN_STATES,
@@ -31,6 +31,7 @@ import {
 } from "@/lib/validation";
 import { InlineField, SelectField } from "@/components/ml/onboarding";
 import { CityField } from "@/components/ml/listing-form";
+import { placeFromPin } from "@/lib/postcode.functions";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
@@ -291,6 +292,24 @@ function EditProfile() {
   const gaps = profileGaps({ ...(row ?? {}), ...form } as ProfileRow);
 
   const update = (patch: Partial<Form>) => setForm((f) => ({ ...f, ...patch }));
+
+  /*
+   * A PIN code is six digits somebody already knows, and it resolves to a real district without
+   * anyone curating a city list — which is why the city field was so often left empty, or filled
+   * with a place the picker could not offer. It fills only what is still blank: a city already
+   * entered is the person's answer, not ours to overwrite.
+   */
+  const lookUpPin = useServerFn(placeFromPin);
+  const fillFromPin = async (pin: string) => {
+    if (!/^[1-9]\d{5}$/.test(pin)) return;
+    const place = await lookUpPin({ data: { pin } }).catch(() => null);
+    if (!place) return;
+    setForm((f) => ({
+      ...f,
+      state: f.state || place.state,
+      city: f.city || cityFromDistrict(place.district),
+    }));
+  };
   // Shown under each field as it is typed; a save waits until none is left.
   const problems = {
     first_name: nameProblem(form.first_name, "First name", true),
@@ -638,7 +657,11 @@ function EditProfile() {
           <Field
             label="PIN code"
             value={form.pin_code}
-            onChange={(v) => update({ pin_code: v.replace(/\D/g, "").slice(0, 6) })}
+            onChange={(v) => {
+              const pin = v.replace(/\D/g, "").slice(0, 6);
+              update({ pin_code: pin });
+              void fillFromPin(pin);
+            }}
             hint="6 digits, e.g. 560038. Only used to find what is near you; never shown."
             error={problems.pin_code}
             inputMode="numeric"

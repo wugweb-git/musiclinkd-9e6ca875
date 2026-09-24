@@ -73,6 +73,43 @@ export function sameCity(a: string | null | undefined, b: string | null | undefi
   return x === y || holdsWord(x, y) || holdsWord(y, x);
 }
 
+/*
+ * India Post names a district the way the post office does, which is not always what a person
+ * would call the place: "Bangalore" for Bengaluru, "Bombay" for Mumbai, "Central Delhi" for the
+ * part of Delhi somebody lives in. These are the same places under older or administrative names,
+ * not different ones.
+ */
+const districtAliases: Record<string, string> = {
+  bangalore: "Bengaluru",
+  bombay: "Mumbai",
+  calcutta: "Kolkata",
+  madras: "Chennai",
+  gurgaon: "Gurugram",
+  mysore: "Mysuru",
+  mangalore: "Mangaluru",
+  poona: "Pune",
+  trivandrum: "Thiruvananthapuram",
+  baroda: "Vadodara",
+};
+
+/**
+ * A district from a PIN lookup, as a city someone would recognise.
+ *
+ * Deliberately permissive: a district the aliases do not know is returned as-is rather than
+ * dropped. The old behaviour required an exact match against a list of 79 cities, so anyone in
+ * Thane or Dombivli got an empty field — which is the whole reason the city was so often wrong.
+ * A real place name we do not have on a list still beats nothing.
+ */
+export function cityFromDistrict(district: string): string {
+  const name = district.trim();
+  if (!name) return "";
+  const known = districtAliases[name.toLowerCase()];
+  if (known) return known;
+  // "Central Delhi", "North Goa" — administrative halves of one place people just call by name.
+  const stripped = name.replace(/^(north|south|east|west|central)\s+/i, "").trim();
+  return districtAliases[stripped.toLowerCase()] ?? stripped;
+}
+
 /** A Google Maps link: maps.app.goo.gl, goo.gl/maps, google.<tld>/maps or maps.google.<tld>. */
 export const GOOGLE_MAPS =
   /^https:\/\/(maps\.app\.goo\.gl\/|goo\.gl\/maps\/|(www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+\/)/i;
