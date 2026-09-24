@@ -1,4 +1,5 @@
-import { isoDate, type DayAvailability, type Slot } from "@/data/booking";
+import { type DayAvailability, type Slot } from "@/data/booking";
+import { isoDate } from "@/lib/when";
 
 /*
  * A database studio's real availability: its weekly opening hours, minus the times taken by

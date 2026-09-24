@@ -171,7 +171,8 @@ export const emptyDashboard: DashboardData = {
 /* Orchestrator selectors — derive "what matters now" from seeded data  */
 /* ------------------------------------------------------------------ */
 
-import { bookings, getBookable, getResource, formatDate, formatTime } from "./booking";
+import { bookings, getBookable, getResource } from "./booking";
+import { formatDate, formatTime } from "@/lib/when";
 
 /** Routes the dashboard is allowed to link to (all already exist). */
 export type DashLink =

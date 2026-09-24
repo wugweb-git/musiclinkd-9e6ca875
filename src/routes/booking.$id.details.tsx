@@ -3,7 +3,7 @@ import { Field as SharedField, SheetSelect } from "@/components/ml/listing-form"
 import { TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
-import { inr } from "@/data/booking";
+import { inr } from "@/lib/price";
 import type { ReactNode } from "react";
 
 export const Route = createFileRoute("/booking/$id/details")({

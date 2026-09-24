@@ -21,7 +21,8 @@ import {
   RentalReportSheet,
 } from "@/components/ml/rental";
 import { SavedToggle } from "@/components/ml/saved-toggle";
-import { inr, type RentalItem } from "@/data/rentals";
+import { type RentalItem } from "@/data/rentals";
+import { inr } from "@/lib/price";
 import { EmptyState, Loading, Price } from "@/components/ml/kit";
 import { getListing } from "@/lib/catalog.functions";
 import { loadCatalogRentals, rentalFromRow } from "@/lib/market-view";

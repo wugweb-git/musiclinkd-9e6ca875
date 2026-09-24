@@ -15,7 +15,9 @@ import {
   StickyBar,
 } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
-import { durationOptions, formatDate, formatTime, inr } from "@/data/booking";
+import { durationOptions } from "@/data/booking";
+import { formatDate, formatTime } from "@/lib/when";
+import { inr } from "@/lib/price";
 import { showDemoControls } from "@/lib/dev";
 import { getStudioCalendar } from "@/lib/studio-calendar.functions";
 import {

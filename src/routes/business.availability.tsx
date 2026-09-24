@@ -7,7 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, Sheet } from "@/components/ml/ui";
 import { BusinessOnlyGate, Card, Loading, SegmentedField } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { formatDate, formatTime } from "@/data/booking";
+import { formatDate, formatTime } from "@/lib/when";
 import { iconSize } from "@/lib/tokens";
 import {
   addMyStudioBlock,

@@ -100,8 +100,6 @@ export type RentalItem = Pick<Equipment, "id" | "name" | "photos"> &
 const img = (id: string, w = 900) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
-export const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-
 export const rentalCategories: {
   slug: RentalCategory;
   label: string;

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Loading } from "@/components/ml/kit";
 import { ProviderSummary, RentalStatusPill } from "@/components/ml/rental";
-import { inr } from "@/data/rentals";
+import { inr } from "@/lib/price";
 import { useAuth } from "@/hooks/use-auth";
 import {
   getMyRentalBooking,

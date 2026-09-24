@@ -12,7 +12,7 @@ import {
   Segmented,
 } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
-import { isoDate } from "@/data/booking";
+import { isoDate } from "@/lib/when";
 import {
   listStudioBookings,
   type BookingRequest,

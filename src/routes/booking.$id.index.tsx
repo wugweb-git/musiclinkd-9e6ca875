@@ -11,7 +11,8 @@ import {
   StickyBar,
 } from "@/components/ml/booking";
 import { useBookingDraft } from "@/components/ml/booking-context";
-import { inr, lowestRate } from "@/data/booking";
+import { lowestRate } from "@/data/booking";
+import { inr } from "@/lib/price";
 import { rupeeParts } from "@/lib/price";
 import { Price } from "@/components/ml/kit";
 import { ReviewCard, ReviewRail, ServiceCard } from "@/components/ml/profile";

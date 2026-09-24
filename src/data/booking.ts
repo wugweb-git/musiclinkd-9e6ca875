@@ -11,6 +11,7 @@ import type { ReviewItem } from "@/data/profile";
  */
 
 import { rupeeParts, type PriceParts } from "@/lib/price";
+import { isoDate } from "@/lib/when";
 
 export type BookableKind =
   | "Recording Studio"
@@ -534,10 +535,6 @@ function hash(s: string) {
   return h;
 }
 
-export function isoDate(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
 export function availabilityFor(
   resourceId: string,
   date: string,
@@ -641,8 +638,6 @@ export function priceFor(b: Bookable, r: Resource, hours: number, addOnIds: stri
   };
 }
 
-export const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-
 /** The cheapest tier as amount and unit ("₹1,200", "hour"). A custom tier has no unit. */
 export function lowestRate(tiers: PricingTier[]): PriceParts | null {
   const tier = tiers.reduce<PricingTier | undefined>(
@@ -651,19 +646,6 @@ export function lowestRate(tiers: PricingTier[]): PriceParts | null {
   );
   if (!tier) return null;
   return rupeeParts(tier.price, tier.unit === "custom" ? null : tier.unit);
-}
-
-export function formatDate(iso: string) {
-  const d = new Date(`${iso}T00:00:00`);
-  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
-}
-
-export function formatTime(t: string) {
-  const [h = "0", m = "00"] = t.split(":");
-  const hh = Number(h);
-  const suffix = hh >= 12 ? "PM" : "AM";
-  const disp = hh % 12 === 0 ? 12 : hh % 12;
-  return `${disp}:${m} ${suffix}`;
 }
 
 /* ------------------------------------------------------------------ */

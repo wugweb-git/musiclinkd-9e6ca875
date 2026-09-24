@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { requestBooking } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { inr } from "@/data/booking";
+import { inr } from "@/lib/price";
 
 export const Route = createFileRoute("/booking/$id/review")({
   head: () => ({

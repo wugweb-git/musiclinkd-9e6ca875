@@ -12,7 +12,7 @@ import { answerBooking, listStudioBookings, type BookingRequest } from "@/lib/bo
 import { availabilityConflicts, findConflicts } from "@/lib/booking-overlaps";
 import { getMyStudio } from "@/lib/studio-owner.functions";
 import { getStudioCalendar } from "@/lib/studio-calendar.functions";
-import { formatDate, formatTime, isoDate } from "@/data/booking";
+import { formatDate, formatTime, isoDate } from "@/lib/when";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
 

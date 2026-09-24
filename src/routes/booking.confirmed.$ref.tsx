@@ -15,7 +15,7 @@ import {
 import { Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
 import { Dialog, Loading } from "@/components/ml/kit";
-import { formatDate, formatTime } from "@/data/booking";
+import { formatDate, formatTime } from "@/lib/when";
 import { cancelBooking, getBookingRequest, rescheduleBooking } from "@/lib/bookings.functions";
 import { addToCalendar, shareLink } from "@/lib/booking-actions";
 import { useAuth } from "@/hooks/use-auth";

@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/ml/ui";
 import { AddOnCard, PriceBreakdownCard, StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
-import { inr } from "@/data/booking";
+import { inr } from "@/lib/price";
 
 export const Route = createFileRoute("/booking/$id/addons")({
   head: () => ({

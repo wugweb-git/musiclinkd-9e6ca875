@@ -13,7 +13,7 @@ import {
   RentalCalendar,
 } from "@/components/ml/rental";
 import { Loading, Price } from "@/components/ml/kit";
-import { inr } from "@/data/rentals";
+import { inr } from "@/lib/price";
 import { rupeeParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";

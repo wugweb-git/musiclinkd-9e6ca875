@@ -10,7 +10,8 @@ import {
   EmptyState,
   ErrorState,
 } from "@/components/ml/booking";
-import { formatDate, formatTime, isoDate, type BookingStatus } from "@/data/booking";
+import { type BookingStatus } from "@/data/booking";
+import { formatDate, formatTime, isoDate } from "@/lib/when";
 import { listMyBookings } from "@/lib/bookings.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
