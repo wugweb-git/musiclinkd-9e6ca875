@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Children, useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import { Children, useEffect, useMemo, useState, type ComponentProps, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Switch } from "@/components/ui/switch";
@@ -582,6 +582,48 @@ function useScrollY() {
  * it, then the name and whatever lines the page adds. The person profile, business profiles and a
  * studio's booking page all use this one header.
  */
+/**
+ * The cover before anyone has uploaded one.
+ *
+ * It was a flat near-black fill, which is what a new profile, band, collab and business page all
+ * showed — and the first thing anyone opening a shared link saw. A void reads as broken rather
+ * than as empty.
+ *
+ * So it draws the app's own waveform, the mark on the splash screen, at low contrast. The bar
+ * heights come from a hash of the name, so two pages are not the same picture, and the same page
+ * is the same picture every time. Ink only: the chrome stays monochrome and the media still
+ * carries all the colour — there just is not any media yet.
+ */
+function CoverFallback({ name }: { name: string }) {
+  const bars = useMemo(() => {
+    // A small deterministic PRNG seeded from the name; nothing here is random at runtime.
+    let seed = 2166136261;
+    for (let i = 0; i < name.length; i += 1) seed = Math.imul(seed ^ name.charCodeAt(i), 16777619);
+    const BARS = 56;
+    return Array.from({ length: BARS }, (_, i) => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      // A waveform swells toward the middle instead of running flat from edge to edge.
+      const envelope = Math.sin((i / (BARS - 1)) * Math.PI) ** 0.7;
+      return Math.round((0.12 + (seed / 0xffffffff) * 0.88 * envelope) * 100);
+    });
+  }, [name]);
+
+  return (
+    <div
+      aria-hidden
+      className="flex h-full w-full items-center justify-center gap-[3px] overflow-hidden bg-icon-chip px-4"
+    >
+      {bars.map((height, i) => (
+        <span
+          key={i}
+          className="w-1 shrink-0 rounded-full bg-background/20"
+          style={{ height: `${height}%` }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function CoverHero({
   cover,
   photo,
@@ -627,7 +669,7 @@ export function CoverHero({
             <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
           </>
         ) : (
-          <div className="h-full w-full bg-icon-chip" />
+          <CoverFallback name={name} />
         )}
         {back ? (
           <Link
