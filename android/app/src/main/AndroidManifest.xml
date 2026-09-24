@@ -22,6 +22,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!--
+              Where OAuth comes back to. Google refuses to run a sign-in inside an embedded
+              webview, so the consent screen opens in a Chrome Custom Tab and returns here.
+
+              A private scheme rather than an https App Link on purpose: an App Link has to be
+              proved with an assetlinks.json served from app.musiclinkd.com carrying this app's
+              signing fingerprint, and that cannot exist before the app is signed. This needs
+              nothing but the scheme, so sign-in works from the first debug build.
+
+              launchMode is singleTask above, so the return lands on the running activity and
+              arrives as onNewIntent rather than starting a second copy of the app.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.musiclinkd.app" />
+            </intent-filter>
+
         </activity>
 
         <provider

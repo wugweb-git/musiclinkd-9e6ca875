@@ -29,6 +29,7 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { showDemoControls } from "@/lib/dev";
 import { useAuthProvider } from "@/lib/post-auth";
+import { isNativeApp, signInWithGoogleNative } from "@/lib/native-auth";
 import { beat, useArrival } from "@/lib/flow-motion";
 import { roleIcon } from "@/lib/role-icons";
 import { useTaxonomy } from "@/lib/taxonomy";
@@ -216,6 +217,20 @@ function WelcomeScreen() {
     }
     setBusy("google");
     setError(null);
+    // On a device the consent screen cannot run in the webview — Google refuses it — so it opens
+    // in a Chrome Custom Tab and returns through the app's own scheme. The session then arrives on
+    // the listener in the root, not here, which is why this path just waits.
+    if (isNativeApp()) {
+      const { error: nativeErr } = await signInWithGoogleNative();
+      if (nativeErr) {
+        setBusy(null);
+        setError({
+          title: "Google sign-in didn't finish",
+          body: "Try again, or use your email and password.",
+        });
+      }
+      return;
+    }
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });

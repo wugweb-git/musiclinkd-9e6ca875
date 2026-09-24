@@ -13,12 +13,14 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { AppNav } from "@/components/ml/ui";
 import { startAnalytics, trackPageview } from "@/lib/analytics";
+import { listenForAuthReturn } from "@/lib/native-auth";
 import { useAuth } from "@/hooks/use-auth";
 import { syncRecentlyViewed } from "@/lib/device-history";
 import { useRememberAccounts } from "@/hooks/use-remember-accounts";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { toast } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -151,6 +153,7 @@ function RootComponent() {
   const { user } = useAuth();
   const userId = user?.id;
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const router = useRouter();
   // Recently viewed follows the account: merge this device's list once a session is known.
   useEffect(() => {
     if (userId) void syncRecentlyViewed();
@@ -163,6 +166,17 @@ function RootComponent() {
   useEffect(() => {
     void startAnalytics().then(() => trackPageview(path));
   }, [path]);
+
+  // The Android wrap signs in through a Chrome Custom Tab, so the session arrives as a deep link
+  // rather than a page load. A no-op in a browser.
+  useEffect(
+    () =>
+      listenForAuthReturn((ok, message) => {
+        if (ok) void router.navigate({ to: "/", replace: true });
+        else toast.error(message ?? "Sign-in didn't finish. Try again.");
+      }),
+    [router],
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
