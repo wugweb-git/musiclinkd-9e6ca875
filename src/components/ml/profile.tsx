@@ -67,6 +67,7 @@ import { haptic } from "@/lib/haptics";
 const isDbId = (id: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 import { iconSize } from "@/lib/tokens";
+import { initialsOf } from "./viewer";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -695,13 +696,23 @@ export function CoverHero({
               )}
             />
           ) : (
+            /*
+             * Initials, not a generic person glyph. PersonAvatar has done this everywhere else in
+             * the app for a while — the inbox, the chat header, the picker rows — and only the
+             * hero, the biggest photo on the page, still drew the same grey silhouette for
+             * everyone. An ink disc on the same icon-chip ground as those rows, so a page with no
+             * photo still looks like somebody's, and only falls back to the glyph when there is
+             * no name either. The type scales with the photo as the header shrinks.
+             */
             <span
+              aria-label={name}
               className={cn(
-                "flex aspect-square w-full items-center justify-center border-4 border-background bg-card text-muted-foreground",
+                "flex aspect-square w-full items-center justify-center border-4 border-background bg-icon-chip font-semibold text-primary-foreground",
                 square ? "rounded-lg" : "rounded-full",
               )}
+              style={{ fontSize: `${Math.round(photoSize * 0.3)}px` }}
             >
-              <User size={iconSize.xl} aria-label={name} />
+              {initialsOf(name) || <User size={iconSize.xl} aria-hidden />}
             </span>
           )}
           {photoPick}
