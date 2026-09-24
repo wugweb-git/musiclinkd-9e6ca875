@@ -25,7 +25,7 @@ import {
   Pause,
   Smartphone,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { WavePlayer } from "@/components/waves-cn/wave-player";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
 import { StateCard as BaseStateCard, StatusPill as BaseStatusPill } from "@/components/ml/kit";
@@ -34,7 +34,6 @@ import { MediaEmbed } from "./media-embed";
 import { cn } from "@/lib/utils";
 import {
   analyticsFor,
-  contributorDirectory,
   FEATURED_LIMIT,
   mediaStateCopy,
   workType,
@@ -44,6 +43,9 @@ import {
   type WorkAnalyticsFigures,
 } from "@/data/portfolio";
 import { showDemoControls } from "@/lib/dev";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { searchPeople } from "@/lib/profile-groups.functions";
 import { iconSize } from "@/lib/tokens";
 import { DrawerList, DrawerOptionRow } from "./drawer-list";
 
@@ -615,12 +617,25 @@ export function ContributorPicker({
   onChange: (v: string[]) => void;
 }) {
   const [q, setQ] = useState("");
-  const matches = contributorDirectory.filter((c) =>
-    c.name.toLowerCase().includes(q.trim().toLowerCase()),
-  );
+  const [term, setTerm] = useState("");
+  const findPeople = useServerFn(searchPeople);
+  // The box says it searches MusicLinkd, so it searches MusicLinkd. It used to filter six names
+  // written into the app, most of whom are not on it, so crediting a real collaborator was
+  // impossible — every one of them fell through to "not on MusicLinkd yet".
+  useEffect(() => {
+    const t = window.setTimeout(() => setTerm(q.trim()), 250);
+    return () => window.clearTimeout(t);
+  }, [q]);
+  const people = useQuery({
+    queryKey: ["people-search", term],
+    queryFn: () => findPeople({ data: { q: term, limit: 8 } }),
+    enabled: term.length >= 2,
+  });
+  const matches = (people.data?.people ?? []).filter((p) => !value.includes(p.name));
   const add = (name: string) => {
     if (!value.includes(name)) onChange([...value, name]);
     setQ("");
+    setTerm("");
   };
   return (
     <div>
@@ -656,10 +671,12 @@ export function ContributorPicker({
               className="state-layer flex w-full items-center justify-between rounded-lg bg-subtle px-4 py-3 text-left transition-transform duration-125 ease-standard active:scale-97"
             >
               <span className="text-sm font-semibold">{c.name}</span>
-              <span className="text-1 text-muted-foreground">{c.role}</span>
+              <span className="text-1 text-muted-foreground">@{c.username}</span>
             </button>
           ))}
-          {matches.length === 0 ? (
+          {people.isFetching ? (
+            <p className="px-4 py-3 text-1 text-muted-foreground">Searching…</p>
+          ) : matches.length === 0 ? (
             <button
               type="button"
               onClick={() => add(q.trim())}
