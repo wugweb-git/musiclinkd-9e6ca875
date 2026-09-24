@@ -14,6 +14,7 @@
  */
 
 import { categoryLabel, type Opportunity } from "@/data/opportunities";
+import { sameCity } from "@/lib/place";
 import type { TaxonomyCategory, TaxonomyOption } from "@/lib/taxonomy";
 
 /** A profile as stored: roles, instruments and genres are taxonomy slugs. */
@@ -64,11 +65,6 @@ function option(labels: Labels, category: TaxonomyCategory, value: string) {
 
 function label(labels: Labels, category: TaxonomyCategory, value: string): string {
   return option(labels, category, value)?.label ?? value;
-}
-
-/** The first part of a stored location: "Mumbai, MH" → "mumbai". */
-function cityKey(s: string | null | undefined): string {
-  return norm((s ?? "").split(",")[0] ?? "");
 }
 
 /** What a stored opportunity asks for, from its screen shape. */
@@ -128,12 +124,10 @@ export function personFit(
     }
   }
 
-  const theirs = cityKey(target.city);
-  if (theirs) {
+  if (target.city?.trim()) {
     possible += WEIGHT.city;
-    const mine = cityKey(person.city);
-    // "New Delhi" and "Delhi" are the same place.
-    if (mine && (mine === theirs || holdsWords(mine, theirs) || holdsWords(theirs, mine))) {
+    // "New Delhi" and "Delhi" are the same place; sameCity is the app's one city comparison.
+    if (sameCity(person.city, target.city)) {
       earned += WEIGHT.city;
       reasons.push((person.city ?? "").split(",")[0]!.trim());
       matches += 1;

@@ -34,6 +34,13 @@ import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
 
+// Work modes are stored as their key ("in-person"), never as the whole option object: Chips takes a
+// list of keys and looks each label up, so the stored value and the shown label stay separate.
+const workModeKeys = workModeOptions.map((o) => o.key);
+const workModeLabels: Record<string, string> = Object.fromEntries(
+  workModeOptions.map((o) => [o.key, o.label]),
+);
+
 export const Route = createFileRoute("/profile/edit")({
   // ?section= opens that section (a profile section's edit pencil links straight to it).
   validateSearch: (search: Record<string, unknown>): { section?: string } =>
@@ -513,7 +520,8 @@ function EditProfile() {
         <div className="space-y-4">
           <Chips
             label="Work modes"
-            options={workModeOptions as unknown as string[]}
+            options={workModeKeys}
+            labels={workModeLabels}
             selected={form.work_modes}
             onToggle={(v) => toggle("work_modes", v)}
           />

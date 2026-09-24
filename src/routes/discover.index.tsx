@@ -18,6 +18,7 @@ import {
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
 import { BetaBadge, Price, Row, SoonBadge } from "@/components/ml/kit";
 import { stageOf } from "@/lib/release";
+import { sameCity } from "@/lib/place";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { SectionActionLink } from "@/components/ml/links";
 import { useState } from "react";
@@ -123,9 +124,7 @@ function Discover() {
   const myCity = recs?.city ?? "";
   const nearby = myCity
     ? [...suggested, ...people].filter(
-        (p, i, all) =>
-          p.city?.trim().toLowerCase() === myCity.toLowerCase() &&
-          all.findIndex((q) => q.id === p.id) === i,
+        (p, i, all) => sameCity(p.city, myCity) && all.findIndex((q) => q.id === p.id) === i,
       )
     : [];
   const studios = rankBy(dbStudios, recs?.studios, (s) => s.id);

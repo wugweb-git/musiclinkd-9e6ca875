@@ -179,9 +179,15 @@ export function choicesFor(options: TaxonomyOption[] | undefined) {
   }));
 }
 
-/** slug → label for display; falls back to the slug so nothing renders blank. */
-export function labelFor(options: TaxonomyOption[] | undefined, slug: string): string {
-  return options?.find((o) => o.slug === slug)?.label ?? slug;
+/**
+ * A stored value → its label. A profile stores `metadata.app_key` where the category sets one and
+ * the slug otherwise — that is what `choicesFor` writes — so the lookup has to accept both. Matching
+ * on the slug alone left every app_key-backed category (work modes, experience levels, intents,
+ * available for, work types) rendering its raw stored value instead of its label. Falls back to the
+ * value so nothing renders blank.
+ */
+export function labelFor(options: TaxonomyOption[] | undefined, value: string): string {
+  return options?.find((o) => o.slug === value || o.metadata?.app_key === value)?.label ?? value;
 }
 
 /**

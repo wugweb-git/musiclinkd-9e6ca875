@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
-import { parsePlace, samePinArea } from "@/lib/place";
+import { parsePlace, sameCity, samePinArea } from "@/lib/place";
 import { recommendPrefsOf } from "@/lib/discovery-settings";
 
 /*
@@ -69,12 +69,7 @@ type Candidate = {
 };
 
 const lower = (s: string | null | undefined) => (s ?? "").trim().toLowerCase();
-const sameCity = (a: string | null | undefined, b: string | null | undefined) => {
-  const x = lower(a);
-  const y = lower(b);
-  return Boolean(x && y && (x === y || y.includes(x) || x.includes(y)));
-};
-const overlap = (a: string[] | null | undefined, b: string[] | null | undefined) => {
+const overlap =(a: string[] | null | undefined, b: string[] | null | undefined) => {
   const set = new Set(a ?? []);
   return (b ?? []).filter((v) => set.has(v));
 };

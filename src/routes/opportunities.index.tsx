@@ -12,6 +12,7 @@ import { listMyApplications } from "@/lib/applications.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
 import { personFit, fitTarget, type FitPerson } from "@/lib/fit";
 import { useTaxonomy } from "@/lib/taxonomy";
+import { sameCity } from "@/lib/place";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
@@ -78,8 +79,7 @@ function OpportunitiesHome() {
       ? forYou
       : tab === "Recent"
         ? all
-        : // Stored locations carry a state ("Mumbai, MH").
-          all.filter((o) => myCity && o.city.split(",")[0]?.trim() === myCity.trim());
+        : all.filter((o) => myCity && sameCity(o.city, myCity));
 
   const openCount = (key: string) =>
     all.filter((o) => o.status === "open" && o.categoryKey === key).length;

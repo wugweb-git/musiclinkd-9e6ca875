@@ -421,7 +421,15 @@ export function SheetSelect({
         onClick={() => setOpen(true)}
         className={`flex h-13 w-full items-center justify-between gap-2 rounded-full border border-border bg-card px-5 text-left text-sm ${className}`}
       >
-        <span className="truncate text-foreground">{current?.label ?? placeholder}</span>
+        {/*
+         * A stored value the options don't contain — a city typed before this was a picker, one
+         * Google wrote, or one whose state no longer matches — shows as itself. Falling straight
+         * through to the placeholder made the field read "Choose" while it was set, and it still
+         * submitted the old value.
+         */}
+        <span className="truncate text-foreground">
+          {current?.label ?? (value || placeholder)}
+        </span>
         <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
       </button>
       <Sheet open={open} onClose={close} title={title}>

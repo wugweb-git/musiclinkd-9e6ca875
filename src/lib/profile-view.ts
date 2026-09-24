@@ -177,10 +177,20 @@ const serviceModes: NonNullable<ServiceItem["mode"]>[] = [
   "Remote · In person",
 ];
 
-/** The card's mode from work_modes slugs, when the stored mode text is not one the card shows. */
-function modeFromWorkModes(slugs: string[] | null | undefined): ServiceItem["mode"] {
-  const remote = slugs?.includes("remote") ?? false;
-  const inPerson = slugs?.includes("in_person") ?? false;
+/**
+ * The card's mode from stored work modes, when the stored mode text is not one the card shows.
+ *
+ * The same idea is spelled two ways in the database: profiles.work_modes holds the app_key
+ * ("in-person") while profile_services.work_modes holds the slug ("in_person"), which a trigger
+ * enforces. Matching one spelling made this branch dead, so a service card never said "In person".
+ * Compare with the separator stripped and both columns read the same. "Hybrid" is a mix of both.
+ */
+function modeFromWorkModes(values: string[] | null | undefined): ServiceItem["mode"] {
+  const has = (want: string) =>
+    values?.some((v) => v.replace(/[-_\s]/g, "").toLowerCase() === want) ?? false;
+  const hybrid = has("hybrid");
+  const remote = hybrid || has("remote");
+  const inPerson = hybrid || has("inperson");
   if (remote && inPerson) return "Remote · In person";
   if (remote) return "Remote";
   if (inPerson) return "In person";

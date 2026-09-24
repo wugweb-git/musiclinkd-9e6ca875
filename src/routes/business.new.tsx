@@ -225,11 +225,9 @@ function NewBusiness() {
   }
 
   const typeLabel = types.find((o) => o.slug === type)?.label ?? "";
+  // A city from the Maps link that isn't in this state's list still shows as picked — SheetSelect
+  // falls back to the stored value itself, so this screen no longer patches the option list.
   const cityOptions = choicesFor(tx?.cities.filter((c) => c.metadata?.state === state));
-  // A city from the Maps link that isn't in the list still shows as picked.
-  if (city && !cityOptions.some((c) => c.value === city)) {
-    cityOptions.unshift({ value: city, label: city, hint: undefined });
-  }
 
   const copy: Record<Step, { group: string; title: string; subtitle: string; why: string }> = {
     type: {

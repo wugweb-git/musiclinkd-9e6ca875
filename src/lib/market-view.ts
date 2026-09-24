@@ -10,7 +10,7 @@ import {
 import { priceParts } from "@/lib/price";
 import { getRentalBookingCounts } from "@/lib/rentals.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { parsePlace, samePinArea, shownPlace } from "@/lib/place";
+import { parsePlace, sameCity, samePinArea, shownPlace } from "@/lib/place";
 import { gearCategoryOf, loadGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
 
 /*
@@ -314,14 +314,14 @@ export function nearFirst<T extends { pin?: string }>(
   );
 }
 
+/**
+ * The listings in a city. An empty result is returned as an empty result: falling back to the
+ * unfiltered list made a city that matches nothing look like it had filtered when it had silently
+ * done nothing, so the screen shows its own empty state instead.
+ */
 export function inCity<T extends { location?: string }>(items: T[], city: string): T[] {
-  const want = city.trim().toLowerCase();
-  if (!want) return items;
-  const here = items.filter((item) => {
-    const place = (item.location ?? "").toLowerCase();
-    return place !== "" && (place.includes(want) || want.includes(place));
-  });
-  return here.length ? here : items;
+  if (!city.trim()) return items;
+  return items.filter((item) => sameCity(item.location, city));
 }
 
 /**
