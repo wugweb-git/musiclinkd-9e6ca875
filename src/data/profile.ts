@@ -1,6 +1,5 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { singers, talents, type Talent } from "./discover";
-import { linkedProfileSeeds } from "./linked-profiles";
 import { priceText, type PriceParts } from "@/lib/price";
 
 /**
@@ -848,51 +847,15 @@ const ananya: PersonProfile = {
   ],
 };
 
-const byUsername: Record<string, PersonProfile> = {
-  [rahul.username]: rahul,
-  [ananya.username]: ananya,
-  ...Object.fromEntries(linkedProfileSeeds.map((s) => [s.profile.username, s.profile])),
-};
-
-/** A Discover talent's profile from its card record alone; sections the card lacks stay empty. */
-function fromTalent(t: Talent): PersonProfile {
-  return {
-    ...emptySections(),
-    ...(profileIdByUsername[t.id] ? { profileId: profileIdByUsername[t.id] } : {}),
-    username: t.id,
-    name: t.name,
-    photo: t.photo,
-    cover: shots[2]!,
-    headline: `${t.role} based in ${t.location}.`,
-    roleType: "Musician",
-    primaryRole: t.role.split(" · ")[0] ?? t.role,
-    secondaryRoles: t.role.split(" · ").slice(1),
-    location: t.location,
-    availability:
-      t.availability === "Booked"
-        ? "Busy"
-        : t.availability === "Selective"
-          ? "In Studio"
-          : "Available",
-    verification: t.verified ? "Professional" : "Email Verified",
-    genres: t.genres,
-    languages: t.languages,
-    stats: { connections: "—", followers: t.followers, plays: "—", credits: t.credits },
-    rating: t.rating,
-    shortBio: `${t.role} working across ${t.genres.slice(0, 2).join(" and ")}. Starting at ${priceText(t.rate)}.`,
-    longBio: `${t.role} working across ${t.genres.join(", ")}. Sessions run remote or in person around ${t.location}, with starting rates from ${priceText(t.rate)}.`,
-  };
-}
-
-export const allTalent = [...talents, ...singers];
-
-/** The seed profile for a username, or undefined — never another person's profile. */
-export function getProfile(username: string): PersonProfile | undefined {
-  const exact = byUsername[username];
-  if (exact) return exact;
-  const t = allTalent.find((x) => x.id === username);
-  return t ? fromTalent(t) : undefined;
-}
+/*
+ * getProfile, byUsername, fromTalent and allTalent lived here and were referenced nowhere in the
+ * repo — but byUsername spread linkedProfileSeeds, so that 65KB file was pulled into the browser
+ * bundle for a lookup table nothing read. It reached eleven route chunks; the profile chunk alone
+ * was 60KB, 77% of it string literals.
+ *
+ * linked-profiles.ts itself stays exactly where it is: supabase/generators/export_linked_*.ts
+ * compile it into three migrations, and those generators run at build time, never in a browser.
+ */
 
 /** Owner-mode fixtures (SCREEN 17 / 19 / 20). */
 export const ownerUsername = rahul.username;
