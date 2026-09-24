@@ -33,7 +33,9 @@ export function NotificationsBell({ tone = "card" }: { tone?: "card" | "onInk" }
       className={`hit-area state-layer relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-transform duration-125 ease-standard active:scale-97 ${surface}`}
     >
       <Bell size={iconSize.md} aria-hidden />
-      <span className="sr-only">{unread ? `Notifications (${unread} unread)` : "Notifications"}</span>
+      <span className="sr-only">
+        {unread ? `Notifications (${unread} unread)` : "Notifications"}
+      </span>
       {unread ? (
         <span
           aria-hidden

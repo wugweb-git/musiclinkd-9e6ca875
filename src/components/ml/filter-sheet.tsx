@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Btn, Chip, Sheet } from "./ui";
+import { SheetSectionHeading } from "./drawer-list";
 
 const groups: { label: string; options: string[] }[] = [
   {
@@ -29,17 +30,22 @@ export function FilterSheet({ open, onClose }: { open: boolean; onClose: () => v
     setSelected((s) => (s.includes(v) ? s.filter((x) => x !== v) : [...s, v]));
 
   return (
-    <Sheet open={open} onClose={onClose}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-3">Refine search</h2>
-        <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Refine search"
+      titleAction={
+        <button
+          onClick={() => setSelected([])}
+          className="shrink-0 text-1 font-semibold text-foreground"
+        >
           Clear all
         </button>
-      </div>
-
+      }
+    >
       {groups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="pill mb-2 bg-subtle text-muted-foreground">{g.label}</h3>
+          <SheetSectionHeading>{g.label}</SheetSectionHeading>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
               <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>

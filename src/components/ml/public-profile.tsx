@@ -165,7 +165,11 @@ export function PublicProfileScreen({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       ) : null}
-      {view ? <BusinessProfileExperience b={view} work={person} /> : <PersonProfileExperience p={person!} />}
+      {view ? (
+        <BusinessProfileExperience b={view} work={person} />
+      ) : (
+        <PersonProfileExperience p={person!} />
+      )}
     </>
   );
 }

@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { Check, Search, type LucideIcon } from "lucide-react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { Check, Search, X, type LucideIcon } from "lucide-react";
 import { iconSize } from "@/lib/tokens";
 
 /*
@@ -18,7 +18,48 @@ export type DrawerOption = {
   iconNode?: ReactNode;
 };
 
-/** The search box at the top of a long list. */
+/**
+ * A heading over a group of rows inside a drawer. The one style: there were eight, two of them
+ * paragraphs rather than headings.
+ */
+export function SheetSectionHeading({ children }: { children: ReactNode }) {
+  return <h3 className="mb-2 text-1 font-semibold text-muted-foreground">{children}</h3>;
+}
+
+/**
+ * The control that opens a drawer's search, for the Sheet's `titleAction` slot.
+ *
+ * Search is collapsed when a drawer opens (owner, 24 Sep 2026). A drawer shows its options first —
+ * that is what you came for — and the box opens on tap. It used to be the other way round: a list
+ * of more than eight auto-expanded a search box that pushed the options down the panel.
+ */
+export function DrawerSearchButton({
+  open,
+  onToggle,
+  label,
+}: {
+  open: boolean;
+  onToggle: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={open ? "Close search" : label}
+      aria-expanded={open}
+      className="state-layer flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground"
+    >
+      {open ? (
+        <X size={iconSize.md} strokeWidth={1.75} aria-hidden />
+      ) : (
+        <Search size={iconSize.md} strokeWidth={1.75} aria-hidden />
+      )}
+    </button>
+  );
+}
+
+/** The search box itself, shown once DrawerSearchButton opens it. */
 export function DrawerSearch({
   value,
   onChange,
@@ -30,14 +71,21 @@ export function DrawerSearch({
   placeholder?: string;
   label: string;
 }) {
+  const field = useRef<HTMLInputElement>(null);
+  // The box only exists because the person just tapped Search, so the caret belongs in it. Done
+  // on mount rather than with autoFocus, which the accessibility rules reject outright.
+  useEffect(() => {
+    field.current?.focus();
+  }, []);
   return (
-    <div className="relative mb-3">
+    <div className="relative">
       <Search
-        size={18}
+        size={iconSize.md}
         className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-foreground"
         aria-hidden
       />
       <input
+        ref={field}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}

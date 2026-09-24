@@ -137,19 +137,15 @@ export function AuthHeading({
 }) {
   return (
     <div className={cn("mb-3.5 sm:mb-4", className)}>
-      <h1 className="text-2.5 sm:text-3 font-bold tracking-tight text-foreground leading-tight">{title}</h1>
+      <h1 className="text-2.5 sm:text-3 font-bold tracking-tight text-foreground leading-tight">
+        {title}
+      </h1>
       {sub ? <p className="mt-1 text-1 leading-snug text-muted-foreground">{sub}</p> : null}
     </div>
   );
 }
 
-export function Divider({
-  label,
-  className,
-}: {
-  label: string;
-  className?: string | undefined;
-}) {
+export function Divider({ label, className }: { label: string; className?: string | undefined }) {
   return (
     <div className={cn("my-4 flex items-center gap-3 text-1 text-muted-foreground", className)}>
       <span className="h-px flex-1 bg-border/80" />
@@ -545,7 +541,10 @@ export function CodeInput({
         type="button"
         key={shakeKey}
         onClick={() => ref.current?.focus()}
-        className={cn("mb-4 sm:mb-5 flex w-full justify-between gap-2 sm:gap-2.5", shakeKey ? "animate-shake" : "")}
+        className={cn(
+          "mb-4 sm:mb-5 flex w-full justify-between gap-2 sm:gap-2.5",
+          shakeKey ? "animate-shake" : "",
+        )}
         aria-label={label}
       >
         {Array.from({ length }, (_, i) => {
@@ -661,7 +660,12 @@ export function useFieldErrors<N extends string>() {
 
 export function LegalNote({ className }: { className?: string | undefined } = {}) {
   return (
-    <p className={cn("mt-2 text-center text-0 sm:text-1 leading-snug text-muted-foreground", className)}>
+    <p
+      className={cn(
+        "mt-2 text-center text-0 sm:text-1 leading-snug text-muted-foreground",
+        className,
+      )}
+    >
       By continuing you agree to our{" "}
       <TextLink to="/legal/terms" className="underline underline-offset-2">
         Terms
@@ -717,7 +721,9 @@ export function AuthStatus({
       <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
         <div className="my-auto py-1">
           <div className="rounded-lg bg-card p-4 sm:p-5 border border-border/80 shadow-xs">
-            <div className={cn("mb-4 flex h-12 w-12 items-center justify-center rounded-sm", t.tile)}>
+            <div
+              className={cn("mb-4 flex h-12 w-12 items-center justify-center rounded-sm", t.tile)}
+            >
               <Icon size={22} className={t.icon} aria-hidden />
             </div>
             <AuthHeading title={title} sub={body} />
@@ -734,7 +740,9 @@ export function AuthStatus({
             <div className="space-y-2.5">{actions}</div>
             <TrustNote>{note}</TrustNote>
           </div>
-          {footer ? <p className="mt-3.5 text-center text-xs sm:text-sm text-muted-foreground">{footer}</p> : null}
+          {footer ? (
+            <p className="mt-3.5 text-center text-xs sm:text-sm text-muted-foreground">{footer}</p>
+          ) : null}
         </div>
       </div>
     </AuthScreen>

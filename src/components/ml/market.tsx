@@ -44,7 +44,14 @@ import type { Listing } from "@/data/market";
 import type { RentalItem } from "@/data/rentals";
 import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
 import { useTaxonomy } from "@/lib/taxonomy";
-import { DrawerList, DrawerOptionRow, DrawerSearch, matching } from "./drawer-list";
+import {
+  DrawerList,
+  DrawerOptionRow,
+  DrawerSearch,
+  DrawerSearchButton,
+  SheetSectionHeading,
+  matching,
+} from "./drawer-list";
 import {
   applyMarketFilter,
   emptyMarketFilter,
@@ -817,8 +824,22 @@ export function LocationSheet({
     ? allCities.map((c) => c.label).filter((c) => c.toLowerCase().includes(term))
     : marketCities;
   return (
-    <Sheet open={open} onClose={onClose} title="Choose a location">
-      <div className="mb-5 overflow-hidden rounded-lg bg-card">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Choose a location"
+      titleAction={
+        <DrawerSearchButton
+          open={editing}
+          onToggle={() => {
+            if (editing) setQuery("");
+            setEditing((v) => !v);
+          }}
+          label="Search a city"
+        />
+      }
+    >
+      <div className="overflow-hidden rounded-lg bg-card">
         {open ? (
           <iframe
             key={mapSrc}
@@ -839,9 +860,6 @@ export function LocationSheet({
             >
               Locate me
             </Btn>
-            <Btn variant="outline" className="flex-1" onClick={() => setEditing((v) => !v)}>
-              Edit
-            </Btn>
           </div>
         </div>
       </div>
@@ -853,7 +871,7 @@ export function LocationSheet({
           label="Search places"
         />
       ) : null}
-      <h3 className="mb-2 text-sm font-semibold text-foreground">Suggested for you</h3>
+      <SheetSectionHeading>Suggested for you</SheetSectionHeading>
       <DrawerList label="Suggested places">
         {shown.map((c) => (
           <DrawerOptionRow
@@ -882,6 +900,7 @@ export function CategorySheet({
   rental?: boolean;
 }) {
   const navigate = useNavigate();
+  const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
   const shown = matching(
     categories.map((c) => ({
@@ -894,8 +913,24 @@ export function CategorySheet({
     query,
   );
   return (
-    <Sheet open={open} onClose={onClose} title="Categories">
-      <DrawerSearch value={query} onChange={setQuery} label="Search categories" />
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Categories"
+      titleAction={
+        <DrawerSearchButton
+          open={searching}
+          onToggle={() => {
+            if (searching) setQuery("");
+            setSearching((v) => !v);
+          }}
+          label="Search categories"
+        />
+      }
+    >
+      {searching ? (
+        <DrawerSearch value={query} onChange={setQuery} label="Search categories" />
+      ) : null}
       <DrawerList label="Categories" empty="Nothing matches — try a broader word.">
         {shown.map((o) => (
           <DrawerOptionRow
@@ -985,23 +1020,25 @@ export function MarketFilterSheet({
     }));
 
   return (
-    <Sheet open={open} onClose={onClose}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-3">Filters</h2>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Filters"
+      titleAction={
         <button
           type="button"
           onClick={() => setF(emptyMarketFilter)}
-          className="text-1 font-semibold text-foreground"
+          className="shrink-0 text-1 font-semibold text-foreground"
         >
           Clear all
         </button>
-      </div>
-
+      }
+    >
       {filterGroupsFor(taxonomy)
         .filter((g) => !(g.rentalOnly && f.types.length === 1 && f.types[0] === "For sale"))
         .map((g) => (
           <div key={g.key} className="mb-5">
-            <h3 className="mb-2 text-1 font-semibold text-foreground">{g.label}</h3>
+            <SheetSectionHeading>{g.label}</SheetSectionHeading>
             <div className="flex flex-wrap gap-2">
               {g.options.map((o) => (
                 <Chip

@@ -214,7 +214,9 @@ export function BandRiderCard({ lines }: { lines: string[] }) {
               {label ? (
                 <span className="shrink-0 font-semibold text-foreground">{label}</span>
               ) : null}
-              <span className={`font-medium text-foreground ${label ? "text-right" : ""}`}>{value}</span>
+              <span className={`font-medium text-foreground ${label ? "text-right" : ""}`}>
+                {value}
+              </span>
             </div>
           );
         })}

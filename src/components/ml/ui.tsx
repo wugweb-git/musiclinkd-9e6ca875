@@ -710,11 +710,18 @@ export function Sheet({
   onClose,
   children,
   title,
+  titleAction,
 }: {
   open: boolean;
   onClose: () => void;
   children: ReactNode;
   title?: string;
+  /**
+   * One control beside the title — "Clear all", a search toggle. Drawers used to hand-roll their
+   * own title row to get this, which meant passing no `title` and leaving the dialog with no
+   * accessible name.
+   */
+  titleAction?: ReactNode;
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<{ start: number; dy: number } | null>(null);
@@ -771,8 +778,15 @@ export function Sheet({
         >
           <div className="mx-auto h-1 w-10 rounded-full bg-border" />
         </div>
-        {title ? <h2 className="mb-4 text-3">{title}</h2> : null}
-        {children}
+        {title ? (
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="min-w-0 flex-1 truncate text-3">{title}</h2>
+            {titleAction}
+          </div>
+        ) : null}
+        {/* One rhythm for every drawer's body. space-y only separates siblings, so a drawer that
+            already wraps its own content is unaffected. */}
+        <div className="space-y-4">{children}</div>
       </div>
     </div>
   );

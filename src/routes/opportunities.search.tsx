@@ -8,6 +8,7 @@ import { opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
+import { SheetSectionHeading } from "@/components/ml/drawer-list";
 
 type Search = { q?: string };
 
@@ -135,7 +136,7 @@ function OpportunitySearch() {
       <Sheet open={filters} onClose={() => setFilters(false)} title="Filters">
         <div className="space-y-5">
           <div>
-            <p className="mb-2 text-1 font-semibold">Work mode</p>
+            <SheetSectionHeading>Work mode</SheetSectionHeading>
             <div className="flex flex-wrap gap-2">
               {modes.map((m) => (
                 <Chip key={m} active={mode === m} onClick={() => setMode(mode === m ? null : m)}>
@@ -145,7 +146,7 @@ function OpportunitySearch() {
             </div>
           </div>
           <div>
-            <p className="mb-2 text-1 font-semibold">Minimum pay</p>
+            <SheetSectionHeading>Minimum pay</SheetSectionHeading>
             <div className="flex flex-wrap gap-2">
               {payBands.map((p) => (
                 <Chip key={p} active={pay === p} onClick={() => setPay(p)}>
@@ -155,7 +156,7 @@ function OpportunitySearch() {
             </div>
           </div>
           <div>
-            <p className="mb-2 text-1 font-semibold">Requirement type</p>
+            <SheetSectionHeading>Requirement type</SheetSectionHeading>
             <div className="flex flex-wrap gap-2">
               {opportunityCategories.slice(0, 12).map((c) => (
                 <Chip
@@ -174,7 +175,7 @@ function OpportunitySearch() {
           </div>
           {workTypes.length ? (
             <div>
-              <p className="mb-2 text-1 font-semibold">Type</p>
+              <SheetSectionHeading>Type</SheetSectionHeading>
               <div className="flex flex-wrap gap-2">
                 {workTypes.map((t) => (
                   <Chip

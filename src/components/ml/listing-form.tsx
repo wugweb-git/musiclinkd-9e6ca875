@@ -34,6 +34,7 @@ import {
   DrawerList,
   DrawerOptionRow,
   DrawerSearch,
+  DrawerSearchButton,
   matching,
   type DrawerOption,
 } from "./drawer-list";
@@ -329,10 +330,16 @@ export function SheetMultiSelect({
   max: number;
 }) {
   const [open, setOpen] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
   const picked = options.filter((o) => value.includes(o.value));
   const full = value.length >= max;
   const shown = matching(options, query);
+  const canSearch = options.length > SEARCH_FROM;
+  const toggleSearch = () => {
+    if (searching) setQuery("");
+    setSearching((v) => !v);
+  };
   return (
     <>
       <button
@@ -344,20 +351,32 @@ export function SheetMultiSelect({
         <span className="min-w-0 truncate text-foreground">
           {picked.length ? picked.map((o) => o.label).join(", ") : placeholder}
         </span>
-        <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
+        <ChevronDown size={iconSize.sm} className="shrink-0 text-foreground" aria-hidden />
       </button>
       <Sheet
         open={open}
         onClose={() => {
           setOpen(false);
           setQuery("");
+          setSearching(false);
         }}
         title={title}
+        {...(canSearch
+          ? {
+              titleAction: (
+                <DrawerSearchButton
+                  open={searching}
+                  onToggle={toggleSearch}
+                  label={`Search ${title.toLowerCase()}`}
+                />
+              ),
+            }
+          : {})}
       >
-        {options.length > SEARCH_FROM ? (
+        {searching ? (
           <DrawerSearch value={query} onChange={setQuery} label={`Search ${title.toLowerCase()}`} />
         ) : null}
-        <p className="mb-3 text-1 text-foreground">
+        <p className="text-1 text-foreground">
           {value.length} of {max} picked
         </p>
         <DrawerList label={title} multiple empty="Nothing matches — try a broader word.">
@@ -376,7 +395,7 @@ export function SheetMultiSelect({
             );
           })}
         </DrawerList>
-        <Btn className="mt-4 w-full" onClick={() => setOpen(false)}>
+        <Btn className="w-full" onClick={() => setOpen(false)}>
           Done
         </Btn>
       </Sheet>
@@ -406,12 +425,19 @@ export function SheetSelect({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
   const shown = matching(options, query);
   const current = options.find((o) => o.value === value);
+  const canSearch = searchable || options.length > SEARCH_FROM;
   const close = () => {
     setOpen(false);
     setQuery("");
+    setSearching(false);
+  };
+  const toggleSearch = () => {
+    if (searching) setQuery("");
+    setSearching((v) => !v);
   };
 
   return (
@@ -429,10 +455,25 @@ export function SheetSelect({
          * submitted the old value.
          */}
         <span className="truncate text-foreground">{current?.label ?? (value || placeholder)}</span>
-        <ChevronDown size={18} className="shrink-0 text-foreground" aria-hidden />
+        <ChevronDown size={iconSize.sm} className="shrink-0 text-foreground" aria-hidden />
       </button>
-      <Sheet open={open} onClose={close} title={title}>
-        {searchable || options.length > SEARCH_FROM ? (
+      <Sheet
+        open={open}
+        onClose={close}
+        title={title}
+        {...(canSearch
+          ? {
+              titleAction: (
+                <DrawerSearchButton
+                  open={searching}
+                  onToggle={toggleSearch}
+                  label={`Search ${title.toLowerCase()}`}
+                />
+              ),
+            }
+          : {})}
+      >
+        {searching ? (
           <DrawerSearch
             value={query}
             onChange={setQuery}

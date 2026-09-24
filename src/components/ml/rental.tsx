@@ -16,6 +16,7 @@ import { listMySavedIds } from "@/lib/saved.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
+import { SheetSectionHeading } from "./drawer-list";
 
 const rentalAvailabilityTone: Record<"ok" | "warn" | "off", Tone> = {
   ok: "good",
@@ -31,7 +32,9 @@ export function RentalAvailabilityBadge({
   text: string;
   tone?: "ok" | "warn" | "off";
 }) {
-  return <StatusPill label={text} tone={rentalAvailabilityTone[tone]} className="max-w-full truncate" />;
+  return (
+    <StatusPill label={text} tone={rentalAvailabilityTone[tone]} className="max-w-full truncate" />
+  );
 }
 
 export function RentalPriceBlock({ e, size = "md" }: { e: RentalItem; size?: "md" | "lg" }) {
@@ -72,12 +75,7 @@ const rentalStatusTone: Record<RentalStatus, Tone> = {
 
 export function RentalStatusPill({ status }: { status: RentalStatus }) {
   return (
-    <StatusPill
-      label={status}
-      tone={rentalStatusTone[status]}
-      icon={<></>}
-      className="shrink-0"
-    />
+    <StatusPill label={status} tone={rentalStatusTone[status]} icon={<></>} className="shrink-0" />
   );
 }
 
@@ -493,15 +491,20 @@ export function RentalFilterSheet({
   const groups = more ? [...rentalFilterGroups, ...moreFilterGroups] : rentalFilterGroups;
 
   return (
-    <Sheet open={open} onClose={onClose}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-3">Filters</h2>
-        <button onClick={() => setSelected([])} className="text-1 font-semibold text-foreground">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="Filters"
+      titleAction={
+        <button
+          onClick={() => setSelected([])}
+          className="shrink-0 text-1 font-semibold text-foreground"
+        >
           Clear all
         </button>
-      </div>
-
-      <h3 className="pill mb-2 bg-background text-muted-foreground">Rental dates</h3>
+      }
+    >
+      <SheetSectionHeading>Rental dates</SheetSectionHeading>
       <div className="mb-5 flex flex-wrap gap-2">
         {["Any dates", "This weekend", "Next week", "Pick dates"].map((d) => (
           <Chip key={d} active={dates === d} onClick={() => setDates(d)}>
@@ -512,7 +515,7 @@ export function RentalFilterSheet({
 
       {groups.map((g) => (
         <div key={g.label} className="mb-5">
-          <h3 className="pill mb-2 bg-background text-muted-foreground">{g.label}</h3>
+          <SheetSectionHeading>{g.label}</SheetSectionHeading>
           <div className="flex flex-wrap gap-2">
             {g.options.map((o) => (
               <Chip key={o} active={selected.includes(o)} onClick={() => toggle(o)}>
