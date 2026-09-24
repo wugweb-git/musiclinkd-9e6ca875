@@ -265,8 +265,14 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
   };
 }
 
+/*
+ * The one text input skin: a pill, the same shape as the pickers beside it.
+ *
+ * text-2 rather than text-sm because the viewport sets no maximum-scale, so iOS Safari zooms the
+ * page whenever it focuses an input smaller than 16px — every one of these fields did that.
+ */
 export const inputClass =
-  "h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-sm outline-none focus:border-primary";
+  "h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-2 outline-none focus:border-primary";
 
 /** A form field: a plain label over its control (not a pill). Shared by every create flow. */
 export function Field({

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import { Card, Meter, Row, Dialog } from "@/components/ml/kit";
 import { bandCreationSteps } from "@/data/band";
 import { labelFor, useTaxonomy } from "@/lib/taxonomy";
 import { CityField } from "@/components/ml/listing-form";
+import { InlineField } from "@/components/ml/onboarding";
 import { createCollab, getCollab, addCollabMember } from "@/lib/collabs.functions";
 
 export const Route = createFileRoute("/bands/new")({
@@ -237,26 +238,11 @@ function CreateBand() {
   );
 }
 
+/** The shared field, with an id from its label. Was a third styled copy of the same input. */
 function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
-}) {
-  return (
-    <label className="block">
-      <span className="text-1 font-semibold">{label}</span>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="mt-2 h-12 w-full rounded-sm border border-border bg-background px-4 text-sm outline-none focus:border-primary"
-      />
-    </label>
-  );
+  inputId,
+  ...props
+}: Omit<ComponentProps<typeof InlineField>, "inputId"> & { inputId?: string }) {
+  const id = inputId ?? `band-${props.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+  return <InlineField {...props} inputId={id} />;
 }

@@ -781,9 +781,10 @@ export function InlineField({
   label: string;
   value: string;
   onChange: (v: string) => void;
-  placeholder: string;
+  /** Optional: many fields read better with a label alone. */
+  placeholder?: string;
   hint?: string;
-  error?: string;
+  error?: string | null;
   ok?: string;
   prefix?: string;
   /** An icon at the start of the box, e.g. a platform's mark. */
@@ -792,7 +793,7 @@ export function InlineField({
   maxLength?: number;
   inputId: string;
   autoComplete?: string;
-  inputMode?: "text" | "url" | "email" | "numeric";
+  inputMode?: "text" | "url" | "email" | "numeric" | "decimal" | "tel";
   /** A date field opens the phone's date picker. */
   type?: "text" | "date";
   /** Latest date allowed, for type="date" (YYYY-MM-DD). */
@@ -819,8 +820,11 @@ export function InlineField({
       </label>
       <div
         className={cn(
-          "flex items-center gap-1 rounded-sm border bg-card px-3.5 shadow-xs transition-all duration-150 ease-standard",
-          multiline ? "py-3" : "h-12",
+          // One input shape for the app (owner, 24 Sep): a pill, the same shape as the pickers it
+          // sits beside. A textarea keeps a rounded rectangle — a pill around four lines reads
+          // wrong — which is the shape the other multi-line fields already use.
+          "flex items-center gap-1 border bg-card shadow-xs transition-all duration-150 ease-standard",
+          multiline ? "rounded-lg px-4 py-3" : "h-13 rounded-full px-5",
           readOnly && "bg-background",
           error
             ? "border-destructive focus-within:ring-2 focus-within:ring-destructive/20"

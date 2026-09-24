@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useCallback, useEffect, useState, type ReactElement } from "react";
+import { useCallback, useEffect, useState, type ComponentProps, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, RefreshCw, Save } from "lucide-react";
 import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
@@ -29,7 +29,7 @@ import {
   pinProblem,
   stateProblem,
 } from "@/lib/validation";
-import { SelectField } from "@/components/ml/onboarding";
+import { InlineField, SelectField } from "@/components/ml/onboarding";
 import { CityField } from "@/components/ml/listing-form";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
@@ -827,54 +827,17 @@ function EditProfile() {
   );
 }
 
+/**
+ * The shared field (InlineField), with an id derived from its label so this screen's eighteen
+ * fields don't each have to name one. This used to be a second, differently styled copy of the
+ * same idea — rounded-lg where the rest of the app is a pill, its own label and error treatment.
+ */
 function Field({
-  label,
-  value,
-  onChange,
-  hint,
-  error,
-  multiline = false,
-  readOnly = false,
-  inputMode,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  hint?: string;
-  /** What is wrong with the value; shown in place of the hint. */
-  error?: string | null;
-  multiline?: boolean;
-  readOnly?: boolean;
-  inputMode?: "decimal" | "numeric";
-}) {
-  return (
-    <label className="block">
-      <span className="block text-1 font-medium text-muted-foreground">{label}</span>
-      {multiline ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          rows={4}
-          className="mt-1.5 w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
-        />
-      ) : (
-        <input
-          value={value}
-          readOnly={readOnly}
-          {...(inputMode ? { inputMode } : {})}
-          onChange={(e) => onChange(e.target.value)}
-          className={`mt-1.5 min-h-control w-full rounded-lg border border-border px-4 text-sm outline-none focus:border-primary ${readOnly ? "bg-background text-muted-foreground" : "bg-card"}`}
-        />
-      )}
-      {error ? (
-        <span role="alert" className="mt-1 block text-1 text-destructive">
-          {error}
-        </span>
-      ) : hint ? (
-        <span className="mt-1 block text-1 text-muted-foreground">{hint}</span>
-      ) : null}
-    </label>
-  );
+  inputId,
+  ...props
+}: Omit<ComponentProps<typeof InlineField>, "inputId"> & { inputId?: string }) {
+  const id = inputId ?? `edit-${props.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+  return <InlineField {...props} inputId={id} />;
 }
 
 function TaxonomyChips({

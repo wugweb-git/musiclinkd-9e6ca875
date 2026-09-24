@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { SheetSelect } from "@/components/ml/listing-form";
+import { Field as SharedField, SheetSelect } from "@/components/ml/listing-form";
 import { TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/data/booking";
+import type { ReactNode } from "react";
 
 export const Route = createFileRoute("/booking/$id/details")({
   head: () => ({
@@ -127,20 +128,15 @@ function Details() {
   );
 }
 
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
+/**
+ * The shared field wrapper, with an id derived from its label. This was a copy that gave the
+ * label no association with its control at all, so a screen reader read the two apart.
+ */
+function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+  const id = `booking-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
-    <label className="block">
-      <span className="text-sm font-semibold">{label}</span>
-      {hint ? <span className="mt-0.5 block text-1 text-muted-foreground">{hint}</span> : null}
-      <span className="mt-2 block">{children}</span>
-    </label>
+    <SharedField label={label} id={id} {...(hint ? { hint } : {})}>
+      {children}
+    </SharedField>
   );
 }

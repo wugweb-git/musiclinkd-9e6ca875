@@ -355,7 +355,7 @@ export function PoliciesEditor({
             maxLength={200}
             rows={2}
             onChange={(e) => onChange(value.map((x, j) => (j === i ? e.target.value : x)))}
-            className="min-h-control flex-1 resize-none rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
+            className="min-h-control flex-1 resize-none rounded-lg border border-border bg-card px-4 py-3 text-2 outline-none focus:border-primary"
           />
           <IconBtn
             label={`Remove policy ${i + 1}`}

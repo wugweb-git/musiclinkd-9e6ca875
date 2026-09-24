@@ -10,9 +10,15 @@ import { opportunityCategories } from "@/data/opportunities";
 import { createOpportunity } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { categoryIcon } from "@/components/ml/opportunity";
-import { CityField, SheetSelect } from "@/components/ml/listing-form";
+import {
+  CityField,
+  Field as SharedField,
+  SheetSelect,
+  inputClass,
+} from "@/components/ml/listing-form";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
+import type { ReactNode } from "react";
 
 type Step =
   | "basics"
@@ -189,7 +195,7 @@ function CreateOpportunity() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Female playback singer for indie-pop single"
-                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
+                className={inputClass}
               />
             </Field>
             <Field label="Requirement type">
@@ -242,7 +248,7 @@ function CreateOpportunity() {
                 value={dates}
                 onChange={(e) => setDates(e.target.value)}
                 placeholder="18–22 Sep 2026"
-                className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
+                className={inputClass}
               />
             </Field>
             <Card className="space-y-1">
@@ -284,7 +290,7 @@ function CreateOpportunity() {
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="₹25,000–₹40,000 per song"
-                  className="w-full rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
+                  className={inputClass}
                 />
               </Field>
             ) : (
@@ -306,7 +312,7 @@ function CreateOpportunity() {
                   value={req}
                   onChange={(e) => setReq(e.target.value)}
                   placeholder="Hindi + English diction"
-                  className="min-w-0 flex-1 rounded-lg border border-border bg-card px-4 py-3 text-sm outline-none"
+                  className={`${inputClass} min-w-0 flex-1`}
                 />
                 <Btn
                   onClick={() => {
@@ -415,22 +421,15 @@ function CreateOpportunity() {
   );
 }
 
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
+/**
+ * The shared field wrapper, with an id derived from its label. This was a copy that gave the
+ * label no association with its control at all, so a screen reader read the two apart.
+ */
+function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+  const id = `opportunity-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
-    <div className="space-y-2">
-      <div>
-        <p className="text-sm font-semibold">{label}</p>
-        {hint ? <p className="text-1 text-muted-foreground">{hint}</p> : null}
-      </div>
+    <SharedField label={label} id={id} {...(hint ? { hint } : {})}>
       {children}
-    </div>
+    </SharedField>
   );
 }
