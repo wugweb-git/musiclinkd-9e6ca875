@@ -310,6 +310,7 @@ export function Row({
   right,
   to,
   params,
+  search,
   hash,
   onClick,
   grouped = false,
@@ -322,6 +323,8 @@ export function Row({
   right?: ReactNode;
   to?: LinkProps["to"];
   params?: LinkProps["params"];
+  /** Search params for the target, e.g. the Market hub opened on its Rent view. */
+  search?: LinkProps["search"];
   /** A section on the target screen, without the "#". */
   hash?: string;
   onClick?: () => void;
@@ -355,6 +358,7 @@ export function Row({
       <Link
         to={to}
         {...(params ? { params } : {})}
+        {...(search ? { search } : {})}
         {...(hash ? { hash } : {})}
         {...(onClick ? { onClick } : {})}
         className={cls}

@@ -141,7 +141,12 @@ export const navItems: {
  */
 const menuGroups: {
   title: string;
-  items: { to: NonNullable<LinkProps["to"]>; label: string; icon: LucideIcon }[];
+  items: {
+    to: NonNullable<LinkProps["to"]>;
+    label: string;
+    icon: LucideIcon;
+    search?: LinkProps["search"];
+  }[];
 }[] = [
   {
     title: "Browse",
@@ -170,7 +175,7 @@ const menuGroups: {
     title: "Market & bookings",
     items: [
       { to: "/marketplace", label: "Market", icon: ShoppingBag },
-      { to: "/marketplace/rent", label: "Rentals", icon: Package },
+      { to: "/marketplace", search: { view: "Rent" }, label: "Rentals", icon: Package },
       { to: "/bookings", label: "Bookings", icon: CalendarCheck },
     ],
   },
@@ -294,10 +299,11 @@ export function BottomNav() {
                 const Icon = item.icon;
                 const stage = stageOf(item.to);
                 return (
-                  <li key={item.to}>
+                  <li key={item.label}>
                     <Row
                       grouped
                       to={item.to}
+                      {...(item.search ? { search: item.search } : {})}
                       title={item.label}
                       icon={<Icon size={iconSize.md} strokeWidth={1.75} aria-hidden />}
                       onClick={() => setMenuOpen(false)}

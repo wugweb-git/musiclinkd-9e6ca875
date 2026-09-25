@@ -1401,12 +1401,15 @@ export function SectionRow({
   title,
   hint,
   to,
+  search,
   action,
   children,
 }: {
   title: string;
   hint?: string;
   to?: string;
+  /** Search params for the See All link, e.g. the hub opened on its Rent view. */
+  search?: Record<string, string>;
   /** Used in place of the See All link when the section opens something instead of a page. */
   action?: ReactNode;
   children: ReactNode;
@@ -1420,7 +1423,7 @@ export function SectionRow({
         </div>
         {action ??
           (to ? (
-            <SectionActionLink to={to} className="text-1">
+            <SectionActionLink to={to} {...(search ? { search } : {})} className="text-1">
               See All
             </SectionActionLink>
           ) : null)}

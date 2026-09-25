@@ -248,7 +248,7 @@ function MarketHome() {
       ) : null}
 
       {!showGrid && forRent.length ? (
-        <SectionRow title="For rent" to="/marketplace/rent">
+        <SectionRow title="For rent" to="/marketplace" search={{ view: "Rent" }}>
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {forRent.map((l) => (
               <ListingTile key={l.id} l={l} />
