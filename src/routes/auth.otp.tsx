@@ -18,6 +18,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { haptic } from "@/lib/haptics";
 import { iconSize } from "@/lib/tokens";
+import { ISD_CODE } from "@/lib/validation";
 
 import { MadeByWugweb } from "@/components/ml/kit";
 
@@ -107,7 +108,7 @@ function OtpScreen() {
               title="Verify your number"
               sub={
                 phone
-                  ? `We sent a 6-digit one-time code to +91 ${formatIndianMobile(phone)}`
+                  ? `We sent a 6-digit one-time code to ${ISD_CODE} ${formatIndianMobile(phone)}`
                   : "Enter the 6-digit code we sent you."
               }
             />

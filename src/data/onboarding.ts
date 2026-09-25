@@ -9,7 +9,7 @@
 //   FUTURE    — out of scope for this release
 
 import type { PersonaBucket } from "@/lib/taxonomy";
-import { INDIAN_STATES } from "@/lib/validation";
+import { DEFAULT_COUNTRY, INDIAN_STATES } from "@/lib/validation";
 
 export type FieldSupport = "EXISTING" | "COMPUTED" | "PROPOSED" | "FUTURE";
 
@@ -287,10 +287,10 @@ export const businessTypes = [
  * is the only source, and everything that reasons about Indian cities belongs here rather than in a
  * screen: see `cityAliases` below, which the identity step uses to match what the edge reports.
  */
-export const countries = ["India"];
+export const countries = [DEFAULT_COUNTRY];
 /** Every Indian state and union territory (src/lib/validation.ts is the one list). */
 export const statesByCountry: Record<string, string[]> = {
-  India: [...INDIAN_STATES],
+  [DEFAULT_COUNTRY]: [...INDIAN_STATES],
 };
 export const citiesByState: Record<string, string[]> = {
   Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik"],

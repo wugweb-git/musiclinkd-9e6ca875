@@ -17,6 +17,7 @@ import { LogoMark } from "./logo";
 import { IconBtn } from "./ui";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
+import { ISD_CODE, MOBILE_DIGITS } from "@/lib/validation";
 
 /* ---------------------------------------------------------------- shell */
 
@@ -455,7 +456,7 @@ export function IndiaFlag({ className }: { className?: string }) {
 /** "9876543210" → "98765 43210". */
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export function formatIndianMobile(digits: string) {
-  const d = digits.replace(/\D/g, "").slice(0, 10);
+  const d = digits.replace(/\D/g, "").slice(0, MOBILE_DIGITS);
   return d.length > 5 ? `${d.slice(0, 5)} ${d.slice(5)}` : d;
 }
 
@@ -475,7 +476,7 @@ export function PhoneField({
     <TextField
       label="Mobile number"
       value={formatIndianMobile(value)}
-      onChange={(v) => onChange(v.replace(/\D/g, "").slice(0, 10))}
+      onChange={(v) => onChange(v.replace(/\D/g, "").slice(0, MOBILE_DIGITS))}
       {...(onBlur ? { onBlur } : {})}
       {...(error ? { error } : {})}
       type="tel"
@@ -486,7 +487,7 @@ export function PhoneField({
       leading={
         <span className="-ml-0.5 flex shrink-0 items-center gap-2 border-r border-border/80 pr-3 text-2 font-semibold text-foreground">
           <IndiaFlag className="shadow-xs" />
-          <span>+91</span>
+          <span>{ISD_CODE}</span>
         </span>
       }
     />

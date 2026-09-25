@@ -6,7 +6,20 @@
  */
 import { PIN_CODE } from "@/lib/place";
 
+/*
+ * India-only is a decision, not an oversight, and this is where it is written down. It was spread
+ * across a constant here, a one-item array in src/data/onboarding.ts, a `+91` typed into the markup
+ * of PhoneField and another typed into the OTP screen's sentence — so "are we India-only?" could
+ * only be answered by grep, and adding a second country would have meant finding all four.
+ *
+ * Everything that encodes the choice now reads these three. A second country becomes a real piece
+ * of work — a country picker, per-country states, a dial-code list — but it starts from one place.
+ */
 export const DEFAULT_COUNTRY = "India";
+/** Dialling code, shown beside the number and added to it for you. */
+export const ISD_CODE = "+91";
+/** Digits in a national mobile number, without the dialling code. */
+export const MOBILE_DIGITS = 10;
 
 /** India's 28 states and 8 union territories. */
 export const INDIAN_STATES = [
