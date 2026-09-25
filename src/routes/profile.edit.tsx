@@ -216,7 +216,19 @@ function EditProfile() {
   }
 
   const { section: openSection } = Route.useSearch();
-  const [open, setOpen] = useState<string | null>(openSection ?? "identity");
+  /*
+   * Which sections are expanded. A set, not one id (owner, 25 Sep 2026): opening Location used to
+   * close Identity, so filling in a profile meant collapsing the thing you had just been reading.
+   * `?section=` still opens the one a profile's edit pencil points at, and it is simply the first
+   * one open rather than the only one allowed.
+   */
+  const [open, setOpen] = useState<Set<string>>(() => new Set([openSection ?? "identity"]));
+  const toggleSection = (id: string) =>
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
 
   // Experience and each role's professional details live in their own tables; they load and save
   // beside the profile row, on the same Save.
@@ -755,7 +767,7 @@ function EditProfile() {
 
         <div className="space-y-2.5">
           {sections.map((section) => {
-            const isOpen = open === section.id;
+            const isOpen = open.has(section.id);
             return (
               <section
                 key={section.id}
@@ -763,7 +775,7 @@ function EditProfile() {
               >
                 <button
                   type="button"
-                  onClick={() => setOpen(isOpen ? null : section.id)}
+                  onClick={() => toggleSection(section.id)}
                   aria-expanded={isOpen}
                   className="flex min-h-[72px] w-full items-center gap-3 px-4 text-left active:bg-subtle/50 transition-colors"
                 >
