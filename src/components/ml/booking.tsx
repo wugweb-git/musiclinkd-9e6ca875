@@ -15,7 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
+import { ActionBar, Btn, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import {
   EmptyState as BaseEmptyState,
   OfflineBanner as BaseOfflineBanner,
@@ -848,7 +848,7 @@ export function StickyBar({
   secondary?: ReactNode | undefined;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-nav mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+    <ActionBar>
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
           {price ? <p className="truncate text-2 font-bold text-price">{price}</p> : null}
@@ -862,7 +862,7 @@ export function StickyBar({
           {primaryLabel}
         </Btn>
       </div>
-    </div>
+    </ActionBar>
   );
 }
 

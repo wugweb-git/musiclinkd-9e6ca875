@@ -86,6 +86,35 @@ export function Screen({
   );
 }
 
+/**
+ * The bar of actions pinned to the bottom of a screen: Apply, Publish, Book, Send invites, Save.
+ *
+ * There were eleven of these, hand-written, in seven versions — three backgrounds, three border
+ * treatments, four bottom paddings and two blur strengths, none of it decided. Five of them also
+ * sat at `bottom-16`, reserving room for a bottom nav that does not render on a detail page, so the
+ * button floated above a strip of bare background. One of them had no safe-area padding at all, so
+ * on a notched phone the button sat under the home indicator.
+ *
+ * It sits below the nav (`z-bar` under `z-nav`) and is laid out `max-w-app` so it lines up with the
+ * page rather than the window. Children are whatever the screen needs; the chrome is not the
+ * screen's business.
+ */
+export function ActionBar({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 /** The one bottom nav, mounted in the root layout and shown on every nav root. */
 export function AppNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });

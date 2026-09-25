@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Pencil, Plus, Share2, Trash2 } from "lucide-react";
-import { Btn, BtnLink, IconBtn, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
+import { ActionBar, Btn, BtnLink, IconBtn, IconBtnLink, Screen, TopBar } from "@/components/ml/ui";
 import {
   AudioPlayer,
   CreditRow,
@@ -270,11 +270,11 @@ function WorkDetail() {
 
       {/* New user: the first work is published; the flow carries on to Review profile. */}
       {onboarding && item?.published ? (
-        <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app bg-background/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+        <ActionBar>
           <BtnLink to="/onboarding/preview" className="w-full">
             Continue to Review Profile
           </BtnLink>
-        </div>
+        </ActionBar>
       ) : null}
     </Screen>
   );

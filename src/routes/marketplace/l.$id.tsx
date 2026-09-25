@@ -29,7 +29,7 @@ import {
   Weight,
   type LucideIcon,
 } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink } from "@/components/ml/ui";
+import { ActionBar, Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink } from "@/components/ml/ui";
 import { MediaEmbed } from "@/components/ml/media-embed";
 import { useAuth } from "@/hooks/use-auth";
 import { shareLink } from "@/lib/booking-actions";
@@ -406,7 +406,7 @@ function ListingDetail() {
 
       {/* One primary action: yours → Edit; for sale → Make offer; for rent → Request rental. No
           payment anywhere — the rest happens between the two people. */}
-      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app bg-background/95 px-5 pb-[max(env(safe-area-inset-bottom),12px)] pt-3 backdrop-blur">
+      <ActionBar>
         {mine && l.dbId ? (
           <div className="flex gap-2">
             <BtnLink to="/marketplace/mine" variant="outline" className="flex-1">
@@ -436,7 +436,7 @@ function ListingDetail() {
             ) : null}
           </div>
         )}
-      </div>
+      </ActionBar>
 
       <OfferSheet open={offer} onClose={() => setOffer(false)} listing={l} />
       <ReportSheet open={report} onClose={() => setReport(false)} subjectId={l.id} />

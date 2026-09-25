@@ -2,7 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Screen, TopBar, Btn, BtnLink, SearchBar, VerifiedBadge } from "@/components/ml/ui";
+import {
+  ActionBar,
+  Screen,
+  TopBar,
+  Btn,
+  BtnLink,
+  SearchBar,
+  VerifiedBadge,
+} from "@/components/ml/ui";
 import { Card, Row, Dialog, EmptyState } from "@/components/ml/kit";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
@@ -128,7 +136,7 @@ function InviteMembers() {
       </div>
 
       {invited.length ? (
-        <div className="fixed inset-x-0 bottom-0 mx-auto w-full max-w-app border-t border-border bg-background/95 px-5 py-4 backdrop-blur">
+        <ActionBar>
           <Btn
             className="w-full"
             disabled={sending}
@@ -144,7 +152,7 @@ function InviteMembers() {
               ? "Sending…"
               : `Send ${invited.length} invitation${invited.length === 1 ? "" : "s"}`}
           </Btn>
-        </div>
+        </ActionBar>
       ) : null}
 
       <Dialog

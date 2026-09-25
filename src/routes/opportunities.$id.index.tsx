@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Bookmark, Share2, CalendarDays, MapPin, Wallet, CheckCircle2, Circle } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { ActionBar, Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState, Price } from "@/components/ml/kit";
 import {
   MatchBar,
@@ -202,7 +202,7 @@ function OpportunityDetail() {
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <ActionBar>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -241,7 +241,7 @@ function OpportunityDetail() {
             </BtnLink>
           )}
         </div>
-      </div>
+      </ActionBar>
 
       <Sheet open={share} onClose={() => setShare(false)} title="Share opportunity">
         <div className="space-y-2">

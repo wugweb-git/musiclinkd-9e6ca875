@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { useCallback, useEffect, useState, type ComponentProps, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Check, ChevronDown, ChevronRight, RefreshCw, Save } from "lucide-react";
-import { Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
+import { ActionBar, Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
 import { SegmentedField } from "@/components/ml/kit";
 import {
   getMyProfile,
@@ -809,7 +809,7 @@ function EditProfile() {
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t border-border bg-card/95 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <ActionBar className="space-y-2">
         {status === "taken" || status === "reserved" || status === "invalid" ? (
           <p role="alert" className="text-1 text-destructive">
             {status === "taken"
@@ -835,7 +835,7 @@ function EditProfile() {
           <Save size={iconSize.sm} aria-hidden />
           {status === "saving" ? "Saving…" : "Save changes"}
         </Btn>
-      </div>
+      </ActionBar>
     </Screen>
   );
 }

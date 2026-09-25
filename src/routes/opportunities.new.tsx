@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
-import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
+import { ActionBar, Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
 import { Card, StatusPill } from "@/components/ml/kit";
 import { opportunityCategories } from "@/data/opportunities";
 import { createOpportunity } from "@/lib/applications.functions";
@@ -390,7 +390,7 @@ function CreateOpportunity() {
         ) : null}
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app border-t border-border bg-card/95 px-5 pb-[max(14px,env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+      <ActionBar>
         <div className="flex gap-2">
           {idx > 0 ? (
             <Btn variant="outline" className="flex-1" onClick={() => go(order[idx - 1]!)}>
@@ -416,7 +416,7 @@ function CreateOpportunity() {
             {step === "preview" ? "Publish" : "Continue"}
           </Btn>
         </div>
-      </div>
+      </ActionBar>
     </Screen>
   );
 }

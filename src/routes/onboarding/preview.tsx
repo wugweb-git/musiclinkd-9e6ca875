@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { BtnLink, Screen, TopBar } from "@/components/ml/ui";
+import { ActionBar, BtnLink, Screen, TopBar } from "@/components/ml/ui";
 import { OnboardingProvider, useOnboarding } from "@/components/ml/onboarding";
 import { ProfileHero } from "@/components/ml/profile";
 import { linkPlatforms, visibilityOptions, visibleSteps } from "@/data/onboarding";
@@ -146,7 +146,7 @@ function Preview() {
         </p>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-bar mx-auto w-full max-w-app space-y-2 border-t border-border/80 bg-background/90 px-5 pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md shadow-xs">
+      <ActionBar className="space-y-2">
         <BtnLink to="/onboarding/complete" className="w-full h-12 text-sm font-semibold shadow-xs">
           Publish My Profile
         </BtnLink>
@@ -158,7 +158,7 @@ function Preview() {
             Finish Later
           </AuthLink>
         </p>
-      </div>
+      </ActionBar>
     </Screen>
   );
 }
