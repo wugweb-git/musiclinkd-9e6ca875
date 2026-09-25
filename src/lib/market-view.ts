@@ -144,6 +144,20 @@ export function listingFromRow(row: ListingRow, labels: TaxonomyLabels, now: num
           deliverable: row.delivery_available ?? false,
         }
       : {}),
+    // A rental's terms, so the one detail screen can state them. Sent only when set.
+    ...(type === "rental"
+      ? present({
+          deposit: rupeesOf(row.deposit_paise),
+          weekly: rupeesOf(row.weekly_price_paise),
+          monthly: rupeesOf(row.monthly_price_paise),
+          minDays: row.min_days ?? undefined,
+          maxDays: row.max_days ?? undefined,
+          noticePeriod: row.notice_period ?? undefined,
+          quantity: row.quantity_available ?? undefined,
+          deliveryFee: rupeesOf(row.delivery_fee_paise),
+          deliveryNote: row.delivery_note ?? undefined,
+        })
+      : {}),
     subcategory: subcategoryOf(row, category, labels),
     saves: 0,
     postedAt: postedAt(row.created_at, now),
@@ -254,7 +268,9 @@ export function rentalFromRow(row: ListingRow, labels: TaxonomyLabels): RentalIt
     ...(row.item_category ? { itemCategory: row.item_category } : {}),
     ...(placeOf(row) ? { location: placeOf(row) } : {}),
     name: row.title,
-    photos: row.image_url ? [row.image_url] : [],
+    // Every photo, the way listingFromRow reads them. This took `image_url` alone, so the same row
+    // showed all its pictures on /marketplace/l/$id and exactly one on /marketplace/rent/e/$id.
+    photos: row.photos?.length ? row.photos : row.image_url ? [row.image_url] : [],
     ...(row.price_paise != null && row.price_unit === "day"
       ? { daily: row.price_paise / 100 }
       : {}),

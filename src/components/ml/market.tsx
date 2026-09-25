@@ -449,11 +449,11 @@ export function ProductCard({
   );
 
   if (preview) return <div className={className}>{body}</div>;
-  return item.opens === "equipment" ? (
-    <Link to="/marketplace/rent/e/$id" params={{ id: item.id }} className={className}>
-      {body}
-    </Link>
-  ) : (
+  // Sale and rent are one flow, so a listing has one detail screen. This used to send rentals to
+  // /marketplace/rent/e/$id, a second page over the same database row that showed the deposit and
+  // the rental terms while /marketplace/l/$id showed the photos — so the same item read differently
+  // depending on which card you happened to tap. The terms live on the listing now.
+  return (
     <Link to="/marketplace/l/$id" params={{ id: item.id }} className={className}>
       {body}
     </Link>

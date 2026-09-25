@@ -43,6 +43,20 @@ export type Listing = {
   /** Goods: whether it can be picked up, or delivered. */
   pickup?: boolean;
   deliverable?: boolean;
+  /*
+   * Rentals: the terms somebody needs before they can agree to one. These used to live only on the
+   * RentalItem read by a second detail screen, so the same row told you the price on one page and
+   * the deposit on another. A rental is a listing; these travel with it.
+   */
+  deposit?: number;
+  weekly?: number;
+  monthly?: number;
+  minDays?: number;
+  maxDays?: number;
+  noticePeriod?: string;
+  quantity?: number;
+  deliveryFee?: number;
+  deliveryNote?: string;
   subcategory: string;
   brand?: string;
   rating?: number;

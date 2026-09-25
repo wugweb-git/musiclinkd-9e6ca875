@@ -54,7 +54,7 @@ import { loadCatalogListings, loadListingBySlug } from "@/lib/market-view";
 import { useSavedListings } from "@/hooks/use-saved-listings";
 import { rememberListingVisit } from "@/lib/device-history";
 import { listReviewsFor } from "@/lib/reviews.functions";
-import { priceText } from "@/lib/price";
+import { inr, priceText } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
@@ -152,6 +152,33 @@ function ListingDetail() {
         { label: "Fulfilment", value: fulfil },
         { label: "City", value: where },
       ].filter((f) => f.value)
+    : [];
+  /*
+   * What renting this actually commits you to. These lived on a second detail screen
+   * (/marketplace/rent/e/$id), so the row you were looking at told you the price here and the
+   * deposit there. They belong with the listing. Only what is set is shown.
+   */
+  const terms = rental
+    ? [
+        ...(l.weekly != null ? [{ label: "Weekly", value: inr(l.weekly) }] : []),
+        ...(l.monthly != null ? [{ label: "Monthly", value: inr(l.monthly) }] : []),
+        ...(l.minDays != null
+          ? [{ label: "Minimum rental", value: `${l.minDays} day${l.minDays > 1 ? "s" : ""}` }]
+          : []),
+        ...(l.maxDays != null ? [{ label: "Maximum rental", value: `${l.maxDays} days` }] : []),
+        ...(l.noticePeriod ? [{ label: "Notice period", value: l.noticePeriod }] : []),
+        ...(l.quantity != null ? [{ label: "Quantity available", value: `${l.quantity}` }] : []),
+        // No stored fee is not a free delivery, so the amount shows only when it is set.
+        ...(l.deliverable
+          ? [
+              {
+                label: "Delivery",
+                value: `${l.pickup ? "Pickup or " : ""}delivery${l.deliveryFee != null ? ` ${inr(l.deliveryFee)}` : ""}`,
+              },
+            ]
+          : []),
+        ...(l.deliveryNote ? [{ label: "Delivery note", value: l.deliveryNote }] : []),
+      ]
     : [];
   const details = [
     ...facts,
@@ -312,6 +339,31 @@ function ListingDetail() {
           <>
             <h2 className="mt-6 text-2">Description</h2>
             <p className="mt-2 text-sm leading-relaxed text-foreground">{l.description}</p>
+          </>
+        ) : null}
+
+        {rental && l.deposit != null ? (
+          <div className="mt-6 rounded-lg bg-warn-container p-4">
+            <p className="text-sm font-semibold text-warn-strong">
+              Refundable security deposit {inr(l.deposit)}
+            </p>
+            <p className="mt-1 text-1 text-warn-strong">
+              Held by the provider and returned when the equipment comes back as it went out.
+            </p>
+          </div>
+        ) : null}
+
+        {terms.length ? (
+          <>
+            <h2 className="mt-6 text-2">Rental terms</h2>
+            <dl className="mt-2 divide-y divide-border rounded-lg bg-card">
+              {terms.map((t) => (
+                <div key={t.label} className="flex items-center gap-3 px-4 py-3">
+                  <dt className="min-w-0 flex-1 text-1 text-foreground">{t.label}</dt>
+                  <dd className="text-right text-1 font-semibold">{t.value}</dd>
+                </div>
+              ))}
+            </dl>
           </>
         ) : null}
 
