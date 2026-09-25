@@ -44,3 +44,15 @@ guide/
 
 # Storybook's built output
 storybook-static/
+
+# Secrets. `.env` itself is tracked and holds only publishable values — the project id, the
+# publishable key and the GA measurement id, all of which ship to the browser anyway. Anything
+# genuinely secret (SUPABASE_SERVICE_ROLE_KEY, a Firebase service account, an upload keystore) goes
+# in .env.local or the host's own secret store, never in a tracked file.
+.env.local
+.env.*.local
+.env.production
+*.jks
+*.keystore
+google-services-account*.json
+service-account*.json
