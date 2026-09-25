@@ -336,20 +336,20 @@ export function Row({
         </span>
       ) : null}
       <span className="min-w-0 flex-1 text-left">
-        <span className="block truncate text-sm font-semibold">{title}</span>
+        <span className="block truncate text-2 font-semibold">{title}</span>
         {subtitle ? (
           <span className="block truncate text-1 text-muted-foreground">{subtitle}</span>
         ) : null}
       </span>
       {badge}
       {right ?? (
-        <ChevronRight size={iconSize.sm} className="shrink-0 text-muted-foreground" aria-hidden />
+        <ChevronRight size={iconSize.md} className="shrink-0 text-muted-foreground" aria-hidden />
       )}
     </>
   );
   const cls = grouped
-    ? "state-layer flex w-full items-center gap-3 px-4 py-3"
-    : "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3";
+    ? "state-layer flex w-full items-center gap-3 px-4 py-3.5"
+    : "flex w-full items-center gap-3 rounded-lg bg-subtle px-4 py-3.5";
   if (to) {
     return (
       <Link
@@ -439,7 +439,7 @@ export function Switch({
 export function RowGroup({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="mb-2 px-1 text-1 font-semibold text-muted-foreground">{title}</h2>
+      <h2 className="pill mb-2 px-1 text-muted-foreground">{title}</h2>
       <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">{children}</ul>
     </section>
   );

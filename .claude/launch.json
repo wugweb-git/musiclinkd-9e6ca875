@@ -11,6 +11,11 @@
       "port": 8080
     },
     {
+      "name": "musiclinkd-attach",
+      "port": 8080,
+      "url": "http://localhost:8080"
+    },
+    {
       "name": "storybook",
       "runtimeExecutable": "bun",
       "runtimeArgs": [

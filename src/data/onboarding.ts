@@ -751,7 +751,9 @@ export function validateUsername(v: string): { ok: boolean; message: string } {
   if (v.length > 30) return { ok: false, message: "30 characters at most." };
   if (!/^[a-z0-9._]+$/.test(v))
     return { ok: false, message: "Lowercase letters, numbers, dots and underscores only." };
-  return { ok: true, message: `musiclinkd.com/${v}` };
+  // The @ matters: /@name is the real address ($handle.tsx). Without it this line advertised
+  // musiclinkd.com/name, which resolves to nothing, directly under a field prefixed "musiclinkd.com/@".
+  return { ok: true, message: `musiclinkd.com/@${v}` };
 }
 
 export function validateUrl(v: string): boolean {

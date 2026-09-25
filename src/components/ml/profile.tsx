@@ -1834,8 +1834,7 @@ export function ShareSheet({
   onClose: () => void;
 }) {
   // Only rendered in the browser once opened, so window and navigator are there when it shows.
-  const url =
-    typeof window === "undefined" ? "" : `${window.location.origin}/profile/${p.username}`;
+  const url = typeof window === "undefined" ? "" : `${window.location.origin}/@${p.username}`;
   const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
   return (
     <Sheet open={open} onClose={onClose} title="Share profile">
