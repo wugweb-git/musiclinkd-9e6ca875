@@ -20,7 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
 import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
-import { GOOGLE_MAPS, PIN_CODE, cityFromDistrict } from "@/lib/place";
+import { GOOGLE_MAPS, PIN_CODE } from "@/lib/place";
 import {
   DEFAULT_COUNTRY,
   INDIAN_STATES,
@@ -31,7 +31,7 @@ import {
 } from "@/lib/validation";
 import { InlineField, SelectField } from "@/components/ml/onboarding";
 import { CityField } from "@/components/ml/listing-form";
-import { placeFromPin } from "@/lib/postcode.functions";
+import { usePinFill } from "@/hooks/use-pin-fill";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
@@ -293,22 +293,12 @@ function EditProfile() {
 
   const update = (patch: Partial<Form>) => setForm((f) => ({ ...f, ...patch }));
 
-  /*
-   * A PIN code is six digits somebody already knows, and it resolves to a real district without
-   * anyone curating a city list — which is why the city field was so often left empty, or filled
-   * with a place the picker could not offer. It fills only what is still blank: a city already
-   * entered is the person's answer, not ours to overwrite.
-   */
-  const lookUpPin = useServerFn(placeFromPin);
+  // Six digits fill the city and state that are still blank. See usePinFill.
+  const pinFill = usePinFill();
   const fillFromPin = async (pin: string) => {
-    if (!/^[1-9]\d{5}$/.test(pin)) return;
-    const place = await lookUpPin({ data: { pin } }).catch(() => null);
+    const place = await pinFill(pin);
     if (!place) return;
-    setForm((f) => ({
-      ...f,
-      state: f.state || place.state,
-      city: f.city || cityFromDistrict(place.district),
-    }));
+    setForm((f) => ({ ...f, state: f.state || place.state, city: f.city || place.city }));
   };
   // Shown under each field as it is typed; a save waits until none is left.
   const problems = {

@@ -25,6 +25,7 @@ import { readMapsLink, type MapsPlace } from "@/lib/maps-link.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
 import { switchToLinked } from "@/lib/saved-accounts";
 import { GOOGLE_MAPS } from "@/lib/place";
+import { usePinFill } from "@/hooks/use-pin-fill";
 import { cityProblem, pinProblem } from "@/lib/validation";
 import { businessTypes, choicesFor, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { roleIcon } from "@/lib/role-icons";
@@ -152,6 +153,20 @@ function NewBusiness() {
     }, 500);
     return () => window.clearTimeout(t);
   }, [link, mapsError, read]);
+
+  /*
+   * The PIN code was already asked for here, one field below the city, and did nothing but sit in
+   * the row. It knows the answer to the question above it: six digits name a district and a state,
+   * so a studio in Thane or Dombivli no longer has to find itself in a list that never had it.
+   * Only blanks are filled — a city the owner chose stays theirs.
+   */
+  const pinFill = usePinFill();
+  const fillFromPin = async (pin: string) => {
+    const place = await pinFill(pin);
+    if (!place) return;
+    setState((cur) => cur || place.state);
+    setCity((cur) => cur || place.city);
+  };
 
   const cityError = city.trim() ? cityProblem(city) : "Choose the city.";
   const pinError = pinCode ? pinProblem(pinCode) : "Enter the 6-digit PIN code.";
@@ -486,7 +501,11 @@ function NewBusiness() {
               inputId="pinCode"
               label="PIN code"
               value={pinCode}
-              onChange={(v) => setPinCode(v.replace(/\D/g, "").slice(0, 6))}
+              onChange={(v) => {
+                const pin = v.replace(/\D/g, "").slice(0, 6);
+                setPinCode(pin);
+                void fillFromPin(pin);
+              }}
               placeholder="400053"
               inputMode="numeric"
               {...(pinCode.length === 6 && pinError

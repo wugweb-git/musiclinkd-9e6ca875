@@ -2,6 +2,7 @@
 // Client-safe: pure functions, no server imports.
 
 import { emptyDraft, type OnboardingDraft, type RoleKey } from "@/data/onboarding";
+import { PIN_CODE } from "@/lib/place";
 
 export type ProfileRow = {
   id?: string;
@@ -31,7 +32,7 @@ export type ProfileRow = {
   onboarding_step?: string | null;
   onboarding_draft?: unknown;
   onboarding_complete?: boolean | null;
-  /** Neighbourhood within the city ("Indiranagar"). */
+  /** Six digits ("400053"). Never shown; it fills the city and answers what is near you. */
   pin_code?: string | null;
   influences?: string[] | null;
   hourly_rate_paise?: number | null;
@@ -72,6 +73,9 @@ export function draftToProfile(d: OnboardingDraft, step?: string) {
     bio: d.bio || null,
     city: d.city || null,
     state: d.state || null,
+    // Kept only when it is a real PIN: a half-typed one would be stored and then fail the same
+    // check on Edit profile, where it is the field that fills the city.
+    pin_code: PIN_CODE.test(d.pinCode.trim()) ? d.pinCode.trim() : null,
     country: d.country || null,
     roles: [d.primaryRole, ...d.secondaryRoles].filter(Boolean) as string[],
     instruments: d.primaryInstrument
@@ -137,6 +141,7 @@ export function profileToDraft(row: ProfileRow | null | undefined): OnboardingDr
     country: row.country ?? emptyDraft.country,
     state: row.state ?? "",
     city: row.city ?? "",
+    pinCode: row.pin_code ?? "",
     workModes: row.work_modes ?? [],
     availability: row.availability ? [row.availability] : [],
     intents: row.intents ?? [],

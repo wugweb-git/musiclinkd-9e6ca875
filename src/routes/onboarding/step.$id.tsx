@@ -21,6 +21,9 @@ import {
   saveMyPrivateDetails,
 } from "@/lib/profile-private.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { usePinFill } from "@/hooks/use-pin-fill";
+import { cityFromDistrict } from "@/lib/place";
+import { pinProblem } from "@/lib/validation";
 import { useServerFn } from "@tanstack/react-start";
 import { useFlowBack } from "@/lib/flow-back";
 import { getLocationGuess } from "@/lib/location-guess.functions";
@@ -187,7 +190,10 @@ function StepRoute() {
         if (!state) return;
         const wanted = cityAliases[lower(city)] ?? lower(city);
         const match = (citiesByState[state] ?? []).find((c) => c.toLowerCase() === wanted);
-        set({ state, city: match ?? "" });
+        // A city the list does not carry is still a real city. This used to fall back to "", so
+        // somebody in Thane was told their state and left to find a city that was never offered —
+        // the first place a new person met the gap. The picker shows a value it has no option for.
+        set({ state, city: match ?? cityFromDistrict(city ?? "") });
       })
       .catch(() => undefined);
   }, [hydrated, id, draft.state, draft.country, locate, set]);
@@ -472,6 +478,17 @@ function StepBody({
 }) {
   const { bucket, bucketState, retryBucket } = useOnboarding();
   const taxonomy = useTaxonomy();
+  /*
+   * The city picker offers what the taxonomy carries, and the taxonomy carries two to four cities
+   * per state. This is where a new person meets that first, so the PIN code answers it: six digits
+   * name a district, and anything already chosen is left alone.
+   */
+  const pinFill = usePinFill();
+  const fillFromPin = async (pin: string) => {
+    const place = await pinFill(pin);
+    if (!place) return;
+    set({ ...(d.state ? {} : { state: place.state }), ...(d.city ? {} : { city: place.city }) });
+  };
   // Languages start from the phone's own languages (e.g. hi-IN, en-IN), once, while none are picked.
   const langPrefilled = useRef(false);
   useEffect(() => {
@@ -571,6 +588,22 @@ function StepBody({
               )}
             </DrawerField>
           </div>
+          <InlineField
+            inputId="pinCode"
+            label="PIN code (optional)"
+            value={d.pinCode}
+            onChange={(v) => {
+              const pin = v.replace(/\D/g, "").slice(0, 6);
+              set({ pinCode: pin });
+              void fillFromPin(pin);
+            }}
+            placeholder="400053"
+            inputMode="numeric"
+            autoComplete="postal-code"
+            {...(d.pinCode.length === 6 && pinProblem(d.pinCode)
+              ? { error: pinProblem(d.pinCode)! }
+              : { hint: "Fills the city above. Never shown to anyone; it finds people near you." })}
+          />
           <PrivateDetailsFields />
           <InlineField
             inputId="bio"

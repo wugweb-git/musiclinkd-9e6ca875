@@ -125,6 +125,14 @@ function readCache(userId: string): OnboardingDraft | null {
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [draft, setDraft] = useState<OnboardingDraft>(emptyDraft);
+  /*
+   * The draft as it is right now, for a patch that arrives later than the render it was written in.
+   * A PIN lookup answers a second or two after the digits are typed, and the edge location guess
+   * answers whenever it answers; merging either into the draft captured at that render puts the
+   * fields typed in between back to what they were. Every patch below reads this instead.
+   */
+  const latest = useRef(draft);
+  latest.current = draft;
   const [hydrated, setHydrated] = useState(false);
   const [sync, setSync] = useState<SyncState>("loading");
   const { user, signedIn, loading: authLoading } = useAuth();
@@ -302,18 +310,18 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       bucket,
       bucketState,
       retryBucket: () => setBucketAttempt((n) => n + 1),
-      set: (patch) => persistDraft({ ...draft, ...patch }),
+      set: (patch) => persistDraft({ ...latest.current, ...patch }),
       toggle: (field, val) => {
-        const list = (draft[field] as unknown as string[]) ?? [];
+        const list = (latest.current[field] as unknown as string[]) ?? [];
         const next = list.includes(val) ? list.filter((x) => x !== val) : [...list, val];
-        persistDraft({ ...draft, [field]: next } as OnboardingDraft);
+        persistDraft({ ...latest.current, [field]: next } as OnboardingDraft);
       },
       markComplete: (id) =>
         persistDraft({
-          ...draft,
-          completedSteps: draft.completedSteps.includes(id)
-            ? draft.completedSteps
-            : [...draft.completedSteps, id],
+          ...latest.current,
+          completedSteps: latest.current.completedSteps.includes(id)
+            ? latest.current.completedSteps
+            : [...latest.current.completedSteps, id],
         }),
       reset: () => persistDraft({ ...emptyDraft, username: claimedUsername ?? "" }),
       claimedUsername,

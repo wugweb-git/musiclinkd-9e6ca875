@@ -448,6 +448,7 @@ export type OnboardingDraft = {
   country: string;
   state: string;
   city: string;
+  pinCode: string; // EXISTING profiles.pin_code — fills the city and state, never shown to anyone
   locality: string; // PROPOSED location.locality
   workModes: string[]; // PROPOSED professionalProfiles.workModes
   availability: string[]; // EXISTING availability.openFor
@@ -478,6 +479,7 @@ export const emptyDraft: OnboardingDraft = {
   country: "India",
   state: "",
   city: "",
+  pinCode: "",
   locality: "",
   workModes: [],
   availability: [],
