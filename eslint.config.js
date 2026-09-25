@@ -28,6 +28,10 @@ export default tseslint.config(
       "src/lib/{compose-refs,glass-variants,styles-prop,internal-glyphs,provider,wave-cn}.*",
       "src/hooks/{use-as-ref,use-lazy-ref,use-isomorphic-layout-effect,use-liquid-glass,use-controlled-state,use-auto-height}.*",
       "src/lib/get-strict-context.tsx",
+      // Generated from the database schema and rewritten wholesale on every regeneration, the same
+      // reason routeTree.gen.ts is left alone. It carried 3,309 of the repo's 3,336 lint errors, so
+      // `bun run lint` was red no matter what anybody did — a gate nobody can pass is not a gate.
+      "src/integrations/supabase/types.ts",
     ],
   },
   {

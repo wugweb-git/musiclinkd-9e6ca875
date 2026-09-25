@@ -5,9 +5,16 @@ import { supabaseForUser } from "../supabase";
 export default defineTool({
   name: "list_my_portfolio",
   title: "List my portfolio",
-  description: "List the signed-in member's portfolio work (tracks, videos, credits) in their chosen order.",
+  description:
+    "List the signed-in member's portfolio work (tracks, videos, credits) in their chosen order.",
   inputSchema: {
-    limit: z.number().int().min(1).max(100).optional().describe("Maximum items to return (default 50)."),
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe("Maximum items to return (default 50)."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ limit }, ctx) => {

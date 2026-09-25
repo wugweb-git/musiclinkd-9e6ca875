@@ -4,7 +4,8 @@ import { supabaseForUser } from "../supabase";
 export default defineTool({
   name: "get_my_profile",
   title: "Get my profile",
-  description: "Read the signed-in member's MusicLinkd profile: name, username, headline, roles, genres and city.",
+  description:
+    "Read the signed-in member's MusicLinkd profile: name, username, headline, roles, genres and city.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_args, ctx) => {

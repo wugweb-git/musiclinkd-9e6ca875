@@ -49,4 +49,3 @@ export const duration = {
   slow: 320,
   enter: 480,
 } as const;
-
