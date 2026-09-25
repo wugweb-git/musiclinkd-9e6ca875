@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Btn, Sheet, TopBar } from "@/components/ml/ui";
+import { Screen, Btn, Sheet, TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
 import { ServiceCard } from "@/components/ml/profile";
 import { serviceItem } from "@/lib/service-item";
@@ -74,7 +74,7 @@ function SelectService() {
   });
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen className="pb-nav-clear">
       <TopBar title="What do you want to book?" subtitle={b.name} back={`/booking/${b.id}`} />
       <main className="px-5 pt-4">
         <StepDots step={1} total={5} />
@@ -203,6 +203,6 @@ function SelectService() {
           </p>
         </form>
       </Sheet>
-    </div>
+    </Screen>
   );
 }

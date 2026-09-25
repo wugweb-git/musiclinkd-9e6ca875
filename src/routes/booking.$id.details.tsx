@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Field as SharedField, SheetSelect } from "@/components/ml/listing-form";
-import { TopBar } from "@/components/ml/ui";
+import { Screen, TopBar } from "@/components/ml/ui";
 import { StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/lib/price";
@@ -40,7 +40,7 @@ function Details() {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen className="pb-nav-clear">
       <TopBar
         title="Session details"
         subtitle={draft.purpose || b.name}
@@ -124,7 +124,7 @@ function Details() {
         primaryLabel="Continue"
         onPrimary={() => navigate({ to: "/booking/$id/addons", params: { id: b.id } })}
       />
-    </div>
+    </Screen>
   );
 }
 

@@ -12,7 +12,7 @@ import {
   Share2,
   XCircle,
 } from "lucide-react";
-import { Btn, BtnLink, Sheet } from "@/components/ml/ui";
+import { Screen, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { BookingStatusPill, Detail } from "@/components/ml/booking";
 import { Dialog, Loading } from "@/components/ml/kit";
 import { formatDate, formatTime } from "@/lib/when";
@@ -105,7 +105,7 @@ function Confirmed() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[100dvh] w-full max-w-app flex-col justify-between bg-background px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-14">
+    <Screen className="flex flex-col justify-between px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-14">
       <div>
         {confirmed ? (
           <CheckCircle2 size={44} className="text-primary" />
@@ -293,6 +293,6 @@ function Confirmed() {
           Keep it
         </Btn>
       </Dialog>
-    </div>
+    </Screen>
   );
 }

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { MessageCircle, Share2 } from "lucide-react";
-import { Btn, IconBtn } from "@/components/ml/ui";
+import { Screen, Btn, IconBtn } from "@/components/ml/ui";
 import {
   BookableHero,
   EntityMetaRow,
@@ -63,7 +63,7 @@ function BookingEntry() {
   ];
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen className="pb-nav-clear">
       <BookableHero b={b} back="/discover" />
 
       <main className="px-5 pt-4">
@@ -254,6 +254,6 @@ function BookingEntry() {
         primaryLabel="Book"
         onPrimary={() => navigate({ to: "/booking/$id/service", params: { id: b.id } })}
       />
-    </div>
+    </Screen>
   );
 }

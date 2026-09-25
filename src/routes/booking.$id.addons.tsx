@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { TopBar } from "@/components/ml/ui";
+import { Screen, TopBar } from "@/components/ml/ui";
 import { AddOnCard, PriceBreakdownCard, StepDots, StickyBar } from "@/components/ml/booking";
 import { CalendarGate, useBookingDraft } from "@/components/ml/booking-context";
 import { inr } from "@/lib/price";
@@ -35,7 +35,7 @@ function AddOns() {
   const navigate = useNavigate();
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-32">
+    <Screen className="pb-nav-clear">
       <TopBar title="Equipment & add-ons" subtitle="Optional" back={`/booking/${b.id}/details`} />
       <main className="px-5 pt-4">
         <StepDots step={4} total={5} />
@@ -66,6 +66,6 @@ function AddOns() {
         primaryLabel="Review booking"
         onPrimary={() => navigate({ to: "/booking/$id/review", params: { id: b.id } })}
       />
-    </div>
+    </Screen>
   );
 }

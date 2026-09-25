@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { TopBar, Btn } from "@/components/ml/ui";
+import { Screen, TopBar, Btn } from "@/components/ml/ui";
 import {
   AcknowledgeRow,
   BookingSummaryCard,
@@ -74,7 +74,7 @@ function Review() {
   const ready = Boolean(draft.date && draft.start) && ack;
 
   return (
-    <div className="mx-auto min-h-[100dvh] w-full max-w-app bg-background pb-36">
+    <Screen className="pb-nav-clear">
       <TopBar title="Review booking" subtitle={b.name} back={`/booking/${b.id}/addons`} />
       <main className="px-5 pt-4">
         <StepDots step={5} total={5} />
@@ -161,6 +161,6 @@ function Review() {
         // Bookings end at Confirmed: payment happens between the two people, off MusicLinkd.
         onPrimary={() => (signedIn ? ask.mutate() : void navigate({ to: "/welcome" }))}
       />
-    </div>
+    </Screen>
   );
 }
