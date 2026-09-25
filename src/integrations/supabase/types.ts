@@ -2292,6 +2292,44 @@ export type Database = {
           },
         ]
       }
+      push_tokens: {
+        Row: {
+          created_at: string
+          device: string | null
+          id: string
+          platform: string
+          profile_id: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          device?: string | null
+          id?: string
+          platform?: string
+          profile_id?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          device?: string | null
+          id?: string
+          platform?: string
+          profile_id?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_tokens_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       qr_scans: {
         Row: {
           created_at: string
