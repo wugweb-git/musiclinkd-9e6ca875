@@ -4,7 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { getMyProfile, getTaxonomyLabels } from "@/lib/portfolio.functions";
 import { getMyCompany } from "@/lib/profile-groups.functions";
 import { asLinkMap, type ProfileRow } from "@/lib/profile-map";
-import { myIdentity, SHORT_HOST, type QrStyle } from "@/data/identity";
+import { myIdentity, type QrStyle } from "@/data/identity";
+import { profileUrl } from "@/lib/site";
 import { defaultQrPrefs, qrPrefsOf } from "@/lib/qr-prefs";
 
 type Contact = {
@@ -13,12 +14,6 @@ type Contact = {
   website: string | null;
   company: string | null;
 };
-
-/** The public profile link people reach by scanning. Absolute, so it works off the phone. */
-function profileUrl(username: string) {
-  const origin = typeof window === "undefined" ? `https://${SHORT_HOST}` : window.location.origin;
-  return `${origin}/@${username}`;
-}
 
 /**
  * The real identity behind the QR module: the signed-in person's own profile, plus the contact

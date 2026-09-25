@@ -4,6 +4,7 @@
  * route: /identity/q/$code — the canonical resolver for every MusicLinkd QR.
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { PUBLIC_HOST } from "@/lib/site";
 import { useEffect, useState } from "react";
 import { MessageCircle, ScanLine, Share2, UserPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
@@ -55,7 +56,7 @@ function QrResult() {
 
   return (
     <Screen bottomNav={false}>
-      <TopBar title="Scanned code" subtitle={`musiclinkd.app/q/${code}`} back="/identity/scan" />
+      <TopBar title="Scanned code" subtitle={`${PUBLIC_HOST}/q/${code}`} back="/identity/scan" />
 
       <main className="px-5 pt-4">
         {phase === "loading" ? (

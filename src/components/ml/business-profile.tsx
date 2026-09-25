@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { profileUrl } from "@/lib/site";
 import { useState } from "react";
 import {
   BarChart3,
@@ -617,7 +618,7 @@ function BusinessActions({
           label="Share Profile"
           variant="outline"
           className="h-11 w-11"
-          onClick={() => void shareLink({ title: name, url: `${window.location.origin}/@${id}` })}
+          onClick={() => void shareLink({ title: name, url: profileUrl(id) })}
         >
           <Share2 size={iconSize.md} aria-hidden />
         </IconBtn>

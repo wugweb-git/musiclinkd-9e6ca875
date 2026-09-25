@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { shareUrl } from "@/lib/site";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
@@ -328,9 +329,7 @@ function CollabRoom() {
             <IconBtn
               label="Share"
               variant="plain"
-              onClick={() =>
-                void shareLink({ title: c.name, url: `${window.location.origin}/collab/${c.id}` })
-              }
+              onClick={() => void shareLink({ title: c.name, url: shareUrl(`/collab/${c.id}`) })}
               className="bg-card/90"
             >
               <Share2 size={iconSize.sm} aria-hidden />
@@ -765,7 +764,7 @@ function InviteLinkRow({ collabId, name }: { collabId: string; name: string }) {
     );
   }
 
-  const url = `${window.location.origin}/collab/join/${row.token}`;
+  const url = shareUrl(`/collab/join/${row.token}`);
   return (
     <div className="overflow-hidden rounded-lg bg-subtle">
       <div className="flex items-center gap-3 px-4 py-3">

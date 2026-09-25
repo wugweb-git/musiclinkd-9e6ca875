@@ -56,6 +56,7 @@ import {
   type TaxonomyOption,
 } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
+import { PUBLIC_HOST } from "@/lib/site";
 
 /* ------------------------------------------------------------------ */
 /* Draft store — the account is the source of truth                    */
@@ -1084,7 +1085,7 @@ export function UsernameField({
     <InlineField
       inputId={inputId}
       label="Username"
-      prefix="musiclinkd.com/@"
+      prefix={`${PUBLIC_HOST}/@`}
       value={value}
       onChange={(v) => onChange(v.toLowerCase().replace(/\s/g, ""))}
       placeholder="yourname"

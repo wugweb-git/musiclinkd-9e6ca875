@@ -9,6 +9,7 @@
 //   FUTURE    — out of scope for this release
 
 import type { PersonaBucket } from "@/lib/taxonomy";
+import { PUBLIC_HOST } from "@/lib/site";
 import { DEFAULT_COUNTRY, INDIAN_STATES } from "@/lib/validation";
 
 export type FieldSupport = "EXISTING" | "COMPUTED" | "PROPOSED" | "FUTURE";
@@ -753,7 +754,7 @@ export function validateUsername(v: string): { ok: boolean; message: string } {
     return { ok: false, message: "Lowercase letters, numbers, dots and underscores only." };
   // The @ matters: /@name is the real address ($handle.tsx). Without it this line advertised
   // musiclinkd.com/name, which resolves to nothing, directly under a field prefixed "musiclinkd.com/@".
-  return { ok: true, message: `musiclinkd.com/@${v}` };
+  return { ok: true, message: `${PUBLIC_HOST}/@${v}` };
 }
 
 export function validateUrl(v: string): boolean {

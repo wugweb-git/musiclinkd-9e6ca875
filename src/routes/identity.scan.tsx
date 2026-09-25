@@ -9,6 +9,7 @@
  * camera access at all falls back to typing the code.
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { PUBLIC_HOST } from "@/lib/site";
 import { useEffect, useRef, useState } from "react";
 import { Camera, Image as ImageIcon, ScanLine, ShieldQuestion } from "lucide-react";
 import { toast } from "sonner";
@@ -227,7 +228,7 @@ function Scanner() {
             <input
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value)}
-              placeholder="username or musiclinkd.app/profile/username"
+              placeholder={`username or ${PUBLIC_HOST}/@username`}
               className="min-h-control w-full rounded-lg border border-border bg-background px-3 text-1 outline-none focus:border-primary"
             />
             <Btn

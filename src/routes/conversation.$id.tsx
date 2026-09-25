@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { PUBLIC_ORIGIN } from "@/lib/site";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -92,7 +93,7 @@ function ShareSheet({
     queryFn: () => readWorks(),
     enabled: open,
   });
-  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const origin = PUBLIC_ORIGIN;
   const live = (services.data ?? []).filter((s) => s.status === "active");
   const published = (works.data ?? []).filter((w) => w.published);
   return (

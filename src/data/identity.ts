@@ -10,6 +10,7 @@ import { listings, sellerById } from "./market";
 import { demoPortfolio } from "./portfolio";
 import { getBookable, lowestRate } from "./booking";
 import type { PriceParts } from "@/lib/price";
+import { PUBLIC_HOST, codeUrl } from "@/lib/site";
 
 /** Canonical entity kinds a MusicLinkd QR may resolve to. */
 export type QrEntityType =
@@ -37,10 +38,10 @@ export type QrDestination = {
   status: QrStatus;
 };
 
-export const SHORT_HOST = "musiclinkd.app";
+export const SHORT_HOST = PUBLIC_HOST;
 
 export function canonicalUrl(code: string) {
-  return `https://${SHORT_HOST}/q/${code}`;
+  return codeUrl(code);
 }
 
 /** The signed-in demo identity. Sourced from the profile flow, not duplicated. */

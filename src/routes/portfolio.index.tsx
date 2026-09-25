@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { shareUrl } from "@/lib/site";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Search, X } from "lucide-react";
@@ -130,7 +131,7 @@ function PortfolioOverview() {
   });
 
   function share(item: PortfolioItem) {
-    const url = `${window.location.origin}/portfolio/${item.id}`;
+    const url = shareUrl(`/portfolio/${item.id}`);
     void shareLink({ title: item.title, url });
   }
 

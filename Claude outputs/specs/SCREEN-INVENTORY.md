@@ -1,7 +1,7 @@
 # Screen inventory — Lovable app (app.musiclinkd.com)
 
 Every route file under `src/routes`, what it is, who reaches it, from where, and why it exists.
-Source of truth: the route tree in this repo, 25 Sep 2026. 181 route files.
+Source of truth: the route tree in this repo, 25 Sep 2026. 181 route files, plus 2 system screens that have no route file.
 
 The **Open** column launches each screen on the local dev server at `http://localhost:8080`. Start it first:
 
@@ -9,9 +9,36 @@ The **Open** column launches each screen on the local dev server at `http://loca
 bun run dev
 ```
 
-Routes with a `$param` show **—**: they need a real id, so reach them from the listing screen above them in the table.
+Routes with a `$param` show **—**: they need a real id, so reach them from the listing screen above them in the table. The `/business/$id/*` rows are linked with a real sample business (`wugweb`) so they open directly.
+
+**Business screens are not owner-gated.** Signed in as talent you can still open any business page's dashboard, leads and analytics via `/business/<username>/…`. What fails is the shortcut routes `/business/leads`, `/business/availability`, `/business/policies`, `/business/pricing` and `/business/bookings` — they resolve "my business" from the session, find none, and show a "Leads are for a business page" empty state.
 
 Cohort column: **T** = talent (a human account), **B** = business account, **Both**, **Out** = signed-out / public.
+
+## Three classes of screen
+
+Every screen falls into one of three classes, by whether the talent/business fork applies to it:
+
+| Class | Fork applies? | Content decided by | Examples |
+|---|---|---|---|
+| **System** | No — type unknown or irrelevant | Nothing about the person | 404, error, welcome, `auth/*`, offline, maintenance, locked, legal, about |
+| **Published** | No — viewer-agnostic | The **subject** being viewed | `/profile/$username`, `/@handle`, `/business/$id`, cards, search, categories, listings |
+| **Owner** | **Yes** | The **session's** locked type | `/profile`, `/portfolio`, dashboard, leads, settings, bookings |
+
+Onboarding is in none of them: it is the screen where the fork is made.
+
+A Published screen never needs a cohort gate — the subject is in the URL. Only Owner screens express the fork, and they should all express it the same way.
+
+## 0. System screens (no route file)
+
+These are not in `src/routes`. They hang off `__root.tsx` and are reachable from any URL.
+
+| Screen | Where | Who | Why |
+|---|---|---|---|
+| 404 — Page not found | `notFoundComponent`, `__root.tsx:133` | System | Any unmatched URL. "Go home" points at `/`, which resolves the fork, so one button is correct for both cohorts |
+| This page didn't load | `errorComponent`, `__root.tsx:134` | System | Any thrown render error; reports to Lovable and offers Try again |
+
+Both are raw markup rather than the `ml/*` component kit — the only screens that do not compose from it.
 
 ---
 
@@ -65,7 +92,7 @@ Cohort column: **T** = talent (a human account), **B** = business account, **Bot
 | `/categories` | Browse categories | Both | Discover / Search empty state | Taxonomy as a browsable list | [Open](http://localhost:8080/categories) |
 | `/categories/$slug` | One category | Both | Categories list, deep links | Landing page per taxonomy term | — |
 | `/singers` | → `/categories/singers` | Out | Legacy / marketing links | Old vanity URL | [Open](http://localhost:8080/singers) |
-| `/studio` | Studios | Both | Discover, marketing links | Studio-type businesses as a browsable list | [Open](http://localhost:8080/studio) |
+| `/studio` | Studios | Both | Discover, marketing links | A legacy list filtered to one business type; the type is data, not a screen | [Open](http://localhost:8080/studio) |
 | `/recommendations/swipe` | Swipe recommendations | Both | Home card, Discover | Fast accept/skip triage of suggestions | [Open](http://localhost:8080/recommendations/swipe) |
 | `/recommendations/settings` | Discovery settings | Both | Swipe screen | Tune what gets recommended | [Open](http://localhost:8080/recommendations/settings) |
 | `/recommended` | → `/recommendations/swipe` | Both | Legacy links | Old name kept working | [Open](http://localhost:8080/recommended) |
@@ -141,7 +168,7 @@ Cohort column: **T** = talent (a human account), **B** = business account, **Bot
 | `/booking/$id/service` | What do you want to book? | Both | Book | Book always picks a service first | — |
 | `/booking/$id/schedule` | Availability | Both | Step 1 | Choose date and time | — |
 | `/booking/$id/details` | Session details | Both | Step 2 | Brief, headcount, location | — |
-| `/booking/$id/addons` | Equipment & add-ons | Both | Step 3 | Studio services link amenities and equipment | — |
+| `/booking/$id/addons` | Equipment & add-ons | Both | Step 3 | A business service links its amenities and equipment | — |
 | `/booking/$id/review` | Review booking | Both | Step 4 | Last look before sending | — |
 | `/booking/confirmed/$ref` | Confirmed / ask for another time | Both | Review → send | Outcome, plus reschedule ask | — |
 | `/bookings` | My bookings | Both | Tab bar, profile | Everything booked, as the customer | [Open](http://localhost:8080/bookings) |
@@ -152,18 +179,18 @@ Cohort column: **T** = talent (a human account), **B** = business account, **Bot
 | --- | --- | --- | --- | --- | --- |
 | `/business` | Businesses | Both | Discover, search | Browse business pages | [Open](http://localhost:8080/business) |
 | `/business/new` | Create a business page | B | Switch account | One login owns one business page | [Open](http://localhost:8080/business/new) |
-| `/business/$id` | Business page | Both | Search, links | The public business page | — |
-| `/business/$id/dashboard` | Dashboard | B | Switch account | The business landing surface | — |
-| `/business/$id/manage` | Manage | B | Dashboard | Edit the page | — |
-| `/business/$id/services` | Services | Both | Business page | What this business offers | — |
-| `/business/$id/portfolio` | Portfolio | Both | Business page | The business's work | — |
-| `/business/$id/team` | Team | Both | Business page | Who works there | — |
-| `/business/$id/reviews` | Reviews | Both | Business page | Review rail for the business | — |
-| `/business/$id/availability` | Availability | B | Manage | When the business takes work | — |
-| `/business/$id/enquiry` | Enquiry | Both | Business page | Enquire without booking | — |
-| `/business/$id/leads` | Leads | B | Dashboard | Enquiries not yet bookings | — |
-| `/business/$id/analytics` | Analytics | B | Dashboard | Page and booking performance | — |
-| `/business/$id/verification` | Verification | B | Dashboard | Business verification state | — |
+| `/business/$id` | Business page | Both | Search, links | The public business page | [Open](http://localhost:8080/business/wugweb) |
+| `/business/$id/dashboard` | Dashboard | B | Switch account | The business landing surface | [Open](http://localhost:8080/business/wugweb/dashboard) |
+| `/business/$id/manage` | Manage | B | Dashboard | Edit the page | [Open](http://localhost:8080/business/wugweb/manage) |
+| `/business/$id/services` | Services | Both | Business page | What this business offers | [Open](http://localhost:8080/business/wugweb/services) |
+| `/business/$id/portfolio` | Portfolio | Both | Business page | The business's work | [Open](http://localhost:8080/business/wugweb/portfolio) |
+| `/business/$id/team` | Team | Both | Business page | Who works there | [Open](http://localhost:8080/business/wugweb/team) |
+| `/business/$id/reviews` | Reviews | Both | Business page | Review rail for the business | [Open](http://localhost:8080/business/wugweb/reviews) |
+| `/business/$id/availability` | Availability | B | Manage | When the business takes work | [Open](http://localhost:8080/business/wugweb/availability) |
+| `/business/$id/enquiry` | Enquiry | Both | Business page | Enquire without booking | [Open](http://localhost:8080/business/wugweb/enquiry) |
+| `/business/$id/leads` | Leads | B | Dashboard | Enquiries not yet bookings | [Open](http://localhost:8080/business/wugweb/leads) |
+| `/business/$id/analytics` | Analytics | B | Dashboard | Page and booking performance | [Open](http://localhost:8080/business/wugweb/analytics) |
+| `/business/$id/verification` | Verification | B | Dashboard | Business verification state | [Open](http://localhost:8080/business/wugweb/verification) |
 | `/business/policies` | Policies | B | Manage | Cancellation and house rules | [Open](http://localhost:8080/business/policies) |
 | `/business/pricing` | Pricing | B | Manage | Rate card | [Open](http://localhost:8080/business/pricing) |
 | `/business/availability` | Availability | B | Dashboard | Account-level calendar | [Open](http://localhost:8080/business/availability) |

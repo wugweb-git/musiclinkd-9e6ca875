@@ -4,12 +4,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { getMyBusiness } from "@/lib/profile-groups.functions";
 import { getTaxonomyLabels } from "@/lib/portfolio.functions";
 import { taxonomyLabel } from "@/lib/catalog.functions";
-import { SHORT_HOST } from "@/data/identity";
+import { profileUrl } from "@/lib/site";
 
-function businessUrl(username: string) {
-  const origin = typeof window === "undefined" ? `https://${SHORT_HOST}` : window.location.origin;
-  return `${origin}/@${username}`;
-}
+// A business page shares the same public address shape as a person: /@handle. See lib/site.ts.
+const businessUrl = profileUrl;
 
 /**
  * The real business identity behind the QR module's "Business" subject — the signed-in account's

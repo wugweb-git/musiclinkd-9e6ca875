@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { profileUrl } from "@/lib/site";
 import { Children, useEffect, useMemo, useState, type ComponentProps, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -1834,7 +1835,7 @@ export function ShareSheet({
   onClose: () => void;
 }) {
   // Only rendered in the browser once opened, so window and navigator are there when it shows.
-  const url = typeof window === "undefined" ? "" : `${window.location.origin}/@${p.username}`;
+  const url = profileUrl(p.username);
   const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
   return (
     <Sheet open={open} onClose={onClose} title="Share profile">

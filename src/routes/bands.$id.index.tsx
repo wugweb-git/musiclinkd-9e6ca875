@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { shareUrl } from "@/lib/site";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import {
@@ -122,8 +123,7 @@ function BandProfile() {
   }
 
   const owner = band.owner;
-  const share = () =>
-    void shareLink({ title: band.name, url: `${window.location.origin}/bands/${band.id}` });
+  const share = () => void shareLink({ title: band.name, url: shareUrl(`/bands/${band.id}`) });
 
   function onToggleFollow() {
     if (!band) return;

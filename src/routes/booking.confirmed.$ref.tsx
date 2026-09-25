@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { shareUrl } from "@/lib/site";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -207,7 +208,7 @@ function Confirmed() {
               onClick={() =>
                 void shareLink({
                   title: b.studio?.name ?? b.studio_name ?? "Studio session",
-                  url: `${window.location.origin}/studio`,
+                  url: shareUrl("/studio"),
                 })
               }
             >

@@ -3,6 +3,7 @@ import { notFound, redirect } from "@tanstack/react-router";
 import { BusinessProfileExperience } from "@/components/ml/business-profile";
 import { PersonProfileExperience } from "@/components/ml/person-profile";
 import { businessViewFromRecord } from "@/lib/business-view";
+import { profileUrl } from "@/lib/site";
 import {
   getPublicProfile,
   getPublicProfileSections,
@@ -122,7 +123,7 @@ export function PublicProfileScreen({
         name: view.name,
         description: view.tagline || view.about,
         image: view.cover || view.logo,
-        url: `https://musiclinkd.com/@${username}`,
+        url: profileUrl(username),
         telephone: undefined,
         sameAs: view.website ? [view.website] : undefined,
         address: view.city
@@ -141,7 +142,7 @@ export function PublicProfileScreen({
           jobTitle: person.primaryRole,
           description: person.shortBio || person.longBio || person.headline,
           image: person.photo,
-          url: `https://musiclinkd.com/@${username}`,
+          url: profileUrl(username),
           knowsAbout: [
             ...(person.genres || []),
             ...(person.instruments || []),
