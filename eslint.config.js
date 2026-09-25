@@ -32,6 +32,16 @@ export default tseslint.config(
       // reason routeTree.gen.ts is left alone. It carried 3,309 of the repo's 3,336 lint errors, so
       // `bun run lint` was red no matter what anybody did — a gate nobody can pass is not a gate.
       "src/integrations/supabase/types.ts",
+      // Agent worktrees: six whole checkouts of this repo, 2,039 .tsx files against the 343 real
+      // ones in src/. `eslint .` was linting all six copies — minutes of work, and every finding
+      // about a stale copy of a file rather than the file. Git ignores nested worktrees on its own;
+      // eslint does not.
+      ".claude/**",
+      // Build output, not source. `android/app/src/main/assets/public` is the web bundle that
+      // `cap sync` copies in — 272 minified files, which a formatting rule will happily spend
+      // minutes disagreeing with. Both are already gitignored; flat config does not read that.
+      "android/**",
+      "storybook-static/**",
     ],
   },
   {
