@@ -19,12 +19,21 @@ async function admin() {
   return supabaseAdmin;
 }
 
-/** A free username from a business name: letters and digits joined by dots, 3 to 30 long. */
+/**
+ * A free username from a business name: letters and digits joined by dots, 3 to 30 long.
+ *
+ * `reserved_usernames` is a global list, not the caller's data, and `authenticated` has no grant on
+ * it at all — so reading it through the caller's client returned an error this code then ignored,
+ * and every reserved name looked free. The database trigger still refused the claim, so the only
+ * symptom was a suggestion that could not be accepted. It reads through the service client, the way
+ * opportunity_views already does.
+ */
 async function freeUsername(client: SupabaseClient, name: string, preferred?: string) {
+  const names = (await admin()) as unknown as SupabaseClient;
   if (preferred && /^[a-z0-9._]{3,30}$/.test(preferred)) {
     const [{ data: used }, { data: reserved }] = await Promise.all([
       client.from("profiles").select("id").eq("username", preferred).limit(1),
-      client.from("reserved_usernames").select("name").eq("name", preferred).limit(1),
+      names.from("reserved_usernames").select("name").eq("name", preferred).limit(1),
     ]);
     if (!used?.length && !reserved?.length) return preferred;
   }
@@ -40,7 +49,7 @@ async function freeUsername(client: SupabaseClient, name: string, preferred?: st
     const candidate = i === 0 ? padded : `${padded}${Math.floor(100 + Math.random() * 900)}`;
     const [{ data: used }, { data: reserved }] = await Promise.all([
       client.from("profiles").select("id").eq("username", candidate).limit(1),
-      client.from("reserved_usernames").select("name").eq("name", candidate).limit(1),
+      names.from("reserved_usernames").select("name").eq("name", candidate).limit(1),
     ]);
     if (!used?.length && !reserved?.length) return candidate;
   }

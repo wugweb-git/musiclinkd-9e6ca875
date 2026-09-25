@@ -53,7 +53,16 @@ export const myPortfolioPlays = createServerFn({ method: "GET" })
     const ids = ((mine ?? []) as { id: string }[]).map((m) => m.id);
     if (!ids.length) return {};
 
-    const { data, error } = await client
+    /*
+     * Through the service client, because `authenticated` has no grant on portfolio_item_plays at
+     * all — a play is written by record_portfolio_play (SECURITY DEFINER) and read by nobody else.
+     * This used the caller's client, so the query came back "permission denied for table
+     * portfolio_item_plays" and the `throw` below turned an artist's own analytics screen into an
+     * error. The rows read are already narrowed to `ids`, which is this account's own work.
+     */
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const plays = supabaseAdmin as unknown as SupabaseClient;
+    const { data, error } = await plays
       .from("portfolio_item_plays")
       .select("item_id")
       .in("item_id", ids);
