@@ -660,7 +660,14 @@ export function CoverHero({
   const coverHeight = 132 - 60 * shrink;
   const photoSize = 136 - 52 * shrink;
   return (
-    <header>
+    /*
+     * A div, not a header. `<header>` outside article/aside/main/nav/section is a `banner`
+     * landmark, and a page may have one — but this is a shared hero used on the profile, band,
+     * business, collab and booking screens, every one of which already has its own top bar. On the
+     * owner's profile axe failed with "Document should not have more than one banner landmark".
+     * Nothing is lost: the name inside is still an <h1>, which is what carries the meaning.
+     */
+    <div>
       <div
         className="relative overflow-hidden motion-reduce:!h-33"
         style={{ height: `${coverHeight}px` }}
@@ -722,7 +729,7 @@ export function CoverHero({
         {title ?? (name ? <h1 className="mt-3 text-3 leading-tight">{name}</h1> : null)}
         {children}
       </div>
-    </header>
+    </div>
   );
 }
 
