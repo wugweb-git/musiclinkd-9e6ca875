@@ -32,6 +32,12 @@ export default tseslint.config(
       // reason routeTree.gen.ts is left alone. It carried 3,309 of the repo's 3,336 lint errors, so
       // `bun run lint` was red no matter what anybody did — a gate nobody can pass is not a gate.
       "src/integrations/supabase/types.ts",
+      // Lovable's preview auth broker, and its first line says "This file is automatically
+      // generated. Do not edit it directly." It has been regenerated four times — 2, 13, 24 and 25
+      // Sep — and each time it came back with `let timer` and single quotes, so the one lint error
+      // was fixed by hand three times and reappeared within hours. CI was red on every push,
+      // including every one of ours, for a file nobody is allowed to edit.
+      "src/integrations/supabase/previewAuthStorage.ts",
       // Agent worktrees: six whole checkouts of this repo, 2,039 .tsx files against the 343 real
       // ones in src/. `eslint .` was linting all six copies — minutes of work, and every finding
       // about a stale copy of a file rather than the file. Git ignores nested worktrees on its own;
