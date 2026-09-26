@@ -90,7 +90,17 @@ function PortfolioAnalytics() {
                 There's no analytics table yet, so these figures aren't tracked — they'll start
                 counting once that's built, not reflect a lack of engagement.
               </p>
-            ) : null}
+            ) : (
+              /*
+               * Signed out, every figure and every work on this screen is made up (demoPortfolio,
+               * analyticsFor, portfolioTrend). The signed-in view has always said its numbers are
+               * untracked; this one said nothing at all, so a visitor had no way to tell they were
+               * looking at an example rather than somebody's real performance.
+               */
+              <p className="mb-3 rounded-lg bg-warn-container px-3 py-2 text-1 text-warn-strong">
+                An example, not real data. Sign in to see how your own work is doing.
+              </p>
+            )}
             <WorkAnalytics figures={totals} />
 
             {/* The same 30 days as the totals above, drawn. */}
