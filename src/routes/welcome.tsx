@@ -278,69 +278,49 @@ function WelcomeScreen() {
   }
 
   return (
-    <AuthScreen brand={false} className="bg-[#f7f6f2]">
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        <header className="shrink-0 px-1 pt-1">
+<AuthScreen brand={false} className="bg-[#f7f6f2]">
+<div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#f7f6f2] text-foreground">
+        <header className="shrink-0 px-5 pb-7 pt-2">
           <div className="flex items-center justify-between">
             <Brand compact className="vt-brand mb-0" />
-            <span className="rounded-full bg-foreground px-2.5 py-1 text-1 font-semibold text-background">INDIA / MUSIC</span>
+            <button type="button" onClick={() => switchMode(signup ? "signin" : "signup")} className="min-h-12 text-1 font-semibold text-muted-foreground underline underline-offset-4">
+              {signup ? "Sign in" : "Create account"}
+            </button>
           </div>
-          <div className="mt-8 flex items-end justify-between gap-4">
-            <h1 className={cn("max-w-[275px] text-4 font-bold leading-[0.98] tracking-[-0.06em] text-foreground", rise)} style={beat(1)}>
-              Make something<br />worth hearing.
+          <div className={cn("mt-12", rise)} style={beat(1)}>
+            <p className="mb-3 text-1 font-semibold tracking-[0.16em] text-[#ea4c89]">MUSICLINKD</p>
+            <h1 className="max-w-[315px] text-4 font-bold leading-[0.96] tracking-[-0.065em] text-foreground">
+              Your next<br /><span className="text-[#ea4c89]">sound</span> starts here.
             </h1>
-            <div aria-hidden className="mb-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pink-strong text-background shadow-elevation-1">
-              <span className="text-2 font-bold">↗</span>
-            </div>
+            <p className="mt-4 max-w-[285px] text-2 leading-snug text-muted-foreground">Meet the artists, studios and opportunities shaping India&apos;s music scene.</p>
           </div>
-          <p className={cn("mt-4 max-w-[285px] text-2 leading-snug text-muted-foreground", rise)} style={beat(2)}>
-            The people, places and opportunities behind India&apos;s music.
-          </p>
-          <div className={cn("mt-5 flex items-center gap-2", rise)} style={beat(3)}>
-            <span className="h-1.5 w-10 rounded-full bg-pink-strong" />
-            <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
-            <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
-            <span className="ml-1 text-1 font-medium text-muted-foreground">Connect / create / grow</span>
+          <div className={cn("mt-7 flex gap-2 overflow-hidden", rise)} style={beat(2)} aria-label="Music community roles">
+            {["Artists", "Studios", "Producers"].map((label, index) => <span key={label} className={cn("shrink-0 rounded-full border px-3 py-2 text-1 font-medium", index === 0 ? "border-[#ea4c89] bg-[#ea4c89] text-white" : "border-border bg-white text-muted-foreground")}>{label}</span>)}
           </div>
           <div className="sr-only"><ul>{audience.map((a) => <li key={a}>{a}</li>)}</ul></div>
         </header>
 
-        <main className={cn("mt-8 min-h-0 flex-1", rise)} style={beat(4)}>
-          {saved.length ? (
-            <section className="mb-3">
-              <p className="mb-1 text-1 font-semibold text-muted-foreground">Continue as</p>
-              <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
-                {saved.slice(0, 1).map((a) => <AccountRow key={a.userId} account={a} current={false} busy={busy !== null} onPick={() => void continueAs(a.userId)} onRemove={() => forgetAccount(a.userId)} />)}
-              </ul>
-            </section>
-          ) : null}
-
-          <form noValidate onSubmit={(e) => { e.preventDefault(); if (!busy) void submit(); }} className="rounded-xl bg-background p-4 shadow-elevation-1 ring-1 ring-foreground/5">
-            <div className="mb-4 flex items-baseline justify-between gap-2">
-              <div>
-                <h2 className="text-2 font-bold tracking-tight text-foreground">{signup ? "Join MusicLinkd" : "Welcome back"}</h2>
-                <p className="mt-0.5 text-1 text-muted-foreground">{signup ? "Your next collaboration starts here." : "Pick up where you left off."}</p>
-              </div>
-              <button type="button" onClick={() => switchMode(signup ? "signin" : "signup")} className="min-h-12 shrink-0 text-1 font-semibold text-pink-strong underline underline-offset-4">
-                {signup ? "Sign in" : "Join"}
-              </button>
+        <main className={cn("mt-1 flex-none rounded-t-[32px] bg-[#f7f6f2] px-5 pb-5 pt-6 text-foreground", rise)} style={beat(3)}>
+          {saved.length ? <section className="mb-4"><p className="mb-2 text-1 font-semibold text-muted-foreground">Continue as</p><ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">{saved.slice(0, 1).map((a) => <AccountRow key={a.userId} account={a} current={false} busy={busy !== null} onPick={() => void continueAs(a.userId)} onRemove={() => forgetAccount(a.userId)} />)}</ul></section> : null}
+          <form noValidate onSubmit={(e) => { e.preventDefault(); if (!busy) void submit(); }}>
+            <div className="mb-5 flex items-start justify-between gap-3">
+              <div><h2 className="text-3 font-bold tracking-[-0.04em]">{signup ? "Join MusicLinkd" : "Welcome back"}</h2><p className="mt-1 text-1 text-muted-foreground">{signup ? "Build your music circle." : "Pick up where you left off."}</p></div>
+              <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-[#ea4c89]" aria-hidden />
             </div>
             {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-            <TextField label="Email" value={email} className="mb-2" onChange={(v) => { setEmail(v); carryEmail(v); }} onBlur={() => fields.touch("email")} error={fields.errorFor("email", emailProblem)} type="email" inputMode="email" autoComplete="email" enterKeyHint="next" placeholder="name@example.com" />
+            <TextField label="Email" value={email} className="mb-3" onChange={(v) => { setEmail(v); carryEmail(v); }} onBlur={() => fields.touch("email")} error={fields.errorFor("email", emailProblem)} type="email" inputMode="email" autoComplete="email" enterKeyHint="next" placeholder="name@example.com" />
             <PasswordInput className="mb-1" value={password} onChange={setPassword} onBlur={() => fields.touch("password")} error={fields.errorFor("password", passwordProblem)} placeholder={signup ? "Create a strong password" : "Your password"} autoComplete={signup ? "new-password" : "current-password"} below={signup ? <PasswordRequirements value={password} /> : null} />
-            {!signup ? <div className="mb-2 flex justify-end"><AuthLink to="/auth/forgot" className="text-1 font-medium text-muted-foreground">Forgot password?</AuthLink></div> : null}
-            <Btn type="submit" className="h-12 w-full text-sm font-semibold" loading={busy === "email"}>{signup ? "Create account" : "Sign in"}</Btn>
+            {!signup ? <div className="mb-3 flex justify-end"><AuthLink to="/auth/forgot" className="text-1 font-medium text-muted-foreground underline underline-offset-4">Forgot password?</AuthLink></div> : null}
+            <Btn type="submit" className="h-14 w-full rounded-full bg-[#111111] text-sm font-semibold text-white hover:bg-[#252525]" loading={busy === "email"}>{signup ? "Create account" : "Sign in"}</Btn>
           </form>
-
-          <Divider label="or continue with" className="my-3" />
+          <Divider label="or continue with" className="my-4" />
           <div className={`grid gap-2 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
-            <Btn variant="outline" className="h-11 w-full bg-background px-1 text-1 font-medium" icon={<GoogleIcon />} loading={busy === "google"} onClick={() => void google()}>Google</Btn>
-            {showLinkedIn ? <Btn variant="outline" className="h-11 w-full bg-background px-1 text-1 font-medium" icon={<Linkedin size={iconSize.sm} aria-hidden />} loading={busy === "linkedin"} onClick={() => void linkedin()}>LinkedIn</Btn> : null}
-            <Btn variant="outline" className="h-11 w-full bg-background px-1 text-1 font-medium" icon={<Smartphone size={iconSize.sm} aria-hidden />} onClick={() => void navigate({ to: "/auth/phone" })}>Phone</Btn>
+            <Btn variant="outline" className="h-12 w-full rounded-full bg-white px-1 text-1 font-medium" icon={<GoogleIcon />} loading={busy === "google"} onClick={() => void google()}>Google</Btn>
+            {showLinkedIn ? <Btn variant="outline" className="h-12 w-full rounded-full bg-white px-1 text-1 font-medium" icon={<Linkedin size={iconSize.sm} aria-hidden />} loading={busy === "linkedin"} onClick={() => void linkedin()}>LinkedIn</Btn> : null}
+            <Btn variant="outline" className="h-12 w-full rounded-full bg-white px-1 text-1 font-medium" icon={<Smartphone size={iconSize.sm} aria-hidden />} onClick={() => void navigate({ to: "/auth/phone" })}>Phone</Btn>
           </div>
+          <footer className="pt-5 text-center"><LegalNote className="mt-0" /><div className="mt-1"><MadeByWugweb /></div>{showDemoControls ? <p className="mt-1 text-1"><AuthLink to="/dev/new-user" className="text-muted-foreground">Dev: Test as a new user</AuthLink></p> : null}</footer>
         </main>
-
-        <footer className="shrink-0 pb-1 pt-4 text-center"><LegalNote className="mt-0" /><div className="mt-1"><MadeByWugweb /></div>{showDemoControls ? <p className="mt-1 text-1"><AuthLink to="/dev/new-user" className="text-muted-foreground">Dev: Test as a new user</AuthLink></p> : null}</footer>
       </div>
     </AuthScreen>
   );
