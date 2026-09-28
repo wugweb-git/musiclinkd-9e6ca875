@@ -58,7 +58,7 @@ function ServicesHome() {
         right={
           <BtnLink
             to="/services/new"
-            search={{ step: "what" as const }}
+            search={{}}
             variant="ink"
             className="min-h-10 px-4"
             icon={<Plus size={iconSize.sm} aria-hidden />}
@@ -137,7 +137,7 @@ function ServicesHome() {
             title={`No ${filter.toLowerCase()} services`}
             body="Publish a service so people can book you without asking for a quote first."
           >
-            <BtnLink to="/services/new" search={{ step: "what" as const }} className="w-full">
+            <BtnLink to="/services/new" search={{}} className="w-full">
               Add a Service
             </BtnLink>
           </EmptyState>

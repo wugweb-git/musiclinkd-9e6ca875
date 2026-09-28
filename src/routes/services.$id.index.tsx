@@ -390,12 +390,7 @@ function ServiceDetail() {
 
       <Sheet open={manage && Boolean(s)} onClose={() => setManage(false)} title="Manage service">
         <div className="space-y-2">
-          <BtnLink
-            to="/services/new"
-            search={{ step: "what" as const, id }}
-            variant="outline"
-            className="w-full"
-          >
+          <BtnLink to="/services/new" search={{ id }} variant="outline" className="w-full">
             Edit Details & Pricing
           </BtnLink>
           <Btn

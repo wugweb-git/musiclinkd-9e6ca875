@@ -55,17 +55,23 @@ import { sized } from "@/lib/image-url";
  * drawer pickers with icons, the icon footer, a preview of the card as it shows on your profile):
  * what you offer, then price and publish.
  */
-const steps = ["what", "price"] as const;
+/*
+ * Step slugs are nouns, like every other flow's (`/business/new` uses type, details, policies).
+ * The first was `what`, which is a sentence fragment, not a name — `?step=what` read as a bug in
+ * the address bar (owner, 29 Sep 2026). The first step is also no longer written into the URL at
+ * all: `/services/new` *is* step one, so there is nothing for a parameter to say.
+ */
+const steps = ["details", "price"] as const;
 type Step = (typeof steps)[number];
 const stepLabels: Record<Step, string> = {
-  what: "What you offer",
+  details: "What you offer",
   price: "Price & publish",
 };
-/** Older links name the steps this flow used to have. */
+/** Older links name the steps this flow used to have, including the `what` this replaced. */
 const legacySteps: Record<string, Step> = {
-  category: "what",
-  basics: "what",
-  details: "what",
+  what: "details",
+  category: "details",
+  basics: "details",
   pricing: "price",
   delivery: "price",
   review: "price",
@@ -124,11 +130,18 @@ const categoryIcons: Record<string, LucideIcon> = {
 function NewService() {
   const search = Route.useSearch();
   const id = search.id;
-  const step: Step = search.step ?? "what";
+  const step: Step = search.step ?? "details";
   const navigate = useNavigate();
   const idx = steps.indexOf(step);
+  // The first step is the bare address; only later steps name themselves.
   const go = (s: Step) =>
-    navigate({ to: "/services/new", search: id ? { step: s, id } : { step: s } });
+    navigate({
+      to: "/services/new",
+      search: {
+        ...(s === steps[0] ? {} : { step: s }),
+        ...(id ? { id } : {}),
+      },
+    });
 
   const { user, signedIn } = useAuth();
   const { options, pending: optionsPending, error: optionsError } = useServiceOptions();
@@ -287,7 +300,7 @@ function NewService() {
 
   // Each step's Continue waits for that step's own fields.
   const ready =
-    step === "what"
+    step === "details"
       ? Boolean(
           categories.length &&
           title.trim() &&
@@ -372,7 +385,7 @@ function NewService() {
           />
         ) : null}
 
-        {step === "what" ? (
+        {step === "details" ? (
           optionsPending ? (
             <Loading rows={3} />
           ) : (
