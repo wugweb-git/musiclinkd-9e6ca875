@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { AlertTriangle, CalendarClock } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, Tag } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading, Tag } from "@/components/ml/kit";
 import { BusinessOnlyGate } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { answerBooking, listStudioBookings, type BookingRequest } from "@/lib/bookings.functions";
@@ -102,6 +102,8 @@ function ConflictsContent() {
 
         {q.isLoading ? (
           <Loading rows={2} />
+        ) : q.isError ? (
+          <LoadError what="your conflicts" />
         ) : conflicts.length || outside.length ? (
           <div className="space-y-3">
             {conflicts.map((c) => {

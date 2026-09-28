@@ -5,7 +5,16 @@ import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { Card, Segmented, Stars, EmptyState, Loading, Meter, Row } from "@/components/ml/kit";
+import {
+  Card,
+  EmptyState,
+  LoadError,
+  Loading,
+  Meter,
+  Row,
+  Segmented,
+  Stars,
+} from "@/components/ml/kit";
 import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { reviewItemFrom } from "@/lib/review-item";
 import { reviewPolicy } from "@/data/reviews";
@@ -117,6 +126,8 @@ function ReviewsHub() {
             {tab === "Received" ? (
               about.isLoading ? (
                 <Loading rows={2} />
+              ) : about.isError ? (
+                <LoadError what="reviews" />
               ) : received.length ? (
                 <ReviewRail label="Reviews you received">
                   {received.map((r) => (
@@ -134,6 +145,8 @@ function ReviewsHub() {
             {tab === "To review" ? (
               reviewable.isLoading ? (
                 <Loading rows={2} />
+              ) : reviewable.isError ? (
+                <LoadError what="reviews" />
               ) : (reviewable.data ?? []).length ? (
                 (reviewable.data ?? []).map((s) => (
                   <Card key={s.id} className="space-y-3">
@@ -157,6 +170,8 @@ function ReviewsHub() {
             {tab === "Given" ? (
               mine.isLoading ? (
                 <Loading rows={2} />
+              ) : mine.isError ? (
+                <LoadError what="reviews" />
               ) : (mine.data ?? []).length ? (
                 <ReviewRail label="Reviews you gave">
                   {(mine.data ?? []).map((r) => (

@@ -49,7 +49,7 @@ import {
   SellerCard,
   TrustPill,
 } from "@/components/ml/market";
-import { EmptyState, Loading } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading } from "@/components/ml/kit";
 import { loadCatalogListings, loadListingBySlug } from "@/lib/market-view";
 import { useSavedListings } from "@/hooks/use-saved-listings";
 import { rememberListingVisit } from "@/lib/device-history";
@@ -422,6 +422,8 @@ function ListingDetail() {
             <div className="mt-2">
               {realReviews.isLoading ? (
                 <Loading rows={2} />
+              ) : realReviews.isError ? (
+                <LoadError what="these reviews" />
               ) : realReviews.data?.length ? (
                 <ReviewRail>
                   {realReviews.data.map((r) => (

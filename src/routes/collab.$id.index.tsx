@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink, Chip, IconBtn, Sheet } from "@/components/ml/ui";
-import { Dialog, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import { Dialog, EmptyState, LoadError, Loading, SegmentedField } from "@/components/ml/kit";
 import {
   addCollabMember,
   answerCollabInvite,
@@ -269,6 +269,17 @@ function CollabRoom() {
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
+
+  if (q.isError) {
+    return (
+      <Screen>
+        <TopBar title="Collaboration" back="/collab" />
+        <div className="px-5 pt-6">
+          <LoadError what="this collaboration" />
+        </div>
+      </Screen>
+    );
+  }
 
   if (signedIn && q.isLoading) {
     return (

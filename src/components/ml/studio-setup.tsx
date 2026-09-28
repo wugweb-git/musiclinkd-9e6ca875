@@ -7,7 +7,7 @@ import { Btn, Chip, IconBtn, Sheet } from "@/components/ml/ui";
 import { Card, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
 import { PhotoSheet } from "@/components/ml/booking";
 import { ImagePickButton } from "@/components/ml/profile";
-import { DrawerField } from "@/components/ml/onboarding";
+import { ChipPicker, DrawerField } from "@/components/ml/onboarding";
 import { SheetMultiSelect, SheetSelect } from "@/components/ml/listing-form";
 import {
   type MyStudioEquipment,
@@ -81,17 +81,26 @@ export function AmenitiesEditor() {
   if (q.isError || !q.data?.ready) return null;
   return (
     <section id="facilities" ref={section} className="scroll-mt-4 space-y-3">
+      {/*
+        Chips, like every other "pick several of these" question in onboarding — instruments,
+        genres, languages (owner, 29 Sep 2026). This was a drawer, which made the same question
+        look like a different one depending on which side of the fork you came in from.
+      */}
       <DrawerField label="Amenities" hint="What the place has. Add a photo of each.">
-        <SheetMultiSelect
-          title="Amenities"
-          value={update.isPending && update.variables ? update.variables : picked}
-          options={choicesFor(tx?.studio_amenities).map((o) => ({
-            ...o,
-            icon: amenityIcon(o.value),
-          }))}
-          max={tx?.studio_amenities.length ?? 40}
-          placeholder="Choose"
-          onChange={(v) => update.mutate(v)}
+        <ChipPicker
+          options={choicesFor(tx?.studio_amenities).map((o) => {
+            const Icon = amenityIcon(o.value);
+            return {
+              value: o.value,
+              label: o.label,
+              media: <Icon size={iconSize.sm} aria-hidden />,
+            };
+          })}
+          selected={update.isPending && update.variables ? update.variables : picked}
+          onToggle={(v) => {
+            const now = update.isPending && update.variables ? update.variables : picked;
+            update.mutate(now.includes(v) ? now.filter((x) => x !== v) : [...now, v]);
+          }}
         />
       </DrawerField>
       {q.data.facilities.map((f) => (

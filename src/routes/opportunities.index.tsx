@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Search, Bookmark, Briefcase, Users } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
-import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading, Row, Segmented } from "@/components/ml/kit";
 import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunityCategories } from "@/data/opportunities";
 import { loadDbOpportunities } from "@/lib/opportunity-view";
@@ -168,6 +168,8 @@ function OpportunitiesHome() {
 
         {tab !== "Recent" && signedIn && profile.isLoading ? (
           <Loading rows={3} />
+        ) : profile.isError ? (
+          <LoadError what="what fits you" />
         ) : list.length === 0 && tab === "For you" ? (
           <EmptyState
             title={

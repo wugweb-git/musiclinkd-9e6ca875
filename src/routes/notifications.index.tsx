@@ -15,7 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import {
   listNotifications,
   markRead,
@@ -150,6 +150,8 @@ function NotificationsScreen() {
           />
         ) : q.isLoading ? (
           <Loading rows={4} />
+        ) : q.isError ? (
+          <LoadError what="your notifications" />
         ) : list.length === 0 ? (
           <EmptyState
             icon={<BellOff size={iconSize.md} className="text-muted-foreground" />}

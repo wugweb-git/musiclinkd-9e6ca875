@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import {
   DrawerField,
   InlineField,
+  ChipPicker,
   PersonTypePicker,
   UsernameField,
   StepShell,
@@ -327,57 +328,22 @@ function NewBusiness() {
           <StepSkeleton />
         ) : step === "type" ? (
           <div className="space-y-6">
-            <div className="rounded-lg border border-border/80 bg-card p-4 shadow-xs">
-              <p className="eyebrow mb-3 text-muted-foreground">Select business type</p>
-              <div className="grid grid-cols-2 gap-3">
-                {types.map((t) => {
-                  const Icon = roleIcon(t);
-                  const isSelected = type === t.slug;
-                  return (
-                    <button
-                      key={t.slug}
-                      type="button"
-                      onClick={() => {
-                        haptic("select");
-                        setType(t.slug);
-                      }}
-                      className={cn(
-                        "group flex flex-col items-start rounded-lg border p-3.5 text-left transition-all duration-150 ease-standard active:scale-97",
-                        isSelected
-                          ? "border-foreground bg-card ring-2 ring-foreground/15 shadow-xs"
-                          : "border-border/80 bg-subtle/50 hover:border-muted-foreground/40 hover:bg-card",
-                      )}
-                    >
-                      <div className="mb-2.5 flex w-full items-center justify-between">
-                        <span
-                          className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-full transition-colors",
-                            isSelected
-                              ? "bg-foreground text-background"
-                              : "border border-border bg-card text-foreground",
-                          )}
-                        >
-                          <Icon size={18} aria-hidden />
-                        </span>
-                        {isSelected ? (
-                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-background">
-                            <Check size={12} strokeWidth={3} />
-                          </span>
-                        ) : null}
-                      </div>
-                      <span className="text-sm font-bold text-foreground transition-colors group-hover:text-primary">
-                        {t.label}
-                      </span>
-                      {t.metadata?.description ? (
-                        <span className="mt-0.5 line-clamp-2 text-1 leading-snug text-muted-foreground">
-                          {t.metadata.description}
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {/*
+              The same picker a talent uses for their person type (owner, 29 Sep 2026). This was a
+              hand-rolled grid of buttons with its own selected state, ring and hover colours —
+              a second UI for the same question, and PersonTypePicker was already imported in this
+              file. Picking a business type is picking a persona type; only the list differs.
+            */}
+            <PersonTypePicker
+              groups={BUSINESS_GROUPS}
+              options={types}
+              selected={type ? [type] : []}
+              icon={typeIcon}
+              onToggle={(slug) => {
+                haptic("select");
+                setType(slug === type ? "" : slug);
+              }}
+            />
 
             <div className="rounded-lg border border-border/80 bg-card p-5 shadow-xs">
               <div className="mb-1 flex items-center justify-between">
@@ -515,24 +481,24 @@ function NewBusiness() {
           </div>
         ) : step === "offer" ? (
           <div className="space-y-5 rounded-lg bg-card p-5 border border-border/80 shadow-xs">
-            <DrawerField label="Genres" hint="Optional. The styles of music you specialize in.">
-              <SheetMultiSelect
-                title="Genres"
-                value={genres}
+            <DrawerField label="Genres">
+              <ChipPicker
                 options={(tx.genres ?? []).map((o) => ({ value: o.slug, label: o.label }))}
-                max={10}
-                placeholder="Choose genres"
-                onChange={setGenres}
+                selected={genres}
+                onToggle={(v) =>
+                  setGenres(genres.includes(v) ? genres.filter((g) => g !== v) : [...genres, v])
+                }
               />
             </DrawerField>
             <DrawerField label="Languages supported">
-              <SheetMultiSelect
-                title="Languages"
-                value={languages}
+              <ChipPicker
                 options={(tx.languages ?? []).map((o) => ({ value: o.slug, label: o.label }))}
-                max={tx.languages.length}
-                placeholder="Choose languages"
-                onChange={setLanguages}
+                selected={languages}
+                onToggle={(v) =>
+                  setLanguages(
+                    languages.includes(v) ? languages.filter((l) => l !== v) : [...languages, v],
+                  )
+                }
               />
             </DrawerField>
           </div>

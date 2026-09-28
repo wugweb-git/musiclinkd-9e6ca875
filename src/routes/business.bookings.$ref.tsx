@@ -4,7 +4,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { MessageCircle, Users } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { useMessagePerson } from "@/hooks/use-message-person";
-import { BusinessOnlyGate, EmptyState, Loading, StatusPill, type Tone } from "@/components/ml/kit";
+import {
+  BusinessOnlyGate,
+  EmptyState,
+  LoadError,
+  Loading,
+  StatusPill,
+  type Tone,
+} from "@/components/ml/kit";
 import { Detail } from "@/components/ml/booking";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getBookingRequest, type BookingStatus } from "@/lib/bookings.functions";
@@ -80,6 +87,17 @@ function ProviderBookingDetailContent() {
     queryKey: ["booking", ref],
     queryFn: () => load({ data: { id: ref } }),
   });
+
+  if (q.isError) {
+    return (
+      <Screen>
+        <TopBar title="Session" back="/business/bookings" />
+        <div className="px-5 pt-6">
+          <LoadError what="this booking" />
+        </div>
+      </Screen>
+    );
+  }
 
   if (q.isLoading) {
     return (

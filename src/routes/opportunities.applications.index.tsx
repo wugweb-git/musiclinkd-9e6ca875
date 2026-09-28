@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Btn, Screen, TopBar, BtnLink } from "@/components/ml/ui";
-import { Segmented, EmptyState, Loading } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { listMyApplications, withdrawApplication } from "@/lib/applications.functions";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -88,6 +88,8 @@ function Applications() {
           </EmptyState>
         ) : q.isLoading ? (
           <Loading rows={3} />
+        ) : q.isError ? (
+          <LoadError what="your applications" />
         ) : list.length === 0 ? (
           <EmptyState
             title="Nothing here"

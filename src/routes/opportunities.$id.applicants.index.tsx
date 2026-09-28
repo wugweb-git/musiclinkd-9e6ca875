@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Btn, Screen, TopBar, BtnLink, VerifiedBadge } from "@/components/ml/ui";
-import { Segmented, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading, Segmented, SegmentedField } from "@/components/ml/kit";
 import {
   KanbanBoard,
   KanbanCard,
@@ -124,7 +124,11 @@ function Applicants() {
           onChange={setView}
         />
 
-        {q.isLoading ? <Loading rows={3} /> : null}
+        {q.isLoading ? (
+          <Loading rows={3} />
+        ) : q.isError ? (
+          <LoadError what="the applicants" />
+        ) : null}
 
         {!q.isLoading && view === "Board" ? (
           <ApplicantBoard

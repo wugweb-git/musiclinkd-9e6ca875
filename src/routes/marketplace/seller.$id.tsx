@@ -8,7 +8,7 @@ import { RentalReportSheet } from "@/components/ml/rental";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Followers, ListingGrid, Rating, ReviewTags, TrustPill } from "@/components/ml/market";
-import { EmptyState, Loading } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading } from "@/components/ml/kit";
 import { getRentalProvider } from "@/lib/rentals.functions";
 import { getSellerListings } from "@/lib/catalog.functions";
 import { listingFromRow as adaptListing } from "@/lib/market-view";
@@ -117,6 +117,8 @@ function SellerProfile() {
         <div className="mt-2 space-y-3">
           {listings.isLoading ? (
             <Loading rows={2} />
+          ) : listings.isError ? (
+            <LoadError what="their listings" />
           ) : items.length ? (
             <ListingGrid items={items} />
           ) : (
@@ -128,6 +130,8 @@ function SellerProfile() {
         <div className="mt-2">
           {reviews.isLoading ? (
             <Loading rows={2} />
+          ) : reviews.isError ? (
+            <LoadError what="these reviews" />
           ) : reviews.data?.length ? (
             <ReviewRail>
               {reviews.data.map((r) => (

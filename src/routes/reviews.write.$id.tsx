@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, StatusPill } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading, StatusPill } from "@/components/ml/kit";
 import { reviewPolicy } from "@/data/reviews";
 import { listReviewable, writeReview } from "@/lib/reviews.functions";
 import { getMyProfile } from "@/lib/portfolio.functions";
@@ -78,6 +78,17 @@ function WriteReview() {
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "That didn't save. Try again."),
   });
+
+  if (subjects.isError) {
+    return (
+      <Screen bottomNav={false}>
+        <TopBar title="Write a review" back="/reviews" />
+        <div className="px-5 pt-6">
+          <LoadError what="who you can review" />
+        </div>
+      </Screen>
+    );
+  }
 
   if (signedIn && subjects.isLoading) {
     return (

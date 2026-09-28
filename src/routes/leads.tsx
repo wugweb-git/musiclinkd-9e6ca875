@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, StatusPill, Segmented } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading, Segmented, StatusPill } from "@/components/ml/kit";
 import { leadStatusTone } from "@/data/business";
 import { listMyLeads, setLeadStatus, type EnquiryStatus } from "@/lib/enquiries.functions";
 import { conversationWith } from "@/lib/messages.functions";
@@ -121,6 +121,8 @@ function BusinessLeads() {
 
         {q.isLoading ? (
           <Loading rows={3} />
+        ) : q.isError ? (
+          <LoadError what="your leads" />
         ) : list.length ? (
           <div className="space-y-3">
             {list.map((l) => (

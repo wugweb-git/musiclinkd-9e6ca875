@@ -15,7 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
-import { Dialog, Price, StatusPill } from "@/components/ml/kit";
+import { Dialog, LoadError, Price, StatusPill } from "@/components/ml/kit";
 import { EmptyState, MarketCategoryIcon } from "@/components/ml/market";
 import {
   clearListingDraft,
@@ -244,6 +244,8 @@ function Mine() {
                 <div key={i} className="h-28 animate-pulse rounded-lg bg-subtle" />
               ))}
             </div>
+          ) : mine.isError ? (
+            <LoadError what="your listings" />
           ) : listings.length ? (
             <div className="space-y-3">
               {listings.map((l) => (

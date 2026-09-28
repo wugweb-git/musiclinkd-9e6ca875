@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, Circle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
-import { Card, StatusPill, EmptyState, Dialog, Loading } from "@/components/ml/kit";
+import { Card, Dialog, EmptyState, LoadError, Loading, StatusPill } from "@/components/ml/kit";
 import { applicationTone, type ApplicationStatus } from "@/data/opportunities";
 import { workType } from "@/data/portfolio";
 import {
@@ -113,6 +113,17 @@ function ApplicationDetail() {
         <TopBar title="Your application" back="/opportunities/applications" />
         <div className="px-5 pt-4">
           <Loading rows={3} />
+        </div>
+      </Screen>
+    );
+  }
+
+  if (q.isError) {
+    return (
+      <Screen>
+        <TopBar title="Your application" back="/opportunities/applications" />
+        <div className="px-5 pt-6">
+          <LoadError what="this application" />
         </div>
       </Screen>
     );

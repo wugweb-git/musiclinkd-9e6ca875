@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Sheet, VerifiedBadge } from "@/components/ml/ui";
 import { CollabKindSheet } from "@/components/ml/collab";
-import { Card, StatusPill, EmptyState, Dialog, Loading } from "@/components/ml/kit";
+import { Card, Dialog, EmptyState, LoadError, Loading, StatusPill } from "@/components/ml/kit";
 import {
   listApplicants,
   listAttachedWork,
@@ -172,6 +172,8 @@ function ApplicantDetail() {
             <h2 className="mb-2 text-sm">Attached work</h2>
             {work.isLoading ? (
               <Loading rows={2} />
+            ) : work.isError ? (
+              <LoadError what="this application" />
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 {(work.data ?? []).map((p) => (

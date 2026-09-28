@@ -5,7 +5,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import { Btn, IconBtn, Screen, Sheet, TopBar } from "@/components/ml/ui";
-import { BusinessOnlyGate, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import {
+  BusinessOnlyGate,
+  EmptyState,
+  LoadError,
+  Loading,
+  SegmentedField,
+} from "@/components/ml/kit";
 import { Field, SheetSelect, inputClass } from "@/components/ml/listing-form";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { StickyBar } from "@/components/ml/booking";
@@ -141,6 +147,16 @@ function PricingContent() {
         <TopBar title="Pricing" back="/business/bookings" />
         <div className="px-5 pt-8">
           <Loading />
+        </div>
+      </Screen>
+    );
+  }
+  if (q.isError) {
+    return (
+      <Screen bottomNav={false}>
+        <TopBar title="Pricing" back="/business/bookings" />
+        <div className="px-5 pt-8">
+          <LoadError what="your pricing" />
         </div>
       </Screen>
     );

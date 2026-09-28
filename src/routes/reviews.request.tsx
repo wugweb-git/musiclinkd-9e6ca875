@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, StatusPill } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading, StatusPill } from "@/components/ml/kit";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { initialsOf } from "@/components/ml/viewer";
 import { askForReview, listReviewAskTargets } from "@/lib/reviews.functions";
@@ -67,6 +67,8 @@ function RequestReviews() {
 
         {q.isLoading ? (
           <Loading rows={2} />
+        ) : q.isError ? (
+          <LoadError what="who you can ask" />
         ) : reviewRequestTargets.length ? (
           <div className="space-y-3">
             {reviewRequestTargets.map((t) => {

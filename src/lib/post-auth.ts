@@ -10,14 +10,28 @@ type OnboardingState = {
 } | null;
 
 export function postAuthTarget(profile: OnboardingState): PostAuthTarget {
-  // No row at all = genuinely the first sign-in, before the signup trigger has (or ever will)
-  // create a profile — the only case that still forces onboarding.
+  // No row at all: the first sign-in, before the signup trigger has created a profile.
   if (!profile) return "/onboarding";
-  // Any existing profile row — complete or not — is a returning user: land on Discover,
-  // every time. Onboarding used to re-gate every sign-in until the profile was finished, which is
-  // what sent a real returning user back to a "Welcome back, 0 of 7 completed" resume screen
-  // instead of into the app (owner call, 23 Sep). Finishing a profile is now something a user
-  // opts into from inside the app (e.g. a CTA to /onboarding/resume), not a forced redirect.
+
+  /*
+   * A brand-new account: the trigger made the row, but nobody has answered a single question yet
+   * — no step reached, no draft, not complete. That is a signup, and a signup goes to onboarding.
+   *
+   * This case was missing (owner, 29 Sep 2026: "sign up is leading me to discovery"). The rule
+   * used to be "any row at all means a returning user", which is true a minute after signup and
+   * false at the moment of it: the trigger writes the row *during* signup, so every new account
+   * was routed straight past onboarding into Discover and never saw it.
+   */
+  const started = Boolean(profile.onboarding_step) || Boolean(profile.onboarding_draft);
+  if (!profile.onboarding_complete && !started) return "/onboarding";
+
+  /*
+   * Everyone else lands on Discover, including someone who began onboarding and walked away.
+   * Onboarding used to re-gate every sign-in until the profile was finished, which sent a real
+   * returning user back to a "Welcome back, 0 of 7 completed" resume screen instead of into the
+   * app (owner call, 23 Sep). Finishing a half-done profile stays something you opt into from
+   * inside the app, via a CTA to /onboarding/resume.
+   */
   return "/discover";
 }
 

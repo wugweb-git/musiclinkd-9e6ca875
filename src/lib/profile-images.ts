@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { downscale, downscaleImage } from "@/lib/image-downscale";
 
 /*
  * Profile photo and cover uploads. Files go to public Supabase Storage buckets under the signed-in
@@ -32,7 +33,10 @@ export function checkImageFile(file: File, maxBytes: number): string {
 }
 
 export async function uploadProfileImage(kind: ProfileImageKind, file: File): Promise<string> {
-  const ext = checkImageFile(file, MAX_BYTES[kind]);
+  // Check what the user picked, then upload a version sized for what it is displayed at.
+  checkImageFile(file, MAX_BYTES[kind]);
+  const scaled = await downscaleImage(file, downscale[kind]);
+  const ext = checkImageFile(scaled, MAX_BYTES[kind]);
 
   const { data: session } = await supabase.auth.getSession();
   const userId = session.session?.user.id;
@@ -41,7 +45,10 @@ export async function uploadProfileImage(kind: ProfileImageKind, file: File): Pr
   // A fresh name per upload, so a replaced image is never served from a stale cache.
   const path = `${userId}/${kind}-${Date.now()}.${ext}`;
   const bucket = supabase.storage.from(BUCKET[kind]);
-  const { error } = await bucket.upload(path, file, { contentType: file.type, upsert: false });
+  const { error } = await bucket.upload(path, scaled, {
+    contentType: scaled.type,
+    upsert: false,
+  });
   if (error) throw new Error(error.message);
   return bucket.getPublicUrl(path).data.publicUrl;
 }

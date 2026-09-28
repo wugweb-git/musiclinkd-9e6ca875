@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, Dialog, EmptyState, Loading, Stars } from "@/components/ml/kit";
+import { Card, Dialog, EmptyState, LoadError, Loading, Stars } from "@/components/ml/kit";
 import { deleteMyReview, editMyReview, listMyReviews } from "@/lib/reviews.functions";
 
 export const Route = createFileRoute("/reviews/$id/edit")({
@@ -65,6 +65,17 @@ function EditReview() {
       setBusy(false);
       setConfirm(false);
     }
+  }
+
+  if (q.isError) {
+    return (
+      <Screen>
+        <TopBar title="Edit review" back="/reviews" />
+        <div className="px-5 pt-6">
+          <LoadError what="this review" />
+        </div>
+      </Screen>
+    );
   }
 
   if (q.isLoading) {

@@ -5,7 +5,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, Chip } from "@/components/ml/ui";
-import { BusinessOnlyGate, EmptyState, Loading, SegmentedField } from "@/components/ml/kit";
+import {
+  BusinessOnlyGate,
+  EmptyState,
+  LoadError,
+  Loading,
+  SegmentedField,
+} from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { Detail, StickyBar } from "@/components/ml/booking";
 import { answerBooking, getBookingRequest, listStudioBookings } from "@/lib/bookings.functions";
@@ -103,6 +109,17 @@ function RequestReviewContent() {
       toast.error("Couldn't send that — try again");
       setDecision("none");
     }
+  }
+
+  if (q.isError) {
+    return (
+      <Screen>
+        <TopBar title="Request" back="/business/bookings" />
+        <div className="px-5 pt-6">
+          <LoadError what="this request" />
+        </div>
+      </Screen>
+    );
   }
 
   if (q.isLoading) {

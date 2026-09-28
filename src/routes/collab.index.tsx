@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { ArrowUpDown, Plus, Search, UsersRound } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
-import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { DrawerSearch } from "@/components/ml/drawer-list";
 import { Field, SheetMultiSelect } from "@/components/ml/listing-form";
 import { FilterButton, SortSheet, SwitchRow } from "@/components/ml/market";
@@ -209,6 +209,8 @@ function Collabs() {
           </EmptyState>
         ) : q.isLoading ? (
           <Loading rows={3} />
+        ) : q.isError ? (
+          <LoadError what="your collaborations" />
         ) : all.length === 0 ? (
           <EmptyState
             icon={<UsersRound size={iconSize.md} className="text-muted-foreground" />}

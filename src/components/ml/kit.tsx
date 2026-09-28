@@ -618,11 +618,41 @@ export function StateCard({
 
 export function Loading({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="flex flex-col gap-2" aria-busy>
+    <div className="flex flex-col gap-2" role="status" aria-busy aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="h-20 animate-pulse rounded-lg bg-subtle" />
       ))}
     </div>
+  );
+}
+
+/**
+ * A fetch that failed, said once, everywhere.
+ *
+ * Roughly thirty screens had a query, a `Loading` and an `EmptyState` and no `isError` branch, so
+ * a dropped connection rendered the empty state instead — "You haven't written any reviews yet"
+ * for a request that never arrived. On a phone that is the common case, not the rare one, and it
+ * tells the user the opposite of what happened (audit, 29 Sep 2026).
+ *
+ * `StateCard tone="error"` already existed and was simply never reached for; this is that, with
+ * the words filled in, so a screen's error branch is one component and not a decision.
+ */
+export function LoadError({
+  what = "this",
+  action,
+}: {
+  /** What failed to load, as it would read mid-sentence: "your bookings", "this listing". */
+  what?: string;
+  /** A Try again button, when the screen has one. `Btn` lives in ui.tsx, which imports this file. */
+  action?: ReactNode;
+}) {
+  return (
+    <StateCard
+      tone="error"
+      title={`We couldn't load ${what}`}
+      body="Check your connection, then try again."
+      {...(action ? { action } : {})}
+    />
   );
 }
 

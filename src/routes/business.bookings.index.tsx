@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CalendarClock, XCircle } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
-import { BusinessOnlyGate, Segmented } from "@/components/ml/kit";
+import { BusinessOnlyGate, LoadError, Segmented } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { type BookingStatus } from "@/data/booking";
 import { formatDate, formatTime, isoDate } from "@/lib/when";
@@ -117,6 +117,8 @@ function ProviderBookingsContent() {
             />
           ) : q.isLoading ? (
             <BookingSkeleton />
+          ) : q.isError ? (
+            <LoadError what="your booking requests" />
           ) : (
             <List items={list} emptyTitle={`Nothing ${tab.toLowerCase()}`} />
           )}

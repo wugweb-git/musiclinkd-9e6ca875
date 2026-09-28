@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Chip, BtnLink } from "@/components/ml/ui";
 import { EmptyState } from "@/components/ml/market";
-import { Loading, Segmented } from "@/components/ml/kit";
+import { LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { BookingCard } from "@/components/ml/rental";
 import { type RentalStatus } from "@/data/rentals";
 import { listMyRentalBookings } from "@/lib/rentals.functions";
@@ -67,7 +67,11 @@ function MyRentals() {
       </div>
 
       <div className="space-y-3 px-5 pb-6">
-        {signedIn && q.isLoading ? <Loading rows={2} /> : null}
+        {signedIn && q.isLoading ? (
+          <Loading rows={2} />
+        ) : q.isError ? (
+          <LoadError what="your rentals" />
+        ) : null}
         {list.length === 0 && !(signedIn && q.isLoading) ? (
           <EmptyState
             emoji="📭"

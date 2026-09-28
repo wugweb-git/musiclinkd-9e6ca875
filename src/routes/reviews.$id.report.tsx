@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, Chip } from "@/components/ml/ui";
-import { Card, EmptyState, Loading } from "@/components/ml/kit";
+import { Card, EmptyState, LoadError, Loading } from "@/components/ml/kit";
 import { flagReasons } from "@/data/reviews";
 import { listReviewsAboutMe } from "@/lib/reviews.functions";
 import { fileReport } from "@/lib/reports.functions";
@@ -50,6 +50,17 @@ function ReportReview() {
     onError: () => toast.error("That didn't send. Try again."),
   });
   const sent = send.isSuccess;
+
+  if (q.isError) {
+    return (
+      <Screen>
+        <TopBar title="Report" back="/reviews" />
+        <div className="px-5 pt-6">
+          <LoadError what="this review" />
+        </div>
+      </Screen>
+    );
+  }
 
   if (q.isLoading) {
     return (

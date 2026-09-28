@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Btn, BtnLink, Screen, TopBar } from "@/components/ml/ui";
-import { BusinessOnlyGate, Segmented } from "@/components/ml/kit";
+import { BusinessOnlyGate, LoadError, Segmented } from "@/components/ml/kit";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { BookingSkeleton, BookingStatusPill, EmptyState } from "@/components/ml/booking";
 import { type BookingStatus } from "@/data/booking";
@@ -99,6 +99,8 @@ function RequestsContent() {
           />
         ) : q.isLoading ? (
           <BookingSkeleton rows={3} />
+        ) : q.isError ? (
+          <LoadError what="your requests" />
         ) : list.length === 0 ? (
           <EmptyState
             title="No requests here"

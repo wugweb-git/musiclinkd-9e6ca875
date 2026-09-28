@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar } from "@/components/ml/ui";
+import { LoadError } from "@/components/ml/kit";
 import { PortfolioSkeleton, StateCard } from "@/components/ml/portfolio";
 import { WorkForm } from "@/components/ml/work-form";
 import { getMyPortfolioItem } from "@/lib/portfolio.functions";
@@ -41,7 +42,8 @@ function EditWork() {
       <TopBar title="Edit work" back="/portfolio" />
       <main className="px-5 pt-4">
         {q.isLoading ? <PortfolioSkeleton /> : null}
-        {!q.isLoading && !q.data ? (
+        {q.isError ? <LoadError what="this work" /> : null}
+        {!q.isLoading && !q.isError && !q.data ? (
           <StateCard
             title="You can't edit this work"
             body="It may have been removed, or you don't have permission to edit it."

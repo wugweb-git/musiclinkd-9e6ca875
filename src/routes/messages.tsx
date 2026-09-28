@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Check, MessageCircle, Send, SquarePen, UserRoundPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { IconBtn, Screen, Sheet, TopBar } from "@/components/ml/ui";
-import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
+import { EmptyState, LoadError, Loading, Segmented } from "@/components/ml/kit";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { DrawerList, DrawerOptionRow, DrawerSearch } from "@/components/ml/drawer-list";
 import { PersonAvatar } from "@/components/ml/person-avatar";
@@ -131,6 +131,8 @@ function Connections() {
   const connected = matchingPeople(q.data?.connected ?? [], query, (c) => c.person);
   const sent = matchingPeople(q.data?.sent ?? [], query, (c) => c.person);
   const busy = signedIn && (q.isLoading || threads.isLoading);
+  // Without this, a failed fetch shows the error card *and* "No conversations yet" under it.
+  const failed = signedIn && (q.isError || threads.isError);
 
   return (
     <Screen>
@@ -158,8 +160,9 @@ function Connections() {
 
           <div className="px-5 pt-2">
             {busy ? <Loading rows={3} /> : null}
+            {failed ? <LoadError what="your messages" /> : null}
 
-            {!busy && tab === "Chats" ? (
+            {!busy && !failed && tab === "Chats" ? (
               chats.length ? (
                 <ul>
                   {chats.map((t) => {
@@ -223,7 +226,7 @@ function Connections() {
               )
             ) : null}
 
-            {!busy && tab === "Requests" ? (
+            {!busy && !failed && tab === "Requests" ? (
               received.length || sent.length ? (
                 <div className="space-y-5">
                   {received.length ? (
@@ -285,7 +288,7 @@ function Connections() {
               )
             ) : null}
 
-            {!busy && tab === "Connected" ? (
+            {!busy && !failed && tab === "Connected" ? (
               connected.length ? (
                 <ul>
                   {connected.map((c) => (
