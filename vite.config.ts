@@ -29,6 +29,15 @@ export default defineConfig({
   },
   vite: {
     plugins: [serveGuidePlugin()],
+    resolve: {
+      alias: {
+        // supabase-js constructs a RealtimeClient whether or not you use realtime, which put the
+        // whole websocket stack (55 KB gzip) on the critical path for a feature the app does not
+        // have: no `.channel(` and no `postgres_changes` anywhere in src. The stub covers the
+        // methods supabase-js calls itself and throws on anything that would open a socket.
+        "@supabase/realtime-js": "/src/integrations/supabase/realtime-stub.ts",
+      },
+    },
     build: {
       rollupOptions: {
         output: {
