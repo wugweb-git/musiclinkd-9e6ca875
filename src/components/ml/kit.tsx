@@ -4,14 +4,11 @@
  * not a second design language.
  */
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { useRef, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ChevronRight, Star, WifiOff, type LucideIcon } from "lucide-react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 import { unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
-import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { useDismissable } from "@/hooks/use-dismissable";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand" | "category";
@@ -238,26 +235,22 @@ export function SegmentedField<T extends string>({
  * stay for filters that narrow a list; `SegmentedField` stays for settings answers.
  */
 /**
- * A tab's icon, only rendered when `icons` gives one for it. Animates in/out on selection change
- * (SPEC-issue17's "icon animates on state change" rule) with GSAP, skipped under
- * `prefers-reduced-motion` — the swap is instant then, same as every other reduced-motion path in
- * this app.
+ * A tab's icon, only rendered when `icons` gives one for it. Animates in on selection change
+ * (SPEC-issue17's "icon animates on state change" rule).
+ *
+ * The `key` remounts the icon when selection flips, which is what restarts the animation — a CSS
+ * animation does not re-run on a class change alone. `prefers-reduced-motion` is handled globally
+ * in styles.css, so there is nothing to check here.
  */
 function SegmentedIcon({ Icon, active }: { Icon: LucideIcon; active: boolean }) {
-  const ref = useRef<SVGSVGElement>(null);
-  const reducedMotion = usePrefersReducedMotion();
-  useGSAP(
-    () => {
-      if (!ref.current || reducedMotion) return;
-      gsap.fromTo(
-        ref.current,
-        { scale: 0.7, opacity: 0.4 },
-        { scale: 1, opacity: 1, duration: 0.2, ease: "back.out(2)" },
-      );
-    },
-    { dependencies: [active, reducedMotion], scope: ref },
+  return (
+    <Icon
+      key={String(active)}
+      size={iconSize.xs}
+      aria-hidden
+      className={`animate-icon-pop ${active ? "text-brand" : ""}`}
+    />
   );
-  return <Icon ref={ref} size={iconSize.xs} aria-hidden className={active ? "text-brand" : ""} />;
 }
 
 export function Segmented<T extends string>({
@@ -426,10 +419,10 @@ export function Switch({
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${checked ? "bg-primary" : "bg-background"}`}
+      className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${checked ? "bg-primary" : "bg-switch-off"}`}
     >
       <span
-        className={`block h-5 w-5 rounded-full bg-background transition-transform ${checked ? "translate-x-5" : ""}`}
+        className={`block h-5 w-5 rounded-full bg-card transition-transform ${checked ? "translate-x-5" : ""}`}
       />
     </button>
   );
