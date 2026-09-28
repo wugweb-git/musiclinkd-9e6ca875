@@ -1,22 +1,18 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
-import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Segmented } from "@/components/ml/kit";
-import {
-  BandLiveVideoList,
-  BandLiveVideoSheet,
-  BandReleaseSheet,
-} from "@/components/ml/band-sections";
-import { useAuth } from "@/hooks/use-auth";
-import { bandViewFromRow, loadBand } from "@/lib/band-view";
-import { joinParts } from "@/lib/utils";
-import { sized } from "@/lib/image-url";
 
+/*
+ * A redirect, nothing more. The band's portfolio lives on the band page itself, in its Music tab.
+ *
+ * This file also carried a loader, head meta and a 130-line `BandPortfolio` component after an
+ * unconditional `throw redirect` in `beforeLoad` — none of which could ever run, and all of which
+ * read as live code to anyone maintaining it (audit C7, 29 Sep 2026). The route stays so existing
+ * links keep working; per the standing rule, route files are not renamed or deleted.
+ */
 export const Route = createFileRoute("/bands/$id/portfolio")({
-  // ?tab=Live opens the Live tab, from the band page's live videos row.
+  // ?tab=Live is still accepted so old links do not 404, but the band page has no Live tab —
+  // its live work sits in Music, which is where this has always sent people.
   validateSearch: (s: Record<string, unknown>): { tab?: "Live" } =>
     s["tab"] === "Live" ? { tab: "Live" } : {},
-  // The portfolio now lives on the band page itself, in its Music tab.
   beforeLoad: ({ params }) => {
     throw redirect({
       to: "/bands/$id",
@@ -25,130 +21,4 @@ export const Route = createFileRoute("/bands/$id/portfolio")({
       replace: true,
     });
   },
-  loader: ({ params }) => loadBand(params.id),
-  head: () => ({
-    meta: [
-      { title: "Band portfolio | MusicLinkd" },
-      {
-        name: "description",
-        content:
-          "Releases, recordings and live work credited to the band rather than to one member.",
-      },
-      { property: "og:title", content: "Band portfolio | MusicLinkd" },
-      { property: "og:description", content: "Releases and recordings credited to the band." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: BandPortfolio,
 });
-
-const tabs = ["Discography", "Live"] as const;
-
-function BandPortfolio() {
-  const { band: row, labels } = Route.useLoaderData();
-  const { user } = useAuth();
-  const band = row ? bandViewFromRow(row, labels, user?.id ?? null) : undefined;
-  const search = Route.useSearch();
-  const [tab, setTab] = useState<(typeof tabs)[number]>(search.tab ?? "Discography");
-  const [adding, setAdding] = useState(false);
-  const [addingRelease, setAddingRelease] = useState(false);
-
-  if (!band) {
-    return (
-      <Screen>
-        <TopBar title="Portfolio" back="/bands" />
-        <div className="px-5 pt-6">
-          <EmptyState
-            title="Band not found"
-            body="This band may have been deleted or made private."
-          />
-        </div>
-      </Screen>
-    );
-  }
-
-  return (
-    <Screen>
-      <TopBar title="Portfolio" subtitle={band.name} back={`/bands/${band.id}`} />
-
-      <div className="space-y-4 px-5 pt-4 pb-8">
-        <Segmented value={tab} options={tabs} onChange={setTab} />
-
-        {tab === "Discography" ? (
-          band.releases.length ? (
-            <div className="space-y-3">
-              {band.releases.map((r) => (
-                <Card key={r.id}>
-                  <div className="flex items-center gap-3">
-                    {r.cover ? (
-                      <img
-                        src={sized(r.cover, { width: 56 })}
-                        alt=""
-                        className="h-14 w-14 rounded-[12px] object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div
-                        aria-hidden
-                        className="h-14 w-14 shrink-0 rounded-[12px] bg-background"
-                      />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{r.title}</p>
-                      <p className="truncate text-1 text-muted-foreground">
-                        {joinParts(r.kind, r.year ? String(r.year) : "")}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-              {band.owner ? (
-                <Btn variant="outline" className="w-full" onClick={() => setAddingRelease(true)}>
-                  Add a release
-                </Btn>
-              ) : null}
-            </div>
-          ) : (
-            <EmptyState
-              title="No releases yet"
-              body="Add the band's EPs, singles and albums so bookers can hear you."
-            >
-              {band.owner ? <Btn onClick={() => setAddingRelease(true)}>Add a release</Btn> : null}
-            </EmptyState>
-          )
-        ) : (
-          <div className="space-y-3">
-            {/* Adding live work is for the band's owner and admins. */}
-            {band.owner ? (
-              <Card>
-                <p className="text-sm font-semibold">Live recordings and sets</p>
-                <p className="mt-1 text-1 text-muted-foreground">
-                  A single well-shot live video does more for a booking than five studio demos. Add
-                  one set video and a photo from the room.
-                </p>
-                <Btn variant="outline" className="mt-3 w-full" onClick={() => setAdding(true)}>
-                  Add live work
-                </Btn>
-              </Card>
-            ) : null}
-            {band.liveVideos.length ? (
-              <BandLiveVideoList videos={band.liveVideos} canManage={band.owner} />
-            ) : (
-              <EmptyState
-                title="Nothing live yet"
-                body="Upload a set video or link one from YouTube."
-              />
-            )}
-          </div>
-        )}
-      </div>
-      {adding ? (
-        <BandLiveVideoSheet bandId={band.dbId} open onClose={() => setAdding(false)} />
-      ) : null}
-      {addingRelease ? (
-        <BandReleaseSheet bandId={band.dbId} open onClose={() => setAddingRelease(false)} />
-      ) : null}
-    </Screen>
-  );
-}

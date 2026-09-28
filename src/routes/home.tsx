@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import type { ReactNode } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -78,46 +79,48 @@ function useDashboard() {
   const navigate = useNavigate();
   const loadProfile = useServerFn(getMyProfile);
   const loadPortfolio = useServerFn(listMyPortfolio);
-  const [status, setStatus] = useState<Status>("loading");
-  const [home, setHome] = useState<Home | null>(null);
+  const [offline, setOffline] = useState(
+    typeof navigator !== "undefined" && navigator.onLine === false,
+  );
 
-  const load = useCallback(async () => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      setStatus("offline");
-      return;
-    }
-    setStatus("loading");
-    try {
+  /*
+   * React Query, like every other screen. Home held its own useState/useEffect, so the
+   * most-navigated tab in the app re-fetched and showed a spinner every single time it was
+   * returned to — no cache, no dedupe, and its own hand-rolled loading/error/offline states
+   * beside the ones the rest of the app shares (audit, 29 Sep 2026).
+   */
+  const q = useQuery({
+    queryKey: ["home", "dashboard"],
+    enabled: signedIn && !offline,
+    queryFn: async () => {
       const [row, items, tx] = await Promise.all([
         loadProfile() as Promise<ProfileRow | null>,
         loadPortfolio(),
         loadTaxonomy().catch(() => null),
       ]);
-      setHome(buildHome(row, items.length, tx?.person_types));
-      setStatus("ready");
-    } catch {
-      setStatus("error");
-    }
-  }, [loadProfile, loadPortfolio]);
+      return buildHome(row, items.length, tx?.person_types);
+    },
+  });
 
   useEffect(() => {
     if (authLoading) return;
-    if (!signedIn) {
-      void navigate({ to: "/welcome", replace: true });
-      return;
-    }
-    void load();
-    const onOffline = () => setStatus("offline");
-    const onOnline = () => void load();
-    window.addEventListener("offline", onOffline);
-    window.addEventListener("online", onOnline);
-    return () => {
-      window.removeEventListener("offline", onOffline);
-      window.removeEventListener("online", onOnline);
-    };
-  }, [authLoading, signedIn, navigate, load]);
+    if (!signedIn) void navigate({ to: "/welcome", replace: true });
+  }, [authLoading, signedIn, navigate]);
 
-  return { status, home, retry: () => void load() };
+  useEffect(() => {
+    const on = () => setOffline(false);
+    const off = () => setOffline(true);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
+
+  const status: Status = offline ? "offline" : q.isError ? "error" : q.data ? "ready" : "loading";
+
+  return { status, home: q.data ?? null, retry: () => void q.refetch() };
 }
 
 function buildHome(
