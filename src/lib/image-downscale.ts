@@ -78,9 +78,7 @@ export async function downscaleImage(file: File, opts: DownscaleOptions): Promis
     if ("close" in source) source.close();
 
     const type = outputType();
-    const blob = await new Promise<Blob | null>((resolve) =>
-      canvas.toBlob(resolve, type, quality),
-    );
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
     if (!blob || blob.size >= file.size) return file;
 
     const name = file.name.replace(/\.[^.]+$/, "") + (type === "image/webp" ? ".webp" : ".jpg");

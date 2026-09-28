@@ -132,7 +132,11 @@ function PortfolioAnalytics() {
                 <StateCard
                   title="Nothing to measure yet"
                   body="Publish your first work and performance data starts collecting."
-                  action={<BtnLink to="/portfolio" search={{ add: "1" }}>Add Work</BtnLink>}
+                  action={
+                    <BtnLink to="/portfolio" search={{ add: "1" }}>
+                      Add Work
+                    </BtnLink>
+                  }
                 />
               ) : null}
               {items.map((item) => {
