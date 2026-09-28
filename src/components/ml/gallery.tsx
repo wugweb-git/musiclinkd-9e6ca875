@@ -271,7 +271,7 @@ function SortablePhoto({
         onClick={onRemove}
         aria-label={`Remove photo ${index + 1}`}
         title="Remove photo"
-        className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-foreground"
+        className="hit-area absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-foreground"
       >
         <X size={iconSize.xs} aria-hidden />
       </button>

@@ -133,7 +133,9 @@ export function TalentProfileExperience({
           (profile/$username) is a different screen and keeps its own back-arrow header. */}
       {owner ? (
         <header className="flex items-center justify-between px-5 pb-4 pt-6">
-          <h1 className="text-3 leading-tight">Profile</h1>
+          {/* Not an <h1>: the hero below carries one for the person's name, and a page has one
+              heading. This is a bar label, so it reads as a bar label. */}
+          <p className="text-3 leading-tight">Profile</p>
           <div className="flex items-center gap-2">
             <NotificationsBell />
             <IconBtnLink to="/search" label="Search" variant="plain" className="h-10 w-10">

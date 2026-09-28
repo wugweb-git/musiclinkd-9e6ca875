@@ -258,6 +258,7 @@ export function Segmented<T extends string>({
   options,
   onChange,
   icons,
+  label,
   className = "-mx-5 border-b border-border px-5",
 }: {
   value: T;
@@ -267,9 +268,22 @@ export function Segmented<T extends string>({
   icons?: Partial<Record<T, LucideIcon>>;
   /** Edge to edge with its underline by default; pass "" inside a row that draws its own line. */
   className?: string;
+  /** Names the set for anyone who cannot see what it sits under: "Filter leads", "Review type". */
+  label?: string;
 }) {
+  /*
+   * A group of exclusive toggles, not a tablist. It claimed `role="tablist"` and `role="tab"` on
+   * 24 screens with no `aria-controls`, no `tabpanel` and no arrow-key navigation, which is a
+   * worse experience than plain buttons: a screen reader announces tabs and then none of the
+   * behaviour a tab user expects is there. Saying what it is beats half-implementing what it is
+   * not (audit B5, 29 Sep 2026).
+   */
   return (
-    <div className={`rail no-scrollbar flex overflow-x-auto ${className}`} role="tablist">
+    <div
+      className={`rail no-scrollbar flex overflow-x-auto ${className}`}
+      role="group"
+      {...(label ? { "aria-label": label } : {})}
+    >
       {options.map((o) => {
         const active = value === o;
         const Icon = icons?.[o];
@@ -277,8 +291,7 @@ export function Segmented<T extends string>({
           <button
             key={o}
             type="button"
-            role="tab"
-            aria-selected={active}
+            aria-pressed={active}
             onClick={() => onChange(o)}
             className={`state-layer relative flex shrink-0 items-center gap-1.5 px-3 py-3 text-sm font-semibold transition-colors duration-200 ease-standard first:pl-0 ${
               active ? "text-foreground" : "text-muted-foreground"

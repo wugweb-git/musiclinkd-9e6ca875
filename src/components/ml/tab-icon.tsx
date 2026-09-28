@@ -153,15 +153,19 @@ export function SectionTabs<K extends string>({
 }) {
   return (
     <nav aria-label={label} className="pt-inset sticky top-0 z-tabs bg-background/95 px-2 backdrop-blur">
-      <div role="tablist" aria-label={label} className="flex items-stretch">
+      {/*
+        A group of exclusive toggles, not a tablist — same call as Segmented (audit B5,
+        29 Sep 2026). There is no aria-controls, no element with role="tabpanel" and no arrow-key
+        navigation behind these, so announcing them as tabs promises behaviour that is not here.
+      */}
+      <div role="group" aria-label={label} className="flex items-stretch">
         {tabs.map(({ key, icon: Icon, solid, move }) => {
           const active = value === key;
           return (
             <button
               key={key}
               type="button"
-              role="tab"
-              aria-selected={active}
+              aria-pressed={active}
               aria-label={key}
               onClick={() => onChange(key)}
               className={cn(

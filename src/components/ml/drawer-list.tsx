@@ -124,9 +124,10 @@ export function DrawerOptionRow({
   onClick: () => void;
 }) {
   return (
-    <li role="option" aria-selected={selected}>
+    <li>
       <button
         type="button"
+        aria-pressed={selected}
         disabled={disabled}
         onClick={onClick}
         className={`state-layer flex w-full items-center gap-3 rounded-lg border-2 bg-subtle px-4 py-3 text-left ${selected ? "border-foreground" : "border-transparent"} ${disabled ? "opacity-50" : ""}`}
@@ -162,12 +163,13 @@ export function DrawerList({
   const hasRows = Array.isArray(children) ? children.length > 0 : Boolean(children);
   return (
     <>
-      <ul
-        className="max-h-[50vh] space-y-2 overflow-y-auto"
-        role="listbox"
-        aria-label={label}
-        {...(multiple ? { "aria-multiselectable": true } : {})}
-      >
+      {/*
+        A plain list of buttons, not a listbox. `role="option"` must not contain an interactive
+        descendant, and every row here is a <button> — invalid markup in the shared option list
+        behind every picker sheet. The rows carry aria-pressed instead, which is what they are
+        (audit B10, 29 Sep 2026).
+      */}
+      <ul className="max-h-[50dvh] space-y-2 overflow-y-auto" aria-label={label}>
         {children}
       </ul>
       {!hasRows && empty ? <p className="px-4 py-3 text-1 text-foreground">{empty}</p> : null}

@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type AnchorHTMLAttributes,
+  type ComponentPropsWithoutRef,
   type PointerEvent,
   type ReactNode,
   type Ref,
@@ -672,6 +673,14 @@ export function IconBtn({
   onClick,
   disabled = false,
   loading = false,
+  /*
+   * State this button carries, passed through rather than dropped. The props were a fixed list
+   * with no rest spread, and a hyphenated JSX attribute escapes TypeScript's excess-property
+   * check, so every `aria-expanded` and `aria-controls` written at a call site was silently
+   * discarded — a collapsible profile section announced as a plain button and never said whether
+   * it was open.
+   */
+  ...aria
 }: {
   label: string;
   children: ReactNode;
@@ -680,7 +689,10 @@ export function IconBtn({
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
-}) {
+} & Pick<
+  ComponentPropsWithoutRef<"button">,
+  "aria-expanded" | "aria-controls" | "aria-haspopup" | "aria-pressed" | "id"
+>) {
   const ripple = useRipple();
   return (
     <button
@@ -691,6 +703,7 @@ export function IconBtn({
       onPointerDown={ripple.onPointerDown}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
+      {...aria}
       className={iconBtnClass(variant, className)}
     >
       {ripple.layer}
@@ -761,11 +774,51 @@ export function Sheet({
   // Escape and Android's back button, through the one shared dismiss stack.
   useDismissable(open, onClose);
 
+  /*
+   * Focus restore, a focus trap, and a scroll lock. The first was already here; the other two were
+   * not, though a comment in kit.tsx claimed otherwise, which is how they stayed missing. Tab
+   * walked straight out of the drawer into the page behind it, and that page kept scrolling under
+   * the finger while a sheet was open — on a phone the second is the one you feel.
+   */
   useEffect(() => {
     if (!open) return;
     const opener = document.activeElement as HTMLElement | null;
     panel.current?.focus();
-    return () => opener?.focus?.();
+
+    const { overflow, touchAction } = document.body.style;
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    const onTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !panel.current) return;
+      const focusable = panel.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      // Nothing to move between: keep focus on the panel rather than letting it escape.
+      if (!focusable.length) {
+        e.preventDefault();
+        panel.current.focus();
+        return;
+      }
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === panel.current)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", onTab);
+
+    return () => {
+      window.removeEventListener("keydown", onTab);
+      document.body.style.overflow = overflow;
+      document.body.style.touchAction = touchAction;
+      opener?.focus?.();
+    };
   }, [open]);
 
   if (!open) return null;
@@ -784,7 +837,7 @@ export function Sheet({
         aria-label={title}
         tabIndex={-1}
         style={dy ? { transform: `translateY(${dy}px)` } : undefined}
-        className={`relative max-h-[88vh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-3xl border border-border bg-card px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 outline-none no-scrollbar duration-300 ease-enter ${drag ? "" : "transition-transform"}`}
+        className={`relative max-h-[88dvh] animate-in slide-in-from-bottom overflow-y-auto rounded-t-3xl border border-border bg-card px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-3 outline-none no-scrollbar duration-300 ease-enter ${drag ? "" : "transition-transform"}`}
       >
         <div
           aria-hidden

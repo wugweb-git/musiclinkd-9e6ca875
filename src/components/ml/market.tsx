@@ -86,7 +86,7 @@ export function SaveButton({
         e.stopPropagation();
         onToggle();
       }}
-      className="flex items-center justify-center rounded-full bg-card transition-transform active:scale-97"
+      className="hit-area flex items-center justify-center rounded-full bg-card transition-transform active:scale-97"
       style={{ width: size, height: size }}
     >
       <Heart
@@ -394,7 +394,7 @@ export function ProductCard({
             onAnimationEnd={(e) => {
               if (e.target === e.currentTarget) setTapped(false);
             }}
-            className={`absolute right-[3.47cqw] top-[2.93cqw] flex h-[10.4cqw] w-[10.4cqw] items-center justify-center rounded-full backdrop-blur-md transition-[color,background-color] duration-200 ${
+            className={`hit-area absolute right-[3.47cqw] top-[2.93cqw] flex h-[10.4cqw] w-[10.4cqw] items-center justify-center rounded-full backdrop-blur-md transition-[color,background-color] duration-200 ${
               isSaved ? "bg-red-500/20 text-red-500" : "bg-white/50 text-[#0D0D0D]"
             } ${tapped ? "animate-tab-tap" : ""}`}
           >

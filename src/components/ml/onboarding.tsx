@@ -1187,7 +1187,7 @@ export function DateDrawerField({
   ) => (
     <div className="min-w-0 flex-1">
       <p className="mb-2 text-center text-1 font-semibold text-muted-foreground">{label}</p>
-      <ul className="max-h-[40vh] space-y-1 overflow-y-auto" role="listbox" aria-label={label}>
+      <ul className="max-h-[40dvh] space-y-1 overflow-y-auto" role="listbox" aria-label={label}>
         {items.map((it) => {
           const on = it.value === picked;
           return (
