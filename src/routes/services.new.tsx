@@ -504,7 +504,12 @@ function NewService() {
         ) : null}
 
         {step === "price" ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
+            <div className="pb-1 pt-3">
+              <p className="text-1 font-medium text-primary">MAKE IT BOOKABLE</p>
+              <h1 className="mt-1 text-3 font-semibold tracking-tight text-foreground">Set the details.</h1>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Give people the information they need to say yes.</p>
+            </div>
             <Field label="Starting price (₹)" id="service-price">
               <input
                 value={price}

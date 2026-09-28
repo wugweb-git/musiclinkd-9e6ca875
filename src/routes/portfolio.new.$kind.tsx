@@ -34,13 +34,22 @@ function NewWork() {
   const t = workType(kind);
 
   return (
-    <Screen bottomNav={false} className="pb-32">
+    <Screen bottomNav={false} className="bg-background pb-32">
       <TopBar
-        title={`New ${t.label.toLowerCase()}`}
+        title={from === "onboarding" ? "Add your first work" : `New ${t.label.toLowerCase()}`}
         subtitle="Step 1 of 2 · Details"
         back="/portfolio"
       />
-      <main className="px-5 pt-4">
+      <main className="px-4 pt-3">
+        <div className="mb-5 border-b border-border pb-4">
+          <p className="text-1 font-semibold tracking-[0.14em] text-primary">SHOW YOUR WORK</p>
+          <h1 className="mt-1 text-3 font-semibold tracking-tight text-foreground">
+            Add something you&apos;re proud of.
+          </h1>
+          <p className="mt-1 max-w-[30rem] text-sm leading-5 text-muted-foreground">
+            Share a link and we&apos;ll build the presentation around it.
+          </p>
+        </div>
         <WorkForm kind={kind} signedIn={signedIn} fromOnboarding={from === "onboarding"} />
       </main>
     </Screen>

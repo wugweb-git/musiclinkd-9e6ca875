@@ -198,7 +198,7 @@ export function WorkForm({
         onChange={setLink}
         inputMode="url"
         autoComplete="url"
-        placeholder="Paste a YouTube, Spotify or SoundCloud link"
+        placeholder="Paste a YouTube, Spotify or SoundCloud link…"
         hint={
           reading
             ? "Reading the link…"
@@ -241,7 +241,7 @@ export function WorkForm({
         rows={1}
         placeholder={`${t.label} title`}
         aria-invalid={Boolean(titleError) || undefined}
-        className="mt-6 field-sizing-content w-full resize-none bg-transparent text-3 font-bold leading-tight outline-none placeholder:text-muted-foreground/50"
+        className="mt-5 field-sizing-content w-full resize-none bg-transparent text-3 font-semibold leading-tight outline-none placeholder:text-muted-foreground/50"
       />
       {titleError ? (
         <p role="alert" className="mt-1 animate-message text-1 text-destructive">
@@ -250,7 +250,7 @@ export function WorkForm({
       ) : null}
 
       {/* Everything else: one list of rows. */}
-      <div className="mt-6 divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+      <div className="mt-5 divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <Row
           label="Your role"
           value={roles.length ? roles.join(", ") : null}
