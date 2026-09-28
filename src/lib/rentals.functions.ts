@@ -188,9 +188,17 @@ export const listIncomingRentalRequests = createServerFn({ method: "GET" })
 export const listMyIncomingRentalRequests = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<MyRentalBooking[]> => {
+    /*
+     * `!inner`, unlike the shared BOOKING_SELECT. Filtering on an embedded column without it does
+     * not restrict the parent in PostgREST — it nulls the embed instead, so this returned every
+     * rental booking in the table, including the ones this account made as a renter, with a null
+     * listing. RLS meant nothing leaked; the owner just saw blank-titled cards and an inflated
+     * "Open requests" count on /marketplace/mine. The two other filtered-embed queries in this
+     * file already do it this way (audit C3, 29 Sep 2026).
+     */
     const { data: rows, error } = await db(context.supabase)
       .from("rental_bookings")
-      .select(BOOKING_SELECT)
+      .select(BOOKING_SELECT.replace("marketplace_listings(", "marketplace_listings!inner("))
       .eq("listing.seller_profile_id", context.userId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);

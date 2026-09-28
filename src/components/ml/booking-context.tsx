@@ -1,6 +1,8 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Navigate } from "@tanstack/react-router";
 import { getResource, priceFor, type Bookable, type Resource } from "@/data/booking";
+import { BtnLink, Screen, TopBar } from "./ui";
+import { EmptyState } from "./kit";
 
 export type BookingDraft = {
   resourceId: string;
@@ -93,16 +95,24 @@ export function BookingDraftProvider({
     };
   }, [bookable, resource, draft]);
 
+  /*
+   * A real screen, not a bare centred div. This branch is reached by a bad slug *and* by a genuine
+   * listing with no resources configured — `getResource` returns undefined for an empty array — and
+   * it used to render with no Screen, no TopBar, no nav and no link out, so on Android the system
+   * back gesture was the only escape (audit C1, 29 Sep 2026).
+   */
   if (!value) {
     return (
-      <div className="mx-auto flex min-h-[100dvh] w-full max-w-app items-center justify-center bg-background px-8 text-center">
-        <div>
-          <p className="text-2 font-semibold">This space is unavailable</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            It may have been removed or is no longer taking bookings.
-          </p>
+      <Screen>
+        <TopBar title="Booking" back="/discover" />
+        <div className="px-5 pt-6">
+          <EmptyState
+            title="This space is unavailable"
+            body="It may have been removed, or it is not taking bookings yet."
+            action={<BtnLink to="/discover">Find another</BtnLink>}
+          />
         </div>
-      </div>
+      </Screen>
     );
   }
 

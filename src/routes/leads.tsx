@@ -1,22 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import {
-  BusinessOnlyGate,
-  Card,
-  EmptyState,
-  Loading,
-  StatusPill,
-  Segmented,
-} from "@/components/ml/kit";
+import { Card, EmptyState, Loading, StatusPill, Segmented } from "@/components/ml/kit";
 import { leadStatusTone } from "@/data/business";
 import { listMyLeads, setLeadStatus, type EnquiryStatus } from "@/lib/enquiries.functions";
 import { conversationWith } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { useRequireBusiness } from "@/hooks/use-require-business";
 
 export const Route = createFileRoute("/leads")({
   head: () => ({
@@ -25,10 +17,13 @@ export const Route = createFileRoute("/leads")({
       {
         name: "description",
         content:
-          "Every enquiry that arrived on your business page, with what they asked for and how far it got.",
+          "Every enquiry about the services you offer, with what they asked for and how far it got.",
       },
       { property: "og:title", content: "Leads inbox | MusicLinkd" },
-      { property: "og:description", content: "Enquiries from your business page in one queue." },
+      {
+        property: "og:description",
+        content: "Enquiries about the services you offer, in one queue.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -42,10 +37,16 @@ function BusinessLeads() {
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const queryClient = useQueryClient();
   const load = useServerFn(listMyLeads);
-  const { loading } = useAuth();
-  // listMyLeads filters on the signed-in account, so this screen needs no id in its address.
-  const gate = useRequireBusiness();
-  const q = useQuery({ queryKey: ["leads", "mine"], queryFn: () => load(), enabled: gate.allowed });
+  const { loading, signedIn } = useAuth();
+  /*
+   * listMyLeads filters on the signed-in account, so this screen needs no id in its address —
+   * and no business gate either. `sendEnquiry` writes `business_profile_id = the service owner`,
+   * which is whoever offers the service: a session player with a mixing service receives enquiries
+   * exactly as a studio does. This screen used to be behind `useRequireBusiness`, so that row was
+   * written and never shown, while /leads stayed in the menu for talent accounts and walled them
+   * off at it. The gate was tighter than the data (audit C2, 29 Sep 2026).
+   */
+  const q = useQuery({ queryKey: ["leads", "mine"], queryFn: () => load(), enabled: signedIn });
   const answer = useServerFn(setLeadStatus);
   const [updating, setUpdating] = useState<string | null>(null);
 
@@ -79,17 +80,27 @@ function BusinessLeads() {
     }
   }
 
-  if (!gate.allowed) {
+  if (loading || !signedIn) {
     return (
       <Screen>
         <TopBar title="Leads" back="/home" />
-        <BusinessOnlyGate
-          allowed={gate.allowed}
-          loading={gate.loading || loading}
-          signedIn={gate.signedIn}
-        >
-          <div />
-        </BusinessOnlyGate>
+        {loading ? (
+          <div className="px-5 pt-6">
+            <Loading rows={3} />
+          </div>
+        ) : (
+          <EmptyState
+            title="Sign in to see your leads"
+            body="Enquiries about the services you offer arrive here."
+          >
+            <Link
+              to="/welcome"
+              className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+            >
+              Sign in
+            </Link>
+          </EmptyState>
+        )}
       </Screen>
     );
   }
