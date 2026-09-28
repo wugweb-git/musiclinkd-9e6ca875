@@ -198,7 +198,12 @@ function Schedule() {
                       <BtnLink to="/messages" variant="outline" className="w-full">
                         Message Provider
                       </BtnLink>
-                      <BtnLink to="/studio" variant="ghost" className="w-full">
+                      <BtnLink
+                        to="/discover/$slug"
+                        params={{ slug: "studios" }}
+                        variant="ghost"
+                        className="w-full"
+                      >
                         See Similar Spaces
                       </BtnLink>
                     </div>

@@ -28,8 +28,12 @@ import { iconSize } from "@/lib/tokens";
 export const Route = createFileRoute("/portfolio/")({
   // ?add=1 opens the work-type drawer. Adding work is a drawer, not a screen (owner, 28 Sep 2026):
   // /portfolio/new was a step-1 screen duplicating WorkTypeSheet, and is gone.
-  validateSearch: (search: Record<string, unknown>): { add?: "1" } =>
-    search["add"] === "1" ? { add: "1" } : {},
+  validateSearch: (search: Record<string, unknown>): { add?: "1"; from?: "onboarding" } => ({
+    ...(search["add"] === "1" ? { add: "1" as const } : {}),
+    // Onboarding hands off here to add a first work; the flag has to survive the drawer so the
+    // work screen can offer "continue onboarding" (owner, 29 Sep 2026).
+    ...(search["from"] === "onboarding" ? { from: "onboarding" as const } : {}),
+  }),
   head: () => ({
     meta: [
       { title: "Portfolio — MusicLinkd" },
@@ -286,7 +290,11 @@ function PortfolioOverview() {
           ))}
         </div>
       </main>
-      <WorkTypeSheet open={adding} onClose={() => setAdding(false)} />
+      <WorkTypeSheet
+        open={adding}
+        onClose={() => setAdding(false)}
+        {...(search.from === "onboarding" ? { from: "onboarding" as const } : {})}
+      />
 
       <Dialog
         open={toDelete !== null}

@@ -95,7 +95,11 @@ function MyBookings() {
           <EmptyState
             title="No bookings yet"
             body="When you ask a studio for a session it shows up here."
-            action={<BtnLink to="/studio">Discover Studios &amp; Spaces</BtnLink>}
+            action={
+              <BtnLink to="/discover/$slug" params={{ slug: "studios" }}>
+                Discover Studios &amp; Spaces
+              </BtnLink>
+            }
           />
         ) : (
           <ul className="space-y-3">

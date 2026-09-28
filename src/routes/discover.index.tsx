@@ -312,7 +312,11 @@ function Discover() {
         <section className="pb-8">
           <SectionHeader
             title="Studios"
-            action={<SectionActionLink to="/studio">See All</SectionActionLink>}
+            action={
+              <SectionActionLink to="/discover/$slug" params={{ slug: "studios" }}>
+                See All
+              </SectionActionLink>
+            }
           />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {studios.map((s) => (

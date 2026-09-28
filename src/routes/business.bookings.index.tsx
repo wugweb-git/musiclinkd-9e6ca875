@@ -102,7 +102,7 @@ function ProviderBookingsContent() {
           <WorkspaceLink to="/business/bookings/calendar" label="Calendar" />
           <WorkspaceLink to="/business/availability" label="Availability" />
           <WorkspaceLink to="/business/pricing" label="Pricing" />
-          <WorkspaceLink to="/business/policies" label="Policies" />
+          <WorkspaceLink to="/profile/edit" label="Policies" />
         </div>
 
         <div className="mt-4 px-5 pb-1">
@@ -187,7 +187,7 @@ function WorkspaceLink({
     | "/business/bookings/calendar"
     | "/business/availability"
     | "/business/pricing"
-    | "/business/policies";
+    | "/profile/edit";
   label: string;
 }) {
   return (

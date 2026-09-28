@@ -161,6 +161,50 @@ because they are verbs on different objects. The two worth watching:
 - `analytics` — `/opportunities/$id/analytics` and `/portfolio/analytics`
 
 
+### Data sync — onboarding ↔ profile ↔ edit, both cohorts (28 Sep)
+
+What the app counts as a complete profile (`profileGaps`, `src/lib/profile-map.ts`) — **10 fields,
+identical for both cohorts**:
+
+> Display name · Username · Profile photo · Primary role · City · Professional bio · Genres ·
+> Languages · Availability · Links
+
+Against what each onboarding flow actually asks:
+
+| Field | Talent onboarding (`/onboarding/step/$id`) | Business onboarding (`/business/new`) | Edit (`/profile/edit`) |
+|---|---|---|---|
+| Display name | ✓ identity | ✓ name | ✓ first + last |
+| Username | ✓ identity | ✓ | ✓ |
+| Profile photo | ✓ identity | **✗** | ✓ |
+| Primary role / type | ✓ role | ✓ type | ✓ Type |
+| City | ✓ identity ("where you're based") | ✓ city + state + PIN | ✓ State, PIN |
+| Bio | ✓ identity ("a short bio") | **✗** — tagline only | ✓ Bio, Headline |
+| Genres | ✓ | ✓ | ✓ |
+| Languages | ✓ | ✓ | ✓ |
+| Availability | **✗** | **✗** | ✓ — and now a toggle on `/home` |
+| Links | ✓ contact | **✗** | ✓ |
+| Instruments | ✓ (skipped when the role has none) | — | ✓ |
+| Work modes · Intent | ✓ | **✗** | ✓ Work modes |
+| Policies | — | ✓ | ✓ *(moved into the form 28 Sep)* |
+| Maps link | — | ✓ | ✓ |
+| Experience | ✗ | ✗ | ✓ |
+
+**Out of sync, in order of consequence:**
+
+1. **A business is scored against fields its own onboarding never asks for.** Photo, bio and links
+   are in `profileGaps` and in the edit form, but `/business/new` collects none of them — so a
+   business finishes setup and is immediately told its profile is incomplete.
+2. **Availability is required of both and asked of neither.** It is now a toggle on `/home`, which
+   is the fix, but no flow prompts for it.
+3. **Experience** exists only in the edit form — not collected, not scored.
+4. **Tagline vs bio.** Business onboarding writes a tagline; `profileGaps` wants a bio over 40
+   characters. Different fields, so a tagline does not satisfy it.
+
+The edit form is the superset and is already correct for both cohorts: shared fields for everyone,
+plus Google Maps link and Policies shown only when `useRequireBusiness` says the account is a
+business. It **gates fields, not the screen** — which is why `/profile/edit` serves Both.
+
+
 ### Business onboarding owns these — 28 Sep
 
 `/business/new` is the business onboarding flow, and its step list already contains **`policies`**,

@@ -95,7 +95,16 @@ export function WorkTypeIcon({
 }
 
 /** Add work: the type list in a bottom drawer, one shared option row per type. */
-export function WorkTypeSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function WorkTypeSheet({
+  open,
+  onClose,
+  from,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** Passed straight through so the onboarding hand-off survives the drawer. */
+  from?: "onboarding";
+}) {
   const navigate = useNavigate();
   return (
     <Sheet open={open} onClose={onClose} title="Add work">
@@ -106,7 +115,11 @@ export function WorkTypeSheet({ open, onClose }: { open: boolean; onClose: () =>
             option={{ value: t.kind, label: t.label, icon: workIcons[t.kind] ?? Music2 }}
             onClick={() => {
               onClose();
-              void navigate({ to: "/portfolio/new/$kind", params: { kind: t.kind } });
+              void navigate({
+                to: "/portfolio/new/$kind",
+                params: { kind: t.kind },
+                ...(from ? { search: { from } } : {}),
+              });
             }}
           />
         ))}

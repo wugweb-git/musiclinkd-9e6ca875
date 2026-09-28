@@ -149,10 +149,16 @@ function EditProfile() {
   const loadBusiness = useServerFn(getMyBusiness);
   const saveBusiness = useServerFn(updateMyBusiness);
   const [mapsUrl, setMapsUrl] = useState("");
+  // A business's rules live in the same form as the rest of its details, not on a screen of their
+  // own (owner, 28 Sep 2026) — /business/policies was the last business field without a home here.
+  const [policies, setPolicies] = useState("");
   useEffect(() => {
     if (!isBusiness) return;
     void loadBusiness()
-      .then((r) => setMapsUrl(r?.business.maps_url ?? ""))
+      .then((r) => {
+        setMapsUrl(r?.business.maps_url ?? "");
+        setPolicies((r?.business.policies ?? []).join("\n"));
+      })
       .catch(() => undefined);
   }, [isBusiness, loadBusiness]);
 
@@ -378,7 +384,17 @@ function EditProfile() {
       }
       if (isBusiness) {
         const link = mapsUrl.trim();
-        await saveBusiness({ data: { maps_url: GOOGLE_MAPS.test(link) ? link : null } });
+        const rules = policies
+          .split("\n")
+          .map((r) => r.trim())
+          .filter(Boolean)
+          .slice(0, 12);
+        await saveBusiness({
+          data: {
+            maps_url: GOOGLE_MAPS.test(link) ? link : null,
+            ...(rules.length ? { policies: rules } : {}),
+          },
+        });
       }
       setRow(saved as ProfileRow);
       setStatus("saved");
@@ -670,6 +686,15 @@ function EditProfile() {
               >
                 Sync from Google
               </Btn>
+              <div className="mt-3">
+                <Field
+                  label="Policies"
+                  value={policies}
+                  onChange={setPolicies}
+                  multiline
+                  hint="Your rules, one per line — cancellation, deposits, what you expect. Up to 12."
+                />
+              </div>
             </div>
           ) : null}
           <Field

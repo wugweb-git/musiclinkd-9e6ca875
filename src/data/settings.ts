@@ -109,13 +109,6 @@ export const settingsGroups: SettingsGroup[] = [
         icon: "lock",
       },
       {
-        key: "qr-sharing",
-        label: "QR & sharing",
-        hint: "What your QR card shares",
-        to: "/identity/settings",
-        icon: "qr",
-      },
-      {
         key: "security",
         label: "Security",
         hint: "Password, sessions",
@@ -128,13 +121,6 @@ export const settingsGroups: SettingsGroup[] = [
         hint: "Channels and quiet hours",
         to: "/notifications/settings",
         icon: "bell",
-      },
-      {
-        key: "discovery",
-        label: "Discovery preferences",
-        hint: "What you get recommended",
-        to: "/recommendations/settings",
-        icon: "compass",
       },
     ],
   },

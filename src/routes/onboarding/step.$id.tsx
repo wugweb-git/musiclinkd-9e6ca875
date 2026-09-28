@@ -257,7 +257,7 @@ function StepRoute() {
           navigate(
             hasWork
               ? { to: "/onboarding/preview" }
-              : { to: "/portfolio", search: { add: "1" as const } },
+              : { to: "/portfolio", search: { add: "1" as const, from: "onboarding" as const } },
           ),
         );
       return;

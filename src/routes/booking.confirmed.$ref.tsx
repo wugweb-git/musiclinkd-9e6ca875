@@ -208,7 +208,8 @@ function Confirmed() {
               onClick={() =>
                 void shareLink({
                   title: b.studio?.name ?? b.studio_name ?? "Studio session",
-                  url: shareUrl("/studio"),
+                  // The studio booked, not a stub: /booking/<slug> is its bookable page.
+                  url: shareUrl(b.studio?.slug ? `/booking/${b.studio.slug}` : "/discover/studios"),
                 })
               }
             >

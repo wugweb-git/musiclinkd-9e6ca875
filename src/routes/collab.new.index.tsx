@@ -85,7 +85,10 @@ function NewCollab() {
   const errors = useFieldErrors<FieldName>();
 
   const [kind, setKind] = useState<Kind | null>(type ?? null);
-  const [step, setStep] = useState(type ? 1 : 0);
+  // The Kind step moved to CollabKindSheet, so step 0 is Details for everyone. The old
+  // `type ? 1 : 0` offset compensated for a step that no longer exists and skipped the name
+  // field entirely (owner, 29 Sep 2026).
+  const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [projectType, setProjectType] = useState<string | null>(null);
   const [about, setAbout] = useState("");
