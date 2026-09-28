@@ -23,13 +23,13 @@ import { iconSize } from "@/lib/tokens";
 export const Route = createFileRoute("/services/")({
   head: () => ({
     meta: [
-      { title: "Your services | MusicLinkd" },
+      { title: "Services | MusicLinkd" },
       {
         name: "description",
         content:
           "Publish what you offer, set pricing and packages, and control when you are bookable.",
       },
-      { property: "og:title", content: "Your services | MusicLinkd" },
+      { property: "og:title", content: "Services | MusicLinkd" },
       { property: "og:description", content: "Services, pricing and availability in one place." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -56,14 +56,15 @@ function ServicesHome() {
         subtitle="What people can book you for"
         back="/profile"
         right={
-          <Link
+          <BtnLink
             to="/services/new"
             search={{ step: "what" as const }}
-            aria-label="Add service"
-            className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
+            variant="ink"
+            className="min-h-10 px-4"
+            icon={<Plus size={iconSize.sm} aria-hidden />}
           >
-            <Plus size={iconSize.md} />
-          </Link>
+            New
+          </BtnLink>
         }
       />
 

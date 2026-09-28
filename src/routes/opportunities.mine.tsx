@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Eye, Users, Bookmark } from "lucide-react";
 import { Screen, TopBar, BtnLink } from "@/components/ml/ui";
 import { Card, StatusPill, EmptyState } from "@/components/ml/kit";
@@ -33,14 +33,15 @@ function MyOpportunities() {
         subtitle="Posted by you"
         back="/opportunities"
         right={
-          <Link
+          <BtnLink
             to="/opportunities/new"
             search={{ step: "basics" }}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
-            aria-label="New opportunity"
+            variant="ink"
+            className="min-h-10 px-4"
+            icon={<Plus size={iconSize.sm} aria-hidden />}
           >
-            <Plus size={iconSize.md} />
-          </Link>
+            New
+          </BtnLink>
         }
       />
       <div className="space-y-3 px-5 pt-4 pb-4">

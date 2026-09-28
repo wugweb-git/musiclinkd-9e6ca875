@@ -2,12 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { ArrowUpDown, Plus, UsersRound } from "lucide-react";
+import { ArrowUpDown, Plus, Search, UsersRound } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink, IconBtn, IconBtnLink, Sheet } from "@/components/ml/ui";
 import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { DrawerSearch } from "@/components/ml/drawer-list";
 import { Field, SheetMultiSelect } from "@/components/ml/listing-form";
 import { FilterButton, SortSheet, SwitchRow } from "@/components/ml/market";
+import { NotificationsBell } from "@/components/ml/tab-header";
 import {
   listMyCollabs,
   listProjectTypes,
@@ -170,6 +171,10 @@ function Collabs() {
         back="/discover"
         right={
           <div className="flex items-center gap-2">
+            <NotificationsBell />
+            <IconBtnLink to="/search" label="Search" variant="plain" className="h-10 w-10">
+              <Search size={iconSize.md} aria-hidden />
+            </IconBtnLink>
             {all.length ? (
               <>
                 <IconBtn label={`Sort: ${sort}`} onClick={() => setSortOpen(true)}>
@@ -178,14 +183,14 @@ function Collabs() {
                 <FilterButton count={filterCount} onClick={() => setFiltersOpen(true)} />
               </>
             ) : null}
-            <IconBtnLink
-              label="Start a collab"
+            <BtnLink
               to="/collab/new"
               variant="ink"
-              className="h-10 w-10"
+              className="min-h-10 px-4"
+              icon={<Plus size={iconSize.sm} aria-hidden />}
             >
-              <Plus size={iconSize.md} aria-hidden />
-            </IconBtnLink>
+              New
+            </BtnLink>
           </div>
         }
       />

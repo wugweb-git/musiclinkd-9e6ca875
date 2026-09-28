@@ -207,7 +207,6 @@ export const securityRows = [
     hint: "Sends a reset link to your email",
     to: "/auth/forgot",
   },
-  // Two-step verification is off the menu for now (owner, 21 Sep 2026); /settings/security/2fa stays.
   {
     key: "delete",
     label: "Delete account",

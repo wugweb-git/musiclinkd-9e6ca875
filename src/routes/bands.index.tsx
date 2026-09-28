@@ -50,13 +50,14 @@ function BandsIndex() {
         title="Bands"
         subtitle="Groups, line-ups and open seats"
         right={
-          <Link
+          <BtnLink
             to="/bands/new"
-            aria-label="Create a band"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
+            variant="ink"
+            className="min-h-10 px-4"
+            icon={<Plus size={iconSize.sm} aria-hidden />}
           >
-            <Plus size={iconSize.md} aria-hidden />
-          </Link>
+            New
+          </BtnLink>
         }
       />
       <div className="space-y-4 px-5 pt-4">

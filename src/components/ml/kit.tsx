@@ -444,7 +444,9 @@ export function RowGroup({ title, children }: { title: string; children: ReactNo
   return (
     <section>
       <h2 className="pill mb-2 px-1 text-muted-foreground">{title}</h2>
-      <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">{children}</ul>
+      <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-subtle">
+        {children}
+      </ul>
     </section>
   );
 }

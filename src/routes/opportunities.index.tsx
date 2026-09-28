@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Search, Bookmark, Briefcase, Users } from "lucide-react";
-import { Screen, TopBar, BtnLink, Sheet } from "@/components/ml/ui";
+import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { Card, Segmented, EmptyState, Loading, Row } from "@/components/ml/kit";
 import { OpportunityCard, categoryIcon, useSavedOpportunities } from "@/components/ml/opportunity";
 import { opportunityCategories } from "@/data/opportunities";
@@ -102,14 +102,14 @@ function OpportunitiesHome() {
         subtitle="Who needs what, right now"
         back="/discover"
         right={
-          <button
-            type="button"
+          <Btn
+            variant="ink"
+            className="min-h-10 px-4"
+            icon={<Plus size={iconSize.sm} aria-hidden />}
             onClick={() => setSheet(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground"
-            aria-label="Post an opportunity"
           >
-            <Plus size={iconSize.md} />
-          </button>
+            New
+          </Btn>
         }
       />
 

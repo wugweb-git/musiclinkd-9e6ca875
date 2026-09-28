@@ -2,9 +2,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState, type ComponentProps, type ReactElement } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, ChevronDown, ChevronRight, RefreshCw, Save } from "lucide-react";
+import { Camera, Check, ChevronDown, ChevronRight, Pencil, RefreshCw, Save } from "lucide-react";
 import { ActionBar, Btn, BtnLink, Chip, Screen, TopBar } from "@/components/ml/ui";
-import { SegmentedField } from "@/components/ml/kit";
+import { ImagePickButton } from "@/components/ml/profile";
+import { uploadProfileImage, type ProfileImageKind } from "@/lib/profile-images";
 import {
   getMyProfile,
   getMyProfileSections,
@@ -12,12 +13,10 @@ import {
   saveMyExperience,
   saveMyProfile,
   saveMyRoleDetails,
-  RATE_UNITS,
-  type RateUnit,
 } from "@/lib/portfolio.functions";
 import { profileGaps, type ProfileRow } from "@/lib/profile-map";
 import { useAuth } from "@/hooks/use-auth";
-import { linkPlatforms, visibilityOptions, workModes as workModeOptions } from "@/data/onboarding";
+import { linkPlatforms, workModes as workModeOptions } from "@/data/onboarding";
 import { talentTypes, useTaxonomy, type TaxonomyOption } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { GOOGLE_MAPS, PIN_CODE } from "@/lib/place";
@@ -77,9 +76,6 @@ type Form = {
   pin_code: string;
   state: string;
   availability: string;
-  /** Whole rupees as typed; empty for no rate. */
-  rate: string;
-  rate_unit: RateUnit;
   visibility: string;
   experience_level: string;
   roles: string[];
@@ -100,8 +96,6 @@ const empty: Form = {
   pin_code: "",
   state: "",
   availability: "",
-  rate: "",
-  rate_unit: "hour",
   visibility: "public",
   experience_level: "",
   roles: [],
@@ -123,30 +117,6 @@ function splitName(row: ProfileRow): { first_name: string; last_name: string } {
     : { first_name: full.slice(0, space), last_name: full.slice(space + 1).trim() };
 }
 
-/** One-keyword labels for the rate units, in the order the choice shows them. */
-const UNIT_LABELS: Record<RateUnit, string> = {
-  hour: "Hour",
-  session: "Session",
-  day: "Day",
-  night: "Night",
-  show: "Show",
-  song: "Song",
-  track: "Track",
-  feature: "Feature",
-};
-const UNIT_ORDER = Object.keys(UNIT_LABELS) as RateUnit[];
-const unitFromLabel = (label: string) => UNIT_ORDER.find((u) => UNIT_LABELS[u] === label) ?? "hour";
-
-function rateFromRow(row: ProfileRow): { rate: string; rate_unit: RateUnit } {
-  const unit = RATE_UNITS.find((u) => u === row.rate_unit);
-  if (row.rate_paise != null)
-    return { rate: String(row.rate_paise / 100), rate_unit: unit ?? "hour" };
-  if (row.hourly_rate_paise != null) {
-    return { rate: String(row.hourly_rate_paise / 100), rate_unit: "hour" };
-  }
-  return { rate: "", rate_unit: unit ?? "hour" };
-}
-
 function fromRow(row: ProfileRow | null): Form {
   if (!row) return empty;
   return {
@@ -158,8 +128,6 @@ function fromRow(row: ProfileRow | null): Form {
     pin_code: row.pin_code ?? "",
     state: row.state ?? "",
     availability: row.availability ?? "",
-    // Before a rate has a unit, the hourly rate is the rate.
-    ...rateFromRow(row),
     visibility: row.visibility ?? "public",
     experience_level: row.experience_level ?? "",
     roles: row.roles ?? [],
@@ -272,6 +240,25 @@ function EditProfile() {
     "idle" | "saving" | "saved" | "error" | "offline" | "taken" | "reserved" | "invalid"
   >("idle");
 
+  // Cover and profile photo: uploaded and saved straight away, same as the rest of Identity is
+  // saved on the main Save — a photo change shouldn't wait behind unrelated fields.
+  const pickImage = async (kind: ProfileImageKind, file: File) => {
+    try {
+      const url = await uploadProfileImage(kind, file);
+      await persist({ data: kind === "avatar" ? { avatar_url: url } : { cover_url: url } });
+      setRow(
+        (current) =>
+          ({
+            ...(current ?? {}),
+            [kind === "avatar" ? "avatar_url" : "cover_url"]: url,
+          }) as ProfileRow,
+      );
+      toast.success(kind === "avatar" ? "Profile photo updated" : "Cover updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "That upload didn't work. Try again.");
+    }
+  };
+
   // Options come from taxonomy_options, the same source onboarding uses; the form stores slugs.
   const { options: taxonomy, state: taxonomyState } = useTaxonomy();
   const roleOptions = taxonomy ? talentTypes(taxonomy.person_types) : [];
@@ -347,8 +334,6 @@ function EditProfile() {
       return;
     }
     setStatus("saving");
-    const rupees = Number(form.rate.replace(/[₹,\s]/g, ""));
-    const ratePaise = form.rate.trim() && Number.isFinite(rupees) ? Math.round(rupees * 100) : null;
     try {
       const saved = await persist({
         data: {
@@ -365,12 +350,6 @@ function EditProfile() {
           state: form.state || null,
           country: DEFAULT_COUNTRY,
           availability: form.availability || null,
-          rate_paise: ratePaise,
-          rate_unit: ratePaise == null ? null : form.rate_unit,
-          // The hourly rate follows the rate while it is per hour; any other unit leaves it be.
-          ...(form.rate_unit === "hour" || ratePaise == null
-            ? { hourly_rate_paise: ratePaise }
-            : {}),
           visibility: form.visibility || "public",
           experience_level: form.experience_level || null,
           roles: form.roles,
@@ -454,10 +433,45 @@ function EditProfile() {
     {
       id: "identity",
       label: "Identity",
-      detail: "Name, username, headline, bio",
-      done: Boolean(form.first_name && form.username),
+      detail: "Name, headline, bio",
+      done: Boolean(form.first_name),
       body: (
         <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div
+                className="h-16 w-16 rounded-full bg-subtle bg-cover bg-center"
+                style={row?.avatar_url ? { backgroundImage: `url(${row.avatar_url})` } : undefined}
+                aria-hidden
+              />
+              <ImagePickButton
+                kind="avatar"
+                label="Change profile photo"
+                className="absolute -bottom-1 -right-1 h-8 w-8 border border-border bg-card text-foreground"
+                onPick={pickImage}
+              >
+                <Camera size={iconSize.sm} aria-hidden />
+              </ImagePickButton>
+            </div>
+            <div className="relative h-16 flex-1 overflow-hidden rounded-lg bg-subtle">
+              {row?.cover_url ? (
+                <img
+                  src={row.cover_url}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              ) : null}
+              <ImagePickButton
+                kind="cover"
+                label="Change cover photo"
+                className="absolute right-2 top-2 h-8 w-8 bg-card/90 text-foreground"
+                onPick={pickImage}
+              >
+                <Pencil size={iconSize.sm} aria-hidden />
+              </ImagePickButton>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <Field
               label="First name"
@@ -472,17 +486,6 @@ function EditProfile() {
               error={problems.last_name}
             />
           </div>
-          <Field
-            label="Username"
-            value={form.username}
-            onChange={(v) => update({ username: v.toLowerCase().replace(/\s+/g, ".") })}
-            readOnly={Boolean(row?.username)}
-            hint={
-              row?.username
-                ? "Your public link. Usernames can't be changed."
-                : "3–30 characters: lowercase letters, numbers, dots and underscores. Can't be changed later."
-            }
-          />
           <Field label="Headline" value={form.headline} onChange={(v) => update({ headline: v })} />
           <Field label="Bio" value={form.bio} onChange={(v) => update({ bio: v })} multiline />
         </div>
@@ -536,7 +539,7 @@ function EditProfile() {
     {
       id: "professional",
       label: "Professional",
-      detail: "Work modes, experience level, rate",
+      detail: "Work modes, experience level",
       done: Boolean(form.experience_level || form.work_modes.length),
       body: (
         <div className="space-y-4">
@@ -552,27 +555,6 @@ function EditProfile() {
             value={form.experience_level}
             onChange={(v) => update({ experience_level: v })}
           />
-          <Field
-            label="Rate (₹)"
-            value={form.rate}
-            onChange={(v) => update({ rate: v })}
-            inputMode="decimal"
-          />
-          <div>
-            <span className="block text-1 font-medium text-muted-foreground">Per</span>
-            {/* Eight units don't fit one row at phone width: two rows of four, one choice. */}
-            <div className="mt-1.5 space-y-1.5">
-              {[UNIT_ORDER.slice(0, 4), UNIT_ORDER.slice(4)].map((row) => (
-                <SegmentedField
-                  key={row[0]}
-                  label="Rate unit"
-                  value={UNIT_LABELS[form.rate_unit]}
-                  options={row.map((u) => UNIT_LABELS[u])}
-                  onChange={(label) => update({ rate_unit: unitFromLabel(label) })}
-                />
-              ))}
-            </div>
-          </div>
         </div>
       ),
     },
@@ -696,32 +678,6 @@ function EditProfile() {
             onChange={(v) => update({ availability: v })}
             hint="e.g. Open for studio work"
           />
-        </div>
-      ),
-    },
-    {
-      id: "privacy",
-      label: "Privacy",
-      detail: "Who can see your profile",
-      done: true,
-      body: (
-        <div className="space-y-2">
-          {visibilityOptions.map((o) => (
-            <button
-              key={o.key}
-              type="button"
-              onClick={() => update({ visibility: o.key })}
-              className={`flex min-h-[56px] w-full items-center gap-3 rounded-lg border-2 px-4 text-left ${form.visibility === o.key ? "border-foreground bg-subtle" : "border-transparent bg-subtle"}`}
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold">{o.label}</span>
-                <span className="block truncate text-1 text-muted-foreground">{o.hint}</span>
-              </span>
-              {form.visibility === o.key ? (
-                <Check size={iconSize.sm} className="shrink-0 text-primary" aria-hidden />
-              ) : null}
-            </button>
-          ))}
         </div>
       ),
     },

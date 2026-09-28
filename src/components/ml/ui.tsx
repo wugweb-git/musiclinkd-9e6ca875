@@ -21,6 +21,7 @@ import {
   Grid2x2,
   ArrowLeftRight,
   Bell,
+  Home,
   FolderKanban,
   BriefcaseBusiness,
   Handshake,
@@ -32,12 +33,8 @@ import {
   Inbox,
   Star,
   BadgeCheck,
-  Sparkles,
   Bookmark,
-  History,
-  LayoutGrid,
   QrCode,
-  Mic2,
   Settings,
   CircleHelp,
   Megaphone,
@@ -128,6 +125,7 @@ export const navItems: {
   icon: LucideIcon;
   solid: SolidIcon;
 }[] = [
+  { to: "/home", label: "Home", icon: Home, solid: "home" },
   { to: "/discover", label: "Discover", icon: Compass, solid: "compass" },
   { to: "/messages", label: "Connections", icon: MessageCircle, solid: "speech" },
   { to: "/marketplace", label: "Market", icon: ShoppingBag, solid: "bag" },
@@ -135,9 +133,12 @@ export const navItems: {
 ];
 
 /*
- * Every module, grouped, for the menu. Regrouped 24 Sep 2026: the old five mixed things you browse
- * with things you own, and put Categories beside Leads. Nothing was dropped — the four tabs are
- * still listed, so the menu remains the complete map of the app.
+ * Every module not already reachable another way, grouped, for the menu. Restructured 28 Sep 2026
+ * (owner). Cut: the four tab roots (Discover, Connections, Market, Profile) — a permanent icon in
+ * the bar below already covers them; Studios — a business type, not its own category, kept alive
+ * elsewhere only for legacy links; Search and Categories — both reachable from the search icon in
+ * every header; Recommendations — already a card on Discover. Saved and Recently viewed, being the
+ * same idea (things kept for later vs. things opened before), are one row now, not two.
  */
 const menuGroups: {
   title: string;
@@ -150,15 +151,7 @@ const menuGroups: {
 }[] = [
   {
     title: "Browse",
-    items: [
-      { to: "/discover", label: "Discover", icon: Compass },
-      { to: "/search", label: "Search", icon: Search },
-      { to: "/categories", label: "Categories", icon: LayoutGrid },
-      { to: "/studio", label: "Studios", icon: Mic2 },
-      { to: "/recommendations/swipe", label: "Recommendations", icon: Sparkles },
-      { to: "/saved", label: "Saved", icon: Bookmark },
-      { to: "/recently-viewed", label: "Recently viewed", icon: History },
-    ],
+    items: [{ to: "/saved", label: "Saved & recently viewed", icon: Bookmark }],
   },
   {
     title: "My work",
@@ -172,9 +165,8 @@ const menuGroups: {
     ],
   },
   {
-    title: "Market & bookings",
+    title: "Rentals & bookings",
     items: [
-      { to: "/marketplace", label: "Market", icon: ShoppingBag },
       { to: "/marketplace", search: { view: "Rent" }, label: "Rentals", icon: Package },
       { to: "/bookings", label: "Bookings", icon: CalendarCheck },
     ],
@@ -190,8 +182,6 @@ const menuGroups: {
   {
     title: "You",
     items: [
-      { to: "/profile", label: "Profile", icon: User },
-      { to: "/messages", label: "Connections", icon: MessageCircle },
       { to: "/notifications", label: "Notifications", icon: Bell },
       { to: "/identity/qr", label: "QR & Card", icon: QrCode },
       { to: "/verification", label: "Verification", icon: BadgeCheck },
@@ -335,12 +325,15 @@ export function TopBar({
   back?: string;
   right?: ReactNode;
 }) {
+  // subtitle is intentionally never rendered (owner rule) — the prop stays so existing callers
+  // don't need touching, but the top bar is title-only, no exceptions.
+  void subtitle;
   return (
     <header className="sticky top-0 z-bar flex items-center gap-3 bg-background/90 px-5 py-4 backdrop-blur">
       {back ? (
         <Link
           to={back}
-          className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-97"
+          className="hit-area flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
           aria-label="Back"
         >
           <ArrowLeft size={iconSize.md} aria-hidden />
@@ -348,7 +341,6 @@ export function TopBar({
       ) : null}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-3 leading-tight">{title}</h1>
-        {subtitle ? <p className="truncate text-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
       {right}
     </header>

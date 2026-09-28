@@ -65,14 +65,15 @@ function BusinessHome() {
         // One account, one business: adding shows only while there is none.
         right={
           !canCreate || pending ? undefined : (
-            <Link
+            <BtnLink
               to="/business/new"
               search={{ step: "type" as const }}
-              aria-label="Add business"
-              className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground"
+              variant="ink"
+              className="min-h-10 px-4"
+              icon={<Plus size={iconSize.sm} aria-hidden />}
             >
-              <Plus size={iconSize.md} />
-            </Link>
+              New
+            </BtnLink>
           )
         }
       />

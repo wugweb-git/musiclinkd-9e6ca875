@@ -143,7 +143,7 @@ function MarketHome() {
     <Screen>
       <header className="sticky top-0 z-bar mb-5 bg-background/90 pt-6 backdrop-blur">
         <div className="mb-3 flex items-center justify-between px-5">
-          <h1 className="text-4 leading-tight">Market</h1>
+          <h1 className="text-3 leading-tight">Market</h1>
           <div className="flex items-center gap-2">
             <Link
               to="/marketplace/mine"

@@ -98,7 +98,6 @@ import { Route as RecommendationsSwipeRouteImport } from './routes/recommendatio
 import { Route as ReviewsIndexRouteImport } from './routes/reviews.index'
 import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
 import { Route as SearchIndexRouteImport } from './routes/search.index'
-import { Route as SearchHistoryRouteImport } from './routes/search.history'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
 import { Route as ServicesConflictsRouteImport } from './routes/services.conflicts'
@@ -107,7 +106,6 @@ import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as SettingsDeleteAccountRouteImport } from './routes/settings.delete-account'
 import { Route as SettingsPrivacyRouteImport } from './routes/settings.privacy'
-import { Route as SettingsSecurityRouteImport } from './routes/settings.security'
 import { Route as SettingsSpotifyRouteImport } from './routes/settings.spotify'
 import { Route as TalentIdRouteImport } from './routes/talent.$id'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
@@ -180,7 +178,7 @@ import { Route as SearchWhyIdRouteImport } from './routes/search.why.$id'
 import { Route as ServicesIdIndexRouteImport } from './routes/services.$id.index'
 import { Route as ServicesIdEnquiryRouteImport } from './routes/services.$id.enquiry'
 import { Route as ServicesIdManageRouteImport } from './routes/services.$id.manage'
-import { Route as SettingsSecurity2faRouteImport } from './routes/settings.security.2fa'
+import { Route as SettingsSecurityIndexRouteImport } from './routes/settings.security.index'
 import { Route as BusinessBookingsRequestsIndexRouteImport } from './routes/business.bookings.requests.index'
 import { Route as BusinessBookingsRequestsRefRouteImport } from './routes/business.bookings.requests.$ref'
 import { Route as MarketplaceRentActiveIdRouteImport } from './routes/marketplace/rent/active.$id'
@@ -636,11 +634,6 @@ const SearchIndexRoute = SearchIndexRouteImport.update({
   path: '/search/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SearchHistoryRoute = SearchHistoryRouteImport.update({
-  id: '/search/history',
-  path: '/search/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
@@ -679,11 +672,6 @@ const SettingsDeleteAccountRoute = SettingsDeleteAccountRouteImport.update({
 const SettingsPrivacyRoute = SettingsPrivacyRouteImport.update({
   id: '/settings/privacy',
   path: '/settings/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsSecurityRoute = SettingsSecurityRouteImport.update({
-  id: '/settings/security',
-  path: '/settings/security',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsSpotifyRoute = SettingsSpotifyRouteImport.update({
@@ -1050,10 +1038,10 @@ const ServicesIdManageRoute = ServicesIdManageRouteImport.update({
   path: '/services/$id/manage',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsSecurity2faRoute = SettingsSecurity2faRouteImport.update({
-  id: '/2fa',
-  path: '/2fa',
-  getParentRoute: () => SettingsSecurityRoute,
+const SettingsSecurityIndexRoute = SettingsSecurityIndexRouteImport.update({
+  id: '/settings/security/',
+  path: '/settings/security/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessBookingsRequestsIndexRoute =
   BusinessBookingsRequestsIndexRouteImport.update({
@@ -1181,14 +1169,12 @@ export interface FileRoutesByFullPath {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
-  '/search/history': typeof SearchHistoryRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
-  '/settings/security': typeof SettingsSecurityRouteWithChildren
   '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1266,7 +1252,6 @@ export interface FileRoutesByFullPath {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
-  '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
@@ -1280,6 +1265,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
+  '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
@@ -1363,14 +1349,12 @@ export interface FileRoutesByTo {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
-  '/search/history': typeof SearchHistoryRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
-  '/settings/security': typeof SettingsSecurityRouteWithChildren
   '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1448,7 +1432,6 @@ export interface FileRoutesByTo {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
-  '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id': typeof BandsIdIndexRoute
   '/booking/$id': typeof BookingIdIndexRoute
   '/business/$id': typeof BusinessIdIndexRoute
@@ -1462,6 +1445,7 @@ export interface FileRoutesByTo {
   '/portfolio/$id': typeof PortfolioIdIndexRoute
   '/portfolio/new': typeof PortfolioNewIndexRoute
   '/services/$id': typeof ServicesIdIndexRoute
+  '/settings/security': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
@@ -1547,14 +1531,12 @@ export interface FileRoutesById {
   '/recommendations/settings': typeof RecommendationsSettingsRoute
   '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
-  '/search/history': typeof SearchHistoryRoute
   '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
   '/settings/delete-account': typeof SettingsDeleteAccountRoute
   '/settings/privacy': typeof SettingsPrivacyRoute
-  '/settings/security': typeof SettingsSecurityRouteWithChildren
   '/settings/spotify': typeof SettingsSpotifyRoute
   '/talent/$id': typeof TalentIdRoute
   '/verification/$type': typeof VerificationTypeRoute
@@ -1632,7 +1614,6 @@ export interface FileRoutesById {
   '/search/why/$id': typeof SearchWhyIdRoute
   '/services/$id/enquiry': typeof ServicesIdEnquiryRoute
   '/services/$id/manage': typeof ServicesIdManageRoute
-  '/settings/security/2fa': typeof SettingsSecurity2faRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
   '/business/$id/': typeof BusinessIdIndexRoute
@@ -1646,6 +1627,7 @@ export interface FileRoutesById {
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
   '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
+  '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
   '/marketplace/rent/active/$id': typeof MarketplaceRentActiveIdRoute
   '/marketplace/rent/c/$slug': typeof MarketplaceRentCSlugRoute
@@ -1732,14 +1714,12 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/recommendations/swipe'
     | '/reviews/request'
-    | '/search/history'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
     | '/settings/delete-account'
     | '/settings/privacy'
-    | '/settings/security'
     | '/settings/spotify'
     | '/talent/$id'
     | '/verification/$type'
@@ -1817,7 +1797,6 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
-    | '/settings/security/2fa'
     | '/bands/$id/'
     | '/booking/$id/'
     | '/business/$id/'
@@ -1831,6 +1810,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id/'
     | '/portfolio/new/'
     | '/services/$id/'
+    | '/settings/security/'
     | '/business/bookings/requests/$ref'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
@@ -1914,14 +1894,12 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/recommendations/swipe'
     | '/reviews/request'
-    | '/search/history'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
     | '/settings/delete-account'
     | '/settings/privacy'
-    | '/settings/security'
     | '/settings/spotify'
     | '/talent/$id'
     | '/verification/$type'
@@ -1999,7 +1977,6 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
-    | '/settings/security/2fa'
     | '/bands/$id'
     | '/booking/$id'
     | '/business/$id'
@@ -2013,6 +1990,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id'
     | '/portfolio/new'
     | '/services/$id'
+    | '/settings/security'
     | '/business/bookings/requests/$ref'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
@@ -2097,14 +2075,12 @@ export interface FileRouteTypes {
     | '/recommendations/settings'
     | '/recommendations/swipe'
     | '/reviews/request'
-    | '/search/history'
     | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
     | '/settings/delete-account'
     | '/settings/privacy'
-    | '/settings/security'
     | '/settings/spotify'
     | '/talent/$id'
     | '/verification/$type'
@@ -2182,7 +2158,6 @@ export interface FileRouteTypes {
     | '/search/why/$id'
     | '/services/$id/enquiry'
     | '/services/$id/manage'
-    | '/settings/security/2fa'
     | '/bands/$id/'
     | '/booking/$id/'
     | '/business/$id/'
@@ -2196,6 +2171,7 @@ export interface FileRouteTypes {
     | '/portfolio/$id/'
     | '/portfolio/new/'
     | '/services/$id/'
+    | '/settings/security/'
     | '/business/bookings/requests/$ref'
     | '/marketplace/rent/active/$id'
     | '/marketplace/rent/c/$slug'
@@ -2281,14 +2257,12 @@ export interface RootRouteChildren {
   RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
   RecommendationsSwipeRoute: typeof RecommendationsSwipeRoute
   ReviewsRequestRoute: typeof ReviewsRequestRoute
-  SearchHistoryRoute: typeof SearchHistoryRoute
   ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesConflictsRoute: typeof ServicesConflictsRoute
   ServicesNewRoute: typeof ServicesNewRoute
   SettingsAccountRoute: typeof SettingsAccountRoute
   SettingsDeleteAccountRoute: typeof SettingsDeleteAccountRoute
   SettingsPrivacyRoute: typeof SettingsPrivacyRoute
-  SettingsSecurityRoute: typeof SettingsSecurityRouteWithChildren
   SettingsSpotifyRoute: typeof SettingsSpotifyRoute
   TalentIdRoute: typeof TalentIdRoute
   VerificationTypeRoute: typeof VerificationTypeRoute
@@ -2373,6 +2347,7 @@ export interface RootRouteChildren {
   PortfolioIdIndexRoute: typeof PortfolioIdIndexRoute
   PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ServicesIdIndexRoute: typeof ServicesIdIndexRoute
+  SettingsSecurityIndexRoute: typeof SettingsSecurityIndexRoute
   BusinessBookingsRequestsRefRoute: typeof BusinessBookingsRequestsRefRoute
   MarketplaceRentActiveIdRoute: typeof MarketplaceRentActiveIdRoute
   MarketplaceRentCSlugRoute: typeof MarketplaceRentCSlugRoute
@@ -3009,13 +2984,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/search/history': {
-      id: '/search/history'
-      path: '/search/history'
-      fullPath: '/search/history'
-      preLoaderRoute: typeof SearchHistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/services/': {
       id: '/services/'
       path: '/services'
@@ -3070,13 +3038,6 @@ declare module '@tanstack/react-router' {
       path: '/settings/privacy'
       fullPath: '/settings/privacy'
       preLoaderRoute: typeof SettingsPrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/security': {
-      id: '/settings/security'
-      path: '/settings/security'
-      fullPath: '/settings/security'
-      preLoaderRoute: typeof SettingsSecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/spotify': {
@@ -3583,12 +3544,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIdManageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/security/2fa': {
-      id: '/settings/security/2fa'
-      path: '/2fa'
-      fullPath: '/settings/security/2fa'
-      preLoaderRoute: typeof SettingsSecurity2faRouteImport
-      parentRoute: typeof SettingsSecurityRoute
+    '/settings/security/': {
+      id: '/settings/security/'
+      path: '/settings/security'
+      fullPath: '/settings/security/'
+      preLoaderRoute: typeof SettingsSecurityIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/business/bookings/requests/': {
       id: '/business/bookings/requests/'
@@ -3678,17 +3639,6 @@ const BookingIdRouteWithChildren = BookingIdRoute._addFileChildren(
   BookingIdRouteChildren,
 )
 
-interface SettingsSecurityRouteChildren {
-  SettingsSecurity2faRoute: typeof SettingsSecurity2faRoute
-}
-
-const SettingsSecurityRouteChildren: SettingsSecurityRouteChildren = {
-  SettingsSecurity2faRoute: SettingsSecurity2faRoute,
-}
-
-const SettingsSecurityRouteWithChildren =
-  SettingsSecurityRoute._addFileChildren(SettingsSecurityRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HandleRoute: HandleRoute,
@@ -3763,14 +3713,12 @@ const rootRouteChildren: RootRouteChildren = {
   RecommendationsSettingsRoute: RecommendationsSettingsRoute,
   RecommendationsSwipeRoute: RecommendationsSwipeRoute,
   ReviewsRequestRoute: ReviewsRequestRoute,
-  SearchHistoryRoute: SearchHistoryRoute,
   ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesConflictsRoute: ServicesConflictsRoute,
   ServicesNewRoute: ServicesNewRoute,
   SettingsAccountRoute: SettingsAccountRoute,
   SettingsDeleteAccountRoute: SettingsDeleteAccountRoute,
   SettingsPrivacyRoute: SettingsPrivacyRoute,
-  SettingsSecurityRoute: SettingsSecurityRouteWithChildren,
   SettingsSpotifyRoute: SettingsSpotifyRoute,
   TalentIdRoute: TalentIdRoute,
   VerificationTypeRoute: VerificationTypeRoute,
@@ -3855,6 +3803,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioIdIndexRoute: PortfolioIdIndexRoute,
   PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ServicesIdIndexRoute: ServicesIdIndexRoute,
+  SettingsSecurityIndexRoute: SettingsSecurityIndexRoute,
   BusinessBookingsRequestsRefRoute: BusinessBookingsRequestsRefRoute,
   MarketplaceRentActiveIdRoute: MarketplaceRentActiveIdRoute,
   MarketplaceRentCSlugRoute: MarketplaceRentCSlugRoute,

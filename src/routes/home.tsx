@@ -133,7 +133,9 @@ function buildHome(
   };
 
   const cont: ContinueCard[] = [];
-  if (!row?.onboarding_complete) {
+  // The real signal is what's actually filled in, not whether onboarding was ever marked done —
+  // an account that skipped straight through still has an incomplete profile to finish.
+  if (gaps.missing.length) {
     cont.push({
       id: "setup",
       eyebrow: "Pick up where you left off",
@@ -141,7 +143,7 @@ function buildHome(
       meta: `${gaps.missing.length} left`,
       detail: `${gaps.percent}% done`,
       cta: "Continue setup",
-      to: "/onboarding/resume",
+      to: row?.onboarding_complete ? "/profile/edit" : "/onboarding/resume",
       progress: gaps.percent,
     });
   }

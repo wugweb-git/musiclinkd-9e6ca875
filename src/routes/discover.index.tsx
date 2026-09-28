@@ -132,7 +132,7 @@ function Discover() {
     <Screen>
       <header className="px-5 pb-4 pt-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-4 leading-tight">Discover</h1>
+          <h1 className="text-3 leading-tight">Discover</h1>
           <div className="flex items-center gap-2">
             <NotificationsBell />
             <SearchIconButton open={searchOpen} onToggle={() => setSearchOpen((v) => !v)} />

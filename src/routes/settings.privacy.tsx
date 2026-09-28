@@ -23,7 +23,12 @@ import { Screen, TopBar, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import { SoonBadge, Switch } from "@/components/ml/kit";
 import { ChipPicker, OptionList } from "@/components/ml/onboarding";
 import { privacyControls } from "@/data/settings";
-import { availabilityFor, contactChannels, workModes } from "@/data/onboarding";
+import {
+  availabilityFor,
+  contactChannels,
+  intents as intentOptions,
+  workModes,
+} from "@/data/onboarding";
 import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { exportMyData } from "@/lib/account.functions";
 import { iconSize } from "@/lib/tokens";
@@ -99,6 +104,7 @@ function PrivacyScreen() {
         } | null;
         contact_channels?: string[] | null;
         work_modes?: string[] | null;
+        intents?: string[] | null;
         // "Available for" has no array column yet; it rides in `availability` (text) as a
         // comma-joined list. Lossy only in that empty entries can't round-trip — fine here,
         // since availabilityFor labels never contain commas.
@@ -115,7 +121,8 @@ function PrivacyScreen() {
   const [reach, setReach] = useState<string[]>([]);
   const [modes, setModes] = useState<string[]>([]);
   const [availableFor, setAvailableFor] = useState<string[]>([]);
-  const [drawer, setDrawer] = useState<"reach" | "modes" | "available" | null>(null);
+  const [myIntents, setMyIntents] = useState<string[]>([]);
+  const [drawer, setDrawer] = useState<"reach" | "modes" | "available" | "intents" | null>(null);
   // Read after mount so the server render and the first client render agree; storage is per device.
   const [analyticsOn, setAnalyticsOn] = useState(false);
   useEffect(() => setAnalyticsOn(analyticsConsent()), []);
@@ -126,6 +133,7 @@ function PrivacyScreen() {
     setReach(row.contact_channels ?? []);
     setModes(row.work_modes ?? []);
     setAvailableFor((row.availability ?? "").split(", ").filter(Boolean));
+    setMyIntents(row.intents ?? []);
     setValues((v) => ({
       ...v,
       visibility: visibilityFromDb[row.visibility ?? "public"] ?? "Public",
@@ -319,6 +327,37 @@ function PrivacyScreen() {
         </section>
 
         <section>
+          <h2 className="pill mb-2 px-1 text-muted-foreground">What you're here for</h2>
+          <ul className="divide-y divide-border overflow-hidden rounded-lg bg-subtle">
+            <li>
+              <button
+                type="button"
+                onClick={() => setDrawer("intents")}
+                className="state-layer flex w-full items-center gap-3 px-4 py-3.5 text-left"
+              >
+                <span className="flex h-10 w-7 shrink-0 items-center justify-center">
+                  <Compass size={24} strokeWidth={1.75} aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-2 font-semibold">Goals on MusicLinkd</span>
+                  <span className="block truncate text-1 text-muted-foreground">
+                    {summarise(myIntents, (v) => v)}
+                  </span>
+                </span>
+                <ChevronRight
+                  size={iconSize.md}
+                  className="shrink-0 text-muted-foreground"
+                  aria-hidden
+                />
+              </button>
+            </li>
+          </ul>
+          <p className="mt-2 px-1 text-1 text-muted-foreground">
+            Set when you joined; shapes your home feed and recommendations.
+          </p>
+        </section>
+
+        <section>
           <h2 className="pill mb-2 px-1 text-muted-foreground">Your data</h2>
           <p className="mb-3 px-1 text-1 text-muted-foreground">
             A copy covers your profile, portfolio and bookings. Deleting removes them.
@@ -379,6 +418,22 @@ function PrivacyScreen() {
             const next = toggleIn(availableFor, v);
             setAvailableFor(next);
             void saveMulti({ availability: next.join(", ") });
+          }}
+        />
+      </Sheet>
+
+      <Sheet
+        open={drawer === "intents"}
+        onClose={() => setDrawer(null)}
+        title="Goals on MusicLinkd"
+      >
+        <ChipPicker
+          options={intentOptions}
+          selected={myIntents}
+          onToggle={(v) => {
+            const next = toggleIn(myIntents, v);
+            setMyIntents(next);
+            void saveMulti({ intents: next });
           }}
         />
       </Sheet>

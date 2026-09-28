@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { Bookmark, History, Info, MapPin } from "lucide-react";
+import { ArrowLeft, Bookmark, Info, MapPin } from "lucide-react";
 import {
   Chip,
   IconBtn,
@@ -36,7 +36,6 @@ import {
   saveSearch,
 } from "@/lib/searches.functions";
 import { getTaxonomyLabels, type TaxonomyLabels } from "@/lib/portfolio.functions";
-import { readRecentSearches } from "@/lib/device-history";
 import { listingFromRow } from "@/lib/market-view";
 import { opportunityFromRow } from "@/lib/opportunity-view";
 import { useSearchRecorder } from "@/lib/search-events";
@@ -219,16 +218,6 @@ function SearchResults() {
   // stops, with what it actually found.
   useSearchRecorder("global", settled ? term : "", total);
 
-  // Recent searches are this device's own; before /search covered everything it recorded as
-  // Discover, so those still count here.
-  const [recent, setRecent] = useState<string[]>([]);
-  useEffect(() => {
-    const mine = [...readRecentSearches("global"), ...readRecentSearches("discover")]
-      .sort((a, b) => b.at.localeCompare(a.at))
-      .map((s) => s.query);
-    setRecent([...new Set(mine)].slice(0, 8));
-  }, [term]);
-
   const fetchPopular = useServerFn(popularSearches);
   const popular = useQuery({
     queryKey: ["searches", "popular", "global"],
@@ -344,18 +333,11 @@ function SearchResults() {
           <Link
             to="/discover"
             aria-label="Back to Discover"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
+            className="flex h-10 w-10 items-center justify-center"
           >
-            ←
+            <ArrowLeft size={iconSize.md} aria-hidden />
           </Link>
-          <h1 className="text-3">Search</h1>
-          <Link
-            to="/search/history"
-            aria-label="Search history"
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card"
-          >
-            <History size={iconSize.md} aria-hidden />
-          </Link>
+          <h1 className="text-3 leading-tight">Search</h1>
         </div>
         <SearchBar value={q} onChange={setQ} />
         <div className="rail mt-3 flex gap-2 overflow-x-auto no-scrollbar">
@@ -385,9 +367,6 @@ function SearchResults() {
 
       {!term && tab === "all" ? (
         <div className="space-y-5 px-5 pt-4">
-          {recent.length ? (
-            <ChipGroup title="Recent searches" items={recent} onPick={setQ} />
-          ) : null}
           {saved.data?.length ? (
             <ChipGroup
               title="Saved searches"

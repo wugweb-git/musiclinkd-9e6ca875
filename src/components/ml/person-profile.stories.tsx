@@ -1,15 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { ownerProfile, profileCompletion, profileInsights } from "@/data/profile";
+import { ownerProfile } from "@/data/profile";
 import { PersonProfileExperience } from "./person-profile";
 
 /*
- * The whole person profile. It is one component with four branches — owner or visitor, and with or
- * without the owner-only completion and insight panels — so the four combinations below are the
- * whole surface.
- *
- * The profile is the existing seed account. `insights` is deliberately left out of the visitor
- * stories: real profiles pass nothing, so sample figures never reach someone else's screen.
+ * The whole person profile. One component, one tabbed layout, for owner and visitor alike — the
+ * owner gets an Edit button and a few inline edit affordances instead of Connect/Message/Hire.
  */
 const meta = {
   title: "Profile/Person profile",
@@ -20,20 +16,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** What someone else sees: no owner actions, no completion, no insights. */
+/** What someone else sees: no owner actions. */
 export const Visitor: Story = {};
 
-/** The owner's own profile, complete — so the completion panel stays hidden. */
+/** The owner's own profile: an Edit button instead of Connect/Message/Hire. */
 export const Owner: Story = { args: { owner: true } };
-
-/** The owner with gaps: the completion panel appears and names what is missing. */
-export const OwnerIncomplete: Story = {
-  args: { owner: true, completion: profileCompletion },
-};
-
-export const OwnerWithInsights: Story = {
-  args: { owner: true, completion: profileCompletion, insights: profileInsights },
-};
 
 /**
  * A profile with no username cannot be shared, because sharing needs a public link — the share

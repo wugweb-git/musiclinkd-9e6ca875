@@ -28,13 +28,13 @@ import { iconSize } from "@/lib/tokens";
 export const Route = createFileRoute("/portfolio/")({
   head: () => ({
     meta: [
-      { title: "Your portfolio — MusicLinkd" },
+      { title: "Portfolio — MusicLinkd" },
       {
         name: "description",
         content:
           "Publish the tracks, projects, performances and credits that prove what you've done in music.",
       },
-      { property: "og:title", content: "Your portfolio — MusicLinkd" },
+      { property: "og:title", content: "Portfolio — MusicLinkd" },
       {
         property: "og:description",
         content: "Show the work you're proud of — tracks, projects, performances and credits.",
@@ -157,7 +157,7 @@ function PortfolioOverview() {
   return (
     <Screen bottomNav={false} className="pb-32">
       <TopBar
-        title="Your portfolio"
+        title="Portfolio"
         subtitle="Show the work you're proud of"
         back="/profile"
         right={
@@ -178,9 +178,14 @@ function PortfolioOverview() {
               )}
             </IconBtn>
             {/* Performance (/portfolio/analytics) is unlinked: analytics is GA's job, later (owner, 21 Sep 2026). */}
-            <IconBtn label="Add work" variant="ink" onClick={() => setAdding(true)}>
-              <Plus size={iconSize.md} aria-hidden />
-            </IconBtn>
+            <Btn
+              variant="ink"
+              className="min-h-10 px-4"
+              icon={<Plus size={iconSize.sm} aria-hidden />}
+              onClick={() => setAdding(true)}
+            >
+              Add
+            </Btn>
           </div>
         }
       />

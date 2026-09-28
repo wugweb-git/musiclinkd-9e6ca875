@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
-  BadgeCheck,
   Check,
   UserPlus,
   Send,
@@ -44,8 +43,6 @@ import { NotificationsBell } from "./tab-header";
 import { Price } from "./kit";
 import {
   AudioTrackCard,
-  CompletionCard,
-  ExperienceCard,
   FeaturedCard,
   MarketEntryCard,
   MoreSheet,
@@ -54,13 +51,9 @@ import {
   type ProfileEmptyCta,
   ProfileHero,
   ProfileSection,
-  StackSection,
-  AvailabilityToggle,
-  ClampedText,
   ReviewCard,
   ReviewRail,
   ServiceCard,
-  ServicesProvided,
   ReviewInviteCard,
   ShareSheet,
   SocialLinks,
@@ -106,13 +99,9 @@ const addWork = (label: string, kind: WorkKind): ProfileEmptyCta => ({
   kind,
 });
 
-type Completion = { percent: number; missing: { id: string; label: string; to?: string }[] };
-
 export function PersonProfileExperience({
   p,
   owner = false,
-  completion,
-  insights,
   onPickImage,
   onGalleryChange,
 }: {
@@ -125,17 +114,12 @@ export function PersonProfileExperience({
    * profile can reload it.
    */
   onGalleryChange?: (() => void) | undefined;
-  /** Owner only: what the profile still needs. Hidden when nothing is missing. */
-  completion?: Completion | undefined;
-  /** Owner only: insight figures. Left out for a real profile, so no sample numbers show. */
-  insights?: typeof profileInsights | undefined;
 }) {
   const [tab, setTab] = useState<ProfileTab>("Overview");
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [hireOpen, setHireOpen] = useState(false);
-  const [insightsOpen, setInsightsOpen] = useState(false);
   const { signedIn, loading } = useAuth();
 
   const toggleTrack = (id: string) => setPlayingId((current) => (current === id ? null : id));
@@ -148,7 +132,7 @@ export function PersonProfileExperience({
           (profile/$username) is a different screen and keeps its own back-arrow header. */}
       {owner ? (
         <header className="flex items-center justify-between px-5 pb-4 pt-6">
-          <h1 className="text-4 leading-tight">Profile</h1>
+          <h1 className="text-3 leading-tight">Profile</h1>
           <div className="flex items-center gap-2">
             <NotificationsBell />
             <IconBtnLink to="/search" label="Search" variant="plain" className="h-10 w-10">
@@ -173,11 +157,7 @@ export function PersonProfileExperience({
 
         <div className="px-5 pt-4">
           {owner ? (
-            <OwnerActions
-              username={p.username}
-              onShare={share}
-              onInsights={() => setInsightsOpen((open) => !open)}
-            />
+            <OwnerActions username={p.username} onShare={share} />
           ) : (
             <ViewerActions
               profileId={p.profileId}
@@ -188,25 +168,10 @@ export function PersonProfileExperience({
         </div>
       </div>
 
-      {owner ? (
-        <OwnerPanel completion={completion} insights={insights} insightsOpen={insightsOpen} />
-      ) : null}
-
-      {owner ? null : (
-        <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Profile sections" />
-      )}
+      <SectionTabs tabs={tabs} value={tab} onChange={setTab} label="Profile sections" />
 
       <main className="px-5 pb-8">
-        {owner ? (
-          <OwnerStack
-            p={p}
-            playingId={playingId}
-            onToggleTrack={toggleTrack}
-            onHire={() => setHireOpen(true)}
-            onGalleryChange={onGalleryChange}
-          />
-        ) : null}
-        {tab === "Overview" && !owner ? (
+        {tab === "Overview" ? (
           <Overview
             p={p}
             playingId={playingId}
@@ -216,12 +181,18 @@ export function PersonProfileExperience({
             onTab={setTab}
           />
         ) : null}
-        {!owner && tab === "Portfolio" ? (
-          <Portfolio p={p} playingId={playingId} onToggleTrack={toggleTrack} owner={owner} />
+        {tab === "Portfolio" ? (
+          <Portfolio
+            p={p}
+            playingId={playingId}
+            onToggleTrack={toggleTrack}
+            owner={owner}
+            onGalleryChange={onGalleryChange}
+          />
         ) : null}
-        {!owner && tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
-        {!owner && tab === "About" ? <About p={p} /> : null}
-        {!owner && tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
+        {tab === "Services" ? <Services p={p} onHire={() => setHireOpen(true)} /> : null}
+        {tab === "About" ? <About p={p} /> : null}
+        {tab === "Reviews" ? <Reviews p={p} owner={owner} /> : null}
         {/* A shared profile link is most people's first sight of MusicLinkd, so a signed-out visitor
             is told what this is and how to join. Copy is the welcome screen's own; no figures. */}
         {!owner && !loading && !signedIn ? (
@@ -482,11 +453,9 @@ export function CallBtn({
 function OwnerActions({
   username,
   onShare,
-  onInsights,
 }: {
   username: string;
   onShare?: (() => void) | undefined;
-  onInsights: () => void;
 }) {
   return (
     // Icon-only actions: the label is each button's accessible name and its tooltip.
@@ -499,65 +468,32 @@ function OwnerActions({
           <Share2 size={iconSize.md} aria-hidden />
         </IconBtn>
       ) : null}
-      <IconBtn label="Stats" variant="outline" className="h-11 w-11" onClick={onInsights}>
+      <IconBtnLink to="/profile/insights" label="Stats" variant="outline" className="h-11 w-11">
         <BarChart3 size={iconSize.md} aria-hidden />
-      </IconBtn>
-      {/* The public page needs a username; without one, set it in profile edit. */}
-      <IconBtnLink
-        {...(username
-          ? { to: "/profile/$username" as const, params: { username } }
-          : { to: "/profile/edit" as const })}
-        label="View Public Profile"
-        variant="outline"
-        className="h-11 w-11"
-      >
-        <ExternalLink size={iconSize.md} aria-hidden />
       </IconBtnLink>
+      {/* A preview action stays a preview: without a username there is no public page to view yet,
+          so this tells you that instead of silently opening Edit under the same "preview" icon. */}
+      {username ? (
+        <IconBtnLink
+          to="/profile/$username"
+          params={{ username }}
+          label="View Public Profile"
+          variant="outline"
+          className="h-11 w-11"
+        >
+          <ExternalLink size={iconSize.md} aria-hidden />
+        </IconBtnLink>
+      ) : (
+        <IconBtn
+          label="View Public Profile"
+          variant="outline"
+          className="h-11 w-11"
+          onClick={() => toast("Set a username first — it's what your public link uses.")}
+        >
+          <ExternalLink size={iconSize.md} aria-hidden />
+        </IconBtn>
+      )}
     </div>
-  );
-}
-
-function OwnerPanel({
-  completion,
-  insights,
-  insightsOpen,
-}: {
-  completion: Completion | undefined;
-  insights: typeof profileInsights | undefined;
-  insightsOpen: boolean;
-}) {
-  return (
-    <section className="space-y-3 px-5 pt-5">
-      {completion?.missing.length ? (
-        <CompletionCard percent={completion.percent} missing={completion.missing} />
-      ) : null}
-
-      {insightsOpen ? (
-        <div className="rounded-lg bg-subtle p-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="pill bg-background text-muted-foreground">Profile insights</p>
-              {insights ? <h2 className="mt-1 text-2">{insights.range}</h2> : null}
-            </div>
-            <BarChart3 size={iconSize.md} className="text-primary" aria-hidden />
-          </div>
-          {insights ? (
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {insights.headline.map((item) => (
-                <div key={item.label} className="rounded-lg bg-subtle p-3">
-                  <p className="text-1 text-muted-foreground">{item.label}</p>
-                  <p className="mt-1 text-2 font-bold">{item.value}</p>
-                  <p className="text-1 font-semibold text-foreground">{item.delta}</p>
-                </div>
-              ))}
-            </div>
-          ) : null}
-          <BtnLink to="/profile/insights" variant="ghost" className="mt-3 w-full">
-            Full Insights
-          </BtnLink>
-        </div>
-      ) : null}
-    </section>
   );
 }
 
@@ -672,218 +608,18 @@ function Overview({
     </>
   );
 }
-
-/**
- * The owner's own profile: every section stacked, each editable from its own heading row, the way
- * LinkedIn lays out a profile you own. No tabs — tabs are for the public profile, where a visitor
- * is choosing what to look at rather than working through their own record.
- */
-function OwnerStack({
-  p,
-  playingId,
-  onToggleTrack,
-  onHire,
-  onGalleryChange,
-}: {
-  p: PersonProfile;
-  playingId: string | null;
-  onToggleTrack: (id: string) => void;
-  onHire: () => void;
-  onGalleryChange?: (() => void) | undefined;
-}) {
-  const edit = "/profile/edit" as const;
-  // The signed-in owner manages the gallery here; the demo profile shown signed out only shows it.
-  const gallery = onGalleryChange ? (
-    <GalleryEditor title="Gallery" onChange={onGalleryChange} />
-  ) : p.gallery.length ? (
-    <GalleryView images={p.gallery} title="Gallery" />
-  ) : null;
-  const bio = p.longBio || p.shortBio;
-  return (
-    <>
-      <StackSection title="About" editTo={edit} editSection="identity">
-        {bio ? (
-          <ClampedText text={bio} />
-        ) : (
-          <ProfileEmpty title="No summary yet" body="Say what you do and who you do it for." />
-        )}
-      </StackSection>
-
-      {p.featured ? (
-        <StackSection title="Featured" editTo="/portfolio">
-          <FeaturedCard featured={p.featured} />
-        </StackSection>
-      ) : null}
-
-      <StackSection title="Services provided" editTo="/services" collapsible>
-        {p.services.length ? (
-          <ServicesProvided services={p.services} />
-        ) : (
-          <ProfileEmpty
-            title="No services yet"
-            body="List what you offer and what it costs, so people can book it."
-          />
-        )}
-      </StackSection>
-
-      {typesOf(p).length || p.genres.length || p.instruments.length || p.languages.length ? (
-        <StackSection title="Music identity" editTo={edit} editSection="music" collapsible>
-          <MusicIdentityBento p={p} />
-        </StackSection>
-      ) : null}
-
-      <StackSection title="Portfolio" editTo="/portfolio">
-        {p.audio.length || p.video.length || p.gallery.length ? (
-          <div className="space-y-4">
-            {p.audio.length ? (
-              <div className="space-y-2">
-                {p.audio.slice(0, 2).map((track) => (
-                  <AudioTrackCard
-                    key={track.id}
-                    track={track}
-                    playing={playingId === track.id}
-                    onToggle={() => onToggleTrack(track.id)}
-                  />
-                ))}
-              </div>
-            ) : null}
-            {p.video.length ? (
-              <div className="space-y-3">
-                {p.video.slice(0, 2).map((video) => (
-                  <VideoCard key={video.id} v={video} layout="row" />
-                ))}
-              </div>
-            ) : null}
-            {gallery}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <ProfileEmpty
-              title="No work yet"
-              body="Tracks, videos and credits are what turn a profile view into an enquiry."
-            />
-            {gallery}
-          </div>
-        )}
-      </StackSection>
-
-      {p.experience.length ? (
-        <StackSection title="Experience" editTo={edit} editSection="experience" collapsible>
-          <div className="space-y-2">
-            {p.experience.map((item) => (
-              <ExperienceCard key={item.id} e={item} />
-            ))}
-          </div>
-        </StackSection>
-      ) : null}
-
-      <StackSection
-        title="Professional details"
-        editTo={edit}
-        editSection={p.professional.length ? "details" : "professional"}
-        collapsible
-        defaultOpen={false}
-      >
-        {p.professional.length ? (
-          <div className="divide-y divide-border rounded-lg bg-subtle">
-            {p.professional.map((item) => (
-              <InfoRow key={item.label} label={item.label} value={item.value} />
-            ))}
-          </div>
-        ) : (
-          <ProfileEmpty
-            title="No details yet"
-            body="Setup, tools and working details will appear here."
-          />
-        )}
-      </StackSection>
-
-      <StackSection
-        title="Location & availability"
-        editTo={edit}
-        editSection="availability"
-        collapsible
-        defaultOpen={false}
-      >
-        <div className="space-y-2">
-          <div className="rounded-lg bg-subtle p-4">
-            <p className="text-sm font-semibold text-foreground">{p.location || "No city set"}</p>
-          </div>
-          <AvailabilityToggle available={isOpenForWork(p.availability)} />
-        </div>
-      </StackSection>
-
-      <StackSection
-        title="Privacy"
-        editTo={edit}
-        editSection="privacy"
-        collapsible
-        defaultOpen={false}
-      >
-        <div className="rounded-lg bg-subtle p-4">
-          <p className="text-sm font-semibold text-foreground">{p.privacy}</p>
-          <p className="mt-1 text-1 text-muted-foreground">Who can see your profile.</p>
-        </div>
-      </StackSection>
-
-      <StackSection title="Links" editTo={edit} editSection="links" collapsible defaultOpen={false}>
-        {p.links.length ? (
-          <SocialLinks links={p.links} />
-        ) : (
-          <ProfileEmpty title="No links yet" body="Streaming and social links will appear here." />
-        )}
-      </StackSection>
-
-      <StackSection title="Reviews">
-        {p.reviews.length ? (
-          <ReviewRail>
-            {p.reviews.map((review) => (
-              <ReviewCard key={review.id} r={review} />
-            ))}
-          </ReviewRail>
-        ) : (
-          <p className="text-1 text-foreground">
-            You haven't received enough reviews to show an overall rating.
-          </p>
-        )}
-        <div className="mt-3">
-          <ReviewInviteCard />
-        </div>
-      </StackSection>
-
-      {p.opportunities.length ? (
-        <StackSection title="Opportunities" collapsible>
-          <div className="space-y-2">
-            {p.opportunities.map((opportunity) => (
-              <OpportunityCard key={opportunity.id} o={opportunity} />
-            ))}
-          </div>
-        </StackSection>
-      ) : null}
-
-      {p.market.length ? (
-        <StackSection title="Marketplace" collapsible>
-          <div className="rail flex gap-3 overflow-x-auto no-scrollbar">
-            {p.market.map((entry) => (
-              <MarketEntryCard key={entry.id} m={entry} />
-            ))}
-          </div>
-        </StackSection>
-      ) : null}
-    </>
-  );
-}
-
 function Portfolio({
   p,
   playingId,
   onToggleTrack,
   owner,
+  onGalleryChange,
 }: {
   p: PersonProfile;
   playingId: string | null;
   onToggleTrack: (id: string) => void;
   owner: boolean;
+  onGalleryChange?: (() => void) | undefined;
 }) {
   const [layout, setLayout] = useState<"grid" | "rows">("grid");
   const [viewing, setViewing] = useState(false);
@@ -948,8 +684,12 @@ function Portfolio({
           )}
         </div>
       </ProfileSection>
-      {/* Visitors see a gallery only when it has photos; the owner adds them on their own profile. */}
-      {p.gallery.length ? (
+      {/* The owner can always add photos here; a visitor sees the gallery only once it has some. */}
+      {owner && onGalleryChange ? (
+        <ProfileSection title="Gallery">
+          <GalleryEditor title="Gallery" onChange={onGalleryChange} />
+        </ProfileSection>
+      ) : p.gallery.length ? (
         <ProfileSection title="Gallery">
           {layout === "grid" ? (
             <GalleryView images={p.gallery} title="Gallery" />

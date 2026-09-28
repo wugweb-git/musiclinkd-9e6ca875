@@ -215,7 +215,7 @@ function Conversation() {
         <header className="flex shrink-0 items-center gap-3 bg-background/90 px-5 py-3 backdrop-blur">
           <Link
             to="/messages"
-            className="hit-area flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card transition-transform duration-200 ease-standard active:scale-97"
+            className="hit-area flex h-10 w-10 shrink-0 items-center justify-center transition-transform duration-200 ease-standard active:scale-97"
             aria-label="Back"
           >
             <ArrowLeft size={iconSize.md} aria-hidden />

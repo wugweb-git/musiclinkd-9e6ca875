@@ -33,7 +33,7 @@ function deviceLabel(ua: string | null) {
   return `${browser} on ${os}`;
 }
 
-export const Route = createFileRoute("/settings/security")({
+export const Route = createFileRoute("/settings/security/")({
   head: () => ({
     meta: [
       { title: "Security | MusicLinkd" },
