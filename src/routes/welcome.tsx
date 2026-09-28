@@ -280,62 +280,41 @@ function WelcomeScreen() {
   return (
     <AuthScreen brand={false} className="bg-background">
       <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-        {/* Top Header */}
-        <div className="shrink-0">
-          <div className="flex items-center justify-between pt-0.5">
-            <Brand compact className="vt-brand mb-0" />
+        {/* Compact mobile-first hero: clear value proposition before asking for credentials. */}
+        <div className="shrink-0 overflow-hidden rounded-lg bg-foreground px-4 pb-2.5 pt-2 text-background shadow-elevation-2">
+          <div className="flex items-center justify-between">
+            <Brand compact className="vt-brand mb-0 [&_span:last-child]:text-background" />
             <div aria-hidden className="flex items-center gap-1 text-pink-strong">
               <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-1" />
               <span className="h-3.5 w-0.5 rounded-full bg-pink-strong animate-eq-2" />
               <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-3" />
             </div>
           </div>
-
-          <div className="pt-0.5 pb-0.5">
-            <h1 className="sr-only">
-              MusicLinkd — India&apos;s professional network for musicians, producers and studios
-            </h1>
-            <div className="flex items-center justify-between gap-2">
-              <div
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full bg-pink-container px-2 py-0.5 text-1 font-semibold text-pink-strong",
-                  rise,
-                )}
-                style={beat(1)}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-pink-strong animate-pulse" />
-                India&apos;s music network
-              </div>
-
-              <div
-                className="text-1 font-bold tracking-tight text-foreground"
-                aria-label="Tagline: Connect, collaborate, create"
-              >
-                <span className={cn("inline-block", rise)} style={beat(2)}>
-                  Connect.{" "}
-                </span>
-                <span className={cn("inline-block", rise)} style={beat(3)}>
-                  Collab.{" "}
-                </span>
-                <span className={cn("inline-block text-pink-strong", rise)} style={beat(4)}>
-                  Create.
-                </span>
-              </div>
-            </div>
-
-            {/* Screen readers get the three lines */}
-            <ul className="sr-only">
+          <h1 className={cn("mt-2 max-w-[300px] text-2 font-bold leading-tight tracking-tight text-background", rise)} style={beat(1)}>
+            Your people are here.
+          </h1>
+          <p className={cn("mt-1 max-w-[300px] text-1 leading-relaxed text-background/65", rise)} style={beat(2)}>
+            India&apos;s professional network for the people behind the music.
+          </p>
+          <div className={cn("mt-2 flex flex-wrap gap-1.5", rise)} style={beat(3)} aria-label="What you can do on MusicLinkd">
+            {['Collaborate', 'Get discovered', 'Book better'].map((item) => (
+              <span key={item} className="rounded-full border border-background/15 bg-background/10 px-2.5 py-1 text-1 font-medium text-background/80">
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="sr-only">
+            <ul>
               {audience.map((a) => (
                 <li key={a}>{a}</li>
               ))}
             </ul>
-
-            <RoleTicker className={cn("-mx-4 sm:-mx-5 mt-1", rise)} style={beat(5)} />
           </div>
+          <RoleTicker className={cn("-mx-4 mt-2", rise)} style={beat(4)} />
         </div>
 
         {/* Interactive mode switcher + Form */}
-        <div className={cn("my-auto", rise)} style={beat(6)}>
+        <div className={cn("my-3 flex-1 min-h-0 overflow-y-auto", rise)} style={beat(5)}>
           {saved.length ? (
             <section className="mb-1.5">
               <p className="mb-0.5 text-1 font-semibold text-muted-foreground">Continue as</p>
