@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="400" height="280" role="img" aria-label="no work"><g fill="none" stroke="#0d0d0d" stroke-opacity="0.34" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="62" y="70" width="276" height="140" rx="16"/>
+  <path d="M98 140 v-22 M120 140 v-42 M142 140 v-64 M164 140 v-34 M186 140 v-52"/>
+  <path d="M98 140 v22 M120 140 v42 M142 140 v64 M164 140 v34 M186 140 v52"/>
+  <path d="M212 140 h104" stroke-dasharray="2 14"/>
+  <circle cx="316" cy="140" r="9" fill="#ea4c89" stroke="none" stroke-opacity="1"/></g></svg>

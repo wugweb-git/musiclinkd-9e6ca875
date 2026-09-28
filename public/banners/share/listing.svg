@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="A MusicLinkd listing"><rect width="1200" height="630" fill="#0d0d0d"/>
+  <text x="80" y="120" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="30" font-weight="700" letter-spacing="-0.6">MusicLinkd</text><circle cx="279" cy="110" r="6" fill="#ea4c89"/>
+  <rect x="80" y="196" width="300" height="300" rx="20" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+  <path d="M148 420 l68 -84 52 60 40 -44 66 76" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="176" cy="268" r="22" fill="#ffffff" fill-opacity="0.22"/>
+  <rect x="428" y="212" width="480" height="32" rx="8" fill="#ffffff" fill-opacity="0.9"/>
+  <rect x="428" y="266" width="320" height="22" rx="6" fill="#ffffff" fill-opacity="0.38"/>
+  <text x="428" y="384" fill="#ea4c89" font-family="Inter,system-ui,sans-serif" font-size="56" font-weight="700" letter-spacing="-1.6">₹ —</text>
+  <rect x="428" y="424" width="164" height="42" rx="21" fill="#ffffff" fill-opacity="0.14"/>
+  <text x="80" y="556" fill="#ffffff" fill-opacity="0.6" font-family="Inter,system-ui,sans-serif" font-size="22" font-weight="500">app.musiclinkd.com</text></svg>

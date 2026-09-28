@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="400" height="280" role="img" aria-label="no bookings"><g fill="none" stroke="#0d0d0d" stroke-opacity="0.34" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="88" y="74" width="224" height="150" rx="14"/>
+  <path d="M88 114 h224 M136 60 v28 M264 60 v28"/>
+  <path d="M124 150 h28 M186 150 h28 M248 150 h28 M124 188 h28 M186 188 h28"/>
+  <rect x="240" y="176" width="36" height="24" rx="8" fill="#ea4c89" stroke="none" stroke-opacity="1"/></g></svg>

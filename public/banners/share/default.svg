@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="MusicLinkd — find the people who make the music"><rect width="1200" height="630" fill="#0d0d0d"/>
+  <text x="80" y="120" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="30" font-weight="700" letter-spacing="-0.6">MusicLinkd</text><circle cx="279" cy="110" r="6" fill="#ea4c89"/>
+  <text x="80" y="330" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="76" font-weight="700" letter-spacing="-2.4">Find the people</text>
+  <text x="80" y="418" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="76" font-weight="700" letter-spacing="-2.4">who make the music.</text>
+  <rect x="80" y="470" width="56" height="4" rx="2" fill="#ea4c89"/>
+  <text x="80" y="528" fill="#ffffff" fill-opacity="0.6" font-family="Inter,system-ui,sans-serif" font-size="24" font-weight="500">app.musiclinkd.com</text>
+  <g opacity="0.1" stroke="#ffffff" stroke-width="2" fill="none">
+    <path d="M760 120 V510"/><path d="M786 120 V510"/><path d="M812 120 V510"/><path d="M838 120 V510"/><path d="M864 120 V510"/><path d="M890 120 V510"/><path d="M916 120 V510"/><path d="M942 120 V510"/><path d="M968 120 V510"/><path d="M994 120 V510"/><path d="M1020 120 V510"/><path d="M1046 120 V510"/><path d="M1072 120 V510"/><path d="M1098 120 V510"/><path d="M1124 120 V510"/><path d="M1150 120 V510"/><path d="M1176 120 V510"/>
+  </g></svg>

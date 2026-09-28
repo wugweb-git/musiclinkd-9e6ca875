@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 824 320" width="824" height="320" role="img" aria-label="Spaces to book">
+  <rect width="824" height="320" fill="#0d0d0d"/><defs><linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop offset="0.14" stop-color="#fff" stop-opacity="0"/><stop offset="0.58" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="scrim"><rect width="824" height="320" fill="url(#fade)"/></mask></defs>
+  <g mask="url(#scrim)" opacity="0.18" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round"><rect x="80" y="44" width="300" height="232" rx="6"/><rect x="404" y="44" width="180" height="108" rx="6"/><rect x="404" y="176" width="180" height="100" rx="6"/><rect x="608" y="44" width="152" height="232" rx="6"/><path d="M80 200 h300 M404 96 h180 M608 160 h152"/><circle cx="230" cy="122" r="46"/></g>
+  <rect x="56" y="196" width="40" height="3" rx="1.5" fill="#ea4c89"/>
+  <text x="56" y="172" fill="#ffffff" font-family="Inter,system-ui,sans-serif" font-size="44" font-weight="700" letter-spacing="-1.2">Spaces</text>
+  <text x="56" y="232" fill="#ffffff" fill-opacity="0.62" font-family="Inter,system-ui,sans-serif" font-size="17" font-weight="500">Rooms to record, rehearse and perform in</text></svg>
