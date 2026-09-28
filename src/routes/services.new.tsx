@@ -377,8 +377,13 @@ function NewService() {
             <Loading rows={3} />
           ) : (
             <div className="space-y-3">
-              <div className="pb-1 pt-3">
-                <p className="text-1 font-medium text-primary">MAKE IT BOOKABLE</p>
+              <div className="pb-2 pt-3">
+                <div className="mb-3 flex items-center gap-2" aria-hidden="true">
+                  <span className="h-1.5 w-8 rounded-full bg-primary" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-border" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-border" />
+                </div>
+                <p className="text-1 font-semibold tracking-[0.14em] text-primary">YOUR OFFER</p>
                 <h1 className="mt-1 text-3 font-semibold tracking-tight text-foreground">
                   What are you offering?
                 </h1>
@@ -386,6 +391,7 @@ function NewService() {
                   Start with the work you want people to find.
                 </p>
               </div>
+              <div className="space-y-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
               <Field
                 label="Category"
                 id="service-categories"
@@ -499,6 +505,7 @@ function NewService() {
                 value={requirements}
                 onChange={setRequirements}
               />
+              </div>
             </div>
           )
         ) : null}
