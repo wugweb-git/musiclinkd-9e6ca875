@@ -43,7 +43,6 @@ export type SearchHit = {
   /** Where it opens. */
   link:
     | { to: "/profile/$username"; params: { username: string } }
-    | { to: "/business/$id"; params: { id: string } }
     | { to: "/booking/$id"; params: { id: string } }
     | { to: "/bands/$id"; params: { id: string } }
     | { to: "/collab/$id"; params: { id: string } }
@@ -154,7 +153,7 @@ async function businesses(
       place: r.profile.city,
       photo: r.logo_url ?? r.profile.avatar_url,
       verified: Boolean(r.profile.is_verified),
-      link: { to: "/business/$id", params: { id: r.profile.username ?? "" } },
+      link: { to: "/profile/$username", params: { username: r.profile.username ?? "" } },
     }));
   return { items, total: count ?? items.length };
 }

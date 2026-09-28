@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { OpportunityCard, useSavedOpportunities } from "@/components/ml/opportunity";
+import { loadDbOpportunities } from "@/lib/opportunity-view";
 import { X } from "lucide-react";
 import { Screen, TopBar } from "@/components/ml/ui";
 import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
@@ -17,7 +19,7 @@ import { iconSize } from "@/lib/tokens";
 export const Route = createFileRoute("/saved")({
   head: () => ({
     meta: [
-      { title: "Saved Profiles | MusicLinkd" },
+      { title: "Bookmarked | MusicLinkd" },
       {
         name: "description",
         content:
@@ -33,19 +35,23 @@ export const Route = createFileRoute("/saved")({
   component: Saved,
 });
 
-const tabs: { label: string; type: SavedTargetType }[] = [
+type BookmarkTab = SavedTargetType | "opportunity";
+
+const tabs: { label: string; type: BookmarkTab }[] = [
   { label: "Talent", type: "talent" },
   { label: "Bands", type: "band" },
   { label: "Studios", type: "studio" },
   { label: "Businesses", type: "business" },
-  { label: "Events", type: "event" },
   { label: "Listings", type: "listing" },
   { label: "Works", type: "portfolio" },
+  { label: "Opportunities", type: "opportunity" },
 ];
 
 function Saved() {
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<SavedTargetType>("talent");
+  const [tab, setTab] = useState<BookmarkTab>("talent");
+  // Opportunities are bookmarked on the device, not in saved_items — one screen, two sources.
+  const savedOpportunities = useSavedOpportunities();
   const load = useServerFn(listMySaved);
   const remove = useServerFn(unsaveTarget);
   const q = useQuery({ queryKey: ["saved", "mine"], queryFn: () => load() });
@@ -60,11 +66,11 @@ function Saved() {
     }
   }
 
-  const cards = q.data?.[tab] ?? [];
+  const cards = tab === "opportunity" ? [] : (q.data?.[tab] ?? []);
 
   return (
     <Screen>
-      <TopBar title="Saved profiles" back="/discover" />
+      <TopBar title="Bookmarked" back="/discover" />
       <div className="px-5 pb-4">
         <Segmented
           value={tabs.find((t) => t.type === tab)?.label ?? tabs[0]!.label}
@@ -74,7 +80,9 @@ function Saved() {
       </div>
 
       <div className="space-y-3 px-5 pb-8">
-        {q.isLoading ? (
+        {tab === "opportunity" ? (
+          <SavedOpportunityList saved={savedOpportunities} />
+        ) : q.isLoading ? (
           <Loading />
         ) : q.isError ? (
           <EmptyState
@@ -144,5 +152,35 @@ function Actions({ onRemove }: { onRemove: () => void }) {
         <X size={iconSize.sm} aria-hidden />
       </button>
     </div>
+  );
+}
+
+/** The opportunities bookmarked on this device, shown as the Opportunities tab of Bookmarked. */
+function SavedOpportunityList({ saved }: { saved: ReturnType<typeof useSavedOpportunities> }) {
+  const all = useQuery({
+    queryKey: ["opportunities", "all"],
+    queryFn: () => loadDbOpportunities(),
+  });
+  const list = (all.data ?? []).filter((o) => saved.ids.includes(o.id));
+  if (all.isLoading) return <Loading />;
+  if (!list.length) {
+    return (
+      <EmptyState
+        title="Nothing bookmarked here yet"
+        body="Bookmark an opportunity to find it again here."
+      />
+    );
+  }
+  return (
+    <>
+      {list.map((o) => (
+        <OpportunityCard
+          key={o.id}
+          o={o}
+          saved={saved.has(o.id)}
+          onSave={() => saved.toggle(o.id)}
+        />
+      ))}
+    </>
   );
 }

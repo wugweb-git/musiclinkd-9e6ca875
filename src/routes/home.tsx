@@ -155,7 +155,7 @@ function buildHome(
       meta: "Tracks, videos and credits are what turn a profile view into an enquiry.",
       detail: "",
       cta: "Add work",
-      to: "/portfolio/new",
+      to: "/portfolio",
     });
   }
 

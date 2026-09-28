@@ -41,8 +41,8 @@ import {
 } from "@/components/ml/profile";
 import { GalleryView } from "@/components/ml/gallery";
 import { PhotoSheet, ProofPill } from "@/components/ml/booking";
-import type { PersonProfile } from "@/data/profile";
-import { CallBtn } from "@/components/ml/person-profile";
+import type { TalentProfile } from "@/data/profile";
+import { CallBtn } from "@/components/ml/talent-profile";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useMessagePerson } from "@/hooks/use-message-person";
@@ -67,7 +67,7 @@ export function BusinessProfileExperience({
 }: {
   b: BusinessView | undefined;
   /** The business's portfolio (tracks, videos, projects), read like a talent's. */
-  work?: PersonProfile | null;
+  work?: TalentProfile | null;
 }) {
   const [tab, setTab] = useState<BusinessTab>("Overview");
   const navigate = useNavigate();
@@ -88,7 +88,7 @@ export function BusinessProfileExperience({
   if (!b) {
     return (
       <Screen>
-        <TopBar title="Business" back="/business" />
+        <TopBar title="Business" back="/discover" />
         <div className="px-5 pt-6">
           <EmptyState title="Business not found" body="This profile may have been removed." />
         </div>
@@ -104,13 +104,12 @@ export function BusinessProfileExperience({
         photo={b.logo}
         name={b.name}
         square
-        back="/business"
+        back="/discover"
         actions={
           isOwner ? (
             // Managing is the owner's; a visitor has nothing to manage here.
             <Link
-              to="/business/$id/manage"
-              params={{ id: b.id }}
+              to="/profile/edit"
               aria-label="Manage business"
               className="grid h-10 w-10 place-items-center rounded-full bg-card/90"
             >
@@ -532,7 +531,7 @@ function SwitchToManage({ id, profileId, name }: { id: string; profileId: string
           try {
             await switchToLinked(profileId, enter);
             // A fresh start as the page, so nothing from your own profile stays on screen.
-            window.location.assign(`/business/${id}/manage`);
+            window.location.assign("/profile/edit");
           } catch {
             toast.error("Couldn't switch. Try again from Switch account.");
             setBusy(false);
@@ -605,13 +604,7 @@ function BusinessActions({
   if (owner) {
     return (
       <div className="flex items-center gap-2">
-        <IconBtnLink
-          to="/business/$id/manage"
-          params={{ id }}
-          label="Edit Business"
-          variant="ink"
-          className="h-11 w-11"
-        >
+        <IconBtnLink to="/profile/edit" label="Edit Business" variant="ink" className="h-11 w-11">
           <Pencil size={iconSize.md} aria-hidden />
         </IconBtnLink>
         <IconBtn
@@ -622,13 +615,7 @@ function BusinessActions({
         >
           <Share2 size={iconSize.md} aria-hidden />
         </IconBtn>
-        <IconBtnLink
-          to="/business/$id/dashboard"
-          params={{ id }}
-          label="Stats"
-          variant="outline"
-          className="h-11 w-11"
-        >
+        <IconBtnLink to="/home" label="Stats" variant="outline" className="h-11 w-11">
           <BarChart3 size={iconSize.md} aria-hidden />
         </IconBtnLink>
       </div>

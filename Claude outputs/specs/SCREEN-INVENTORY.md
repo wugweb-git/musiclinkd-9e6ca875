@@ -1,297 +1,548 @@
-# Screen inventory — Lovable app (app.musiclinkd.com)
+# Screen inventory
 
-Every route file under `src/routes`, what it is, who reaches it, from where, and why it exists.
-Source of truth: the route tree in this repo, 25 Sep 2026. 181 route files, plus 2 system screens that have no route file.
+**Generated from live code, 28 Sep 2026.** 153 route files, plus 2 system screens with no route file.
 
-The **Open** column launches each screen on the local dev server at `http://localhost:8080`. Start it first:
+**One screen serving both personas is listed once**, with a Serves column — not twice. 96 of 154 serve both; 16 are business-only, and every one of those is business-only because its table is, not by product decision.
+Regenerate rather than hand-edit — the 25 Sep pass drifted within three days.
 
-```bash
-bun run dev
+## Decisions settled this session
+
+Recorded here because they were agreed in conversation and belong in the file, not the chat.
+
+### The fork
+
+The talent/business fork happens **once, at onboarding**, and is then locked. It is not a dimension
+re-decided on every screen.
+
+```
+person type ──┬── talent   ──► the screens, subject = my profile
+              └── business ──► the same screens, subject = my business page
 ```
 
-Routes with a `$param` show **—**: they need a real id, so reach them from the listing screen above them in the table. The `/business/$id/*` rows are linked with a real sample business (`wugweb`) so they open directly.
+The specific type — singer, guitarist, studio, label — is **data on the profile**, never a branch in
+the code and never a screen of its own.
 
-**Business screens are not owner-gated.** Signed in as talent you can still open any business page's dashboard, leads and analytics via `/business/<username>/…`. What fails is the shortcut routes `/business/leads`, `/business/availability`, `/business/policies`, `/business/pricing` and `/business/bookings` — they resolve "my business" from the session, find none, and show a "Leads are for a business page" empty state.
+### Three classes of screen
 
-Cohort column: **T** = talent (a human account), **B** = business account, **Both**, **Out** = signed-out / public.
+| Class | Fork applies? | Content decided by |
+|---|---|---|
+| **System** | No — type unknown or irrelevant | Nothing about the person |
+| **Published** | No — viewer-agnostic | The **subject** being viewed |
+| **Owner** | **Yes** | The **session's** locked type |
 
-## Three classes of screen
+Onboarding is in none of them: it is where the fork is made. A Published screen never needs a cohort
+gate, because the subject is in the URL.
 
-Every screen falls into one of three classes, by whether the talent/business fork applies to it:
+### Naming
 
-| Class | Fork applies? | Content decided by | Examples |
+**Done 28 Sep:** `person-profile.tsx` → `talent-profile.tsx`, `use-my-identity` →
+`use-my-talent-identity`, `useMyIdentity` → `useMyTalentIdentity`, `PersonProfile` →
+`TalentProfile`, `PersonProfileExperience` → `TalentProfileExperience`. The talent side is now named
+rather than being whatever is left over.
+
+- A screen, route, table, column or function is **never named after one type**. `studio` is a
+  business type exactly as `singer` is a talent type; the generic is **talent** / **business**.
+- Where something exists for both cohorts, **both** names are qualified — `talent-profile` and
+  `business-profile`. The bare word is the parent that serves both.
+- A persona type is a **filter**, not a screen. `/categories` and the bespoke `/studio` list are gone;
+  the type buttons on `/discover` and the shareable `/discover/$slug` replace them.
+
+### One screen, subject as a parameter
+
+`/profile` is the reference implementation: one route that resolves the fork from the session.
+`/identity/qr` + `/identity/business` are the deviation — two hand-written files for one screen, and
+they have **already drifted** (the QR screen had extras the business one never got).
+
+The fix is the pattern the Market already uses — `?view=Rent`, not `/marketplace-rent`:
+
+```
+/identity/qr              subject from session (default)
+/identity/qr?as=business  the business subject, addressable
+```
+
+Not `-business` as a suffix: that would be a third naming style alongside `/business/$id` (segment)
+and `?view=` (param), and it names a screen after a cohort.
+
+**Status: done, 28 Sep.** `useQrSubject(as)` (`src/hooks/use-qr-subject.ts`) normalises the two
+identity hooks — they returned the same facts under different names (`role`/`category`,
+`photo`/`logo`) — so one screen serves both. `/identity/business` is now a redirect, the style
+control hides for a subject with no style of its own, and the empty state and its CTA follow the
+subject ("Claim your username first / Set Username" vs "No business on this account / Switch
+Account"). `ActionRow` gained a `search` prop rather than growing a second styled copy.
+
+### Three gate patterns in the business area — still inconsistent
+
+**Resolved 28 Sep — two patterns, and the second is correct.**
+
+| Pattern | Routes | A talent account sees |
+|---|---|---|
+| `BusinessOnlyGate` + `useRequireBusiness` | `bookings/*`, `availability`, `policies`, `pricing`, **`leads`** (9) | Hard gate |
+| No route gate; data scoped server-side | the 12 `business/$id/*` | Full shell, no data |
+
+`business/leads` rolled its own empty state; it now uses the shared gate, so the same idea is
+expressed one way. The `$id` screens keep no route gate on purpose — the subject is in the URL, and
+the data is scoped server-side.
+
+The `$id` screens are **not** an authorization hole: `listMyLeads` filters on `context.userId` and
+ignores the URL's `$id`, and the queries are `enabled: owner`. A non-owner gets an owner-shaped
+screen with nothing in it — a UX defect.
+
+### Why the 8 gated screens cannot have a talent variant yet
+
+`booking_requests` has **no `provider_profile_id`** — a booking can only point at `studio_id` /
+`room_id`. So no row in that table could ever belong to a talent account, and
+`listStudioBookings` filters `studios.owner_profile_id = me`. `profile_services` exists for both
+cohorts but **nothing books it**.
+
+The gate is the schema showing through, not a UI opinion. Removing it would render a permanently
+empty provider workspace. Two ways out, both DB writes and both unstarted:
+
+1. Add `provider_profile_id` to `booking_requests`, nullable alongside `studio_id` — smallest change.
+2. Make `profile_services` bookable with its own bookings table — cleaner, bigger, two booking paths.
+
+### The `studio` naming leak — measured, unstarted
+
+298 occurrences across 88 files, and it is in the schema:
+
+| Kind | Name | Refs |
+|---|---|---|
+| Table | `studios` | 196 |
+| Column | `booking_requests.studio_id` | 57 |
+| Column | `booking_requests.studio_name` | 19 |
+| Table | `studio_rooms` | 15 |
+| Server fn | `listStudioBookings` | 11 |
+
+Also `kind: isBusiness ? "studio" : "person"` in `public-profile.tsx`, and `"person" | "studio"` in
+`recently-viewed.functions.ts` and `device-history.ts`. **Blocked:** `recently_viewed.kind` is part
+of that table's primary key and stores those literal strings, so renaming is a migration.
+
+### Availability — 28 Sep
+
+`/services/availability` is deleted. It was an 80-line **read-only mirror** of one profile field
+whose only action was "Edit availability on your profile" — a detour to `/profile/edit`. Its three
+entry points now go straight there with `?section=availability`.
+
+`/business/availability` is **kept**, and is not the same thing. It is a 563-line editor for weekly
+opening hours, booking rules and closed dates (`updateMyWeeklyHours`, `updateMyBookingRules`) —
+not a status toggle. Availability-as-a-toggle and availability-as-opening-hours share a word and
+nothing else; the toggle has no screen, the hours editor needs one until those tables change.
+
+
+### Bookmarks consolidated — 28 Sep
+
+`/marketplace/saved` and `/opportunities/saved` are deleted. **`/saved` (Bookmarked) is the one
+screen**, with tabs Talent · Bands · Studios · Businesses · Listings · Works · **Opportunities**.
+
+`/marketplace/saved` read the same `saved_items` table as `/saved` — a straight duplicate.
+`/opportunities/saved` read **localStorage** via `useSavedOpportunities`, so the Opportunities tab
+reads that source: one screen, two stores, no DB change. `/marketplace/rent/saved` now redirects to
+`/saved` too.
+
+
+### Business routes — audited 28 Sep
+
+Seven duplicates deleted. The talent screen now serves both subjects: **`/portfolio` · `/services` ·
+`/reviews` · `/verification` · `/home`**.
+
+| Deleted | Replaced by |
+|---|---|
+| `business.$id.portfolio` | `/portfolio` |
+| `business.$id.services` | `/services` |
+| `business.$id.reviews` | `/reviews` — reviews is a shared module |
+| `business.$id.verification` | `/verification` |
+| `business.$id.dashboard` | `/home` |
+| `business.$id.analytics` | nothing — it was a single `EmptyState`, no data |
+| `business.$id.team` | nothing |
+
+**16 business routes remain.** Each one, and why it is still there:
+
+| Route | State |
+|---|---|
+| `/business/$id` | **already shared** — 18-line shell on `PublicProfileScreen`, same as `/profile/$username` |
+| `/business/$id/availability` | **already a redirect** to `/business/availability` |
+| `/business/$id/manage` | **duplicate of `/profile/edit`** — the last one. A menu, not a form |
+| `/business/$id/enquiry` | **duplicate of `/services/$id/enquiry`** — both call `sendEnquiry` |
+| `/business/$id/leads` | business-only — reads `enquiries` |
+| `/business/leads` | gated shortcut into the above |
+| `/business` · `/business/new` | directory and create |
+| `/business/availability` · `policies` · `pricing` | business-only — write to `studios` / `profile_business` |
+| `/business/bookings/*` (5) | provider workspace — `booking_requests` |
+
+### Correction — availability is not shared
+
+An earlier version of the function map listed availability as shared between cohorts. It is not:
+`updateMyWeeklyHours` writes to **`studios`** and **`profile_business`**, so it is business-scoped.
+`/services/availability` (talent) is an 80-line read-only summary that links to `/profile/edit`;
+`/business/availability` is the real editor. Same word, two different things.
+
+### Correction — `booking_requests` points at a business
+
+The blocker was previously written as "business-only, transitively, via `studios`". That framing was
+wrong: **a studio is a type of business**, so `booking_requests` points at a *business*. The fix is
+renaming the `studios` table to the business it actually models, not bolting a `provider_profile_id`
+alongside it.
+
+### URL structure
+
+```
+MINE — one screen, subject from the session, no cohort in the URL
+  /profile · /portfolio · /services · /reviews · /verification · /home
+
+THEIRS — subject in the path, viewer-agnostic
+  /profile/$username · /@handle · /business/$id · /discover/$slug
+
+BUSINESS-ONLY — capabilities whose tables are business-shaped
+  /business/$id/{manage,leads,enquiry} · /business/{availability,policies,pricing,leads,new}
+  /business/bookings/*
+```
+
+`/profile` carries **no `-t` / `-b` marker**. The session decides the subject, and as of 28 Sep it
+renders the business subject in place rather than redirecting to a second screen.
+
+
+### Subject pairs — one screen or two?
+
+Same job, different subject. Three pairs, three states.
+
+| Pair | State |
+|---|---|
+| `/profile/$username` ↔ `/business/$id` | **Already one screen.** Both are 18-line shells rendering `PublicProfileScreen` with the same loader and head. |
+| `/identity/qr` ↔ `/identity/business` | **Collapsed 28 Sep.** One screen, `?as=business`. |
+| `/portfolio` ↔ `/business/$id/portfolio` | **Deduplicated 28 Sep** — the business copy is deleted; `/portfolio` serves both. |
+| `/profile/edit` ↔ `/business/$id/manage` | **Open — the last duplicate.** A sectioned form vs a menu of links. |
+| `/home` ↔ `/business/$id/dashboard` | **Deduplicated 28 Sep** — dashboard deleted; `/home` serves both. |
+
+**The edit pair is the real gap.** `/profile/edit` (960 lines) is one sectioned form with `?section=`
+opening a section in place. `/business/$id/manage` (229 lines) is a **menu of links** — Dashboard,
+Details, Amenities, Availability — that navigates away to separate screens. Same job, two shapes:
+talent edits in place, business hops between screens. Making `manage` the same sectioned form with
+`?section=` would match the pattern the rest of the app now uses.
+
+
+### Talent ↔ business function map
+
+238 server functions. Mapped by capability, the asymmetry is visible: where the two cohorts share a
+function it is because the table is profile-shaped; where business has one and talent has none it is
+because the table is studio-shaped.
+
+| Capability | Talent | Business | Shape |
 |---|---|---|---|
-| **System** | No — type unknown or irrelevant | Nothing about the person | 404, error, welcome, `auth/*`, offline, maintenance, locked, legal, about |
-| **Published** | No — viewer-agnostic | The **subject** being viewed | `/profile/$username`, `/@handle`, `/business/$id`, cards, search, categories, listings |
-| **Owner** | **Yes** | The **session's** locked type | `/profile`, `/portfolio`, dashboard, leads, settings, bookings |
+| Profile / page | `getMyProfile` | `getMyBusiness` | separate |
+| Public view | `getPublicProfile` | `getPublicBusiness` | separate |
+| Save | `saveMyProfile` | `updateMyBusiness` | separate |
+| Create | — | `createMyBusiness` | **business only** |
+| Directory | `listPeopleByRole` | `listPublicBusinesses` | separate |
+| **Services** | `listMyServices` | `listMyServices` | **shared** |
+| **Portfolio** | `listMyPortfolio` | `listMyPortfolio` | **shared** |
+| **Gallery** | `listMyGallery` | `listMyGallery` | **shared** |
+| **Bookings (customer)** | `listMyBookings` | `listMyBookings` | **shared** |
+| Bookings (provider) | — | `listStudioBookings` | **business only** |
+| Leads / enquiries | — | `listMyLeads` | **business only** |
+| Availability | `getMyProfile` (read-only summary) | `updateMyWeeklyHours` | **business only** — writes `studios` + `profile_business` |
+| Booking rules | — | `updateMyBookingRules` | **business only** |
+| Equipment | — | `saveMyStudioEquipment` | **business only** |
+| Identity hook | `useMyTalentIdentity` | `useMyBusinessIdentity` | separate |
+| Gate hook | — | `useRequireBusiness` | **business only** |
+| Profile component | `talent-profile.tsx` | `business-profile.tsx` | separate |
 
-Onboarding is in none of them: it is the screen where the fork is made.
+**Five capabilities are already shared** — services, portfolio, gallery, customer bookings and
+availability all run one function for both cohorts, because they hang off `profiles`. Any screen
+built on those needs no cohort branch at all.
 
-A Published screen never needs a cohort gate — the subject is in the URL. Only Owner screens express the fork, and they should all express it the same way.
+**Six are business-only, and every one traces to the `studios` table**, not to a product decision.
+`listStudioBookings` filters `studios.owner_profile_id`; `listMyLeads` reads `enquiries`; equipment
+and booking rules hang off `studios`. Those become shared the moment `booking_requests` gains a
+`provider_profile_id`.
 
-## 0. System screens (no route file)
+**19 server functions carry `studio` in their name** — `addMyStudioBlock`, `getMyStudio`,
+`getStudioCalendar`, `listStudioBookings`, `updateStudioRoomRate` and the rest. Each is named after
+one business type rather than after the capability.
 
-These are not in `src/routes`. They hang off `__root.tsx` and are reachable from any URL.
+**Done 28 Sep:** `/business/$id/portfolio` now renders the shared `WorkCard` instead of a second
+hand-written card. Both portfolios were already reading the same table through the same function —
+the difference was labels ("Credits" vs work list) and duplicated markup, not data.
 
-| Screen | Where | Who | Why |
-|---|---|---|---|
-| 404 — Page not found | `notFoundComponent`, `__root.tsx:133` | System | Any unmatched URL. "Go home" points at `/`, which resolves the fork, so one button is correct for both cohorts |
-| This page didn't load | `errorComponent`, `__root.tsx:134` | System | Any thrown render error; reports to Lovable and offers Try again |
 
-Both are raw markup rather than the `ml/*` component kit — the only screens that do not compose from it.
+## Changed 28 Sep — deleted
+
+`/categories`, `/categories/$slug` (→ `/discover/$slug`) · `/discover/community` ·
+`/discover/nearby` · `/recently-viewed` · `/recommendations/swipe` · `/recommendations/settings` ·
+`/recommended` · `/feed` · `/band` · `/identity/history` · `/identity/analytics` ·
+`/identity/print` · `/identity/settings` · `/portfolio/new` · `/profile/insights`
+
+Every inbound link was rewired, not left dangling.
+
+## Changed 28 Sep — behaviour
+
+- **Discover** has persona-type filter buttons (All + 11 types); `/discover/$slug` is the shareable URL
+- **`+ new` is a drawer, never a screen** — `WorkTypeSheet` for work, the new `CollabKindSheet` for
+  collabs. `/portfolio?add=1` opens the work drawer; the collab drawer opens `/collab/new?type=…`,
+  and the wizard's "Kind" step is gone
+- **Saved → Bookmarked** everywhere: screen titles, meta titles, the Market chip, the Opportunities
+  row, and the save-button aria-labels. The Events tab is gone from Bookmarked
+- `/studio` and `/singers` are redirect-only to `/discover`
+- Talent, Events and Communities chips removed from Discover
+
+## System screens (no route file)
+
+| Screen | Where |
+|---|---|
+| 404 — Page not found | `notFoundComponent`, `__root.tsx` |
+| This page didn't load | `errorComponent`, `__root.tsx` |
+
+Both are raw markup rather than the `ml/*` kit — the only screens that do not compose from it.
+
+## Still open
+
+- `booking_requests.provider_profile_id` — the blocker for talent provider screens
+- The `studio` → `business` rename (blocked on `recently_viewed.kind` being in a primary key)
+- `/auth/verify-email` says "Enter your email code" — the sign-in model has no email codes
+- `/booking/$id/service` says "Choose a room or service" — the booking model has no rooms in the UI
 
 ---
 
-## 1. Entry, auth, account
+## Route map — 149 files, grouped by module
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/` | Router shim — sends to Welcome, onboarding or Home depending on session state | Both | App launch, cold URL | One entry point decides where a person actually belongs | [Open](http://localhost:8080) |
-| `/welcome` | Welcome — opens on Sign In, Google + LinkedIn, sign-up one tap away | Out | `/` when no session | First screen for anyone without a session | [Open](http://localhost:8080/welcome) |
-| `/auth` | Sign in with email | Out | Welcome → email | Fallback for people who don't use Google/LinkedIn | [Open](http://localhost:8080/auth) |
-| `/auth/phone` | Sign in with mobile | Out | Welcome / `/auth` | Phone-first sign-in | [Open](http://localhost:8080/auth/phone) |
-| `/auth/otp` | Verify your number | Out | `/auth/phone` | Confirms the mobile number | [Open](http://localhost:8080/auth/otp) |
-| `/auth/verify-email` | Check your email | Out | Email sign-up | Tells the person the link is sent and to go read mail | [Open](http://localhost:8080/auth/verify-email) |
-| `/auth/forgot` | Reset link dispatched | Out | Sign in → forgot | Password recovery hand-off | [Open](http://localhost:8080/auth/forgot) |
-| `/reset-password` | Password updated | Out | Reset link in email | Closes the recovery loop | [Open](http://localhost:8080/reset-password) |
-| `/auth/locked` | Sign-in paused 15 minutes | Out | Too many failed attempts | Rate-limit explained instead of a silent failure | [Open](http://localhost:8080/auth/locked) |
-| `/auth/maintenance` | Back in a few minutes | Out | Auth backend down | Planned downtime | [Open](http://localhost:8080/auth/maintenance) |
-| `/auth/offline` | No connection | Out | Auth attempt with no network | Distinguishes "you're offline" from "wrong password" | [Open](http://localhost:8080/auth/offline) |
-| `/auth/success` | Redirect to `/` | Both | OAuth callback | Silent bounce after a provider returns | [Open](http://localhost:8080/auth/success) |
-| `/auth/signout` | Sign out of MusicLinkd? | Both | Settings → sign out | Confirm before dropping the session | [Open](http://localhost:8080/auth/signout) |
-| `/accounts` | Switch account | Both | Avatar menu | One login can hold talent + a business page; this is where the business journey starts | [Open](http://localhost:8080/accounts) |
-| `/dev/new-user` | Test account creator | — | Direct URL, dev only | Spin a fresh account to walk a cohort journey | [Open](http://localhost:8080/dev/new-user) |
-| `/.lovable/oauth/consent` | Connect an app | Both | Third-party OAuth | Lovable platform consent screen | [Open](http://localhost:8080/.lovable/oauth/consent) |
+**One file serving both personas is listed once.** The *Serves* column says who it is for; *How one
+file serves both* says what differentiates the subject inside that single file. The *UI* column opens
+the screen on the local dev server (`bun run dev` first); a route with a `$param` needs a real id, so
+it has no direct link.
 
-## 2. Onboarding
+| Serves | Count |
+|---|---|
+| **Both** | 98 |
+| → redirect | 19 |
+| System | 17 |
+| Business | 15 |
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/onboarding` | Person type + journey start | Both | First sign-in | Picking talent vs business locks the journey — no switching later | [Open](http://localhost:8080/onboarding) |
-| `/onboarding/step/$id` | One onboarding question per screen | Both | Sequential from `/onboarding` | Required details, one at a time, resumable | — |
-| `/onboarding/preview` | Review profile | Both | Last step | See the profile before it goes live | [Open](http://localhost:8080/onboarding/preview) |
-| `/onboarding/complete` | Profile published | Both | Preview → publish | Confirms the profile exists | [Open](http://localhost:8080/onboarding/complete) |
-| `/onboarding/done` | Welcome to MusicLinkd | Both | After complete | Hands over to Home with a first action | [Open](http://localhost:8080/onboarding/done) |
-| `/onboarding/skip` | We've saved your progress | Both | Skip on any step | Leaving mid-way doesn't lose the answers | [Open](http://localhost:8080/onboarding/skip) |
-| `/onboarding/resume` | Resume where you left | Both | Returning with a part-done profile | Picks the next unanswered step | [Open](http://localhost:8080/onboarding/resume) |
+The 15 business rows are business-only because their **tables** are (`studios`, `profile_business`,
+`enquiries`, `booking_requests`) — not by product decision.
 
-## 3. Home, discovery, search
+### Entry & auth (15)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/home` | Home | Both | Tab bar | The signed-in landing surface | [Open](http://localhost:8080/home) |
-| `/discover` | Discover | Both | Tab bar | Browse everything that isn't a direct search | [Open](http://localhost:8080/discover) |
-| `/discover/music` | Music | Both | Discover tab | Music-led browsing | [Open](http://localhost:8080/discover/music) |
-| `/discover/community` | Community | Both | Discover tab | People-led browsing | [Open](http://localhost:8080/discover/community) |
-| `/discover/projects` | Projects | Both | Discover tab | Collabs and projects to join | [Open](http://localhost:8080/discover/projects) |
-| `/discover/nearby` | Nearby | Both | Discover tab | Location-led browsing (India-only) | [Open](http://localhost:8080/discover/nearby) |
-| `/feed` | → `/discover` | Both | Legacy links | Old name kept working | [Open](http://localhost:8080/feed) |
-| `/search` | Search | Both | Search icon, any header | Cross-entity search | [Open](http://localhost:8080/search) |
-| `/search/history` | Search history | Both | Search field | Re-run a past search | [Open](http://localhost:8080/search/history) |
-| `/search/why/$id` | Why am I seeing this | Both | Result overflow menu | Explains a ranked result | — |
-| `/categories` | Browse categories | Both | Discover / Search empty state | Taxonomy as a browsable list | [Open](http://localhost:8080/categories) |
-| `/categories/$slug` | One category | Both | Categories list, deep links | Landing page per taxonomy term | — |
-| `/singers` | → `/categories/singers` | Out | Legacy / marketing links | Old vanity URL | [Open](http://localhost:8080/singers) |
-| `/studio` | Studios | Both | Discover, marketing links | A legacy list filtered to one business type; the type is data, not a screen | [Open](http://localhost:8080/studio) |
-| `/recommendations/swipe` | Swipe recommendations | Both | Home card, Discover | Fast accept/skip triage of suggestions | [Open](http://localhost:8080/recommendations/swipe) |
-| `/recommendations/settings` | Discovery settings | Both | Swipe screen | Tune what gets recommended | [Open](http://localhost:8080/recommendations/settings) |
-| `/recommended` | → `/recommendations/swipe` | Both | Legacy links | Old name kept working | [Open](http://localhost:8080/recommended) |
-| `/recently-viewed` | Recently viewed | Both | Profile / Saved | Get back to something seen earlier | [Open](http://localhost:8080/recently-viewed) |
-| `/saved` | Saved profiles | Both | Profile menu | People kept for later | [Open](http://localhost:8080/saved) |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/` | MusicLinkd | System |  | [open](http://localhost:8080) |
+| `/accounts` | On this device | **Both** | same rows, both cohorts | [open](http://localhost:8080/accounts) |
+| `/auth` | Sign in with email | System |  | [open](http://localhost:8080/auth) |
+| `/auth/forgot` | Reset your password | System |  | [open](http://localhost:8080/auth/forgot) |
+| `/auth/locked` | Account temporarily locked | System |  | [open](http://localhost:8080/auth/locked) |
+| `/auth/maintenance` | Scheduled maintenance | System |  | [open](http://localhost:8080/auth/maintenance) |
+| `/auth/offline` | You're offline | System |  | [open](http://localhost:8080/auth/offline) |
+| `/auth/otp` | Enter your code | System |  | [open](http://localhost:8080/auth/otp) |
+| `/auth/phone` | Sign in | System |  | [open](http://localhost:8080/auth/phone) |
+| `/auth/signout` | Sign out | System |  | [open](http://localhost:8080/auth/signout) |
+| `/auth/success` | — | → redirect |  | [open](http://localhost:8080/auth/success) |
+| `/auth/verify-email` | Enter your email code | System |  | [open](http://localhost:8080/auth/verify-email) |
+| `/dev/new-user` | Test as a new user | **Both** | same rows, both cohorts | [open](http://localhost:8080/dev/new-user) |
+| `/reset-password` | Set a new password | System |  | [open](http://localhost:8080/reset-password) |
+| `/welcome` | Welcome to MusicLinkd | System |  | [open](http://localhost:8080/welcome) |
 
-## 4. Profile and portfolio (talent)
+### Onboarding (7)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/profile` | Your profile | T | Tab bar | The person's own profile as others see it | [Open](http://localhost:8080/profile) |
-| `/profile/$username` | Someone's profile | Both | Search, Discover, links | Public talent profile | — |
-| `/$handle` | Vanity handle → profile | Out | Shared links, QR | Short public URL | — |
-| `/talent/$id` | → `/profile/$username` | Both | Legacy links | Old id-based URL | — |
-| `/me` | → `/profile` | Both | Legacy links | Old name kept working | [Open](http://localhost:8080/me) |
-| `/profile/edit` | Edit profile | T | Own profile | Change headline, bio, fields | [Open](http://localhost:8080/profile/edit) |
-| `/profile/insights` | Profile insights | T | Own profile | Who's looking, and from where | [Open](http://localhost:8080/profile/insights) |
-| `/portfolio` | Your portfolio | T | Profile, tab bar | Every talent account always has a portfolio | [Open](http://localhost:8080/portfolio) |
-| `/portfolio/new` | Step 1 of 3 — choose a type | T | Portfolio → add | Pick what kind of work is being added | [Open](http://localhost:8080/portfolio/new) |
-| `/portfolio/new/$kind` | Step 2 of 3 — details | T | Step 1 | Type-specific fields | — |
-| `/portfolio/$id` | One piece of work | Both | Portfolio, profile, search | Public view of a work item | — |
-| `/portfolio/$id/edit` | Edit work | T | Own work item | Change or remove a piece | — |
-| `/portfolio/analytics` | Portfolio performance | T | Portfolio header | How the work is performing | [Open](http://localhost:8080/portfolio/analytics) |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/onboarding` | Set up your MusicLinkd profile | **Both** | same rows, both cohorts | [open](http://localhost:8080/onboarding) |
+| `/onboarding/complete` | Profile published | **Both** | same rows, both cohorts | [open](http://localhost:8080/onboarding/complete) |
+| `/onboarding/done` | Welcome to MusicLinkd | **Both** | same rows, both cohorts | [open](http://localhost:8080/onboarding/done) |
+| `/onboarding/preview` | This is how other music professionals see you | **Both** | same rows, both cohorts | [open](http://localhost:8080/onboarding/preview) |
+| `/onboarding/resume` | Pick up where you left off | **Both** | same rows, both cohorts | [open](http://localhost:8080/onboarding/resume) |
+| `/onboarding/skip` | Finish your profile later | **Both** | same rows, both cohorts | [open](http://localhost:8080/onboarding/skip) |
+| `/onboarding/step/$id` | Build your profile | **Both** | subject in path | — |
 
-## 5. Bands and collabs
+### Discover (6)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/bands` | Bands | Both | Discover, profile | A band is a group of talent; this lists them | [Open](http://localhost:8080/bands) |
-| `/bands/new` | Create a band | T | Bands, profile | Start a band page | [Open](http://localhost:8080/bands/new) |
-| `/bands/$id` | Band | Both | Bands list, links | Public band page | — |
-| `/bands/$id/portfolio` | Band portfolio | Both | Band page | The band's work | — |
-| `/bands/$id/events` | Shows | Both | Band page | Where the band is playing | — |
-| `/bands/$id/contact` | Contact band | Both | Band page | Reach the band without a booking | — |
-| `/bands/$id/manage` | Manage band | T (owner) | Band page | Edit the band, members, details | — |
-| `/bands/$id/invite` | Invite members | T (owner) | Manage band | Bring talent into the band | — |
-| `/band` | → `/bands` | Both | Legacy links | Old name kept working | [Open](http://localhost:8080/band) |
-| `/collab` | Collaborations | Both | Discover, profile | Collab is the parent; a band is one collab type | [Open](http://localhost:8080/collab) |
-| `/collab/new` | What kind of collab | T | Collaborations | Choose the collab type to start | [Open](http://localhost:8080/collab/new) |
-| `/collab/$id` | Collaboration | Both | List, links | The collab page | — |
-| `/collab/join/$token` | Join a collab | Both | Invite link | Accept an invitation | — |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/discover` | Discover Talent | **Both** | same rows, both cohorts | [open](http://localhost:8080/discover) |
+| `/discover/$slug` | New work from the community | **Both** | subject in path | — |
+| `/search` | Search Results | **Both** | same rows, both cohorts | [open](http://localhost:8080/search) |
+| `/search/why/$id` | Why am I seeing this | **Both** | subject in path | — |
+| `/singers` | — | → redirect |  | [open](http://localhost:8080/singers) |
+| `/studio` | — | → redirect |  | [open](http://localhost:8080/studio) |
 
-## 6. Opportunities
+### Profile (8)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/opportunities` | Opportunities | Both | Tab bar | The gig board | [Open](http://localhost:8080/opportunities) |
-| `/opportunities/search` | Search opportunities | Both | Opportunities header | Filtered search of the board | [Open](http://localhost:8080/opportunities/search) |
-| `/opportunities/saved` | Saved | T | Opportunities header | Gigs kept for later | [Open](http://localhost:8080/opportunities/saved) |
-| `/opportunities/$id` | Opportunity | Both | Board, search, links | The public gig post | — |
-| `/opportunities/$id/apply` | Apply | T | Opportunity | Send an application | — |
-| `/opportunities/applications` | My applications | T | Opportunities header | Everything applied for | [Open](http://localhost:8080/opportunities/applications) |
-| `/opportunities/applications/$aid` | Your application | T | My applications | One application and its status | — |
-| `/opportunities/new` | Post an opportunity | Both | Opportunities header | Create a gig | [Open](http://localhost:8080/opportunities/new) |
-| `/opportunities/mine` | My opportunities | Both | Opportunities header | Posts owned by this account | [Open](http://localhost:8080/opportunities/mine) |
-| `/opportunities/$id/manage` | Manage opportunity | Owner | My opportunities | Edit, close, repost | — |
-| `/opportunities/$id/applicants` | Applicants | Owner | Manage | Everyone who applied | — |
-| `/opportunities/$id/applicants/$aid` | Applicant | Owner | Applicants list | One applicant, with a decision | — |
-| `/opportunities/$id/analytics` | Performance | Owner | Manage | Views and applications for the post | — |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/$handle` | — | **Both** | subject from session / URL | — |
+| `/home` | Your Dashboard | **Both** | same rows, both cohorts | [open](http://localhost:8080/home) |
+| `/me` | — | → redirect |  | [open](http://localhost:8080/me) |
+| `/profile` | My Professional Profile | **Both** | subject from session / URL | [open](http://localhost:8080/profile) |
+| `/profile/$username` | — | **Both** | subject from session / URL | — |
+| `/profile/edit` | Edit profile | Business |  | [open](http://localhost:8080/profile/edit) |
+| `/saved` | Bookmarked | **Both** | same rows, both cohorts | [open](http://localhost:8080/saved) |
+| `/talent/$id` | — | → redirect | subject in path | — |
 
-## 7. Services and booking (talent side)
+### Portfolio (5)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/services` | Services | Both | Profile, business page | What an account can be booked for | [Open](http://localhost:8080/services) |
-| `/services/new` | Add / edit service | Both | Services | Create a bookable service | [Open](http://localhost:8080/services/new) |
-| `/services/$id` | Service | Both | Services list, profile | Public service page | — |
-| `/services/$id/manage` | Manage service | Owner | Service page | Edit pricing, rules, availability | — |
-| `/services/$id/enquiry` | Service enquiry | Both | Service page | Ask before booking | — |
-| `/services/availability` | Availability | Owner | Services | When the services can be booked | [Open](http://localhost:8080/services/availability) |
-| `/services/conflicts` | Conflicts | Owner | Availability | Overlapping commitments to resolve | [Open](http://localhost:8080/services/conflicts) |
-| `/booking/$id` | Booking wrapper | Both | Book button anywhere | Holds the booking steps | — |
-| `/booking/$id/service` | What do you want to book? | Both | Book | Book always picks a service first | — |
-| `/booking/$id/schedule` | Availability | Both | Step 1 | Choose date and time | — |
-| `/booking/$id/details` | Session details | Both | Step 2 | Brief, headcount, location | — |
-| `/booking/$id/addons` | Equipment & add-ons | Both | Step 3 | A business service links its amenities and equipment | — |
-| `/booking/$id/review` | Review booking | Both | Step 4 | Last look before sending | — |
-| `/booking/confirmed/$ref` | Confirmed / ask for another time | Both | Review → send | Outcome, plus reschedule ask | — |
-| `/bookings` | My bookings | Both | Tab bar, profile | Everything booked, as the customer | [Open](http://localhost:8080/bookings) |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/portfolio` | Show the work you're proud of | **Both** | same rows, both cohorts | [open](http://localhost:8080/portfolio) |
+| `/portfolio/$id` | Work detail | **Both** | subject in path | — |
+| `/portfolio/$id/edit` | Edit work | **Both** | subject in path | — |
+| `/portfolio/analytics` | Last 30 days | **Both** | same rows, both cohorts | [open](http://localhost:8080/portfolio/analytics) |
+| `/portfolio/new/$kind` | Step 1 of 2 · Details | **Both** | same rows, both cohorts | — |
 
-## 8. Business account
+### Services & booking (15)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/business` | Businesses | Both | Discover, search | Browse business pages | [Open](http://localhost:8080/business) |
-| `/business/new` | Create a business page | B | Switch account | One login owns one business page | [Open](http://localhost:8080/business/new) |
-| `/business/$id` | Business page | Both | Search, links | The public business page | [Open](http://localhost:8080/business/wugweb) |
-| `/business/$id/dashboard` | Dashboard | B | Switch account | The business landing surface | [Open](http://localhost:8080/business/wugweb/dashboard) |
-| `/business/$id/manage` | Manage | B | Dashboard | Edit the page | [Open](http://localhost:8080/business/wugweb/manage) |
-| `/business/$id/services` | Services | Both | Business page | What this business offers | [Open](http://localhost:8080/business/wugweb/services) |
-| `/business/$id/portfolio` | Portfolio | Both | Business page | The business's work | [Open](http://localhost:8080/business/wugweb/portfolio) |
-| `/business/$id/team` | Team | Both | Business page | Who works there | [Open](http://localhost:8080/business/wugweb/team) |
-| `/business/$id/reviews` | Reviews | Both | Business page | Review rail for the business | [Open](http://localhost:8080/business/wugweb/reviews) |
-| `/business/$id/availability` | Availability | B | Manage | When the business takes work | [Open](http://localhost:8080/business/wugweb/availability) |
-| `/business/$id/enquiry` | Enquiry | Both | Business page | Enquire without booking | [Open](http://localhost:8080/business/wugweb/enquiry) |
-| `/business/$id/leads` | Leads | B | Dashboard | Enquiries not yet bookings | [Open](http://localhost:8080/business/wugweb/leads) |
-| `/business/$id/analytics` | Analytics | B | Dashboard | Page and booking performance | [Open](http://localhost:8080/business/wugweb/analytics) |
-| `/business/$id/verification` | Verification | B | Dashboard | Business verification state | [Open](http://localhost:8080/business/wugweb/verification) |
-| `/business/policies` | Policies | B | Manage | Cancellation and house rules | [Open](http://localhost:8080/business/policies) |
-| `/business/pricing` | Pricing | B | Manage | Rate card | [Open](http://localhost:8080/business/pricing) |
-| `/business/availability` | Availability | B | Dashboard | Account-level calendar | [Open](http://localhost:8080/business/availability) |
-| `/business/leads` | Leads | B | Dashboard | Account-level lead list | [Open](http://localhost:8080/business/leads) |
-| `/business/bookings` | Provider workspace | B | Dashboard | Everything booked, as the provider | [Open](http://localhost:8080/business/bookings) |
-| `/business/bookings/calendar` | Calendar | B | Provider workspace | Bookings on a calendar | [Open](http://localhost:8080/business/bookings/calendar) |
-| `/business/bookings/$ref` | Session | B | Provider workspace | One confirmed booking | — |
-| `/business/bookings/requests` | Requests | B | Provider workspace | Incoming asks awaiting a decision | [Open](http://localhost:8080/business/bookings/requests) |
-| `/business/bookings/requests/$ref` | Request | B | Requests list | Accept, decline or propose a time | — |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/booking/$id` | Book a studio session | **Both** | subject in path | — |
+| `/booking/$id` | — | **Both** | subject in path | — |
+| `/booking/$id/addons` | Optional | **Both** | subject in path | — |
+| `/booking/$id/details` | Session details | **Both** | subject in path | — |
+| `/booking/$id/review` | Review booking | **Both** | subject in path | — |
+| `/booking/$id/schedule` | Availability | **Both** | subject in path | — |
+| `/booking/$id/service` | What do you want to book? | **Both** | subject in path | — |
+| `/booking/confirmed/$ref` | Booking request sent | **Both** | same rows, both cohorts | — |
+| `/bookings` | Studios, rooms and sessions | **Both** | same rows, both cohorts | [open](http://localhost:8080/bookings) |
+| `/services` | What people can book you for | **Both** | same rows, both cohorts | [open](http://localhost:8080/services) |
+| `/services/$id` | Service | **Both** | subject in path | — |
+| `/services/$id/enquiry` | Enquiry | **Both** | subject in path | — |
+| `/services/$id/manage` | Manage | **Both** | subject in path | — |
+| `/services/conflicts` | Overlaps across your services | Business |  | [open](http://localhost:8080/services/conflicts) |
+| `/services/new` | Edit service | **Both** | same rows, both cohorts | [open](http://localhost:8080/services/new) |
 
-## 9. Marketplace (one marketplace — instruments and equipment, sell + rent)
+### Business (13)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/marketplace` | Market | Both | Tab bar | Sell and rent are one flow, split by a view toggle | [Open](http://localhost:8080/marketplace) |
-| `/marketplace/search` | Search | Both | Market header | Filtered search of listings | [Open](http://localhost:8080/marketplace/search) |
-| `/marketplace/nearby` | Nearby | Both | Market | Location-led listings | [Open](http://localhost:8080/marketplace/nearby) |
-| `/marketplace/c/$slug` | Category | Both | Market | Categories come from the taxonomy | — |
-| `/marketplace/l/$id` | Listing | Both | Market, search, links | One item for sale | — |
-| `/marketplace/seller/$id` | Seller | Both | Listing | Who is selling | — |
-| `/marketplace/saved` | Saved | Both | Market header | Listings kept for later | [Open](http://localhost:8080/marketplace/saved) |
-| `/marketplace/sell` | List an item | Both | Market | Create a sale listing | [Open](http://localhost:8080/marketplace/sell) |
-| `/marketplace/mine` | My listings | Both | Market header | The seller screen | [Open](http://localhost:8080/marketplace/mine) |
-| `/marketplace/rent` | → `/marketplace?view=Rent` | Both | Legacy links | Rent folds into Market | [Open](http://localhost:8080/marketplace/rent) |
-| `/marketplace/rent/search` | Rent search | Both | Market (Rent view) | Filtered search of rentals | [Open](http://localhost:8080/marketplace/rent/search) |
-| `/marketplace/rent/nearby` | Rent nearby | Both | Market (Rent view) | Location-led rentals | [Open](http://localhost:8080/marketplace/rent/nearby) |
-| `/marketplace/rent/c/$slug` | Rent category | Both | Market (Rent view) | Taxonomy within rent | — |
-| `/marketplace/rent/e/$id` | Rental item | Both | Rent views, links | One item for rent | — |
-| `/marketplace/rent/provider/$id` | Provider | Both | Rental item | Who is renting it out | — |
-| `/marketplace/rent/saved` | Saved rentals | Both | Rent view | Kept for later | [Open](http://localhost:8080/marketplace/rent/saved) |
-| `/marketplace/rent/list` | Rent something out | Both | Market | Create a rental listing | [Open](http://localhost:8080/marketplace/rent/list) |
-| `/marketplace/rent/listings` | My rental listings | Both | Rent view | What this account rents out | [Open](http://localhost:8080/marketplace/rent/listings) |
-| `/marketplace/rent/mine` | My rentals | Both | Rent view | What this account has rented | [Open](http://localhost:8080/marketplace/rent/mine) |
-| `/marketplace/rent/request/$id` | Rental request | Both | Rental item | Ask to rent, and its status | — |
-| `/marketplace/rent/active/$id` | Active rental | Both | My rentals | A rental in progress | — |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/business/$id/availability` | — | → redirect | subject in path | — |
+| `/business/$id/enquiry` | Enquiry | Business | subject in path | — |
+| `/business/$id/leads` | Leads | Business | subject in path | — |
+| `/business/availability` | Availability | Business |  | [open](http://localhost:8080/business/availability) |
+| `/business/bookings` | Requests and sessions for the spaces you run | Business |  | [open](http://localhost:8080/business/bookings) |
+| `/business/bookings/$ref` | Session | Business |  | — |
+| `/business/bookings/calendar` | Your studio | Business |  | [open](http://localhost:8080/business/bookings/calendar) |
+| `/business/bookings/requests` | Requests | Business |  | [open](http://localhost:8080/business/bookings/requests) |
+| `/business/bookings/requests/$ref` | Request | Business |  | — |
+| `/business/leads` | Leads | Business |  | [open](http://localhost:8080/business/leads) |
+| `/business/new` | Create a business | Business |  | [open](http://localhost:8080/business/new) |
+| `/business/policies` | Your space | Business |  | [open](http://localhost:8080/business/policies) |
+| `/business/pricing` | Pricing | Business |  | [open](http://localhost:8080/business/pricing) |
 
-## 10. Messages, notifications, reviews
+### Opportunities (12)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/messages` | Messages | Both | Tab bar | Every thread | [Open](http://localhost:8080/messages) |
-| `/conversation/$id` | Conversation | Both | Messages, contact buttons | One thread | — |
-| `/notifications` | Notifications | Both | Bell icon | Activity across the app | [Open](http://localhost:8080/notifications) |
-| `/notifications/settings` | Notification settings | Both | Notifications header | Choose what arrives | [Open](http://localhost:8080/notifications/settings) |
-| `/reviews` | Reviews | Both | Profile, business page | Reviews are a horizontal rail — no replies, no stat strips | [Open](http://localhost:8080/reviews) |
-| `/reviews/write/$id` | Write a review | Both | After a booking | Leave a review | — |
-| `/reviews/$id/edit` | Edit review | Author | Own review | Change a review | — |
-| `/reviews/$id/reply` | Reply | Subject | Review | Present in code, off in the reviews UI | — |
-| `/reviews/$id/report` | Report review | Both | Review overflow | Flag a review | — |
-| `/reviews/request` | Ask for a review | Both | Bookings, profile | Prompt a past client | [Open](http://localhost:8080/reviews/request) |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/opportunities` | Who needs what, right now | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities) |
+| `/opportunities/$id` | Opportunity | **Both** | subject in path | — |
+| `/opportunities/$id/analytics` | Performance | **Both** | subject in path | — |
+| `/opportunities/$id/applicants` | Applicants | **Both** | subject in path | — |
+| `/opportunities/$id/applicants/$aid` | Applicant | **Both** | subject in path | — |
+| `/opportunities/$id/apply` | Apply | **Both** | subject in path | — |
+| `/opportunities/$id/manage` | Manage | **Both** | subject in path | — |
+| `/opportunities/applications` | Applications never expire silently | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/applications) |
+| `/opportunities/applications/$aid` | Your application | **Both** | same rows, both cohorts | — |
+| `/opportunities/mine` | Posted by you | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/mine) |
+| `/opportunities/new` | Published | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/new) |
+| `/opportunities/search` | Search opportunities | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/search) |
 
-## 11. Identity / QR
+### Collabs & bands (12)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/identity/qr` | Your QR | T | Profile | Share the profile in person | [Open](http://localhost:8080/identity/qr) |
-| `/identity/business` | Business QR | B | Business dashboard | Same, for a business page | [Open](http://localhost:8080/identity/business) |
-| `/identity/scan` | Scan QR | Both | QR screen | Read someone else's code | [Open](http://localhost:8080/identity/scan) |
-| `/identity/q/$code` | Scanned code | Both | Camera / link | Resolves a code to a person or business | — |
-| `/identity/contact` | Digital card | Both | QR screen | The card a scan shows | [Open](http://localhost:8080/identity/contact) |
-| `/identity/contact/save` | Save contact | Both | Digital card | Into the phone's contacts | [Open](http://localhost:8080/identity/contact/save) |
-| `/identity/history` | Scanned QR history | Both | QR screen | Who was scanned, and when | [Open](http://localhost:8080/identity/history) |
-| `/identity/analytics` | QR analytics | Both | QR screen | How often the code is used | [Open](http://localhost:8080/identity/analytics) |
-| `/identity/print` | Print preview | Both | QR screen | A code for a flyer or case | [Open](http://localhost:8080/identity/print) |
-| `/identity/settings` | QR & sharing | Both | QR screen | What the code exposes | [Open](http://localhost:8080/identity/settings) |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/bands` | Groups, line-ups and open seats | **Both** | same rows, both cohorts | [open](http://localhost:8080/bands) |
+| `/bands/$id` | Band | **Both** | subject in path | — |
+| `/bands/$id/contact` | Contact | **Both** | subject in path | — |
+| `/bands/$id/events` | Shows | **Both** | subject in path | — |
+| `/bands/$id/invite` | Invite members | **Both** | subject in path | — |
+| `/bands/$id/manage` | Manage band | **Both** | subject in path | — |
+| `/bands/$id/portfolio` | Portfolio | → redirect | subject in path | — |
+| `/bands/new` | Create a band | **Both** | same rows, both cohorts | [open](http://localhost:8080/bands/new) |
+| `/collab` | Bands and projects you are in | **Both** | same rows, both cohorts | [open](http://localhost:8080/collab) |
+| `/collab/$id` | Collaboration | **Both** | subject in path | — |
+| `/collab/join/$token` | Join | **Both** | same rows, both cohorts | — |
+| `/collab/new` | Start a collab | → redirect |  | [open](http://localhost:8080/collab/new) |
 
-## 12. Verification
+### Marketplace (20)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/verification` | Verification | Both | Settings, profile | Current verification state | [Open](http://localhost:8080/verification) |
-| `/verification/choose` | Get verified | Both | Verification | Pick what to verify | [Open](http://localhost:8080/verification/choose) |
-| `/verification/$type` | Verify one thing | Both | Choose | The per-type flow | — |
-| `/verification/badge` | Your badge | Both | Verification | What others see once verified | [Open](http://localhost:8080/verification/badge) |
-| `/verification/privacy` | Document privacy | Both | Verify flow | What happens to uploaded documents | [Open](http://localhost:8080/verification/privacy) |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/marketplace` | Market | **Both** | same rows, both cohorts | [open](http://localhost:8080/marketplace) |
+| `/marketplace/c/$slug` | — | **Both** | subject in path | — |
+| `/marketplace/l/$id` | Listing unavailable | **Both** | subject in path | — |
+| `/marketplace/mine` | My listings | **Both** | same rows, both cohorts | [open](http://localhost:8080/marketplace/mine) |
+| `/marketplace/nearby` | Nearby | **Both** | same rows, both cohorts | [open](http://localhost:8080/marketplace/nearby) |
+| `/marketplace/rent` | — | → redirect |  | [open](http://localhost:8080/marketplace/rent) |
+| `/marketplace/rent/active/$id` | Rental not found | **Both** | subject in path | — |
+| `/marketplace/rent/c/$slug` | — | → redirect | subject in path | — |
+| `/marketplace/rent/e/$id` | — | → redirect | subject in path | — |
+| `/marketplace/rent/list` | — | → redirect |  | [open](http://localhost:8080/marketplace/rent/list) |
+| `/marketplace/rent/listings` | — | → redirect |  | [open](http://localhost:8080/marketplace/rent/listings) |
+| `/marketplace/rent/mine` | My rentals | **Both** | same rows, both cohorts | [open](http://localhost:8080/marketplace/rent/mine) |
+| `/marketplace/rent/nearby` | — | → redirect |  | [open](http://localhost:8080/marketplace/rent/nearby) |
+| `/marketplace/rent/provider/$id` | Provider | **Both** | subject in path | — |
+| `/marketplace/rent/request/$id` | Rental | **Both** | subject in path | — |
+| `/marketplace/rent/saved` | — | → redirect |  | [open](http://localhost:8080/marketplace/rent/saved) |
+| `/marketplace/rent/search` | — | → redirect |  | [open](http://localhost:8080/marketplace/rent/search) |
+| `/marketplace/search` | Search | **Both** | same rows, both cohorts | [open](http://localhost:8080/marketplace/search) |
+| `/marketplace/sell` | Create a Listing | **Both** | same rows, both cohorts | [open](http://localhost:8080/marketplace/sell) |
+| `/marketplace/seller/$id` | Seller | **Both** | subject in path | — |
 
-## 13. Settings, help, legal
+### Messages & notifications (4)
 
-| Route | Screen | Who | Entered from | Why | Open |
-| --- | --- | --- | --- | --- | --- |
-| `/settings` | Settings | Both | Profile menu | Settings index | [Open](http://localhost:8080/settings) |
-| `/settings/account` | Account | Both | Settings | Email, phone, account basics | [Open](http://localhost:8080/settings/account) |
-| `/settings/privacy` | Privacy | Both | Settings | What's visible to whom | [Open](http://localhost:8080/settings/privacy) |
-| `/settings/security` | Security | Both | Settings | Sessions and password | [Open](http://localhost:8080/settings/security) |
-| `/settings/security/2fa` | Two-step verification | Both | Security | Turn 2FA on | [Open](http://localhost:8080/settings/security/2fa) |
-| `/settings/spotify` | Spotify | T | Settings | Connect a music account | [Open](http://localhost:8080/settings/spotify) |
-| `/settings/delete-account` | Delete account | Both | Account | Leave for good | [Open](http://localhost:8080/settings/delete-account) |
-| `/help` | Help & guides | Both | Settings, footer | Support index | [Open](http://localhost:8080/help) |
-| `/help/category/$key` | Help category | Both | Help index | A group of articles | — |
-| `/help/$slug` | Help article | Both | Category, search | One article | — |
-| `/about` | About | Out | Footer | Marketing page | [Open](http://localhost:8080/about) |
-| `/contact` | Contact | Out | Footer | Reach the company | [Open](http://localhost:8080/contact) |
-| `/legal/terms` | Terms | Out | Footer, sign-up | Legal | [Open](http://localhost:8080/legal/terms) |
-| `/legal/privacy` | Privacy policy | Out | Footer, sign-up | Legal | [Open](http://localhost:8080/legal/privacy) |
-| `/legal/cookies` | Cookies | Out | Footer | Legal | [Open](http://localhost:8080/legal/cookies) |
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/conversation/$id` | Conversation | **Both** | subject in path | — |
+| `/messages` | Messages | **Both** | same rows, both cohorts | [open](http://localhost:8080/messages) |
+| `/notifications` | Notifications | **Both** | same rows, both cohorts | [open](http://localhost:8080/notifications) |
+| `/notifications/settings` | Channels and quiet hours | **Both** | same rows, both cohorts | [open](http://localhost:8080/notifications/settings) |
 
----
+### Reviews (6)
 
-## Notes
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/reviews` | Only from completed work | **Both** | same rows, both cohorts | [open](http://localhost:8080/reviews) |
+| `/reviews/$id/edit` | Edit review | **Both** | subject in path | — |
+| `/reviews/$id/reply` | — | → redirect | subject in path | — |
+| `/reviews/$id/report` | Report | **Both** | subject in path | — |
+| `/reviews/request` | Only people you actually worked with | **Both** | same rows, both cohorts | [open](http://localhost:8080/reviews/request) |
+| `/reviews/write/$id` | Write a review | **Both** | subject in path | — |
 
-- **Redirect-only routes** (no UI of their own): `/`, `/me`, `/feed`, `/band`, `/singers`, `/recommended`, `/talent/$id`, `/auth/success`, `/marketplace/rent`. They exist so older links and old vocabulary keep working.
-- **Payment screens are absent by design** — no checkout, billing, payout or plan routes.
-- Booking always starts by picking a service; enquiry is the separate, non-committal path.
-- Rent and sell are one marketplace; the `rent/*` routes are views inside it, not a second market.
+### Identity / QR (6)
+
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/identity/business` | — | → redirect |  | [open](http://localhost:8080/identity/business) |
+| `/identity/contact` | Digital card | **Both** | same rows, both cohorts | [open](http://localhost:8080/identity/contact) |
+| `/identity/contact/save` | Review before saving | **Both** | same rows, both cohorts | [open](http://localhost:8080/identity/contact/save) |
+| `/identity/q/$code` | Scanned code | **Both** | same rows, both cohorts | — |
+| `/identity/qr` | Your MusicLinkd ID | **Both** | `?as=business` | [open](http://localhost:8080/identity/qr) |
+| `/identity/scan` | MusicLinkd codes only | **Both** | same rows, both cohorts | [open](http://localhost:8080/identity/scan) |
+
+### Verification (5)
+
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/verification` | Trust signals across your profile | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification) |
+| `/verification/$type` | Verification | **Both** | same rows, both cohorts | — |
+| `/verification/badge` | One meaning, everywhere | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification/badge) |
+| `/verification/choose` | Pick the badge that fits you | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification/choose) |
+| `/verification/privacy` | What happens to what you upload | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification/privacy) |
+
+### Settings, help, legal (14)
+
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/about` | — | System |  | [open](http://localhost:8080/about) |
+| `/contact` | — | System |  | [open](http://localhost:8080/contact) |
+| `/help` | Written for working musicians | **Both** | same rows, both cohorts | [open](http://localhost:8080/help) |
+| `/help/$slug` | Not found | **Both** | subject in path | — |
+| `/help/category/$key` | — | **Both** | same rows, both cohorts | — |
+| `/legal/cookies` | — | System |  | [open](http://localhost:8080/legal/cookies) |
+| `/legal/privacy` | — | System |  | [open](http://localhost:8080/legal/privacy) |
+| `/legal/terms` | — | System |  | [open](http://localhost:8080/legal/terms) |
+| `/settings` | Account and preferences | Business |  | [open](http://localhost:8080/settings) |
+| `/settings/account` | Sign-in and basics | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/account) |
+| `/settings/delete-account` | This cannot be undone | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/delete-account) |
+| `/settings/privacy` | Who sees and contacts you | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/privacy) |
+| `/settings/security` | Password and devices | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/security) |
+| `/settings/spotify` | Spotify | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/spotify) |
+
+### Other (1)
+
+| Route | Screen | Serves | How one file serves both | UI |
+|---|---|---|---|---|
+| `/.lovable/oauth/consent` | Connect an app | → redirect |  | [open](http://localhost:8080/.lovable/oauth/consent) |

@@ -18,7 +18,7 @@ const ORDER = [
   "/onboarding",
   ...steps.map((s) => `/onboarding/step/${s.id}`),
   // The new user's first work (`?from=onboarding`), between the last question and Review profile.
-  "/portfolio/new",
+  "/portfolio",
   "/portfolio/new/$kind",
   "/portfolio/$id",
   "/onboarding/preview",
@@ -53,7 +53,7 @@ const flowPath = (loc: ParsedLocation) => {
   const p = clean(loc.pathname);
   if (p.startsWith("/portfolio/new/")) return "/portfolio/new/$kind";
   const fromOnboarding = (loc.search as { from?: unknown }).from === "onboarding";
-  if (fromOnboarding && /^\/portfolio\/[^/]+$/.test(p) && p !== "/portfolio/new") {
+  if (fromOnboarding && /^\/portfolio\/[^/]+$/.test(p)) {
     return "/portfolio/$id";
   }
   return p;

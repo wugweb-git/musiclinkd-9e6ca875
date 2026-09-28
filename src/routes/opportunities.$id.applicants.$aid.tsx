@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 import { ActionBar, Screen, TopBar, Btn, BtnLink, Sheet, VerifiedBadge } from "@/components/ml/ui";
+import { CollabKindSheet } from "@/components/ml/collab";
 import { Card, StatusPill, EmptyState, Dialog, Loading } from "@/components/ml/kit";
 import {
   listApplicants,
@@ -41,6 +42,7 @@ export const Route = createFileRoute("/opportunities/$id/applicants/$aid")({
  * (src/lib/fit.ts) and their review average, what they wrote, and the published work they attached.
  */
 function ApplicantDetail() {
+  const [starting, setStarting] = useState(false);
   const { id, aid } = Route.useParams();
   const { db: opportunity } = Route.useLoaderData();
   const { options: taxonomy } = useTaxonomy();
@@ -91,6 +93,7 @@ function ApplicantDetail() {
         <div className="px-5 pt-6">
           <Loading rows={3} />
         </div>
+        <CollabKindSheet open={starting} onClose={() => setStarting(false)} />
       </Screen>
     );
   }
@@ -242,9 +245,15 @@ function ApplicantDetail() {
 
       <Sheet open={hire} onClose={() => setHire(false)} title="How do you want to work together?">
         <div className="space-y-2">
-          <BtnLink to="/collab/new" className="w-full">
+          <Btn
+            className="w-full"
+            onClick={() => {
+              setHire(false);
+              setStarting(true);
+            }}
+          >
             Start a Collaboration
-          </BtnLink>
+          </Btn>
           <BtnLink to="/messages" variant="ghost" className="w-full">
             Keep Talking First
           </BtnLink>

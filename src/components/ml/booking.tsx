@@ -132,8 +132,8 @@ export function BookableHero({ b, back }: { b: Bookable; back?: string }) {
       {/* A studio is a business profile: its @username opens that profile. */}
       {b.username ? (
         <Link
-          to="/business/$id"
-          params={{ id: b.username }}
+          to="/profile/$username"
+          params={{ username: b.username }}
           className="mt-0.5 block text-sm text-muted-foreground"
         >
           @{b.username}

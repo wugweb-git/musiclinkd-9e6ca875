@@ -80,7 +80,7 @@ const views = [
   { label: "Buy", to: null },
   { label: "Rent", to: null },
   { label: "Nearby", to: null },
-  { label: "Saved", to: "/marketplace/saved" },
+  { label: "Bookmarked", to: "/saved" },
 ] as const;
 
 // SPEC-issue17's own reference case (Facebook's "Explore" pill) — the first real call site for
@@ -127,17 +127,6 @@ function MarketHome() {
   const showGrid = view !== "Explore" || active > 0;
   const forSale = allForSale.slice(0, 8);
   const forRent = allForRent.slice(0, 8);
-  // Listings opened on this device, most recent first, read live from the catalog. Goods only:
-  // services never sit in this rail.
-  const [viewed, setViewed] = useState<Listing[]>([]);
-  useEffect(() => {
-    const byId = new Map(catalog.map((l) => [l.id, l]));
-    setViewed(
-      readListingVisits()
-        .map((v) => byId.get(v.id))
-        .filter((l): l is Listing => !!l && (l.type === "product" || l.type === "rental")),
-    );
-  }, [catalog]);
 
   return (
     <Screen>
@@ -251,16 +240,6 @@ function MarketHome() {
         <SectionRow title="For rent" to="/marketplace" search={{ view: "Rent" }}>
           <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
             {forRent.map((l) => (
-              <ListingTile key={l.id} l={l} />
-            ))}
-          </div>
-        </SectionRow>
-      ) : null}
-
-      {!showGrid && viewed.length ? (
-        <SectionRow title="Recently viewed" to="/recently-viewed">
-          <div className="rail flex gap-3 overflow-x-auto px-5 pb-1 no-scrollbar">
-            {viewed.map((l) => (
               <ListingTile key={l.id} l={l} />
             ))}
           </div>

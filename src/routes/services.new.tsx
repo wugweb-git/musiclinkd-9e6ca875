@@ -466,7 +466,7 @@ function NewService() {
                       <p className="text-1 text-foreground">
                         Nothing in your portfolio yet. Add a piece of work first, then pick it here.
                       </p>
-                      <BtnLink to="/portfolio/new" variant="outline" className="mt-3 w-full">
+                      <BtnLink to="/portfolio" search={{ add: "1" }} variant="outline" className="mt-3 w-full">
                         Add to portfolio
                       </BtnLink>
                     </div>

@@ -8,6 +8,7 @@ import { EmptyState, Loading, Segmented } from "@/components/ml/kit";
 import { DrawerSearch } from "@/components/ml/drawer-list";
 import { Field, SheetMultiSelect } from "@/components/ml/listing-form";
 import { FilterButton, SortSheet, SwitchRow } from "@/components/ml/market";
+import { CollabKindSheet } from "@/components/ml/collab";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import {
   listMyCollabs,
@@ -124,6 +125,7 @@ function Collabs() {
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
+  const [starting, setStarting] = useState(false);
   const [sort, setSort] = useState(sorts[0]!);
   const [kind, setKind] = useState<string[]>([]);
   const [projectType, setProjectType] = useState<string[]>([]);
@@ -183,14 +185,14 @@ function Collabs() {
                 <FilterButton count={filterCount} onClick={() => setFiltersOpen(true)} />
               </>
             ) : null}
-            <BtnLink
-              to="/collab/new"
+            <Btn
               variant="ink"
               className="min-h-10 px-4"
               icon={<Plus size={iconSize.sm} aria-hidden />}
+              onClick={() => setStarting(true)}
             >
               New
-            </BtnLink>
+            </Btn>
           </div>
         }
       />
@@ -213,9 +215,9 @@ function Collabs() {
             title="No collaborations yet"
             body="Start a project with the people you are making something with, or join a band."
           >
-            <BtnLink to="/collab/new" className="w-full">
+            <Btn className="w-full" onClick={() => setStarting(true)}>
               Start a collab
-            </BtnLink>
+            </Btn>
           </EmptyState>
         ) : (
           <>
@@ -325,6 +327,7 @@ function Collabs() {
         onChange={setSort}
         options={sorts}
       />
+      <CollabKindSheet open={starting} onClose={() => setStarting(false)} />
     </Screen>
   );
 }

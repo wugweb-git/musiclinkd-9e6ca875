@@ -1,4 +1,4 @@
-import type { PersonProfile } from "./profile";
+import type { TalentProfile } from "./profile";
 
 /**
  * Profiles for the people and businesses the seed data links to: opportunity posters, applicants
@@ -11,7 +11,7 @@ import type { PersonProfile } from "./profile";
 export type LinkedProfileSeed = {
   /** `auth.users.id` and `profiles.id` in the live database. */
   id: string;
-  profile: PersonProfile;
+  profile: TalentProfile;
   db: {
     /** Onboarding role keys where one fits; otherwise the label itself. */
     roles: string[];

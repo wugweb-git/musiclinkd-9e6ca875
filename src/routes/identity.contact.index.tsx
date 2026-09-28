@@ -6,7 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Building2, Globe, Mail, Phone, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { QrCode, ActionRow, nativeShare } from "@/components/ml/qr";
-import { useMyIdentity } from "@/hooks/use-my-identity";
+import { useMyTalentIdentity } from "@/hooks/use-my-talent-identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/contact/")({
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/identity/contact/")({
 });
 
 function BusinessCard() {
-  const me = useMyIdentity();
+  const me = useMyTalentIdentity();
   const url = me.url;
   const shared = [
     me.phone ? { icon: <Phone size={iconSize.sm} />, label: me.phone, hint: "Mobile" } : null,

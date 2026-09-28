@@ -207,7 +207,7 @@ function OpportunityDetail() {
           <button
             type="button"
             onClick={() => toggle(o.id)}
-            aria-label={saved ? "Saved" : "Save"}
+            aria-label={saved ? "Bookmarked" : "Bookmark"}
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-border bg-background"
           >
             <Bookmark

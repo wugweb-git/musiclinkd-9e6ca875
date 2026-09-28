@@ -183,7 +183,7 @@ export type DashLink =
   | "/search"
   | "/studio"
   | "/bookings"
-  | "/portfolio/new"
+  | "/portfolio"
   | "/profile/edit"
   | "/opportunities"
   | "/opportunities/applications"

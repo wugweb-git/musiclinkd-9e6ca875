@@ -37,8 +37,8 @@ function NewWork() {
     <Screen bottomNav={false} className="pb-32">
       <TopBar
         title={`New ${t.label.toLowerCase()}`}
-        subtitle="Step 2 of 3 · Details"
-        back="/portfolio/new"
+        subtitle="Step 1 of 2 · Details"
+        back="/portfolio"
       />
       <main className="px-5 pt-4">
         <WorkForm kind={kind} signedIn={signedIn} fromOnboarding={from === "onboarding"} />

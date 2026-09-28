@@ -115,11 +115,12 @@ function NewCollab() {
     enabled: term.length >= 2,
   });
 
+  // Kind now comes from the drawer (CollabKindSheet), so the wizard has no Kind step of its own.
   const steps =
     kind === "band"
-      ? (["Kind", "Details", "People", "Preview"] as const)
-      : (["Kind", "Details", "Plan", "People", "Preview"] as const);
-  const current = steps[step] ?? "Kind";
+      ? (["Details", "People", "Preview"] as const)
+      : (["Details", "Plan", "People", "Preview"] as const);
+  const current = steps[step] ?? "Details";
   const last = step === steps.length - 1;
 
   const problems: Record<FieldName, string | null> = {
@@ -137,8 +138,7 @@ function NewCollab() {
     People: [],
     Preview: [],
   };
-  const stepOk = (s: string) =>
-    (s !== "Kind" || kind !== null) && (stepFields[s] ?? []).every((f) => !problems[f]);
+  const stepOk = (s: string) => (stepFields[s] ?? []).every((f) => !problems[f]);
   const err = (f: FieldName) => errors.errorFor(f, problems[f]);
 
   const roleOptions = talentTypes(taxonomy?.person_types ?? []).map((t) => ({
@@ -236,31 +236,6 @@ function NewCollab() {
       />
       <div className="px-5 pt-4">
         <StepProgress total={steps.length} current={step} />
-
-        {current === "Kind" ? (
-          <DrawerList label="What you are starting">
-            <DrawerOptionRow
-              option={{
-                value: "project",
-                label: "Project",
-                hint: "One piece of work — a single, an EP, a film score — that ends",
-                icon: Disc3,
-              }}
-              selected={kind === "project"}
-              onClick={() => setKind("project")}
-            />
-            <DrawerOptionRow
-              option={{
-                value: "band",
-                label: "Band",
-                hint: "An ongoing group of talent, with a public band page",
-                icon: Music2,
-              }}
-              selected={kind === "band"}
-              onClick={() => void navigate({ to: "/bands/new" })}
-            />
-          </DrawerList>
-        ) : null}
 
         {current === "Details" ? (
           <div className="space-y-5">
@@ -578,7 +553,7 @@ function NewCollab() {
           onCancel={() => void navigate({ to: "/collab" })}
           onBack={() => setStep(step - 1)}
           onNext={next}
-          disabled={!signedIn || (current === "Kind" && !kind)}
+          disabled={!signedIn || !kind}
           busy={publish.isPending}
           publishLabel={kind === "band" ? "Publish band" : "Start project"}
         />

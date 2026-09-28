@@ -26,6 +26,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/portfolio/")({
+  // ?add=1 opens the work-type drawer. Adding work is a drawer, not a screen (owner, 28 Sep 2026):
+  // /portfolio/new was a step-1 screen duplicating WorkTypeSheet, and is gone.
+  validateSearch: (search: Record<string, unknown>): { add?: "1" } =>
+    search["add"] === "1" ? { add: "1" } : {},
   head: () => ({
     meta: [
       { title: "Portfolio — MusicLinkd" },
@@ -47,9 +51,17 @@ export const Route = createFileRoute("/portfolio/")({
 });
 
 function PortfolioOverview() {
+  const search = Route.useSearch();
   const { signedIn, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
+  // ?add=1 is how every "add work" entry point across the app opens the drawer; adding work is a
+  // drawer, not a screen (owner, 28 Sep 2026), so /portfolio/new is gone.
+  useEffect(() => {
+    if (search.add === "1" || new URLSearchParams(window.location.search).get("add") === "1") {
+      setAdding(true);
+    }
+  }, [search.add]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [term, setTerm] = useState("");
   const searchInput = useRef<HTMLInputElement>(null);

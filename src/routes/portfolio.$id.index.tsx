@@ -231,7 +231,7 @@ function WorkDetail() {
               </IconBtn>
               {own ? (
                 <IconBtnLink
-                  to="/portfolio/new"
+                  to="/portfolio" search={{ add: "1" }}
                   label="Add Another Work"
                   variant="outline"
                   className="h-11 w-11"

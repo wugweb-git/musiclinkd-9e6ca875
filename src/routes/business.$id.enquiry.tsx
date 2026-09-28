@@ -60,7 +60,7 @@ function BusinessEnquiry() {
   if (!b) {
     return (
       <Screen>
-        <TopBar title="Enquiry" back="/business" />
+        <TopBar title="Enquiry" back="/discover" />
         <div className="px-5 pt-6">
           <EmptyState
             title="Business not found"
@@ -74,7 +74,7 @@ function BusinessEnquiry() {
   if (sent) {
     return (
       <Screen>
-        <TopBar title="Enquiry sent" back={`/business/${b.id}`} />
+        <TopBar title="Enquiry sent" back={`/profile/${b.id}`} />
         <div className="space-y-4 px-5 pt-6">
           <Card className="text-center">
             <CheckCircle2 size={40} className="mx-auto text-primary" aria-hidden />
@@ -90,7 +90,12 @@ function BusinessEnquiry() {
               Open Conversation
             </BtnLink>
           ) : null}
-          <BtnLink to="/business/$id" params={{ id: b.id }} variant="ghost" className="w-full">
+          <BtnLink
+            to="/profile/$username"
+            params={{ username: b.id }}
+            variant="ghost"
+            className="w-full"
+          >
             Back to {b.name}
           </BtnLink>
         </div>
@@ -100,7 +105,7 @@ function BusinessEnquiry() {
 
   return (
     <Screen>
-      <TopBar title="Enquire" subtitle={b.name} back={`/business/${b.id}`} />
+      <TopBar title="Enquire" subtitle={b.name} back={`/profile/${b.id}`} />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>

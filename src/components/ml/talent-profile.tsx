@@ -34,7 +34,7 @@ import {
   type LucideIcon,
   UserRound,
 } from "lucide-react";
-import { profileIdByUsername, type PersonProfile, type profileInsights } from "@/data/profile";
+import { profileIdByUsername, type TalentProfile, type profileInsights } from "@/data/profile";
 import type { WorkKind } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 import { Btn, BtnLink, Chip, IconBtn, IconBtnLink, Screen } from "./ui";
@@ -99,13 +99,13 @@ const addWork = (label: string, kind: WorkKind): ProfileEmptyCta => ({
   kind,
 });
 
-export function PersonProfileExperience({
+export function TalentProfileExperience({
   p,
   owner = false,
   onPickImage,
   onGalleryChange,
 }: {
-  p: PersonProfile;
+  p: TalentProfile;
   owner?: boolean;
   /** Owner only: uploads a chosen photo or cover and saves it to the profile. */
   onPickImage?: ((kind: "avatar" | "cover", file: File) => Promise<void>) | undefined;
@@ -468,9 +468,6 @@ function OwnerActions({
           <Share2 size={iconSize.md} aria-hidden />
         </IconBtn>
       ) : null}
-      <IconBtnLink to="/profile/insights" label="Stats" variant="outline" className="h-11 w-11">
-        <BarChart3 size={iconSize.md} aria-hidden />
-      </IconBtnLink>
       {/* A preview action stays a preview: without a username there is no public page to view yet,
           so this tells you that instead of silently opening Edit under the same "preview" icon. */}
       {username ? (
@@ -505,7 +502,7 @@ function Overview({
   owner,
   onTab,
 }: {
-  p: PersonProfile;
+  p: TalentProfile;
   playingId: string | null;
   onToggleTrack: (id: string) => void;
   onHire: () => void;
@@ -615,7 +612,7 @@ function Portfolio({
   owner,
   onGalleryChange,
 }: {
-  p: PersonProfile;
+  p: TalentProfile;
   playingId: string | null;
   onToggleTrack: (id: string) => void;
   owner: boolean;
@@ -719,7 +716,7 @@ function Portfolio({
   );
 }
 
-function Services({ p, onHire }: { p: PersonProfile; onHire: () => void }) {
+function Services({ p, onHire }: { p: TalentProfile; onHire: () => void }) {
   return (
     <ProfileSection title="Services">
       <div className="space-y-3">
@@ -739,7 +736,7 @@ function Services({ p, onHire }: { p: PersonProfile; onHire: () => void }) {
   );
 }
 
-function About({ p }: { p: PersonProfile }) {
+function About({ p }: { p: TalentProfile }) {
   return (
     <>
       <ProfileSection title="About">
@@ -810,7 +807,7 @@ function About({ p }: { p: PersonProfile }) {
   );
 }
 
-function Reviews({ p, owner }: { p: PersonProfile; owner: boolean }) {
+function Reviews({ p, owner }: { p: TalentProfile; owner: boolean }) {
   return (
     <>
       <ProfileSection title="Reviews">
@@ -869,7 +866,7 @@ function IdentityFact({ icon, label, value }: { icon: ReactNode; label: string; 
   );
 }
 
-function RelationshipSections({ p }: { p: PersonProfile }) {
+function RelationshipSections({ p }: { p: TalentProfile }) {
   return (
     <>
       {p.opportunities.length ? (
@@ -922,7 +919,7 @@ function RelationshipSections({ p }: { p: PersonProfile }) {
 }
 
 /** The person's types (Violinist, Producer…): shown in Music identity, not under the name. */
-function typesOf(p: PersonProfile) {
+function typesOf(p: TalentProfile) {
   return [p.primaryRole, ...p.secondaryRoles].filter(Boolean);
 }
 
@@ -974,7 +971,7 @@ function BentoChip({ children }: { children: ReactNode }) {
  * grid, one card per group, Genres spanning both columns. Content-rich sections like this read
  * better as cards than as one long chip list.
  */
-function MusicIdentityBento({ p }: { p: PersonProfile }) {
+function MusicIdentityBento({ p }: { p: TalentProfile }) {
   const types = typesOf(p);
   return (
     <div className="grid grid-cols-2 gap-2.5">

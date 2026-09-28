@@ -282,15 +282,7 @@ function Scanner() {
           </>
         )}
 
-        <div className="mt-6 flex flex-col gap-2">
-          <p className="pill px-1 bg-subtle text-muted-foreground">Recently scanned</p>
-          <ActionRow
-            icon={<ShieldQuestion size={iconSize.sm} />}
-            label="Scanned QR history"
-            hint="Everyone you've scanned"
-            onClick={() => void nav({ to: "/identity/history" })}
-          />
-        </div>
+        <div className="mt-6 flex flex-col gap-2"></div>
       </main>
     </Screen>
   );

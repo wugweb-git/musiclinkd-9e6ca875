@@ -78,7 +78,7 @@ export function SaveButton({
   return (
     <button
       type="button"
-      aria-label={saved ? "Remove from saved" : "Save listing"}
+      aria-label={saved ? "Remove bookmark" : "Bookmark listing"}
       aria-pressed={saved}
       onClick={(e) => {
         e.preventDefault();
@@ -381,7 +381,7 @@ export function ProductCard({
           ) : null}
           <button
             type="button"
-            aria-label={isSaved ? "Remove from saved" : "Save"}
+            aria-label={isSaved ? "Remove bookmark" : "Bookmark"}
             aria-pressed={isSaved}
             onClick={(e) => {
               e.preventDefault();

@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMyIdentity } from "@/hooks/use-my-identity";
+import { useQrSubject, type QrSubjectKind } from "@/hooks/use-qr-subject";
 import { saveMyProfile } from "@/lib/portfolio.functions";
 import { Screen, Btn, BtnLink, Sheet } from "@/components/ml/ui";
 import {
@@ -42,6 +42,10 @@ import { qrStyles, type QrStyle } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/qr")({
+  // One screen, two subjects: ?as=business shows the business page's code. A second hand-written
+  // screen drifts from the first, so /identity/business redirects here (owner, 28 Sep 2026).
+  validateSearch: (search: Record<string, unknown>): { as?: QrSubjectKind } =>
+    search["as"] === "business" ? { as: "business" } : {},
   head: () => ({
     meta: [
       { title: "Your MusicLinkd ID — QR & digital identity" },
@@ -67,7 +71,8 @@ function DigitalId() {
   const [phase, setPhase] = useState<"loading" | "ready" | "offline">("loading");
   const [share, setShare] = useState(false);
   const [look, setLook] = useState(false);
-  const me = useMyIdentity();
+  const { as } = Route.useSearch();
+  const me = useQrSubject(as ?? "talent");
   const url = me.url;
   const style = me.qrStyle;
   const save = useServerFn(saveMyProfile);
@@ -133,16 +138,20 @@ function DigitalId() {
             ) : (
               // No username, no public address: there is nothing honest to put in a code yet.
               <div className="mt-6 rounded-3xl bg-background/10 p-5 text-center">
-                <h1 className="text-2 font-semibold">Claim your username first</h1>
+                <h1 className="text-2 font-semibold">
+                  {me.exists ? "Claim your username first" : "No business on this account"}
+                </h1>
                 <p className="mt-1 text-1 text-background/70">
-                  Your code points at your public profile, and that needs a username.
+                  {me.exists
+                    ? "Your code points at your public profile, and that needs a username."
+                    : "A business QR belongs to a business page. Switch to it, or add one."}
                 </p>
                 <BtnLink
-                  to="/profile/edit"
+                  to={me.exists ? "/profile/edit" : "/accounts"}
                   variant="ghost"
                   className="mt-4 w-full bg-background text-foreground"
                 >
-                  Set Username
+                  {me.exists ? "Set Username" : "Switch Account"}
                 </BtnLink>
               </div>
             )}
@@ -170,14 +179,16 @@ function DigitalId() {
               >
                 Share
               </Btn>
-              <Btn
-                variant="ghost"
-                className="min-w-0 flex-1 border border-background/25 px-3 text-background"
-                icon={<Palette size={iconSize.sm} aria-hidden />}
-                onClick={() => setLook(true)}
-              >
-                Style
-              </Btn>
+              {me.styleable ? (
+                <Btn
+                  variant="ghost"
+                  className="min-w-0 flex-1 border border-background/25 px-3 text-background"
+                  icon={<Palette size={iconSize.sm} aria-hidden />}
+                  onClick={() => setLook(true)}
+                >
+                  Style
+                </Btn>
+              ) : null}
             </div>
           </>
         )}
@@ -204,25 +215,9 @@ function DigitalId() {
               icon={<Building2 size={iconSize.sm} />}
               label="Business QR"
               hint="A code for a studio, label or venue you run"
-              to="/identity/business"
+              to="/identity/qr"
+              search={{ as: "business" }}
               soon
-            />
-            <ActionRow
-              icon={<Printer size={iconSize.sm} />}
-              label="Print preview"
-              hint="Card, poster, studio sign, badge"
-              to="/identity/print"
-            />
-            <ActionRow
-              icon={<History size={iconSize.sm} />}
-              label="Scanned QR history"
-              to="/identity/history"
-            />
-            <ActionRow
-              icon={<BarChart3 size={iconSize.sm} />}
-              label="QR analytics"
-              hint="Total scans, unique people, recent activity"
-              to="/identity/analytics"
             />
           </div>
 

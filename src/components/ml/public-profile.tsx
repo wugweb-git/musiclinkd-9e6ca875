@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { notFound, redirect } from "@tanstack/react-router";
 import { BusinessProfileExperience } from "@/components/ml/business-profile";
-import { PersonProfileExperience } from "@/components/ml/person-profile";
+import { TalentProfileExperience } from "@/components/ml/talent-profile";
 import { businessViewFromRecord } from "@/lib/business-view";
 import { profileUrl } from "@/lib/site";
 import {
@@ -169,7 +169,7 @@ export function PublicProfileScreen({
       {view ? (
         <BusinessProfileExperience b={view} work={person} />
       ) : (
-        <PersonProfileExperience p={person!} />
+        <TalentProfileExperience p={person!} />
       )}
     </>
   );

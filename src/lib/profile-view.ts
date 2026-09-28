@@ -7,7 +7,7 @@ import {
   type AvailabilityState,
   type MarketEntry,
   type OpportunityItem,
-  type PersonProfile,
+  type TalentProfile,
   type ProfileRole,
   type ProjectItem,
   type ReleaseItem,
@@ -95,7 +95,7 @@ const roleTypeFromKey: Record<string, ProfileRole> = {
  * The base for a real profile with no seed: identity from its own row, every section empty. Never a
  * template person, so the screen shows empty states for whatever the record does not hold.
  */
-export function profileFromRow(row: ProfileRow): PersonProfile {
+export function profileFromRow(row: ProfileRow): TalentProfile {
   return {
     ...emptySections(),
     ...(row.id ? { profileId: row.id } : {}),
@@ -112,10 +112,10 @@ export function profileFromRow(row: ProfileRow): PersonProfile {
 }
 
 export function mergeProfileRow(
-  base: PersonProfile,
+  base: TalentProfile,
   row: ProfileRow | null | undefined,
   labels?: TaxonomyLabels,
-): PersonProfile {
+): TalentProfile {
   if (!row) return base;
   const primary = roleLabel(row.roles?.[0], labels);
   const profileId = row.id;
@@ -381,7 +381,7 @@ function storedMarket(sections: ProfileSections, labels: TaxonomyLabels | undefi
   });
 }
 
-function storedStudio(sections: ProfileSections): PersonProfile["studio"] {
+function storedStudio(sections: ProfileSections): TalentProfile["studio"] {
   const studio = sections.studios[0];
   if (!studio) return undefined;
   const price = priceParts(studio.hourly_rate_paise, "hr");
@@ -398,10 +398,10 @@ function storedStudio(sections: ProfileSections): PersonProfile["studio"] {
  * exactly what they showed before; stored rows fill the sections that are empty.
  */
 export function mergeSections(
-  base: PersonProfile,
+  base: TalentProfile,
   sections: ProfileSections | null | undefined,
   labels?: TaxonomyLabels,
-): PersonProfile {
+): TalentProfile {
   if (!sections) return base;
   const fromPortfolio = portfolioSections(sections.portfolio);
   const pick = <T>(current: T[], stored: T[]) => (current.length ? current : stored);

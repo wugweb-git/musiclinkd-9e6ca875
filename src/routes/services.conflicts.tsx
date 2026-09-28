@@ -85,11 +85,7 @@ function ConflictsContent() {
 
   return (
     <Screen>
-      <TopBar
-        title="Conflicts"
-        subtitle="Overlaps across your services"
-        back="/services/availability"
-      />
+      <TopBar title="Conflicts" subtitle="Overlaps across your services" back="/services" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <Card>
@@ -198,7 +194,12 @@ function ConflictsContent() {
           <EmptyState title="No conflicts" body="Your calendar is clean." />
         )}
 
-        <BtnLink to="/services/availability" variant="outline" className="w-full">
+        <BtnLink
+          to="/profile/edit"
+          search={{ section: "availability" }}
+          variant="outline"
+          className="w-full"
+        >
           <CalendarClock size={iconSize.sm} className="mr-2 inline" aria-hidden />
           Adjust Availability
         </BtnLink>

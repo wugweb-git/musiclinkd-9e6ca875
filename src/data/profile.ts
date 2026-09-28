@@ -130,7 +130,7 @@ export type MarketEntry = {
   params?: LinkProps["params"];
 };
 
-export type PersonProfile = {
+export type TalentProfile = {
   username: string;
   /** profiles.id, when this view came from the database. Connect and Follow need it. */
   profileId?: string | undefined;
@@ -201,7 +201,7 @@ const shots = [
  * record lacks renders the screen's empty state instead of someone else's work.
  */
 export function emptySections(): Omit<
-  PersonProfile,
+  TalentProfile,
   "username" | "name" | "photo" | "headline" | "primaryRole" | "location"
 > {
   return {
@@ -255,7 +255,7 @@ export const profileIdByUsername: Record<string, string> = {
   "ravi.deshmukh": "565f053c-eacc-50cb-854d-d5d2bc06b64e",
 };
 
-const rahul: PersonProfile = {
+const rahul: TalentProfile = {
   profileId: "5a7466b9-2422-5d5d-9460-ee61b2002f13",
   username: "rahul.iyer",
   name: "Rahul Iyer",
@@ -775,7 +775,7 @@ const rahul: PersonProfile = {
   ],
 };
 
-const ananya: PersonProfile = {
+const ananya: TalentProfile = {
   ...emptySections(),
   profileId: "1783effb-4fcb-59dc-a6e4-76131013c3d4",
   username: "ananya.sharma",

@@ -130,16 +130,17 @@ function OpportunitiesHome() {
           />
           <Row
             icon={<Bookmark size={iconSize.sm} />}
-            title="Saved"
+            title="Bookmarked"
             subtitle="Shortlist"
-            to="/opportunities/saved"
+            to="/saved"
           />
         </div>
         <Row
           icon={<Users size={iconSize.sm} />}
           title="Projects you can join"
           subtitle="Work in progress looking for collaborators"
-          to="/discover/projects"
+          to="/discover/$slug"
+          params={{ slug: "projects" }}
         />
 
         <section>

@@ -22,7 +22,7 @@ type Contact = {
  * there is no identity: every field is empty and there is no URL to encode. Shares the ["profile","me"] query used by
  * Settings, so a change there (or here) is visible everywhere without a refetch.
  */
-export function useMyIdentity() {
+export function useMyTalentIdentity() {
   const { signedIn, loading, user } = useAuth();
   const load = useServerFn(getMyProfile);
   const loadLabels = useServerFn(getTaxonomyLabels);

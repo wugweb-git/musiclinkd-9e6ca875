@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Check, UserRoundPlus } from "lucide-react";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { StateCard, ActionRow } from "@/components/ml/qr";
-import { useMyIdentity } from "@/hooks/use-my-identity";
+import { useMyTalentIdentity } from "@/hooks/use-my-talent-identity";
 import { iconSize } from "@/lib/tokens";
 
 export const Route = createFileRoute("/identity/contact/save")({
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/identity/contact/save")({
 });
 
 /** A real .vcf a phone can open straight into its own "add contact" screen. */
-function vCard(me: ReturnType<typeof useMyIdentity>): string {
+function vCard(me: ReturnType<typeof useMyTalentIdentity>): string {
   const lines = [
     "BEGIN:VCARD",
     "VERSION:3.0",
@@ -43,7 +43,7 @@ function vCard(me: ReturnType<typeof useMyIdentity>): string {
 }
 
 function SaveContact() {
-  const me = useMyIdentity();
+  const me = useMyTalentIdentity();
   const [phase, setPhase] = useState<"ready" | "saving" | "done" | "error">("ready");
 
   function save() {

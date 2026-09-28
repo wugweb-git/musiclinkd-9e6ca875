@@ -328,6 +328,7 @@ export function ActionRow({
   hint,
   onClick,
   to,
+  search,
   soon,
 }: {
   icon: ReactNode;
@@ -335,6 +336,8 @@ export function ActionRow({
   hint?: string;
   onClick?: () => void;
   to?: LinkProps["to"];
+  /** Search params for `to`, so one screen with a subject param can be linked without a second row. */
+  search?: LinkProps["search"];
   /** Screen exists but has no backend yet — show, but don't link. */
   soon?: boolean;
 }) {
@@ -360,7 +363,7 @@ export function ActionRow({
   }
   if (to) {
     return (
-      <Link to={to} className={cls}>
+      <Link to={to} {...(search ? { search } : {})} className={cls}>
         {inner}
       </Link>
     );

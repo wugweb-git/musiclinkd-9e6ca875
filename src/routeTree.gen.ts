@@ -13,14 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as HandleRouteImport } from './routes/$handle'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountsRouteImport } from './routes/accounts'
-import { Route as BandRouteImport } from './routes/band'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as FeedRouteImport } from './routes/feed'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
-import { Route as RecentlyViewedRouteImport } from './routes/recently-viewed'
-import { Route as RecommendedRouteImport } from './routes/recommended'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SingersRouteImport } from './routes/singers'
@@ -40,38 +36,27 @@ import { Route as BandsIndexRouteImport } from './routes/bands.index'
 import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
-import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as BusinessAvailabilityRouteImport } from './routes/business.availability'
 import { Route as BusinessLeadsRouteImport } from './routes/business.leads'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as BusinessPoliciesRouteImport } from './routes/business.policies'
 import { Route as BusinessPricingRouteImport } from './routes/business.pricing'
-import { Route as CategoriesIndexRouteImport } from './routes/categories.index'
-import { Route as CategoriesSlugRouteImport } from './routes/categories.$slug'
 import { Route as CollabIndexRouteImport } from './routes/collab.index'
 import { Route as ConversationIdRouteImport } from './routes/conversation.$id'
 import { Route as DevNewUserRouteImport } from './routes/dev.new-user'
 import { Route as DiscoverIndexRouteImport } from './routes/discover.index'
-import { Route as DiscoverCommunityRouteImport } from './routes/discover.community'
-import { Route as DiscoverMusicRouteImport } from './routes/discover.music'
-import { Route as DiscoverNearbyRouteImport } from './routes/discover.nearby'
-import { Route as DiscoverProjectsRouteImport } from './routes/discover.projects'
+import { Route as DiscoverSlugRouteImport } from './routes/discover.$slug'
 import { Route as HelpIndexRouteImport } from './routes/help.index'
 import { Route as HelpSlugRouteImport } from './routes/help.$slug'
-import { Route as IdentityAnalyticsRouteImport } from './routes/identity.analytics'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
-import { Route as IdentityHistoryRouteImport } from './routes/identity.history'
-import { Route as IdentityPrintRouteImport } from './routes/identity.print'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
 import { Route as IdentityScanRouteImport } from './routes/identity.scan'
-import { Route as IdentitySettingsRouteImport } from './routes/identity.settings'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
-import { Route as MarketplaceSavedRouteImport } from './routes/marketplace/saved'
 import { Route as MarketplaceSearchRouteImport } from './routes/marketplace/search'
 import { Route as MarketplaceSellRouteImport } from './routes/marketplace/sell'
 import { Route as NotificationsIndexRouteImport } from './routes/notifications.index'
@@ -85,21 +70,16 @@ import { Route as OnboardingSkipRouteImport } from './routes/onboarding/skip'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
 import { Route as OpportunitiesMineRouteImport } from './routes/opportunities.mine'
 import { Route as OpportunitiesNewRouteImport } from './routes/opportunities.new'
-import { Route as OpportunitiesSavedRouteImport } from './routes/opportunities.saved'
 import { Route as OpportunitiesSearchRouteImport } from './routes/opportunities.search'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioAnalyticsRouteImport } from './routes/portfolio.analytics'
 import { Route as ProfileIndexRouteImport } from './routes/profile.index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile.$username'
 import { Route as ProfileEditRouteImport } from './routes/profile.edit'
-import { Route as ProfileInsightsRouteImport } from './routes/profile.insights'
-import { Route as RecommendationsSettingsRouteImport } from './routes/recommendations.settings'
-import { Route as RecommendationsSwipeRouteImport } from './routes/recommendations.swipe'
 import { Route as ReviewsIndexRouteImport } from './routes/reviews.index'
 import { Route as ReviewsRequestRouteImport } from './routes/reviews.request'
 import { Route as SearchIndexRouteImport } from './routes/search.index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
-import { Route as ServicesAvailabilityRouteImport } from './routes/services.availability'
 import { Route as ServicesConflictsRouteImport } from './routes/services.conflicts'
 import { Route as ServicesNewRouteImport } from './routes/services.new'
 import { Route as SettingsIndexRouteImport } from './routes/settings.index'
@@ -127,18 +107,9 @@ import { Route as BookingIdReviewRouteImport } from './routes/booking.$id.review
 import { Route as BookingIdScheduleRouteImport } from './routes/booking.$id.schedule'
 import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.service'
 import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confirmed.$ref'
-import { Route as BusinessIdIndexRouteImport } from './routes/business.$id.index'
-import { Route as BusinessIdAnalyticsRouteImport } from './routes/business.$id.analytics'
 import { Route as BusinessIdAvailabilityRouteImport } from './routes/business.$id.availability'
-import { Route as BusinessIdDashboardRouteImport } from './routes/business.$id.dashboard'
 import { Route as BusinessIdEnquiryRouteImport } from './routes/business.$id.enquiry'
 import { Route as BusinessIdLeadsRouteImport } from './routes/business.$id.leads'
-import { Route as BusinessIdManageRouteImport } from './routes/business.$id.manage'
-import { Route as BusinessIdPortfolioRouteImport } from './routes/business.$id.portfolio'
-import { Route as BusinessIdReviewsRouteImport } from './routes/business.$id.reviews'
-import { Route as BusinessIdServicesRouteImport } from './routes/business.$id.services'
-import { Route as BusinessIdTeamRouteImport } from './routes/business.$id.team'
-import { Route as BusinessIdVerificationRouteImport } from './routes/business.$id.verification'
 import { Route as BusinessBookingsIndexRouteImport } from './routes/business.bookings.index'
 import { Route as BusinessBookingsRefRouteImport } from './routes/business.bookings.$ref'
 import { Route as BusinessBookingsCalendarRouteImport } from './routes/business.bookings.calendar'
@@ -168,7 +139,6 @@ import { Route as OpportunitiesApplicationsIndexRouteImport } from './routes/opp
 import { Route as OpportunitiesApplicationsAidRouteImport } from './routes/opportunities.applications.$aid'
 import { Route as PortfolioIdIndexRouteImport } from './routes/portfolio.$id.index'
 import { Route as PortfolioIdEditRouteImport } from './routes/portfolio.$id.edit'
-import { Route as PortfolioNewIndexRouteImport } from './routes/portfolio.new.index'
 import { Route as PortfolioNewKindRouteImport } from './routes/portfolio.new.$kind'
 import { Route as ReviewsIdEditRouteImport } from './routes/reviews.$id.edit'
 import { Route as ReviewsIdReplyRouteImport } from './routes/reviews.$id.reply'
@@ -209,19 +179,9 @@ const AccountsRoute = AccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BandRoute = BandRouteImport.update({
-  id: '/band',
-  path: '/band',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FeedRoute = FeedRouteImport.update({
-  id: '/feed',
-  path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -237,16 +197,6 @@ const MeRoute = MeRouteImport.update({
 const MessagesRoute = MessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecentlyViewedRoute = RecentlyViewedRouteImport.update({
-  id: '/recently-viewed',
-  path: '/recently-viewed',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecommendedRoute = RecommendedRouteImport.update({
-  id: '/recommended',
-  path: '/recommended',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -344,11 +294,6 @@ const BookingsIndexRoute = BookingsIndexRouteImport.update({
   path: '/bookings/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BusinessIndexRoute = BusinessIndexRouteImport.update({
-  id: '/business/',
-  path: '/business/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BusinessAvailabilityRoute = BusinessAvailabilityRouteImport.update({
   id: '/business/availability',
   path: '/business/availability',
@@ -374,16 +319,6 @@ const BusinessPricingRoute = BusinessPricingRouteImport.update({
   path: '/business/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriesIndexRoute = CategoriesIndexRouteImport.update({
-  id: '/categories/',
-  path: '/categories/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CategoriesSlugRoute = CategoriesSlugRouteImport.update({
-  id: '/categories/$slug',
-  path: '/categories/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CollabIndexRoute = CollabIndexRouteImport.update({
   id: '/collab/',
   path: '/collab/',
@@ -404,24 +339,9 @@ const DiscoverIndexRoute = DiscoverIndexRouteImport.update({
   path: '/discover/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DiscoverCommunityRoute = DiscoverCommunityRouteImport.update({
-  id: '/discover/community',
-  path: '/discover/community',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoverMusicRoute = DiscoverMusicRouteImport.update({
-  id: '/discover/music',
-  path: '/discover/music',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoverNearbyRoute = DiscoverNearbyRouteImport.update({
-  id: '/discover/nearby',
-  path: '/discover/nearby',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiscoverProjectsRoute = DiscoverProjectsRouteImport.update({
-  id: '/discover/projects',
-  path: '/discover/projects',
+const DiscoverSlugRoute = DiscoverSlugRouteImport.update({
+  id: '/discover/$slug',
+  path: '/discover/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpIndexRoute = HelpIndexRouteImport.update({
@@ -434,24 +354,9 @@ const HelpSlugRoute = HelpSlugRouteImport.update({
   path: '/help/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IdentityAnalyticsRoute = IdentityAnalyticsRouteImport.update({
-  id: '/identity/analytics',
-  path: '/identity/analytics',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IdentityBusinessRoute = IdentityBusinessRouteImport.update({
   id: '/identity/business',
   path: '/identity/business',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentityHistoryRoute = IdentityHistoryRouteImport.update({
-  id: '/identity/history',
-  path: '/identity/history',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentityPrintRoute = IdentityPrintRouteImport.update({
-  id: '/identity/print',
-  path: '/identity/print',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IdentityQrRoute = IdentityQrRouteImport.update({
@@ -462,11 +367,6 @@ const IdentityQrRoute = IdentityQrRouteImport.update({
 const IdentityScanRoute = IdentityScanRouteImport.update({
   id: '/identity/scan',
   path: '/identity/scan',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentitySettingsRoute = IdentitySettingsRouteImport.update({
-  id: '/identity/settings',
-  path: '/identity/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalCookiesRoute = LegalCookiesRouteImport.update({
@@ -497,11 +397,6 @@ const MarketplaceMineRoute = MarketplaceMineRouteImport.update({
 const MarketplaceNearbyRoute = MarketplaceNearbyRouteImport.update({
   id: '/marketplace/nearby',
   path: '/marketplace/nearby',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MarketplaceSavedRoute = MarketplaceSavedRouteImport.update({
-  id: '/marketplace/saved',
-  path: '/marketplace/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceSearchRoute = MarketplaceSearchRouteImport.update({
@@ -569,11 +464,6 @@ const OpportunitiesNewRoute = OpportunitiesNewRouteImport.update({
   path: '/opportunities/new',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OpportunitiesSavedRoute = OpportunitiesSavedRouteImport.update({
-  id: '/opportunities/saved',
-  path: '/opportunities/saved',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OpportunitiesSearchRoute = OpportunitiesSearchRouteImport.update({
   id: '/opportunities/search',
   path: '/opportunities/search',
@@ -604,21 +494,6 @@ const ProfileEditRoute = ProfileEditRouteImport.update({
   path: '/profile/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProfileInsightsRoute = ProfileInsightsRouteImport.update({
-  id: '/profile/insights',
-  path: '/profile/insights',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecommendationsSettingsRoute = RecommendationsSettingsRouteImport.update({
-  id: '/recommendations/settings',
-  path: '/recommendations/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecommendationsSwipeRoute = RecommendationsSwipeRouteImport.update({
-  id: '/recommendations/swipe',
-  path: '/recommendations/swipe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ReviewsIndexRoute = ReviewsIndexRouteImport.update({
   id: '/reviews/',
   path: '/reviews/',
@@ -637,11 +512,6 @@ const SearchIndexRoute = SearchIndexRouteImport.update({
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/services/',
   path: '/services/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicesAvailabilityRoute = ServicesAvailabilityRouteImport.update({
-  id: '/services/availability',
-  path: '/services/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesConflictsRoute = ServicesConflictsRouteImport.update({
@@ -779,24 +649,9 @@ const BookingConfirmedRefRoute = BookingConfirmedRefRouteImport.update({
   path: '/booking/confirmed/$ref',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BusinessIdIndexRoute = BusinessIdIndexRouteImport.update({
-  id: '/business/$id/',
-  path: '/business/$id/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdAnalyticsRoute = BusinessIdAnalyticsRouteImport.update({
-  id: '/business/$id/analytics',
-  path: '/business/$id/analytics',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BusinessIdAvailabilityRoute = BusinessIdAvailabilityRouteImport.update({
   id: '/business/$id/availability',
   path: '/business/$id/availability',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdDashboardRoute = BusinessIdDashboardRouteImport.update({
-  id: '/business/$id/dashboard',
-  path: '/business/$id/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessIdEnquiryRoute = BusinessIdEnquiryRouteImport.update({
@@ -807,36 +662,6 @@ const BusinessIdEnquiryRoute = BusinessIdEnquiryRouteImport.update({
 const BusinessIdLeadsRoute = BusinessIdLeadsRouteImport.update({
   id: '/business/$id/leads',
   path: '/business/$id/leads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdManageRoute = BusinessIdManageRouteImport.update({
-  id: '/business/$id/manage',
-  path: '/business/$id/manage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdPortfolioRoute = BusinessIdPortfolioRouteImport.update({
-  id: '/business/$id/portfolio',
-  path: '/business/$id/portfolio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdReviewsRoute = BusinessIdReviewsRouteImport.update({
-  id: '/business/$id/reviews',
-  path: '/business/$id/reviews',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdServicesRoute = BusinessIdServicesRouteImport.update({
-  id: '/business/$id/services',
-  path: '/business/$id/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdTeamRoute = BusinessIdTeamRouteImport.update({
-  id: '/business/$id/team',
-  path: '/business/$id/team',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessIdVerificationRoute = BusinessIdVerificationRouteImport.update({
-  id: '/business/$id/verification',
-  path: '/business/$id/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessBookingsIndexRoute = BusinessBookingsIndexRouteImport.update({
@@ -988,11 +813,6 @@ const PortfolioIdEditRoute = PortfolioIdEditRouteImport.update({
   path: '/portfolio/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PortfolioNewIndexRoute = PortfolioNewIndexRouteImport.update({
-  id: '/portfolio/new/',
-  path: '/portfolio/new/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PortfolioNewKindRoute = PortfolioNewKindRouteImport.update({
   id: '/portfolio/new/$kind',
   path: '/portfolio/new/$kind',
@@ -1100,14 +920,10 @@ export interface FileRoutesByFullPath {
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/band': typeof BandRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRoute
   '/home': typeof HomeRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/recently-viewed': typeof RecentlyViewedRoute
-  '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/singers': typeof SingersRoute
@@ -1129,27 +945,18 @@ export interface FileRoutesByFullPath {
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
-  '/categories/$slug': typeof CategoriesSlugRoute
   '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
-  '/discover/community': typeof DiscoverCommunityRoute
-  '/discover/music': typeof DiscoverMusicRoute
-  '/discover/nearby': typeof DiscoverNearbyRoute
-  '/discover/projects': typeof DiscoverProjectsRoute
+  '/discover/$slug': typeof DiscoverSlugRoute
   '/help/$slug': typeof HelpSlugRoute
-  '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
-  '/identity/history': typeof IdentityHistoryRoute
-  '/identity/print': typeof IdentityPrintRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
-  '/identity/settings': typeof IdentitySettingsRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
-  '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/notifications/settings': typeof NotificationsSettingsRoute
@@ -1160,16 +967,11 @@ export interface FileRoutesByFullPath {
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/opportunities/mine': typeof OpportunitiesMineRoute
   '/opportunities/new': typeof OpportunitiesNewRoute
-  '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
-  '/profile/insights': typeof ProfileInsightsRoute
-  '/recommendations/settings': typeof RecommendationsSettingsRoute
-  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
-  '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -1184,8 +986,6 @@ export interface FileRoutesByFullPath {
   '/auth/': typeof AuthIndexRoute
   '/bands/': typeof BandsIndexRoute
   '/bookings/': typeof BookingsIndexRoute
-  '/business/': typeof BusinessIndexRoute
-  '/categories/': typeof CategoriesIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/discover/': typeof DiscoverIndexRoute
   '/help/': typeof HelpIndexRoute
@@ -1212,17 +1012,9 @@ export interface FileRoutesByFullPath {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
-  '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
-  '/business/$id/dashboard': typeof BusinessIdDashboardRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
   '/business/$id/leads': typeof BusinessIdLeadsRoute
-  '/business/$id/manage': typeof BusinessIdManageRoute
-  '/business/$id/portfolio': typeof BusinessIdPortfolioRoute
-  '/business/$id/reviews': typeof BusinessIdReviewsRoute
-  '/business/$id/services': typeof BusinessIdServicesRoute
-  '/business/$id/team': typeof BusinessIdTeamRoute
-  '/business/$id/verification': typeof BusinessIdVerificationRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1254,7 +1046,6 @@ export interface FileRoutesByFullPath {
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
-  '/business/$id/': typeof BusinessIdIndexRoute
   '/business/bookings/': typeof BusinessBookingsIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/collab/new/': typeof CollabNewIndexRoute
@@ -1263,7 +1054,6 @@ export interface FileRoutesByFullPath {
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
-  '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
   '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1281,14 +1071,10 @@ export interface FileRoutesByTo {
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/band': typeof BandRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRoute
   '/home': typeof HomeRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/recently-viewed': typeof RecentlyViewedRoute
-  '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/singers': typeof SingersRoute
@@ -1309,27 +1095,18 @@ export interface FileRoutesByTo {
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
-  '/categories/$slug': typeof CategoriesSlugRoute
   '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
-  '/discover/community': typeof DiscoverCommunityRoute
-  '/discover/music': typeof DiscoverMusicRoute
-  '/discover/nearby': typeof DiscoverNearbyRoute
-  '/discover/projects': typeof DiscoverProjectsRoute
+  '/discover/$slug': typeof DiscoverSlugRoute
   '/help/$slug': typeof HelpSlugRoute
-  '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
-  '/identity/history': typeof IdentityHistoryRoute
-  '/identity/print': typeof IdentityPrintRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
-  '/identity/settings': typeof IdentitySettingsRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
-  '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/notifications/settings': typeof NotificationsSettingsRoute
@@ -1340,16 +1117,11 @@ export interface FileRoutesByTo {
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/opportunities/mine': typeof OpportunitiesMineRoute
   '/opportunities/new': typeof OpportunitiesNewRoute
-  '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
-  '/profile/insights': typeof ProfileInsightsRoute
-  '/recommendations/settings': typeof RecommendationsSettingsRoute
-  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
-  '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -1364,8 +1136,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/bands': typeof BandsIndexRoute
   '/bookings': typeof BookingsIndexRoute
-  '/business': typeof BusinessIndexRoute
-  '/categories': typeof CategoriesIndexRoute
   '/collab': typeof CollabIndexRoute
   '/discover': typeof DiscoverIndexRoute
   '/help': typeof HelpIndexRoute
@@ -1392,17 +1162,9 @@ export interface FileRoutesByTo {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
-  '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
-  '/business/$id/dashboard': typeof BusinessIdDashboardRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
   '/business/$id/leads': typeof BusinessIdLeadsRoute
-  '/business/$id/manage': typeof BusinessIdManageRoute
-  '/business/$id/portfolio': typeof BusinessIdPortfolioRoute
-  '/business/$id/reviews': typeof BusinessIdReviewsRoute
-  '/business/$id/services': typeof BusinessIdServicesRoute
-  '/business/$id/team': typeof BusinessIdTeamRoute
-  '/business/$id/verification': typeof BusinessIdVerificationRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1434,7 +1196,6 @@ export interface FileRoutesByTo {
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/bands/$id': typeof BandsIdIndexRoute
   '/booking/$id': typeof BookingIdIndexRoute
-  '/business/$id': typeof BusinessIdIndexRoute
   '/business/bookings': typeof BusinessBookingsIndexRoute
   '/collab/$id': typeof CollabIdIndexRoute
   '/collab/new': typeof CollabNewIndexRoute
@@ -1443,7 +1204,6 @@ export interface FileRoutesByTo {
   '/opportunities/$id': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id': typeof PortfolioIdIndexRoute
-  '/portfolio/new': typeof PortfolioNewIndexRoute
   '/services/$id': typeof ServicesIdIndexRoute
   '/settings/security': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1462,14 +1222,10 @@ export interface FileRoutesById {
   '/$handle': typeof HandleRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/band': typeof BandRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRoute
   '/home': typeof HomeRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
-  '/recently-viewed': typeof RecentlyViewedRoute
-  '/recommended': typeof RecommendedRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
   '/singers': typeof SingersRoute
@@ -1491,27 +1247,18 @@ export interface FileRoutesById {
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
-  '/categories/$slug': typeof CategoriesSlugRoute
   '/conversation/$id': typeof ConversationIdRoute
   '/dev/new-user': typeof DevNewUserRoute
-  '/discover/community': typeof DiscoverCommunityRoute
-  '/discover/music': typeof DiscoverMusicRoute
-  '/discover/nearby': typeof DiscoverNearbyRoute
-  '/discover/projects': typeof DiscoverProjectsRoute
+  '/discover/$slug': typeof DiscoverSlugRoute
   '/help/$slug': typeof HelpSlugRoute
-  '/identity/analytics': typeof IdentityAnalyticsRoute
   '/identity/business': typeof IdentityBusinessRoute
-  '/identity/history': typeof IdentityHistoryRoute
-  '/identity/print': typeof IdentityPrintRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
-  '/identity/settings': typeof IdentitySettingsRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
-  '/marketplace/saved': typeof MarketplaceSavedRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
   '/marketplace/sell': typeof MarketplaceSellRoute
   '/notifications/settings': typeof NotificationsSettingsRoute
@@ -1522,16 +1269,11 @@ export interface FileRoutesById {
   '/onboarding/skip': typeof OnboardingSkipRoute
   '/opportunities/mine': typeof OpportunitiesMineRoute
   '/opportunities/new': typeof OpportunitiesNewRoute
-  '/opportunities/saved': typeof OpportunitiesSavedRoute
   '/opportunities/search': typeof OpportunitiesSearchRoute
   '/portfolio/analytics': typeof PortfolioAnalyticsRoute
   '/profile/$username': typeof ProfileUsernameRoute
   '/profile/edit': typeof ProfileEditRoute
-  '/profile/insights': typeof ProfileInsightsRoute
-  '/recommendations/settings': typeof RecommendationsSettingsRoute
-  '/recommendations/swipe': typeof RecommendationsSwipeRoute
   '/reviews/request': typeof ReviewsRequestRoute
-  '/services/availability': typeof ServicesAvailabilityRoute
   '/services/conflicts': typeof ServicesConflictsRoute
   '/services/new': typeof ServicesNewRoute
   '/settings/account': typeof SettingsAccountRoute
@@ -1546,8 +1288,6 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/bands/': typeof BandsIndexRoute
   '/bookings/': typeof BookingsIndexRoute
-  '/business/': typeof BusinessIndexRoute
-  '/categories/': typeof CategoriesIndexRoute
   '/collab/': typeof CollabIndexRoute
   '/discover/': typeof DiscoverIndexRoute
   '/help/': typeof HelpIndexRoute
@@ -1574,17 +1314,9 @@ export interface FileRoutesById {
   '/booking/$id/schedule': typeof BookingIdScheduleRoute
   '/booking/$id/service': typeof BookingIdServiceRoute
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
-  '/business/$id/analytics': typeof BusinessIdAnalyticsRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
-  '/business/$id/dashboard': typeof BusinessIdDashboardRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
   '/business/$id/leads': typeof BusinessIdLeadsRoute
-  '/business/$id/manage': typeof BusinessIdManageRoute
-  '/business/$id/portfolio': typeof BusinessIdPortfolioRoute
-  '/business/$id/reviews': typeof BusinessIdReviewsRoute
-  '/business/$id/services': typeof BusinessIdServicesRoute
-  '/business/$id/team': typeof BusinessIdTeamRoute
-  '/business/$id/verification': typeof BusinessIdVerificationRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1616,7 +1348,6 @@ export interface FileRoutesById {
   '/services/$id/manage': typeof ServicesIdManageRoute
   '/bands/$id/': typeof BandsIdIndexRoute
   '/booking/$id/': typeof BookingIdIndexRoute
-  '/business/$id/': typeof BusinessIdIndexRoute
   '/business/bookings/': typeof BusinessBookingsIndexRoute
   '/collab/$id/': typeof CollabIdIndexRoute
   '/collab/new/': typeof CollabNewIndexRoute
@@ -1625,7 +1356,6 @@ export interface FileRoutesById {
   '/opportunities/$id/': typeof OpportunitiesIdIndexRoute
   '/opportunities/applications/': typeof OpportunitiesApplicationsIndexRoute
   '/portfolio/$id/': typeof PortfolioIdIndexRoute
-  '/portfolio/new/': typeof PortfolioNewIndexRoute
   '/services/$id/': typeof ServicesIdIndexRoute
   '/settings/security/': typeof SettingsSecurityIndexRoute
   '/business/bookings/requests/$ref': typeof BusinessBookingsRequestsRefRoute
@@ -1645,14 +1375,10 @@ export interface FileRouteTypes {
     | '/$handle'
     | '/about'
     | '/accounts'
-    | '/band'
     | '/contact'
-    | '/feed'
     | '/home'
     | '/me'
     | '/messages'
-    | '/recently-viewed'
-    | '/recommended'
     | '/reset-password'
     | '/saved'
     | '/singers'
@@ -1674,27 +1400,18 @@ export interface FileRouteTypes {
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
-    | '/categories/$slug'
     | '/conversation/$id'
     | '/dev/new-user'
-    | '/discover/community'
-    | '/discover/music'
-    | '/discover/nearby'
-    | '/discover/projects'
+    | '/discover/$slug'
     | '/help/$slug'
-    | '/identity/analytics'
     | '/identity/business'
-    | '/identity/history'
-    | '/identity/print'
     | '/identity/qr'
     | '/identity/scan'
-    | '/identity/settings'
     | '/legal/cookies'
     | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
-    | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
     | '/notifications/settings'
@@ -1705,16 +1422,11 @@ export interface FileRouteTypes {
     | '/onboarding/skip'
     | '/opportunities/mine'
     | '/opportunities/new'
-    | '/opportunities/saved'
     | '/opportunities/search'
     | '/portfolio/analytics'
     | '/profile/$username'
     | '/profile/edit'
-    | '/profile/insights'
-    | '/recommendations/settings'
-    | '/recommendations/swipe'
     | '/reviews/request'
-    | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
@@ -1729,8 +1441,6 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/bands/'
     | '/bookings/'
-    | '/business/'
-    | '/categories/'
     | '/collab/'
     | '/discover/'
     | '/help/'
@@ -1757,17 +1467,9 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
-    | '/business/$id/analytics'
     | '/business/$id/availability'
-    | '/business/$id/dashboard'
     | '/business/$id/enquiry'
     | '/business/$id/leads'
-    | '/business/$id/manage'
-    | '/business/$id/portfolio'
-    | '/business/$id/reviews'
-    | '/business/$id/services'
-    | '/business/$id/team'
-    | '/business/$id/verification'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1799,7 +1501,6 @@ export interface FileRouteTypes {
     | '/services/$id/manage'
     | '/bands/$id/'
     | '/booking/$id/'
-    | '/business/$id/'
     | '/business/bookings/'
     | '/collab/$id/'
     | '/collab/new/'
@@ -1808,7 +1509,6 @@ export interface FileRouteTypes {
     | '/opportunities/$id/'
     | '/opportunities/applications/'
     | '/portfolio/$id/'
-    | '/portfolio/new/'
     | '/services/$id/'
     | '/settings/security/'
     | '/business/bookings/requests/$ref'
@@ -1826,14 +1526,10 @@ export interface FileRouteTypes {
     | '/$handle'
     | '/about'
     | '/accounts'
-    | '/band'
     | '/contact'
-    | '/feed'
     | '/home'
     | '/me'
     | '/messages'
-    | '/recently-viewed'
-    | '/recommended'
     | '/reset-password'
     | '/saved'
     | '/singers'
@@ -1854,27 +1550,18 @@ export interface FileRouteTypes {
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
-    | '/categories/$slug'
     | '/conversation/$id'
     | '/dev/new-user'
-    | '/discover/community'
-    | '/discover/music'
-    | '/discover/nearby'
-    | '/discover/projects'
+    | '/discover/$slug'
     | '/help/$slug'
-    | '/identity/analytics'
     | '/identity/business'
-    | '/identity/history'
-    | '/identity/print'
     | '/identity/qr'
     | '/identity/scan'
-    | '/identity/settings'
     | '/legal/cookies'
     | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
-    | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
     | '/notifications/settings'
@@ -1885,16 +1572,11 @@ export interface FileRouteTypes {
     | '/onboarding/skip'
     | '/opportunities/mine'
     | '/opportunities/new'
-    | '/opportunities/saved'
     | '/opportunities/search'
     | '/portfolio/analytics'
     | '/profile/$username'
     | '/profile/edit'
-    | '/profile/insights'
-    | '/recommendations/settings'
-    | '/recommendations/swipe'
     | '/reviews/request'
-    | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
@@ -1909,8 +1591,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/bands'
     | '/bookings'
-    | '/business'
-    | '/categories'
     | '/collab'
     | '/discover'
     | '/help'
@@ -1937,17 +1617,9 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
-    | '/business/$id/analytics'
     | '/business/$id/availability'
-    | '/business/$id/dashboard'
     | '/business/$id/enquiry'
     | '/business/$id/leads'
-    | '/business/$id/manage'
-    | '/business/$id/portfolio'
-    | '/business/$id/reviews'
-    | '/business/$id/services'
-    | '/business/$id/team'
-    | '/business/$id/verification'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1979,7 +1651,6 @@ export interface FileRouteTypes {
     | '/services/$id/manage'
     | '/bands/$id'
     | '/booking/$id'
-    | '/business/$id'
     | '/business/bookings'
     | '/collab/$id'
     | '/collab/new'
@@ -1988,7 +1659,6 @@ export interface FileRouteTypes {
     | '/opportunities/$id'
     | '/opportunities/applications'
     | '/portfolio/$id'
-    | '/portfolio/new'
     | '/services/$id'
     | '/settings/security'
     | '/business/bookings/requests/$ref'
@@ -2006,14 +1676,10 @@ export interface FileRouteTypes {
     | '/$handle'
     | '/about'
     | '/accounts'
-    | '/band'
     | '/contact'
-    | '/feed'
     | '/home'
     | '/me'
     | '/messages'
-    | '/recently-viewed'
-    | '/recommended'
     | '/reset-password'
     | '/saved'
     | '/singers'
@@ -2035,27 +1701,18 @@ export interface FileRouteTypes {
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
-    | '/categories/$slug'
     | '/conversation/$id'
     | '/dev/new-user'
-    | '/discover/community'
-    | '/discover/music'
-    | '/discover/nearby'
-    | '/discover/projects'
+    | '/discover/$slug'
     | '/help/$slug'
-    | '/identity/analytics'
     | '/identity/business'
-    | '/identity/history'
-    | '/identity/print'
     | '/identity/qr'
     | '/identity/scan'
-    | '/identity/settings'
     | '/legal/cookies'
     | '/legal/privacy'
     | '/legal/terms'
     | '/marketplace/mine'
     | '/marketplace/nearby'
-    | '/marketplace/saved'
     | '/marketplace/search'
     | '/marketplace/sell'
     | '/notifications/settings'
@@ -2066,16 +1723,11 @@ export interface FileRouteTypes {
     | '/onboarding/skip'
     | '/opportunities/mine'
     | '/opportunities/new'
-    | '/opportunities/saved'
     | '/opportunities/search'
     | '/portfolio/analytics'
     | '/profile/$username'
     | '/profile/edit'
-    | '/profile/insights'
-    | '/recommendations/settings'
-    | '/recommendations/swipe'
     | '/reviews/request'
-    | '/services/availability'
     | '/services/conflicts'
     | '/services/new'
     | '/settings/account'
@@ -2090,8 +1742,6 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/bands/'
     | '/bookings/'
-    | '/business/'
-    | '/categories/'
     | '/collab/'
     | '/discover/'
     | '/help/'
@@ -2118,17 +1768,9 @@ export interface FileRouteTypes {
     | '/booking/$id/schedule'
     | '/booking/$id/service'
     | '/booking/confirmed/$ref'
-    | '/business/$id/analytics'
     | '/business/$id/availability'
-    | '/business/$id/dashboard'
     | '/business/$id/enquiry'
     | '/business/$id/leads'
-    | '/business/$id/manage'
-    | '/business/$id/portfolio'
-    | '/business/$id/reviews'
-    | '/business/$id/services'
-    | '/business/$id/team'
-    | '/business/$id/verification'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -2160,7 +1802,6 @@ export interface FileRouteTypes {
     | '/services/$id/manage'
     | '/bands/$id/'
     | '/booking/$id/'
-    | '/business/$id/'
     | '/business/bookings/'
     | '/collab/$id/'
     | '/collab/new/'
@@ -2169,7 +1810,6 @@ export interface FileRouteTypes {
     | '/opportunities/$id/'
     | '/opportunities/applications/'
     | '/portfolio/$id/'
-    | '/portfolio/new/'
     | '/services/$id/'
     | '/settings/security/'
     | '/business/bookings/requests/$ref'
@@ -2188,14 +1828,10 @@ export interface RootRouteChildren {
   HandleRoute: typeof HandleRoute
   AboutRoute: typeof AboutRoute
   AccountsRoute: typeof AccountsRoute
-  BandRoute: typeof BandRoute
   ContactRoute: typeof ContactRoute
-  FeedRoute: typeof FeedRoute
   HomeRoute: typeof HomeRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
-  RecentlyViewedRoute: typeof RecentlyViewedRoute
-  RecommendedRoute: typeof RecommendedRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
   SingersRoute: typeof SingersRoute
@@ -2217,27 +1853,18 @@ export interface RootRouteChildren {
   BusinessNewRoute: typeof BusinessNewRoute
   BusinessPoliciesRoute: typeof BusinessPoliciesRoute
   BusinessPricingRoute: typeof BusinessPricingRoute
-  CategoriesSlugRoute: typeof CategoriesSlugRoute
   ConversationIdRoute: typeof ConversationIdRoute
   DevNewUserRoute: typeof DevNewUserRoute
-  DiscoverCommunityRoute: typeof DiscoverCommunityRoute
-  DiscoverMusicRoute: typeof DiscoverMusicRoute
-  DiscoverNearbyRoute: typeof DiscoverNearbyRoute
-  DiscoverProjectsRoute: typeof DiscoverProjectsRoute
+  DiscoverSlugRoute: typeof DiscoverSlugRoute
   HelpSlugRoute: typeof HelpSlugRoute
-  IdentityAnalyticsRoute: typeof IdentityAnalyticsRoute
   IdentityBusinessRoute: typeof IdentityBusinessRoute
-  IdentityHistoryRoute: typeof IdentityHistoryRoute
-  IdentityPrintRoute: typeof IdentityPrintRoute
   IdentityQrRoute: typeof IdentityQrRoute
   IdentityScanRoute: typeof IdentityScanRoute
-  IdentitySettingsRoute: typeof IdentitySettingsRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalTermsRoute: typeof LegalTermsRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
-  MarketplaceSavedRoute: typeof MarketplaceSavedRoute
   MarketplaceSearchRoute: typeof MarketplaceSearchRoute
   MarketplaceSellRoute: typeof MarketplaceSellRoute
   NotificationsSettingsRoute: typeof NotificationsSettingsRoute
@@ -2248,16 +1875,11 @@ export interface RootRouteChildren {
   OnboardingSkipRoute: typeof OnboardingSkipRoute
   OpportunitiesMineRoute: typeof OpportunitiesMineRoute
   OpportunitiesNewRoute: typeof OpportunitiesNewRoute
-  OpportunitiesSavedRoute: typeof OpportunitiesSavedRoute
   OpportunitiesSearchRoute: typeof OpportunitiesSearchRoute
   PortfolioAnalyticsRoute: typeof PortfolioAnalyticsRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
   ProfileEditRoute: typeof ProfileEditRoute
-  ProfileInsightsRoute: typeof ProfileInsightsRoute
-  RecommendationsSettingsRoute: typeof RecommendationsSettingsRoute
-  RecommendationsSwipeRoute: typeof RecommendationsSwipeRoute
   ReviewsRequestRoute: typeof ReviewsRequestRoute
-  ServicesAvailabilityRoute: typeof ServicesAvailabilityRoute
   ServicesConflictsRoute: typeof ServicesConflictsRoute
   ServicesNewRoute: typeof ServicesNewRoute
   SettingsAccountRoute: typeof SettingsAccountRoute
@@ -2272,8 +1894,6 @@ export interface RootRouteChildren {
   AuthIndexRoute: typeof AuthIndexRoute
   BandsIndexRoute: typeof BandsIndexRoute
   BookingsIndexRoute: typeof BookingsIndexRoute
-  BusinessIndexRoute: typeof BusinessIndexRoute
-  CategoriesIndexRoute: typeof CategoriesIndexRoute
   CollabIndexRoute: typeof CollabIndexRoute
   DiscoverIndexRoute: typeof DiscoverIndexRoute
   HelpIndexRoute: typeof HelpIndexRoute
@@ -2295,17 +1915,9 @@ export interface RootRouteChildren {
   BandsIdManageRoute: typeof BandsIdManageRoute
   BandsIdPortfolioRoute: typeof BandsIdPortfolioRoute
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
-  BusinessIdAnalyticsRoute: typeof BusinessIdAnalyticsRoute
   BusinessIdAvailabilityRoute: typeof BusinessIdAvailabilityRoute
-  BusinessIdDashboardRoute: typeof BusinessIdDashboardRoute
   BusinessIdEnquiryRoute: typeof BusinessIdEnquiryRoute
   BusinessIdLeadsRoute: typeof BusinessIdLeadsRoute
-  BusinessIdManageRoute: typeof BusinessIdManageRoute
-  BusinessIdPortfolioRoute: typeof BusinessIdPortfolioRoute
-  BusinessIdReviewsRoute: typeof BusinessIdReviewsRoute
-  BusinessIdServicesRoute: typeof BusinessIdServicesRoute
-  BusinessIdTeamRoute: typeof BusinessIdTeamRoute
-  BusinessIdVerificationRoute: typeof BusinessIdVerificationRoute
   BusinessBookingsRefRoute: typeof BusinessBookingsRefRoute
   BusinessBookingsCalendarRoute: typeof BusinessBookingsCalendarRoute
   CollabJoinTokenRoute: typeof CollabJoinTokenRoute
@@ -2336,7 +1948,6 @@ export interface RootRouteChildren {
   ServicesIdEnquiryRoute: typeof ServicesIdEnquiryRoute
   ServicesIdManageRoute: typeof ServicesIdManageRoute
   BandsIdIndexRoute: typeof BandsIdIndexRoute
-  BusinessIdIndexRoute: typeof BusinessIdIndexRoute
   BusinessBookingsIndexRoute: typeof BusinessBookingsIndexRoute
   CollabIdIndexRoute: typeof CollabIdIndexRoute
   CollabNewIndexRoute: typeof CollabNewIndexRoute
@@ -2345,7 +1956,6 @@ export interface RootRouteChildren {
   OpportunitiesIdIndexRoute: typeof OpportunitiesIdIndexRoute
   OpportunitiesApplicationsIndexRoute: typeof OpportunitiesApplicationsIndexRoute
   PortfolioIdIndexRoute: typeof PortfolioIdIndexRoute
-  PortfolioNewIndexRoute: typeof PortfolioNewIndexRoute
   ServicesIdIndexRoute: typeof ServicesIdIndexRoute
   SettingsSecurityIndexRoute: typeof SettingsSecurityIndexRoute
   BusinessBookingsRequestsRefRoute: typeof BusinessBookingsRequestsRefRoute
@@ -2389,25 +1999,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/band': {
-      id: '/band'
-      path: '/band'
-      fullPath: '/band'
-      preLoaderRoute: typeof BandRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/feed': {
-      id: '/feed'
-      path: '/feed'
-      fullPath: '/feed'
-      preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -2429,20 +2025,6 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recently-viewed': {
-      id: '/recently-viewed'
-      path: '/recently-viewed'
-      fullPath: '/recently-viewed'
-      preLoaderRoute: typeof RecentlyViewedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recommended': {
-      id: '/recommended'
-      path: '/recommended'
-      fullPath: '/recommended'
-      preLoaderRoute: typeof RecommendedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -2578,13 +2160,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/business/': {
-      id: '/business/'
-      path: '/business'
-      fullPath: '/business/'
-      preLoaderRoute: typeof BusinessIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/business/availability': {
       id: '/business/availability'
       path: '/business/availability'
@@ -2620,20 +2195,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessPricingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/categories/': {
-      id: '/categories/'
-      path: '/categories'
-      fullPath: '/categories/'
-      preLoaderRoute: typeof CategoriesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/categories/$slug': {
-      id: '/categories/$slug'
-      path: '/categories/$slug'
-      fullPath: '/categories/$slug'
-      preLoaderRoute: typeof CategoriesSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/collab/': {
       id: '/collab/'
       path: '/collab'
@@ -2662,32 +2223,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DiscoverIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/discover/community': {
-      id: '/discover/community'
-      path: '/discover/community'
-      fullPath: '/discover/community'
-      preLoaderRoute: typeof DiscoverCommunityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discover/music': {
-      id: '/discover/music'
-      path: '/discover/music'
-      fullPath: '/discover/music'
-      preLoaderRoute: typeof DiscoverMusicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discover/nearby': {
-      id: '/discover/nearby'
-      path: '/discover/nearby'
-      fullPath: '/discover/nearby'
-      preLoaderRoute: typeof DiscoverNearbyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/discover/projects': {
-      id: '/discover/projects'
-      path: '/discover/projects'
-      fullPath: '/discover/projects'
-      preLoaderRoute: typeof DiscoverProjectsRouteImport
+    '/discover/$slug': {
+      id: '/discover/$slug'
+      path: '/discover/$slug'
+      fullPath: '/discover/$slug'
+      preLoaderRoute: typeof DiscoverSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/help/': {
@@ -2704,32 +2244,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HelpSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/identity/analytics': {
-      id: '/identity/analytics'
-      path: '/identity/analytics'
-      fullPath: '/identity/analytics'
-      preLoaderRoute: typeof IdentityAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/identity/business': {
       id: '/identity/business'
       path: '/identity/business'
       fullPath: '/identity/business'
       preLoaderRoute: typeof IdentityBusinessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity/history': {
-      id: '/identity/history'
-      path: '/identity/history'
-      fullPath: '/identity/history'
-      preLoaderRoute: typeof IdentityHistoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity/print': {
-      id: '/identity/print'
-      path: '/identity/print'
-      fullPath: '/identity/print'
-      preLoaderRoute: typeof IdentityPrintRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/identity/qr': {
@@ -2744,13 +2263,6 @@ declare module '@tanstack/react-router' {
       path: '/identity/scan'
       fullPath: '/identity/scan'
       preLoaderRoute: typeof IdentityScanRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identity/settings': {
-      id: '/identity/settings'
-      path: '/identity/settings'
-      fullPath: '/identity/settings'
-      preLoaderRoute: typeof IdentitySettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal/cookies': {
@@ -2793,13 +2305,6 @@ declare module '@tanstack/react-router' {
       path: '/marketplace/nearby'
       fullPath: '/marketplace/nearby'
       preLoaderRoute: typeof MarketplaceNearbyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/marketplace/saved': {
-      id: '/marketplace/saved'
-      path: '/marketplace/saved'
-      fullPath: '/marketplace/saved'
-      preLoaderRoute: typeof MarketplaceSavedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/search': {
@@ -2893,13 +2398,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/opportunities/saved': {
-      id: '/opportunities/saved'
-      path: '/opportunities/saved'
-      fullPath: '/opportunities/saved'
-      preLoaderRoute: typeof OpportunitiesSavedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/opportunities/search': {
       id: '/opportunities/search'
       path: '/opportunities/search'
@@ -2942,27 +2440,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileEditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile/insights': {
-      id: '/profile/insights'
-      path: '/profile/insights'
-      fullPath: '/profile/insights'
-      preLoaderRoute: typeof ProfileInsightsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recommendations/settings': {
-      id: '/recommendations/settings'
-      path: '/recommendations/settings'
-      fullPath: '/recommendations/settings'
-      preLoaderRoute: typeof RecommendationsSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recommendations/swipe': {
-      id: '/recommendations/swipe'
-      path: '/recommendations/swipe'
-      fullPath: '/recommendations/swipe'
-      preLoaderRoute: typeof RecommendationsSwipeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/reviews/': {
       id: '/reviews/'
       path: '/reviews'
@@ -2989,13 +2466,6 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services/'
       preLoaderRoute: typeof ServicesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/services/availability': {
-      id: '/services/availability'
-      path: '/services/availability'
-      fullPath: '/services/availability'
-      preLoaderRoute: typeof ServicesAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services/conflicts': {
@@ -3187,32 +2657,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingConfirmedRefRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/business/$id/': {
-      id: '/business/$id/'
-      path: '/business/$id'
-      fullPath: '/business/$id/'
-      preLoaderRoute: typeof BusinessIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/analytics': {
-      id: '/business/$id/analytics'
-      path: '/business/$id/analytics'
-      fullPath: '/business/$id/analytics'
-      preLoaderRoute: typeof BusinessIdAnalyticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/business/$id/availability': {
       id: '/business/$id/availability'
       path: '/business/$id/availability'
       fullPath: '/business/$id/availability'
       preLoaderRoute: typeof BusinessIdAvailabilityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/dashboard': {
-      id: '/business/$id/dashboard'
-      path: '/business/$id/dashboard'
-      fullPath: '/business/$id/dashboard'
-      preLoaderRoute: typeof BusinessIdDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/business/$id/enquiry': {
@@ -3227,48 +2676,6 @@ declare module '@tanstack/react-router' {
       path: '/business/$id/leads'
       fullPath: '/business/$id/leads'
       preLoaderRoute: typeof BusinessIdLeadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/manage': {
-      id: '/business/$id/manage'
-      path: '/business/$id/manage'
-      fullPath: '/business/$id/manage'
-      preLoaderRoute: typeof BusinessIdManageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/portfolio': {
-      id: '/business/$id/portfolio'
-      path: '/business/$id/portfolio'
-      fullPath: '/business/$id/portfolio'
-      preLoaderRoute: typeof BusinessIdPortfolioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/reviews': {
-      id: '/business/$id/reviews'
-      path: '/business/$id/reviews'
-      fullPath: '/business/$id/reviews'
-      preLoaderRoute: typeof BusinessIdReviewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/services': {
-      id: '/business/$id/services'
-      path: '/business/$id/services'
-      fullPath: '/business/$id/services'
-      preLoaderRoute: typeof BusinessIdServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/team': {
-      id: '/business/$id/team'
-      path: '/business/$id/team'
-      fullPath: '/business/$id/team'
-      preLoaderRoute: typeof BusinessIdTeamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business/$id/verification': {
-      id: '/business/$id/verification'
-      path: '/business/$id/verification'
-      fullPath: '/business/$id/verification'
-      preLoaderRoute: typeof BusinessIdVerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/business/bookings/': {
@@ -3474,13 +2881,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/portfolio/new/': {
-      id: '/portfolio/new/'
-      path: '/portfolio/new'
-      fullPath: '/portfolio/new/'
-      preLoaderRoute: typeof PortfolioNewIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/portfolio/new/$kind': {
       id: '/portfolio/new/$kind'
       path: '/portfolio/new/$kind'
@@ -3644,14 +3044,10 @@ const rootRouteChildren: RootRouteChildren = {
   HandleRoute: HandleRoute,
   AboutRoute: AboutRoute,
   AccountsRoute: AccountsRoute,
-  BandRoute: BandRoute,
   ContactRoute: ContactRoute,
-  FeedRoute: FeedRoute,
   HomeRoute: HomeRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
-  RecentlyViewedRoute: RecentlyViewedRoute,
-  RecommendedRoute: RecommendedRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
   SingersRoute: SingersRoute,
@@ -3673,27 +3069,18 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessNewRoute: BusinessNewRoute,
   BusinessPoliciesRoute: BusinessPoliciesRoute,
   BusinessPricingRoute: BusinessPricingRoute,
-  CategoriesSlugRoute: CategoriesSlugRoute,
   ConversationIdRoute: ConversationIdRoute,
   DevNewUserRoute: DevNewUserRoute,
-  DiscoverCommunityRoute: DiscoverCommunityRoute,
-  DiscoverMusicRoute: DiscoverMusicRoute,
-  DiscoverNearbyRoute: DiscoverNearbyRoute,
-  DiscoverProjectsRoute: DiscoverProjectsRoute,
+  DiscoverSlugRoute: DiscoverSlugRoute,
   HelpSlugRoute: HelpSlugRoute,
-  IdentityAnalyticsRoute: IdentityAnalyticsRoute,
   IdentityBusinessRoute: IdentityBusinessRoute,
-  IdentityHistoryRoute: IdentityHistoryRoute,
-  IdentityPrintRoute: IdentityPrintRoute,
   IdentityQrRoute: IdentityQrRoute,
   IdentityScanRoute: IdentityScanRoute,
-  IdentitySettingsRoute: IdentitySettingsRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalTermsRoute: LegalTermsRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
-  MarketplaceSavedRoute: MarketplaceSavedRoute,
   MarketplaceSearchRoute: MarketplaceSearchRoute,
   MarketplaceSellRoute: MarketplaceSellRoute,
   NotificationsSettingsRoute: NotificationsSettingsRoute,
@@ -3704,16 +3091,11 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingSkipRoute: OnboardingSkipRoute,
   OpportunitiesMineRoute: OpportunitiesMineRoute,
   OpportunitiesNewRoute: OpportunitiesNewRoute,
-  OpportunitiesSavedRoute: OpportunitiesSavedRoute,
   OpportunitiesSearchRoute: OpportunitiesSearchRoute,
   PortfolioAnalyticsRoute: PortfolioAnalyticsRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
   ProfileEditRoute: ProfileEditRoute,
-  ProfileInsightsRoute: ProfileInsightsRoute,
-  RecommendationsSettingsRoute: RecommendationsSettingsRoute,
-  RecommendationsSwipeRoute: RecommendationsSwipeRoute,
   ReviewsRequestRoute: ReviewsRequestRoute,
-  ServicesAvailabilityRoute: ServicesAvailabilityRoute,
   ServicesConflictsRoute: ServicesConflictsRoute,
   ServicesNewRoute: ServicesNewRoute,
   SettingsAccountRoute: SettingsAccountRoute,
@@ -3728,8 +3110,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthIndexRoute: AuthIndexRoute,
   BandsIndexRoute: BandsIndexRoute,
   BookingsIndexRoute: BookingsIndexRoute,
-  BusinessIndexRoute: BusinessIndexRoute,
-  CategoriesIndexRoute: CategoriesIndexRoute,
   CollabIndexRoute: CollabIndexRoute,
   DiscoverIndexRoute: DiscoverIndexRoute,
   HelpIndexRoute: HelpIndexRoute,
@@ -3751,17 +3131,9 @@ const rootRouteChildren: RootRouteChildren = {
   BandsIdManageRoute: BandsIdManageRoute,
   BandsIdPortfolioRoute: BandsIdPortfolioRoute,
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
-  BusinessIdAnalyticsRoute: BusinessIdAnalyticsRoute,
   BusinessIdAvailabilityRoute: BusinessIdAvailabilityRoute,
-  BusinessIdDashboardRoute: BusinessIdDashboardRoute,
   BusinessIdEnquiryRoute: BusinessIdEnquiryRoute,
   BusinessIdLeadsRoute: BusinessIdLeadsRoute,
-  BusinessIdManageRoute: BusinessIdManageRoute,
-  BusinessIdPortfolioRoute: BusinessIdPortfolioRoute,
-  BusinessIdReviewsRoute: BusinessIdReviewsRoute,
-  BusinessIdServicesRoute: BusinessIdServicesRoute,
-  BusinessIdTeamRoute: BusinessIdTeamRoute,
-  BusinessIdVerificationRoute: BusinessIdVerificationRoute,
   BusinessBookingsRefRoute: BusinessBookingsRefRoute,
   BusinessBookingsCalendarRoute: BusinessBookingsCalendarRoute,
   CollabJoinTokenRoute: CollabJoinTokenRoute,
@@ -3792,7 +3164,6 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesIdEnquiryRoute: ServicesIdEnquiryRoute,
   ServicesIdManageRoute: ServicesIdManageRoute,
   BandsIdIndexRoute: BandsIdIndexRoute,
-  BusinessIdIndexRoute: BusinessIdIndexRoute,
   BusinessBookingsIndexRoute: BusinessBookingsIndexRoute,
   CollabIdIndexRoute: CollabIdIndexRoute,
   CollabNewIndexRoute: CollabNewIndexRoute,
@@ -3801,7 +3172,6 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesIdIndexRoute: OpportunitiesIdIndexRoute,
   OpportunitiesApplicationsIndexRoute: OpportunitiesApplicationsIndexRoute,
   PortfolioIdIndexRoute: PortfolioIdIndexRoute,
-  PortfolioNewIndexRoute: PortfolioNewIndexRoute,
   ServicesIdIndexRoute: ServicesIdIndexRoute,
   SettingsSecurityIndexRoute: SettingsSecurityIndexRoute,
   BusinessBookingsRequestsRefRoute: BusinessBookingsRequestsRefRoute,

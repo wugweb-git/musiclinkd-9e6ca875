@@ -1,6 +1,6 @@
 import { createFileRoute, type LinkProps } from "@tanstack/react-router";
 import { Copy } from "lucide-react";
-import { useMyIdentity } from "@/hooks/use-my-identity";
+import { useMyTalentIdentity } from "@/hooks/use-my-talent-identity";
 import {
   AtSign,
   BadgeCheck,
@@ -48,7 +48,7 @@ import { reactivateMyAccount } from "@/lib/account.functions";
  * address and copies it; without one it says so and goes where you claim it.
  */
 function ProfileLinkRow() {
-  const { username, url } = useMyIdentity();
+  const { username, url } = useMyTalentIdentity();
   if (!username || !url) {
     return (
       <Row

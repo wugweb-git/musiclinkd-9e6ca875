@@ -16,13 +16,13 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Screen, SearchBar, SectionHeader, VerifiedBadge } from "@/components/ml/ui";
-import { BetaBadge, Price, Row, SoonBadge } from "@/components/ml/kit";
+import { BetaBadge, Price, Row, Segmented, SoonBadge } from "@/components/ml/kit";
 import { stageOf } from "@/lib/release";
 import { sameCity } from "@/lib/place";
 import { NotificationsBell, SearchField, SearchIconButton } from "@/components/ml/tab-header";
 import { SectionActionLink } from "@/components/ml/links";
 import { useState } from "react";
-import { quickCategories } from "@/data/discover";
+import { categories, quickCategories } from "@/data/discover";
 import { listStudios } from "@/lib/catalog.functions";
 import {
   listTrendingPages,
@@ -100,6 +100,9 @@ function categoryIcon(label: string) {
 function Discover() {
   const { dbStudios, trendingWork, people, trendingPages } = Route.useLoaderData();
   const [searchOpen, setSearchOpen] = useState(false);
+  // A persona type is a filter here, not a screen of its own (owner, 28 Sep 2026).
+  const [personaFilter, setPersonaFilter] = useState<string>("All");
+  const personaOptions = ["All", ...categories.map((c) => c.label)];
   const { signedIn } = useAuth();
   const audioWork = trendingWork.filter((w) => workType(w.kind).media === "audio");
   const videoWork = trendingWork.filter((w) => w.kind === "video");
@@ -119,7 +122,11 @@ function Discover() {
   // section here instead: signed in, the people ranked from the viewer's own roles, genres,
   // instruments, city, follows and saves (recommendations.functions.ts); signed out, the directory.
   const recs = useRecommendations();
-  const suggested = recs?.people.length ? recs.people : people;
+  const allSuggested = recs?.people.length ? recs.people : people;
+  const filterRole = categories.find((c) => c.label === personaFilter)?.role;
+  const suggested = filterRole
+    ? allSuggested.filter((p) => p.roles.includes(filterRole))
+    : allSuggested;
   // Around you is the viewer's own stored city, never someone else's.
   const myCity = recs?.city ?? "";
   const nearby = myCity
@@ -174,27 +181,31 @@ function Discover() {
         })}
       </div>
 
-      {suggested.length ? (
+      {allSuggested.length ? (
         <section className="pb-6">
           <SectionHeader
             title="People to work with"
             action={<SectionActionLink to="/search">See All</SectionActionLink>}
           />
-          <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
-            {suggested.slice(0, 8).map((p) => (
-              <PersonHeroCard key={p.id} person={p} roleLabels={options?.person_types} />
-            ))}
+          <div className="px-5">
+            <Segmented
+              value={personaFilter}
+              options={personaOptions}
+              onChange={setPersonaFilter}
+              className=""
+            />
           </div>
-          {signedIn ? (
-            <div className="px-5 pt-3">
-              <Row
-                icon={<Sparkles size={iconSize.md} aria-hidden />}
-                title="Swipe through matches"
-                subtitle="Save or skip people recommended for you"
-                to="/recommendations/swipe"
-              />
+          {suggested.length ? (
+            <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
+              {suggested.slice(0, 8).map((p) => (
+                <PersonHeroCard key={p.id} person={p} roleLabels={options?.person_types} />
+              ))}
             </div>
-          ) : null}
+          ) : (
+            <p className="px-5 py-6 text-1 text-muted-foreground">
+              Nobody here yet. Try another filter.
+            </p>
+          )}
         </section>
       ) : null}
 
@@ -288,14 +299,7 @@ function Discover() {
 
       {nearby.length > 1 ? (
         <section className="pb-8">
-          <SectionHeader
-            title="Around you"
-            action={
-              <SectionActionLink to="/discover/nearby" icon={<MapPin size={iconSize.sm} />}>
-                {myCity}
-              </SectionActionLink>
-            }
-          />
+          <SectionHeader title="Around you" />
           <div className="rail flex gap-3 overflow-x-auto px-5 no-scrollbar">
             {nearby.slice(0, 8).map((p) => (
               <PersonHeroCard key={p.id} person={p} roleLabels={options?.person_types} />

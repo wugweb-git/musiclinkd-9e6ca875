@@ -175,6 +175,16 @@ export const serviceStatusTone: Record<ServiceStatus, "good" | "warn" | "neutral
   draft: "neutral",
 };
 
+/**
+ * What a status is called on screen. One list for both subjects — a business's services and a
+ * talent's are the same rows in profile_services, so they read the same (owner, 28 Sep 2026).
+ */
+export const serviceStatusLabel: Record<ServiceStatus, string> = {
+  active: "Live",
+  paused: "Paused",
+  draft: "Draft",
+};
+
 /* ── Availability ─────────────────────────────────────────── */
 
 export type AvailabilityRule = { day: string; enabled: boolean; from: string; to: string };

@@ -356,7 +356,12 @@ function ServiceDetail() {
 
           {owner ? (
             <div className="grid grid-cols-2 gap-2">
-              <BtnLink to="/services/availability" variant="outline" className="w-full">
+              <BtnLink
+                to="/profile/edit"
+                search={{ section: "availability" }}
+                variant="outline"
+                className="w-full"
+              >
                 Availability
               </BtnLink>
               {s.ownerAvailability ? (

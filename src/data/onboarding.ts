@@ -661,7 +661,7 @@ export type Readiness = {
   hint: string;
   done: boolean;
   cta?: string;
-  to?: "/portfolio/new" | "/services" | "/verification";
+  to?: "/portfolio" | "/services" | "/verification";
 };
 
 export function readiness(d: OnboardingDraft): Readiness[] {
@@ -690,7 +690,7 @@ export function readiness(d: OnboardingDraft): Readiness[] {
       hint: "Add tracks, videos or credits",
       done: false,
       cta: "Add portfolio",
-      to: "/portfolio/new",
+      to: "/portfolio",
     },
     {
       key: "services",

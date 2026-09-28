@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { isMyAccountBusiness } from "@/lib/profile-groups.functions";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { PersonProfileExperience } from "@/components/ml/person-profile";
+import { TalentProfileExperience } from "@/components/ml/talent-profile";
 import { ProfileSkeleton } from "@/components/ml/profile";
+import { PublicProfileScreen, loadPublicProfile } from "@/components/ml/public-profile";
 import { StateCard } from "@/components/ml/portfolio";
 import { ownerProfile } from "@/data/profile";
 import {
@@ -41,12 +42,12 @@ export const Route = createFileRoute("/profile/")({
 });
 
 /**
- * /profile is "my profile": a business account's is its business page, so it opens that
- * (/business/<username>, with Manage for the owner) instead of the talent profile.
+ * /profile is "my profile": one screen, the subject taken from the session. A business account sees
+ * its business page rendered here — it is not sent to a second screen (owner, 28 Sep 2026). The
+ * fork happens once, at onboarding; screens do not re-decide it, and they do not double up.
  */
 function MyProfile() {
   const { signedIn } = useAuth();
-  const navigate = useNavigate();
   const checkBusiness = useServerFn(isMyAccountBusiness);
   const loadProfile = useServerFn(getMyProfile);
   const business = useQuery({
@@ -58,22 +59,26 @@ function MyProfile() {
     },
     enabled: signedIn,
   });
-  useEffect(() => {
-    if (business.data) {
-      void navigate({ to: "/business/$id", params: { id: business.data }, replace: true });
-    }
-  }, [business.data, navigate]);
-  if (signedIn && (business.isPending || business.data)) {
+  // The business subject renders here, in the same screen the talent subject uses.
+  const page = useQuery({
+    queryKey: ["profile", "me", "business-page", business.data],
+    queryFn: () => loadPublicProfile(business.data as string),
+    enabled: Boolean(business.data),
+  });
+  if (signedIn && (business.isPending || (business.data && page.isPending))) {
     return (
       <Screen>
         <ProfileSkeleton />
       </Screen>
     );
   }
-  return <PersonProfile />;
+  if (business.data && page.data) {
+    return <PublicProfileScreen username={business.data} data={page.data} />;
+  }
+  return <TalentProfile />;
 }
 
-function PersonProfile() {
+function TalentProfile() {
   const { signedIn, loading } = useAuth();
   const load = useServerFn(getMyProfile);
   const loadLabels = useServerFn(getTaxonomyLabels);
@@ -136,12 +141,12 @@ function PersonProfile() {
 
   // Signed in: your own record, with empty states for what it doesn't hold. Signed out: the demo owner.
   if (!signedIn) {
-    return <PersonProfileExperience p={ownerProfile} owner />;
+    return <TalentProfileExperience p={ownerProfile} owner />;
   }
   const view = mergeSections(
     mergeProfileRow(profileFromRow(row ?? {}), row, labels),
     sections,
     labels,
   );
-  return <PersonProfileExperience p={view} owner onGalleryChange={reloadSections} />;
+  return <TalentProfileExperience p={view} owner onGalleryChange={reloadSections} />;
 }

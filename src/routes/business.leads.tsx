@@ -1,12 +1,15 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Screen, TopBar } from "@/components/ml/ui";
-import { EmptyState, Loading } from "@/components/ml/kit";
+import { BusinessOnlyGate, Loading } from "@/components/ml/kit";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 import { useMyBusinessIdentity } from "@/hooks/use-my-business-identity";
 
 /*
  * Leads from the menu: opens the signed-in business's own Leads inbox (/business/<username>/leads),
- * the screen an enquiry's notice opens too.
+ * the screen an enquiry's notice opens too. One gate for the whole business area — this screen used
+ * to roll its own empty state, which made the same "business only" idea read three different ways
+ * (owner, 28 Sep 2026).
  */
 export const Route = createFileRoute("/business/leads")({
   head: () => ({
@@ -16,28 +19,29 @@ export const Route = createFileRoute("/business/leads")({
 });
 
 function MyLeads() {
+  const gate = useRequireBusiness();
+  return (
+    <Screen>
+      <TopBar title="Leads" back="/home" />
+      <BusinessOnlyGate allowed={gate.allowed} loading={gate.loading} signedIn={gate.signedIn}>
+        <ToMyLeads />
+      </BusinessOnlyGate>
+    </Screen>
+  );
+}
+
+/** Past the gate this account has a business page, so send it to that page's own Leads inbox. */
+function ToMyLeads() {
   const navigate = useNavigate();
   const me = useMyBusinessIdentity();
-
   useEffect(() => {
     if (me.username) {
       void navigate({ to: "/business/$id/leads", params: { id: me.username }, replace: true });
     }
   }, [me.username, navigate]);
-
   return (
-    <Screen>
-      <TopBar title="Leads" back="/business" />
-      <div className="px-5 pt-6">
-        {me.ready && !me.username ? (
-          <EmptyState
-            title="Leads are for a business page"
-            body="Switch to your business page to see the enquiries it has received."
-          />
-        ) : (
-          <Loading rows={2} />
-        )}
-      </div>
-    </Screen>
+    <div className="px-5 pt-6">
+      <Loading rows={2} />
+    </div>
   );
 }

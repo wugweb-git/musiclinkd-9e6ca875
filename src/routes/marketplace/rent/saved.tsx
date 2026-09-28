@@ -5,6 +5,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
  */
 export const Route = createFileRoute("/marketplace/rent/saved")({
   beforeLoad: () => {
-    throw redirect({ to: "/marketplace/saved", replace: true });
+    throw redirect({ to: "/saved", replace: true });
   },
 });

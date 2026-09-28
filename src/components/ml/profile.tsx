@@ -42,7 +42,7 @@ import type {
   ExperienceItem,
   MarketEntry,
   OpportunityItem,
-  PersonProfile,
+  TalentProfile,
   ProjectItem,
   ReviewItem,
   ServiceItem,
@@ -494,7 +494,7 @@ export function InfoRow({ label, value }: { label: string; value: string | Price
 /* ── Hero ──────────────────────────────────────────────────── */
 
 /** The verified tick is for verified tiers only, never a default. */
-function isVerifiedTier(tier: PersonProfile["verification"]) {
+function isVerifiedTier(tier: TalentProfile["verification"]) {
   return tier === "Professional" || tier === "Industry Verified";
 }
 
@@ -741,7 +741,7 @@ export function ProfileHero({
   back,
   onPickImage,
 }: {
-  p: PersonProfile;
+  p: TalentProfile;
   owner?: boolean;
   /** Owner only: uploads the chosen file and saves it to the profile. */
   onPickImage?: ((kind: ProfileImageKind, file: File) => Promise<void>) | undefined;
@@ -856,7 +856,7 @@ export function ProfileHero({
 
 /* ── Portfolio pieces ──────────────────────────────────────── */
 
-export function FeaturedCard({ featured }: { featured: NonNullable<PersonProfile["featured"]> }) {
+export function FeaturedCard({ featured }: { featured: NonNullable<TalentProfile["featured"]> }) {
   const [expanded, setExpanded] = useState(false);
   const [playing, setPlaying] = useState(false);
 
@@ -1837,7 +1837,7 @@ export function ShareSheet({
   open,
   onClose,
 }: {
-  p: PersonProfile;
+  p: TalentProfile;
   open: boolean;
   onClose: () => void;
 }) {

@@ -11,7 +11,7 @@ import { useViewer } from "@/components/ml/viewer";
 import { listMyServices } from "@/lib/services.functions";
 import { listMyPortfolio } from "@/lib/portfolio.functions";
 import { Loading } from "@/components/ml/kit";
-import { CallBtn } from "@/components/ml/person-profile";
+import { CallBtn } from "@/components/ml/talent-profile";
 import { PersonAvatar } from "@/components/ml/person-avatar";
 import { getConversation, sendMessage, type Message } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";

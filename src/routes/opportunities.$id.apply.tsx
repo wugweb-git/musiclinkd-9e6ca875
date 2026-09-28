@@ -178,7 +178,7 @@ function ApplyFlow() {
                 );
               })}
             </div>
-            <BtnLink to="/portfolio/new" variant="ghost" className="w-full">
+            <BtnLink to="/portfolio" search={{ add: "1" }} variant="ghost" className="w-full">
               Add New Work to Portfolio
             </BtnLink>
           </>

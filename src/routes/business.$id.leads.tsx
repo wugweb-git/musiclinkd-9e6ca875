@@ -77,7 +77,7 @@ function BusinessLeads() {
   if (!b || (!loading && !owner)) {
     return (
       <Screen>
-        <TopBar title="Leads" back="/business" />
+        <TopBar title="Leads" back="/home" />
         <div className="px-5 pt-6">
           <EmptyState
             title="Business not found"
@@ -95,7 +95,7 @@ function BusinessLeads() {
 
   return (
     <Screen>
-      <TopBar title="Leads" subtitle={b.name} back={`/business/${b.id}/dashboard`} />
+      <TopBar title="Leads" subtitle={b.name} back="/home" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <div className="">

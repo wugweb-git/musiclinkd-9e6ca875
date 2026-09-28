@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { ownerProfile } from "@/data/profile";
-import { PersonProfileExperience } from "./person-profile";
+import { TalentProfileExperience } from "./talent-profile";
 
 /*
  * The whole person profile. One component, one tabbed layout, for owner and visitor alike — the
@@ -9,10 +9,10 @@ import { PersonProfileExperience } from "./person-profile";
  */
 const meta = {
   title: "Profile/Person profile",
-  component: PersonProfileExperience,
+  component: TalentProfileExperience,
   args: { p: ownerProfile },
   parameters: { layout: "fullscreen" },
-} satisfies Meta<typeof PersonProfileExperience>;
+} satisfies Meta<typeof TalentProfileExperience>;
 export default meta;
 type Story = StoryObj<typeof meta>;
 

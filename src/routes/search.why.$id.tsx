@@ -209,11 +209,6 @@ function WhyThisResult() {
         )}
 
         <Row
-          title="Recommendation settings"
-          subtitle="Choose which signals we may use"
-          to="/recommendations/settings"
-        />
-        <Row
           title="Privacy settings"
           subtitle="Control what your profile shares"
           to="/settings/privacy"

@@ -186,30 +186,22 @@ export const singers: Talent[] = [
 ];
 
 export const quickCategories: { label: string; to: QuickCategoryTo }[] = [
-  { label: "Talent", to: "/categories" },
   { label: "Bands", to: "/bands" },
-  { label: "Music", to: "/discover/music" },
-  { label: "Studios", to: "/discover/community" },
-  { label: "Events", to: "/categories" },
+  { label: "Music", to: "/discover/$slug" },
+  { label: "Studios", to: "/discover/$slug" },
   { label: "Marketplace", to: "/marketplace" },
   { label: "Rentals", to: "/marketplace/rent" },
-  { label: "Labels", to: "/discover/community" },
-  { label: "Venues", to: "/discover/community" },
-  { label: "Communities", to: "/discover/community" },
+  { label: "Labels", to: "/discover/$slug" },
+  { label: "Venues", to: "/discover/$slug" },
 ];
 
-type QuickCategoryTo =
-  | "/categories"
-  | "/bands"
-  | "/discover/music"
-  | "/discover/community"
-  | "/marketplace"
-  | "/marketplace/rent";
+type QuickCategoryTo = "/discover/$slug" | "/bands" | "/marketplace" | "/marketplace/rent";
 
 /*
- * Browse categories. Each opens search for that kind of person; `role` is the taxonomy slug the
- * search filters on. Counts were invented figures and are gone (owner rule: never fabricate counts);
- * add them back only from a real query.
+ * The persona-type filter on Discover. A type is a filter, not a screen of its own (owner,
+ * 28 Sep 2026) — /categories and /studio were deleted in favour of these buttons. `role` is the
+ * taxonomy slug the list filters on. Counts were invented figures and are gone (owner rule: never
+ * fabricate counts); add them back only from a real query.
  */
 export const categories = [
   { label: "Singers", role: "singer", slug: "singers" },

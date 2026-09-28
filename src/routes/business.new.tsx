@@ -621,7 +621,7 @@ function NewBusiness() {
         body="Add your spaces, hours and rates next."
         onClose={() => create.reset()}
       >
-        <BtnLink to="/business" className="w-full">
+        <BtnLink to="/home" className="w-full">
           Open Business
         </BtnLink>
       </Dialog>
