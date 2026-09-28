@@ -184,6 +184,11 @@
      runtime (~50KB gzip) on every screen for 0.2s of scale and opacity. The overshoot is in the
      keyframe rather than an ease, so it matches back.out(2) closely enough to be the same motion. */
   --animate-icon-pop: icon-pop 200ms var(--easing-standard) both;
+  /* Splash: stage lights behind the mark. Each column breathes on its own offset, so the wall
+     reads as a room being lit rather than a loading bar. */
+  --animate-stage: stage 2.8s ease-in-out infinite;
+  /* Splash: the session check, as a bar that fills and holds rather than a spinner. */
+  --animate-loadbar: loadbar 1.8s var(--easing-enter) infinite;
   /* Arrival screens land on a beat: each block rises in, delayed by beat(n) (flow-motion.ts). */
   --animate-rise: rise 480ms var(--easing-enter) both;
   /* The Soon label: a slow light passes across it, so a later feature reads as on its way. */
@@ -451,6 +456,25 @@
     from {
       transform: scale(0.6);
       opacity: 0;
+    }
+  }
+  @keyframes stage {
+    0%,
+    100% {
+      transform: scaleY(0.45);
+      opacity: 0.45;
+    }
+    50% {
+      transform: scaleY(1);
+      opacity: 0.9;
+    }
+  }
+  @keyframes loadbar {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(300%);
     }
   }
   @keyframes icon-pop {

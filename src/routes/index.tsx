@@ -25,6 +25,19 @@ export const Route = createFileRoute("/")({
   component: SessionCheck,
 });
 
+/* Stage-light columns: tallest at the centre, each lit on its own offset. */
+const STAGE = [
+  { h: 30, w: 10, delay: 0 },
+  { h: 58, w: 16, delay: 620 },
+  { h: 42, w: 12, delay: 240 },
+  { h: 88, w: 20, delay: 880 },
+  { h: 64, w: 14, delay: 120 },
+  { h: 34, w: 10, delay: 700 },
+  { h: 76, w: 18, delay: 380 },
+  { h: 48, w: 12, delay: 960 },
+  { h: 26, w: 10, delay: 520 },
+];
+
 function SessionCheck() {
   const { signedIn, loading } = useAuth();
   const navigate = useNavigate();
@@ -70,69 +83,65 @@ function SessionCheck() {
   }, [loading, signedIn, navigate, loadProfile, syncIdentity, reducedMotion]);
 
   return (
-    // Full-bleed brand ground with the mark in white: the one screen where pink carries everything.
+    /*
+     * The splash, on ink rather than the pink ground (owner mockup, 29 Sep 2026).
+     *
+     * A wall of stage lights behind the mark, each column breathing on its own offset, so the
+     * screen reads as a room being lit rather than a progress spinner. All CSS — no photograph,
+     * nothing to download — which matters here more than anywhere else, because this screen is
+     * showing *while* the app waits on the network.
+     */
     <div
-      className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden brand-ground px-8"
+      className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-ink px-8"
       role="status"
       aria-label="Checking your session"
     >
-      {/* Concentric pulsing sonic aura rings (Shazam / Apple Music audio resonance) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-      >
-        <span className="absolute h-56 w-56 rounded-full border border-white/25 animate-sonar" />
-        <span
-          className="absolute h-56 w-56 rounded-full border border-white/20 animate-sonar"
-          style={{ animationDelay: "700ms" }}
-        />
-        <span
-          className="absolute h-56 w-56 rounded-full border border-white/15 animate-sonar"
-          style={{ animationDelay: "1400ms" }}
-        />
-        <span
-          className="absolute h-56 w-56 rounded-full border border-white/10 animate-sonar"
-          style={{ animationDelay: "2100ms" }}
-        />
-        <span className="absolute h-80 w-80 rounded-full bg-white/10 blur-3xl animate-pulse-glow" />
+      {/* The stage: pink columns of light, tallest toward the middle, each on its own beat. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-x-0 bottom-0 flex h-[86%] items-end justify-between px-2">
+          {STAGE.map((bar, i) => (
+            <span
+              key={i}
+              className="origin-bottom rounded-full bg-gradient-to-t from-brand/0 via-brand/60 to-brand"
+              style={{
+                height: `${bar.h}%`,
+                width: `${bar.w}px`,
+                animation: reducedMotion ? undefined : "var(--animate-stage)",
+                animationDelay: `${bar.delay}ms`,
+                filter: "blur(10px)",
+              }}
+            />
+          ))}
+        </div>
+        {/* Warm haze off the lights, and a floor that swallows them. */}
+        <div className="absolute inset-0 bg-[radial-gradient(90%_60%_at_50%_38%,color-mix(in_oklab,var(--brand)_38%,transparent),transparent_70%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink via-ink/85 to-transparent" />
       </div>
 
-      {/* Main Brand Hero */}
       <div className="relative z-10 flex flex-col items-center text-center">
-        {/* Waveform Logo Mark with acoustic glow */}
         <div className="relative flex items-center justify-center">
           <div
             aria-hidden
-            className="pointer-events-none absolute -inset-4 rounded-full bg-white/15 blur-2xl animate-pulse-glow"
+            className="pointer-events-none absolute -inset-6 rounded-full bg-brand/30 blur-3xl animate-pulse-glow"
           />
-          <LogoMark className="vt-brand relative z-10 w-44 max-w-[260px] animate-waveform text-white [filter:drop-shadow(0_18px_40px_rgba(0,0,0,0.28))]" />
+          <LogoMark className="vt-brand relative z-10 w-36 max-w-[220px] animate-waveform text-brand [filter:drop-shadow(0_10px_30px_color-mix(in_oklab,var(--brand)_60%,transparent))]" />
         </div>
 
-        {/* Brand Name */}
-        <h1 className="mt-6 text-4 font-bold tracking-tight text-white animate-rise [filter:drop-shadow(0_4px_12px_rgba(0,0,0,0.18))]">
-          MusicLinkd
-        </h1>
+        <h1 className="mt-5 text-4 font-bold tracking-tight text-white">MusicLinkd</h1>
 
-        {/* Product Line / Tagline */}
-        <p
-          className="mt-2 max-w-prose-sm text-sm font-medium leading-relaxed tracking-wide text-white/90 animate-rise"
-          style={{ animationDelay: "120ms" }}
-        >
-          India's professional network for the music industry
+        <p className="mt-2 text-sm font-medium tracking-wide text-white/75">
+          Connect. Collaborate. <span className="text-brand">Create.</span>
         </p>
+      </div>
 
-        {/* Acoustic sound equalizer status indicator */}
-        <div
-          aria-hidden
-          className="mt-8 flex items-center gap-1.5 opacity-90 animate-rise"
-          style={{ animationDelay: "240ms" }}
-        >
-          <span className="w-1 rounded-full bg-white/75 animate-eq-1" />
-          <span className="w-1 rounded-full bg-white/90 animate-eq-2" />
-          <span className="w-1 rounded-full bg-white animate-eq-3" />
-          <span className="w-1 rounded-full bg-white/90 animate-eq-2" />
-          <span className="w-1 rounded-full bg-white/75 animate-eq-1" />
-        </div>
+      {/* The session check, as a bar that travels rather than a spinner. */}
+      <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-3 pb-[max(2rem,env(safe-area-inset-bottom))]">
+        <span aria-hidden className="h-1 w-32 overflow-hidden rounded-full bg-white/15">
+          <span className="block h-full w-1/3 rounded-full bg-brand animate-loadbar" />
+        </span>
+        <p className="text-1 font-semibold uppercase tracking-[0.22em] text-white/45">
+          A network for music people
+        </p>
       </div>
     </div>
   );
