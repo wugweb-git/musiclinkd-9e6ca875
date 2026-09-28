@@ -12,6 +12,7 @@ import gsap from "gsap";
 import { unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { useDismissable } from "@/hooks/use-dismissable";
 
 export type Tone = "neutral" | "good" | "warn" | "bad" | "brand" | "category";
 
@@ -731,7 +732,11 @@ export function ReasonChip({ children }: { children: ReactNode }) {
  * Centered modal, built on Radix's `Dialog` primitive (`@/components/ui/dialog.tsx`'s
  * `DialogPrimitive`, not that file's own preset styling — this keeps the existing visual output
  * exactly, the primitive is only here for focus-trap, escape-to-close and scroll-lock, which the
- * hand-rolled version this replaced never had (unlike `Sheet` in `ml/ui.tsx`, which did).
+ * hand-rolled version this replaced never had.
+ *
+ * `Sheet` in `ml/ui.tsx` does **not** have them either: it restores focus and closes on Escape,
+ * but Tab still walks into the page behind it and the body still scrolls. An earlier version of
+ * this comment claimed otherwise, which is why it went unfixed.
  */
 export function Dialog({
   open,
@@ -746,6 +751,9 @@ export function Dialog({
   onClose: () => void;
   children?: ReactNode;
 }) {
+  // Radix covers Escape, focus and scroll-lock; it knows nothing about Android's back button.
+  useDismissable(open, onClose, { escape: false });
+
   return (
     <DialogPrimitive.Root open={open} onOpenChange={(next: boolean) => !next && onClose()}>
       <DialogPrimitive.Portal>

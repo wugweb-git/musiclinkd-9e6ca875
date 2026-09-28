@@ -975,6 +975,27 @@
   }
 }
 
+/*
+ * The status-bar inset, as one utility. `viewport-fit=cover` is set in the root document and
+ * targetSdkVersion 36 forces edge-to-edge on Android 15+, so env(safe-area-inset-top) is non-zero
+ * in the wrap and zero in a desktop browser. Anything pinned to the top of the screen — TopBar
+ * above all, at 158 call sites — must add this padding or it sits under the clock.
+ *
+ * `max()` keeps the component's own breathing room on a device that reports no inset.
+ */
+@utility pt-safe {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/*
+ * The raw inset, with no minimum of its own: for a bar that already sits below something and must
+ * not grow on a device that has no inset (the profile section tabs, which are flush with the hero
+ * until they stick).
+ */
+@utility pt-inset {
+  padding-top: env(safe-area-inset-top);
+}
+
 /* ------------------------------------------------------------------ page motion
  * Material 3 shared axis X for the registration flow, driven by the View Transitions API through
  * the router (src/lib/flow-motion.ts). Forward enters from the right, back from the left; the exit

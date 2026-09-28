@@ -45,6 +45,7 @@ import { BetaBadge, Row, RowGroup, SoonBadge } from "./kit";
 import { stageOf } from "@/lib/release";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { useDismissable } from "@/hooks/use-dismissable";
 import { TabIcon, type SolidIcon } from "./tab-icon";
 
 /*
@@ -328,7 +329,7 @@ export function TopBar({
   // don't need touching, but the top bar is title-only, no exceptions.
   void subtitle;
   return (
-    <header className="sticky top-0 z-bar flex items-center gap-3 bg-background/90 px-5 py-4 backdrop-blur">
+    <header className="pt-safe sticky top-0 z-bar flex items-center gap-3 bg-background/90 px-5 pb-4 backdrop-blur">
       {back ? (
         <Link
           to={back}
@@ -756,21 +757,14 @@ export function Sheet({
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const [drag, setDrag] = useState<{ start: number; dy: number } | null>(null);
-  const close = useRef(onClose);
-  close.current = onClose;
+  // Escape and Android's back button, through the one shared dismiss stack.
+  useDismissable(open, onClose);
 
   useEffect(() => {
     if (!open) return;
     const opener = document.activeElement as HTMLElement | null;
     panel.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close.current();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      opener?.focus?.();
-    };
+    return () => opener?.focus?.();
   }, [open]);
 
   if (!open) return null;

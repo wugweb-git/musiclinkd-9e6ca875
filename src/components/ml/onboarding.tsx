@@ -508,7 +508,7 @@ export function StepShell({
     >
       {/* Modern top app bar: frosted glass with segmented story-style progress track */}
       <header
-        className={`vt-flow-header sticky top-0 z-bar border-b bg-background/90 px-5 pb-3.5 pt-4 backdrop-blur-md transition-colors duration-200 ease-standard ${
+        className={`vt-flow-header pt-safe sticky top-0 z-bar border-b bg-background/90 px-5 pb-3.5 backdrop-blur-md transition-colors duration-200 ease-standard ${
           edges.top ? "border-border shadow-2xs" : "border-transparent"
         }`}
       >

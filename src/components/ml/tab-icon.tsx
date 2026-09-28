@@ -152,7 +152,7 @@ export function SectionTabs<K extends string>({
   label: string;
 }) {
   return (
-    <nav aria-label={label} className="sticky top-0 z-tabs bg-background/95 px-2 backdrop-blur">
+    <nav aria-label={label} className="pt-inset sticky top-0 z-tabs bg-background/95 px-2 backdrop-blur">
       <div role="tablist" aria-label={label} className="flex items-stretch">
         {tabs.map(({ key, icon: Icon, solid, move }) => {
           const active = value === key;

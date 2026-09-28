@@ -130,7 +130,7 @@ function MarketHome() {
 
   return (
     <Screen>
-      <header className="sticky top-0 z-bar mb-5 bg-background/90 pt-6 backdrop-blur">
+      <header className="sticky top-0 z-bar mb-5 bg-background/90 pt-[max(1.5rem,env(safe-area-inset-top))] backdrop-blur">
         <div className="mb-3 flex items-center justify-between px-5">
           <h1 className="text-3 leading-tight">Market</h1>
           <div className="flex items-center gap-2">

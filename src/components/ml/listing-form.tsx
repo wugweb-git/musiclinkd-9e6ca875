@@ -1,4 +1,13 @@
-import { useEffect, useState, type ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  createContext,
+  isValidElement,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
@@ -274,7 +283,35 @@ export function listingPayload(d: ListingDraft, taxonomy: GearTaxonomy) {
 export const inputClass =
   "h-13 w-full rounded-full border border-border bg-card px-5 py-3.5 text-2 outline-none focus:border-primary";
 
-/** A form field: a plain label over its control (not a pill). Shared by every create flow. */
+/**
+ * What a `Field` knows that its control needs: the id to answer to, what describes it, and whether
+ * it is currently wrong. A composite control — `SheetSelect`, a price row, anything that is not a
+ * bare `<input>` — reads this with `useFieldControl()` and spreads it onto its own focusable
+ * element. `Field` also injects the same three onto a direct `<input>`/`<textarea>`/`<select>`
+ * child, so the common case needs nothing at the call site.
+ */
+const FieldContext = createContext<{
+  id: string;
+  "aria-describedby": string | undefined;
+  "aria-invalid": boolean | undefined;
+} | null>(null);
+
+export function useFieldControl() {
+  return useContext(FieldContext);
+}
+
+/** The intrinsic elements a `<label for>` can point at. Anything else gets the context instead. */
+const labelable = new Set(["input", "textarea", "select"]);
+
+/**
+ * A form field: a plain label over its control (not a pill). Shared by every create flow.
+ *
+ * The label used to be a `<span id>` referenced by `aria-labelledby` on the wrapping `role="group"`,
+ * which named the *group* and left the control itself anonymous — a screen reader read "edit text,
+ * blank" on most of Hire, Create-listing, Post-opportunity and Verification. It is a real
+ * `<label for>` now, and the hint and the error are tied to the control with `aria-describedby`, so
+ * tabbing back to a field that is wrong says what is wrong with it.
+ */
 export function Field({
   label,
   id,
@@ -283,6 +320,7 @@ export function Field({
   children,
 }: {
   label: string;
+  /** The field's identity; the control answers to `<id>-control`. */
   id: string;
   /** One line under the label that says what the field is for. */
   hint?: string;
@@ -290,15 +328,52 @@ export function Field({
   error?: string | null | undefined;
   children: ReactNode;
 }) {
+  const controlId = `${id}-control`;
+  const describedBy =
+    [hint ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(" ") ||
+    undefined;
+  const control = {
+    id: controlId,
+    "aria-describedby": describedBy,
+    "aria-invalid": error ? true : undefined,
+  };
+
+  // A bare input is the common case and should need nothing from the caller. Fields that wrap the
+  // control — the price row puts the amount and its unit in a grid — are the same case one level
+  // down, so this walks to the first labelable element rather than giving up on a wrapper. Anything
+  // already carrying an `id` is left alone: the caller has said what it wants.
+  let named = false;
+  const nameFirstControl = (node: ReactNode): ReactNode => {
+    if (named || !isValidElement(node)) return node;
+    const props = node.props as { id?: string; children?: ReactNode };
+    if (typeof node.type === "string" && labelable.has(node.type)) {
+      named = true;
+      return cloneElement(node, { ...control, ...props });
+    }
+    if (props.children === undefined) return node;
+    return cloneElement(node, {
+      ...props,
+      children: Children.map(props.children, nameFirstControl),
+    } as never);
+  };
+  const child = Children.map(children, nameFirstControl);
+
   return (
-    <div role="group" aria-labelledby={id}>
-      <span id={id} className="block text-1 font-medium text-foreground">
+    <div>
+      <label htmlFor={controlId} id={id} className="block text-1 font-medium text-foreground">
         {label}
-      </span>
-      {hint ? <span className="mt-0.5 block text-1 text-muted-foreground">{hint}</span> : null}
-      <div className="mt-1.5">{children}</div>
+      </label>
+      {hint ? (
+        <span id={`${id}-hint`} className="mt-0.5 block text-1 text-muted-foreground">
+          {hint}
+        </span>
+      ) : null}
+      <div className="mt-1.5">
+        <FieldContext.Provider value={control}>{child}</FieldContext.Provider>
+      </div>
       {error ? (
         <p
+          id={`${id}-error`}
           role="alert"
           className="mt-1.5 flex animate-message items-start gap-1.5 text-1 text-destructive"
         >
@@ -433,6 +508,7 @@ export function SheetSelect({
   const [open, setOpen] = useState(false);
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
+  const field = useFieldControl() ?? {};
   const shown = matching(options, query);
   const current = options.find((o) => o.value === value);
   const canSearch = searchable || options.length > SEARCH_FROM;
@@ -451,7 +527,10 @@ export function SheetSelect({
       <button
         type="button"
         aria-haspopup="dialog"
+        aria-expanded={open}
         onClick={() => setOpen(true)}
+        // The trigger is the field's control: it takes the label, the hint and the error.
+        {...field}
         className={`flex h-13 w-full items-center justify-between gap-2 rounded-full border border-border bg-card px-5 text-left text-sm ${className}`}
       >
         {/*

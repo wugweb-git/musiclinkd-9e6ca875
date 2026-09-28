@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AppNav } from "@/components/ml/ui";
 import { startAnalytics, trackPageview } from "@/lib/analytics";
 import { listenForAuthReturn } from "@/lib/native-auth";
+import { startBackButton } from "@/lib/dismiss-stack";
 import { useAuth } from "@/hooks/use-auth";
 import { syncRecentlyViewed } from "@/lib/device-history";
 import { useRememberAccounts } from "@/hooks/use-remember-accounts";
@@ -177,6 +178,9 @@ function RootComponent() {
       }),
     [router],
   );
+
+  // Android's hardware back: close the top overlay, else go back, else exit. A no-op in a browser.
+  useEffect(() => startBackButton(), []);
 
   return (
     <QueryClientProvider client={queryClient}>
