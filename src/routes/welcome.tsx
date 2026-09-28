@@ -278,204 +278,69 @@ function WelcomeScreen() {
   }
 
   return (
-    <AuthScreen brand={false} className="bg-background">
-      <div className="flex flex-1 min-h-0 flex-col justify-between overflow-hidden">
-        {/* Compact mobile-first hero: clear value proposition before asking for credentials. */}
-        <div className="shrink-0 overflow-hidden rounded-lg bg-foreground px-4 pb-2.5 pt-2 text-background shadow-elevation-2">
+    <AuthScreen brand={false} className="bg-[#f7f6f2]">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <header className="shrink-0 px-1 pt-1">
           <div className="flex items-center justify-between">
-            <Brand compact className="vt-brand mb-0 [&_span:last-child]:text-background" />
-            <div aria-hidden className="flex items-center gap-1 text-pink-strong">
-              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-1" />
-              <span className="h-3.5 w-0.5 rounded-full bg-pink-strong animate-eq-2" />
-              <span className="h-2 w-0.5 rounded-full bg-pink-strong animate-eq-3" />
+            <Brand compact className="vt-brand mb-0" />
+            <span className="rounded-full bg-foreground px-2.5 py-1 text-1 font-semibold text-background">INDIA / MUSIC</span>
+          </div>
+          <div className="mt-8 flex items-end justify-between gap-4">
+            <h1 className={cn("max-w-[275px] text-4 font-bold leading-[0.98] tracking-[-0.06em] text-foreground", rise)} style={beat(1)}>
+              Make something<br />worth hearing.
+            </h1>
+            <div aria-hidden className="mb-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pink-strong text-background shadow-elevation-1">
+              <span className="text-2 font-bold">↗</span>
             </div>
           </div>
-          <h1 className={cn("mt-2 max-w-[300px] text-2 font-bold leading-tight tracking-tight text-background", rise)} style={beat(1)}>
-            Your people are here.
-          </h1>
-          <p className={cn("mt-1 max-w-[300px] text-1 leading-relaxed text-background/65", rise)} style={beat(2)}>
-            India&apos;s professional network for the people behind the music.
+          <p className={cn("mt-4 max-w-[285px] text-2 leading-snug text-muted-foreground", rise)} style={beat(2)}>
+            The people, places and opportunities behind India&apos;s music.
           </p>
-          <div className={cn("mt-2 flex flex-wrap gap-1.5", rise)} style={beat(3)} aria-label="What you can do on MusicLinkd">
-            {['Collaborate', 'Get discovered', 'Book better'].map((item) => (
-              <span key={item} className="rounded-full border border-background/15 bg-background/10 px-2.5 py-1 text-1 font-medium text-background/80">
-                {item}
-              </span>
-            ))}
+          <div className={cn("mt-5 flex items-center gap-2", rise)} style={beat(3)}>
+            <span className="h-1.5 w-10 rounded-full bg-pink-strong" />
+            <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
+            <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
+            <span className="ml-1 text-1 font-medium text-muted-foreground">Connect / create / grow</span>
           </div>
-          <div className="sr-only">
-            <ul>
-              {audience.map((a) => (
-                <li key={a}>{a}</li>
-              ))}
-            </ul>
-          </div>
-          <RoleTicker className={cn("-mx-4 mt-2", rise)} style={beat(4)} />
-        </div>
+          <div className="sr-only"><ul>{audience.map((a) => <li key={a}>{a}</li>)}</ul></div>
+        </header>
 
-        {/* Interactive mode switcher + Form */}
-        <div className={cn("my-3 flex-1 min-h-0 overflow-y-auto", rise)} style={beat(5)}>
+        <main className={cn("mt-8 min-h-0 flex-1", rise)} style={beat(4)}>
           {saved.length ? (
-            <section className="mb-1.5">
-              <p className="mb-0.5 text-1 font-semibold text-muted-foreground">Continue as</p>
-              <ul className="divide-y divide-border overflow-hidden rounded-lg bg-card border border-border shadow-xs">
-                {saved.slice(0, 1).map((a) => (
-                  <AccountRow
-                    key={a.userId}
-                    account={a}
-                    current={false}
-                    busy={busy !== null}
-                    onPick={() => void continueAs(a.userId)}
-                    onRemove={() => forgetAccount(a.userId)}
-                  />
-                ))}
+            <section className="mb-3">
+              <p className="mb-1 text-1 font-semibold text-muted-foreground">Continue as</p>
+              <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-card">
+                {saved.slice(0, 1).map((a) => <AccountRow key={a.userId} account={a} current={false} busy={busy !== null} onPick={() => void continueAs(a.userId)} onRemove={() => forgetAccount(a.userId)} />)}
               </ul>
             </section>
           ) : null}
 
-          <form
-            noValidate
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!busy) void submit();
-            }}
-            className="rounded-lg bg-card p-2.5 sm:p-3.5 border border-border/80 shadow-xs"
-          >
-            <div className="mb-1.5">
-              <h2 className="text-1 sm:text-2 font-bold text-foreground">
-                {signup ? "Create your account" : "Welcome back"}
-              </h2>
-              <p className="text-1 text-muted-foreground">
-                {signup
-                  ? "Join musicians, producers and studios across India."
-                  : "Sign in with your email and password."}
-              </p>
-            </div>
-
-            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
-
-            <TextField
-              label="Email"
-              value={email}
-              className="mb-1.5"
-              onChange={(v) => {
-                setEmail(v);
-                carryEmail(v);
-              }}
-              onBlur={() => fields.touch("email")}
-              error={fields.errorFor("email", emailProblem)}
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              enterKeyHint="next"
-              placeholder="name@example.com"
-            />
-            <PasswordInput
-              className="mb-1"
-              value={password}
-              onChange={setPassword}
-              onBlur={() => fields.touch("password")}
-              error={fields.errorFor("password", passwordProblem)}
-              placeholder={signup ? "Create a strong password" : "Your password"}
-              autoComplete={signup ? "new-password" : "current-password"}
-              below={signup ? <PasswordRequirements value={password} /> : null}
-            />
-
-            {signup ? null : (
-              <div className="mb-1 flex items-center justify-end">
-                <AuthLink
-                  to="/auth/forgot"
-                  className="text-muted-foreground hover:text-foreground font-medium text-1"
-                >
-                  Forgot Password?
-                </AuthLink>
+          <form noValidate onSubmit={(e) => { e.preventDefault(); if (!busy) void submit(); }} className="rounded-xl bg-background p-4 shadow-elevation-1 ring-1 ring-foreground/5">
+            <div className="mb-4 flex items-baseline justify-between gap-2">
+              <div>
+                <h2 className="text-2 font-bold tracking-tight text-foreground">{signup ? "Join MusicLinkd" : "Welcome back"}</h2>
+                <p className="mt-0.5 text-1 text-muted-foreground">{signup ? "Your next collaboration starts here." : "Pick up where you left off."}</p>
               </div>
-            )}
-
-            <Btn
-              type="submit"
-              className="w-full h-10 sm:h-11 text-xs sm:text-sm font-semibold shadow-xs"
-              loading={busy === "email"}
-            >
-              {signup ? "Create Account" : "Sign In"}
-            </Btn>
+              <button type="button" onClick={() => switchMode(signup ? "signin" : "signup")} className="min-h-12 shrink-0 text-1 font-semibold text-pink-strong underline underline-offset-4">
+                {signup ? "Sign in" : "Join"}
+              </button>
+            </div>
+            {error ? <AuthNotice title={error.title}>{error.body}</AuthNotice> : null}
+            <TextField label="Email" value={email} className="mb-2" onChange={(v) => { setEmail(v); carryEmail(v); }} onBlur={() => fields.touch("email")} error={fields.errorFor("email", emailProblem)} type="email" inputMode="email" autoComplete="email" enterKeyHint="next" placeholder="name@example.com" />
+            <PasswordInput className="mb-1" value={password} onChange={setPassword} onBlur={() => fields.touch("password")} error={fields.errorFor("password", passwordProblem)} placeholder={signup ? "Create a strong password" : "Your password"} autoComplete={signup ? "new-password" : "current-password"} below={signup ? <PasswordRequirements value={password} /> : null} />
+            {!signup ? <div className="mb-2 flex justify-end"><AuthLink to="/auth/forgot" className="text-1 font-medium text-muted-foreground">Forgot password?</AuthLink></div> : null}
+            <Btn type="submit" className="h-12 w-full text-sm font-semibold" loading={busy === "email"}>{signup ? "Create account" : "Sign in"}</Btn>
           </form>
 
-          <Divider label="or" className="my-1" />
-
-          <div className={`grid gap-1.5 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
-            <Btn
-              variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
-              icon={<GoogleIcon />}
-              loading={busy === "google"}
-              onClick={() => void google()}
-            >
-              Google
-            </Btn>
-            {showLinkedIn ? (
-              <Btn
-                variant="outline"
-                className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
-                icon={<Linkedin size={iconSize.sm} aria-hidden />}
-                loading={busy === "linkedin"}
-                onClick={() => void linkedin()}
-              >
-                LinkedIn
-              </Btn>
-            ) : null}
-            <Btn
-              variant="outline"
-              className="w-full h-8 sm:h-9 bg-card border-border/90 hover:bg-subtle text-xs sm:text-sm font-medium shadow-xs px-1.5"
-              icon={<Smartphone size={iconSize.sm} aria-hidden />}
-              onClick={() => void navigate({ to: "/auth/phone" })}
-            >
-              Phone
-            </Btn>
+          <Divider label="or continue with" className="my-3" />
+          <div className={`grid gap-2 ${showLinkedIn ? "grid-cols-3" : "grid-cols-2"}`}>
+            <Btn variant="outline" className="h-11 w-full bg-background px-1 text-1 font-medium" icon={<GoogleIcon />} loading={busy === "google"} onClick={() => void google()}>Google</Btn>
+            {showLinkedIn ? <Btn variant="outline" className="h-11 w-full bg-background px-1 text-1 font-medium" icon={<Linkedin size={iconSize.sm} aria-hidden />} loading={busy === "linkedin"} onClick={() => void linkedin()}>LinkedIn</Btn> : null}
+            <Btn variant="outline" className="h-11 w-full bg-background px-1 text-1 font-medium" icon={<Smartphone size={iconSize.sm} aria-hidden />} onClick={() => void navigate({ to: "/auth/phone" })}>Phone</Btn>
           </div>
+        </main>
 
-          <p className="mt-1.5 text-center text-xs sm:text-sm text-muted-foreground">
-            {signup ? (
-              <>
-                Already have an account?{" "}
-                <button
-                  type="button"
-                  onClick={() => switchMode("signin")}
-                  className="font-semibold text-foreground underline underline-offset-4"
-                >
-                  Sign in
-                </button>
-              </>
-            ) : (
-              <>
-                New to MusicLinkd?{" "}
-                <button
-                  type="button"
-                  onClick={() => switchMode("signup")}
-                  className="font-semibold text-foreground underline underline-offset-4"
-                >
-                  Create an account
-                </button>
-              </>
-            )}
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="shrink-0 pt-0.5 text-center">
-          <LegalNote className="mt-0" />
-          <div className="mt-0.5">
-            <MadeByWugweb />
-          </div>
-
-          {showDemoControls ? (
-            <p className="mt-0.5 text-center text-1">
-              <AuthLink to="/dev/new-user" className="text-muted-foreground">
-                Dev: Test as a new user
-              </AuthLink>
-            </p>
-          ) : null}
-        </div>
+        <footer className="shrink-0 pb-1 pt-4 text-center"><LegalNote className="mt-0" /><div className="mt-1"><MadeByWugweb /></div>{showDemoControls ? <p className="mt-1 text-1"><AuthLink to="/dev/new-user" className="text-muted-foreground">Dev: Test as a new user</AuthLink></p> : null}</footer>
       </div>
     </AuthScreen>
   );
