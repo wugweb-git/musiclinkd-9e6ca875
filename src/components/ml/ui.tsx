@@ -175,7 +175,7 @@ const menuGroups: {
     title: "Business",
     items: [
       { to: "/business/bookings", label: "Booking requests", icon: CalendarClock },
-      { to: "/business/leads", label: "Leads", icon: Inbox },
+      { to: "/leads", label: "Leads", icon: Inbox },
     ],
   },
   {

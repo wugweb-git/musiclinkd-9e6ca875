@@ -8,7 +8,16 @@ export type SettingsGroup = {
   title: string;
   /** `icon` names a lucide icon the settings screen maps; keep it to one word. */
   /** `soon`: placed in a later phase — the row shows but does nothing. */
-  rows: { key: string; label: string; hint: string; to: string; icon: string; soon?: boolean }[];
+  rows: {
+    key: string;
+    label: string;
+    hint: string;
+    to: string;
+    /** Path params when `to` has a $segment, e.g. /legal/$slug. */
+    params?: Record<string, string>;
+    icon: string;
+    soon?: boolean;
+  }[];
 };
 
 export const settingsGroups: SettingsGroup[] = [
@@ -144,14 +153,16 @@ export const settingsGroups: SettingsGroup[] = [
         key: "terms",
         label: "Terms of use",
         hint: "Last updated Jul 2026",
-        to: "/legal/terms",
+        to: "/legal/$slug",
+        params: { slug: "terms" },
         icon: "scroll",
       },
       {
         key: "privacy-policy",
         label: "Privacy policy",
         hint: "How we handle your data",
-        to: "/legal/privacy",
+        to: "/legal/$slug",
+        params: { slug: "privacy" },
         icon: "file-text",
       },
       {

@@ -37,9 +37,9 @@ export const Route = createFileRoute("/help/")({
 const sitePages = [
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
-  { to: "/legal/privacy", label: "Privacy" },
-  { to: "/legal/terms", label: "Terms" },
-  { to: "/legal/cookies", label: "Cookies" },
+  { to: "/legal/$slug" as const, params: { slug: "privacy" }, label: "Privacy" },
+  { to: "/legal/$slug" as const, params: { slug: "terms" }, label: "Terms" },
+  { to: "/legal/$slug" as const, params: { slug: "cookies" }, label: "Cookies" },
 ] as const;
 
 /** One keyword per topic for the filter row; the category's full label stays on its own page. */

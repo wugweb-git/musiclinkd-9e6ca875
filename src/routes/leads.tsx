@@ -4,15 +4,21 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn } from "@/components/ml/ui";
-import { Card, EmptyState, Loading, StatusPill, Segmented } from "@/components/ml/kit";
+import {
+  BusinessOnlyGate,
+  Card,
+  EmptyState,
+  Loading,
+  StatusPill,
+  Segmented,
+} from "@/components/ml/kit";
 import { leadStatusTone } from "@/data/business";
-import { businessView, loadBusiness } from "@/lib/business-view";
 import { listMyLeads, setLeadStatus, type EnquiryStatus } from "@/lib/enquiries.functions";
 import { conversationWith } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { useRequireBusiness } from "@/hooks/use-require-business";
 
-export const Route = createFileRoute("/business/$id/leads")({
-  loader: ({ params }) => loadBusiness(params.id),
+export const Route = createFileRoute("/leads")({
   head: () => ({
     meta: [
       { title: "Leads inbox | MusicLinkd" },
@@ -33,14 +39,13 @@ export const Route = createFileRoute("/business/$id/leads")({
 const filters = ["All", "New", "Replied", "Booked"] as const;
 
 function BusinessLeads() {
-  const b = businessView(Route.useLoaderData());
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const queryClient = useQueryClient();
   const load = useServerFn(listMyLeads);
-  const { user, loading } = useAuth();
-  // Leads are the signed-in business's own; nobody else's inbox opens under this address.
-  const owner = Boolean(b && user && user.id === b.profileId);
-  const q = useQuery({ queryKey: ["leads", "mine"], queryFn: () => load(), enabled: owner });
+  const { loading } = useAuth();
+  // listMyLeads filters on the signed-in account, so this screen needs no id in its address.
+  const gate = useRequireBusiness();
+  const q = useQuery({ queryKey: ["leads", "mine"], queryFn: () => load(), enabled: gate.allowed });
   const answer = useServerFn(setLeadStatus);
   const [updating, setUpdating] = useState<string | null>(null);
 
@@ -74,16 +79,17 @@ function BusinessLeads() {
     }
   }
 
-  if (!b || (!loading && !owner)) {
+  if (!gate.allowed) {
     return (
       <Screen>
         <TopBar title="Leads" back="/home" />
-        <div className="px-5 pt-6">
-          <EmptyState
-            title="Business not found"
-            body="This business may have been removed or you no longer have access to it."
-          />
-        </div>
+        <BusinessOnlyGate
+          allowed={gate.allowed}
+          loading={gate.loading || loading}
+          signedIn={gate.signedIn}
+        >
+          <div />
+        </BusinessOnlyGate>
       </Screen>
     );
   }
@@ -95,7 +101,7 @@ function BusinessLeads() {
 
   return (
     <Screen>
-      <TopBar title="Leads" subtitle={b.name} back="/home" />
+      <TopBar title="Leads" back="/home" />
 
       <div className="space-y-4 px-5 pt-4 pb-8">
         <div className="">

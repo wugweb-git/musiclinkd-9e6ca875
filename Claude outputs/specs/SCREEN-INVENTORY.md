@@ -116,6 +116,43 @@ Also `kind: isBusiness ? "studio" : "person"` in `public-profile.tsx`, and `"per
 `recently-viewed.functions.ts` and `device-history.ts`. **Blocked:** `recently_viewed.kind` is part
 of that table's primary key and stores those literal strings, so renaming is a migration.
 
+### Deep audit — 28 Sep, after deploy
+
+Ran structurally (same imports + server functions + size band) and by repeated path segment.
+
+**Fixed now:**
+
+| Was | Now |
+|---|---|
+| `legal.terms` · `legal.privacy` · `legal.cookies` — three 15-line files differing only in a CMS key and a title | **`legal.$slug`** — one screen, three slugs. The settings-row type gained `params` so a `$slug` route can sit in a settings list |
+
+**Confirmed duplicate, not yet merged:**
+
+`marketplace/seller.$id` (142 lines) and `marketplace/rent/provider.$id` (214 lines) both query one
+person, their listings, their reviews and taxonomy labels. Same screen, two words — "Seller" and
+"Provider". In one marketplace a seller and a rental provider are the same party, so this should be
+one screen. The merge needs care: the provider screen carries rental-specific detail the seller
+screen does not.
+
+**Looks like a duplicate but is not** — recorded so it is not "fixed" by mistake:
+
+| Pair | Why they differ |
+|---|---|
+| `/marketplace/mine` ↔ `/marketplace/rent/mine` | Opposite roles. `mine` is the **seller's** one place (listings + incoming rental requests, no tabs — owner, 22 Sep). `rent/mine` is the **renter's** bookings, tabbed Upcoming/Active/Completed/Cancelled. Same relationship as `/bookings` (customer) ↔ `/business/bookings` (provider). |
+| `/business/$id/leads` ↔ `/business/leads` | The second is a gated shortcut that resolves "my business" and redirects into the first. |
+| `/business/$id/availability` | Already a redirect to `/business/availability`. |
+
+**Already folded:** 8 of the 12 `marketplace/rent/*` files are redirects into Market — `c/$slug`,
+`e/$id`, `index`, `list`, `listings`, `nearby`, `saved`, `search`. Only 4 are real screens:
+`active.$id`, `mine`, `provider.$id`, `request.$id`.
+
+**Repeated last segments** are mostly legitimate — `new`, `edit`, `manage`, `search`, `mine` recur
+because they are verbs on different objects. The two worth watching:
+
+- `enquiry` — `/business/$id/enquiry` and `/services/$id/enquiry` both call `sendEnquiry`
+- `analytics` — `/opportunities/$id/analytics` and `/portfolio/analytics`
+
+
 ### Availability — 28 Sep
 
 `/services/availability` is deleted. It was an 80-line **read-only mirror** of one profile field

@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as LeadsRouteImport } from './routes/leads'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -37,7 +38,6 @@ import { Route as BandsNewRouteImport } from './routes/bands.new'
 import { Route as BookingIdRouteImport } from './routes/booking.$id'
 import { Route as BookingsIndexRouteImport } from './routes/bookings.index'
 import { Route as BusinessAvailabilityRouteImport } from './routes/business.availability'
-import { Route as BusinessLeadsRouteImport } from './routes/business.leads'
 import { Route as BusinessNewRouteImport } from './routes/business.new'
 import { Route as BusinessPoliciesRouteImport } from './routes/business.policies'
 import { Route as BusinessPricingRouteImport } from './routes/business.pricing'
@@ -51,9 +51,7 @@ import { Route as HelpSlugRouteImport } from './routes/help.$slug'
 import { Route as IdentityBusinessRouteImport } from './routes/identity.business'
 import { Route as IdentityQrRouteImport } from './routes/identity.qr'
 import { Route as IdentityScanRouteImport } from './routes/identity.scan'
-import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
-import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
-import { Route as LegalTermsRouteImport } from './routes/legal.terms'
+import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace/index'
 import { Route as MarketplaceMineRouteImport } from './routes/marketplace/mine'
 import { Route as MarketplaceNearbyRouteImport } from './routes/marketplace/nearby'
@@ -109,7 +107,6 @@ import { Route as BookingIdServiceRouteImport } from './routes/booking.$id.servi
 import { Route as BookingConfirmedRefRouteImport } from './routes/booking.confirmed.$ref'
 import { Route as BusinessIdAvailabilityRouteImport } from './routes/business.$id.availability'
 import { Route as BusinessIdEnquiryRouteImport } from './routes/business.$id.enquiry'
-import { Route as BusinessIdLeadsRouteImport } from './routes/business.$id.leads'
 import { Route as BusinessBookingsIndexRouteImport } from './routes/business.bookings.index'
 import { Route as BusinessBookingsRefRouteImport } from './routes/business.bookings.$ref'
 import { Route as BusinessBookingsCalendarRouteImport } from './routes/business.bookings.calendar'
@@ -187,6 +184,11 @@ const ContactRoute = ContactRouteImport.update({
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeadsRoute = LeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeRoute = MeRouteImport.update({
@@ -299,11 +301,6 @@ const BusinessAvailabilityRoute = BusinessAvailabilityRouteImport.update({
   path: '/business/availability',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BusinessLeadsRoute = BusinessLeadsRouteImport.update({
-  id: '/business/leads',
-  path: '/business/leads',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BusinessNewRoute = BusinessNewRouteImport.update({
   id: '/business/new',
   path: '/business/new',
@@ -369,19 +366,9 @@ const IdentityScanRoute = IdentityScanRouteImport.update({
   path: '/identity/scan',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LegalCookiesRoute = LegalCookiesRouteImport.update({
-  id: '/legal/cookies',
-  path: '/legal/cookies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
-  id: '/legal/privacy',
-  path: '/legal/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LegalTermsRoute = LegalTermsRouteImport.update({
-  id: '/legal/terms',
-  path: '/legal/terms',
+const LegalSlugRoute = LegalSlugRouteImport.update({
+  id: '/legal/$slug',
+  path: '/legal/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -659,11 +646,6 @@ const BusinessIdEnquiryRoute = BusinessIdEnquiryRouteImport.update({
   path: '/business/$id/enquiry',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BusinessIdLeadsRoute = BusinessIdLeadsRouteImport.update({
-  id: '/business/$id/leads',
-  path: '/business/$id/leads',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BusinessBookingsIndexRoute = BusinessBookingsIndexRouteImport.update({
   id: '/business/bookings/',
   path: '/business/bookings/',
@@ -922,6 +904,7 @@ export interface FileRoutesByFullPath {
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
+  '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -941,7 +924,6 @@ export interface FileRoutesByFullPath {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/availability': typeof BusinessAvailabilityRoute
-  '/business/leads': typeof BusinessLeadsRoute
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
@@ -952,9 +934,7 @@ export interface FileRoutesByFullPath {
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
-  '/legal/cookies': typeof LegalCookiesRoute
-  '/legal/privacy': typeof LegalPrivacyRoute
-  '/legal/terms': typeof LegalTermsRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
@@ -1014,7 +994,6 @@ export interface FileRoutesByFullPath {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
-  '/business/$id/leads': typeof BusinessIdLeadsRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1073,6 +1052,7 @@ export interface FileRoutesByTo {
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
+  '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1091,7 +1071,6 @@ export interface FileRoutesByTo {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/bands/new': typeof BandsNewRoute
   '/business/availability': typeof BusinessAvailabilityRoute
-  '/business/leads': typeof BusinessLeadsRoute
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
@@ -1102,9 +1081,7 @@ export interface FileRoutesByTo {
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
-  '/legal/cookies': typeof LegalCookiesRoute
-  '/legal/privacy': typeof LegalPrivacyRoute
-  '/legal/terms': typeof LegalTermsRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
@@ -1164,7 +1141,6 @@ export interface FileRoutesByTo {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
-  '/business/$id/leads': typeof BusinessIdLeadsRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1224,6 +1200,7 @@ export interface FileRoutesById {
   '/accounts': typeof AccountsRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
+  '/leads': typeof LeadsRoute
   '/me': typeof MeRoute
   '/messages': typeof MessagesRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -1243,7 +1220,6 @@ export interface FileRoutesById {
   '/bands/new': typeof BandsNewRoute
   '/booking/$id': typeof BookingIdRouteWithChildren
   '/business/availability': typeof BusinessAvailabilityRoute
-  '/business/leads': typeof BusinessLeadsRoute
   '/business/new': typeof BusinessNewRoute
   '/business/policies': typeof BusinessPoliciesRoute
   '/business/pricing': typeof BusinessPricingRoute
@@ -1254,9 +1230,7 @@ export interface FileRoutesById {
   '/identity/business': typeof IdentityBusinessRoute
   '/identity/qr': typeof IdentityQrRoute
   '/identity/scan': typeof IdentityScanRoute
-  '/legal/cookies': typeof LegalCookiesRoute
-  '/legal/privacy': typeof LegalPrivacyRoute
-  '/legal/terms': typeof LegalTermsRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/marketplace/mine': typeof MarketplaceMineRoute
   '/marketplace/nearby': typeof MarketplaceNearbyRoute
   '/marketplace/search': typeof MarketplaceSearchRoute
@@ -1316,7 +1290,6 @@ export interface FileRoutesById {
   '/booking/confirmed/$ref': typeof BookingConfirmedRefRoute
   '/business/$id/availability': typeof BusinessIdAvailabilityRoute
   '/business/$id/enquiry': typeof BusinessIdEnquiryRoute
-  '/business/$id/leads': typeof BusinessIdLeadsRoute
   '/business/bookings/$ref': typeof BusinessBookingsRefRoute
   '/business/bookings/calendar': typeof BusinessBookingsCalendarRoute
   '/collab/join/$token': typeof CollabJoinTokenRoute
@@ -1377,6 +1350,7 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/contact'
     | '/home'
+    | '/leads'
     | '/me'
     | '/messages'
     | '/reset-password'
@@ -1396,7 +1370,6 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/availability'
-    | '/business/leads'
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
@@ -1407,9 +1380,7 @@ export interface FileRouteTypes {
     | '/identity/business'
     | '/identity/qr'
     | '/identity/scan'
-    | '/legal/cookies'
-    | '/legal/privacy'
-    | '/legal/terms'
+    | '/legal/$slug'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/search'
@@ -1469,7 +1440,6 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/business/$id/availability'
     | '/business/$id/enquiry'
-    | '/business/$id/leads'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1528,6 +1498,7 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/contact'
     | '/home'
+    | '/leads'
     | '/me'
     | '/messages'
     | '/reset-password'
@@ -1546,7 +1517,6 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/bands/new'
     | '/business/availability'
-    | '/business/leads'
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
@@ -1557,9 +1527,7 @@ export interface FileRouteTypes {
     | '/identity/business'
     | '/identity/qr'
     | '/identity/scan'
-    | '/legal/cookies'
-    | '/legal/privacy'
-    | '/legal/terms'
+    | '/legal/$slug'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/search'
@@ -1619,7 +1587,6 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/business/$id/availability'
     | '/business/$id/enquiry'
-    | '/business/$id/leads'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1678,6 +1645,7 @@ export interface FileRouteTypes {
     | '/accounts'
     | '/contact'
     | '/home'
+    | '/leads'
     | '/me'
     | '/messages'
     | '/reset-password'
@@ -1697,7 +1665,6 @@ export interface FileRouteTypes {
     | '/bands/new'
     | '/booking/$id'
     | '/business/availability'
-    | '/business/leads'
     | '/business/new'
     | '/business/policies'
     | '/business/pricing'
@@ -1708,9 +1675,7 @@ export interface FileRouteTypes {
     | '/identity/business'
     | '/identity/qr'
     | '/identity/scan'
-    | '/legal/cookies'
-    | '/legal/privacy'
-    | '/legal/terms'
+    | '/legal/$slug'
     | '/marketplace/mine'
     | '/marketplace/nearby'
     | '/marketplace/search'
@@ -1770,7 +1735,6 @@ export interface FileRouteTypes {
     | '/booking/confirmed/$ref'
     | '/business/$id/availability'
     | '/business/$id/enquiry'
-    | '/business/$id/leads'
     | '/business/bookings/$ref'
     | '/business/bookings/calendar'
     | '/collab/join/$token'
@@ -1830,6 +1794,7 @@ export interface RootRouteChildren {
   AccountsRoute: typeof AccountsRoute
   ContactRoute: typeof ContactRoute
   HomeRoute: typeof HomeRoute
+  LeadsRoute: typeof LeadsRoute
   MeRoute: typeof MeRoute
   MessagesRoute: typeof MessagesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -1849,7 +1814,6 @@ export interface RootRouteChildren {
   BandsNewRoute: typeof BandsNewRoute
   BookingIdRoute: typeof BookingIdRouteWithChildren
   BusinessAvailabilityRoute: typeof BusinessAvailabilityRoute
-  BusinessLeadsRoute: typeof BusinessLeadsRoute
   BusinessNewRoute: typeof BusinessNewRoute
   BusinessPoliciesRoute: typeof BusinessPoliciesRoute
   BusinessPricingRoute: typeof BusinessPricingRoute
@@ -1860,9 +1824,7 @@ export interface RootRouteChildren {
   IdentityBusinessRoute: typeof IdentityBusinessRoute
   IdentityQrRoute: typeof IdentityQrRoute
   IdentityScanRoute: typeof IdentityScanRoute
-  LegalCookiesRoute: typeof LegalCookiesRoute
-  LegalPrivacyRoute: typeof LegalPrivacyRoute
-  LegalTermsRoute: typeof LegalTermsRoute
+  LegalSlugRoute: typeof LegalSlugRoute
   MarketplaceMineRoute: typeof MarketplaceMineRoute
   MarketplaceNearbyRoute: typeof MarketplaceNearbyRoute
   MarketplaceSearchRoute: typeof MarketplaceSearchRoute
@@ -1917,7 +1879,6 @@ export interface RootRouteChildren {
   BookingConfirmedRefRoute: typeof BookingConfirmedRefRoute
   BusinessIdAvailabilityRoute: typeof BusinessIdAvailabilityRoute
   BusinessIdEnquiryRoute: typeof BusinessIdEnquiryRoute
-  BusinessIdLeadsRoute: typeof BusinessIdLeadsRoute
   BusinessBookingsRefRoute: typeof BusinessBookingsRefRoute
   BusinessBookingsCalendarRoute: typeof BusinessBookingsCalendarRoute
   CollabJoinTokenRoute: typeof CollabJoinTokenRoute
@@ -2011,6 +1972,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leads': {
+      id: '/leads'
+      path: '/leads'
+      fullPath: '/leads'
+      preLoaderRoute: typeof LeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me': {
@@ -2167,13 +2135,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessAvailabilityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/business/leads': {
-      id: '/business/leads'
-      path: '/business/leads'
-      fullPath: '/business/leads'
-      preLoaderRoute: typeof BusinessLeadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/business/new': {
       id: '/business/new'
       path: '/business/new'
@@ -2265,25 +2226,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IdentityScanRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/legal/cookies': {
-      id: '/legal/cookies'
-      path: '/legal/cookies'
-      fullPath: '/legal/cookies'
-      preLoaderRoute: typeof LegalCookiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/legal/privacy': {
-      id: '/legal/privacy'
-      path: '/legal/privacy'
-      fullPath: '/legal/privacy'
-      preLoaderRoute: typeof LegalPrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/legal/terms': {
-      id: '/legal/terms'
-      path: '/legal/terms'
-      fullPath: '/legal/terms'
-      preLoaderRoute: typeof LegalTermsRouteImport
+    '/legal/$slug': {
+      id: '/legal/$slug'
+      path: '/legal/$slug'
+      fullPath: '/legal/$slug'
+      preLoaderRoute: typeof LegalSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -2671,13 +2618,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessIdEnquiryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/business/$id/leads': {
-      id: '/business/$id/leads'
-      path: '/business/$id/leads'
-      fullPath: '/business/$id/leads'
-      preLoaderRoute: typeof BusinessIdLeadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/business/bookings/': {
       id: '/business/bookings/'
       path: '/business/bookings'
@@ -3046,6 +2986,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountsRoute: AccountsRoute,
   ContactRoute: ContactRoute,
   HomeRoute: HomeRoute,
+  LeadsRoute: LeadsRoute,
   MeRoute: MeRoute,
   MessagesRoute: MessagesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -3065,7 +3006,6 @@ const rootRouteChildren: RootRouteChildren = {
   BandsNewRoute: BandsNewRoute,
   BookingIdRoute: BookingIdRouteWithChildren,
   BusinessAvailabilityRoute: BusinessAvailabilityRoute,
-  BusinessLeadsRoute: BusinessLeadsRoute,
   BusinessNewRoute: BusinessNewRoute,
   BusinessPoliciesRoute: BusinessPoliciesRoute,
   BusinessPricingRoute: BusinessPricingRoute,
@@ -3076,9 +3016,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdentityBusinessRoute: IdentityBusinessRoute,
   IdentityQrRoute: IdentityQrRoute,
   IdentityScanRoute: IdentityScanRoute,
-  LegalCookiesRoute: LegalCookiesRoute,
-  LegalPrivacyRoute: LegalPrivacyRoute,
-  LegalTermsRoute: LegalTermsRoute,
+  LegalSlugRoute: LegalSlugRoute,
   MarketplaceMineRoute: MarketplaceMineRoute,
   MarketplaceNearbyRoute: MarketplaceNearbyRoute,
   MarketplaceSearchRoute: MarketplaceSearchRoute,
@@ -3133,7 +3071,6 @@ const rootRouteChildren: RootRouteChildren = {
   BookingConfirmedRefRoute: BookingConfirmedRefRoute,
   BusinessIdAvailabilityRoute: BusinessIdAvailabilityRoute,
   BusinessIdEnquiryRoute: BusinessIdEnquiryRoute,
-  BusinessIdLeadsRoute: BusinessIdLeadsRoute,
   BusinessBookingsRefRoute: BusinessBookingsRefRoute,
   BusinessBookingsCalendarRoute: BusinessBookingsCalendarRoute,
   CollabJoinTokenRoute: CollabJoinTokenRoute,

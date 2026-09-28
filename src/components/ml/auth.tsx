@@ -661,11 +661,19 @@ export function LegalNote({ className }: { className?: string | undefined } = {}
   return (
     <p className={cn("mt-2 text-center text-1 leading-snug text-muted-foreground", className)}>
       By continuing you agree to our{" "}
-      <TextLink to="/legal/terms" className="underline underline-offset-2">
+      <TextLink
+        to="/legal/$slug"
+        params={{ slug: "terms" }}
+        className="underline underline-offset-2"
+      >
         Terms
       </TextLink>{" "}
       and{" "}
-      <TextLink to="/legal/privacy" className="underline underline-offset-2">
+      <TextLink
+        to="/legal/$slug"
+        params={{ slug: "privacy" }}
+        className="underline underline-offset-2"
+      >
         Privacy Policy
       </TextLink>
       .

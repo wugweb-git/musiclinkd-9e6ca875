@@ -187,7 +187,10 @@ function SettingsScreen() {
                       subtitle={r.hint}
                       {...(r.soon
                         ? { badge: <SoonBadge />, right: <span /> }
-                        : { to: r.to as LinkProps["to"] })}
+                        : {
+                            to: r.to as LinkProps["to"],
+                            ...(r.params ? { params: r.params } : {}),
+                          })}
                     />
                   </li>
                 );
