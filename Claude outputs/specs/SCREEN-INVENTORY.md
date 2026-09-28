@@ -153,6 +153,29 @@ because they are verbs on different objects. The two worth watching:
 - `analytics` — `/opportunities/$id/analytics` and `/portfolio/analytics`
 
 
+### Business onboarding owns these — 28 Sep
+
+`/business/new` is the business onboarding flow, and its step list already contains **`policies`**,
+with its own state and save. So `/business/policies` is a second place to edit the same thing
+(owner: "part of business onboarding"). Same for the create flow itself — `/business/new` belongs
+inside onboarding rather than standing alone.
+
+Not done: `/business/new` is a 600-line creation flow, and folding it into the onboarding step
+machine means that machine gains a business branch. Deleting `/business/policies` first needs a
+check that `business.new` can be re-entered to *edit* an existing business, not only create one —
+otherwise editing a policy would restart creation.
+
+Already correct, and needed no work: verification is **not** part of `/profile/edit`, and account
+deactivation already lives in `settings/delete-account`. Both were properties of the deleted
+`/business/$id/manage` menu.
+
+### Availability is a toggle, not a screen — done 28 Sep
+
+`/home` carries it in the ink stage for both cohorts: "Not taking work" ⇄ "Taking work", writing
+`profiles.availability`. Verified to persist across a reload. This is what `/services/availability`
+was standing in for before it was deleted.
+
+
 ### Availability — 28 Sep
 
 `/services/availability` is deleted. It was an 80-line **read-only mirror** of one profile field
@@ -338,22 +361,25 @@ Both are raw markup rather than the `ml/*` kit — the only screens that do not 
 
 ---
 
-## Route map — 149 files, grouped by module
+## Route map — 146 files, grouped by module
 
-**One file serving both personas is listed once.** The *Serves* column says who it is for; *How one
-file serves both* says what differentiates the subject inside that single file. The *UI* column opens
-the screen on the local dev server (`bun run dev` first); a route with a `$param` needs a real id, so
-it has no direct link.
+**One file serving both personas is listed once.** *Serves* says who it is for; *How one file serves
+both* says what differentiates the subject inside that file; *UI* opens it on the local dev server.
+
+A screen counts as **Business** only when it actually **gates** (`<BusinessOnlyGate>`). Using
+`useRequireBusiness` to *detect* the cohort and show an extra field does not make a screen
+business-only — `/profile/edit` does exactly that for the Google Maps link, and serves both.
 
 | Serves | Count |
 |---|---|
-| **Both** | 98 |
+| **Both** | 102 |
 | → redirect | 19 |
-| System | 17 |
-| Business | 15 |
+| System | 15 |
+| Business | 10 |
 
-The 15 business rows are business-only because their **tables** are (`studios`, `profile_business`,
-`enquiries`, `booking_requests`) — not by product decision.
+The 10 gated screens: `/business/availability` · `/business/policies` · `/business/pricing` ·
+`/business/bookings` (+4 children) · `/leads` · `/services/conflicts`. Every one is gated because its
+**table** is business-shaped, not by product decision.
 
 ### Entry & auth (15)
 
@@ -407,7 +433,7 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/me` | — | → redirect |  | [open](http://localhost:8080/me) |
 | `/profile` | My Professional Profile | **Both** | subject from session / URL | [open](http://localhost:8080/profile) |
 | `/profile/$username` | — | **Both** | subject from session / URL | — |
-| `/profile/edit` | Edit profile | Business |  | [open](http://localhost:8080/profile/edit) |
+| `/profile/edit` | Edit profile | **Both** | cohort-aware fields | [open](http://localhost:8080/profile/edit) |
 | `/saved` | Bookmarked | **Both** | same rows, both cohorts | [open](http://localhost:8080/saved) |
 | `/talent/$id` | — | → redirect | subject in path | — |
 
@@ -419,7 +445,7 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/portfolio/$id` | Work detail | **Both** | subject in path | — |
 | `/portfolio/$id/edit` | Edit work | **Both** | subject in path | — |
 | `/portfolio/analytics` | Last 30 days | **Both** | same rows, both cohorts | [open](http://localhost:8080/portfolio/analytics) |
-| `/portfolio/new/$kind` | Step 1 of 2 · Details | **Both** | same rows, both cohorts | — |
+| `/portfolio/new/$kind` | Step 1 of 2 · Details | **Both** | subject in path | — |
 
 ### Services & booking (15)
 
@@ -432,7 +458,7 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/booking/$id/review` | Review booking | **Both** | subject in path | — |
 | `/booking/$id/schedule` | Availability | **Both** | subject in path | — |
 | `/booking/$id/service` | What do you want to book? | **Both** | subject in path | — |
-| `/booking/confirmed/$ref` | Booking request sent | **Both** | same rows, both cohorts | — |
+| `/booking/confirmed/$ref` | Booking request sent | **Both** | subject in path | — |
 | `/bookings` | Studios, rooms and sessions | **Both** | same rows, both cohorts | [open](http://localhost:8080/bookings) |
 | `/services` | What people can book you for | **Both** | same rows, both cohorts | [open](http://localhost:8080/services) |
 | `/services/$id` | Service | **Both** | subject in path | — |
@@ -441,23 +467,22 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/services/conflicts` | Overlaps across your services | Business |  | [open](http://localhost:8080/services/conflicts) |
 | `/services/new` | Edit service | **Both** | same rows, both cohorts | [open](http://localhost:8080/services/new) |
 
-### Business (13)
+### Business (12)
 
 | Route | Screen | Serves | How one file serves both | UI |
 |---|---|---|---|---|
 | `/business/$id/availability` | — | → redirect | subject in path | — |
-| `/business/$id/enquiry` | Enquiry | Business | subject in path | — |
-| `/business/$id/leads` | Leads | Business | subject in path | — |
+| `/business/$id/enquiry` | Enquiry | **Both** | subject in path | — |
 | `/business/availability` | Availability | Business |  | [open](http://localhost:8080/business/availability) |
 | `/business/bookings` | Requests and sessions for the spaces you run | Business |  | [open](http://localhost:8080/business/bookings) |
-| `/business/bookings/$ref` | Session | Business |  | — |
+| `/business/bookings/$ref` | Session | Business | subject in path | — |
 | `/business/bookings/calendar` | Your studio | Business |  | [open](http://localhost:8080/business/bookings/calendar) |
 | `/business/bookings/requests` | Requests | Business |  | [open](http://localhost:8080/business/bookings/requests) |
-| `/business/bookings/requests/$ref` | Request | Business |  | — |
-| `/business/leads` | Leads | Business |  | [open](http://localhost:8080/business/leads) |
-| `/business/new` | Create a business | Business |  | [open](http://localhost:8080/business/new) |
+| `/business/bookings/requests/$ref` | Request | Business | subject in path | — |
+| `/business/new` | Create a business | **Both** | same rows, both cohorts | [open](http://localhost:8080/business/new) |
 | `/business/policies` | Your space | Business |  | [open](http://localhost:8080/business/policies) |
 | `/business/pricing` | Pricing | Business |  | [open](http://localhost:8080/business/pricing) |
+| `/leads` | Leads | Business |  | [open](http://localhost:8080/leads) |
 
 ### Opportunities (12)
 
@@ -471,7 +496,7 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/opportunities/$id/apply` | Apply | **Both** | subject in path | — |
 | `/opportunities/$id/manage` | Manage | **Both** | subject in path | — |
 | `/opportunities/applications` | Applications never expire silently | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/applications) |
-| `/opportunities/applications/$aid` | Your application | **Both** | same rows, both cohorts | — |
+| `/opportunities/applications/$aid` | Your application | **Both** | subject in path | — |
 | `/opportunities/mine` | Posted by you | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/mine) |
 | `/opportunities/new` | Published | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/new) |
 | `/opportunities/search` | Search opportunities | **Both** | same rows, both cohorts | [open](http://localhost:8080/opportunities/search) |
@@ -490,7 +515,7 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/bands/new` | Create a band | **Both** | same rows, both cohorts | [open](http://localhost:8080/bands/new) |
 | `/collab` | Bands and projects you are in | **Both** | same rows, both cohorts | [open](http://localhost:8080/collab) |
 | `/collab/$id` | Collaboration | **Both** | subject in path | — |
-| `/collab/join/$token` | Join | **Both** | same rows, both cohorts | — |
+| `/collab/join/$token` | Join | **Both** | subject in path | — |
 | `/collab/new` | Start a collab | → redirect |  | [open](http://localhost:8080/collab/new) |
 
 ### Marketplace (20)
@@ -545,7 +570,7 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/identity/business` | — | → redirect |  | [open](http://localhost:8080/identity/business) |
 | `/identity/contact` | Digital card | **Both** | same rows, both cohorts | [open](http://localhost:8080/identity/contact) |
 | `/identity/contact/save` | Review before saving | **Both** | same rows, both cohorts | [open](http://localhost:8080/identity/contact/save) |
-| `/identity/q/$code` | Scanned code | **Both** | same rows, both cohorts | — |
+| `/identity/q/$code` | Scanned code | **Both** | subject in path | — |
 | `/identity/qr` | Your MusicLinkd ID | **Both** | `?as=business` | [open](http://localhost:8080/identity/qr) |
 | `/identity/scan` | MusicLinkd codes only | **Both** | same rows, both cohorts | [open](http://localhost:8080/identity/scan) |
 
@@ -554,12 +579,12 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | Route | Screen | Serves | How one file serves both | UI |
 |---|---|---|---|---|
 | `/verification` | Trust signals across your profile | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification) |
-| `/verification/$type` | Verification | **Both** | same rows, both cohorts | — |
+| `/verification/$type` | Verification | **Both** | subject in path | — |
 | `/verification/badge` | One meaning, everywhere | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification/badge) |
 | `/verification/choose` | Pick the badge that fits you | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification/choose) |
 | `/verification/privacy` | What happens to what you upload | **Both** | same rows, both cohorts | [open](http://localhost:8080/verification/privacy) |
 
-### Settings, help, legal (14)
+### Settings, help, legal (12)
 
 | Route | Screen | Serves | How one file serves both | UI |
 |---|---|---|---|---|
@@ -567,11 +592,9 @@ The 15 business rows are business-only because their **tables** are (`studios`, 
 | `/contact` | — | System |  | [open](http://localhost:8080/contact) |
 | `/help` | Written for working musicians | **Both** | same rows, both cohorts | [open](http://localhost:8080/help) |
 | `/help/$slug` | Not found | **Both** | subject in path | — |
-| `/help/category/$key` | — | **Both** | same rows, both cohorts | — |
-| `/legal/cookies` | — | System |  | [open](http://localhost:8080/legal/cookies) |
-| `/legal/privacy` | — | System |  | [open](http://localhost:8080/legal/privacy) |
-| `/legal/terms` | — | System |  | [open](http://localhost:8080/legal/terms) |
-| `/settings` | Account and preferences | Business |  | [open](http://localhost:8080/settings) |
+| `/help/category/$key` | — | **Both** | subject in path | — |
+| `/legal/$slug` | — | System | subject in path | — |
+| `/settings` | Account and preferences | **Both** | cohort-aware fields | [open](http://localhost:8080/settings) |
 | `/settings/account` | Sign-in and basics | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/account) |
 | `/settings/delete-account` | This cannot be undone | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/delete-account) |
 | `/settings/privacy` | Who sees and contacts you | **Both** | same rows, both cohorts | [open](http://localhost:8080/settings/privacy) |

@@ -6,11 +6,18 @@ import { ChevronRight, WifiOff, RefreshCw, Star, Settings, Sparkles } from "luci
 import { Screen, Btn, BtnLink, SectionHeader } from "@/components/ml/ui";
 import { EmptyState, Loading } from "@/components/ml/kit";
 import { SavedToggle } from "@/components/ml/saved-toggle";
+import { SwitchRow } from "@/components/ml/market";
+import { toast } from "sonner";
 import { ViewerAvatar, firstNameOf, useViewer } from "@/components/ml/viewer";
 import { NotificationsBell } from "@/components/ml/tab-header";
 import { emptyDashboard, type ContinueCard, type DashboardData } from "@/data/dashboard";
 import { useAuth } from "@/hooks/use-auth";
-import { getMyProfile, listMyPortfolio, getTaxonomyLabels } from "@/lib/portfolio.functions";
+import {
+  getMyProfile,
+  listMyPortfolio,
+  getTaxonomyLabels,
+  saveMyProfile,
+} from "@/lib/portfolio.functions";
 import type { TaxonomyLabels } from "@/lib/portfolio.functions";
 import { listOpportunities, listStudios } from "@/lib/catalog.functions";
 import { listPeopleByRole, type DirectoryPerson } from "@/lib/profile-groups.functions";
@@ -221,6 +228,7 @@ function Header() {
 }
 
 function Body({ home }: { home: Home }) {
+  const saveProfile = useServerFn(saveMyProfile);
   const { data, cont } = home;
   const { user } = data;
   const loaded = Route.useLoaderData();
@@ -247,6 +255,21 @@ function Body({ home }: { home: Home }) {
           {viewerFirstName || "Welcome"}
         </h1>
         {user.role ? <p className="mt-1 truncate text-sm text-background/70">{user.role}</p> : null}
+
+        {/* Availability is one profile field both cohorts have, so it is a toggle here rather than
+            a screen of its own (owner, 28 Sep 2026) — /services/availability was a detour. */}
+        <div className="mt-4 rounded-lg bg-background/10 px-4">
+          <AvailabilityToggle
+            available={user.available}
+            onChange={async (next) => {
+              try {
+                await saveProfile({ data: { availability: next ? "available_now" : "" } });
+              } catch {
+                toast.error("Couldn't save that — try again");
+              }
+            }}
+          />
+        </div>
 
         {cont.length ? (
           <ul className="mt-5 space-y-2">
@@ -376,5 +399,27 @@ function SkeletonBody() {
       </div>
       <Loading rows={3} />
     </div>
+  );
+}
+
+/** Taking work, or not. One field, both cohorts, no screen. */
+function AvailabilityToggle({
+  available,
+  onChange,
+}: {
+  available: boolean;
+  onChange: (next: boolean) => Promise<void>;
+}) {
+  const [on, setOn] = useState(available);
+  useEffect(() => setOn(available), [available]);
+  return (
+    <SwitchRow
+      label={on ? "Taking work" : "Not taking work"}
+      value={on}
+      onChange={(v) => {
+        setOn(v);
+        void onChange(v);
+      }}
+    />
   );
 }
