@@ -354,14 +354,14 @@ function NewService() {
   ) as ServiceItem["mode"];
 
   return (
-    <Screen bottomNav={false} className="pb-8">
+    <Screen bottomNav={false} className="bg-background pb-5">
       <TopBar
-        title={source ? "Edit service" : "Add a service"}
-        subtitle={`Step ${idx + 1} of ${steps.length} · ${stepLabels[step]}`}
+        title={source ? "Edit service" : "New service"}
+        subtitle={`Step ${idx + 1} of ${steps.length}`}
         back={source ? `/services/${source.id}` : "/services"}
       />
 
-      <div className="px-5 pt-4">
+      <div className="px-4 pt-3">
         <StepProgress total={steps.length} current={idx} />
 
         {optionsError ? (
@@ -376,42 +376,51 @@ function NewService() {
           optionsPending ? (
             <Loading rows={3} />
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
+              <div className="pb-1 pt-3">
+                <p className="text-1 font-medium text-primary">MAKE IT BOOKABLE</p>
+                <h1 className="mt-1 text-3 font-semibold tracking-tight text-foreground">
+                  What are you offering?
+                </h1>
+                <p className="mt-1 max-w-[30rem] text-sm leading-5 text-muted-foreground">
+                  Start with the work you want people to find.
+                </p>
+              </div>
               <Field
-                label="Categories"
+                label="Category"
                 id="service-categories"
-                hint="Select up to 3 categories to help clients find your service"
+                hint="Choose up to 3"
               >
                 <SheetMultiSelect
                   title="Categories"
                   value={categories}
                   options={categoryOptions}
                   onChange={setCategories}
-                  placeholder="What are you offering?"
+                  placeholder="Select a category"
                   max={3}
                 />
               </Field>
-              <Field label="Title" id="service-title">
+              <Field label="Service name" id="service-title">
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Session vocals — lead & harmonies"
+                  placeholder="Session vocals, lead and harmonies"
                   className={inputClass}
                 />
               </Field>
-              <Field label="Description" id="service-description">
+              <Field label="Short description" id="service-description">
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  rows={4}
-                  placeholder="What the client gets, how you work, what makes it yours."
-                  className="w-full rounded-lg border border-border bg-card p-4 text-sm outline-none focus:border-primary"
+                  rows={3}
+                  placeholder="What will the client receive?"
+                  className="w-full rounded-lg border border-border bg-card p-3.5 text-sm leading-5 outline-none focus:border-primary"
                 />
               </Field>
               <TagListField
                 label="Deliverables"
                 id="service-deliverables"
-                placeholder="Dry WAV stems"
+                placeholder="Add a deliverable"
                 value={deliverables}
                 onChange={setDeliverables}
               />
