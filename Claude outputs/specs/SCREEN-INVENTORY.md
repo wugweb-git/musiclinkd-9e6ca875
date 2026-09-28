@@ -126,13 +126,21 @@ Ran structurally (same imports + server functions + size band) and by repeated p
 |---|---|
 | `legal.terms` · `legal.privacy` · `legal.cookies` — three 15-line files differing only in a CMS key and a title | **`legal.$slug`** — one screen, three slugs. The settings-row type gained `params` so a `$slug` route can sit in a settings list |
 
-**Confirmed duplicate, not yet merged:**
+**Merged 28 Sep:** `marketplace/rent/provider.$id` → `marketplace/seller.$id`.
 
-`marketplace/seller.$id` (142 lines) and `marketplace/rent/provider.$id` (214 lines) both query one
-person, their listings, their reviews and taxonomy labels. Same screen, two words — "Seller" and
-"Provider". In one marketplace a seller and a rental provider are the same party, so this should be
-one screen. The merge needs care: the provider screen carries rental-specific detail the seller
-screen does not.
+A seller and a rental provider are the same party in one marketplace. Both screens already called
+the **same** `getSellerListings`, `listReviewsFor` and `getTaxonomyLabels`; only the header loader
+differed (`getRentalProvider` vs the seller's). The report/block action with `RentalReportSheet` —
+the one thing provider had that seller lacked — moved across. Provider's
+`category === "gear_rental"` filter is deliberately dropped: a person's listings show whether they
+sell or rent them out.
+
+**Create is not edit — `/business/policies` stays.** `business.new` calls only `createMyBusiness`
+and never loads an existing business, so it is create-only. `/business/policies` is the *edit* path
+for the same field. Deleting it would make editing a cancellation policy restart business creation.
+Folding it in needs `business.new` to load and update an existing business first — a change to that
+flow, not a deletion. Same shape as `/marketplace/mine` (seller) vs `/marketplace/rent/mine`
+(renter): opposite jobs wearing one word.
 
 **Looks like a duplicate but is not** — recorded so it is not "fixed" by mistake:
 

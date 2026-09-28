@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { reviewItemFrom } from "@/lib/review-item";
 import { ReviewCard, ReviewRail } from "@/components/ml/profile";
 import { useQuery } from "@tanstack/react-query";
+import { RentalReportSheet } from "@/components/ml/rental";
 import { useServerFn } from "@tanstack/react-start";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { Followers, ListingGrid, Rating, ReviewTags, TrustPill } from "@/components/ml/market";
@@ -45,6 +46,7 @@ function SellerProfile() {
   });
   const labels = useQuery({ queryKey: ["taxonomy", "labels"], queryFn: () => loadLabels() });
   const [following, setFollowing] = useState(false);
+  const [report, setReport] = useState(false);
 
   if (seller.isLoading) {
     return (
@@ -136,7 +138,21 @@ function SellerProfile() {
             <EmptyState title="No reviews yet" body="No one has reviewed this seller yet." />
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setReport(true)}
+          className="mt-6 w-full text-left text-1 text-muted-foreground underline underline-offset-2"
+        >
+          Report or block this seller
+        </button>
       </div>
+
+      <RentalReportSheet
+        open={report}
+        onClose={() => setReport(false)}
+        subject={{ type: "profile", id }}
+      />
     </Screen>
   );
 }
