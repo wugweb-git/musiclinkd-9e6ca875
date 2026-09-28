@@ -14,6 +14,7 @@ import { getSellerListings } from "@/lib/catalog.functions";
 import { listingFromRow as adaptListing } from "@/lib/market-view";
 import { listReviewsFor } from "@/lib/reviews.functions";
 import { getTaxonomyLabels } from "@/lib/portfolio.functions";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/marketplace/seller/$id")({
   head: () => ({
@@ -80,7 +81,11 @@ function SellerProfile() {
         <div className="rounded-lg bg-subtle p-4">
           <div className="flex items-center gap-3">
             {s.photo ? (
-              <img src={s.photo} alt="" className="h-14 w-14 rounded-full object-cover" />
+              <img
+                src={sized(s.photo, { width: 56 })}
+                alt=""
+                className="h-14 w-14 rounded-full object-cover"
+              />
             ) : (
               <span className="h-14 w-14 shrink-0 rounded-full bg-background" aria-hidden />
             )}

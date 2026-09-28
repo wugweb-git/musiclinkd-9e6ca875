@@ -14,6 +14,7 @@ import { useViewer } from "./viewer";
 import { Price, SoonBadge } from "./kit";
 import { styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 /**
  * Saves the QR for `value` as a PNG through the browser (talent and business QR screens).
@@ -89,7 +90,7 @@ export function QrCode({
       {src ? (
         <>
           <img
-            src={src}
+            src={sized(src, { width: 412 })}
             alt={label ?? `QR code for ${value}`}
             width={size}
             height={size}
@@ -156,7 +157,7 @@ export function QrIdentityCard({
 
       <div className="mt-4 flex flex-col items-center gap-2">
         <img
-          src={photo}
+          src={sized(photo, { width: 64 })}
           alt=""
           className="h-16 w-16 rounded-full object-cover"
           style={{ border: `2px solid ${s.dark}20` }}
@@ -274,7 +275,7 @@ export function DestinationPreviewCard({ preview }: { preview: DestinationPrevie
       <div className="mt-3 flex gap-3">
         {preview.image ? (
           <img
-            src={preview.image}
+            src={sized(preview.image, { width: 80 })}
             alt=""
             className={`h-20 w-20 shrink-0 object-cover ${
               preview.kind === "profile" ? "rounded-full" : "rounded-lg"

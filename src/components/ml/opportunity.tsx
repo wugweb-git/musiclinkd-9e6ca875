@@ -43,6 +43,7 @@ import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
 import { setOpportunitySaved } from "@/lib/applications.functions";
 import { fitLine, type Fit } from "@/lib/fit";
+import { sized } from "@/lib/image-url";
 
 /** One icon per requirement type, in place of the emoji the categories carried. */
 const categoryIcons: Record<string, LucideIcon> = {
@@ -189,7 +190,11 @@ export function PosterRow({ o }: { o: Opportunity }) {
   const body = (
     <>
       {o.poster.photo ? (
-        <img src={o.poster.photo} alt="" className="h-11 w-11 rounded-full object-cover" />
+        <img
+          src={sized(o.poster.photo, { width: 44 })}
+          alt=""
+          className="h-11 w-11 rounded-full object-cover"
+        />
       ) : null}
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
@@ -235,7 +240,7 @@ export function OpportunityCard({
         <div className="flex items-center gap-2.5 pr-10">
           {o.poster.photo ? (
             <img
-              src={o.poster.photo}
+              src={sized(o.poster.photo, { width: 32 })}
               alt=""
               className="h-8 w-8 shrink-0 rounded-full object-cover"
             />
@@ -323,7 +328,11 @@ export function ApplicantCard({ a }: { a: Applicant }) {
     >
       <Card className="space-y-3">
         <div className="flex items-center gap-3">
-          <img src={a.photo} alt="" className="h-12 w-12 rounded-full object-cover" />
+          <img
+            src={sized(a.photo, { width: 48 })}
+            alt=""
+            className="h-12 w-12 rounded-full object-cover"
+          />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <span className="truncate text-sm font-semibold">{a.name}</span>

@@ -16,6 +16,7 @@ import { Detail } from "@/components/ml/booking";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getBookingRequest, type BookingStatus } from "@/lib/bookings.functions";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/business/bookings/$ref")({
   head: () => ({
@@ -145,7 +146,7 @@ function ProviderBookingDetailContent() {
           <div className="flex items-center gap-3">
             {bk.requester?.avatar_url ? (
               <img
-                src={bk.requester.avatar_url}
+                src={sized(bk.requester.avatar_url, { width: 48 })}
                 alt=""
                 className="h-12 w-12 rounded-full object-cover"
                 loading="lazy"

@@ -23,6 +23,7 @@ import { iconSize } from "@/lib/tokens";
 import { amenityIcon } from "@/lib/amenity-icons";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { useMessagePerson } from "@/hooks/use-message-person";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/booking/$id/")({
   head: () => ({
@@ -230,7 +231,7 @@ function BookingEntry() {
                   className="block shrink-0 overflow-hidden rounded-lg"
                 >
                   <img
-                    src={g}
+                    src={sized(g, { width: 128 })}
                     alt={`${b.name} interior`}
                     className="h-32 w-48 object-cover"
                     loading="lazy"

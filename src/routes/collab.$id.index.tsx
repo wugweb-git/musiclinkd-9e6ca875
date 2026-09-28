@@ -57,6 +57,7 @@ import { shareLink } from "@/lib/booking-actions";
 import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
+import { sized } from "@/lib/image-url";
 
 /*
  * One collab: what it is and who is in it; talking happens in Messages (owner, 22 Sep 2026). A band
@@ -495,7 +496,7 @@ function CollabRoom() {
               <li key={m.profile_id} className="flex items-center gap-3 px-4 py-3">
                 {m.profile?.avatar_url ? (
                   <img
-                    src={m.profile.avatar_url}
+                    src={sized(m.profile.avatar_url, { width: 40 })}
                     alt=""
                     className="h-10 w-10 shrink-0 rounded-full object-cover"
                   />
@@ -620,7 +621,7 @@ function CollabRoom() {
                   >
                     {p.avatarUrl ? (
                       <img
-                        src={p.avatarUrl}
+                        src={sized(p.avatarUrl, { width: 36 })}
                         alt=""
                         className="h-9 w-9 shrink-0 rounded-full object-cover"
                       />

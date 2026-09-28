@@ -41,6 +41,7 @@ import { opportunityFromRow } from "@/lib/opportunity-view";
 import { useSearchRecorder } from "@/lib/search-events";
 import { talentTypes, useTaxonomy } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 /*
  * Search over everything public: people (the live profiles table, narrowed by a role from the
@@ -536,7 +537,7 @@ function HitList({ hits, q }: { hits: SearchHit[]; q: string }) {
           >
             {h.photo ? (
               <img
-                src={h.photo}
+                src={sized(h.photo, { width: 44 })}
                 alt=""
                 loading="lazy"
                 className={`h-11 w-11 shrink-0 object-cover ${h.kind === "person" ? "rounded-full" : "rounded-md"}`}

@@ -47,6 +47,7 @@ import { useRequireBusiness } from "@/hooks/use-require-business";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { useDismissable } from "@/hooks/use-dismissable";
 import { TabIcon, type SolidIcon } from "./tab-icon";
+import { sized } from "@/lib/image-url";
 
 /*
  * The app shell: centred, capped at the phone width, full viewport height. `100dvh` rather than
@@ -445,7 +446,7 @@ export function Chip({
           }`}
         >
           {typeof media === "string" ? (
-            <img src={media} alt="" className="h-full w-full object-cover" />
+            <img src={sized(media, { width: 412 })} alt="" className="h-full w-full object-cover" />
           ) : (
             media
           )}

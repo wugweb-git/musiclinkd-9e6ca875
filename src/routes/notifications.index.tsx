@@ -24,6 +24,7 @@ import {
 } from "@/lib/notifications.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/notifications/")({
   head: () => ({
@@ -178,7 +179,11 @@ function NotificationRow({ n, onRead }: { n: Notification; onRead: () => void })
     <>
       <span className="relative shrink-0">
         {n.actor?.avatar_url ? (
-          <img src={n.actor.avatar_url} alt="" className="h-11 w-11 rounded-full object-cover" />
+          <img
+            src={sized(n.actor.avatar_url, { width: 44 })}
+            alt=""
+            className="h-11 w-11 rounded-full object-cover"
+          />
         ) : (
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-background">
             <Icon size={iconSize.md} aria-hidden />

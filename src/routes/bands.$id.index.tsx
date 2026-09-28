@@ -55,6 +55,7 @@ import { shareLink } from "@/lib/booking-actions";
 import { SavedToggle } from "@/components/ml/saved-toggle";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 type BandTab = "Overview" | "Members" | "Shows" | "Music";
 
@@ -406,7 +407,7 @@ function BandProfile() {
                         m.photo ? (
                           <img
                             key={m.key}
-                            src={m.photo}
+                            src={sized(m.photo, { width: 20 })}
                             alt=""
                             className="inline-block h-5 w-5 rounded-full ring-1 ring-card object-cover"
                           />
@@ -516,7 +517,7 @@ function BandProfile() {
                   <Card className="flex items-center gap-3 py-3">
                     {m.photo ? (
                       <img
-                        src={m.photo}
+                        src={sized(m.photo, { width: 48 })}
                         alt=""
                         loading="lazy"
                         className="h-12 w-12 shrink-0 rounded-full object-cover"
@@ -619,7 +620,7 @@ function BandProfile() {
                         <div className="flex items-center gap-3">
                           {r.cover ? (
                             <img
-                              src={r.cover}
+                              src={sized(r.cover, { width: 56 })}
                               alt=""
                               className="h-14 w-14 rounded-sm object-cover"
                               loading="lazy"

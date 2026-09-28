@@ -19,6 +19,7 @@ import { waitingAlongside } from "@/lib/booking-overlaps";
 import { bookingReplies } from "@/data/booking";
 import { iconSize } from "@/lib/tokens";
 import { useMessagePerson } from "@/hooks/use-message-person";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/business/bookings/requests/$ref")({
   head: () => ({
@@ -164,7 +165,7 @@ function RequestReviewContent() {
           <div className="flex items-center gap-3">
             {bk.requester?.avatar_url ? (
               <img
-                src={bk.requester.avatar_url}
+                src={sized(bk.requester.avatar_url, { width: 48 })}
                 alt=""
                 className="h-12 w-12 rounded-full object-cover"
                 loading="lazy"

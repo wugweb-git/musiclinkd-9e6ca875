@@ -9,6 +9,7 @@ import { leadStatusTone } from "@/data/business";
 import { listMyLeads, setLeadStatus, type EnquiryStatus } from "@/lib/enquiries.functions";
 import { conversationWith } from "@/lib/messages.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/leads")({
   head: () => ({
@@ -130,7 +131,7 @@ function BusinessLeads() {
                 <div className="flex items-center gap-3">
                   {l.sender?.avatar_url ? (
                     <img
-                      src={l.sender.avatar_url}
+                      src={sized(l.sender.avatar_url, { width: 40 })}
                       alt=""
                       className="h-10 w-10 rounded-full object-cover"
                       loading="lazy"

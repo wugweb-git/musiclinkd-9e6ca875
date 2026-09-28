@@ -27,6 +27,7 @@ import { labelFor, loadTaxonomy } from "@/lib/taxonomy";
 import { rankBy, useRecommendations } from "@/hooks/use-recommendations";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -320,7 +321,7 @@ function Body({ home }: { home: Home }) {
                 >
                   {p.avatarUrl ? (
                     <img
-                      src={p.avatarUrl}
+                      src={sized(p.avatarUrl, { width: 56 })}
                       alt=""
                       loading="lazy"
                       className="h-14 w-14 rounded-full object-cover"

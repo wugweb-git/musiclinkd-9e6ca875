@@ -48,6 +48,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { searchPeople } from "@/lib/profile-groups.functions";
 import { iconSize } from "@/lib/tokens";
 import { DrawerList, DrawerOptionRow } from "./drawer-list";
+import { imageWidth, sized } from "@/lib/image-url";
 
 // eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
 export { analyticsFor };
@@ -170,7 +171,7 @@ export function WorkCard({
         <div className="flex gap-3">
           {item.cover_url ? (
             <img
-              src={item.cover_url}
+              src={sized(item.cover_url, { width: 64 })}
               alt=""
               loading="lazy"
               decoding="async"
@@ -553,7 +554,7 @@ export function AudioPlayer({
       <div className="flex items-center gap-3">
         {artwork ? (
           <img
-            src={artwork}
+            src={sized(artwork, { width: 56 })}
             alt={`Artwork for ${title}`}
             className="h-14 w-14 rounded-sm object-cover"
           />
@@ -783,7 +784,7 @@ export function PortfolioMediaTile({
           </>
         ) : item.cover_url ? (
           <img
-            src={item.cover_url}
+            src={sized(item.cover_url, { width: imageWidth.wide })}
             alt=""
             loading="lazy"
             decoding="async"

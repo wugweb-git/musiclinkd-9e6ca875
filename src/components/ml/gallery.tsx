@@ -33,6 +33,7 @@ import {
 } from "@/lib/gallery.functions";
 import { uploadGalleryPhoto } from "@/lib/gallery";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 /*
  * Galleries (profile_gallery) on a person's profile and a business page. Visitors see GalleryView:
@@ -258,7 +259,7 @@ function SortablePhoto({
         className="block h-24 w-full cursor-grab overflow-hidden rounded-lg bg-subtle"
       >
         <img
-          src={photo.image_url}
+          src={sized(photo.image_url, { width: 412 })}
           alt=""
           className="h-full w-full object-cover"
           loading="lazy"

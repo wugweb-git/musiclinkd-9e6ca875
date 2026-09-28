@@ -49,6 +49,7 @@ import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
 import { amenityIcon } from "@/lib/amenity-icons";
 import { shownPlace } from "@/lib/place";
+import { sized } from "@/lib/image-url";
 
 // Team is off for now: one business profile belongs to one account (owner, 21 Sep 2026).
 type BusinessTab = "Overview" | "Portfolio" | "Reviews";
@@ -247,7 +248,7 @@ export function BusinessProfileExperience({
                       >
                         {e.photos[0] ? (
                           <img
-                            src={e.photos[0]}
+                            src={sized(e.photos[0], { width: 48 })}
                             alt=""
                             loading="lazy"
                             className="h-12 w-12 shrink-0 rounded-sm object-cover"

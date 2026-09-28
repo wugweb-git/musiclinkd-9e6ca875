@@ -36,6 +36,7 @@ import { inr, priceParts } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
 import { useAuth } from "@/hooks/use-auth";
 import { DrawerList, DrawerOptionRow } from "@/components/ml/drawer-list";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/marketplace/mine")({
   head: () => ({
@@ -283,7 +284,7 @@ function Mine() {
                   <div className="flex items-start gap-3">
                     {r.listingPhoto ? (
                       <img
-                        src={r.listingPhoto}
+                        src={sized(r.listingPhoto, { width: 56 })}
                         alt=""
                         className="h-14 w-14 shrink-0 rounded-sm object-cover"
                       />
@@ -459,7 +460,7 @@ function ManagedListing({
       <div className="flex gap-3">
         {l.image_url ? (
           <img
-            src={l.image_url}
+            src={sized(l.image_url, { width: 64 })}
             alt=""
             loading="lazy"
             decoding="async"

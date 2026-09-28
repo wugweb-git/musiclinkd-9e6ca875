@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { joinParts } from "@/lib/utils";
+import { sized } from "@/lib/image-url";
 
 /*
  * Collabs: who you are making something with. A band is the ongoing kind, a project the kind that
@@ -75,7 +76,11 @@ function CollabRow({ c, kindLabel }: { c: Collab; kindLabel: string }) {
   const body = (
     <>
       {c.avatar_url ? (
-        <img src={c.avatar_url} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
+        <img
+          src={sized(c.avatar_url, { width: 48 })}
+          alt=""
+          className="h-12 w-12 shrink-0 rounded-full object-cover"
+        />
       ) : (
         <span
           aria-hidden

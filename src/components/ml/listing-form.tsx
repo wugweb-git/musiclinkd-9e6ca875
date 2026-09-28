@@ -61,6 +61,7 @@ import { instrumentIcon } from "@/lib/instrument-icons";
 import { iconSize } from "@/lib/tokens";
 import { parsePlace, placeLine } from "@/lib/place";
 import { pinProblem } from "@/lib/validation";
+import { sized } from "@/lib/image-url";
 
 /*
  * The one listing flow (/marketplace/sell): sell or rent out an instrument or a piece of
@@ -761,7 +762,7 @@ function PhotoSlots({
           return (
             <div key={url} className={box}>
               <img
-                src={url}
+                src={sized(url, { width: 412 })}
                 alt={cover ? "Cover photo" : `Photo ${i + 1}`}
                 className="h-full w-full object-cover"
               />

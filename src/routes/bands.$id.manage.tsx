@@ -10,6 +10,7 @@ import { Card, Row, StatusPill, Dialog, EmptyState, Segmented } from "@/componen
 import { bandRoleCopy, type BandRole } from "@/data/band";
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
+import { sized } from "@/lib/image-url";
 
 type Edit = "rider" | "stage-plot";
 
@@ -77,7 +78,7 @@ function ManageBand() {
                 <div className="flex items-center gap-3">
                   {m.photo ? (
                     <img
-                      src={m.photo}
+                      src={sized(m.photo, { width: 44 })}
                       alt=""
                       loading="lazy"
                       className="h-11 w-11 shrink-0 rounded-full object-cover"

@@ -32,6 +32,7 @@ import {
 } from "@/lib/bands.functions";
 import { uploadProfileImage } from "@/lib/profile-images";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 /*
  * A band's live performance videos, technical rider and stage plot: the sections the first band
@@ -244,7 +245,12 @@ export function BandStagePlotCard({
         aria-label="View the stage plot full size"
         className="mt-3 block w-full overflow-hidden rounded-lg bg-background"
       >
-        <img src={plot.url} alt="" loading="lazy" className="max-h-64 w-full object-contain" />
+        <img
+          src={sized(plot.url, { width: 412 })}
+          alt=""
+          loading="lazy"
+          className="max-h-64 w-full object-contain"
+        />
       </button>
       {plot.note ? <p className="mt-2 text-1 text-muted-foreground">{plot.note}</p> : null}
       <PhotoSheet title={title} photos={open ? [plot.url] : []} onClose={() => setOpen(false)} />
@@ -353,7 +359,11 @@ export function BandStagePlotSheet({
         >
           <div className="relative overflow-hidden rounded-lg bg-background">
             {url ? (
-              <img src={url} alt="" className="max-h-64 w-full object-contain" />
+              <img
+                src={sized(url, { width: 412 })}
+                alt=""
+                className="max-h-64 w-full object-contain"
+              />
             ) : (
               <div aria-hidden className="h-40 w-full" />
             )}
@@ -505,7 +515,11 @@ export function BandReleaseSheet({
         <Field label="Cover (optional)" id="release-cover">
           <div className="flex items-center gap-3">
             {cover ? (
-              <img src={cover} alt="" className="h-16 w-16 rounded-md object-cover" />
+              <img
+                src={sized(cover, { width: 64 })}
+                alt=""
+                className="h-16 w-16 rounded-md object-cover"
+              />
             ) : (
               <span aria-hidden className="h-16 w-16 shrink-0 rounded-md bg-subtle" />
             )}

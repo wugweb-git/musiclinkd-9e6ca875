@@ -44,6 +44,7 @@ import { inr } from "@/lib/price";
 import { TextLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { earliestBookingDate } from "@/lib/studio-slots";
+import { sized } from "@/lib/image-url";
 
 /* ------------------------------------------------------------------ */
 /* Status                                                            */
@@ -192,7 +193,7 @@ export function ResourceCard({
       <div className="flex gap-3 p-3">
         {r.photo ? (
           <img
-            src={r.photo}
+            src={sized(r.photo, { width: 80 })}
             alt=""
             className="h-20 w-20 shrink-0 rounded-lg object-cover"
             loading="lazy"
@@ -650,7 +651,7 @@ export function BookingSummaryCard({
     <div className="rounded-lg bg-subtle p-4">
       <div className="flex gap-3">
         <img
-          src={r.photo}
+          src={sized(r.photo, { width: 64 })}
           alt=""
           className="h-16 w-16 shrink-0 rounded-lg object-cover"
           loading="lazy"
@@ -691,7 +692,7 @@ export function ProviderRequestCard({
     <div className="rounded-lg bg-subtle p-4">
       <div className="flex items-start gap-3">
         <img
-          src={booking.customerAvatar}
+          src={sized(booking.customerAvatar, { width: 44 })}
           alt=""
           className="h-11 w-11 shrink-0 rounded-full object-cover"
         />
@@ -905,7 +906,7 @@ export function PhotoSheet({
         {photos.map((src, i) => (
           <img
             key={src}
-            src={src}
+            src={sized(src, { width: 412 })}
             alt={`${title}, ${i + 1} of ${photos.length}`}
             className="w-full rounded-lg bg-subtle object-contain"
             loading="lazy"
@@ -951,11 +952,21 @@ export function ProofPill({
     >
       {Icon ? <Icon size={iconSize.sm} className="text-foreground" aria-hidden /> : null}
       {Icon ? null : (
-        <img src={photos[0]} alt="" className="h-6 w-6 rounded-full object-cover" loading="lazy" />
+        <img
+          src={sized(photos[0], { width: 24 })}
+          alt=""
+          className="h-6 w-6 rounded-full object-cover"
+          loading="lazy"
+        />
       )}
       {label}
       {Icon ? (
-        <img src={photos[0]} alt="" className="h-6 w-6 rounded-full object-cover" loading="lazy" />
+        <img
+          src={sized(photos[0], { width: 24 })}
+          alt=""
+          className="h-6 w-6 rounded-full object-cover"
+          loading="lazy"
+        />
       ) : null}
       <span className="tabular-nums text-foreground">{photos.length}</span>
     </button>

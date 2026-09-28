@@ -29,6 +29,7 @@ import { useGearTaxonomy } from "@/lib/listing-category";
 import { choicesFor, useTaxonomy } from "@/lib/taxonomy";
 import { amenityIcon } from "@/lib/amenity-icons";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 /*
  * A studio's amenities, equipment and policies, each with photos where it has them (owner, 22 Sep
@@ -455,7 +456,12 @@ export function ProofPhotos({
             aria-label={`View photo ${i + 1} of ${name}`}
             className="block overflow-hidden rounded-lg"
           >
-            <img src={p.url} alt="" className="h-14 w-14 object-cover" loading="lazy" />
+            <img
+              src={sized(p.url, { width: 56 })}
+              alt=""
+              className="h-14 w-14 object-cover"
+              loading="lazy"
+            />
           </button>
           <button
             type="button"

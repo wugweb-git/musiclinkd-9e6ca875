@@ -57,6 +57,7 @@ import {
 } from "@/lib/taxonomy";
 import { iconSize } from "@/lib/tokens";
 import { PUBLIC_HOST } from "@/lib/site";
+import { sized } from "@/lib/image-url";
 
 /* ------------------------------------------------------------------ */
 /* Draft store — the account is the source of truth                    */
@@ -998,7 +999,11 @@ export function PhotoPicker({
           {uploading ? (
             <span className="text-1 font-semibold text-muted-foreground">Uploading…</span>
           ) : photo ? (
-            <img src={photo} alt={`${label} preview`} className="h-full w-full object-cover" />
+            <img
+              src={sized(photo, { width: 412 })}
+              alt={`${label} preview`}
+              className="h-full w-full object-cover"
+            />
           ) : (
             <Camera size={iconSize.lg} className="text-muted-foreground" />
           )}

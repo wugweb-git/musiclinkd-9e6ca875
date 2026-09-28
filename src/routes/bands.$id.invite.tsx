@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { listPeopleByRole } from "@/lib/profile-groups.functions";
 import { addCollabMember } from "@/lib/collabs.functions";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/bands/$id/invite")({
   loader: ({ params }) => loadBand(params.id),
@@ -104,7 +105,7 @@ function InviteMembers() {
               key={t.id}
               icon={
                 <img
-                  src={t.avatarUrl ?? ""}
+                  src={sized(t.avatarUrl ?? "", { width: 40 })}
                   alt=""
                   loading="lazy"
                   className="h-10 w-10 rounded-full object-cover"

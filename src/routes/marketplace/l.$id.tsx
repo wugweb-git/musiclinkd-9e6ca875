@@ -56,6 +56,7 @@ import { rememberListingVisit } from "@/lib/device-history";
 import { listReviewsFor } from "@/lib/reviews.functions";
 import { inr, priceText } from "@/lib/price";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/marketplace/l/$id")({
   // The id is a database listing slug; related listings are the other listings in its category.
@@ -263,7 +264,7 @@ function ListingDetail() {
               {l.photos.map((src, i) => (
                 <img
                   key={src}
-                  src={src}
+                  src={sized(src, { width: 412 })}
                   alt={i === 0 ? l.title : `${l.title}, photo ${i + 1}`}
                   className="h-full w-full shrink-0 snap-center object-cover"
                 />
@@ -306,7 +307,7 @@ function ListingDetail() {
               }}
               className={`h-14 w-14 shrink-0 overflow-hidden rounded-sm border-2 ${i === shot ? "border-foreground" : "border-transparent opacity-70"}`}
             >
-              <img src={src} alt="" className="h-full w-full object-cover" />
+              <img src={sized(src, { width: 412 })} alt="" className="h-full w-full object-cover" />
             </button>
           ))}
         </div>

@@ -13,6 +13,7 @@ import { getLinkPreview, type LinkPreview } from "@/lib/link-preview.functions";
 import { savePortfolioItem } from "@/lib/portfolio.functions";
 import { cn } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
+import { imageWidth, sized } from "@/lib/image-url";
 
 /*
  * Add or edit a piece of work, link first. Pasting a YouTube, Spotify, SoundCloud or any page link
@@ -212,7 +213,7 @@ export function WorkForm({
       {cover ? (
         <figure className="mt-5 animate-message">
           <img
-            src={cover}
+            src={sized(cover, { width: imageWidth.wide })}
             alt=""
             className={cn(
               "w-full rounded-lg bg-subtle object-cover",

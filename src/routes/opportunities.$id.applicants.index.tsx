@@ -23,6 +23,7 @@ import { personFit, fitTarget } from "@/lib/fit";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { useAuth } from "@/hooks/use-auth";
 import { joinParts } from "@/lib/utils";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/")({
   // The id is a stored opportunity slug.
@@ -161,7 +162,7 @@ function Applicants() {
                     <div className="flex items-center gap-3">
                       {a.person?.avatar_url ? (
                         <img
-                          src={a.person.avatar_url}
+                          src={sized(a.person.avatar_url, { width: 48 })}
                           alt=""
                           className="h-12 w-12 shrink-0 rounded-full object-cover"
                         />
@@ -331,7 +332,7 @@ function BoardFace({ card }: { card: BoardCard }) {
     <>
       {person?.avatar_url ? (
         <img
-          src={person.avatar_url}
+          src={sized(person.avatar_url, { width: 32 })}
           alt=""
           loading="lazy"
           className="h-8 w-8 shrink-0 rounded-full object-cover"

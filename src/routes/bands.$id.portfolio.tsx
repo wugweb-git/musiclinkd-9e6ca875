@@ -10,6 +10,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBand } from "@/lib/band-view";
 import { joinParts } from "@/lib/utils";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/bands/$id/portfolio")({
   // ?tab=Live opens the Live tab, from the band page's live videos row.
@@ -82,7 +83,7 @@ function BandPortfolio() {
                   <div className="flex items-center gap-3">
                     {r.cover ? (
                       <img
-                        src={r.cover}
+                        src={sized(r.cover, { width: 56 })}
                         alt=""
                         className="h-14 w-14 rounded-[12px] object-cover"
                         loading="lazy"

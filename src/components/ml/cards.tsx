@@ -19,6 +19,7 @@ export {
   ReviewCardSkeleton,
   ReviewRail,
 } from "./profile";
+import { sized } from "@/lib/image-url";
 
 /*
  * Talent card and business card (owner, 22 Sep 2026: "redo the cards, all states, types" — one
@@ -77,7 +78,7 @@ export function PersonRow({
       >
         {person.avatarUrl ? (
           <img
-            src={person.avatarUrl}
+            src={sized(person.avatarUrl, { width: 44 })}
             alt=""
             loading="lazy"
             className="h-11 w-11 shrink-0 rounded-full border border-border/60 object-cover"
@@ -157,7 +158,7 @@ export function PersonCard({
     >
       {person.avatarUrl ? (
         <img
-          src={person.avatarUrl}
+          src={sized(person.avatarUrl, { width: 56 })}
           alt=""
           loading="lazy"
           className="h-14 w-14 rounded-full border border-border/60 object-cover"
@@ -233,7 +234,12 @@ export function PersonHeroCard({
       )}
     >
       {person.avatarUrl ? (
-        <img src={person.avatarUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+        <img
+          src={sized(person.avatarUrl, { width: 412 })}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
       ) : (
         <span className="flex h-full w-full items-center justify-center bg-subtle text-muted-foreground">
           <Building2 size={28} strokeWidth={1.5} aria-hidden />
@@ -300,7 +306,7 @@ export function StudioCard({
       {studio.photo ? (
         <div className="overflow-hidden">
           <img
-            src={studio.photo}
+            src={sized(studio.photo, { width: 112 })}
             alt=""
             loading="lazy"
             className="h-28 w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -372,7 +378,12 @@ export function StudioMediaCard({ studio }: { studio: DiscoverStudio }) {
       className="state-layer relative block aspect-[4/3] w-rail-md shrink-0 overflow-hidden rounded-lg text-left"
     >
       {studio.photo ? (
-        <img src={studio.photo} alt="" loading="lazy" className="h-full w-full object-cover" />
+        <img
+          src={sized(studio.photo, { width: 412 })}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
       ) : (
         <span className="flex h-full w-full items-center justify-center bg-subtle text-muted-foreground">
           <Building2 size={28} strokeWidth={1.5} aria-hidden />
@@ -418,7 +429,7 @@ export function StudioRow({ studio }: { studio: DiscoverStudio }) {
       >
         {studio.photo ? (
           <img
-            src={studio.photo}
+            src={sized(studio.photo, { width: 56 })}
             alt=""
             loading="lazy"
             className="h-14 w-14 shrink-0 rounded-lg border border-border/60 object-cover"

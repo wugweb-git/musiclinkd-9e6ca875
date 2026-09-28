@@ -34,6 +34,7 @@ import { usePinFill } from "@/hooks/use-pin-fill";
 import { useRequireBusiness } from "@/hooks/use-require-business";
 import { getMyBusiness, updateMyBusiness } from "@/lib/profile-groups.functions";
 import { syncBusinessFromGoogle } from "@/lib/google-business.functions";
+import { sized } from "@/lib/image-url";
 
 // Work modes are stored as their key ("in-person"), never as the whole option object: Chips takes a
 // list of keys and looks each label up, so the stored value and the shown label stay separate.
@@ -472,7 +473,7 @@ function EditProfile() {
             <div className="relative h-16 flex-1 overflow-hidden rounded-lg bg-subtle">
               {row?.cover_url ? (
                 <img
-                  src={row.cover_url}
+                  src={sized(row.cover_url, { width: 412 })}
                   alt=""
                   className="h-full w-full object-cover"
                   loading="lazy"

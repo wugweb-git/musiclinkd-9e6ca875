@@ -69,6 +69,7 @@ const isDbId = (id: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 import { iconSize } from "@/lib/tokens";
 import { initialsOf } from "./viewer";
+import { imageWidth, sized } from "@/lib/image-url";
 
 /* ── Section shell ─────────────────────────────────────────── */
 
@@ -674,7 +675,11 @@ export function CoverHero({
       >
         {cover ? (
           <>
-            <img src={cover} alt={`${name} cover`} className="h-full w-full object-cover" />
+            <img
+              src={sized(cover, { width: 412 })}
+              alt={`${name} cover`}
+              className="h-full w-full object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/10" />
           </>
         ) : (
@@ -696,7 +701,7 @@ export function CoverHero({
         <div className="relative motion-reduce:!w-34" style={{ width: `${photoSize}px` }}>
           {photo ? (
             <img
-              src={photo}
+              src={sized(photo, { width: imageWidth.avatarLg })}
               alt={name}
               className={cn(
                 "aspect-square w-full border-4 border-background object-cover motion-reduce:!h-34",
@@ -864,7 +869,7 @@ export function FeaturedCard({ featured }: { featured: NonNullable<TalentProfile
     <article className="overflow-hidden rounded-lg border border-border/80 bg-card transition-all">
       <div className="relative">
         <img
-          src={featured.image}
+          src={sized(featured.image, { width: 176 })}
           alt={featured.title}
           className="h-44 w-full object-cover"
           loading="lazy"
@@ -969,7 +974,7 @@ export function AudioTrackCard({
       <div className="flex items-center gap-3 p-3">
         {track.artwork ? (
           <img
-            src={track.artwork}
+            src={sized(track.artwork, { width: 56 })}
             alt=""
             aria-hidden
             loading="lazy"
@@ -1129,7 +1134,12 @@ export function VideoCard({
             className="relative h-20 w-32 shrink-0 overflow-hidden rounded-sm bg-background"
           >
             {v.thumb ? (
-              <img src={v.thumb} alt="" loading="lazy" className="h-full w-full object-cover" />
+              <img
+                src={sized(v.thumb, { width: 412 })}
+                alt=""
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
             ) : (
               <NoCover className="h-full w-full" />
             )}
@@ -1158,7 +1168,12 @@ export function VideoCard({
     >
       <div className="relative h-32">
         {v.thumb ? (
-          <img src={v.thumb} alt={v.title} loading="lazy" className="h-full w-full object-cover" />
+          <img
+            src={sized(v.thumb, { width: 412 })}
+            alt={v.title}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <NoCover className="h-full w-full" />
         )}
@@ -1210,7 +1225,7 @@ export function GalleryGrid({
           return (
             <img
               key={src}
-              src={src}
+              src={sized(src, { width: 412 })}
               alt={`Portfolio work ${i + 1}`}
               loading="lazy"
               className={`w-full rounded-lg object-cover ${size}`}
@@ -1225,7 +1240,12 @@ export function GalleryGrid({
             aria-label={`View photo ${i + 1} of ${images.length}`}
             className={`block overflow-hidden rounded-lg ${size}`}
           >
-            <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+            <img
+              src={sized(src, { width: 412 })}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
           </button>
         );
       })}
@@ -1238,7 +1258,7 @@ export function ProjectCard({ p }: { p: ProjectItem }) {
     <article className="flex gap-3 rounded-lg bg-subtle p-3">
       {p.cover ? (
         <img
-          src={p.cover}
+          src={sized(p.cover, { width: 80 })}
           alt=""
           aria-hidden
           loading="lazy"
@@ -1544,7 +1564,7 @@ export function CollaboratorCard({ c }: { c: Collaborator }) {
   const inner = (
     <>
       <img
-        src={c.photo}
+        src={sized(c.photo, { width: 64 })}
         alt=""
         aria-hidden
         loading="lazy"
@@ -1761,7 +1781,7 @@ export function MarketEntryCard({ m }: { m: MarketEntry }) {
     >
       {m.image ? (
         <img
-          src={m.image}
+          src={sized(m.image, { width: 412 })}
           alt=""
           aria-hidden
           loading="lazy"
@@ -1849,7 +1869,12 @@ export function ShareSheet({
       <div className="ink-gradient overflow-hidden rounded-lg border border-border">
         <div className="flex items-center gap-3 p-4 text-background">
           {p.photo ? (
-            <img src={p.photo} alt="" aria-hidden className="h-14 w-14 rounded-sm object-cover" />
+            <img
+              src={sized(p.photo, { width: 56 })}
+              alt=""
+              aria-hidden
+              className="h-14 w-14 rounded-sm object-cover"
+            />
           ) : (
             <span className="flex h-14 w-14 items-center justify-center rounded-sm bg-background/15">
               <User size={iconSize.lg} aria-hidden />

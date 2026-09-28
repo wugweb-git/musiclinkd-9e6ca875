@@ -65,6 +65,7 @@ import { rupeeParts, unitLabel, unitName, type PriceParts } from "@/lib/price";
 import { SectionActionLink } from "@/components/ml/links";
 import { iconSize } from "@/lib/tokens";
 import { StateIcon } from "./tab-icon";
+import { sized } from "@/lib/image-url";
 
 export function SaveButton({
   saved,
@@ -360,7 +361,7 @@ export function ProductCard({
               {item.photos.map((src, i) => (
                 <img
                   key={src}
-                  src={src}
+                  src={sized(src, { width: 412 })}
                   alt={i === 0 ? item.title : ""}
                   loading="lazy"
                   className="h-full w-full shrink-0 snap-center object-cover transition-transform duration-[600ms] ease-standard group-hover:scale-[1.04]"
@@ -540,7 +541,7 @@ export function ListingRow({ l }: { l: Listing }) {
       <Link to="/marketplace/l/$id" params={{ id: l.id }} className="shrink-0">
         {l.photos[0] ? (
           <img
-            src={l.photos[0]}
+            src={sized(l.photos[0], { width: 96 })}
             alt={l.title}
             loading="lazy"
             className="h-24 w-24 rounded-lg object-cover"
@@ -591,7 +592,11 @@ export function SellerSummary({
   return (
     <div className="flex items-center gap-3">
       {seller.photo ? (
-        <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-sm object-cover" />
+        <img
+          src={sized(seller.photo, { width: 48 })}
+          alt={seller.name}
+          className="h-12 w-12 rounded-sm object-cover"
+        />
       ) : null}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
@@ -641,7 +646,11 @@ export function SellerCard({
   const body = (
     <>
       {seller.photo ? (
-        <img src={seller.photo} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" />
+        <img
+          src={sized(seller.photo, { width: 56 })}
+          alt=""
+          className="h-14 w-14 shrink-0 rounded-full object-cover"
+        />
       ) : (
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-icon-chip text-2 font-semibold text-primary-foreground">
           {seller.name.slice(0, 1).toUpperCase()}
@@ -1285,7 +1294,11 @@ export function OfferSheet({
           <h2 className="mb-4 text-3">Make an offer</h2>
           <div className="mb-5 flex items-center gap-3 rounded-lg border border-border p-3">
             {listing.photos[0] ? (
-              <img src={listing.photos[0]} alt="" className="h-14 w-14 rounded-sm object-cover" />
+              <img
+                src={sized(listing.photos[0], { width: 56 })}
+                alt=""
+                className="h-14 w-14 rounded-sm object-cover"
+              />
             ) : null}
             <div className="min-w-0 flex-1">
               <p className="truncate text-1 font-semibold">{listing.title}</p>

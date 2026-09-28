@@ -2,6 +2,7 @@ import { Check, X } from "lucide-react";
 import { StatusPill } from "@/components/ml/kit";
 import type { SavedAccount } from "@/lib/saved-accounts";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 /** One account saved on this device: Switch account and the welcome screen's "Continue as". */
 export function AccountRow({
@@ -29,7 +30,7 @@ export function AccountRow({
       >
         {account.avatarUrl ? (
           <img
-            src={account.avatarUrl}
+            src={sized(account.avatarUrl, { width: 44 })}
             alt=""
             loading="lazy"
             className={`h-11 w-11 shrink-0 object-cover ${account.kind === "business" ? "rounded-sm" : "rounded-full"}`}

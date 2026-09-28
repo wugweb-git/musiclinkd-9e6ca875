@@ -48,6 +48,7 @@ import { priceParts } from "@/lib/price";
 import { saveService, type ServiceDetail } from "@/lib/services.functions";
 import { getMyStudioEquipment } from "@/lib/studio-owner.functions";
 import { useMyStudioPhotos } from "@/components/ml/studio-setup";
+import { sized } from "@/lib/image-url";
 
 /*
  * Add or edit a service in two steps, on the listing flow's pieces (plain labels with a hint line,
@@ -250,7 +251,7 @@ function NewService() {
     value: w.id,
     label: w.title,
     iconNode: w.cover_url ? (
-      <img src={w.cover_url} alt="" className="h-full w-full object-cover" />
+      <img src={sized(w.cover_url, { width: 412 })} alt="" className="h-full w-full object-cover" />
     ) : (
       <FolderKanban size={iconSize.md} strokeWidth={1.75} aria-hidden />
     ),
@@ -260,7 +261,11 @@ function NewService() {
   const photoOf = (type: "facility" | "equipment", id: string) =>
     studioPhotos.data?.photos.find((p) => p.subject_type === type && p.subject_id === id)?.url;
   const thumb = (url: string | undefined, fallback: ReactNode) =>
-    url ? <img src={url} alt="" className="h-full w-full object-cover" /> : fallback;
+    url ? (
+      <img src={sized(url, { width: 412 })} alt="" className="h-full w-full object-cover" />
+    ) : (
+      fallback
+    );
   const amenityOptions = (studioPhotos.data?.facilities ?? []).map((f) => {
     const FacilityIcon = amenityIcon(f.slug);
     return {
@@ -466,7 +471,12 @@ function NewService() {
                       <p className="text-1 text-foreground">
                         Nothing in your portfolio yet. Add a piece of work first, then pick it here.
                       </p>
-                      <BtnLink to="/portfolio" search={{ add: "1" }} variant="outline" className="mt-3 w-full">
+                      <BtnLink
+                        to="/portfolio"
+                        search={{ add: "1" }}
+                        variant="outline"
+                        className="mt-3 w-full"
+                      >
                         Add to portfolio
                       </BtnLink>
                     </div>

@@ -8,6 +8,7 @@ import type { Listing } from "@/data/market";
 import { sinceThen } from "@/lib/device-history";
 import { removeSavedSearch, type SavedSearch } from "@/lib/searches.functions";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 /** A kept search on the Saved screens: run it again, or let it go. */
 export function SavedSearchRow({ search }: { search: SavedSearch }) {
@@ -77,7 +78,11 @@ export function SellerRow({ seller }: { seller: SellerSummary }) {
       className="flex items-center gap-3 rounded-lg bg-subtle p-4"
     >
       {seller.photo ? (
-        <img src={seller.photo} alt={seller.name} className="h-12 w-12 rounded-sm object-cover" />
+        <img
+          src={sized(seller.photo, { width: 48 })}
+          alt={seller.name}
+          className="h-12 w-12 rounded-sm object-cover"
+        />
       ) : (
         <div className="h-12 w-12 shrink-0 rounded-sm bg-background" aria-hidden />
       )}

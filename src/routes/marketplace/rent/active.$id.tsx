@@ -13,6 +13,7 @@ import {
   getRentalProvider,
   setRentalBookingStatus,
 } from "@/lib/rentals.functions";
+import { sized } from "@/lib/image-url";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -131,7 +132,7 @@ function RealRentalBooking({ id }: { id: string }) {
         <div className="overflow-hidden rounded-lg bg-subtle">
           {b.listingPhoto ? (
             <img
-              src={b.listingPhoto}
+              src={sized(b.listingPhoto, { width: 160 })}
               alt={b.listingTitle ?? ""}
               className="h-40 w-full object-cover"
             />

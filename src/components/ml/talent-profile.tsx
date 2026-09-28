@@ -80,6 +80,7 @@ import { PhotoSheet } from "./booking";
 import { useAuth } from "@/hooks/use-auth";
 import { useMessagePerson } from "@/hooks/use-message-person";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 type ProfileTab = "Overview" | "Portfolio" | "Services" | "About" | "Reviews";
 
@@ -700,7 +701,12 @@ function Portfolio({
                   aria-label={`View photo ${i + 1} of ${p.gallery.length}`}
                   className="block w-full overflow-hidden rounded-lg"
                 >
-                  <img src={image} alt="" loading="lazy" className="h-56 w-full object-cover" />
+                  <img
+                    src={sized(image, { width: 224 })}
+                    alt=""
+                    loading="lazy"
+                    className="h-56 w-full object-cover"
+                  />
                 </button>
               ))}
               <PhotoSheet

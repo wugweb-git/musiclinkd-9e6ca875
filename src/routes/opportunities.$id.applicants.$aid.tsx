@@ -18,6 +18,7 @@ import { personFit, fitTarget } from "@/lib/fit";
 import { useTaxonomy } from "@/lib/taxonomy";
 import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/opportunities/$id/applicants/$aid")({
   // The opportunity the fit is measured against; the id is its slug.
@@ -131,7 +132,7 @@ function ApplicantDetail() {
           <div className="flex items-center gap-3">
             {a.person?.avatar_url ? (
               <img
-                src={a.person.avatar_url}
+                src={sized(a.person.avatar_url, { width: 64 })}
                 alt=""
                 className="h-16 w-16 rounded-full object-cover"
               />
@@ -179,7 +180,11 @@ function ApplicantDetail() {
                 {(work.data ?? []).map((p) => (
                   <div key={p.id} className="overflow-hidden rounded-[20px] bg-subtle">
                     {p.cover_url ? (
-                      <img src={p.cover_url} alt="" className="h-24 w-full object-cover" />
+                      <img
+                        src={sized(p.cover_url, { width: 96 })}
+                        alt=""
+                        className="h-24 w-full object-cover"
+                      />
                     ) : (
                       <div className="h-24 w-full bg-background" aria-hidden />
                     )}

@@ -8,6 +8,7 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { QrCode, ActionRow, nativeShare } from "@/components/ml/qr";
 import { useMyTalentIdentity } from "@/hooks/use-my-talent-identity";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/identity/contact/")({
   head: () => ({
@@ -47,7 +48,11 @@ function BusinessCard() {
         <section className="overflow-hidden rounded-[24px] bg-subtle">
           <div className="flex items-center gap-4 bg-ink px-5 py-5 text-background">
             {me.photo ? (
-              <img src={me.photo} alt="" className="h-16 w-16 rounded-full object-cover" />
+              <img
+                src={sized(me.photo, { width: 64 })}
+                alt=""
+                className="h-16 w-16 rounded-full object-cover"
+              />
             ) : (
               <span aria-hidden className="h-16 w-16 shrink-0 rounded-full bg-background/20" />
             )}

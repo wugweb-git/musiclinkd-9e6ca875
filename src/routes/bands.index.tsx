@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { bandViewFromRow, loadBands } from "@/lib/band-view";
 import { joinParts } from "@/lib/utils";
 import { iconSize } from "@/lib/tokens";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/bands/")({
   loader: () => loadBands(),
@@ -81,7 +82,12 @@ function BandsIndex() {
               <Link key={b.id} to="/bands/$id" params={{ id: b.id }} className="block">
                 <Card className="p-0 overflow-hidden">
                   {b.cover ? (
-                    <img src={b.cover} alt="" loading="lazy" className="h-28 w-full object-cover" />
+                    <img
+                      src={sized(b.cover, { width: 112 })}
+                      alt=""
+                      loading="lazy"
+                      className="h-28 w-full object-cover"
+                    />
                   ) : (
                     <div aria-hidden className="h-28 w-full bg-background" />
                   )}
@@ -89,7 +95,7 @@ function BandsIndex() {
                     <div className="flex items-start gap-3">
                       {b.avatar ? (
                         <img
-                          src={b.avatar}
+                          src={sized(b.avatar, { width: 56 })}
                           alt=""
                           loading="lazy"
                           className="-mt-10 h-14 w-14 shrink-0 rounded-sm border-2 border-card object-cover"

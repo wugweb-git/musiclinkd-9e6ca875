@@ -22,6 +22,7 @@ import {
   getRentalProvider,
   requestRentalBooking,
 } from "@/lib/rentals.functions";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/marketplace/rent/request/$id")({
   loader: ({ params }) => getRentalListingDetail({ data: { slug: params.id } }).catch(() => null),
@@ -167,7 +168,11 @@ function RequestFlow() {
 
         <div className="mb-4 flex items-center gap-3 rounded-lg bg-subtle p-3">
           {e.photos[0] ? (
-            <img src={e.photos[0]} alt="" className="h-14 w-14 shrink-0 rounded-sm object-cover" />
+            <img
+              src={sized(e.photos[0], { width: 56 })}
+              alt=""
+              className="h-14 w-14 shrink-0 rounded-sm object-cover"
+            />
           ) : (
             <div className="h-14 w-14 shrink-0 rounded-sm bg-background" aria-hidden />
           )}

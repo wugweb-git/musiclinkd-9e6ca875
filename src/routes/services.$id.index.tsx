@@ -29,6 +29,7 @@ import {
 import { priceParts } from "@/lib/price";
 import { deleteService, setServiceStatus } from "@/lib/services.functions";
 import { joinParts } from "@/lib/utils";
+import { sized } from "@/lib/image-url";
 
 export const Route = createFileRoute("/services/$id/")({
   head: () => ({
@@ -165,7 +166,7 @@ function ServiceDetail() {
                     >
                       {w.cover_url ? (
                         <img
-                          src={w.cover_url}
+                          src={sized(w.cover_url, { width: 48 })}
                           alt=""
                           className="h-12 w-12 shrink-0 rounded-sm object-cover"
                         />
@@ -215,7 +216,7 @@ function ServiceDetail() {
                       >
                         {e.photos[0] ? (
                           <img
-                            src={e.photos[0]}
+                            src={sized(e.photos[0], { width: 48 })}
                             alt=""
                             className="h-12 w-12 shrink-0 rounded-sm object-cover"
                           />

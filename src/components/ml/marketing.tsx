@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { sized } from "@/lib/image-url";
 
 /*
  * Marketing blocks: the surfaces that talk to people who are not signed in yet, plus the reading
@@ -187,7 +188,7 @@ export function ArticleCard({ article: a }: { article: Article }) {
       <div className="relative overflow-hidden rounded-3xl">
         {a.image ? (
           <img
-            src={a.image}
+            src={sized(a.image, { width: 412 })}
             alt=""
             loading="lazy"
             className="aspect-video w-full object-cover transition-transform duration-320 ease-standard group-hover:scale-[1.02] motion-reduce:transition-none"
@@ -199,7 +200,7 @@ export function ArticleCard({ article: a }: { article: Article }) {
           <span className="absolute bottom-4 left-1/2 flex h-14 w-14 -translate-x-1/2 items-center justify-center overflow-hidden rounded-3xl bg-card text-foreground shadow-elevation-2">
             {a.badge.kind === "avatar" ? (
               <img
-                src={a.badge.src}
+                src={sized(a.badge.src, { width: 412 })}
                 alt={a.badge.alt}
                 loading="lazy"
                 className="h-full w-full object-cover"

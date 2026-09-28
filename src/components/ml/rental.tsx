@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 import { SheetSectionHeading } from "./drawer-list";
+import { sized } from "@/lib/image-url";
 
 const rentalAvailabilityTone: Record<"ok" | "warn" | "off", Tone> = {
   ok: "good",
@@ -92,7 +93,11 @@ export function ProviderSummary({ p, compact }: { p: ProviderLike; compact?: boo
   return (
     <div className="flex items-center gap-3">
       {p.photo ? (
-        <img src={p.photo} alt={p.name} className="h-12 w-12 shrink-0 rounded-sm object-cover" />
+        <img
+          src={sized(p.photo, { width: 48 })}
+          alt={p.name}
+          className="h-12 w-12 shrink-0 rounded-sm object-cover"
+        />
       ) : (
         <div className="h-12 w-12 shrink-0 rounded-sm bg-background" aria-hidden />
       )}
@@ -412,7 +417,7 @@ export function BookingCard({
       <div className="flex gap-3">
         {photo ? (
           <img
-            src={photo}
+            src={sized(photo, { width: 80 })}
             alt={title}
             loading="lazy"
             className="h-20 w-20 shrink-0 rounded-lg object-cover"
