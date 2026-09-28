@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { DOWNLOAD_UNAVAILABLE, downloadBlob, openExternal } from "@/lib/download";
 
 /*
  * What the booking screens hand off to the phone: the calendar, the maps app and the share sheet.
@@ -53,19 +54,15 @@ export function addToCalendar(e: CalendarEvent) {
     "END:VCALENDAR",
   ];
   const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${e.uid}.ics`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  toast.success("Calendar event downloaded");
+  // It used to toast success whether or not anything was saved. In the Android wrap nothing was.
+  if (downloadBlob(`${e.uid}.ics`, blob)) toast.success("Calendar event downloaded");
+  else toast.error(DOWNLOAD_UNAVAILABLE);
 }
 
 /** Opens directions to a place in Google Maps (the app on a phone that has it). */
 export function openDirections(place: string) {
   const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(place)}`;
-  window.open(url, "_blank", "noopener,noreferrer");
+  openExternal(url);
 }
 
 /** The share sheet where the device has one; otherwise the link goes to the clipboard. */

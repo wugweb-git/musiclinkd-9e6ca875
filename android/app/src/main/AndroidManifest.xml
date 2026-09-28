@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--
+      allowBackup was true with no backup rules, so Android's auto-backup copied the WebView's
+      storage — which is where the Supabase session lives — off the device. A signed-in session
+      does not belong in a cloud backup, and nothing in this app needs restoring across installs.
+    -->
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -54,7 +60,30 @@
         </provider>
     </application>
 
-    <!-- Permissions -->
+    <!--
+      Permissions for code that already exists in the app. Without these the feature is built,
+      reachable and silently dead (audit, 29 Sep 2026):
+
+        CAMERA              src/routes/identity.scan.tsx calls getUserMedia; the catch branch was
+                            the only thing that ever ran. The file-input fallback still works.
+        POST_NOTIFICATIONS  src/lib/push.ts and push.functions.ts are wired end to end and the
+                            plugin is registered natively; on Android 13+ the prompt has nothing
+                            to request without this.
+        VIBRATE             src/lib/haptics.ts:18 calls navigator.vibrate, swallowed today.
+        ACCESS_*_LOCATION   the "near me" distance sort in src/components/ml/market.tsx.
+
+      Location is optional: the app asks, and the feature that needs it degrades if refused.
+
+      These take effect on the next Android build — the web deploy does not carry them.
+    -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
 </manifest>

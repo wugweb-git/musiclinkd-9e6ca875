@@ -15,6 +15,7 @@ import { AppNav } from "@/components/ml/ui";
 import { startAnalytics, trackPageview } from "@/lib/analytics";
 import { listenForAuthReturn } from "@/lib/native-auth";
 import { startBackButton } from "@/lib/dismiss-stack";
+import { hideSplash } from "@/lib/splash";
 import { useAuth } from "@/hooks/use-auth";
 import { syncRecentlyViewed } from "@/lib/device-history";
 import { useRememberAccounts } from "@/hooks/use-remember-accounts";
@@ -181,6 +182,13 @@ function RootComponent() {
 
   // Android's hardware back: close the top overlay, else go back, else exit. A no-op in a browser.
   useEffect(() => startBackButton(), []);
+
+  // The splash no longer auto-hides (capacitor.config.ts): it waits for a mounted app rather than
+  // a 500ms timer, so the shell's network fetch happens behind the brand ground instead of a bare
+  // grey window. A no-op in a browser.
+  useEffect(() => {
+    void hideSplash();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

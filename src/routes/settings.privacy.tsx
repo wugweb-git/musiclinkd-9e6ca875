@@ -33,6 +33,7 @@ import { getMyProfile, saveMyProfile } from "@/lib/portfolio.functions";
 import { exportMyData } from "@/lib/account.functions";
 import { iconSize } from "@/lib/tokens";
 import { analyticsConfigured, analyticsConsent, setAnalyticsConsent } from "@/lib/analytics";
+import { DOWNLOAD_UNAVAILABLE, downloadBlob } from "@/lib/download";
 
 export const Route = createFileRoute("/settings/privacy")({
   head: () => ({
@@ -150,12 +151,9 @@ function PrivacyScreen() {
     setExporting(true);
     try {
       const { fileName, json } = await exportData();
-      const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      URL.revokeObjectURL(url);
+      const blob = new Blob([json], { type: "application/json" });
+      // A "download my data" request that quietly does nothing is the worst kind to get wrong.
+      if (!downloadBlob(fileName, blob)) toast.error(DOWNLOAD_UNAVAILABLE);
     } catch {
       toast.error("Couldn't prepare your copy — try again");
     } finally {

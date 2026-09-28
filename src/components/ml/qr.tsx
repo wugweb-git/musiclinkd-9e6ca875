@@ -15,6 +15,7 @@ import { Price, SoonBadge } from "./kit";
 import { styleFor, type DestinationPreview, type QrStyle } from "@/data/identity";
 import { iconSize } from "@/lib/tokens";
 import { sized } from "@/lib/image-url";
+import { DOWNLOAD_UNAVAILABLE, downloadBlob } from "@/lib/download";
 
 /**
  * Saves the QR for `value` as a PNG through the browser (talent and business QR screens).
@@ -28,13 +29,10 @@ export async function downloadQr(value: string, fileName: string) {
       errorCorrectionLevel: "M",
       color: { dark: "#000000", light: "#ffffff" },
     });
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = `${fileName.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "musiclinkd"}-qr.png`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    toast.success("QR image saved");
+    const name = `${fileName.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "musiclinkd"}-qr.png`;
+    const png = await (await fetch(dataUrl)).blob();
+    if (downloadBlob(name, png)) toast.success("QR image saved");
+    else toast.error(DOWNLOAD_UNAVAILABLE);
   } catch {
     toast.error("Couldn't make the QR image. Try again.");
   }

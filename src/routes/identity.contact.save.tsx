@@ -9,6 +9,7 @@ import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import { StateCard, ActionRow } from "@/components/ml/qr";
 import { useMyTalentIdentity } from "@/hooks/use-my-talent-identity";
 import { iconSize } from "@/lib/tokens";
+import { downloadBlob } from "@/lib/download";
 
 export const Route = createFileRoute("/identity/contact/save")({
   head: () => ({
@@ -50,15 +51,7 @@ function SaveContact() {
     setPhase("saving");
     try {
       const blob = new Blob([vCard(me)], { type: "text/vcard" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${me.name || "musiclinkd-contact"}.vcf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      setPhase("done");
+      setPhase(downloadBlob(`${me.name || "musiclinkd-contact"}.vcf`, blob) ? "done" : "error");
     } catch {
       setPhase("error");
     }
