@@ -43,7 +43,7 @@ export const Route = createFileRoute("/marketplace/sell")({
       { property: "og:title", content: "Create a Listing | MusicLinkd Market" },
       {
         property: "og:description",
-        content: "Publish a listing to 72,000+ verified music professionals.",
+        content: "Publish a listing to music professionals on MusicLinkd.",
       },
     ],
   }),

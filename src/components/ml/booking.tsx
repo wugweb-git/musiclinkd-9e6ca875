@@ -24,7 +24,6 @@ import {
   type Tone,
 } from "@/components/ml/kit";
 import {
-  availabilityFor,
   lowestRate,
   monthGrid,
   statusMeta,
@@ -233,9 +232,7 @@ export function ResourceCard({
       <div className="flex items-center justify-between border-t border-border px-4 py-3">
         <div className="min-w-0">
           <Price price={from} amountClassName="text-sm font-semibold" />
-          <p className="text-1 text-muted-foreground">
-            {r.model === "instant" ? "Instant booking" : "Request to book"}
-          </p>
+          <p className="text-1 text-muted-foreground">Request to book</p>
         </div>
         <Btn variant={selected ? "primary" : "outline"} onClick={onSelect ?? (() => undefined)}>
           {selected ? "Selected" : "Select"}
@@ -257,20 +254,16 @@ const dayStyle: Record<DayState, string> = {
 };
 
 export function AvailabilityCalendar({
-  resourceId,
-  fromPrice,
   selected,
   onSelect,
   timezone,
   dayOf,
 }: {
-  resourceId: string;
-  fromPrice: number;
   selected?: string | undefined;
   onSelect: (date: string) => void;
   timezone: string;
-  /** A database studio's real day (src/lib/studio-slots.ts); the design-time schedule otherwise. */
-  dayOf?: ((date: string) => DayAvailability) | undefined;
+  /** The studio's real day from the database (src/lib/studio-slots.ts). There is no fallback. */
+  dayOf: (date: string) => DayAvailability;
 }) {
   const today = new Date();
   const earliest = earliestBookingDate(today);
@@ -327,7 +320,7 @@ export function AvailabilityCalendar({
           const iso = isoDate(d);
           const inMonth = d.getMonth() === cursor.m;
           if (iso < earliest) return <span key={iso} aria-hidden className="h-12" />;
-          const a = dayOf ? dayOf(iso) : availabilityFor(resourceId, iso, fromPrice);
+          const a = dayOf(iso);
           // Bookings start tomorrow at the earliest, whatever the schedule says.
           const disabled = a.state === "unavailable" || a.state === "closed";
           const isSel = selected === iso;

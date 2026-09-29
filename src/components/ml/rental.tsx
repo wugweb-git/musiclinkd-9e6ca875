@@ -2,8 +2,8 @@ import { useMemo, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarDays, Package, Truck } from "lucide-react";
-import { Btn, Chip, Sheet, VerifiedBadge } from "./ui";
+import { ChevronLeft, ChevronRight, Package, Truck } from "lucide-react";
+import { Btn, Chip, IconBtn, Sheet, VerifiedBadge } from "./ui";
 import { Followers, Rating, useFileReport } from "./market";
 import { Price, StatusPill, type Tone } from "./kit";
 import { rupeeParts } from "@/lib/price";
@@ -19,6 +19,7 @@ import { iconSize } from "@/lib/tokens";
 import { shownPlace } from "@/lib/place";
 import { SheetSectionHeading } from "./drawer-list";
 import { sized } from "@/lib/image-url";
+import { formatDate, isoDate, todayInIndia } from "@/lib/when";
 
 const rentalAvailabilityTone: Record<"ok" | "warn" | "off", Tone> = {
   ok: "good",
@@ -183,36 +184,56 @@ export function useSavedRentals(enabled = true) {
 
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
+/**
+ * Rental dates as the listing stores them: full `YYYY-MM-DD` days in the viewer's own calendar.
+ * The month opens on the chosen start (or today) and moves forward and back; past days and the
+ * owner's blocked days can't be picked.
+ */
 export function RentalCalendar({
   e,
   start,
   end,
   onSelect,
-  month = new Date(2026, 7, 1),
 }: {
   e: Equipment;
-  start: number | null;
-  end: number | null;
-  onSelect: (day: number) => void;
-  month?: Date;
+  start: string | null;
+  end: string | null;
+  onSelect: (date: string) => void;
 }) {
-  const year = month.getFullYear();
-  const m = month.getMonth();
-  const first = new Date(year, m, 1);
-  const daysInMonth = new Date(year, m + 1, 0).getDate();
+  const today = todayInIndia();
+  const [cursor, setCursor] = useState(() => {
+    const d = new Date(`${start ?? today}T00:00:00`);
+    return { y: d.getFullYear(), m: d.getMonth() };
+  });
+  const first = new Date(cursor.y, cursor.m, 1);
+  const daysInMonth = new Date(cursor.y, cursor.m + 1, 0).getDate();
   const lead = (first.getDay() + 6) % 7;
-  const blocked = useMemo(
-    () => new Set(e.unavailableDates.map((d) => Number(d.slice(8, 10)))),
-    [e.unavailableDates],
-  );
+  const blocked = useMemo(() => new Set(e.unavailableDates), [e.unavailableDates]);
+  const now = new Date(`${today}T00:00:00`);
+  const atFirstMonth = cursor.y === now.getFullYear() && cursor.m === now.getMonth();
+  const step = (by: number) =>
+    setCursor((c) => {
+      const d = new Date(c.y, c.m + by, 1);
+      return { y: d.getFullYear(), m: d.getMonth() };
+    });
 
   return (
     <div className="rounded-lg bg-subtle p-4">
       <div className="mb-3 flex items-center justify-between">
+        <IconBtn
+          label="Previous month"
+          disabled={atFirstMonth}
+          onClick={() => step(-1)}
+          className={atFirstMonth ? "invisible" : ""}
+        >
+          <ChevronLeft size={iconSize.sm} />
+        </IconBtn>
         <p className="text-2 font-semibold">
-          {month.toLocaleString("en-IN", { month: "long", year: "numeric" })}
+          {first.toLocaleString("en-IN", { month: "long", year: "numeric" })}
         </p>
-        <CalendarDays size={iconSize.sm} className="text-muted-foreground" />
+        <IconBtn label="Next month" onClick={() => step(1)}>
+          <ChevronRight size={iconSize.sm} />
+        </IconBtn>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center">
         {DAY_LABELS.map((d, i) => (
@@ -224,21 +245,30 @@ export function RentalCalendar({
           <span key={`lead${i}`} />
         ))}
         {Array.from({ length: daysInMonth }).map((_, i) => {
-          const day = i + 1;
-          const isBlocked = blocked.has(day);
-          const inRange = start !== null && end !== null && day >= start && day <= end;
-          const isEdge = day === start || day === end;
+          const iso = isoDate(new Date(cursor.y, cursor.m, i + 1));
+          const isBlocked = blocked.has(iso);
+          const isPast = iso < today;
+          const inRange = start !== null && end !== null && iso >= start && iso <= end;
+          const isEdge = iso === start || iso === end;
           return (
             <button
-              key={day}
+              key={iso}
               type="button"
-              disabled={isBlocked}
-              onClick={() => onSelect(day)}
-              className={`flex h-9 items-center justify-center rounded-sm text-1 font-semibold transition-colors ${
+              disabled={isBlocked || isPast}
+              onClick={() => onSelect(iso)}
+              aria-label={`${formatDate(iso)}${isBlocked ? ", unavailable" : ""}`}
+              aria-pressed={isEdge || inRange}
+              className={`flex h-12 items-center justify-center rounded-sm text-1 font-semibold transition-colors ${
                 isBlocked ? "text-muted-foreground line-through opacity-50" : ""
-              } ${isEdge ? "bg-primary text-primary-foreground" : inRange ? "bg-background text-foreground" : ""}`}
+              } ${isPast && !isBlocked ? "text-muted-foreground opacity-50" : ""} ${
+                isEdge
+                  ? "bg-primary text-primary-foreground"
+                  : inRange
+                    ? "bg-background text-foreground"
+                    : ""
+              }`}
             >
-              {day}
+              {i + 1}
             </button>
           );
         })}
@@ -251,7 +281,7 @@ export function RentalCalendar({
           <span className="h-2 w-2 rounded-full bg-border" /> Unavailable
         </span>
         <span>
-          Min {e.minDays} day{e.minDays > 1 ? "s" : ""} · notice {e.noticePeriod}
+          Min {e.minDays} day{e.minDays > 1 ? "s" : ""}, notice {e.noticePeriod}
         </span>
       </div>
     </div>
@@ -272,13 +302,11 @@ export function PriceBreakdown({
   const subtotal = priceFor(e, days) * quantity;
   const deliveryFee = delivery ? (e.deliveryFee ?? 0) : 0;
   const deposit = e.deposit * quantity;
-  const fees = Math.round(subtotal * 0.02);
-  const total = subtotal + deliveryFee + fees;
+  const total = subtotal + deliveryFee;
 
   const rows = [
-    { k: `${inr(e.daily)} × ${days} day${days > 1 ? "s" : ""} × ${quantity}`, v: inr(subtotal) },
+    { k: `${days} day${days > 1 ? "s" : ""} × ${quantity}`, v: inr(subtotal) },
     ...(delivery ? [{ k: "Delivery & pickup", v: inr(deliveryFee) }] : []),
-    { k: "Platform fee (2%)", v: inr(fees) },
   ];
 
   return (

@@ -5,6 +5,55 @@ Format: [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed — P0: nothing on screen claims what didn't happen (30 Sep)
+
+- **Rental dates.** `RentalCalendar` works in full `YYYY-MM-DD` days, moves month to month, opens on the
+  chosen start or today, and can't pick a past or blocked day (blocked days were matched on day number
+  alone). The request screen no longer preselects 18–22 Aug or writes year 2026 / month 7:
+  it sends the dates picked, won't continue across a blocked day, and `requestRentalBooking` rejects
+  malformed, reversed, past or blocked ranges on the server. The confirmation reads "Request sent", not
+  "Rental confirmed"; "Save Draft", which saved nothing, is "Back".
+- **Rental "today" is India's day** (`todayInIndia`, `src/lib/when.ts`), on the server that draws the
+  page and the browser that hydrates it, and in the request check. Between midnight and 5:30 am
+  India time the server's UTC clock drew yesterday as selectable, then the browser redrew it.
+- **Rental price.** The invented "Platform fee (2%)" is gone. `priceFor` applies a weekly or monthly
+  rate only when the owner set one: a stored 0 priced a week at ₹0.
+- **Studio availability.** The hash-generated schedule (`availabilityFor`, `nextAvailableDate`) is
+  removed; `AvailabilityCalendar` takes the studio's real day and has no fallback. A studio with no
+  opening hours shows "Availability not set", and a failed calendar read is an error, not an empty week.
+- **"Instant booking" / "Instant confirmation"** removed: every booking is a request.
+- **Profile More sheet.** Copy link (after the clipboard resolves), Save to shortlist (`saved_items`) and
+  Report profile (`reports`, with a reason) work. Restrict and Block have no backend and show disabled,
+  "Not available yet". The trust-team footer and the "the team will look at it" toast are gone.
+- **Saves.** Marketplace and rental cards save through `saved_items` with the listing detail's hook,
+  roll back and say so on failure, and show no heart when there is no row to save. Opportunity saves
+  live in `saved_items` only (a device-only list is moved there once), and a failed save rolls back.
+- **Offers never sent.** `OfferSheet` passed the listing's slug to `makeOffer`, which takes the row uuid,
+  so every offer failed, silently. It sends the uuid and says when it fails.
+- **Media.** An unembeddable link reads "Open on {site}" and opens it, instead of "Playing in
+  MusicLinkd" with animated bars. `AudioPlayer` and `VideoPlayer` go through `MediaEmbed` rather than
+  feeding a page URL to `<audio>`/`<video>`. `AudioTrackCard` no longer invents "3:42", "Producer &
+  Mix" or an "In-app lossless preview" waveform, and shows no play button without media.
+  `FeaturedCard` drops its hard-coded mastering copy and its play button, which played nothing.
+- **QR.** The share sheet draws a real, scannable code of the profile URL (`QrCode`); `QrBlock`, a hash
+  pattern labelled "Profile QR code", is deleted. `QrCode` shows an error when generation fails.
+  "Copied" appears only after the clipboard write resolves (`copyText`).
+- **Failures shown as facts.** Sign-in methods, contributor search and Spotify show an error with a retry
+  instead of "This is your only way to sign in", "Not on MusicLinkd yet" and "Not available yet". The
+  portfolio header no longer defaults to "Public".
+- **Play counts.** A play is recorded when the browser's player reports playback starting
+  (`MediaEmbed` `onPlay`), not when a play button opens the player. An embedded source's player
+  (YouTube, Spotify, SoundCloud) reports nothing to the page, so plays there are not counted.
+- **Plays before the fix.** Rows recorded before it can't be told apart from real plays, so they are
+  marked by date (`PLAYS_COUNTED_FROM`, `src/lib/plays-cutoff.ts`): Discover's Trending work ignores
+  them (ranked from the rows in `listTrendingWork`, since the RPC only takes whole days), the
+  Performance screen counts the last 30 days its title already names, and both owner views say
+  "Plays counted from {date}". The Performance screen's "There's no analytics table yet, so these
+  figures aren't tracked" is removed: plays are tracked.
+- **Uploads.** A multi-photo upload keeps the photos that made it and names the ones that didn't.
+- **Fabricated figures.** "72,000+ verified pros" (Gear CTA, sell page meta), "248 results" (filter
+  sheet) and the local-only review "Helpful" count are removed.
+
 ### Fixed — profile visibility has three values (15 Sep)
 
 - **Public, MusicLinkd members, Limited** everywhere (owner: "keep 3"). The profile edit screen offered

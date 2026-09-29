@@ -33,17 +33,27 @@ export function SignInMethodsRow() {
   const [identities, setIdentities] = useState<UserIdentity[] | null>(null);
   const [open, setOpen] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  // A failed read is its own state: it never reads as "no methods" or "your only method".
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    setFailed(false);
     void supabase.auth
       .getUserIdentities()
-      .then(({ data }) => setIdentities(data?.identities ?? []))
-      .catch(() => setIdentities([]));
-  }, []);
+      .then(({ data, error }) => {
+        if (error || !data) throw error ?? new Error("No identities");
+        setIdentities(data.identities);
+      })
+      .catch(() => setFailed(true));
+  }, [attempt]);
 
   const count = identities?.length ?? 0;
-  const hint =
-    identities === null ? "Checking…" : identities.map((i) => labelFor(i.provider)).join(", ");
+  const hint = failed
+    ? "Couldn't load"
+    : identities === null
+      ? "Checking…"
+      : identities.map((i) => labelFor(i.provider)).join(", ");
 
   async function remove(identity: UserIdentity) {
     setBusyId(identity.identity_id);
@@ -77,38 +87,49 @@ export function SignInMethodsRow() {
       </button>
 
       <Sheet open={open} onClose={() => setOpen(false)} title="Sign-in methods">
-        <div className="space-y-2">
-          {(identities ?? []).map((identity) => (
-            <div
-              key={identity.identity_id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3"
-            >
-              <span className="min-w-0">
-                <span className="block text-sm font-semibold">{labelFor(identity.provider)}</span>
-                {identity.identity_data?.["email"] ? (
-                  <span className="block truncate text-1 text-muted-foreground">
-                    {String(identity.identity_data["email"])}
-                  </span>
+        {failed ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">Your sign-in methods didn't load.</p>
+            <Btn variant="outline" className="w-full" onClick={() => setAttempt((n) => n + 1)}>
+              Try Again
+            </Btn>
+          </div>
+        ) : identities === null ? (
+          <p className="text-sm text-muted-foreground">Checking…</p>
+        ) : (
+          <div className="space-y-2">
+            {(identities ?? []).map((identity) => (
+              <div
+                key={identity.identity_id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3"
+              >
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">{labelFor(identity.provider)}</span>
+                  {identity.identity_data?.["email"] ? (
+                    <span className="block truncate text-1 text-muted-foreground">
+                      {String(identity.identity_data["email"])}
+                    </span>
+                  ) : null}
+                </span>
+                {count > 1 ? (
+                  <Btn
+                    variant="outline"
+                    className="shrink-0"
+                    loading={busyId === identity.identity_id}
+                    onClick={() => void remove(identity)}
+                  >
+                    Remove
+                  </Btn>
                 ) : null}
-              </span>
-              {count > 1 ? (
-                <Btn
-                  variant="outline"
-                  className="shrink-0"
-                  loading={busyId === identity.identity_id}
-                  onClick={() => void remove(identity)}
-                >
-                  Remove
-                </Btn>
-              ) : null}
-            </div>
-          ))}
-          {count <= 1 ? (
-            <p className="pt-1 text-1 text-muted-foreground">
-              This is your only way to sign in, so it can't be removed. Add another method first.
-            </p>
-          ) : null}
-        </div>
+              </div>
+            ))}
+            {count <= 1 ? (
+              <p className="pt-1 text-1 text-muted-foreground">
+                This is your only way to sign in, so it can't be removed. Add another method first.
+              </p>
+            ) : null}
+          </div>
+        )}
       </Sheet>
     </>
   );

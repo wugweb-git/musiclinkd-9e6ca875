@@ -361,10 +361,32 @@ export const getOpportunityViewSources = createServerFn({ method: "GET" })
   });
 
 /*
- * Saving an opportunity. The shortlist itself stays on the device (useSavedOpportunities); a
- * signed-in save is also kept in saved_items, so the poster can see how many people saved it.
+ * Saving an opportunity: kept in saved_items (target_type "opportunity"), which is both the
+ * saver's shortlist and the poster's Saves count.
  * Schema: supabase/migrations/20260918230000_section_sources.sql
  */
+
+/** The slugs of the opportunities this account saved. */
+export const listMySavedOpportunitySlugs = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<string[]> => {
+    const client = db(context.supabase);
+    const { data: saved, error } = await client
+      .from("saved_items")
+      .select("target_id")
+      .eq("user_id", context.userId)
+      .eq("target_type", "opportunity");
+    if (error) throw new Error(error.message);
+    const ids = ((saved ?? []) as { target_id: string }[]).map((r) => r.target_id);
+    if (!ids.length) return [];
+    const { data: rows, error: oppError } = await client
+      .from("opportunities")
+      .select("slug")
+      .in("id", ids);
+    if (oppError) throw new Error(oppError.message);
+    return ((rows ?? []) as { slug: string }[]).map((r) => r.slug);
+  });
+
 export const setOpportunitySaved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) =>
@@ -372,8 +394,7 @@ export const setOpportunitySaved = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }): Promise<{ ok: boolean }> => {
     const client = db(context.supabase);
-    const opportunityId = await opportunityIdFor(client, data.slug).catch(() => null);
-    if (!opportunityId) return { ok: false };
+    const opportunityId = await opportunityIdFor(client, data.slug);
     const saved = client.from("saved_items");
     const { error } = data.saved
       ? await saved.upsert(
@@ -389,7 +410,8 @@ export const setOpportunitySaved = createServerFn({ method: "POST" })
           .eq("user_id", context.userId)
           .eq("target_type", "opportunity")
           .eq("target_id", opportunityId);
-    return { ok: !error };
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 /** How many people saved the poster's own opportunity. Zero for anyone else's. */

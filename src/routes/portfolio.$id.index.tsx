@@ -208,7 +208,7 @@ function WorkDetail() {
               <section className="mt-6">
                 <h2 className="text-2">Performance</h2>
                 <div className="mt-3">
-                  <WorkAnalytics figures={figures} />
+                  <WorkAnalytics figures={figures} playsNote />
                 </div>
               </section>
             ) : null}

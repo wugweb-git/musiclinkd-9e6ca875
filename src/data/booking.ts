@@ -25,7 +25,8 @@ export type BookableKind =
 
 export type DurationUnit = "hour" | "halfDay" | "fullDay" | "session" | "custom";
 
-export type BookingModel = "request" | "instant";
+/** Every booking is a request the provider confirms; nothing books instantly. */
+export type BookingModel = "request";
 
 /** availability.dayState — EXISTING */
 export type DayState = "available" | "limited" | "unavailable" | "closed";
@@ -269,8 +270,8 @@ export const bookables: Bookable[] = [
         capacity: 2,
         equipment: ["Neumann TLM 103", "Avalon VT-737", "Apollo x8"],
         durations: ["hour", "halfDay", "custom"],
-        model: "instant",
-        availabilityNote: "Instant booking",
+        model: "request",
+        availabilityNote: "",
         photo: img(STUDIO_B),
         tiers: [
           { unit: "hour", label: "Hourly", hours: 1, price: 1200 },
@@ -412,7 +413,7 @@ export const bookables: Bookable[] = [
     gallery: [img(STUDIO_D), img(STUDIO_F)],
     about: "Three backlined rehearsal rooms, open late, priced by the hour with no minimum.",
     facilities: ["Backline included", "Open till 2 AM", "Lockers", "Cafe"],
-    responseTime: "Instant confirmation",
+    responseTime: "",
     taxPct: 18,
     resources: [
       {
@@ -422,8 +423,8 @@ export const bookables: Bookable[] = [
         capacity: 6,
         equipment: ["Pearl Export kit", "Marshall DSL", "Ampeg BA-210", "Yamaha PA"],
         durations: ["hour", "halfDay", "custom"],
-        model: "instant",
-        availabilityNote: "Instant booking",
+        model: "request",
+        availabilityNote: "",
         photo: img(STUDIO_D),
         tiers: [
           { unit: "hour", label: "Hourly", hours: 1, price: 600 },
@@ -437,7 +438,7 @@ export const bookables: Bookable[] = [
         capacity: 4,
         equipment: ["Upright piano", "2× SM58", "Mixer"],
         durations: ["hour", "custom"],
-        model: "instant",
+        model: "request",
         availabilityNote: "Usually free",
         photo: img(STUDIO_F),
         tiers: [{ unit: "hour", label: "Hourly", hours: 1, price: 350 }],
@@ -525,50 +526,6 @@ export function getResource(b: Bookable | undefined, id: string | undefined) {
   return b.resources.find((r) => r.id === id) ?? b.resources[0];
 }
 
-/* ------------------------------------------------------------------ */
-/* Availability — deterministic pseudo-schedule (design-time)          */
-/* ------------------------------------------------------------------ */
-
-function hash(s: string) {
-  let h = 0;
-  for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return h;
-}
-
-export function availabilityFor(
-  resourceId: string,
-  date: string,
-  fromPrice: number,
-): DayAvailability {
-  const d = new Date(`${date}T00:00:00`);
-  const dow = d.getDay();
-  const h = hash(resourceId + date);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  if (d < today) return { date, state: "unavailable", slots: [] };
-  if (dow === 0 && h % 3 === 0) return { date, state: "closed", slots: [] };
-
-  const bucket = h % 10;
-  if (bucket === 0)
-    return {
-      date,
-      state: "unavailable",
-      slots: daySlots(10, 20, [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]),
-    };
-
-  const booked = bucket < 4 ? [10, 11, 15, 16, 17, 19] : bucket < 7 ? [12, 18] : [16];
-  const blocked = bucket % 2 === 0 ? [13] : [];
-  const slots = daySlots(10, 20, booked, blocked);
-  const open = slots.filter((s) => s.state === "open").length;
-  return {
-    date,
-    state: open <= 3 ? "limited" : "available",
-    slots,
-    fromPrice: fromPrice + (dow === 5 || dow === 6 ? 300 : 0),
-  };
-}
-
 export function monthGrid(year: number, month: number) {
   const first = new Date(year, month, 1);
   const start = new Date(first);
@@ -578,16 +535,6 @@ export function monthGrid(year: number, month: number) {
     d.setDate(start.getDate() + i);
     return d;
   });
-}
-
-export function nextAvailableDate(resourceId: string, fromPrice: number, after = new Date()) {
-  for (let i = 1; i < 40; i += 1) {
-    const d = new Date(after);
-    d.setDate(after.getDate() + i);
-    const a = availabilityFor(resourceId, isoDate(d), fromPrice);
-    if (a.state === "available" || a.state === "limited") return a;
-  }
-  return undefined;
 }
 
 export const durationOptions: { unit: DurationUnit; label: string; hours: number }[] = [

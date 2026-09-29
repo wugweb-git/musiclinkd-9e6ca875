@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import type { Listing } from "@/data/market";
 import type { RentalItem } from "@/data/rentals";
+import { useSavedListings } from "@/hooks/use-saved-listings";
 import { useGearTaxonomy, type GearTaxonomy } from "@/lib/listing-category";
 import { useTaxonomy } from "@/lib/taxonomy";
 import {
@@ -271,6 +272,8 @@ export type ProductItem = {
   /** Which detail page opens: a marketplace listing, or a piece of rental equipment. */
   opens: "listing" | "equipment";
   id: string;
+  /** The listing's row uuid, which saves are keyed by. No uuid, no save control. */
+  saveId?: string | undefined;
   title: string;
   photos: string[];
   category: string;
@@ -283,6 +286,7 @@ export function productFromListing(l: Listing): ProductItem {
   return {
     opens: "listing",
     id: l.id,
+    saveId: l.dbId,
     title: l.title,
     photos: l.photos,
     category: l.category,
@@ -296,6 +300,7 @@ export function productFromRental(e: RentalItem): ProductItem {
   return {
     opens: "equipment",
     id: e.id,
+    saveId: e.dbId,
     title: e.name,
     photos: e.photos,
     category: e.category ?? "other",
@@ -337,10 +342,12 @@ export function ProductCard({
   /** Drawn for a listing still being written: the same card, not a link. */
   preview?: boolean;
 }) {
-  const [localSaved, setLocalSaved] = useState(false);
+  const store = useSavedListings();
   const [shown, setShown] = useState(0);
   const [tapped, setTapped] = useState(false);
-  const isSaved = saved ?? localSaved;
+  // Saves are persisted (saved_items); a card with nothing to save against shows no heart.
+  const canSave = !preview && Boolean(onSave || item.saveId);
+  const isSaved = saved ?? (item.saveId ? store.has(item.saveId) : false);
   const unit = unitName(item.price?.unit);
   const className = `group @container block ${rail ? "w-[224px] shrink-0" : ""}`;
 
@@ -380,33 +387,35 @@ export function ProductCard({
               {item.badge}
             </span>
           ) : null}
-          <button
-            type="button"
-            aria-label={isSaved ? "Remove bookmark" : "Bookmark"}
-            aria-pressed={isSaved}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setTapped(true);
-              if (onSave) onSave();
-              else setLocalSaved((s) => !s);
-            }}
-            onAnimationEnd={(e) => {
-              if (e.target === e.currentTarget) setTapped(false);
-            }}
-            className={`hit-area absolute right-[3.47cqw] top-[2.93cqw] flex h-[10.4cqw] w-[10.4cqw] items-center justify-center rounded-full backdrop-blur-md transition-[color,background-color] duration-200 ${
-              isSaved ? "bg-red-500/20 text-red-500" : "bg-white/50 text-[#0D0D0D]"
-            } ${tapped ? "animate-tab-tap" : ""}`}
-          >
-            <StateIcon
-              outline={Heart}
-              solid="heart"
-              active={isSaved}
-              size="4.8cqw"
-              move="beat"
-              strokeWidth={2}
-            />
-          </button>
+          {canSave ? (
+            <button
+              type="button"
+              aria-label={isSaved ? "Remove bookmark" : "Bookmark"}
+              aria-pressed={isSaved}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setTapped(true);
+                if (onSave) onSave();
+                else if (item.saveId) store.toggle(item.saveId);
+              }}
+              onAnimationEnd={(e) => {
+                if (e.target === e.currentTarget) setTapped(false);
+              }}
+              className={`hit-area absolute right-[3.47cqw] top-[2.93cqw] flex h-[10.4cqw] w-[10.4cqw] items-center justify-center rounded-full backdrop-blur-md transition-[color,background-color] duration-200 ${
+                isSaved ? "bg-red-500/20 text-red-500" : "bg-white/50 text-[#0D0D0D]"
+              } ${tapped ? "animate-tab-tap" : ""}`}
+            >
+              <StateIcon
+                outline={Heart}
+                solid="heart"
+                active={isSaved}
+                size="4.8cqw"
+                move="beat"
+                strokeWidth={2}
+              />
+            </button>
+          ) : null}
           {item.photos.length > 1 ? (
             <div
               className="absolute inset-x-0 bottom-[3.73cqw] flex justify-center gap-[1.2cqw]"
@@ -535,7 +544,7 @@ export function EquipmentGrid({ items }: { items: RentalItem[] }) {
 }
 
 export function ListingRow({ l }: { l: Listing }) {
-  const [saved, setSaved] = useState(false);
+  const store = useSavedListings();
   return (
     <article className="flex gap-3 rounded-lg bg-subtle p-3">
       <Link to="/marketplace/l/$id" params={{ id: l.id }} className="shrink-0">
@@ -556,7 +565,13 @@ export function ListingRow({ l }: { l: Listing }) {
             <h3 className="line-clamp-2 text-sm font-semibold leading-snug">{l.title}</h3>
             <PriceBlock price={l.price} />
           </Link>
-          <SaveButton saved={saved} onToggle={() => setSaved((s) => !s)} size={32} />
+          {l.dbId ? (
+            <SaveButton
+              saved={store.has(l.dbId)}
+              onToggle={() => l.dbId && store.toggle(l.dbId)}
+              size={32}
+            />
+          ) : null}
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
           {l.condition ? <ConditionBadge value={l.condition} /> : null}
@@ -1256,19 +1271,21 @@ export function OfferSheet({
 
   async function submit() {
     const rupees = Number(amount.replace(/[^0-9]/g, ""));
-    if (!rupees) return;
+    if (!rupees || !listing.dbId) return;
     setSending(true);
     try {
       await send({
         data: {
-          listingId: listing.id,
+          // Offers are keyed by the listing's row uuid; `id` is its slug.
+          listingId: listing.dbId,
           amountPaise: rupees * 100,
           ...(message.trim() ? { message: message.trim() } : {}),
         },
       });
       setSent(true);
     } catch {
-      /* Sheet stays open with the form intact so they can just try again. */
+      // The sheet stays open with the form intact so they can try again.
+      toast.error("Your offer didn't send. Try again.");
     } finally {
       setSending(false);
     }
@@ -1340,8 +1357,13 @@ export function OfferSheet({
             Payment is arranged directly with the seller.
           </p>
 
-          <Btn className="w-full" disabled={!amount || sending} onClick={() => void submit()}>
-            {sending ? "Sending…" : "Send Offer"}
+          <Btn
+            className="w-full"
+            disabled={!amount || !listing.dbId}
+            loading={sending}
+            onClick={() => void submit()}
+          >
+            Send Offer
           </Btn>
         </>
       )}
@@ -1356,7 +1378,7 @@ export function useFileReport(onDone: () => void) {
     mutationFn: (v: { subjectType: ReportSubject; subjectId: string; reason: string }) =>
       report({ data: v }),
     onSuccess: () => {
-      toast.success("Reported. Thanks — the team will look at it.");
+      toast.success("Report sent");
       onDone();
     },
     onError: () => toast.error("That didn't send. Try again."),

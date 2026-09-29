@@ -1,11 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { anonClient } from "@/lib/portfolio.functions";
+import { PLAYS_COUNTED_FROM } from "@/lib/plays-cutoff";
 import type { DirectoryPerson } from "@/lib/profile-groups.functions";
 
 /*
  * Trending portfolio work: most plays in the last 7 days, counted by the database
  * (supabase/migrations/20260917100200_portfolio_plays_trending.sql), never by the client.
+ *
+ * Only plays since PLAYS_COUNTED_FROM count: before it, opening a player was recorded as a play.
+ * The trending_portfolio_items RPC takes whole days only, so the same ranking is made here from
+ * the rows: published work, public profiles, most plays, then the most recently played.
  */
 
 export type TrendingItem = {
@@ -19,12 +23,85 @@ export type TrendingItem = {
   username: string | null;
 };
 
-export const listTrendingWork = createServerFn({ method: "GET" }).handler(async () => {
-  const client = (await anonClient()) as unknown as SupabaseClient;
-  const { data, error } = await client.rpc("trending_portfolio_items", { days: 7, lim: 10 });
-  if (error) throw new Error(error.message);
-  return ((data ?? []) as TrendingItem[]).map((r) => ({ ...r, plays: Number(r.plays) }));
-});
+export const listTrendingWork = createServerFn({ method: "GET" }).handler(
+  async (): Promise<TrendingItem[]> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin as unknown as SupabaseClient;
+    const since = new Date(
+      Math.max(Date.now() - 7 * 86_400_000, new Date(PLAYS_COUNTED_FROM).getTime()),
+    ).toISOString();
+    const { data: plays, error } = await db
+      .from("portfolio_item_plays")
+      .select("item_id, played_at")
+      .gt("played_at", since)
+      .limit(5000);
+    if (error) throw new Error(error.message);
+    const count = new Map<string, { plays: number; last: string }>();
+    for (const p of (plays ?? []) as { item_id: string; played_at: string }[]) {
+      const c = count.get(p.item_id);
+      if (c) {
+        c.plays += 1;
+        if (p.played_at > c.last) c.last = p.played_at;
+      } else count.set(p.item_id, { plays: 1, last: p.played_at });
+    }
+    if (!count.size) return [];
+
+    const { data: items, error: itemsError } = await db
+      .from("portfolio_items")
+      .select("id, title, kind, cover_url, media_url, user_id")
+      .in("id", [...count.keys()])
+      .eq("published", true);
+    if (itemsError) throw new Error(itemsError.message);
+    const rows = (items ?? []) as {
+      id: string;
+      title: string;
+      kind: string;
+      cover_url: string | null;
+      media_url: string | null;
+      user_id: string;
+    }[];
+    const ownerIds = [...new Set(rows.map((r) => r.user_id))];
+    const { data: owners, error: ownersError } = ownerIds.length
+      ? await db
+          .from("profiles")
+          .select("id, display_name, username, visibility")
+          .in("id", ownerIds)
+      : { data: [], error: null };
+    if (ownersError) throw new Error(ownersError.message);
+    const publicOwner = new Map(
+      (
+        (owners ?? []) as {
+          id: string;
+          display_name: string | null;
+          username: string | null;
+          visibility: string | null;
+        }[]
+      )
+        .filter((o) => (o.visibility ?? "public") === "public")
+        .map((o) => [o.id, o]),
+    );
+
+    return rows
+      .filter((r) => publicOwner.has(r.user_id))
+      .map((r) => {
+        const o = publicOwner.get(r.user_id)!;
+        return {
+          id: r.id,
+          title: r.title,
+          kind: r.kind,
+          cover_url: r.cover_url,
+          media_url: r.media_url,
+          plays: count.get(r.id)!.plays,
+          display_name: o.display_name,
+          username: o.username,
+        };
+      })
+      .sort(
+        (a, b) => b.plays - a.plays || count.get(b.id)!.last.localeCompare(count.get(a.id)!.last),
+      )
+      .slice(0, 10);
+  },
+);
 
 /*
  * Trending this week on Discover: people and studios ranked by what happened to them in the last

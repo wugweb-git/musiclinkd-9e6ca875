@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Minus, Plus } from "lucide-react";
+import { Check, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Screen, TopBar, Btn, BtnLink } from "@/components/ml/ui";
 import {
@@ -23,6 +23,7 @@ import {
   requestRentalBooking,
 } from "@/lib/rentals.functions";
 import { sized } from "@/lib/image-url";
+import { formatDate } from "@/lib/when";
 
 export const Route = createFileRoute("/marketplace/rent/request/$id")({
   loader: ({ params }) => getRentalListingDetail({ data: { slug: params.id } }).catch(() => null),
@@ -78,8 +79,9 @@ function RequestFlow() {
   });
 
   const [step, setStep] = useState<Step>("dates");
-  const [start, setStart] = useState<number | null>(18);
-  const [end, setEnd] = useState<number | null>(22);
+  // Full "YYYY-MM-DD" days, picked by the renter; nothing is preselected.
+  const [start, setStart] = useState<string | null>(null);
+  const [end, setEnd] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [fulfilment, setFulfilment] = useState("Pickup");
   const [note, setNote] = useState("");
@@ -87,14 +89,12 @@ function RequestFlow() {
 
   const request = useMutation({
     mutationFn: () => {
-      const year = 2026;
-      const month = 7; // RentalCalendar's fixed month, August (0-indexed).
-      const iso = (day: number) => new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+      if (!start || !end) throw new Error("Pick a start and an end date.");
       return send({
         data: {
           listingSlug: slug,
-          startDate: iso(start ?? 1),
-          endDate: iso(end ?? start ?? 1),
+          startDate: start,
+          endDate: end,
           quantity: qty,
           fulfilment: fulfilment === "Pickup" ? "pickup" : "provider_delivery",
           ...(note ? { note } : {}),
@@ -106,7 +106,10 @@ function RequestFlow() {
       setStep("confirmed");
       queryClient.invalidateQueries({ queryKey: ["rental-bookings", "mine"] });
     },
-    onError: () => toast.error("That didn't send. Try again."),
+    onError: (err) =>
+      toast.error(
+        err instanceof Error && err.message ? err.message : "That didn't send. Try again.",
+      ),
   });
 
   if (eq.isLoading) {
@@ -133,10 +136,21 @@ function RequestFlow() {
 
   const e = equipment;
   const p = prov.data;
-  const days = start !== null && end !== null ? Math.max(end - start + 1, e.minDays) : e.minDays;
+  const span =
+    start !== null && end !== null
+      ? Math.round(
+          (new Date(`${end}T00:00:00`).getTime() - new Date(`${start}T00:00:00`).getTime()) /
+            86_400_000,
+        ) + 1
+      : null;
+  const days = Math.max(span ?? e.minDays, e.minDays);
   const delivery = fulfilment !== "Pickup";
+  // A range that runs across a day the provider blocked can't be requested.
+  const crossesBlocked =
+    start !== null && end !== null && e.unavailableDates.some((d) => d >= start && d <= end);
+  const range = start && end ? `${formatDate(start)} – ${formatDate(end)}` : null;
 
-  const pick = (day: number) => {
+  const pick = (day: string) => {
     if (start === null || (start !== null && end !== null)) {
       setStart(day);
       setEnd(null);
@@ -153,7 +167,7 @@ function RequestFlow() {
     dates: "Check availability",
     summary: "Rental summary",
     request: "Rental request",
-    confirmed: "Rental confirmed",
+    confirmed: "Request sent",
   };
 
   return (
@@ -216,16 +230,22 @@ function RequestFlow() {
               </div>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              {end === null ? (
+              {start === null ? (
+                <RentalAvailabilityBadge text="Select a start date" tone="warn" />
+              ) : end === null ? (
                 <RentalAvailabilityBadge text="Select an end date" tone="warn" />
+              ) : crossesBlocked ? (
+                <RentalAvailabilityBadge text="Includes an unavailable day" tone="warn" />
               ) : (
-                <RentalAvailabilityBadge text={`Available · ${days} days`} />
+                <RentalAvailabilityBadge text={`${days} days`} />
               )}
-              <span className="text-1 text-muted-foreground">
-                Aug {start ?? "–"} → Aug {end ?? "–"}
-              </span>
+              {range ? <span className="text-1 text-muted-foreground">{range}</span> : null}
             </div>
-            <Btn className="mt-5 w-full" onClick={() => setStep("summary")}>
+            <Btn
+              className="mt-5 w-full"
+              disabled={!start || !end || crossesBlocked}
+              onClick={() => setStep("summary")}
+            >
               Continue
             </Btn>
           </>
@@ -253,7 +273,7 @@ function RequestFlow() {
             </div>
             <dl className="mt-4 divide-y divide-border rounded-lg border border-border">
               {[
-                { k: "Dates", v: `Aug ${start} – Aug ${end} (${days} days)` },
+                { k: "Dates", v: `${range ?? ""} (${days} days)` },
                 { k: "Quantity", v: `${qty}` },
                 { k: "Fulfilment", v: fulfilment },
                 ...(e.location ? [{ k: "Location", v: e.location }] : []),
@@ -296,15 +316,15 @@ function RequestFlow() {
               Send Rental Request
             </Btn>
             <Btn variant="outline" className="mt-2 w-full" onClick={() => setStep("summary")}>
-              Save Draft
+              Back
             </Btn>
           </>
         ) : null}
 
         {step === "confirmed" ? (
           <div className="py-6 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container text-3">
-              ✓
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-container">
+              <Check size={iconSize.lg} aria-hidden />
             </div>
             <h2 className="text-3">Request sent</h2>
             <p className="mx-auto mt-2 max-w-prose-sm text-sm text-muted-foreground">
@@ -314,7 +334,7 @@ function RequestFlow() {
             <dl className="mt-5 divide-y divide-border rounded-lg border border-border text-left">
               {[
                 { k: "Equipment", v: e.name },
-                { k: "Dates", v: `Aug ${start} – Aug ${end}` },
+                { k: "Dates", v: range ?? "" },
                 { k: "Fulfilment", v: fulfilment },
                 ...(e.deposit ? [{ k: "Deposit", v: inr(e.deposit * qty) }] : []),
               ].map((r) => (

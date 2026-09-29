@@ -12,6 +12,15 @@ export function isoDate(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+/**
+ * Today's `YYYY-MM-DD` in India (UTC+5:30), where every listing and studio is. The server's clock
+ * is UTC and the viewer's may be anything, so this is the one "today" both sides agree on: the page
+ * the server draws and the page the browser hydrates show the same first bookable day.
+ */
+export function todayInIndia(now = Date.now()) {
+  return new Date(now + 5.5 * 3_600_000).toISOString().slice(0, 10);
+}
+
 /** "2026-09-24" → "Wed, 24 Sep". Parsed at local midnight so the day never slips a timezone. */
 export function formatDate(iso: string) {
   const d = new Date(`${iso}T00:00:00`);

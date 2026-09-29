@@ -23,6 +23,7 @@ import { getStudioCalendar } from "@/lib/studio-calendar.functions";
 import {
   calendarWindow,
   earliestBookingDate,
+  hasWeeklyHours,
   nextOpenDay,
   spanIsOpen,
   studioDay,
@@ -154,10 +155,18 @@ function Schedule() {
                 void calendar.refetch();
               }}
             />
+          ) : cal && !hasWeeklyHours(cal.weeklyHours) ? (
+            <EmptyState
+              title="Availability not set"
+              body="This studio hasn't added its opening hours yet. Message them to ask about a date."
+              action={
+                <BtnLink to="/messages" variant="outline" className="w-full">
+                  Message Provider
+                </BtnLink>
+              }
+            />
           ) : (
             <AvailabilityCalendar
-              resourceId={r.id}
-              fromPrice={fromPrice}
               {...(draft.date ? { selected: draft.date } : {})}
               onSelect={(date) => set({ date, start: undefined })}
               timezone={timezone}

@@ -48,11 +48,11 @@ function PortfolioAnalytics() {
   });
   const items: PortfolioItem[] = signedIn ? (q.data ?? []) : demoPortfolio;
 
-  // Plays are counted in the database; the rest of the figures are not counted anywhere yet.
+  // Plays are counted in the database, over the same 30 days the screen is titled with.
   const fetchPlays = useServerFn(myPortfolioPlays);
   const plays = useQuery({
-    queryKey: ["portfolio", "plays"],
-    queryFn: () => fetchPlays(),
+    queryKey: ["portfolio", "plays", 30],
+    queryFn: () => fetchPlays({ data: { days: 30 } }),
     enabled: signedIn,
   });
   const playsFor = (id: string) => (signedIn ? (plays.data?.[id] ?? null) : analyticsFor(id).plays);
@@ -85,12 +85,7 @@ function PortfolioAnalytics() {
 
         {!q.isLoading && !q.isError ? (
           <>
-            {signedIn ? (
-              <p className="mb-3 text-1 text-muted-foreground">
-                There's no analytics table yet, so these figures aren't tracked — they'll start
-                counting once that's built, not reflect a lack of engagement.
-              </p>
-            ) : (
+            {signedIn ? null : (
               /*
                * Signed out, every figure and every work on this screen is made up (demoPortfolio,
                * analyticsFor, portfolioTrend). The signed-in view has always said its numbers are
@@ -101,7 +96,7 @@ function PortfolioAnalytics() {
                 An example, not real data. Sign in to see how your own work is doing.
               </p>
             )}
-            <WorkAnalytics figures={totals} />
+            <WorkAnalytics figures={totals} playsNote={signedIn} />
 
             {/* The same 30 days as the totals above, drawn. */}
             <section className="mt-6">

@@ -60,9 +60,11 @@ export function QrCode({
 }) {
   const s = styleFor(style);
   const [src, setSrc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
+    setFailed(false);
     QRCode.toDataURL(value, {
       errorCorrectionLevel: overlay ? "H" : "M",
       margin: 2, // quiet zone
@@ -73,7 +75,9 @@ export function QrCode({
         if (alive) setSrc(d);
       })
       .catch(() => {
-        if (alive) setSrc(null);
+        if (!alive) return;
+        setSrc(null);
+        setFailed(true);
       });
     return () => {
       alive = false;
@@ -108,9 +112,14 @@ export function QrCode({
             />
           ) : null}
         </>
+      ) : failed ? (
+        <p className="p-3 text-center text-1 text-muted-foreground" role="alert">
+          Couldn't make the QR code
+        </p>
       ) : (
         <div
           className="h-full w-full animate-pulse rounded-lg bg-subtle"
+          role="img"
           aria-label="Generating QR code"
         />
       )}
@@ -390,10 +399,11 @@ export function CopyLinkRow({ url }: { url: string }) {
         type="button"
         aria-label="Copy link"
         onClick={() => {
-          void navigator.clipboard?.writeText(url).catch(() => undefined);
-          setDone(true);
-          toast.success("Link copied");
-          timer.current = setTimeout(() => setDone(false), 1600);
+          void copyText(url).then((ok) => {
+            if (!ok) return;
+            setDone(true);
+            timer.current = setTimeout(() => setDone(false), 1600);
+          });
         }}
         className="flex h-9 w-9 items-center justify-center rounded-full bg-background"
       >
@@ -420,8 +430,24 @@ export async function nativeShare(payload: { title: string; text?: string; url: 
       return;
     }
   }
-  void navigator.clipboard?.writeText(payload.url).catch(() => undefined);
-  toast("Sharing isn't available in this browser — link copied instead");
+  await copyText(payload.url, "Sharing isn't available here, so the link was copied");
+}
+
+/**
+ * Copies `text` and says so only once the clipboard write has resolved; a failed write says it
+ * failed. Returns whether it worked.
+ */
+// eslint-disable-next-line react-refresh/only-export-components -- helper intentionally co-located with its component
+export async function copyText(text: string, success = "Link copied") {
+  try {
+    if (!navigator.clipboard) throw new Error("No clipboard");
+    await navigator.clipboard.writeText(text);
+    toast.success(success);
+    return true;
+  } catch {
+    toast.error("Couldn't copy the link");
+    return false;
+  }
 }
 
 export function ShareActions({
@@ -452,10 +478,7 @@ export function ShareActions({
       <ActionRow
         icon={<Copy size={iconSize.sm} />}
         label="Copy link"
-        onClick={() => {
-          void navigator.clipboard?.writeText(url);
-          toast.success("Link copied");
-        }}
+        onClick={() => void copyText(url)}
       />
       <ActionRow
         icon={<Share2 size={iconSize.sm} />}

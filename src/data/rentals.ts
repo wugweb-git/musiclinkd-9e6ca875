@@ -871,10 +871,14 @@ export const popularRentalSearches = [
   "Line array under ₹10k per day",
 ];
 
+/**
+ * The owner's rates for `days`: monthly and weekly rates apply only when the owner set them (a
+ * stored 0 means "no weekly rate", never "free for a week").
+ */
 export const priceFor = (e: Equipment, days: number) => {
-  const months = Math.floor(days / 30);
+  const months = e.monthly > 0 ? Math.floor(days / 30) : 0;
   const afterMonths = days - months * 30;
-  const weeks = Math.floor(afterMonths / 7);
+  const weeks = e.weekly > 0 ? Math.floor(afterMonths / 7) : 0;
   const extraDays = afterMonths - weeks * 7;
   return months * e.monthly + weeks * e.weekly + extraDays * e.daily;
 };
